@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <tracker version="1.0" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sourceforge.net/export/sf_tracker_export.xsd">
 	<artifact id="1901534">
 		<submitted_by>nobody</submitted_by>
@@ -2924,12 +2925,12 @@ PDFOperator{Tf} [COSName{F4}, COSInt{1}]
 PDFOperator{Tm} [COSInt{8}, COSInt{0}, COSInt{0}, COSInt{8}, COSFloat{588.8953}, COSFloat{22.3465}]
 PDFOperator{Tr} [COSInt{0}]
 PDFOperator{Tc} [COSInt{0}]
-PDFOperator{TJ} [COSArray{[COSString{2}, COSInt{1}]}]
+PDFOperator{TJ} [COSArray{[COSString{2?}, COSInt{1}]}]
 &gt;&gt;&gt; Current Test Position: (588.8953, 771.3545)
 &gt;&gt;&gt; 2 (ShowString)
 &gt;&gt;&gt; Current Text Position: (593.3433, 771.3545)
 &gt;&gt;&gt; Current Text Position: (593.3353, 771.3545)
-PDFOperator{TJ} [COSArray{[COSString{}, COSInt{556}]}]
+PDFOperator{TJ} [COSArray{[COSString{?}, COSInt{556}]}]
 &gt;&gt;&gt; Current Text Position: (593.3353, 771.3545)
 &gt;&gt;&gt; 9 (ShowString)
 &gt;&gt;&gt; Current Text Position (597.7833, 771.3545)
@@ -3795,7 +3796,7 @@ The code I believe is responsible for extracting the text here (org.pdfbox.util.
 Any help would be greatly appreciated.
 
 Example code in STB336.pdf:
-[(7)-278()-278(	"&amp;)-278()-278()-278( \))-278()-278(\)\012)-278( '&amp;)-278()]TJ</text>
+[(7?????)-278(???)-278(?	?"&amp;????)-278(???)-278(???)-278( ??\))-278(???)-278(??????\)????\012)-278( ?????'??&amp;)-278(??)]TJ</text>
 			</item>
 		</follow_ups>
 		<existingfiles>
@@ -12602,7 +12603,7 @@ calling PDDocumentInformation.getCreationDate() :
 
 ----------------------
 java.io.IOException: Error converting date:#TÂ©0]4Â¨Ã¸Â¹}
-3W%bÃ!
+3?W%bÃ!
 at org.pdfbox.util.DateConverter.toCalendar
 (DateConverter.java:237)
 at org.pdfbox.util.DateConverter.toCalendar
@@ -16755,12 +16756,12 @@ version 1.3).
 
 My file begins with
 %PDF-1.0
-Û¯û
+Û¯?û
 1 0 obj
 
 where it should better be
 %PDF-1.0
-%Û¯û
+%Û¯?û
 1 0 obj
 
 Still, since Adbobe's Reader actually shows the file, and 
@@ -21578,7 +21579,7 @@ title = info.getTitle();
 
 title is often set to a string like this:
 
-øš&amp;¶hæ_í®ÁƒŠhÚƒÚp©+ Qh«Fëšõƒää&amp;‰§ÇUmÿ`
+øš&amp;¶hæ_í®ÁƒŠh?ÚƒÚp©+ Qh«Fëšõƒää&amp;‰§ÇUmÿ`
 
 If the getDocumentInformation() call fails to get the title 
 then getTitle() should return null or an empty string.
@@ -24770,7 +24771,7 @@ Ben</text>
 		<resolution>None</resolution>
 		<summary>java.io.IOException: Error: Expected an integer type, actual</summary>
 		<detail>java.io.IOException: Error: Expected an integer type, 
-actual='L?s'
+actual='L?s?'
 	at org.pdfbox.pdfparser.BaseParser.readInt
 (BaseParser.java:1213)
 	at org.pdfbox.pdfparser.PDFParser.parseObject
@@ -24826,7 +24827,7 @@ submitted twice</text>
 		<resolution>None</resolution>
 		<summary>java.io.IOException: Error: Expected an integer type, actual</summary>
 		<detail>java.io.IOException: Error: Expected an integer type, 
-actual='L?s'
+actual='L?s?'
 at org.pdfbox.pdfparser.BaseParser.readInt
 (BaseParser.java:1213)
 at org.pdfbox.pdfparser.PDFParser.parseObject
@@ -26388,10 +26389,10 @@ And Acrobat encrypts it as:
 36 0 obj
 &lt;&lt; 
 /S /SubmitForm 
-/F &lt;&lt; /FS /URL /F (h›Ã=.a@xý£S›"\r»„ßÅ_—
-ä@“É¸o2¡.ü'|&gt;ÈÒU:Ã?
-†ÅÑBWçÌÎéwa•oÛ5÷¬\
-cÖÜ&lt;qü †Óþ¨ÃÂ;)&gt;&gt; 
+/F &lt;&lt; /FS /URL /F (?h›Ã=.a@xý£S›"\r»„ßÅ_—
+ä@“É¸?o2?¡.?ü?'|?&gt;ÈÒU:Ã?
+?†ÅÑBWçÌÎéwa?•oÛ?5÷?¬\
+cÖÜ&lt;qü †Ó?þ¨ÃÂ?;)&gt;&gt; 
 &gt;&gt; 
 endobj
 
