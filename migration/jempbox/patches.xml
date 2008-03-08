@@ -1,0 +1,283 @@
+<tracker version="1.0" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sourceforge.net/export/sf_tracker_export.xsd">
+	<artifact id="1537629">
+		<submitted_by>coezbek</submitted_by>
+		<submitted_date>2006-08-09 13:02</submitted_date>
+		<artifact_type id="831989">831989</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Christopher Oezbek</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Several fixes for JempBox 0.1</summary>
+		<detail>This patch fixes several issues with JempBox 0.1:
+
+  * Fixed Namespace_ERR
+  * XMPSchemaBasic 
+    * Wrong name for xmp:CreatorTool fixed
+  * XMPMetadata
+    * Added method to return Schemas by NamespaceURI
+  * XMPSchema
+    * Added documentation on how to add new subclasses.
+    * Fixed getTextProperty to deal with attribute 
+nodes.
+  * DateConverter
+    * Fixed to work with Acrobat 7.0.7 output.
+  * XMLUtil
+    * Added method to save to OutputStream instead of 
+file.
+
+Greetings,
+  Christopher</detail>
+		<follow_ups>
+			<item>
+				<date>1171618666</date>
+				<sender>coezbek</sender>
+				<text>Logged In: YES 
+user_id=1558521
+Originator: YES
+
+This patch was integrated into CVS and will be contained in the upcoming 0.2 release.
+
+Cheers,
+  Christopher</text>
+			</item>
+			<item>
+				<date>1156411971</date>
+				<sender>coezbek</sender>
+				<text>Logged In: YES 
+user_id=1558521
+
+Mh, that looks like a Sourceforge Problem (they frequently 
+have problems with CVS). Maybe try to download:
+
+http://prdownloads.sourceforge.net/jempbox/JempBox-0.1.0-
+dev.zip?download
+
+which I guess would be a snapshot from CVS.
+
+Good luck,
+  Christopher</text>
+			</item>
+			<item>
+				<date>1156410960</date>
+				<sender>davidin</sender>
+				<text>Logged In: YES 
+user_id=1519856
+
+Hi,
+I've understood how to patch the source code in Eclipse but
+I can't connect to CVS JempBox repository...
+
+I use Eclipse also for get CVS code so I do:
+
+1)File--&gt;New--&gt;Project from CVS
+2)I enter the following parameters:
+-------------------------------------
+Host: "jempbox.cvs.sourceforge.net"
+Repository path: "/cvsroot/jempbox"
+User: "anonymous"
+Connection Type: "pserver"
+---------------------------------------
+
+But It doesn't connect to repository... It says:
+"Authenticating using pserver" but after nothing happens...
+
+I've tried to connect to PDFBOX repository and It works so I
+exclude a firewall problem or something like this... I think
+the problem is in jempbox repository. 
+
+The only way is to get code from CVS web repository, import
+it in eclipse manually and apply patch, but I doesn't like
+this way...
+
+Christopher do you have any suggestion? Why I can't connect
+to repository? 
+
+Thanks in advance,
+Davide.</text>
+			</item>
+			<item>
+				<date>1156375369</date>
+				<sender>coezbek</sender>
+				<text>Logged In: YES 
+user_id=1558521
+
+Hi David,
+  you need to download the source code from CVS (http://
+sourceforge.net/cvs/?group_id=164503) and then use patch to 
+apply the patch.txt. This is easiest to do if you use 
+Eclipse which actually has an entry under Team -&gt; Apply 
+Patch that does exactely this.
+
+Good luck,
+  Christopher</text>
+			</item>
+			<item>
+				<date>1156350161</date>
+				<sender>davidin</sender>
+				<text>Logged In: YES 
+user_id=1519856
+
+Hi Christopher,
+How can I patch the JempBox library with your changes? I' ve
+downloaded the file .txt but I don't know how to apply
+changes to jar file...
+
+Thanks,
+Davide</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>188418</id>
+				<name>JempBox2.txt</name>
+				<description>Fixed style in the patch.</description>
+				<filesize>61189</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1155155256</adddate>
+				<submitted_by>1558521</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1171618666</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>assigned_to</field>
+				<old_value>100</old_value>
+				<date>1171618666</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1171618666</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1171618666</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>188418: JempBox2.txt</old_value>
+				<date>1155155256</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>File Deleted</field>
+				<old_value>188414: </old_value>
+				<date>1155155256</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>188414: JempBox2.txt</old_value>
+				<date>1155153755</date>
+				<by>coezbek</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1534696">
+		<submitted_by>coezbek</submitted_by>
+		<submitted_date>2006-08-04 10:53</submitted_date>
+		<artifact_type id="831989">831989</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Christopher Oezbek</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Accepted</resolution>
+		<summary>Fixed Problem with setAttributeNS (NAMESPACE_ERR)</summary>
+		<detail>This fixes a problem with all calls to setAttributeNS 
+in JempBox that violate the xml-specification.
+
+At the moment the following calls are in place:
+
+xmpMeta.setAttributeNS( "adobe:ns:meta/", "xmlns:x", 
+"adobe:ns:meta/" );
+
+the correct way would be 
+
+xmpMeta.setAttributeNS( "http://www.w3.org/2000/xmlns/
+", "xmlns:x", "adobe:ns:meta/" );
+
+The following comes from the DOM-specification (under 
+setAttributeNS - http://www.w3.org/TR/DOM-Level-2-Core/
+core.html):
+
+NAMESPACE_ERR: Raised if the qualifiedName is 
+malformed, if the qualifiedName has a prefix and the 
+namespaceURI is null, if the qualifiedName has a 
+prefix that is "xml" and the namespaceURI is different 
+from "http://www.w3.org/XML/1998/namespace", or if the 
+qualifiedName is "xmlns" and the namespaceURI is 
+different from "http://www.w3.org/2000/xmlns/".
+
+Christopher</detail>
+		<follow_ups>
+			<item>
+				<date>1171618619</date>
+				<sender>coezbek</sender>
+				<text>Logged In: YES 
+user_id=1558521
+Originator: YES
+
+This patch was integrated into CVS and will be contained in the upcoming 0.2 release.
+
+Christopher</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>187648</id>
+				<name>JempBox.txt</name>
+				<description>setAttributeNS-patch</description>
+				<filesize>5458</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1154714001</adddate>
+				<submitted_by>1558521</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1171618619</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>assigned_to</field>
+				<old_value>100</old_value>
+				<date>1171618619</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1171618619</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1171618619</date>
+				<by>coezbek</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>187648: JempBox.txt</old_value>
+				<date>1154714001</date>
+				<by>coezbek</by>
+			</item>
+		</change_log>
+	</artifact>
+</tracker>
+
+ 	  	 

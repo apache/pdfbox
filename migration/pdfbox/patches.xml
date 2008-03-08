@@ -1,0 +1,2488 @@
+<tracker version="1.0" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sourceforge.net/export/sf_tracker_export.xsd">
+	<artifact id="1880473">
+		<submitted_by>jukkaz</submitted_by>
+		<submitted_date>2008-01-26 14:31</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Updated Maven POM file</summary>
+		<detail>Hi,
+
+Attached is an updated Maven 2 POM file for PDFBox.
+This POM file is not designed to replace the Ant build,
+just to make it easy for Maven users to quickly build
+PDFBox (mvn install) and set it up for IDE integration
+(mvn eclipse:eclipse, etc.).
+
+BR,
+
+Jukka Zitting</detail>
+		<existingfiles>
+			<file>
+				<id>263870</id>
+				<name>pom.xml</name>
+				<description>Maven 2 POM file for PDFBox</description>
+				<filesize>4912</filesize>
+				<filetype>text/xml</filetype>
+				<adddate>1201386690</adddate>
+				<submitted_by>660288</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>263870: pom.xml</old_value>
+				<date>1201386690</date>
+				<by>jukkaz</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1769239">
+		<submitted_by>danielwilson</submitted_by>
+		<submitted_date>2007-08-07 06:08</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>None</resolution>
+		<summary>Correction for Incorrect inheritance</summary>
+		<detail>In org.pdfbox.util.operator.pagedrawer.SetStrokingColorSpace, 
+
+the declaration is 
+
+public class SetStrokingColorSpace extends org.pdfbox.util.operator.SetNonStrokingColorSpace
+
+I believe pagedrawer.SetStrokingColorSpace should extend operator.SetStrokingColorSpace, not SetNonStrokingColorSpace.
+
+thus, line 47 should read:
+
+public class SetStrokingColorSpace extends org.pdfbox.util.operator.SetStrokingColorSpace</detail>
+		<follow_ups>
+			<item>
+				<date>1197648237</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+This is no longer an issue due to some refactoring that Ben did.  The PageDrawer versions of the SetStroking and SetNonStroking classes went away.</text>
+			</item>
+		</follow_ups>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1197648237</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1197648237</date>
+				<by>danielwilson</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1822754">
+		<submitted_by>sector9</submitted_by>
+		<submitted_date>2007-10-30 06:01</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Implementation of PDDeviceCMYK.createColorModel()</summary>
+		<detail>The createColorModel() method in src/org/pdfbox/pdmodel/graphics/color/PDDeviceCMYK.java throws an IOException with message "Not implemented".
+
+The attached file contains an implementation.</detail>
+		<follow_ups>
+			<item>
+				<date>1195047626</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Antti,
+
+Do you happen to have a PDF I can add to my test suite for this patch?
+
+Thanks,
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>251980</id>
+				<name>PDDeviceCMYK.java</name>
+				<description>PDDeviceCMYK.java</description>
+				<filesize>4899</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1193749273</adddate>
+				<submitted_by>337685</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>251980: PDDeviceCMYK.java</old_value>
+				<date>1193749275</date>
+				<by>sector9</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1806912">
+		<submitted_by>jmaerki</submitted_by>
+		<submitted_date>2007-10-03 05:42</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Access to stream arrays</summary>
+		<detail>In Apache FOP I recently developed experimental support for embedding existing PDFs in XSL-FO documents destined for PDF output as normal fo:external-graphic elements. I used PDFBox to parse the PDFs since FOP's PDF library doesn't support parsing. I wrote some adapter code that translates PDFBox's object model into FOP's.
+
+While doing that I stumbled over the problem that I couldn't access the individual streams in a stream array. Therefore I added accessors for that. Please find these in the patch file. I'd be grateful if they could be added to PDFBox.
+
+During my work I changed from the scratch file to a RandomAccessBuffer in PDStream's constructor. Since it was before my holidays I don't remember exactly why I did that. I think I had a case where more than one scratch file was needed. But I can't reproduce it anymore. That may just be something to think about. I'll re-raise this if I can reproduce the problem.
+
+Thanks,
+Jeremias Maerki</detail>
+		<follow_ups>
+			<item>
+				<date>1192495348</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Patch is applied.  Currently there is a limitation where you can one be writing to one stream per scratch file at a time.  So right now you can't
+
+1)Start a content stream
+2)Add a image/font/... stream
+3)End the content stream
+
+Maybe that is what you were running into.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>248199</id>
+				<name>pdfbox-stream-array-patch.txt</name>
+				<description>Stream-Array patch for PDFBox</description>
+				<filesize>1180</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1191415328</adddate>
+				<submitted_by>225352</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1192495348</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1192495348</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1192495348</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>248199: pdfbox-stream-array-patch.txt</old_value>
+				<date>1191415329</date>
+				<by>jmaerki</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1796298">
+		<submitted_by>lintlint</submitted_by>
+		<submitted_date>2007-09-17 08:51</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Add a default space between words</summary>
+		<detail>In some files, white spaces are not defined as a character but as a distance between words. This distance is known with TextPosition.getWidthOfSpace() or TextPosition.getWidth(). In my case, WidthOfSpace was 0 and Width was Float.NaN, so extracted text contained no spaces. I just added a check on the value of this distance and a default value (1f) to avoid this behaviour.
+
+I didn't do much tests so it may break other things but for my purpose it is OK.</detail>
+		<existingfiles>
+			<file>
+				<id>246030</id>
+				<name>PDFTextStripper.java.v0.7.3.patch</name>
+				<description>add a default space between words</description>
+				<filesize>653</filesize>
+				<filetype>text/x-patch</filetype>
+				<adddate>1190044271</adddate>
+				<submitted_by>1111319</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>246030: PDFTextStripper.java.v0.7.3.patch</old_value>
+				<date>1190044272</date>
+				<by>lintlint</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1795136">
+		<submitted_by>kahal</submitted_by>
+		<submitted_date>2007-09-14 13:17</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Use installed font for Type0 and TrueType</summary>
+		<detail>Substitute the best matching installed font for Type0 fonts, which are not yet implemented.
+
+Substitue the best matching installed font for TrueType fonts if unable to find or load from a font file.
+
+Files affected:
+ org.pdfbox.pdmodel.font.PDFont.java
+ org.pdfbox.pdmodel.font.PDType0Font.java
+ org.pdfbox.pdmodel.font.PDTrueTypeFont.java</detail>
+		<existingfiles>
+			<file>
+				<id>245722</id>
+				<name>pdmodel-font.zip</name>
+				<description>version 0.7.3 change</description>
+				<filesize>14418</filesize>
+				<filetype>application/x-zip-compressed</filetype>
+				<adddate>1189801023</adddate>
+				<submitted_by>1890740</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>245722: pdmodel-font.zip</old_value>
+				<date>1189801025</date>
+				<by>kahal</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1773675">
+		<submitted_by>nobody</submitted_by>
+		<submitted_date>2007-08-14 00:42</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>pdfToImage: unstable</summary>
+		<detail>currently the pdf to image conversion does only work partially. there are a few problems i would like to address with the patch:
+- draw ALL jpeg image which are inlined in the pdf doc.
+  some of the jpeg image have some kind of ".Adobe"
+  header instead of the "JFIF" header. ImageIO is unable  
+  to read the jpegs starting with the ".adobe" header.
+- catch a few nullpointer exceptions so that the draw
+  "flow" is not interrupted
+- currently the PDType0Font class draws nothing at all,
+  resp. throws which breaks as well the draw "flow".
+  because i did not know how the type0 font should be
+  drawn i simply extended from type1 (which is not cool)
+  so that at least text is drawn.
+
+a lot more pdfs are drawn as images with this changes in a more or less good quality.
+
+you will find all "touched" files in the attached zip file.
+
+btw: i did the relying on the "PDFBox-0.7.4-dev-20070716" dev load.
+
+for any questions send my an email to: philipp.koch@day.com</detail>
+		<follow_ups>
+			<item>
+				<date>1188392128</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: NO
+
+This seems to work well -- given one more change that Philipp emailed me.
+
+You need to add this overload of write2file to org\pdfbox\pdmodel\graphics\xobject\PDXObjectImage.java
+
+
+    /**
+     * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg".
+     * The suffix is automatically set by the
+     * @param file the file
+     * @throws IOException When somethings wrong with the corresponding file.
+     */
+    public void write2file(File file) throws IOException
+    {
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(file);
+            write2OutputStream(out);
+            out.flush();
+        }
+        finally
+        {
+            if( out != null )
+            {
+                out.close();
+            }
+        }
+    }
+    </text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>241160</id>
+				<name>pdfbox-patch.zip</name>
+				<description>patch</description>
+				<filesize>13219</filesize>
+				<filetype>application/x-zip-compressed</filetype>
+				<adddate>1187077334</adddate>
+				<submitted_by>100</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>241160: pdfbox-patch.zip</old_value>
+				<date>1187077336</date>
+				<by>nobody</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1666960">
+		<submitted_by>farrukh482</submitted_by>
+		<submitted_date>2007-02-23 02:38</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Patch for any kind of tiff based pdf.</summary>
+		<detail>Following document contains a way to recompile pdf box so as to accomodate conversion of all types of pdfs that contain tiff images as graphics.
+
+It is done using JAI (Java Advanced Imaging) library.
+
+The document contains full step-by-step instructions</detail>
+		<follow_ups>
+			<item>
+				<date>1186102878</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Now part CVS!  Give the nightly build a try.
+
+Ben</text>
+			</item>
+			<item>
+				<date>1183426980</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Hi farrukh/ussraf,
+
+Do either of you have a PDF that exhibits this problem so I can test this patch.
+
+Thanks,
+Ben</text>
+			</item>
+			<item>
+				<date>1173938776</date>
+				<sender>ussraf</sender>
+				<text>Logged In: YES 
+user_id=1653587
+Originator: NO
+
+Hi, will this be included in the next version of PDFBox?</text>
+			</item>
+			<item>
+				<date>1172228641</date>
+				<sender>farrukh482</sender>
+				<text>Logged In: YES 
+user_id=1699010
+Originator: YES
+
+Here is the precompiled version of PDFBox with JAI tiff support.
+zip file includes PDFBox-0.3.7-dev.jar, jai_codec.jar, jai_core.jar
+
+http://rapidshare.com/files/17855660/PDFBox-With-Tiff-Support.zip.html 
+</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>217368</id>
+				<name>How to rebuild to support all tiff formats.doc</name>
+				<description>Guide to build pdfbox.jar that will support conversion of all types of pdfs containing tiffs as graphic attachments.</description>
+				<filesize>38400</filesize>
+				<filetype>application/msword</filetype>
+				<adddate>1172227086</adddate>
+				<submitted_by>1699010</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1186102878</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1186102878</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1186102878</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>217368: How to rebuild to support all tiff formats.doc</old_value>
+				<date>1172227090</date>
+				<by>farrukh482</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1726446">
+		<submitted_by>wargre</submitted_by>
+		<submitted_date>2007-05-27 07:36</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Fixing merge w&amp;w/o acroform</summary>
+		<detail>when merging a PDF without acroform into one with acroform it crashed.
+
+adding one test to prevent that.</detail>
+		<follow_ups>
+			<item>
+				<date>1183425981</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+change is now in CVS.
+
+Thanks,
+Ben</text>
+			</item>
+			<item>
+				<date>1180277264</date>
+				<sender>wargre</sender>
+				<text>Logged In: YES 
+user_id=1802598
+Originator: YES
+
+File Added: patch.diff</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>230677</id>
+				<name>patch.diff</name>
+				<description>Fixing merge with&amp;without acroform.</description>
+				<filesize>752</filesize>
+				<filetype>application/octet-stream</filetype>
+				<adddate>1180277264</adddate>
+				<submitted_by>1802598</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1183425981</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1183425981</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1183425981</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Deleted</field>
+				<old_value>230676: </old_value>
+				<date>1180277264</date>
+				<by>wargre</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>230677: patch.diff</old_value>
+				<date>1180277264</date>
+				<by>wargre</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>230676: patch.diff</old_value>
+				<date>1180276603</date>
+				<by>wargre</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1729700">
+		<submitted_by>ajpurkiss</submitted_by>
+		<submitted_date>2007-06-01 14:22</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Change to font size and default appearance</summary>
+		<detail>2 Changes
+
+1) The first is to make getDefaultAppearance in PDVariableText public and make a set method
+
+2) Add a second setAppearanceValue(String apValue, float fontSize) in PDAppearance and add a secoind setValue in PDField (and all implementing classes) so we can make use of it.
+
+
+1 - This was added as we needed to change the default appearance of text fields as we found that if you have two fields of the same name they are grouped under a parent field. The parent fields formatting is wrong (probably some default) so we needed to change it to that of the child as it was this formatting used for the display text and not that of the child (although if you edit the PDF you see the child properties listed)
+
+2 - The font calculation in setValue takes into account the box size. The problem we had is that we wanted to font to be 48pt no mater what. We knew the width was right and the the box was not high enough, but we needed this as by shirnking the text to fit we lost the ability to use it (We were using barcodes where the width is important, it does not mater if the height is chopped down).
+
+These changes were made to the 0.7.3 code</detail>
+		<existingfiles>
+			<file>
+				<id>231410</id>
+				<name>changes.zip</name>
+				<description>File changed</description>
+				<filesize>22773</filesize>
+				<filetype>application/zip</filetype>
+				<adddate>1180732959</adddate>
+				<submitted_by>1801634</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>231410: changes.zip</old_value>
+				<date>1180732960</date>
+				<by>ajpurkiss</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1728360">
+		<submitted_by>danielwilson</submitted_by>
+		<submitted_date>2007-05-30 07:23</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Refactor some PageDrawer and Operator methods for .NET</summary>
+		<detail>As discussed at https://sourceforge.net/forum/forum.php?thread_id=1693380&amp;forum_id=267204
+I am using PDFBox to render some Adobe Illustrator 10 files -- which are PDF -- in a .NET viewer.
+
+This has required me to extend PageDrawer in my .NET language so I can override methods that deal with Java's Graphics2D object.
+
+In order to override some of these methods, I've had to refactor a few methods.  The primary changes are in PageDrawer.java, but several other files include supporting changes.</detail>
+		<follow_ups>
+			<item>
+				<date>1186668476</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+Fix util/operator/pagedrawer/SetStrokingColorSpace to reflect inheritance correction noted in later patch.
+File Added: SetStrokingColorSpace.java</text>
+			</item>
+			<item>
+				<date>1180536466</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: FillNonZeroRule.java</text>
+			</item>
+			<item>
+				<date>1180536377</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: FillEvenOddRule.java</text>
+			</item>
+			<item>
+				<date>1180536258</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: SetLineWidth.java</text>
+			</item>
+			<item>
+				<date>1180536168</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: StrokePath.java</text>
+			</item>
+			<item>
+				<date>1180535394</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: SetNonStrokingColorSpace.java</text>
+			</item>
+			<item>
+				<date>1180535269</date>
+				<sender>danielwilson</sender>
+				<text>Logged In: YES 
+user_id=1737686
+Originator: YES
+
+File Added: SetNonStrokingColorSpace.java</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>240553</id>
+				<name>SetStrokingColorSpace.java</name>
+				<description>util/operator/pagedrawer/SetStrokingColorSpace</description>
+				<filesize>3234</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1186668476</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231106</id>
+				<name>FillNonZeroRule.java</name>
+				<description>util/operator/pagedrawer/FillNonZeroRule</description>
+				<filesize>3423</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180536466</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231105</id>
+				<name>FillEvenOddRule.java</name>
+				<description>util/operator/pagedrawer/FillEvenOddRule</description>
+				<filesize>3418</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180536375</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231104</id>
+				<name>SetLineWidth.java</name>
+				<description>util/operator/pagedrawer/SetLineWidth</description>
+				<filesize>2801</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180536257</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231103</id>
+				<name>StrokePath.java</name>
+				<description>util/operator/pagedrawer/StrokePath</description>
+				<filesize>3043</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180536168</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231102</id>
+				<name>SetNonStrokingColorSpace.java</name>
+				<description>util/operator/pagedrawer/SetNonStrokingColorSpace</description>
+				<filesize>3169</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180535394</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+			<file>
+				<id>231100</id>
+				<name>PageDrawer.java</name>
+				<description>PageDrawer</description>
+				<filesize>12380</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1180534984</adddate>
+				<submitted_by>1737686</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Deleted</field>
+				<old_value>231101: </old_value>
+				<date>1186668476</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>240553: SetStrokingColorSpace.java</old_value>
+				<date>1186668476</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231106: FillNonZeroRule.java</old_value>
+				<date>1180536466</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231105: FillEvenOddRule.java</old_value>
+				<date>1180536377</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231104: SetLineWidth.java</old_value>
+				<date>1180536258</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231103: StrokePath.java</old_value>
+				<date>1180536168</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231102: SetNonStrokingColorSpace.java</old_value>
+				<date>1180535394</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231101: SetNonStrokingColorSpace.java</old_value>
+				<date>1180535269</date>
+				<by>danielwilson</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>231100: PageDrawer.java</old_value>
+				<date>1180534987</date>
+				<by>danielwilson</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1672991">
+		<submitted_by>bpsouther</submitted_by>
+		<submitted_date>2007-03-03 05:31</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Specify non default printer in silentPrint mode.</summary>
+		<detail>Patch to allow users to specify which printer to use when calling from the command line in silentMode.</detail>
+		<follow_ups>
+			<item>
+				<date>1178066281</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Updated in CVS.  Changed it a little how we pass the printer name.  Instead just allow passing the entire job.</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>218640</id>
+				<name>printerName.patch</name>
+				<description>  	 Diff file containg patches for PrintPDF.java and PDDocument.java</description>
+				<filesize>3836</filesize>
+				<filetype>text/x-patch</filetype>
+				<adddate>1172928699</adddate>
+				<submitted_by>1733795</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1178066281</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1178066281</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1178066281</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>218640: printerName.patch</old_value>
+				<date>1172928699</date>
+				<by>bpsouther</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1607074">
+		<submitted_by>jlynch16</submitted_by>
+		<submitted_date>2006-12-01 11:42</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="293149"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Portrait and Landscape PageFormat Fix</summary>
+		<detail>I am not sure if any of your drawing code is dependant upon how 
+
+PageFormat PDDocument.getPageFormat(int pageIndex);
+
+currently changes the media width and height of the page it is rendering onto, but I am suggesting that you use the dictionary rotation value when creating the PageFormat in order to figure out page orientation. 
+
+On my preliminary tests, my new code seemed to be an improvement over the way it is currently done.  I'm not sure how this will effect your drawing code that relies on the "width" and "height" reported in the PageFormat when the rendering actually occurs.  The drawing code might need to be updated. 
+
+That will be the next thing I will look into.
+
+-Jim Lynch
+1360 Studios</detail>
+		<follow_ups>
+			<item>
+				<date>1178064657</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Patch has been applied, please review the nightly build.
+
+Thanks for the contribution,
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>205319</id>
+				<name>PDDocument.java</name>
+				<description>My updated PDDocument.java</description>
+				<filesize>34535</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1165002134</adddate>
+				<submitted_by>1657744</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1178064657</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1178064657</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1178064657</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>205319: PDDocument.java</old_value>
+				<date>1165002134</date>
+				<by>jlynch16</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1600672">
+		<submitted_by>jmaerki</submitted_by>
+		<submitted_date>2006-11-21 11:52</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Painting Form XObjects</summary>
+		<detail>Just a tiny little patch as described earlier. Changes PDPageContentStream so it can also paint Form XObjects. I hope I matched your code conventions and that it's useful.
+
+Cheers,
+Jeremias</detail>
+		<follow_ups>
+			<item>
+				<date>1178063907</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+Added patch, made a couple minor changes.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>203865</id>
+				<name>pdfbox-forms-patch.txt</name>
+				<description></description>
+				<filesize>4903</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1164138772</adddate>
+				<submitted_by>225352</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1178063907</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1178063907</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1178063907</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>203865: pdfbox-forms-patch.txt</old_value>
+				<date>1164138772</date>
+				<by>jmaerki</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1640071">
+		<submitted_by>pinxue</submitted_by>
+		<submitted_date>2007-01-19 22:25</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Ben Litchfield</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>patch to enable CJK charset supports</summary>
+		<detail>This patch is applied to 0.7.2 version.
+It enable the supports for CJK charset.
+But there are still two kind of encodings, Identity-H and Identity-V, cannot be handled.
+We have created an ad-hoc solution for this problem with very little change to the source code, but this patch is much more graceful.</detail>
+		<follow_ups>
+			<item>
+				<date>1186653592</date>
+				<sender>yt_okamoto</sender>
+				<text>Logged In: YES 
+user_id=1586822
+Originator: NO
+
+Hi, I'm trying with patched pdfbox-0.7.2 but don't show Japanese PDF encoded by Identity-H correctly too. I await a new pdfbox supported Identity-H and Identity-V a lot.
+
+sample of Japanese PDF document encoded in Identity-H:
+http://www.bridgestone.co.jp/info/library/csr_report/pdf/2006/BS07-08.pdf</text>
+			</item>
+			<item>
+				<date>1176489284</date>
+				<sender>aaaken</sender>
+				<text>Logged In: YES 
+user_id=1768927
+Originator: NO
+
+thanks</text>
+			</item>
+			<item>
+				<date>1175758696</date>
+				<sender>nobody</sender>
+				<text>Logged In: NO 
+
+hi ,i using the patch but chinese dos't show</text>
+			</item>
+			<item>
+				<date>1169274678</date>
+				<sender>pinxue</sender>
+				<text>Logged In: YES 
+user_id=1147498
+Originator: YES
+
+PS: the patch is created by diff in cygwin.
+try:
+patch -p1 &lt; pdfbox-0.7.2-cjk.patch
+in the root of the 0.7.2 source code tree.
+File Added: Preliminary_Application_Form.pdf</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>212167</id>
+				<name>Preliminary_Application_Form.pdf</name>
+				<description>sample of file encoded in Identity-H</description>
+				<filesize>161908</filesize>
+				<filetype>application/pdf</filetype>
+				<adddate>1169274677</adddate>
+				<submitted_by>1147498</submitted_by>
+			</file>
+			<file>
+				<id>212165</id>
+				<name>pdfbox-0.7.2-cjk.patch</name>
+				<description>0.7.2 CJK charset support.</description>
+				<filesize>27111</filesize>
+				<filetype>application/octet-stream</filetype>
+				<adddate>1169274351</adddate>
+				<submitted_by>1147498</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>assigned_to</field>
+				<old_value>100</old_value>
+				<date>1172651503</date>
+				<by>pinxue</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>212167: Preliminary_Application_Form.pdf</old_value>
+				<date>1169274678</date>
+				<by>pinxue</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>212165: pdfbox-0.7.2-cjk.patch</old_value>
+				<date>1169274351</date>
+				<by>pinxue</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1609692">
+		<submitted_by>nobody</submitted_by>
+		<submitted_date>2006-12-05 15:41</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Open</status>
+		<resolution>None</resolution>
+		<summary>Fix for the rectangle rendering on Scaled XObjects</summary>
+		<detail>I have implemented a fix that takes care of "Transformed Xobject rectangle rendering" on a pdf page.  
+
+In my bug: 
+http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1608840&amp;group_id=78314&amp;atid=552832
+
+I stated that I had shrunken 4 pages into one portrait pdf page. This patch takes care of both the portrait drawing AND landscape drawing. To test the landscape rendering, I shrunk two pdf pages onto 1 landscape page. 
+
+My patch does NOT cover all rotation possibilities, only 0, 90, 270. (Still uncertain about 270).  
+
+While making this patch, I noticed that a lot of work has gone into the transformation of the pdf characters, while none of the transformation code was generalized anywhere. It would be nice if all the transformation code inside the character drawing methods were available outside and reachable from all the other operators.  That way, no one would ever have to figure out the "transformation matrix insanity due to the rotation of the page" ever again. :-)
+
+Thanks for all your hard work Ben. This project is awesome. I hope I am helping out a little. 
+
+-Jim Lynch
+1360 Studios
+
+
+</detail>
+		<existingfiles>
+			<file>
+				<id>205942</id>
+				<name>AppendRectangleToPath.java</name>
+				<description>An updated rectangle renderer for Transformed XObjects</description>
+				<filesize>5849</filesize>
+				<filetype>text/java</filetype>
+				<adddate>1165362096</adddate>
+				<submitted_by>100</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>File Added</field>
+				<old_value>205942: AppendRectangleToPath.java</old_value>
+				<date>1165362096</date>
+				<by>nobody</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1577357">
+		<submitted_by>jasch23</submitted_by>
+		<submitted_date>2006-10-14 13:16</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Bugfix for Bug 1057560 Overlay incorrectly order</summary>
+		<detail>If you make a overlay with for example 2 pages over a
+pdf with 5 pages, the pdf has on the first page the
+second page of the overlay instead of the first page of
+the overlay pdf.
+The overlay starts with the wrong order because in the
+method mergePage(COSArray array, PDPage page ) of the
+Overlay class it is not considered that layoutPageSize
+starts with 0.
+But more see in the patch file I uploaded.
+</detail>
+		<follow_ups>
+			<item>
+				<date>1164073697</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+Originator: NO
+
+I looked into this a little more and there was a different issue that was cropping up.  This is fixed in CVS now.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>198186</id>
+				<name>PDFBoxOverlayPatch.txt</name>
+				<description>PDFBox Overlay Patch File</description>
+				<filesize>840</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1160856994</adddate>
+				<submitted_by>1573911</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1164073697</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1164073697</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1164073697</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>198186: PDFBoxOverlayPatch.txt</old_value>
+				<date>1160856994</date>
+				<by>jasch23</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1567224">
+		<submitted_by>renaudw</submitted_by>
+		<submitted_date>2006-09-28 11:30</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>PDFStreamEngine#registerOperatorProcessor</summary>
+		<detail>Discussed at http://sourceforge.net/forum/forum.php?
+thread_id=1580007&amp;forum_id=267204.
+Thanks again.
+</detail>
+		<follow_ups>
+			<item>
+				<date>1159468863</date>
+				<sender>renaudw</sender>
+				<text>Logged In: YES 
+user_id=609291
+
+Uploading new, correct diff against release 0.7.2. Previous 
+diff was bad, sorry.</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>195670</id>
+				<name>PDFStreamEngine.diff</name>
+				<description>GOOD DIFF AGAINST RELEASE 0.7.2</description>
+				<filesize>1519</filesize>
+				<filetype>text/plain</filetype>
+				<adddate>1159468863</adddate>
+				<submitted_by>609291</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1159656932</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1159656932</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1159656932</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Deleted</field>
+				<old_value>195668: </old_value>
+				<date>1159468864</date>
+				<by>renaudw</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>195670: PDFStreamEngine.diff</old_value>
+				<date>1159468864</date>
+				<by>renaudw</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>195668: PDFStreamEngine.diff</old_value>
+				<date>1159468209</date>
+				<by>renaudw</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1177500">
+		<submitted_by>the_limper</submitted_by>
+		<submitted_date>2005-04-05 20:24</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Out of Date</resolution>
+		<summary>Standalone Utility App for Displaying PDFs</summary>
+		<detail>The poorly named PDFDisplayer provides the ability to
+display a PDF file in a GUI window for viewing similar
+to Acrobat Reader.
+
+It's simple and crude, uses the convertToImage() method
+on PDPage, and it probably should be renamed.
+
+
+</detail>
+		<follow_ups>
+			<item>
+				<date>1121172847</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+I don't believe this is any better than the existing 
+org.pdfbox.PDFReader class.  I am closing this issue, if you 
+disagree please reopen.
+
+Ben Litchfield</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>128678</id>
+				<name>PDFDisplayer.java</name>
+				<description>Source File for PDFDisplayer</description>
+				<filesize>11926</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1112757856</adddate>
+				<submitted_by>1252642</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1121172847</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1121172847</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1121172847</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>128678: PDFDisplayer.java</old_value>
+				<date>1112757856</date>
+				<by>the_limper</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="996781">
+		<submitted_by>ramses_ru</submitted_by>
+		<submitted_date>2004-07-23 12:54</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>None</resolution>
+		<summary>AcroForm/Fields problem (NullPointerException)</summary>
+		<detail>I'm using PDFBox to test my PDFs this testing framework
+canoo/webtest.
+
+I found a couple of bugs in releases PDFBox-0.6.6
+(0.6.5). I decided  to provide  patches (see patch and
+description
+http://sourceforge.net/tracker/?group_id=78314&amp;atid=552834)
+for the critical one. )
+
+ 
+Here's the summary:
+  
+1.
+PDAcroForm.getFields() : (line 124)
+-----------------------------
+ final PDField field = PDFieldFactory.createField(
+this, element );
+ if (field!=null) {
+   retval.add(field);
+ }
+-----------------------------
+ 
+If the field is not found, then array of returned
+fields contains null values. this cause some
+applications that using PDFBox terminates with
+"NullPointerException" :(
+ 
+Actually this happened due to that
+PDFieldFactory.createField() could not determine a
+field type and return null (allowed value according
+javadoc to this function)
+ 
+I think, it is a bug somewhere else, because I can open
+my PDFs with another editor and they found my all
+fields.  It would be nice if somebody could analyse
+that bug.
+ 
+2.
+PDFieldFactory.isXXXX()
+I changed the the equals sequence. Otherwise instead of
+error message (in method PDFieldFactory.createField())
+and continue I received "NullPointerException".
+Contains like BTN existing and it is safe to call
+equals with them.
+ 
+ 
+-  return
+field.getDictionaryObject(COSName.getPDFName("FT")).equals(BTN));
++ return
+BTN.equals(field.getDictionaryObject(COSName.getPDFName("FT")));
+ 
+ 
+I hope you are agree with my changes and could
+integrate them soon without a problem.
+Thanx.
+ 
+best regards
+Roman
+</detail>
+		<follow_ups>
+			<item>
+				<date>1090886622</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Changes look good, thanks for the patch.  It is in CVS now.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>95106</id>
+				<name>Fields-PdfBox.0.6.6-patch.zip</name>
+				<description>corrected source code</description>
+				<filesize>13056</filesize>
+				<filetype></filetype>
+				<adddate>1090705027</adddate>
+				<submitted_by>1089376</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1090886622</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1090886622</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>95106: Fields-PdfBox.0.6.6-patch.zip</old_value>
+				<date>1090705027</date>
+				<by>ramses_ru</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="985347">
+		<submitted_by>hpoirier</submitted_by>
+		<submitted_date>2004-07-05 05:20</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>None</resolution>
+		<summary>Exceptions</summary>
+		<detail>Here is a patch that corrects the exception:
+"current font is null" 
+and
+No 'ToUnicode' and no 'Encoding' for Font
+</detail>
+		<follow_ups>
+			<item>
+				<date>1090883180</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Available in CVS.
+
+Thanks for the patch.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>92916</id>
+				<name>patch-pdfbox-0.6.6-dev.txt</name>
+				<description>Patch PDFont.java and PDFStreamEngine.java</description>
+				<filesize>1819</filesize>
+				<filetype></filetype>
+				<adddate>1089030020</adddate>
+				<submitted_by>62593</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1090883180</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1090883180</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>92916: patch-pdfbox-0.6.6-dev.txt</old_value>
+				<date>1089030020</date>
+				<by>hpoirier</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="996191">
+		<submitted_by>nobody</submitted_by>
+		<submitted_date>2004-07-22 14:39</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>None</resolution>
+		<summary>Parsing of encrypted PDFs fails</summary>
+		<detail>BaseParser.java contains bug in method parseCOSString.
+If a PDF-document encrypted (even though with user
+password = "")
+
+Any encrypted values that contain sequence "\t" are
+parsed wrong. ("\t" =&gt; 0x09 0x66). But must be parsed
+as following  ("\t" =&gt; 0x09).
+
+I made a patch to correct this bug. Updated version of
+the class has some tiny code readable improvement in
+the same procedure.
+
+Main problem is missing break in case 'f':</detail>
+		<follow_ups>
+			<item>
+				<date>1090883501</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Thanks for the patch, it is commited to CVS.  I like your 
+readability enhancements.  If you get a chance and are able 
+to please send me the PDF documents that showed showed 
+this and I will add them to my test suite.
+
+ben@csh.rit.edu</text>
+			</item>
+			<item>
+				<date>1090532565</date>
+				<sender>ramses_ru</sender>
+				<text>Logged In: YES 
+user_id=1089376
+
+sorry, it happened that I submited this patch as Anonymous.
+[Login timeout :(]
+- ramses_ru
+</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>94901</id>
+				<name>BaseParser.java </name>
+				<description>corrected version of BaseParser.java</description>
+				<filesize>42478</filesize>
+				<filetype></filetype>
+				<adddate>1090532371</adddate>
+				<submitted_by>100</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1090883501</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1090883501</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>94901: BaseParser.java </old_value>
+				<date>1090532371</date>
+				<by>nobody</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1016603">
+		<submitted_by>bcr</submitted_by>
+		<submitted_date>2004-08-26 01:25</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>None</resolution>
+		<summary>Hex parsing fix for bug 943319</summary>
+		<detail>I think this is the right fix for 943319 -- basically if 
+there were any space characters in a hex string, it 
+would get all confused. I switched it so that it won't 
+attempt to retain anything other than valid hex 
+characters, which I think is the right answer. Patch is 
+against 0.6.6 released code.</detail>
+		<follow_ups>
+			<item>
+				<date>1093735801</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Now in CVS, thanks for the patch.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>99233</id>
+				<name>943319patch</name>
+				<description>Patch to repair 943319</description>
+				<filesize>465</filesize>
+				<filetype></filetype>
+				<adddate>1093508702</adddate>
+				<submitted_by>6616</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1093735801</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1093735801</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>99233: 943319patch</old_value>
+				<date>1093508702</date>
+				<by>bcr</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1238695">
+		<submitted_by>mi2ke</submitted_by>
+		<submitted_date>2005-07-14 22:51</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Some more COSNames</summary>
+		<detail>Hi Ben,
+
+I added some COSNames we are using in our project to
+the org.pdfbox.cos.COSName. Here's the complete list of
+all in alphabetic order, so you just have to copy paste
+the second paragraph underneath into the COSName header
+if you think they are useful.
+
+new are:
+HEIGHT = COSName.getPDFName(  "Height" );
+FRM = COSName.getPDFName(  "FRM" );
+BBOX = COSName.getPDFName(  "BBox" );
+XOBJECT = COSName.getPDFName(  "XObject" );
+COLORSPACE = COSName.getPDFName(  "ColorSpace" );
+DEVICERGB = COSName.getPDFName(  "DeviceRGB" );
+DEVICECMYK = COSName.getPDFName(  "DeviceCMYK" );
+DEVICEN = COSName.getPDFName(  "DeviceN" );
+DEVICEGRAY = COSName.getPDFName(  "DeviceGray" );
+SEPARATION = COSName.getPDFName(  "Separation" );
+INDEXED = COSName.getPDFName(  "Indexed" );
+CALGRAY = COSName.getPDFName(  "CalGray" );
+CALRGB = COSName.getPDFName(  "CalRGB" );
+LAB = COSName.getPDFName(  "Lab" );
+ICCBASED = COSName.getPDFName(  "ICCBased" );
+PATTERN = COSName.getPDFName(  "Pattern" );
+FIELDS = COSName.getPDFName(  "Fields" );
+P = COSName.getPDFName(  "P" );
+ANNOTS = COSName.getPDFName(  "Annots" );
+IM0 = COSName.getPDFName(  "Im0" );
+AP = COSName.getPDFName(  "AP" );
+N = COSName.getPDFName(  "N" );
+MATRIX = COSName.getPDFName(  "Matrix" );
+V = COSName.getPDFName(  "V" );
+DV = COSName.getPDFName(  "DV" );
+NAME = COSName.getPDFName(  "Name" );
+FORMTYPE = COSName.getPDFName(  "FormType" );
+
+
+
+placed in alphabetic order into the existing ones:
+/**
+ * A common COSName value.
+ */
+public static final COSName ACRO_FORM = new COSName(
+"AcroForm" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ANNOTS = new COSName( 
+"Annots" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ASCII85_DECODE = new
+COSName( "ASCII85Decode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ASCII85_DECODE_ABBREVIATION
+= new COSName( "A85" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ASCII_HEX_DECODE = new
+COSName( "ASCIIHexDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName
+ASCII_HEX_DECODE_ABBREVIATION = new COSName( "AHx" );
+/**
+ * A common COSName value.
+ */
+public static final COSName AP = new COSName(  "AP" );
+/**
+ * A common COSName value.
+ */
+public static final COSName BASE_ENCODING = new
+COSName( "BaseEncoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName BASE_FONT = new COSName(
+"BaseFont" );
+/**
+ * A common COSName value.
+ */
+public static final COSName BBOX = new COSName(  "BBox" );
+/**
+ * A common COSName value.
+ */
+public static final COSName CATALOG = new COSName(
+"Catalog" );
+/**
+ * A common COSName value.
+ */
+public static final COSName CALGRAY = new COSName( 
+"CalGray" );
+/**
+ * A common COSName value.
+ */
+public static final COSName CALRGB = new COSName( 
+"CalRGB" );
+/**
+ * A common COSName value.
+ */
+public static final COSName CCITTFAX_DECODE = new
+COSName( "CCITTFaxDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName
+CCITTFAX_DECODE_ABBREVIATION = new COSName( "CCF" );
+/**
+ * A common COSName value.
+ */
+public static final COSName COLORSPACE = new COSName( 
+"ColorSpace" );
+/**
+ * A common COSName value.
+ */
+public static final COSName CONTENTS = new COSName(
+"Contents" );
+/**
+ * A common COSName value.
+ */
+public static final COSName COUNT = new COSName( "Count" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DIFFERENCES = new COSName(
+"Differences" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DCT_DECODE = new COSName(
+"DCTDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DCT_DECODE_ABBREVIATION =
+new COSName( "DCT" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DEVICECMYK = new COSName( 
+"DeviceCMYK" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DEVICEGRAY = new COSName( 
+"DeviceGray" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DEVICEN = new COSName( 
+"DeviceN" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DEVICERGB = new COSName( 
+"DeviceRGB" );
+/**
+ * A common COSName value.
+ */
+public static final COSName DV = new COSName(  "DV" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ENCODING = new COSName(
+"Encoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FIELDS = new COSName( 
+"Fields" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FILTER = new COSName(
+"Filter" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FIRSTCHAR = new COSName(
+"FirstChar" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FLATE_DECODE = new COSName(
+"FlateDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FLATE_DECODE_ABBREVIATION =
+new COSName( "Fl" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FONT = new COSName( "Font" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FORMTYPE = new COSName( 
+"FormType" );
+/**
+ * A common COSName value.
+ */
+public static final COSName FRM = new COSName(  "FRM" );
+/**
+ * A common COSName value.
+ */
+public static final COSName HEIGHT = new COSName( 
+"Height" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ICCBASED = new COSName( 
+"ICCBased" );
+/**
+ * A common COSName value.
+ */
+public static final COSName IDENTITY_H = new COSName(
+"Identity-H" );
+/**
+ * A common COSName value.
+ */
+public static final COSName IMAGE = new COSName( "Image" );
+/**
+ * A common COSName value.
+ */
+public static final COSName INDEXED = new COSName( 
+"Indexed" );
+/**
+ * A common COSName value.
+ */
+public static final COSName JPX_DECODE = new COSName(
+"JPXDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName KIDS = new COSName( "Kids" );
+/**
+ * A common COSName value.
+ */
+public static final COSName LAB = new COSName(  "Lab" );
+/**
+ * A common COSName value.
+ */
+public static final COSName LASTCHAR = new COSName(
+"LastChar" );
+/**
+ * A common COSName value.
+ */
+public static final COSName LENGTH = new COSName(
+"Length" );
+/**
+ * A common COSName value.
+ */
+public static final COSName LZW_DECODE = new COSName(
+"LZWDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName LZW_DECODE_ABBREVIATION =
+new COSName( "LZW" );
+/**
+ * A common COSName value.
+ */
+public static final COSName MAC_ROMAN_ENCODING = new
+COSName( "MacRomanEncoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName MATRIX = new COSName( 
+"Matrix" );
+/**
+ * A common COSName value.
+ */
+public static final COSName N = new COSName(  "N" );
+/**
+ * A common COSName value.
+ */
+public static final COSName NAME = new COSName(  "Name" );
+/**
+ * A common COSName value.
+ */
+public static final COSName P = new COSName(  "P" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PAGE = new COSName( "Page" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PAGES = new COSName( "Pages" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PARENT = new COSName(
+"Parent" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PATTERN = new COSName( 
+"Pattern" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PDF_DOC_ENCODING = new
+COSName( "PDFDocEncoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName PREV = new COSName( "Prev" );
+/**
+ * A common COSName value.
+ */
+public static final COSName RESOURCES = new COSName(
+"Resources" );
+/**
+ * A common COSName value.
+ */
+public static final COSName ROOT = new COSName( "Root" );
+/**
+ * A common COSName value.
+ */
+public static final COSName RUN_LENGTH_DECODE = new
+COSName( "RunLengthDecode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName
+RUN_LENGTH_DECODE_ABBREVIATION = new COSName( "RL" );
+/**
+ * A common COSName value.
+ */
+public static final COSName SEPARATION = new COSName( 
+"Separation" );
+/**
+ * A common COSName value.
+ */
+public static final COSName STANDARD_ENCODING = new
+COSName( "StandardEncoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName SUBTYPE = new COSName(
+"Subtype" );
+/**
+ * A common COSName value.
+ */
+public static final COSName TYPE = new COSName( "Type" );
+/**
+ * A common COSName value.
+ */
+public static final COSName TO_UNICODE = new COSName(
+"ToUnicode" );
+/**
+ * A common COSName value.
+ */
+public static final COSName V = new COSName(  "V" );
+/**
+ * A common COSName value.
+ */
+public static final COSName WIDTHS = new COSName( 
+"Widths" );
+/**
+ * A common COSName value.
+ */
+public static final COSName WIN_ANSI_ENCODING = new
+COSName(  "WinAnsiEncoding" );
+/**
+ * A common COSName value.
+ */
+public static final COSName XOBJECT = new COSName( 
+"XObject" );COSName(  "XObject" );
+
+yours, Michael</detail>
+		<follow_ups>
+			<item>
+				<date>1122747698</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+new constants are now in CVS.
+
+Ben</text>
+			</item>
+		</follow_ups>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1122747698</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1122747698</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1122747698</date>
+				<by>benlitchfield</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1257396">
+		<submitted_by>mi2ke</submitted_by>
+		<submitted_date>2005-08-12 01:33</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>another Method for PDRectangle</summary>
+		<detail>Hi Ben,
+
+i wrote a short 4liner which is sometimes pretty
+useful. If you think it would fit into the Class please
+feel free to add it to
+org.pdfbox.pdmodel.common.PDRectangle
+
+I tested it with a PDPushbutton an a PDTextbox and
+should work with every other too.
+
+Thanks again for you great work ;)
+
+/**
+ * This will move the rectangle the given relative amount
+ * 
+ * @param horizontalAmount positive values will move
+rectangle to the right, negative's to the left.
+ * @param verticalAmount positive values will move the
+rectangle up, negative's down.
+ * 
+ */
+public void move(float horizontalAmount, float
+verticalAmount) {
+    setUpperRightX(getUpperRightX() + horizontalAmount);
+    setLowerLeftX(getLowerLeftX() + horizontalAmount);
+    setUpperRightY(getUpperRightY() + verticalAmount);
+    setLowerLeftY(getLowerLeftY() + verticalAmount);
+}
+
+Michael</detail>
+		<follow_ups>
+			<item>
+				<date>1124158218</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Added to CVS!
+
+Ben Litchfield</text>
+			</item>
+		</follow_ups>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1124158218</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1124158218</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1124158218</date>
+				<by>benlitchfield</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1257394">
+		<submitted_by>arkanlor</submitted_by>
+		<submitted_date>2005-08-12 01:31</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Nobody/Anonymous</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>PDAppearance.java -- getLineWidth correction</summary>
+		<detail>Only the w Index before the first BT should be taken,
+because later the "w" can represent the "Linewidth" of
+underlining 
+
+(Acrobat 7 uses it e.g. in Richtext Appearance Streams)
+
+Here the suggested corrected function:
+
+    /**
+     * w in an appearance stream represents the lineWidth.
+     * @return the linewidth
+     */
+    private float getLineWidth( List tokens )
+    {
+        float retval = 1;
+        if( tokens != null ) {
+            int BTIndex = tokens.indexOf(
+PDFOperator.getOperator( "BT" ));
+            int wIndex = tokens.indexOf(
+PDFOperator.getOperator( "w" ));
+            if( (wIndex &gt; 0) &amp;&amp; (wIndex &lt; BTIndex) ) {
+                retval = ((COSNumber)tokens.get(
+wIndex-1)).floatValue();
+            }
+        }
+        return retval;
+    }
+
+with best regards, Gab</detail>
+		<follow_ups>
+			<item>
+				<date>1124158797</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+Looks good to me, it is in CVS now.  Give tonights nightly 
+build a try.
+
+Ben Litchfield</text>
+			</item>
+		</follow_ups>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1124158797</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1124158797</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1124158797</date>
+				<by>benlitchfield</by>
+			</item>
+		</change_log>
+	</artifact>
+	<artifact id="1235260">
+		<submitted_by>paul_king</submitted_by>
+		<submitted_date>2005-07-09 09:16</submitted_date>
+		<artifact_type id="552834">552834</artifact_type>
+		<category id="100">None</category>
+		<artifact_group id="100"></artifact_group>
+		<assigned_to>Ben Litchfield</assigned_to>
+		<priority id="5">5</priority>
+		<status>Closed</status>
+		<resolution>Fixed</resolution>
+		<summary>Add CCITT Fax Images</summary>
+		<detail>New class for CCITT Images. Places a tiff wrapper
+around the raw CCITT data, allowing JAI Image IO to
+process the image. Can write TIFFs without the
+additional Image IO filters, but will require them to
+convert the data into an Image.
+
+Update to org.pdfbox.pdmodel.graphics.xobject.PFXObject
+also required so that the object of this class is
+created when the image is a fax image.
+i.e. after the "return new PDJpeg(image)l" block,
+before the else if insert 
+else if (filters != null &amp;&amp;
+filters.contains(COSName.CCITTFAX_DECODE.getName())) {
+          return new PDCcitt(image);
+}</detail>
+		<follow_ups>
+			<item>
+				<date>1125965457</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+These changes have been added to PDFBox.
+
+Ben</text>
+			</item>
+			<item>
+				<date>1125684398</date>
+				<sender>paul_king</sender>
+				<text>Logged In: YES 
+user_id=1305046
+
+I've updated to allow construction from a tiff containing a
+CCITT T4 or T6 image. Currently it only allows the first
+image in the TIFF to be added.
+
+Also updated the ImageToPDF example to include .tiff and
+.tif files</text>
+			</item>
+			<item>
+				<date>1125455274</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+reopened to replace existing tiff code with this patch instead.
+
+Ben</text>
+			</item>
+			<item>
+				<date>1122747787</date>
+				<sender>benlitchfield</sender>
+				<text>Logged In: YES 
+user_id=601708
+
+I got an email with some similar code that I just comitted to 
+CVS, not sure if you are the same person or not.
+
+Can you verify that what is in CVS works for you and submit 
+a new patch with any additional changes.
+
+Thanks,
+Ben</text>
+			</item>
+		</follow_ups>
+		<existingfiles>
+			<file>
+				<id>141444</id>
+				<name>PDCcitt.java</name>
+				<description>XObject for CCITT Image</description>
+				<filesize>12964</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1120925772</adddate>
+				<submitted_by>1305046</submitted_by>
+			</file>
+			<file>
+				<id>141446</id>
+				<name>PDXObject.java</name>
+				<description>Updated PDXObject from a 0.7.1 source tree.</description>
+				<filesize>6532</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1120925967</adddate>
+				<submitted_by>100</submitted_by>
+			</file>
+			<file>
+				<id>147888</id>
+				<name>PDCcitt.java</name>
+				<description>Update, allows construction from a TIFF containing a CCITT Image</description>
+				<filesize>18119</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1125684398</adddate>
+				<submitted_by>1305046</submitted_by>
+			</file>
+			<file>
+				<id>147889</id>
+				<name>ImageToPDF.java</name>
+				<description>Update to attempt to handle .tiff and .tif</description>
+				<filesize>4847</filesize>
+				<filetype>text/x-java</filetype>
+				<adddate>1125684529</adddate>
+				<submitted_by>1305046</submitted_by>
+			</file>
+		</existingfiles>
+		<change_log>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1125965457</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>103</old_value>
+				<date>1125965457</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1125965457</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>147889: ImageToPDF.java</old_value>
+				<date>1125684530</date>
+				<by>paul_king</by>
+			</item>
+			<item>
+				<field>File Deleted</field>
+				<old_value>147887: </old_value>
+				<date>1125684446</date>
+				<by>paul_king</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>147888: PDCcitt.java</old_value>
+				<date>1125684399</date>
+				<by>paul_king</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>147887: PDCcitt.java</old_value>
+				<date>1125684235</date>
+				<by>paul_king</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>2</old_value>
+				<date>1125455274</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>1122747787</old_value>
+				<date>1125455274</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>status_id</field>
+				<old_value>1</old_value>
+				<date>1122747787</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>resolution_id</field>
+				<old_value>100</old_value>
+				<date>1122747787</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>close_date</field>
+				<old_value>0</old_value>
+				<date>1122747787</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>assigned_to</field>
+				<old_value>100</old_value>
+				<date>1121172706</date>
+				<by>benlitchfield</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>141446: PDXObject.java</old_value>
+				<date>1120925968</date>
+				<by>nobody</by>
+			</item>
+			<item>
+				<field>File Added</field>
+				<old_value>141444: PDCcitt.java</old_value>
+				<date>1120925775</date>
+				<by>paul_king</by>
+			</item>
+		</change_log>
+	</artifact>
+</tracker>
+
+ 	  	 
