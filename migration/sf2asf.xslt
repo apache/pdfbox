@@ -9,6 +9,8 @@
   <xsl:template match="artifact[status='Open']">
     <xsl:value-of select="submitted_date"/>
     <xsl:text>;</xsl:text>
+    <xsl:apply-templates select="artifact_type"/>
+    <xsl:text>;</xsl:text>
     <xsl:apply-templates select="category"/>
     <xsl:text>;"</xsl:text>
     <xsl:value-of select="str:replaceAll(string(summary),'&quot;','&quot;&quot;')"/>
@@ -27,6 +29,14 @@
     <xsl:text>"
 </xsl:text>
   </xsl:template>
+
+  <xsl:template match="artifact_type[.=552835]">New Feature</xsl:template>
+  <xsl:template match="artifact_type[.=773649]">New Feature</xsl:template>
+  <xsl:template match="artifact_type[.=831990]">New Feature</xsl:template>
+  <xsl:template match="artifact_type[.=552834]">Improvement</xsl:template>
+  <xsl:template match="artifact_type[.=773648]">Improvement</xsl:template>
+  <xsl:template match="artifact_type[.=831989]">Improvement</xsl:template>
+  <xsl:template match="artifact_type">Bug</xsl:template>
 
   <xsl:template match="category[.='lucene']">Lucene</xsl:template>
   <xsl:template match="category[.='PDModel']">PDModel</xsl:template>
