@@ -1,0 +1,9 @@
+<!-- Typical invocation:
+  <!ENTITY % symbols-project
+      PUBLIC "-//Apache Forrest//ENTITIES Symbols Project v1.0//EN"
+      "symbols-project-v10.ent">
+  %symbols-project;
+-->
+<!ENTITY myp "My Project Name">
+<!ENTITY myp-s "<strong>My Project Name</strong>">
+<!ENTITY myp-t "My Project Name&trade;">

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>JempBox - XMP Compatible Java Library</title>
+    <meta name="keywords">Java XMP Library, XMP Java, XMP, PDF metadata</meta>
+  </header> 
+  <body> 
+    <section>
+      <title>Introduction</title>
+      <p>JempBox is an open source Java library that implements Adobe's XMP<SMALL><SUP>TM</SUP></SMALL> specification.</p>
+    </section>
+
+    <section>
+      <title>Features</title>
+      <ul>
+        <li>Reading/Writing XMP streams</li>
+        <li>High level API to standard XMP schemas</li>
+      </ul>
+    </section>
+  </body>
+</document>

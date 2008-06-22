@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>JempBox - XMP Compatible Java Library</title>
+    <meta name="keywords">Java XMP Library, XMP Java, XMP, PDF metadata</meta>
+  </header> 
+  <body> 
+    <section>
+      <title>Introduction</title>
+      <p>Coming Soon.</p>
+    </section>
+    <section>
+		<title>How to commit changes</title>
+		<p>Before committing a patch to Jempbox please make sure that if you build 
+		the project using the build.xml ant-script there are no compilation problems 
+		using a JDK 1.4 target and passing the checkstyle- and junit-tests. Additionally 
+		please add a action-item to the current release in the status.xml (in the folder website)
+		that characterises the changes that you made.</p>
+	</section>		
+  </body>
+</document>
