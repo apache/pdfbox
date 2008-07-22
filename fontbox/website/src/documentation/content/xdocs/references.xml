@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>FontBox - References</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>FontBox References</title>
+      <p>
+      This page lists projects that utilize FontBox and articles that have been written about fontBox.  
+      Send <a href="mailto:ben@benlitchfield.com">me</a> an e-mail if your article 
+      or project is missing.
+      </p>
+    </section>
+    <section>
+      <title>Projects</title>
+      <p><br/></p>
+      <table>
+      	<tr>
+      		<th>Project Name</th>
+      		<th>License</th>
+      		<th>Project Description</th>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.pdfbox.org">PDFBox</a></td>
+      		<td>BSD</td>
+      		<td>PDFBox is a Java PDF Library, it utilizes FontBox for all font functionality.</td>
+      	</tr>
+      </table>
+    </section>
+    
+    <section>
+      <title>Articles/Books</title>
+      <p><br/></p>
+      <table>
+      	<tr>
+      		<th width="250px">Article Name</th>
+      		<th>Article Abstract</th>
+      	</tr>
+      	<tr>
+      		<td colspan="2"><center><i>No Articles at this time</i></center></td>
+      	</tr>
+      </table>
+    </section>
+  </body>
+</document>
