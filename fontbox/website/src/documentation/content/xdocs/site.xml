@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <!--
-  Copyright 2002-2004 The Apache Software Foundation
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
+       http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +39,7 @@ See http://forrest.apache.org/docs/linking.html for more info
     <issues label="Issues" href="http://sourceforge.net/tracker/?group_id=149227&amp;atid=773646" description="Submit an issue" />
     <sourceforge label="SourceForge" href="http://www.sf.net/projects/fontbox" description="SourceForge Site" />
     <references label="References" href="references.html" description="References" />
-    <donations label="License" href="license.html" description="FontBox License" />
+    <donations label="License" href="http://www.apache.org/licenses/LICENSE-2.0" description="License" />
     <!--<donations label="Donations" href="donations.html" description="Donations" />-->
     <releaasenotes label="Release Notes" href="changes.html" description="Release Notes" />
   </about>
