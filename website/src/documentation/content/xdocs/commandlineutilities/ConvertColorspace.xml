@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>ConvertColorspace</title> 
+    <meta name="keywords">convert PDF RGB to CMYK, java pdf, pdf colorspace, pdfbox, open source</meta>
+  </header> 
+  <body> 
+    <section>
+      <title>Description</title>
+      <p>This application will convert a PDF that uses one colorspace to another.  For example, all RGB colors to CMYK colors.
+         Currently this only supports changing text and vector graphics and does not convert images.</p>
+      <table>
+          <tr>
+      		<th>Command Line Parameter</th>
+      		<th>Type</th>
+      		<th>Default Value</th>
+      		<th>Description</th>
+      	  </tr>
+      	  <tr>
+      	  	<td>-password &lt;password&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>The password to the PDF document.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-equiv &lt;color equivalent&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>Color equivalent to use for conversion.<br/>
+            The format is : Colorspace:(values)=Colorspace:(values)<br/>
+            RGB(255,0,0)=CMYK(0,99,100,0)<br/>
+            RGB are integers between 0 and 255<br/>
+            CMYK are integers between 0 and 100<br/>  
+            This option can be used as many times as necessary.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>&lt;inputfile&gt;</td>
+      	  	<td>filename</td>
+      	  	<td>None</td>
+      	  	<td>The PDF file to convert.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>[outputfile]</td>
+      	  	<td>filename</td>
+      	  	<td>The output file.</td>
+      	  	<td>The file to save the converted document to.</td>
+      	  </tr>
+      </table>
+    </section>
+  </body>
+</document>

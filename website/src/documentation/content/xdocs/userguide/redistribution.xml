@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox - Redistribution</title> 
+    <meta name="keywords">Java PDF Library, pdfbox</meta>
+  </header> 
+  <body> 
+    <section>
+      <title>Redistributing PDFBox</title>
+      <p>
+      PDFBox makes use of several open source libraries.  Some are just required for building PDFBox, some are required for running PDFBox.  
+      The below table summarizes the licences that are included with PDFBox and when they are required.
+      </p>
+      <table>
+        <tr>
+            <th>Product</th>
+            <th>Used for</th>
+            <th>Required for PDFBox redistribution</th>
+        </tr>
+        <tr>
+            <td>Adobe AFM</td>
+            <td>Resource files for extracting font encoding.  Bundled inside the PDFBox jar file</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>ant</td>
+            <td>Tool for building PDFBox</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>bouncycastle</td>
+            <td>Encryption libraries for encrypting/decrypting PDF documents</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>Checkstyle</td>
+            <td>Build tool to verify code style compliance</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>FontBox</td>
+            <td>Font Library</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>IKVM</td>
+            <td>Library for .NET version of PDFBox</td>
+            <td>Only if using .NET version(the DLLs in /bin) of PDFBox</td>
+        </tr>
+        <tr>
+            <td>junit</td>
+            <td>Testing framework used in development</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>JempBox</td>
+            <td>Library for working with XMP metadata.</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td>lucene</td>
+            <td>Text search engine library.  PDFBox provides simple integration with Lucene.</td>
+            <td>Optional, only if using Lucene</td>
+        </tr>
+        <tr>
+            <td>JAI-CMM</td>
+            <td>ICC Color profile resources, bundled in PDFBox jar file</td>
+            <td>Yes</td>
+        </tr>
+     </table>
+            
+            
+    </section>
+  </body>
+</document>

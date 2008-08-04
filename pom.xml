@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2002-2007, www.pdfbox.org
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+3. Neither the name of pdfbox; nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>pdfbox</groupId>
+  <artifactId>pdfbox</artifactId>
+  <version>0.7.3</version>
+
+  <name>PDFBox - Java PDF Library</name>
+  <!-- Keep on a single line, see http://jira.codehaus.org/browse/MJAR-39 -->
+  <description>PDFBox is an open source Java PDF library for working with PDF documents.</description>
+
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://www.pdfbox.org/license.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <url>http://www.pdfbox.org/</url>
+
+  <mailingLists>
+    <mailingList>
+      <name>PDFBox Users mailing list</name>
+      <subscribe>pdfbox-user-subscribe@lists.sourceforge.net</subscribe>
+      <unsubscribe>pdfbox-user-unsubscribe@lists.sourceforge.net</unsubscribe>
+      <post>pdfbox-user@lists.sourceforge.net</post>
+    </mailingList>
+  </mailingLists>
+
+  <developers>
+    <developer>
+      <name>Ben Litchfield</name>
+      <id>benlitchfield</id>
+      <email>ben@benlitchfield.com</email>     
+      <roles>
+        <role>committer</role>
+      </roles>
+    </developer>
+  </developers>
+
+    <scm>
+        <url>http://pdfbox.cvs.sourceforge.net/pdfbox/</url>
+    </scm>
+
+    <dependency>
+        <groupId>fontbox</groupId>
+        <artifactId>fontbox</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>jempbox</groupId>
+        <artifactId>jempbox</artifactId>
+        <version>0.2.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>bouncycastle</groupId>
+        <artifactId>bcmail-jdk14</artifactId>
+        <version>136</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>bouncycastle</groupId>
+        <artifactId>bcprov-jdk14</artifactId>
+        <version>136</version>
+    </dependency>
+</project>
+

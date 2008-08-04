@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFToImage</title> 
+    <meta name="keywords">pdf to image, java pdf image, image, pdfbox, open source</meta>
+  </header> 
+  <body> 
+    <section>
+      <title>Description</title>
+      <p>This application will create an image for every page in the PDF document.</p>
+      <warning>This is new code and should be treated as beta quality!</warning>
+      <table>
+          <tr>
+      		<th>Command Line Parameter</th>
+      		<th>Type</th>
+      		<th>Default Value</th>
+      		<th>Description</th>
+      	  </tr>
+      	  <tr>
+      	  	<td>-password &lt;password&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>The password to the PDF document.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-imageType &lt;type&gt;</td>
+      	  	<td>string</td>
+      	  	<td>jpg</td>
+      	  	<td>The image type to write to.  Currently only jpg or png.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-outputPrefix &lt;image file prefix&gt;</td>
+      	  	<td>string</td>
+      	  	<td>Name of PDF document</td>
+      	  	<td>The prefix to the image file.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-startPage &lt;start page&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>1</td>
+      	  	<td>The first page to extract, one based.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-endPage &lt;end page&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>Integer.MAX_INT</td>
+      	  	<td>The last page to extract, one based.</td>
+      	  </tr>
+      </table>
+    </section>
+  </body>
+</document>

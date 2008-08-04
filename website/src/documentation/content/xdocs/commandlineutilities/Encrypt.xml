@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>Encrypt</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>Description</title>
+      <p>This application will encrypt a PDF document.</p>
+      <p>usage: java org.pdfbox.Encrypt [OPTIONS] &lt;password&gt; &lt;inputfile&gt;</p>
+      <table>
+          <tr>
+      		<th>Command Line Parameter</th>
+      		<th>Type</th>
+      		<th>Default Value</th>
+      		<th>Description</th>
+      	  </tr>
+      	  <tr>
+      	  	<td>-O &lt;password&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>The owner password to the PDF, ignored if -certFile is specified.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-U &lt;password&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>The user password to the PDF, ignored if -certFile is specified.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-certFile &lt;path to certificate&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>Path to X.509 cert file.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canAssemble &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the assemble permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canExtractContent &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the extraction permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canExtractForAccessibility &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the extraction permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canFillInForm &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the fill in form permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canModify &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the modify permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canModifyAnnotations &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the modify annots permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canPrint &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the print permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-canPrintDegraded &lt;value&gt;</td>
+      	  	<td>boolean</td>
+      	  	<td>true</td>
+      	  	<td>Set the print degraded permission.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-keyLength &lt;value&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>40</td>
+      	  	<td>The number of bits for the encryption key.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>&lt;inputfile&gt;</td>
+      	  	<td>filename</td>
+      	  	<td>None</td>
+      	  	<td>The PDF file to encrypt.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>[outputfile]</td>
+      	  	<td>filename</td>
+      	  	<td>The output file.</td>
+      	  	<td>The file to save the encrypted document to.  If left blank then it will be the same as the input file.</td>
+      	  </tr>
+      </table>
+    </section>
+  </body>
+</document>

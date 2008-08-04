@@ -1,0 +1,47 @@
+<html>
+<head>
+    <title>PDFBox Examples</title>
+    
+<script language="JavaScript">
+    
+    function forwardToPDF()
+    {
+        var xmlURL = "" + window.location;
+        if( xmlURL.lastIndexOf( "index.html" ) > 0 )
+        {
+            xmlURL = xmlURL.substring( 0, xmlURL.lastIndexOf( "index.html" ) );
+        }
+        if( xmlURL.charAt( xmlURL.length-1 ) != '/' )
+        {
+            xmlURL += "/";
+        }
+        xmlURL += "highlight.jsp";
+        var finalURL = window.document.highlightForm.pdfURL.value + 
+                       "#xml=" + xmlURL + 
+                       "?pdf=" + window.document.highlightForm.pdfURL.value + 
+                       "&words=" + window.document.highlightForm.highlightWords.value;
+
+        window.location = finalURL;
+    }
+    
+</script>
+    
+</head>
+<body>
+        
+<h1>PDFBox Highlighter example</h1>
+
+This is a simple example to show off the PDFBox highlighting capabilities.  Enter a URL PDF that you would like to view and 
+some words that you would like to search on. <br /> <br />
+
+See the <a href="http://partners.adobe.com/public/developer/en/pdf/HighlightFileFormat.pdf">PDF Highlighter spec</a> for more detailed information.
+
+<form name="highlightForm" method="GET" action="">
+PDF: <input name="pdfURL" type="text" size="100" value="http://www.csh.rit.edu/~ben/projects/pdfbox/userguide/bookmarks.pdf" /><br />
+Highligh words:<input type="text" name="highlightWords" length="100" value="hierarchical" /><br /><br />
+<input type="button" value="View PDF With Highlighting" onClick="forwardToPDF()"/>
+</form>
+
+        
+</body>
+</html>

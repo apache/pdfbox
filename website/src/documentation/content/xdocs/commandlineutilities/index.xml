@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox Command Line Utilities</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>Description</title>
+      <p>
+	      PDFBox comes with a series of command line utilities.  They are available as windows binaries
+	      and as standard Java applications.  
+      </p>
+      <p>
+	      In order to run them as java applications you need to add the following jars to your classpath
+	  </p>
+      <ul>
+      	<li>%PDFBOX_HOME%\external\log4j-1.2.9.jar</li>
+      	<li>%PDFBOX_HOME%\lib\PDFBox-0.X.X.jar</li>
+      </ul>
+	  <p>
+	      PDFBox uses log4j for logging, if you do not set up log4j then you will get a warning like this
+	  </p>
+      <note>
+        log4j:WARN No appenders could be found for logger (org.pdfbox.util.ResourceLoader).<br/>
+		log4j:WARN Please initialize the log4j system properly.
+      </note>
+	  <p>
+	      See the log4j <a href="http://logging.apache.org/log4j/docs/documentation.html">documentation</a> for more information on how to set up log4j.
+      </p>
+      <p>
+	      In order to run them as window applications you will need to have the .NET framework installed and add 
+	      %PDFBOX_HOME%\bin to your path.
+      </p>
+    </section>
+  </body>
+</document>

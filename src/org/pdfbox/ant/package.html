@@ -1,0 +1,18 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+
+</head>
+<body>
+<A href="http://jakarta.apache.org/ant/index.html">ANT</a> tasks that utilize PDFBox features can be found in this package.
+This is an example of using the PDF2Text task:<br/> <br/>
+
+&lt;taskdef name="pdf2text" classname="org.pdfbox.ant.PDFToTextTask" classpathref="build.classpath" /&gt;<br/>
+
+&lt;pdf2text&gt;<br/>
+    &nbsp;&nbsp;&lt;fileset dir="test"&gt;<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;include name="**/*.pdf" /&gt;<br/>
+    &nbsp;&nbsp;&lt;/fileset&gt;<br/>
+&lt;/pdf2text&gt;<br/>
+</body>
+</html>

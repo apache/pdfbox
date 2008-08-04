@@ -1,0 +1,487 @@
+<project default="dist" name="PDF Box" basedir=".">
+
+    <!-- Use the following file to alter any of the below properties -->
+    <property file="build.properties" />
+    <property environment="env"/>
+
+    <property name="build.compiler" value="modern" />
+    <property name="src.dir" value="src" />
+    <property name="dest.dir" value="classes" />
+    <property name="bin.dir" value="bin" />
+    <property name="website.dir" value="website" />
+    <property name="website.build.dir" value="${website.dir}/build/site" />
+    <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
+    <property name="lib.dir" value="lib" />
+    <property name="war.dir" value="pdfbox.war" />
+    <property name="licenses.dir" value="licenses" />
+    <property name="dist.dir" value="dist" />
+    <property name="resources.dir" value="Resources" />
+    <property name="checkstyle.config" value="pdfbox-checkstyle.xml" />
+
+    <property name="project.name" value="PDFBox"/>
+    <property name="project.version" value="0.7.4-dev" />
+    <property name="jar.file" value="./lib/${project.name}-${project.version}.jar" />
+
+    <property name="jar.dir" value="external" />
+    
+    <property name="ant.jar" value="${jar.dir}/ant.jar" />
+
+    <property name="checkstyle.jar" value="${jar.dir}/checkstyle-all-*.jar" />
+    
+    <property name="fontbox.name" value="FontBox-0.2.0-dev" />
+    <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
+    
+    <property name="jempbox.name" value="JempBox-0.2.0" />
+    <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
+
+    <property name="lucene.name" value="lucene-core-2.2.0" />
+    <property name="lucene.jar" value="${jar.dir}/${lucene.name}.jar" />
+    
+    <property name="lucene-demos.name" value="lucene-demos-2.2.0" />
+    <property name="lucene-demos.jar" value="${jar.dir}/${lucene-demos.name}.jar" />
+    
+    <property name="bcprov.name" value="bcprov-jdk14-132" />
+    <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
+    
+    <property name="bcmail.name" value="bcmail-jdk14-132" />
+    <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
+    
+    <property name="jai_codec.name" value="jai_codec" />
+    <property name="jai_codec.jar" value="${jar.dir}/${jai_codec.name}.jar" />
+    
+    <property name="jai_core.name" value="jai_core" />
+    <property name="jai_core.jar" value="${jar.dir}/${jai_core.name}.jar" />
+
+    <property name="junit.jar" value="${jar.dir}/junit.jar" />
+
+    <property name="testoutput.dir" value="test/output"/>
+
+    <property name="file" value=""/>
+    
+    <!--.NET properties -->
+    <property name="ikvm.dir" value="."/>
+    <property name="ikvmc" value="${ikvm.dir}/bin/ikvmc.exe"/>
+
+    <path id="build.classpath">
+        <fileset dir="${jar.dir}" >
+            <include name="**/*.jar" />
+        </fileset>
+        <pathelement path="${dest.dir}" />
+        <pathelement path="." />
+    </path>
+
+    <target name="clean" description="Remove all generated files">
+        <delete dir="${dest.dir}"/>
+        <delete dir="${docs.dir}"/>
+        <delete dir="${lib.dir}"/>
+        <delete dir="${bin.dir}"/>
+        <delete file="checkstyle.cache" />
+        <delete dir="${testoutput.dir}"/>
+    </target>
+    
+    <target name="pdfbox.init">
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${dest.dir}"/>
+        <mkdir dir="${docs.dir}" />
+        <mkdir dir="${dist.dir}" />
+        <mkdir dir="${bin.dir}" />
+        <mkdir dir="${testoutput.dir}" />
+    </target>
+
+    <target name="compile" depends="pdfbox.init" description="Compile Java source files">
+        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
+        <javac srcdir="${src.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
+    </target>
+            
+    <target name="test" depends="testextract,test-junit" description="Run junit tests"/>
+
+    <target name="testextract" depends="clean,compile" description="Test text extraction">
+        <junit printsummary="off" fork="on" dir=".">
+            <sysproperty key="test.pdfbox.util.TextStripper.file" value="${file}"/>
+            <classpath>
+                <pathelement path="${ant.jar}" />
+                <pathelement path="${lucene.jar}" />
+                <pathelement path="${lucene-demo.jar}" />
+                <pathelement path="${fontbox.jar}" />
+                <pathelement path="${jempbox.jar}" />
+                <pathelement path="${bcprov.jar}" />
+                <pathelement path="${bcmail.jar}" />
+                <pathelement path="${jai_codec.jar}" />
+                <pathelement path="${jai_core.jar}" />
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="." />
+            </classpath>
+            <formatter usefile="false" type="plain" />
+            <test name="test.pdfbox.util.TestTextStripper" />
+        </junit>
+    </target>
+
+    <target name="test-junit" depends="clean,compile" description="run junit tests">
+        <junit printsummary="off" fork="on" dir=".">
+            <classpath>
+                <pathelement path="${ant.jar}" />
+                <pathelement path="${lucene.jar}" />
+                <pathelement path="${lucene-demo.jar}" />
+                <pathelement path="${fontbox.jar}" />
+                <pathelement path="${jempbox.jar}" />
+                <pathelement path="${bcprov.jar}" />
+                <pathelement path="${bcmail.jar}" />
+                <pathelement path="${jai_codec.jar}" />
+                <pathelement path="${jai_core.jar}" />
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="." />
+            </classpath>
+            <formatter usefile="false" type="plain" />
+            <test name="test.pdfbox.TestAll" />
+        </junit>
+    </target>
+
+    <target name="indexTestDocuments" depends="compile">
+        <java fork="yes" classname="org.pdfbox.searchengine.lucene.IndexFiles" classpathref="build.classpath">
+            <arg value="-create" />
+            <arg value="-index" />
+            <arg value="index" />
+            <arg value="test-pdf" />
+        </java>
+    </target>
+
+    <target name="testPDF2Text" depends="compile">
+        <taskdef name="pdf2text" classname="org.pdfbox.ant.PDFToTextTask" classpathref="build.classpath" />
+        <pdf2text>
+            <fileset dir="test-pdf">
+                <include name="**/*.pdf" />
+                <include name="**/*.PDF" />
+            </fileset>
+        </pdf2text>
+    </target>
+
+    <target name="checkstyle" depends="compile">
+        <!--
+        This doesn't work when run from netbeans for some reason-->
+        <taskdef name="checkstyle"
+                 classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
+                 classpathref="build.classpath" />
+        <checkstyle config="${checkstyle.config}" classpathref="build.classpath" failOnViolation="false">
+            <fileset dir="${src.dir}" />
+        </checkstyle>
+        <!--<java fork="yes" failonerror="yes" classname="com.puppycrawl.tools.checkstyle.Main"
+              classpathref="build.classpath">
+            <arg value="-p" />
+            <arg value="${checkstyle.properties}" />
+            <arg value="-r" />
+            <arg value="${src.dir}" />
+        </java>-->
+    </target>
+
+    <target name="package" depends="compile" description="Package pdfbox into a jar file">
+        <property name="release.name" value="${project.name}-${project.version}" />
+        <propertyfile file="${resources.dir}/pdfbox.version">
+            <entry  key="pdfbox.version" value="${release.name}"/>
+        </propertyfile>
+
+        <jar jarfile="./lib/${release.name}.jar">
+            <fileset dir="${dest.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+            <fileset dir=".">
+                <include name="${resources.dir}/**/*" />
+            </fileset>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <section name="common">
+                    <attribute name="Specification-Title" value="PDFBox"/>
+                    <attribute name="Specification-Version" value="${project.version}"/>
+                    <attribute name="Specification-Vendor" value="PDFBox.org"/>
+                </section>
+            </manifest>
+        </jar>
+        <zip zipfile="./lib/pdfbox.war">
+            <fileset dir="${war.dir}" />
+            <zipfileset dir="./lib" prefix="WEB-INF/lib">
+                <include name="${release.name}.jar" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="nightly-dist">
+        <tstamp />
+        <property name="release.name" value="${project.name}-${project.version}-${DSTAMP}" />
+        <antcall target="dist" />
+    </target>
+
+    <target name="release-dist">
+        <delete dir="${dist.dir}"/>
+        <antcall target="dist" />
+    </target>
+
+    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create zip distribution file">
+        
+        <jar jarfile="${dist.dir}/${release.name}-maven.jar">
+            <fileset dir="./lib/">
+                <include name="${release.name}.jar"/>
+            </fileset>
+            <fileset dir=".">
+                <include name="pom.xml"/>
+            </fileset>            
+        </jar>
+        
+        <zip zipfile="${dist.dir}/${release.name}.zip">
+            <zipfileset dir="." prefix="${release.name}">
+                <include name="${lib.dir}/*.jar"/>
+                <include name="${licenses.dir}/**/*"/>
+                <include name="${src.dir}/**/*.java"/>
+                <include name="${src.dir}/**/*.html"/>
+                <include name="${resources.dir}/**/*" />
+                <include name="${ant.jar}" />
+                <include name="${lucene.jar}" />
+                <include name="${lucene-demos.jar}" />
+                <include name="${junit.jar}" />
+                <include name="${bcprov.jar}" />
+                <include name="${bcmail.jar}" />
+                <include name="${fontbox.jar}" />
+                <include name="${jempbox.jar}" />
+                <include name="${jai_codec.jar}" />
+                <include name="${jai_core.jar}" />
+                <include name="${checkstyle.jar}" />
+                <include name="${bin.dir}/**/*" />
+                <include name="pom.xml" />
+                <include name="build.xml" />
+                <include name="build.properties.example" />
+                <include name="${checkstyle.config}" />
+            </zipfileset>
+            <zipfileset dir="${website.build.dir}" prefix="${release.name}/docs">
+                <include name="**/*" />
+                <exclude name="**/*.zip" />
+            </zipfileset>
+            <zipfileset dir="." prefix="${release.name}">
+                <include name="website/**/*" />
+                <exclude name="website/build/**/*" />
+            </zipfileset>
+            <zipfileset dir="${war.dir}" prefix="${release.name}/${war.dir}">
+                <include name="**/*" />
+            </zipfileset>
+            <zipfileset dir="${ikvm.dir}/bin" prefix="${release.name}/bin" >
+                <include name="*.dll" />
+            </zipfileset>
+        </zip>
+    </target>
+    
+    <target name="checkForIKVM">
+        <condition property="IKVMAvailable">
+            <and>
+                <os family="windows"/>
+                <available file="${ikvmc}" property="ignored" />
+            </and>
+        </condition>
+    </target>
+    
+    <target name="build.NET" depends="checkForIKVM,package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
+        <property name="release.name" value="${project.name}-${project.version}" />
+        <echo>Building JAI Codec</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${jai_codec.name}.dll" />
+            <arg value="${jai_codec.jar}" />
+        </exec>
+        <echo>Building JAI Core</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin/${jai_codec.name}.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${jai_core.name}.dll" />
+            <arg value="${jai_core.jar}" />
+        </exec>
+        <echo>Building BC Prov</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${bcprov.name}.dll" />
+            <arg value="${bcprov.jar}" />
+        </exec>
+        <echo>Building BC Mail</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin/${bcprov.name}.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${bcmail.name}.dll" />
+            <arg value="${bcmail.jar}" />
+        </exec>
+        <echo>Building FontBox</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${fontbox.name}.dll" />
+            <arg value="${fontbox.jar}" />
+        </exec>
+        <echo>Building JempBox</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${jempbox.name}.dll" />
+            <arg value="${jempbox.jar}" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${lucene.name}.dll" />
+            <arg value="${lucene.jar}" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin/${lucene.name}.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${lucene-demos.name}.dll" />
+            <arg value="${lucene-demos.jar}" />
+        </exec>
+        <echo>Building PDFBox</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin/${fontbox.name}.dll" />
+            <arg value="-reference:bin/${jempbox.name}.dll" />
+            <arg value="-reference:bin/${lucene.name}.dll" />
+            <arg value="-reference:bin/${lucene-demos.name}.dll" />
+            <arg value="-reference:bin/${bcprov.name}.dll" />
+            <arg value="-reference:bin/${bcmail.name}.dll" />
+            <arg value="-reference:bin/${jai_core.name}.dll" />
+            <arg value="-reference:bin/${jai_codec.name}.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:bin\${release.name}.dll" />
+            <arg value="lib\${release.name}.jar" />
+        </exec>
+        <echo>Building Decrypt</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\Decrypt.exe" />
+            <arg value="classes\org\pdfbox\Decrypt.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\Encrypt.exe" />
+            <arg value="classes\org\pdfbox\Encrypt.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ExportFDF.exe" />
+            <arg value="classes\org\pdfbox\ExportFDF.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ExportXFDF.exe" />
+            <arg value="classes\org\pdfbox\ExportXFDF.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ExtractImages.exe" />
+            <arg value="classes\org\pdfbox\ExtractImages.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ExtractText.exe" />
+            <arg value="classes\org\pdfbox\ExtractText.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ImportFDF.exe" />
+            <arg value="classes\org\pdfbox\ImportFDF.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\ImportXFDF.exe" />
+            <arg value="classes\org\pdfbox\ImportXFDF.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\Overlay.exe" />
+            <arg value="classes\org\pdfbox\Overlay.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\PDFSplit.exe" />
+            <arg value="classes\org\pdfbox\PDFSplit.class" />
+        </exec>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\PDFReader.exe" />
+            <arg value="classes\org\pdfbox\PDFReader.class" />
+        </exec>
+        <!--The Swing/AWT support in classpath is not quite good enough to make this
+            work, so for now we will just leave blank.-->
+        <!--<exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:bin\${release.name}.dll" />
+            <arg value="-out:bin\PDFDebugger.exe" />
+            <arg value="classes\org\pdfbox\PDFDebugger.class" />
+        </exec>-->
+    </target>
+
+    <target name="javadoc" depends="compile" description="Create Javadocs">
+        <property name="release.name" value="${project.name}-${project.version}" />
+        <javadoc packagenames="org.*"
+               sourcepath="${src.dir}"
+               destdir="${docs.dir}"
+               author="true"
+               version="true"
+               use="true"
+               windowtitle="${release.name} API"
+               doctitle="${project.name}"
+               verbose="no"
+               classpathref="build.classpath" 
+               encoding="ISO-8859-1"
+               breakiterator="yes">
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+            <link href="http://jakarta.apache.org/lucene/docs/api/" />
+            <!--<link href="http://jakarta.apache.org/ant/manual/api/" />-->
+        </javadoc>
+    </target>
+
+    <!-- FORREST_HOME must be set as an environment variable -->
+    <property name="project.home" value="${basedir}/website" />
+    <property name="forrest.jvmargs" value="-Djava.awt.headless=true" />
+    <import file="${env.FORREST_HOME}/main/forrest.build.xml" optional="true"/>
+    <target name="website" if="env.FORREST_HOME">
+       <antcall target="site"/>
+    </target>
+
+</project>

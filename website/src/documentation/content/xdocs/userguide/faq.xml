@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faqs PUBLIC "-//APACHE//DTD FAQ V1.2//EN" "http://forrest.apache.org/dtd/faq-v12.dtd" [
+<!ENTITY s '<code>site.xml</code>'>
+]>
+
+<faqs title="Frequently Asked Questions">
+
+  <part id="general_questions">
+    <title>General Questions</title>
+    <faq id="next_version">
+      <question>
+        When will the next version of PDFBox be released?
+      </question>
+      <answer>
+        <p>
+          As fixes are made and integrated into CVS these changes are documented in the
+          <link href="../changes.html">release notes</link>.  I will give an estimate of when
+          the next version will be released. <br /><br />
+          Of course, this is only an estimate and could change.
+        </p>
+      </answer>
+    </faq>
+    
+    <faq id="log4j_config">
+      <question>
+          I am getting the below Log4J warning message, how do I remove it?
+
+      </question>
+      <answer>
+  <table>
+  	<tr><td>
+  	log4j:WARN No appenders could be found for logger (org.pdfbox.util.ResourceLoader).<br />
+	log4j:WARN Please initialize the log4j system properly.
+	</td></tr>
+  </table>
+        <p>
+        This message means that you need to configure the log4j logging system.  
+        See the <link href="http://logging.apache.org/log4j/docs/documentation.html">log4j documentation</link> for more information.
+        </p>
+        <p>
+        PDFBox comes with a sample log4j configuration file.  To use it you set a 
+		system property like this
+		</p>
+		<p>
+
+		java -Dlog4j.configuration=log4j.xml org.pdfbox.ExtractText &lt;PDF-file&gt; &lt;output-text-file&gt;
+        </p>
+        <p>
+        If this is not working for you then you may have to specify the log4j config file using a URL path, like this:<br/>
+        <br />
+        log4j.configuration=file:///&lt;path to config file&gt;<br />
+        <br/>
+        Please see <a href="https://sourceforge.net/forum/forum.php?thread_id=1254229&amp;forum_id=267205">this</a> forum thread for more information.
+        
+        </p>
+      </answer>
+    </faq>
+    
+    <faq id="pdfbox_threadsafe">
+      <question>
+      Is PDFBox thread safe?
+      </question>
+      <answer>
+        <p>
+        No!  Only one thread may access a single document at a time.  
+        You can have multiple threads each accessing there own PDDocument object.
+        </p>
+      </answer>
+    </faq>
+    
+    <faq id="pdfbox_close_warning">
+      <question>
+      Why do I get a "Warning: You did not close the PDF Document"?
+      </question>
+      <answer>
+        <p>
+        You need to call close() on the PDDocument inside the finally block, if you
+        don't then the document will not be closed properly.  Also, you must close all 
+        PDDocument objects that get created.  The following code creates <b>two</b> 
+        PDDocument objects; one from the "new PDDocument()" and the second by the load method.
+        </p>
+        <pre>
+    PDDocument doc = new PDDocument();
+    try
+    {
+        doc = PDDocument.load( "my.pdf" );
+    }
+    finally
+    {
+        if( doc != null )
+        {
+            doc.close();
+        }
+    }
+        </pre>
+        
+      </answer>
+    </faq>
+
+    
+  </part>
+  
+  <part id="text_extraction">
+    <title>Text Extraction</title>
+    <faq id="no_text_extraction">
+      <question>
+        How come I am not getting any text from the PDF document?
+      </question>
+      <answer>
+        <p>
+          Text extraction from a pdf document is a complicated task and there are many factors
+          involved that effect the possibility and accuracy of text extraction.  It would be helpful
+          to the PDFBox team if you could try a couple things.
+        </p>
+          <ul>
+          	<li>Open the PDF in Acrobat and try to extract text from there.  If Acrobat can extract text
+          	then PDFBox should be able to as well and it is a bug if it is not.  If Acrobat cannot extract text then
+          	PDFBox 'probably' cannot either.</li>
+          	<li>It might really be an image instead of text.  Some PDF documents are just images that have
+          	been scanned in.  You can tell by using the selection tool in Acrobat, if you can't select 
+          	any text then it is probably an image.</li>
+          </ul>
+
+      </answer>
+    </faq>
+    <faq id="gibberish_text">
+      <question>
+        How come I am getting gibberish(G38G43G36G51G5) when extracting text?
+      </question>
+      <answer>
+        <p>
+          This is because the characters in a PDF document can use a custom encoding 
+          instead of unicode or ASCII.  When you see gibberish text then it
+          probably means that a meaningless internal encoding is being used.  The
+		   only way to access the text is to use OCR.  This may be a future
+		   enhancement.
+        </p>
+      </answer>
+    </faq>
+    <faq id="cant_handle_font_width">
+      <question>
+        What does "java.io.IOException: Can't handle font width" mean?
+      </question>
+      <answer>
+        <p>
+          This probably means that the "Resources" directory is not in your classpath.  The 
+          Resources directory is included in the PDFBox jar so this is only a problem if you 
+          are building PDFBox yourself and not using the binary.
+        </p>
+      </answer>
+    </faq>
+    <faq id="no_permission">
+      <question>
+        Why do I get "You do not have permission to extract text" on some documents?
+      </question>
+      <answer>
+        <p>
+          PDF documents have certain security permissions that can 
+          be applied to them and two passwords associated with them, a user password and a master password. 
+          If the "cannot extract text" permission bit is set then you need 
+          to decrypt the document with the master password in order to extract the text. 
+        </p>
+      </answer>
+    </faq>
+    <faq id="parse_whole_document">
+        <question>Can't we just extract the text without parsing the whole document or extract text as it is parsed.</question>
+        <answer>
+        <p>
+        Not really, for a couple reasons.  
+        </p>
+        <ol>
+            <li>If the document is encrypted then you need to parse at least until the encryption dictionary before you can decrypt.</li>
+            <li>Sometime the PDFont contains vital information needed for text extraction.</li>
+            <li>Text on a page does not have to be drawn in reading order.  For example; if the page said "Hello World", the pdf could
+                have been written such that "World" gets drawn and then the cursor moves to the left and the word "Hello" is drawn.</li>
+        </ol>
+        </answer>
+    </faq>
+  </part>
+
+</faqs>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox - References</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>PDFBox References</title>
+      <p>
+      This page lists projects that utilize PDFBox and articles that have been written about PDFBox.  
+      Send <a href="mailto:ben@benlitchfield.com">me</a> an e-mail if your article 
+      or project is missing.
+      </p>
+    </section>
+    <section>
+      <title>Projects</title>
+      <p><br/></p>
+      <table>
+      	<tr>
+      		<th>Project Name</th>
+      		<th>License</th>
+      		<th>Project Description</th>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.alfresco.org">Alfresco</a></td>
+      		<td>LGPL - commercial services/support/training is available</td>
+      		<td>Alfresco is an open source, open-standards content repository built by the most experienced content management team that includes the co-founder of Documentum.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.centriccrm.com">Centric CRM</a></td>
+      		<td>Free To Use But Restricted/Commercial</td>
+      		<td>The Most Advanced Open Source CRM Software.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://webtest.canoo.com/webtest/manual/WebTestHome.html">Canoo Webtest</a></td>
+      		<td><a href="http://webtest.canoo.com/webtest/manual/license.html">BSD Like</a></td>
+      		<td>Free OpenSource tool for XP-style acceptance testing of Java-based Web applications.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://webtest.canoo.com/webtest/manual/WebTestHome.html">contineo</a></td>
+      		<td>GPL</td>
+      		<td>Contineo is a web based document management system.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://forms.pjc.bean.over-blog.com">DirectPrint</a></td>
+      		<td>BSD</td>
+      		<td>JavaBean used to get back print features lost in Oracle Reports </td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.jahia.org/">Jahia</a></td>
+      		<td><a href="http://www.jahia.org/jahia/Jahia/pricing">collaborative source license</a></td>
+      		<td>The Jahia product is currently the most powerful, ready-to-use and affordable integrated midrange Java Content Management and Corporate Portal Server.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://jlibrary.sourceforge.net/">jLibrary</a></td>
+      		<td>BSD</td>
+      		<td>jLibrary is a Document Management System, oriented for personal and enterprise use.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://jomic.sourceforge.net/">Jomic</a></td>
+      		<td>GPL</td>
+      		<td>Jomic is a viewer for comic book archives.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://jpdfunit.sourceforge.net/">JpdfUnit</a></td>
+      		<td>Apache License V2.0</td>
+      		<td>JpdfUnit is a framework for testing a generated pdf document with the JUnit Test Framework.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.liferay.com/">Liferay Portal</a></td>
+      		<td>MIT</td>
+      		<td>Liferay Portal is an open source portal that helps organizations collaborate more efficiently by providing a consolidated view of disparate applications.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.bibl.ulaval.ca/lius/index.en.html">LIUS</a></td>
+      		<td>GPL</td>
+      		<td>LIUS is an indexing Java framework based on the Jakarta Lucene project. The LIUS framework adds to Lucene many files format indexing fonctionalities as: Ms World, Ms Excel, Ms PowerPoint, RTF, PDF, XML, HTML, TXT, Open Office suite and JavaBeans.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.gmod.org/lucegene/">LuceGene</a></td>
+      		<td>Artistic License</td>
+      		<td>LuceGene is an open-source document/object search and retrieval system specially tuned for bioinformatics text databases and documents.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.lutece.paris.fr/">Lutece</a></td>
+      		<td>BSD-like</td>
+      		<td>Lutece is a portal engine which allows you to easily create your websites or intranets based upon HTML,XML content.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://mmapps.sourceforge.net/lucenemodule/">MMBase Lucene Module</a></td>
+      		<td>MPL</td>
+      		<td>Lucenemodule is a plugin (module) for the MMBase content management system that enables Lucene full text search through it's content, and thanks to PDFBox also PDF content.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://incubator.apache.org/nutch/">Nutch</a></td>
+      		<td>ASL</td>
+      		<td>Nutch is open source web-search software. It builds on Lucene, adding web-specifics, such as a crawler, a link-graph database, parsers for HTML and other document formats, etc.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.opencms.org/">OpenCms</a></td>
+      		<td><a href="http://www.opencms.org/opencms/en/terms.html">Custom</a></td>
+      		<td>OpenCms is a professional level Open Source Website Content Management System.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://forge.objectweb.org/projects/ops">Orbeon PresentationServer</a></td>
+      		<td>LGPL</td>
+      		<td>Orbeon PresentationServer (OPS) is an open source J2EE-based platform for XML-centric web applications. OPS is built around XHTML, XForms, XSLT, XML pipelines, and Web Services, which makes it ideal for applications that capture, process and present XML data.
+      		    Commercial consulting/training/support is available through <a href="http://www.orbeon.com/">orbeon</a>.
+      		</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://pdfcat.sourceforge.net">PDFcat</a></td>
+      		<td>LGPL</td>
+      		<td>PDFcat is multi-platform catalog manager that provides searching capability over documents among virtual catalogs.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://homepage.mac.com/ptwobrussell/podreader.html">PodReader</a></td>
+      		<td>GPL</td>
+      		<td>PodReader is an application that facilitates making electronic documents like eBooks readable on your iPod.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.searchblox.com">SearchBlox</a></td>
+      		<td>Commercial</td>
+      		<td>SearchBlox is a high-performance corporate search software designed for the Java 2 Enterprise Edition (J2EE) platform.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://ir.dcs.gla.ac.uk/terrier/">Terrier</a></td>
+      		<td>MPL</td>
+      		<td>Terrier is software for the rapid development of Web, intranet and desktop search engines.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.triboni.com">Triboni GinkGO</a></td>
+      		<td>Commercial</td>
+      		<td>Triboni GinkGO is a highly scalable J2EE services platform that is based on a simple XML business object defintion and scripting language. Toghether with XSLT content centric web applications can be configured in a very short time.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.zilverline.org/">Zilverline</a></td>
+      		<td><a href="http://www.zilverline.org/zilverlineweb/space/license">Collaborative Source License</a></td>
+      		<td>Zilverline is a search engine that offers web access to your personal or intranet content.</td>
+      	</tr>
+      </table>
+    </section>
+    
+    <section>
+      <title>Articles/Books</title>
+      <p><br/></p>
+      <table>
+      	<tr>
+      		<th width="250px">Article Name</th>
+      		<th>Article Abstract</th>
+      	</tr>
+      	<tr>
+      		<td>
+      		Build an eDoc Reader for your iPod<br/>
+      		<a href="http://www.oreillynet.com/pub/a/mac/2004/12/14/ipod_reader.html">Part 1</a> - User Interface<br/>
+      		<a href="http://www.oreillynet.com/pub/a/mac/2004/12/17/ipod_reader.html">Part 2</a> - Document Reading Engine<br/>
+      		<a href="http://www.oreillynet.com/pub/a/mac/2005/01/07/ipod_reader.html">Part 3</a> - *Integration with PDFBox*<br/>
+      		</td>
+      		<td>A three part article that discusses the implementation of the PodReader application.  PodReader is Cocoa application 
+      		written in Objective-C and article discusses how to use the Cocoa-Java bridge to integrate with the Java
+      		version of PDFBox.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.lucenebook.com/">Lucene In Action</a></td>
+      		<td>A book that discusses integrating with the lucene search engine.  One chapter 
+      		discusses how to index various file formats and highlights PDFBox for indexing PDF documents.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.sys-con.com/story/?storyid=48543&amp;DE=1">Java Developers Journal - March 2005</a></td>
+      		<td>An article written by the lead developer of PDFBox discussing text extraction and AcroForm integration using PDFBox functionality.</td>
+      	</tr>
+      	<tr>
+      		<td><a href="http://www.dcs.bbk.ac.uk/research/techreps/2005/bbkcs-05-02.pdf">Refactoring trends across N versions of N Java open source systems: an empirical study</a></td>
+      		<td>This article describes an empirical study of multiple versions of a
+                range of open source Java systems in an attempt to understand whether refactoring occur and, if so,
+                which types of refactoring were most (and least) common.  PDFBox is used as a case study.
+            </td>
+      	</tr>
+      </table>
+    </section>
+  </body>
+</document>

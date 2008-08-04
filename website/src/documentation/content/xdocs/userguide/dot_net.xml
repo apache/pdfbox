@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox - .NET Version</title> 
+    <meta name="keywords">Java PDF Library, pdftotext, PDF to text, ..NET pdf text extraction, pdf ASP, pdf .NET</meta>
+  </header> 
+  <body> 
+    <section>
+        <title>.NET Version</title>
+        <p>
+            Even though PDFBox is written in Java, there is also a .NET version that is available.  It utilizes <a href="http://www.ikvm.net">IKVM</a>
+            to create a fully functioning PDF library for the .NET framework.  The released version contains a bin directory with all of the
+            required DLL files.  For the command line applications that are available in the Java version a native windows executable is
+            also included.  This page contains information that is specific to using the .NET version of PDFBox.
+        </p>
+        <section>
+          <title>log4j</title>
+          <p>
+          PDFBox no longer requires log4j!  Older versions used to require you to configure log4j before using it in .NET
+          </p>
+        </section>
+        <section>
+          <title>Lucene</title>
+          <p>
+          The way that IKVM works is that DLLs are only compatible when used with the dependent DLLs that are used to build them.  For example, in 
+          order to build the PDFBox DLL, a lucene DLL needs to be built, then the PDFBox DLL.  The PDFBox DLL now depends on that <b>*exact*</b>
+          lucene DLL.  This means that if you build your own version of the lucene DLL then you also need to rebuild the PDFBox DLL.  Your best bet
+          is to use the lucene/pdfbox that is shipped with PDFBox.
+          </p>
+        </section>
+    </section>
+  </body>
+</document>

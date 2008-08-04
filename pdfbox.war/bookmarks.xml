@@ -1,0 +1,12 @@
+<XML>
+<Body units=characters color=#ffff00 mode=active version=2>
+<Highlight>
+    <loc pg=1 pos=978 len=6>
+    <loc pg=1 pos=1033 len=6>
+    <loc pg=1 pos=1098 len=6>
+    <loc pg=1 pos=1170 len=6>
+    <loc pg=1 pos=1314 len=6>
+    <loc pg=2 pos=166 len=6>
+</Highlight>
+</Body>
+</XML>

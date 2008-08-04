@@ -1,0 +1,13 @@
+Known Limitations and Problems
+---------------------------------------
+1. You get text like "G38G43G36G51G5" instead of what you expect when you are
+   extracting text.  This is because the characters are a meaningless internal
+   encoding that point to glyphs that are embedded in the PDF document.  The
+   only way to access the text is to use OCR.  This may be a future
+   enhancement.
+
+2. You get an error message like "java.io.IOException: Can't handle font width"
+   this MIGHT be due to the fact that you don't have the Resources directory
+   in your classpath.  The easiest solution is to simply include the
+   PDFBox-x.x.x.jar in your classpath.
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>TextToPDF</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>Description</title>
+      <p>This application will create a PDF document from a text file.</p>
+      <table>
+          <tr>
+      		<th>Command Line Parameter</th>
+      		<th>Type</th>
+      		<th>Default Value</th>
+      		<th>Description</th>
+      	  </tr>
+      	  <tr>
+      	  	<td>-standardFont &lt;fontname&gt;</td>
+      	  	<td>
+      	  	    One of the following:<br/>
+	      	  	Times-BoldItalic<br />
+				ZapfDingbats<br />
+				Helvetica<br />
+				Courier-Bold<br />
+				Courier-BoldOblique<br />
+				Symbol<br />
+				Times-Bold<br />
+				Courier-Oblique<br />
+				Times-Roman<br />
+				Times-Italic<br />
+				Helvetica-Bold<br />
+				Helvetica-Oblique<br />
+				Helvetica-BoldOblique<br />
+				Courier
+      	  	</td>
+      	  	<td>Helvetica</td>
+      	  	<td>The font to use for the text.  Either this or -ttf should be specified but not both.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-ttf &lt;fontfile&gt;</td>
+      	  	<td>Path to TTF File.
+      	  	</td>
+      	  	<td>None</td>
+      	  	<td>The TTF font to use for the text.  Either this or -standardFont should be specified but not both.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-fontSize &lt;fontsize&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>10</td>
+      	  	<td>The size of the font to use.</td>
+      	  </tr>
+      </table>
+    </section>
+  </body>
+</document>

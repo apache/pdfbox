@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox - PDF Highlighting</title> 
+    <meta name="keywords">Java PDF Library, highlight, highlight pdf, highlight pdf text, java</meta>
+  </header> 
+  <body> 
+    <section>
+        <title>Highlighting text in a PDF</title>
+        <p>
+            There are cases when you might want to highlight text in a PDF document.  For example, if the PDF is the result
+            of a search request you might want to highlight the word in the resulting PDF document.  There are several ways
+            this can be achieved, each method varying in complexity and flexibility.
+        </p>
+        <section>
+          <title>1. Use the 'search' open parameter</title>
+          <p>
+          Acrobat supports passing is various parameters that tell it what to do once the PDF is open.  
+          See <a href="http://partners.adobe.com/public/developer/en/acrobat/PDFOpenParameters.pdf" target="_blank">PDF Open Parameters</a> for 
+          documentation on all the open parameters.  One of the parameters is the 'search' parameter, this will automatically run the search
+          functionality inside of Acrobat once the PDF is open.  For example: <a href='http://www.pdfbox.org/userguide/text_extraction.pdf#search="check"' target='_blank'>http://www.pdfbox.org/userguide/text_extraction.pdf#search="check"</a><br/>
+          <br/>
+          <note>The words must be enclosed in quotes and separated by spaces; for example:#search="pdfbox rocks"</note>
+          This is a great solution because of its simplicity!  It doesn't require PDFBox at all, but it is a potential solution that
+          many developers are not aware of.
+          </p>
+          
+        </section>
+        <section>
+          <title>2. Generate a highlight XML document</title>
+          <p>
+          Acrobat also allows you to tell it to highlight specific words in the PDF document.  It does this by passing an XML document to 
+          Acrobat when opening the PDF.  
+          See the <a href="http://partners.adobe.com/public/developer/en/pdf/HighlightFileFormat.pdf" target="_blank">PDF Highlight File Format</a> 
+          for more detailed documentation.  <br/>
+          <br/>
+          Basically the document allows you to tell it the characters to highlight in the PDF by using character
+          offsets on a page.  As this is just an XML document, there are many ways you could create it but PDFBox does have a utility to make it
+          easier.  Take a look at the javadoc for the <a href="/javadoc/org/pdfbox/util/PDFHighlighter.html">PDFHighlighter</a> class.  This will
+          allow you specify a set of words that you want have highlighted and generate the XML document for you.  <br/>
+          <br/>
+          PDFBox also ships with a complete
+          web application example of using this class, take a look at the pdfbox.war directory in your PDFBox installation.
+          <br/>
+          You pass the xml to acrobat through a URL (or command line) parameter like this: 
+          <a href="http://www.pdfbox.org/userguide/text_extraction.pdf#xml=http://www.pdfbox.org/highlight.xml" target="_blank">http://www.pdfbox.org/userguide/text_extraction.pdf#xml=http://www.pdfbox.org/highlight.xml</a>
+          <br/>
+          <note>The value of the xml parameter must be a full URL to the XML document.  <br/>
+          http://www.pdfbox.org/userguide/text_extraction.pdf#xml=highlight.xml will not work<br/>
+          http://www.pdfbox.org/userguide/text_extraction.pdf#xml=http://www.pdfbox.org/highlight.xml is correct!</note>
+          <br/>The one drawback to this solution is that you must parse the PDF and then generate an XML document, which is a time consuming operation.
+          </p>
+        </section>
+        <section>
+          <title>3. Alter pdf contents to highlight specific text</title>
+          <p>
+          Using PDFBox it is possible to regenerate the appearance stream to add highlighting to specific areas.  While this is possible, 
+          it will require recreating a new PDF for every search request.  There is nothing prebuilt in PDFBox to do this automatically for you
+          and will require a significant coding effort.<br/>
+          <br/>
+          You would need to 
+          <ol>
+            <li>Find all locations of the text, determine x/y coordinates, width/height</li>
+            <li>Regenerate the PDF appearance stream and draw a highlighted box behind the text.  Yellow would be easiest, if you want an inverted black/white, then you would need to change the color of the text to be white and draw a black box.</li>
+            <li>Stream the PDF back to the user</li>
+          </ol>
+          This is the most flexible but is also the most work to implement and is also more resource intensive.
+          </p>
+        </section>
+    </section>
+  </body>
+</document>

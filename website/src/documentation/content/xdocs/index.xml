@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document> 
+  <header> 
+    <title>PDFBox - Java PDF Library</title>
+    <meta name="keywords">Java PDF Library, pdfbox, pdftotext, print pdf</meta>
+  </header> 
+  <body>  
+    <section>
+      <title>Introduction</title>
+      <p>PDFBox is an open source Java PDF library for working with PDF documents. This project allows creation of new 
+      PDF documents, manipulation of existing documents and the ability to extract content from documents.  PDFBox 
+      also includes several command line utilities.</p>
+    </section>
+    <section>
+      <title>Features</title>
+      <ul>
+        <li>PDF to text extraction</li>
+        <li>Merge PDF Documents</li>
+        <li>PDF Document Encryption/Decryption</li>
+        <li>Lucene Search Engine Integration</li>
+        <li>Fill in form data FDF and XFDF</li>
+        <li>Create a PDF from a text file</li>
+        <li>Create images from PDF pages</li>
+        <li>Print a PDF</li>
+      </ul>
+    </section>
+  </body>
+</document>
