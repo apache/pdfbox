@@ -1,6 +1,6 @@
 DO NOT TRANSLATE OR LOCALIZE.
 
-%% The following software may be included in this product:  NeuQuant Color Quantization.  Use of any of this software is governed by the terms of the license below: 
+%% The following software may be included in this product:  NeuQuant Color Quantization.  Use of any of this software is governed by the terms of the license below:
 
 * NeuQuant Neural-Net Quantization Algorithm
  * ------------------------------------------
@@ -24,7 +24,7 @@ sublicense,
  * that this copyright notice remain intact.
  */
 
-%% The following software may be included in this product: Oct-Tree Color Quantization.  Use of any of this software is governed by the terms of the license below: 
+%% The following software may be included in this product: Oct-Tree Color Quantization.  Use of any of this software is governed by the terms of the license below:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Permission is hereby granted, free of charge, to any person obtaining a    %
