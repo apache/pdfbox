@@ -496,6 +496,7 @@ public class PDFParser extends BaseParser
 
         }
         //System.out.println( "parsed=" + object );
+        //logger().fine( "parsed=" + object );
         return object;
     }
 

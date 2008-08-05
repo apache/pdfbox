@@ -25,6 +25,7 @@ import org.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
 import org.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.pdfbox.util.PDFOperator;
+import org.pdfbox.pdfviewer.PageDrawer;
 
 import java.io.IOException;
 
@@ -75,5 +76,12 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
             }
         }
         colorInstance.setColorSpaceValue( values );
+        
+        //logger().info("Set NonStrokingColorSpace to have instance of type " + colorInstance.toString() + " with component count " + numComponents);
+        
+        if (context instanceof PageDrawer){
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.ColorChanged (false);
+        }
     }
 }

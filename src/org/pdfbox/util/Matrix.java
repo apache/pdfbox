@@ -146,6 +146,7 @@ public class Matrix implements Cloneable
     {
         Matrix result = new Matrix();
 
+        if (b != null && b.single != null) {
         float[] bMatrix = b.single;
         float[] resultMatrix = result.single;
         resultMatrix[0] = single[0] * bMatrix[0] + single[1] * bMatrix[3] + single[2] * bMatrix[6];
@@ -157,7 +158,7 @@ public class Matrix implements Cloneable
         resultMatrix[6] = single[6] * bMatrix[0] + single[7] * bMatrix[3] + single[8] * bMatrix[6];
         resultMatrix[7] = single[6] * bMatrix[1] + single[7] * bMatrix[4] + single[8] * bMatrix[7];
         resultMatrix[8] = single[6] * bMatrix[2] + single[7] * bMatrix[5] + single[8] * bMatrix[8];
-
+        }
         return result;
     }
     

@@ -16,18 +16,21 @@
  */
 package org.pdfbox.pdfviewer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.pdfbox.util.Matrix;
 
 import org.pdfbox.pdmodel.PDPage;
 import org.pdfbox.pdmodel.PDResources;
@@ -53,8 +56,8 @@ public class PageDrawer extends PDFStreamEngine
 {
 
     private Graphics2D graphics;
-    private Dimension pageSize;
-    private PDPage page;
+    protected Dimension pageSize;
+    protected PDPage page;
 
     private List lineSubPaths = new ArrayList();
     private GeneralPath linePath = new GeneralPath();
@@ -117,15 +120,16 @@ public class PageDrawer extends PDFStreamEngine
         // 2 - Rotate
         // 3 - Scale
         // Refer to PDFReference p176 (or 188 in xpdf)
-        //AffineTransform transform = graphics.getTransform();        
-        //transform.setToTranslate( 0, page.findMediaBox().getHeight()/2 );
-        //transform.setToRotation((double)p.getRotation());
-        //transform.setTransform( 1, 0, 0, 1, 0, 0 );        
-        //transform.setToScale( 1, 1 );
+        /*AffineTransform transform = graphics.getTransform();        
+        transform.setToTranslation( 0, page.findMediaBox().getHeight()/2 );
+        transform.setToRotation((double)p.getRotation());
+        transform.setTransform( 1, 0, 0, 1, 0, 0 );        
+        transform.setToScale( 1, 1 );
         
-        //AffineTransform rotation = graphics.getTransform();
-        //rotation.rotate( (page.findRotation() * Math.PI) / 180d );
-        //graphics.setTransform( rotation );
+        AffineTransform rotation = graphics.getTransform();
+        rotation.rotate( (page.findRotation() * Math.PI) / 180d );
+        graphics.setTransform( rotation );*/
+        
     }
 
     /**
@@ -201,17 +205,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public double fixY( double x, double y )
     {
-        double retval = y;
-        int rotation = page.findRotation();
-        if( rotation == 0 )
-        {
-            retval = pageSize.getHeight() - y;
-        }
-        else if( rotation == 90 )
-        {
-            retval = y;
-        }
-        return retval;
+    	return pageSize.getHeight() - y;
     }
     
     /**
@@ -231,7 +225,11 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void setLinePath(GeneralPath newLinePath)
     {
-        linePath = newLinePath;
+        if (linePath == null || linePath.getCurrentPoint() == null){
+            linePath = newLinePath;
+        }else{
+            linePath.append (newLinePath, false);
+        }
     }
     
     /**
@@ -252,5 +250,125 @@ public class PageDrawer extends PDFStreamEngine
     public void setLineSubPaths(List newLineSubPaths)
     {
         lineSubPaths = newLineSubPaths;
+    }
+
+    	
+    /**
+     *
+     * Fill the path
+     * 
+     * @param windingRule The winding rule this path will use.
+     */
+    public void fillPath(int windingRule) throws IOException{
+    	
+    	graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
+        
+        //logger().info("Filling the path with rule: " + windingRule);
+        
+    	getLinePath().setWindingRule(windingRule);
+        
+    	graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        List subPaths = getLineSubPaths();
+        for( int i=0; i<subPaths.size(); i++ )
+        {
+            GeneralPath subPath = (GeneralPath)subPaths.get( i );
+            if (subPath.getCurrentPoint() != null){ //Sector9's suggestion in bug 1672556
+                subPath.closePath();
+            }
+            graphics.fill( subPath );
+        }
+        
+            graphics.fill( getLinePath() );
+            getLinePath().reset();
+    }
+    
+        
+    public void setStroke(BasicStroke newStroke){
+    	getGraphics().setStroke( newStroke );
+    }
+    
+    public void StrokePath() throws IOException{
+    	graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); //per Ben's 11/15 change in StrokePath.java
+        List subPaths = getLineSubPaths();
+        for( int i=0; i<subPaths.size(); i++ )
+        {
+            GeneralPath subPath = (GeneralPath)subPaths.get( i );
+            graphics.draw( subPath );
+        }
+        subPaths.clear();
+        GeneralPath path = getLinePath();
+        graphics.draw( path );
+        path.reset();
+    }
+    
+    //If you need to do anything when a color changes, do it here ... or in an override of this function
+    public void ColorChanged(Boolean bStroking) throws IOException{
+        logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
+    }
+    
+    //This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
+    public java.awt.geom.Point2D.Double TransformedPoint (double x, double y){
+        
+        double scaleX = 0.0;
+        double scaleY = 0.0;
+        double transX = 0.0;
+        double transY = 0.0;
+        
+        double finalX = x;
+        double finalY = y;
+        
+        //Get the transformation matrix 
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        AffineTransform at = ctm.createAffineTransform();
+
+    	scaleX = at.getScaleX();
+        scaleY = at.getScaleY();
+        transX = at.getTranslateX();
+        transY = at.getTranslateY();
+        
+        Point2D Pscale = ScaledPoint (finalX, finalY, scaleX, scaleY);
+        finalX = Pscale.getX();
+        finalY = Pscale.getY();
+        
+        finalX += transX;
+      	finalY += transY;
+	
+        finalY = fixY( finalX, finalY );
+        finalY -= .6;
+        
+        return new java.awt.geom.Point2D.Double(finalX, finalY);
+    }
+    
+    //Use ScaledPoint rather than TransformedPoint in situations where most of the translation
+    //need not be repeated.
+    //Consider, for example, the second coordinate of a rectangle.
+    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y, double scaleX, double scaleY){
+        
+        double finalX = 0.0;
+        double finalY = 0.0;
+        
+        if(scaleX > 0)
+    	{
+	    	finalX = x * scaleX;
+    	}
+        if(scaleY > 0)
+        {
+        	finalY = y * scaleY;
+    	}
+        
+        return new java.awt.geom.Point2D.Double(finalX, finalY);
+    }
+    
+    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y){
+        
+        double scaleX = 0.0;
+        double scaleY = 0.0;
+        
+        //Get the transformation matrix 
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        AffineTransform at = ctm.createAffineTransform();
+       	scaleX = at.getScaleX();
+        scaleY = at.getScaleY();
+        return ScaledPoint(x, y, scaleX, scaleY);
     }
 }

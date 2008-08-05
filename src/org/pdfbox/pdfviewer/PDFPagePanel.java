@@ -59,12 +59,7 @@ public class PDFPagePanel extends JPanel
     {
         page = pdfPage;
         PDRectangle pageSize = page.findMediaBox();
-        int rotation = page.findRotation();
         pageDimension = pageSize.createDimension();
-        if( rotation == 90 || rotation == 270 )
-        {
-            pageDimension = new Dimension( pageDimension.height, pageDimension.width );
-        }
         setSize( pageDimension );
         setBackground( java.awt.Color.white );
     }

@@ -42,18 +42,12 @@ public class StrokePath extends org.pdfbox.util.operator.SetLineWidth
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PageDrawer drawer = (PageDrawer)context;
-        Graphics2D graphics = ((PageDrawer)context).getGraphics(); 
-        graphics.setColor( drawer.getGraphicsState().getStrokingColorSpace().createColor() );
-        List subPaths = drawer.getLineSubPaths();
-        for( int i=0; i<subPaths.size(); i++ )
-        {
-            GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            graphics.draw( subPath );
-        }
-        subPaths.clear();
-        GeneralPath path = drawer.getLinePath();
-        graphics.draw( path );
-        path.reset();
+        ///dwilson 3/19/07 refactor
+	try{
+		PageDrawer drawer = (PageDrawer)context;
+		drawer.StrokePath();
+	}catch (Exception e){
+		
+	}
     }
 }

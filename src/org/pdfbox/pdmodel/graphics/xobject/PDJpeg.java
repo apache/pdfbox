@@ -20,11 +20,16 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.imageio.IIOException;
 
 import org.pdfbox.cos.COSDictionary;
 import org.pdfbox.cos.COSName;
@@ -76,10 +81,12 @@ public class PDJpeg extends PDXObjectImage
         dic.setItem( COSName.TYPE, COSName.getPDFName( "XObject" ) );
         
         BufferedImage image = getRGBImage();
+        if (image != null) {
         setBitsPerComponent( 8 );
         setColorSpace( PDDeviceRGB.INSTANCE );
         setHeight( image.getHeight() );
         setWidth( image.getWidth() );
+        }
         
     }
     
@@ -121,8 +128,50 @@ public class PDJpeg extends PDXObjectImage
      * {@inheritDoc}
      */
     public BufferedImage getRGBImage() throws IOException
-    {
-        return ImageIO.read(getPDStream().getPartiallyFilteredStream( DCT_FILTERS ));
+    {   //TODO PKOCH
+        File imgFile = null;
+        BufferedImage bi = null;
+        boolean readError = false;
+        try {
+            imgFile = File.createTempFile("pdjpeg", ".jpeg");
+            write2file(imgFile);
+
+            // 1. try to read jpeg image
+            try {
+                bi = ImageIO.read(imgFile);
+            } catch (IIOException iioe) {
+                // cannot read jpeg
+                readError = true;
+            } catch (Exception ignore) {}
+
+            // 2. try to read jpeg again. some jpegs have some strange header containing
+            //    "Adobe " at some place. so just replace the header with a valid jpeg header.
+            //    TODO: not sure if it works for all cases
+            if (bi == null && readError) {
+                byte newImage[] = replaceHeader(imgFile);
+
+                ByteArrayInputStream bai = new ByteArrayInputStream(newImage);
+
+                // persist file temporarely, because i was not able to manage
+                // to call the ImageIO.read(InputStream) successfully.
+                FileOutputStream o = new FileOutputStream(imgFile);
+                byte[] buffer = new byte[512];
+                int read;
+                while ((read=bai.read(buffer)) >0) {
+                   o.write(buffer, 0, read);
+                }
+
+                bai.close();
+                o.close();
+
+                bi = ImageIO.read(imgFile);
+            }
+        } finally {
+            if (imgFile != null) {
+                imgFile.delete();
+            }
+        }
+        return bi;
     }
     
     /**
@@ -138,5 +187,64 @@ public class PDJpeg extends PDXObjectImage
         {
             out.write( buf, 0, amountRead );
         }
+    }
+
+    public static byte[] getBytesFromFile(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+        long length = file.length();
+
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+            throw new IOException("File is tooo large");
+        }
+
+        // Create the byte array to hold the data
+        byte[] bytes = new byte[(int)length];
+
+        // Read in the bytes
+        int offset = 0;
+        int numRead = 0;
+
+        while (offset < bytes.length
+                && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+            offset += numRead;
+        }
+
+        // Ensure all the bytes have been read in
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file "+file.getName());
+        }
+
+        is.close();
+
+        return bytes;
+    }
+
+    private int getHeaderEndPos(byte[] image) {
+        for (int i = 0; i < image.length; i++) {
+            byte b = image[i];
+            if (b == (byte) 0xDB) {         // to do: check for ff db
+                return i -2;
+            }
+        }
+        return 0;
+    }
+
+    private byte[] replaceHeader(File jpegFile) throws IOException {
+        // read image into memory
+        byte image[] = getBytesFromFile(jpegFile);
+
+        // get end position of wrong header respectively startposition of "real jpeg data"
+        int pos = getHeaderEndPos(image);
+
+        // simple correct header
+        byte header[] = new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, (byte) 0x00, (byte) 0x10, (byte) 0x4A, (byte) 0x46, (byte) 0x49, (byte) 0x46, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x00, (byte) 0x60, (byte) 0x00, (byte) 0x60, (byte) 0x00, (byte) 0x00};
+
+        // concat
+        byte newImage[] = new byte[image.length - pos + header.length - 1];
+        System.arraycopy(header, 0, newImage, 0, header.length);
+        System.arraycopy(image, pos + 1, newImage, header.length, image.length - pos - 1);
+
+        return newImage;
     }
 }

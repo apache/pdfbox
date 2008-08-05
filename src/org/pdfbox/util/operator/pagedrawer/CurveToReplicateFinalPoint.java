@@ -17,6 +17,7 @@
 package org.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+import java.awt.geom.Point2D;
 
 import org.pdfbox.cos.COSNumber;
 import org.pdfbox.pdfviewer.PageDrawer;
@@ -46,10 +47,16 @@ public class CurveToReplicateFinalPoint extends OperatorProcessor
         COSNumber y1 = (COSNumber)arguments.get( 1 );
         COSNumber x3 = (COSNumber)arguments.get( 2 );
         COSNumber y3 = (COSNumber)arguments.get( 3 );
-        float x1f = x1.floatValue();
+        /*float x1f = x1.floatValue();
         float y1f = (float)drawer.fixY( x1f, y1.floatValue() );
         float x3f = x3.floatValue();
         float y3f = (float)drawer.fixY( x3f, y3.floatValue() );
         drawer.getLinePath().curveTo(x1f,y1f,x3f,y3f,x3f,y3f);
+        */
+        
+        Point2D P1 = drawer.TransformedPoint(x1.doubleValue(), y1.doubleValue());
+        Point2D P3 = drawer.TransformedPoint(x3.doubleValue(), y3.doubleValue());
+        
+        drawer.getLinePath().curveTo((float)P1.getX(), (float)P1.getY(), (float)P3.getX(), (float)P3.getY(), (float)P3.getX(), (float)P3.getY());
     }
 }

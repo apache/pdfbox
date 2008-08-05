@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.9 $
  */
-public class PDType0Font extends PDFont
+public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
 {
     /**
      * Constructor.
@@ -56,9 +56,11 @@ public class PDType0Font extends PDFont
      * {@inheritDoc}
      */
     public void drawString( String string, Graphics g, float fontSize, 
-        float xScale, float yScale, float x, float y )
+        float xScale, float yScale, float x, float y ) throws IOException
     {
-        throw new RuntimeException( "Not yet implemented" );
+        //throw new RuntimeException( "Not yet implemented" );
+        super.drawString(string, g, fontSize, xScale, yScale, x, y);
+        logger().info("Called Type1Font.drawString since Type0 is not yet implemented");
     }
     
     /**

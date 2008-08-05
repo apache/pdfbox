@@ -19,6 +19,8 @@ package org.pdfbox.pdmodel.graphics.color;
 import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
+import org.pdfbox.exceptions.LoggingObject;
 
 import org.pdfbox.cos.COSArray;
 
@@ -28,7 +30,7 @@ import org.pdfbox.cos.COSArray;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.7 $
  */
-public class PDColorSpaceInstance implements Cloneable
+public class PDColorSpaceInstance extends LoggingObject implements Cloneable
 {
     private PDColorSpace colorSpace = new PDDeviceGray();
     private COSArray colorSpaceValue = new COSArray();
@@ -62,21 +64,49 @@ public class PDColorSpaceInstance implements Cloneable
     public Color createColor() throws IOException
     {
         Color retval = null;
-        float[] components = colorSpaceValue.toFloatArray();
-        if( components.length == 3 )
-        {
-            //for some reason, when using RGB and the RGB colorspace
-            //the new Color doesn't maintain exactly the same values
-            //I think some color conversion needs to take place first
-            //for now we will just make rgb a special case.
-            retval = new Color( components[0], components[1], components[2] );
-        }
-        else
-        {
-            ColorSpace cs = colorSpace.createColorSpace();
-            retval = new Color( cs, components, 1f );
-        }
-        return retval;
+	float[] components = colorSpaceValue.toFloatArray();  
+        try{          
+            
+            if( components.length == 3 )
+            {
+                //for some reason, when using RGB and the RGB colorspace
+                //the new Color doesn't maintain exactly the same values
+                //I think some color conversion needs to take place first
+                //for now we will just make rgb a special case.
+                retval = new Color( components[0], components[1], components[2] );
+            }
+            else
+            {
+                                
+                ColorSpace cs = colorSpace.createColorSpace();
+                
+                if (colorSpace.getName() == PDSeparation.NAME && components.length == 1){
+                    
+                    //Use that component as a single-integer RGB value
+                    retval = new Color((int)components[0]);
+                }
+                else{
+                    retval = new Color( cs, components, 1f );
+                }
+            }
+            return retval;
+        }catch (java.lang.IllegalArgumentException IAe){
+		String Values = "Color Values: ";
+		for(int i=0; i< components.length; i++){
+			Values = Values + components[i] + "\t";
+		}
+		
+	    logger().severe(IAe.toString() + "\n" + Values + "\n at\n" + FullStackTrace(IAe));
+	    
+	    throw IAe;
+        }catch (IOException IOe){
+            logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
+            
+            throw IOe;
+        }catch (Exception e){
+            logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+            throw new IOException("Failed to Create Color");
+         }
     }
     
     /**

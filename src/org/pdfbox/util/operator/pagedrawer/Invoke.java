@@ -61,49 +61,27 @@ public class Invoke extends OperatorProcessor
         PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
         if( xobject instanceof PDXObjectImage )
         {
+        	System.out.println("JUHU PDXObjectImage");
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
                 BufferedImage awtImage = image.getRGBImage();
+                if (awtImage == null) {
+                    return;//TODO PKOCH
+                }
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 
                 int width = awtImage.getWidth();
                 int height = awtImage.getHeight();
 
-                double rotationInRadians =(page.findRotation() * Math.PI)/180;
-                 
-                
-                AffineTransform rotation = new AffineTransform();
-                rotation.setToRotation( rotationInRadians );
-                AffineTransform rotationInverse = rotation.createInverse();
-                Matrix rotationInverseMatrix = new Matrix();
-                rotationInverseMatrix.setFromAffineTransform( rotationInverse );
-                Matrix rotationMatrix = new Matrix();
-                rotationMatrix.setFromAffineTransform( rotation );
-                
-                Matrix unrotatedCTM = ctm.multiply( rotationInverseMatrix );
-                
-                Matrix scalingParams = unrotatedCTM.extractScaling();
+                Matrix scalingParams = ctm.extractScaling();
                 Matrix scalingMatrix = Matrix.getScaleInstance(1f/width,1f/height);
                 scalingParams = scalingParams.multiply( scalingMatrix );
                 
-                Matrix translationParams = unrotatedCTM.extractTranslating();
+                Matrix translationParams = ctm.extractTranslating();
                 Matrix translationMatrix = null;
-                int pageRotation = page.findRotation();
-                if( pageRotation == 0 )
-                {
-                    translationParams.setValue(2,1, -translationParams.getValue( 2,1 ));
-                    translationMatrix = Matrix.getTranslatingInstance( 
-                        0, (float)pageSize.getHeight()-height*scalingParams.getYScale() );
-                }
-                else if( pageRotation == 90 )
-                {
-                    translationMatrix = Matrix.getTranslatingInstance( 0, (float)pageSize.getHeight() );
-                }
-                else 
-                {
-                    //TODO need to figure out other cases
-                }
+                translationParams.setValue(2,1, -translationParams.getValue( 2,1 ));
+                translationMatrix = Matrix.getTranslatingInstance(0, (float)pageSize.getHeight()-height*scalingParams.getYScale() );
                 translationParams = translationParams.multiply( translationMatrix );
 
                 AffineTransform at = new AffineTransform( 
@@ -111,42 +89,6 @@ public class Invoke extends OperatorProcessor
                         0, scalingParams.getValue( 1, 1),
                         translationParams.getValue(2,0), translationParams.getValue( 2,1 )
                     );
-                
-                
-                
-
-                //at.setToTranslation( pageSize.getHeight()-ctm.getValue(2,0),ctm.getValue(2,1) );
-                //at.setToScale( ctm.getValue(0,0)/width, ctm.getValue(1,1)/height);
-                //at.setToRotation( (page.findRotation() * Math.PI)/180 );
-                
-                
-                
-                //AffineTransform rotation = new AffineTransform();
-                //rotation.rotate( (90*Math.PI)/180);
-                
-                /*
-                
-                // The transformation should be done 
-                // 1 - Translation
-                // 2 - Rotation
-                // 3 - Scale or Skew
-                AffineTransform at = new AffineTransform();
-
-                // Translation
-                at = new AffineTransform();
-                //at.setToTranslation((double)ctm.getValue(0,0),
-                //                    (double)ctm.getValue(0,1));
-                
-                // Rotation
-                //AffineTransform toAdd = new AffineTransform();
-                toAdd.setToRotation(1.5705);
-                toAdd.setToRotation(ctm.getValue(2,0)*(Math.PI/180));
-                at.concatenate(toAdd);
-                */
-                
-                // Scale / Skew?
-                //toAdd.setToScale(1, 1); 
-                //at.concatenate(toAdd);
 
                 graphics.drawImage( awtImage, at, null );
             }

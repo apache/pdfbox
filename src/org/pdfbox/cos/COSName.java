@@ -583,4 +583,35 @@ public final class COSName extends COSBase implements Comparable
             }
         }
     }
+    
+     /**
+      * Not usually needed except if resources need to be reclaimed in a ong
+      * running process.
+      * Patch provided by flester@GMail.com
+      * incorporated 5/23/08, Danielwilson@users.SourceForge.net
+      */
+     public static synchronized void clearResources()
+     {
+         // Clear them all
+         nameMap.clear();
+ 
+         // Add the statics back in
+         java.lang.reflect.Field f[] = COSName.class.getFields();
+         if (f != null && f.length > 0)
+         {
+             for (int i=0; i<f.length; i++)
+             {
+                 try
+                 {
+                     Object obj = f[i].get(null);
+                     if (obj != null && obj instanceof COSName)
+                     {
+                         COSName cosname = (COSName)obj;
+                         nameMap.put(cosname.getName(),cosname);
+                     }
+                 }
+                 catch (Exception ignore) {}
+             }
+         }
+     }
 }

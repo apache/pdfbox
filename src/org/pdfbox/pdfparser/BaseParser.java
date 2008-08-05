@@ -42,7 +42,7 @@ import org.pdfbox.cos.COSStream;
 import org.pdfbox.cos.COSString;
 
 import org.pdfbox.persistence.util.COSObjectKey;
-
+import org.pdfbox.exceptions.LoggingObject;
 /**
  * This class is used to contain parsing logic that will be used by both the
  * PDFParser and the COSStreamParser.
@@ -50,7 +50,7 @@ import org.pdfbox.persistence.util.COSObjectKey;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.61 $
  */
-public abstract class BaseParser
+public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
 {
     /**
      * This is a byte array that will be used for comparisons.

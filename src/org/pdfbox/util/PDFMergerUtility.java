@@ -274,13 +274,15 @@ public class PDFMergerUtility
                 destNums = (COSArray)destLabels.getDictionaryObject( COSName.getPDFName( "Nums" ) );
             }
             COSArray srcNums = (COSArray)srcLabels.getDictionaryObject( COSName.getPDFName( "Nums" ) );
-            for( int i=0; i<srcNums.size(); i+=2 )
-            {
-                COSNumber labelIndex = (COSNumber)srcNums.getObject( i );
-                long labelIndexValue = labelIndex.intValue();
-                destNums.add( new COSInteger( labelIndexValue + destPageCount ) );
-                destNums.add( cloneForNewDocument( destination, srcNums.getObject( i+1 ) ) );
-            }
+            if (srcNums != null){
+		    for( int i=0; i<srcNums.size(); i+=2 )
+		    {
+			COSNumber labelIndex = (COSNumber)srcNums.getObject( i );
+			long labelIndexValue = labelIndex.intValue();
+			destNums.add( new COSInteger( labelIndexValue + destPageCount ) );
+			destNums.add( cloneForNewDocument( destination, srcNums.getObject( i+1 ) ) );
+		    }
+	     }
         }
         
         COSName metadata = COSName.getPDFName( "Metadata" );

@@ -23,6 +23,7 @@ import org.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
 import org.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.pdfbox.util.PDFOperator;
+import org.pdfbox.pdfviewer.PageDrawer;
 
 import java.io.IOException;
 
@@ -51,5 +52,10 @@ public class SetNonStrokingRGBColor extends OperatorProcessor
             values[i] = ((COSNumber)arguments.get( i )).floatValue();
         }
         colorInstance.setColorSpaceValue( values );
+        
+        if (context instanceof PageDrawer){
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.ColorChanged (false);
+        }
     }
 }

@@ -17,9 +17,11 @@
 package org.pdfbox.util.operator;
 
 import java.util.List;
+import java.io.IOException;
 import org.pdfbox.cos.COSNumber;
 import org.pdfbox.util.Matrix;
 import org.pdfbox.util.PDFOperator;
+import org.pdfbox.pdfviewer.PageDrawer;
 
 /**
  *
@@ -41,7 +43,7 @@ public class Concatenate extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments) 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
 
         //concatenate matrix to current transformation matrix
@@ -63,6 +65,7 @@ public class Concatenate extends OperatorProcessor
         //this line has changed
         context.getGraphicsState().setCurrentTransformationMatrix(
                 newMatrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix() ) );
-
+        
+        
     }
 }

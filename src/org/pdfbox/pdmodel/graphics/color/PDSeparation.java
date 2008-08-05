@@ -93,7 +93,28 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorSpace createColorSpace() throws IOException
     {
-        throw new IOException( "Not implemented" );
+        //throw new IOException( "Not implemented" );
+        try{
+            
+            ///dump some information to help figure these things out
+            //logger().info( array.toString()); 
+            
+            PDColorSpace alt = getAlternateColorSpace();
+            
+            //logger().info(alt.toString());
+            
+            ColorSpace CS = alt.createColorSpace();///dwilson 12/15/07
+            //logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
+            
+            return CS;
+        }catch (IOException IOe){
+            logger().severe(FullStackTrace(IOe));
+            
+            throw IOe;
+        }catch (Exception e){
+            logger().severe(FullStackTrace(e));
+            throw new IOException("Failed to Create ColorSpace");
+        }
     }
     
     /**
@@ -107,7 +128,8 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        throw new IOException( "Not implemented" );
+        //throw new IOException( "Not implemented" );
+        return getAlternateColorSpace().createColorModel(bpc); 
     }
 
     /**
@@ -141,7 +163,11 @@ public class PDSeparation extends PDColorSpace
     public PDColorSpace getAlternateColorSpace() throws IOException
     {
         COSBase alternate = array.getObject( 2 );
-        return PDColorSpaceFactory.createColorSpace( alternate );
+        PDColorSpace cs = PDColorSpaceFactory.createColorSpace( alternate );
+        
+        //logger().info("Returning " + cs.toString() + " for input " + alternate.toString());
+        
+        return cs;
     }
 
     /**

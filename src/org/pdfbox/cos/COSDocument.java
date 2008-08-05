@@ -124,7 +124,7 @@ public class COSDocument extends COSBase
      *
      * @return This will return an object with the specified type.
      */
-    public COSObject getObjectByType( String type )
+    public COSObject getObjectByType( String type ) throws IOException
     {
         return getObjectByType( COSName.getPDFName( type ) );
     }
@@ -136,7 +136,7 @@ public class COSDocument extends COSBase
      *
      * @return This will return an object with the specified type.
      */
-    public COSObject getObjectByType( COSName type )
+    public COSObject getObjectByType( COSName type ) throws IOException
     {
         COSObject retval = null;
         Iterator iter = objects.iterator();
@@ -147,12 +147,17 @@ public class COSDocument extends COSBase
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
             {
-                COSDictionary dic = (COSDictionary)realObject;
-                COSName objectType = (COSName)dic.getItem( COSName.TYPE );
-                if( objectType != null && objectType.equals( type ) )
-                {
-                    retval = object;
-                }
+		try{
+			COSDictionary dic = (COSDictionary)realObject;
+			COSName objectType = (COSName)dic.getItem( COSName.TYPE );
+			if( objectType != null && objectType.equals( type ) )
+			{
+			    retval = object;
+			}
+		}catch (ClassCastException e){
+			logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+		}
+		
             }
         }
         return retval;
@@ -165,7 +170,7 @@ public class COSDocument extends COSBase
      *
      * @return This will return an object with the specified type.
      */
-    public List getObjectsByType( String type )
+    public List getObjectsByType( String type ) throws IOException
     {
         return getObjectsByType( COSName.getPDFName( type ) );
     }
@@ -177,7 +182,7 @@ public class COSDocument extends COSBase
      *
      * @return This will return an object with the specified type.
      */
-    public List getObjectsByType( COSName type )
+    public List getObjectsByType( COSName type ) throws IOException
     {
         List retval = new ArrayList();
         Iterator iter = objects.iterator();
@@ -188,12 +193,16 @@ public class COSDocument extends COSBase
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
             {
-                COSDictionary dic = (COSDictionary)realObject;
-                COSName objectType = (COSName)dic.getItem( COSName.TYPE );
-                if( objectType != null && objectType.equals( type ) )
-                {
-                    retval.add( object );
-                }
+		try{
+			COSDictionary dic = (COSDictionary)realObject;
+			COSName objectType = (COSName)dic.getItem( COSName.TYPE );
+			if( objectType != null && objectType.equals( type ) )
+			{
+			    retval.add( object );
+			}
+		}catch (ClassCastException e){
+			logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+		}
             }
         }
         return retval;

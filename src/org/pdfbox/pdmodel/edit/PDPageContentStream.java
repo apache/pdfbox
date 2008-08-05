@@ -100,6 +100,11 @@ public class PDPageContentStream
     private static final String G_NON_STROKING = "g\n";
     private static final String APPEND_RECTANGLE = "re\n";
     private static final String FILL = "f\n";
+    private static final String LINE_TO = "l\n";
+    private static final String MOVE_TO = "m\n";
+    private static final String STROKE = "S\n";
+    private static final String LINE_WIDTH = "w\n";
+    
     
     private static final String SET_STROKING_COLORSPACE = "CS\n";
     private static final String SET_NON_STROKING_COLORSPACE = "cs\n";
@@ -736,7 +741,46 @@ public class PDPageContentStream
         appendRawCommands( FILL );
     }
     
-    
+    /**
+     * Draw a line on the page using the current non stroking color and the current line width.
+     * 
+     * @param xStart The start x coordinate.
+     * @param yStart The start y coordinate.
+     * @param xEnd The end x coordinate.
+     * @param yEnd The end y coordinate.
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void drawLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
+    {
+        // moveTo
+        appendRawCommands( formatDecimal.format( xStart) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( yStart) );
+        appendRawCommands( SPACE );
+        appendRawCommands( MOVE_TO );
+        // lineTo
+        appendRawCommands( formatDecimal.format( xEnd ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( yEnd ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( LINE_TO );
+        // stroke
+        appendRawCommands( STROKE );
+        
+    }
+     
+     /**
+     * Set linewidth to the given value.
+     * 
+     * @param lineWidth The width which is used for drwaing.
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void setLineWidth(float lineWidth) throws IOException 
+    {
+        appendRawCommands( formatDecimal.format( lineWidth ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( LINE_WIDTH );
+    }
     /**
      * This will append raw commands to the content stream.
      * 

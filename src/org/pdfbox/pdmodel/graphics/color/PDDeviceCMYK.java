@@ -118,6 +118,7 @@ public class PDDeviceCMYK extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
+        logger().warning ("This looks like a test case for sector9's patch!!!  We need one of these!!!");
         throw new IOException( "Not implemented" );
     }
 }

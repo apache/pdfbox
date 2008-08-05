@@ -16,11 +16,17 @@
  */
 package org.pdfbox.util.operator.pagedrawer;
 
+import java.awt.Point;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
+import java.io.IOException;
 
 import org.pdfbox.cos.COSNumber;
 import org.pdfbox.pdfviewer.PageDrawer;
+import org.pdfbox.util.Matrix;
 import org.pdfbox.util.PDFOperator;
 import org.pdfbox.util.operator.OperatorProcessor;
 
@@ -39,7 +45,7 @@ public class AppendRectangleToPath extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments) 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
         
@@ -47,18 +53,27 @@ public class AppendRectangleToPath extends OperatorProcessor
         COSNumber y = (COSNumber)arguments.get( 1 );
         COSNumber w = (COSNumber)arguments.get( 2 );
         COSNumber h = (COSNumber)arguments.get( 3 );
-        double finalY = drawer.fixY( x.doubleValue(), y.doubleValue())-h.doubleValue();
-        double finalH = h.doubleValue();
-        if( finalH < 0 )
+       
+        double finalX = x.floatValue();
+        double finalY = y.floatValue();
+        double finalW = w.floatValue();
+        double finalH = h.floatValue();
+                
+        Point2D Ppos = drawer.TransformedPoint(finalX, finalY);
+        Point2D Psize = drawer.ScaledPoint(finalW, finalH);
+        
+        finalY = Ppos.getY() - Psize.getY();
+        
+        
+        if(finalY < 0)
         {
-            finalY += finalH;
-            finalH = Math.abs( finalH );
+        	finalY = 0;
         }
-        Rectangle2D rect = new Rectangle2D.Double(
-            x.doubleValue(),
-            finalY,
-            w.doubleValue()+1,
-            finalH+1);
+	      
+        
+        //logger().info("Rectangle coords: " + Ppos.getX() + "," +  finalY + "," +  Psize.getX() + "," +  Psize.getY() );
+        Rectangle2D rect = new Rectangle2D.Double(Ppos.getX(), finalY, Psize.getX(), Psize.getY());
+        
         drawer.getLinePath().reset();
         
         //System.out.println( "Bounds before=" + drawer.getLinePath().getBounds() );

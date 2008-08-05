@@ -45,25 +45,13 @@ public class FillNonZeroRule extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        //NOTE:changes here should probably also be made to FillEvenOddRule
-        PageDrawer drawer = (PageDrawer)context;
-        Graphics2D graphics = drawer.getGraphics();
-        //linePath.closePath();
-        graphics.setColor( drawer.getGraphicsState().getNonStrokingColorSpace().createColor() );
-        drawer.getLinePath().setWindingRule( GeneralPath.WIND_NON_ZERO );
-        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-        
-        List subPaths = drawer.getLineSubPaths();
-        for( int i=0; i<subPaths.size(); i++ )
-        {
-            GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            subPath.closePath();
-            graphics.fill( subPath );
-        }
-        //else
-        //{
-            graphics.fill( drawer.getLinePath() );
-        //}
-        drawer.getLinePath().reset();
+
+	try {
+	    	///dwilson refactoring
+	    	PageDrawer drawer = (PageDrawer)context;
+	    	drawer.fillPath(GeneralPath.WIND_NON_ZERO);
+	} catch (Exception e) {
+		logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
+            }
     }
 }

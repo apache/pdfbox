@@ -93,7 +93,7 @@
         <javac srcdir="${src.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
     </target>
             
-    <target name="test" depends="testextract,test-junit" description="Run junit tests"/>
+    <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
@@ -113,6 +113,30 @@
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="test.pdfbox.util.TestTextStripper" />
+        </junit>
+    </target>
+
+    <target name="testimage" depends="clean,compile" description="Test image rendering">
+        <junit printsummary="off" fork="on" dir="."  > 
+            <jvmarg value="-Xmx1024M"/>
+            <jvmarg value="-Xms512M"/>
+          
+            <sysproperty key="test.pdfbox.util.TextStripper.file" value="${file}"/>
+            <classpath>
+                <pathelement path="${ant.jar}" />
+                <pathelement path="${lucene.jar}" />
+                <pathelement path="${lucene-demo.jar}" />
+                <pathelement path="${fontbox.jar}" />
+                <pathelement path="${jempbox.jar}" />
+                <pathelement path="${bcprov.jar}" />
+                <pathelement path="${bcmail.jar}" />
+                <pathelement path="${jai_codec.jar}" />
+                <pathelement path="${jai_core.jar}" />
+                <pathelement path="${dest.dir}"/>
+                <pathelement path="." />
+            </classpath>
+            <formatter usefile="false" type="plain" />
+            <test name="test.pdfbox.util.TestPDFToImage" />
         </junit>
     </target>
 

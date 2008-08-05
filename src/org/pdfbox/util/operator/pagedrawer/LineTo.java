@@ -17,6 +17,7 @@
 package org.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+import java.awt.geom.Point2D;
 
 import org.pdfbox.cos.COSNumber;
 import org.pdfbox.pdfviewer.PageDrawer;
@@ -46,6 +47,8 @@ public class LineTo extends OperatorProcessor
         COSNumber x = (COSNumber)arguments.get( 0 );
         COSNumber y = (COSNumber)arguments.get( 1 );
         
-        drawer.getLinePath().lineTo( x.floatValue(), (float)drawer.fixY( x.doubleValue(), y.doubleValue()) );
+        //drawer.getLinePath().lineTo( x.floatValue(), (float)drawer.fixY( x.doubleValue(), y.doubleValue()) );
+        Point2D Ppos = drawer.TransformedPoint(x.doubleValue(), y.doubleValue());
+        drawer.getLinePath().lineTo((float)Ppos.getX(), (float)Ppos.getY());
     }
 }

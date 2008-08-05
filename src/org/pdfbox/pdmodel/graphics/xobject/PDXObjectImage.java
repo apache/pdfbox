@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.File;
 
 import org.pdfbox.cos.COSBase;
 import org.pdfbox.cos.COSName;
@@ -101,6 +102,32 @@ public abstract class PDXObjectImage extends PDXObject
         try
         {
             out = new FileOutputStream(filename + "." + suffix);
+            write2OutputStream(out);
+            out.flush();
+        }
+        finally
+        {
+            if( out != null )
+            {
+                out.close();
+            }
+        }
+    }
+    
+        /**
+     * Writes the image to a file with the filename + an appropriate
+suffix, like "Image.jpg".
+     * The suffix is automatically set by the
+     * @param file the file
+     * @throws IOException When somethings wrong with the corresponding
+file.
+     */
+    public void write2file(File file) throws IOException
+    {
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(file);
             write2OutputStream(out);
             out.flush();
         }

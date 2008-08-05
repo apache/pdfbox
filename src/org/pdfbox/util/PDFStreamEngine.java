@@ -29,6 +29,7 @@ import java.util.Stack;
 import org.pdfbox.cos.COSObject;
 import org.pdfbox.cos.COSStream;
 import org.pdfbox.exceptions.WrappedIOException;
+import org.pdfbox.exceptions.LoggingObject;
 
 import org.pdfbox.pdmodel.PDPage;
 import org.pdfbox.pdmodel.PDResources;
@@ -47,7 +48,7 @@ import org.pdfbox.util.operator.OperatorProcessor;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.38 $
  */
-public class PDFStreamEngine
+public class PDFStreamEngine extends LoggingObject
 {
     private static final byte[] SPACE_BYTES = { (byte)32 };
 
@@ -208,6 +209,7 @@ public class PDFStreamEngine
                     {
                         arguments.add( next );
                     }
+                    logger().fine("token: " + next.toString());
                 }
             }
         }
@@ -360,7 +362,7 @@ public class PDFStreamEngine
             // applying word spacing to either the non-32 space or to the character
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
-            if( (string[i] == 0x20) && c.equals( " " ) )
+            if( (string[i] == 0x20) && c != null && c.equals( " " ) )
             {
                 spacing = wordSpacing + characterSpacing;
             }
@@ -462,8 +464,14 @@ public class PDFStreamEngine
      */
     public void processOperator( String operation, List arguments ) throws IOException
     {
-        PDFOperator oper = PDFOperator.getOperator( operation );
-        processOperator( oper, arguments );
+        try{
+            PDFOperator oper = PDFOperator.getOperator( operation );
+            processOperator( oper, arguments );
+        }
+        catch (IOException e)
+        {
+            logger().warning (e.toString() + "\n at\n" + FullStackTrace(e));
+        }
     }
 
     /**
@@ -476,11 +484,17 @@ public class PDFStreamEngine
      */
     protected void processOperator( PDFOperator operator, List arguments ) throws IOException
     {
-        String operation = operator.getOperation();
-        OperatorProcessor processor = (OperatorProcessor)operators.get( operation );
-        if( processor != null )
+        try{
+            String operation = operator.getOperation();
+            OperatorProcessor processor = (OperatorProcessor)operators.get( operation );
+            if( processor != null )
+            {
+                processor.process( operator, arguments );
+            }
+        }
+        catch (Exception e)
         {
-            processor.process( operator, arguments );
+            logger().warning (e.toString() + "\n at\n" + FullStackTrace(e));
         }
     } 
    

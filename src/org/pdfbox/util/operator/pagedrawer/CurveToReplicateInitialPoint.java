@@ -48,15 +48,22 @@ public class CurveToReplicateInitialPoint extends OperatorProcessor
         COSNumber y2 = (COSNumber)arguments.get( 1 );
         COSNumber x3 = (COSNumber)arguments.get( 2 );
         COSNumber y3 = (COSNumber)arguments.get( 3 );
+        GeneralPath path = drawer.getLinePath();
+        Point2D currentPoint = path.getCurrentPoint();
+        /*
         float x2f = x2.floatValue();
         float y2f = (float)drawer.fixY( x2f, y2.floatValue() );
         float x3f = x3.floatValue();
         float y3f = (float)drawer.fixY( x3f, y3.floatValue() );
         
-        GeneralPath path = drawer.getLinePath();
-        Point2D currentPoint = path.getCurrentPoint();
         float currentX = (float)currentPoint.getX();
         float currentY = (float)currentPoint.getY();
         drawer.getLinePath().curveTo(currentX,currentY,x2f,y2f,x3f,y3f);
+        */
+        
+        Point2D P2 = drawer.TransformedPoint(x2.doubleValue(), y2.doubleValue());
+        Point2D P3 = drawer.TransformedPoint(x3.doubleValue(), y3.doubleValue());
+        
+        drawer.getLinePath().curveTo((float)currentPoint.getX(), (float)currentPoint.getY(), (float)P2.getX(), (float)P2.getY(), (float)P3.getX(), (float)P3.getY());
     }
 }

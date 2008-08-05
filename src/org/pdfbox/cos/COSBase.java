@@ -20,6 +20,7 @@ import org.pdfbox.filter.FilterManager;
 import org.pdfbox.pdmodel.common.COSObjectable;
 
 import org.pdfbox.exceptions.COSVisitorException;
+import org.pdfbox.exceptions.LoggingObject;
 
 /**
  * The base object that all objects in the PDF document will extend.
@@ -27,7 +28,7 @@ import org.pdfbox.exceptions.COSVisitorException;
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.14 $
  */
-public abstract class COSBase implements COSObjectable
+public abstract class COSBase extends LoggingObject implements COSObjectable
 {
     /**
      * Constructor.

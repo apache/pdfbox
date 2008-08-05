@@ -22,6 +22,7 @@ import org.pdfbox.cos.COSName;
 import org.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
+import org.pdfbox.exceptions.LoggingObject;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
@@ -33,7 +34,7 @@ import java.awt.image.ColorModel;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $
  */
-public abstract class PDColorSpace implements COSObjectable
+public abstract class PDColorSpace extends LoggingObject implements COSObjectable
 {
     /**
      * This will return the name of the color space.

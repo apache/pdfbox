@@ -18,6 +18,7 @@ package org.pdfbox.util.operator;
 
 import org.pdfbox.util.PDFOperator;
 import org.pdfbox.util.PDFStreamEngine;
+import org.pdfbox.exceptions.LoggingObject;
 import java.util.List;
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
  * @author Huault : huault@free.fr
  * @version $Revision: 1.3 $
  */
-public abstract class OperatorProcessor 
+public abstract class OperatorProcessor extends LoggingObject
 {
 
     /**

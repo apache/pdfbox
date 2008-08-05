@@ -284,36 +284,24 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
             int firstChar = 0;
-            /**
-            for( int i=0; i<glyphToCCode.length; i++ )
-            {
-                if( glyphToCCode[i] != 0 )
-                {
-                    firstChar = Math.min( glyphToCCode[i], firstChar );
-                }
-            }*/
-            
             int maxWidths=256;
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
-            List widths = new ArrayList( widthValues.length );
+            List widths = new ArrayList(maxWidths);
             Integer zero = new Integer( 250 );
-            for( int i=0; i<widthValues.length && i<maxWidths; i++ )
+            for( int i=0; i<maxWidths; i++ )
             {
                 widths.add( zero );
             }
             for( int i=0; i<widthValues.length; i++ )
             {
-                if(glyphToCCode[i]-firstChar < widths.size() &&
-                   glyphToCCode[i]-firstChar >= 0 &&
-                   widths.get( glyphToCCode[i]-firstChar) == zero )
+                if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 && widths.get( glyphToCCode[i]-firstChar) == zero )
                 {
                     widths.set( glyphToCCode[i]-firstChar, 
                         new Integer( (int)(widthValues[i]* 1000f)/header.getUnitsPerEm() ) );
                 }
             }
             retval.setWidths( widths );
-
             retval.setFirstChar( firstChar );
             retval.setLastChar( firstChar + widths.size()-1 );
 

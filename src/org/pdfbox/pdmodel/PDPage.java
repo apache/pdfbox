@@ -34,11 +34,14 @@ import org.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 
+import org.pdfbox.exceptions.LoggingObject;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.renderable.ParameterBlock;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -50,13 +53,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.media.jai.Interpolation;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+
 /**
  * This represents a single page in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.29 $
  */
-public class PDPage implements COSObjectable, Printable
+public class PDPage extends LoggingObject implements COSObjectable, Printable
 {
     private COSDictionary page;
     
@@ -645,32 +652,39 @@ public class PDPage implements COSObjectable, Printable
     public BufferedImage convertToImage() throws IOException
     {
         int scaling = 2;
-        int rotation = findRotation();
         PDRectangle mBox = findMediaBox();
         int width = (int)(mBox.getWidth());//*2);
         int height = (int)(mBox.getHeight());//*2);
-        if( rotation == 90 || rotation == 270 )
-        {
-            int tmp = width;
-            width = height;
-            height = tmp;
-        }
         Dimension pageDimension = new Dimension( width, height );
         
         //note we are doing twice as many pixels because
         //the default size is not really good resolution,
         //so create an image that is twice the size
         //and let the client scale it down.
-        BufferedImage retval = 
-            new BufferedImage( width*scaling, height*scaling, BufferedImage.TYPE_BYTE_INDEXED );
+        BufferedImage retval = new BufferedImage( width*scaling, height*scaling, BufferedImage.TYPE_BYTE_INDEXED );
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
         graphics.setColor( Color.WHITE );
         graphics.fillRect(0,0,width*scaling, height*scaling);
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
-        
-        
+            
+	    try{
+            int rotation = findRotation();
+            if (rotation == 90 || rotation == 270) {
+                ParameterBlock pb = new ParameterBlock();
+                pb.addSource(retval);               // The source image
+                pb.add(0.0F);                       // The x origin
+                pb.add(0.0F);                       // The y origin
+                pb.add((float)(rotation * Math.PI) / 180);                   // The rotation angle
+                pb.add(Interpolation.getInstance(Interpolation.INTERP_BILINEAR)); // The interpolation
+                // Create the rotate operation
+                retval = PlanarImage.wrapRenderedImage(JAI.create("Rotate", pb, null)).getAsBufferedImage();
+            }
+		}catch(Throwable T){
+			logger().severe(T.getMessage() + "\n at\n" + FullStackTrace(T));
+		}
+
         return retval;
     }
     

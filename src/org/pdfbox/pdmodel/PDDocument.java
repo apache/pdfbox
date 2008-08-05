@@ -769,35 +769,29 @@ public class PDDocument implements Pageable
         double height=mediaBox.getHeight();
         
         
-       //PATCH SUGGESTION: 	Jim Lynch
-       //Patch: 1607074 
-       //					Friday, December 01, 2006
-       //      OLD CODE       
-       //      if( width > height )
-       //      {
-       //          format.setOrientation( PageFormat.LANDSCAPE );
-       //          width=mediaBox.getHeight();
-       //          height=mediaBox.getWidth();
-       //      }
-       // OLD CODE      
-       int rotation = page.findRotation();
-       if(rotation == 90 || rotation == 270)
-       {
-    	   //Only if there IS a rotation and its set to 90 or 270
-    	   //Do I need to differentiate between LANDSCAPE and REVERSE_LANDSCAPE??
-    	   format.setOrientation( PageFormat.LANDSCAPE );
-       }
-       else
-       {
-    	   format.setOrientation( PageFormat.PORTRAIT );
-       }
-       
- 
-       
-
-       
-        paper.setImageableArea( 0,0,width,height);
-        paper.setSize( width, height );
+        int rotation = page.findRotation();
+        if(rotation == 90)
+        {
+        	format.setOrientation( PageFormat.LANDSCAPE );
+	    }	
+	    else if(rotation == 270)
+	    {
+	    	format.setOrientation( PageFormat.REVERSE_LANDSCAPE );
+	    }
+	    else
+	    {
+	    	format.setOrientation( PageFormat.PORTRAIT );
+	    }
+	       
+      // If there is rotation > 0, we have to exchange the pagedimension for the printer
+      if (rotation == 90 || rotation == 270) {
+        	paper.setImageableArea( 0,0,height,width);
+        	paper.setSize( height, width );
+	    }
+        else {
+        	paper.setImageableArea( 0,0,width,height);
+        	paper.setSize( width, height );
+	    }
         format.setPaper( paper );
         return format;
     }

@@ -17,7 +17,9 @@
 package org.pdfbox.util.operator.pagedrawer;
 
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.util.List;
+import java.io.IOException;
 
 import org.pdfbox.cos.COSNumber;
 import org.pdfbox.pdfviewer.PageDrawer;
@@ -39,16 +41,26 @@ public class MoveTo extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments) 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PageDrawer drawer = (PageDrawer)context;
-        
-        COSNumber x = (COSNumber)arguments.get( 0 );
-        COSNumber y = (COSNumber)arguments.get( 1 );
-        
-        drawer.getLineSubPaths().add( drawer.getLinePath() );
-        GeneralPath newPath = new GeneralPath();
-        newPath.moveTo( x.floatValue(), (float)drawer.fixY( x.doubleValue(), y.doubleValue()) );
-        drawer.setLinePath( newPath );
+        try{
+            PageDrawer drawer = (PageDrawer)context;
+            
+            COSNumber x = (COSNumber)arguments.get( 0 );
+            COSNumber y = (COSNumber)arguments.get( 1 );
+            
+            drawer.getLineSubPaths().add( drawer.getLinePath() );
+            GeneralPath newPath = new GeneralPath();
+            Point2D Ppos = drawer.TransformedPoint(x.doubleValue(), y.doubleValue());
+            
+            //newPath.moveTo( x.floatValue(), (float)drawer.fixY( x.doubleValue(), y.doubleValue()) );
+            //logger().info("Ready to move to " + Ppos.getX() + ", " + Ppos.getY());
+            
+            newPath.moveTo((float)Ppos.getX(), (float)Ppos.getY());
+            
+            drawer.setLinePath( newPath );
+        }catch (Exception E){
+            logger().warning( E.toString() + "/n at/n" + FullStackTrace(E));
+        }
     }
 }

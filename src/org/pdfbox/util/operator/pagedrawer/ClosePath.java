@@ -17,6 +17,7 @@
 package org.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+import java.io.IOException;
 
 import org.pdfbox.pdfviewer.PageDrawer;
 import org.pdfbox.util.PDFOperator;
@@ -35,7 +36,7 @@ public class ClosePath extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments) 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
         try
@@ -44,8 +45,7 @@ public class ClosePath extends OperatorProcessor
         }
         catch( Throwable t )
         {
-            //System.out.println( "Close Path Failed");
-            //ignore for today
+            logger().warning(t.getMessage() + "\n at\n" + FullStackTrace(t));
         }
     }
 }

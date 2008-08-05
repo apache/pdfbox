@@ -101,6 +101,7 @@ public class PDFStreamParser extends BaseParser
             while( (token = parseNextToken()) != null )
             {
                 streamObjects.add( token );
+                //logger().fine( "parsed=" + token );
             }
         }
         finally

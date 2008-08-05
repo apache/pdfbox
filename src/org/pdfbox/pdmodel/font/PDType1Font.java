@@ -17,6 +17,7 @@
 package org.pdfbox.pdmodel.font;
 
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import org.pdfbox.cos.COSDictionary;
 import org.pdfbox.cos.COSName;
+import org.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This is implementation of the Type1 Font.
@@ -234,10 +236,28 @@ public class PDType1Font extends PDSimpleFont
             }
             else
             {
-                awtFont = new Font( "Arial", Font.PLAIN, 1 );
-                //throw new IOException( "Not yet implemented:" + getClass().getName() + " " +  
-                //this.getBaseFont() + 
-                //" "  + this + " " + TIMES_ROMAN );
+                PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
+		if (fd != null){
+			PDStream ffStream = fd.getFontFile();
+			if( ffStream != null )
+			{
+			    try {
+					awtFont = Font.createFont( Font.TYPE1_FONT, ffStream.createInputStream() );
+				} catch (FontFormatException e) {
+					logger().info("substituting Arial because we couldn't read the embedded Font " + fd.getFontName() );
+					awtFont = new Font( "Arial", Font.PLAIN, 1 );
+				}
+			}
+			else {
+				// TODO try to load external Font. see also PDTrueTypeFont
+						logger().info("substituting Arial because the specified font isn't embedded " + fd.getFontName() );
+				awtFont = new Font( "Arial", Font.PLAIN, 1 );
+			}
+		}
+		else{
+			logger().info("substituting Arial because we failed to get a FontDescriptor" );
+			awtFont = new Font( "Arial", Font.PLAIN, 1 );
+		}
             }
         }
         AffineTransform at = new AffineTransform();
@@ -246,7 +266,6 @@ public class PDType1Font extends PDSimpleFont
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
-        //g2d.getFontRenderContext().getTransform().scale( xScale, yScale );
         
         g2d.drawString( string, (int)x, (int)y );
     }

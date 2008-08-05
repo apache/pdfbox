@@ -23,6 +23,7 @@ import org.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
 import org.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.pdfbox.util.PDFOperator;
+import org.pdfbox.pdfviewer.PageDrawer;
 
 import java.io.IOException;
 
@@ -57,5 +58,9 @@ public class SetStrokingGrayColor extends OperatorProcessor
             throw new IOException( "Error: Expected at least one argument when setting non stroking gray color");
         }
         colorInstance.setColorSpaceValue( values );
+        if (context instanceof PageDrawer){
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.ColorChanged (true);
+        }
     }
 }
