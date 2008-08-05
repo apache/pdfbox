@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,14 +75,14 @@ public abstract class PDAnnotation implements COSObjectable
      * An annotation flag.
      */
     public static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
-    
-    
-    
+
+
+
     private COSDictionary dictionary;
-    
+
     /**
      * Create the correct annotation from the base COS object.
-     * 
+     *
      * @param base The COS object that is the annotation.
      * @return The correctly typed annotation object.
      * @throws IOException If there is an error while creating the annotation.
@@ -114,7 +114,7 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationRubberStamp(annotDic);
             }
-            else if( subtype.equals( PDAnnotationSquareCircle.SUB_TYPE_SQUARE ) || 
+            else if( subtype.equals( PDAnnotationSquareCircle.SUB_TYPE_SQUARE ) ||
                     subtype.equals( PDAnnotationSquareCircle.SUB_TYPE_CIRCLE ) )
             {
                 annot = new PDAnnotationSquareCircle( annotDic );
@@ -123,9 +123,9 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationText( annotDic);
             }
-            else if( subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT ) || 
-                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE ) || 
-                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY ) || 
+            else if( subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT ) ||
+                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE ) ||
+                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY ) ||
                     subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT ))
             {
                 annot = new PDAnnotationTextMarkup( annotDic );
@@ -147,11 +147,11 @@ public abstract class PDAnnotation implements COSObjectable
         {
             throw new IOException( "Error: Unknown annotation type " + base );
         }
-        
+
         return annot;
     }
 
-    /** 
+    /**
      * Constructor.
      */
     public PDAnnotation()
@@ -302,192 +302,192 @@ public abstract class PDAnnotation implements COSObjectable
         }
         dictionary.setItem( COSName.getPDFName( "AP" ), ap );
     }
-    
+
     /**
      * Get the invisible flag.
-     * 
+     *
      * @return The invisible flag.
      */
     public boolean isInvisible()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_INVISIBLE );
     }
-    
+
     /**
      * Set the invisible flag.
-     * 
+     *
      * @param invisible The new invisible flag.
      */
     public void setInvisible( boolean invisible )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_INVISIBLE, invisible );
     }
-    
+
     /**
      * Get the hidden flag.
-     * 
+     *
      * @return The hidden flag.
      */
     public boolean isHidden()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_HIDDEN );
     }
-    
+
     /**
      * Set the hidden flag.
-     * 
+     *
      * @param hidden The new hidden flag.
      */
     public void setHidden( boolean hidden )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_HIDDEN, hidden );
     }
-    
+
     /**
      * Get the printed flag.
-     * 
+     *
      * @return The printed flag.
      */
     public boolean isPrinted()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_PRINTED );
     }
-    
+
     /**
      * Set the printed flag.
-     * 
+     *
      * @param printed The new printed flag.
      */
     public void setPrinted( boolean printed )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_PRINTED, printed );
     }
-    
+
     /**
      * Get the noZoom flag.
-     * 
+     *
      * @return The noZoom flag.
      */
     public boolean isNoZoom()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_ZOOM );
     }
-    
+
     /**
      * Set the noZoom flag.
-     * 
+     *
      * @param noZoom The new noZoom flag.
      */
     public void setNoZoom( boolean noZoom )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_ZOOM, noZoom );
     }
-    
+
     /**
      * Get the noRotate flag.
-     * 
+     *
      * @return The noRotate flag.
      */
     public boolean isNoRotate()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_ROTATE );
     }
-    
+
     /**
      * Set the noRotate flag.
-     * 
+     *
      * @param noRotate The new noRotate flag.
      */
     public void setNoRotate( boolean noRotate )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_ROTATE, noRotate );
     }
-    
+
     /**
      * Get the noView flag.
-     * 
+     *
      * @return The noView flag.
      */
     public boolean isNoView()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_VIEW );
     }
-    
+
     /**
      * Set the noView flag.
-     * 
+     *
      * @param noView The new noView flag.
      */
     public void setNoView( boolean noView )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_VIEW, noView );
     }
-    
+
     /**
      * Get the readOnly flag.
-     * 
+     *
      * @return The readOnly flag.
      */
     public boolean isReadOnly()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_READ_ONLY );
     }
-    
+
     /**
      * Set the readOnly flag.
-     * 
+     *
      * @param readOnly The new readOnly flag.
      */
     public void setReadOnly( boolean readOnly )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_READ_ONLY, readOnly );
     }
-    
+
     /**
      * Get the locked flag.
-     * 
+     *
      * @return The locked flag.
      */
     public boolean isLocked()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_LOCKED );
     }
-    
+
     /**
      * Set the locked flag.
-     * 
+     *
      * @param locked The new locked flag.
      */
     public void setLocked( boolean locked )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_LOCKED, locked );
     }
-    
+
     /**
      * Get the toggleNoView flag.
-     * 
+     *
      * @return The toggleNoView flag.
      */
     public boolean isToggleNoView()
     {
         return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_TOGGLE_NO_VIEW );
     }
-    
+
     /**
      * Set the toggleNoView flag.
-     * 
+     *
      * @param toggleNoView The new toggleNoView flag.
      */
     public void setToggleNoView( boolean toggleNoView )
     {
         BitFlagHelper.setFlag( getDictionary(), "F", FLAG_TOGGLE_NO_VIEW, toggleNoView );
     }
-    
+
     /**
      * Get the action to be performed when this annotation is to be activated.
-     * 
+     *
      * @return The action to be performed when this annotation is activated.
-     * 
+     *
      * @throws IOException If there is an error creating the action.
      */
     public PDAction getAction() throws IOException
@@ -496,22 +496,22 @@ public abstract class PDAnnotation implements COSObjectable
             getDictionary().getDictionaryObject( COSName.A );
         return PDActionFactory.createAction( action );
     }
-    
+
     /**
      * Set the annotation action.
-     * As of PDF 1.6 this is only used for Widget Annotations 
+     * As of PDF 1.6 this is only used for Widget Annotations
      * @param action The annotation action.
      */
     public void setAction( PDAction action )
     {
         getDictionary().setItem( COSName.A, action );
     }
-    
+
     /**
      * Get the additional actions for this field.  This will return null
      * if there are no additional actions for this field.
      * As of PDF 1.6 this is only used for Widget Annotations.
-     * 
+     *
      * @return The actions of the field.
      */
     public PDAnnotationAdditionalActions getActions()
@@ -524,43 +524,43 @@ public abstract class PDAnnotation implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the actions of the field.
-     * 
+     *
      * @param actions The field actions.
      */
     public void setActions( PDAnnotationAdditionalActions actions )
     {
         dictionary.setItem( "AA", actions );
     }
-    
+
     /**
      * Get the "contents" of the field.
-     * 
+     *
      * @return the value of the contents.
      */
     public String getContents()
     {
         return dictionary.getString(COSName.CONTENTS);
     }
-    
+
     /**
      * Set the "contents" of the field.
-     * 
+     *
      * @param value the value of the contents.
      */
     public void setContents( String value)
     {
         dictionary.setString(COSName.CONTENTS, value);
     }
-    
+
     /**
      * This will set the border style dictionary, specifying the width and dash
      * pattern used in drawing the line.
-     * 
+     *
      * @param bs the border style dictionary to set.
-     * 
+     *
      */
     public void setBorderStyle( PDBorderStyleDictionary bs )
     {
@@ -570,7 +570,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * This will retrieve the border style dictionary, specifying the width and
      * dash pattern used in drawing the line.
-     * 
+     *
      * @return the border style dictionary.
      */
     public PDBorderStyleDictionary getBoderStyle()
@@ -580,7 +580,7 @@ public abstract class PDAnnotation implements COSObjectable
         if (bs != null)
         {
             return new PDBorderStyleDictionary( bs );
-        } 
+        }
         else
         {
             return null;
@@ -589,17 +589,17 @@ public abstract class PDAnnotation implements COSObjectable
 
     /**
      * This will retrieve the date and time the annotation was modified.
-     * 
+     *
      * @return the modified date/time (often in date format, but can be an arbitary string).
      */
-    public String getModifiedDate() 
+    public String getModifiedDate()
     {
         return getDictionary().getString( "M" );
     }
 
     /**
      * This will set the the date and time the annotation was modified.
-     * 
+     *
      * @param m
      *            the date and time the annotation was created.
      */
@@ -610,19 +610,19 @@ public abstract class PDAnnotation implements COSObjectable
 
     /**
      * This will get the name, a string intended to uniquely identify each annotatoin
-     * within a page. Not to be confused with some annotations Name entry which 
+     * within a page. Not to be confused with some annotations Name entry which
      * impact the default image drawn for them.
-     * 
+     *
      * @return The identifying name for the Annotion.
      */
-    public String getAnnotationName() 
+    public String getAnnotationName()
     {
         return getDictionary().getString( "NM" );
     }
 
     /**
      * This will set the name, a string intended to uniquely identify each annotatoin
-     * within a page. Not to be confused with some annotations Name entry which 
+     * within a page. Not to be confused with some annotations Name entry which
      * impact the default image drawn for them.
      *
      * @param nm The identifying name for the annotation.
@@ -631,18 +631,18 @@ public abstract class PDAnnotation implements COSObjectable
     {
         getDictionary().setString( "NM", nm );
     }
-    
+
     /**
      * This will set the colour used in drawing various elements.
      * As of PDF 1.6 these are : Background of icon when closed
      *                           Title bar of popup window
      *                           Border of a link annotation
-     *          
+     *
      * Colour is in DeviceRGB colourspace
-     * 
+     *
      * @param c
      *            colour in the DeviceRGB colourspace
-     * 
+     *
      */
     public void setColour( PDGamma c )
     {
@@ -654,11 +654,11 @@ public abstract class PDAnnotation implements COSObjectable
      * As of PDF 1.6 these are : Background of icon when closed
      *                           Title bar of popup window
      *                           Border of a link annotation
-     *          
+     *
      * Colour is in DeviceRGB colourspace
-     * 
+     *
      * @return PDGamma object representing the colour
-     * 
+     *
      */
     public PDGamma getColour()
     {
@@ -666,7 +666,7 @@ public abstract class PDAnnotation implements COSObjectable
         if (c != null)
         {
             return new PDGamma( c );
-        } 
+        }
         else
         {
             return null;

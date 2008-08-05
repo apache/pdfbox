@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import java.io.PrintStream;
 public class WrappedException extends Exception
 {
     private Exception wrapped = null;
-    
+
     /**
      * constructor comment.
      *
@@ -37,23 +37,23 @@ public class WrappedException extends Exception
     {
         wrapped = e;
     }
-    
+
     /**
      * Gets the wrapped exception message.
-     * 
+     *
      * @return A message indicating the exception.
      */
     public String getMessage()
     {
         return wrapped.getMessage();
     }
-    
+
     /**
      * Prints this throwable and its backtrace to the specified print stream.
      *
      * @param s <code>PrintStream</code> to use for output
      */
-    public void printStackTrace(PrintStream s) 
+    public void printStackTrace(PrintStream s)
     {
         super.printStackTrace( s );
         wrapped.printStackTrace( s );

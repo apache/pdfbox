@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,7 +53,7 @@ public class COSArray extends COSBase
     {
         objects.add( object );
     }
-    
+
     /**
      * This will add an object to the array.
      *
@@ -149,7 +149,7 @@ public class COSArray extends COSBase
     {
         objects.set( index, object );
     }
-    
+
     /**
      * This will set an object at a specific index.
      *
@@ -160,7 +160,7 @@ public class COSArray extends COSBase
     {
         objects.set( index, new COSInteger( intVal ) );
     }
-    
+
     /**
      * This will set an object at a specific index.
      *
@@ -211,23 +211,23 @@ public class COSArray extends COSBase
     {
         return (COSBase)objects.get( index );
     }
-    
+
     /**
      * Get the value of the array as an integer.
-     * 
+     *
      * @param index The index into the list.
-     * 
+     *
      * @return The value at that index or -1 if it is null.
      */
     public int getInt( int index )
     {
         return getInt( index, -1 );
     }
-    
+
     /**
      * Get the value of the array as an integer, return the default if it does
      * not exist.
-     * 
+     *
      * @param index The value of the array.
      * @param defaultValue The value to return if the value is null.
      * @return The value at the index or the defaultValue.
@@ -245,10 +245,10 @@ public class COSArray extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * Set the value in the array as an integer.
-     * 
+     *
      * @param index The index into the array.
      * @param value The value to set.
      */
@@ -256,7 +256,7 @@ public class COSArray extends COSBase
     {
         set( index, new COSInteger( value ) );
     }
-    
+
     /**
      * Set the value in the array as a name.
      * @param index The index into the array.
@@ -266,10 +266,10 @@ public class COSArray extends COSBase
     {
         set( index, COSName.getPDFName( name ) );
     }
-    
+
     /**
      * Get the value of the array as a string.
-     * 
+     *
      * @param index The index into the array.
      * @return The name converted to a string or null if it does not exist.
      */
@@ -277,7 +277,7 @@ public class COSArray extends COSBase
     {
         return getName( index, null );
     }
-    
+
     /**
      * Get an entry in the array that is expected to be a COSName.
      * @param index The index into the array.
@@ -297,7 +297,7 @@ public class COSArray extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * Set the value in the array as a string.
      * @param index The index into the array.
@@ -307,10 +307,10 @@ public class COSArray extends COSBase
     {
         set( index, new COSString( string ) );
     }
-    
+
     /**
      * Get the value of the array as a string.
-     * 
+     *
      * @param index The index into the array.
      * @return The string or null if it does not exist.
      */
@@ -318,7 +318,7 @@ public class COSArray extends COSBase
     {
         return getString( index, null );
     }
-    
+
     /**
      * Get an entry in the array that is expected to be a COSName.
      * @param index The index into the array.
@@ -409,24 +409,24 @@ public class COSArray extends COSBase
         }
         return retval;
     }
-    
+
     /**
-     * This will add null values until the size of the array is at least 
+     * This will add null values until the size of the array is at least
      * as large as the parameter.  If the array is already larger than the
      * parameter then nothing is done.
-     * 
+     *
      * @param size The desired size of the array.
      */
     public void growToSize( int size )
     {
         growToSize( size, null );
     }
-    
+
     /**
-     * This will add the object until the size of the array is at least 
+     * This will add the object until the size of the array is at least
      * as large as the parameter.  If the array is already larger than the
      * parameter then nothing is done.
-     * 
+     *
      * @param size The desired size of the array.
      * @param object The object to fill the array with.
      */
@@ -449,10 +449,10 @@ public class COSArray extends COSBase
     {
         return visitor.visitFromArray(this);
     }
-    
+
     /**
      * This will take an COSArray of numbers and convert it to a float[].
-     * 
+     *
      * @return This COSArray as an array of float numbers.
      */
     public float[] toFloatArray()
@@ -464,10 +464,10 @@ public class COSArray extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * Clear the current contents of the COSArray and set it with the float[].
-     * 
+     *
      * @param value The new value of the float array.
      */
     public void setFloatArray( float[] value )

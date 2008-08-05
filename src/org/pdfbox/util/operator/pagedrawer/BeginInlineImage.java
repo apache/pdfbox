@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import org.pdfbox.util.operator.OperatorProcessor;
 
 /**
  * Implementation of content stream operator for page drawer.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
@@ -55,13 +55,13 @@ public class BeginInlineImage extends OperatorProcessor
         image.setImageParameters( params );
         image.setImageData( operator.getImageData() );
         BufferedImage awtImage = image.createImage();
-        
+
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
-        
+
         int width = awtImage.getWidth();
         int height = awtImage.getHeight();
 
-        
+
         AffineTransform at = new AffineTransform(
             ctm.getValue(0,0)/width,
             ctm.getValue(0,1),
@@ -72,8 +72,8 @@ public class BeginInlineImage extends OperatorProcessor
         );
         //at.setToRotation((double)page.getRotation());
 
-        
-        // The transformation should be done 
+
+        // The transformation should be done
         // 1 - Translation
         // 2 - Rotation
         // 3 - Scale or Skew
@@ -91,7 +91,7 @@ public class BeginInlineImage extends OperatorProcessor
         //at.concatenate(toAdd);
 
         // Scale / Skew?
-        //toAdd.setToScale(width, height); 
+        //toAdd.setToScale(width, height);
         //at.concatenate(toAdd);
         //at.setToScale( width, height );
         graphics.drawImage( awtImage, at, null );

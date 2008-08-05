@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,9 +46,9 @@ import org.pdfbox.pdmodel.encryption.PDStandardEncryption;
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.13 $
- * 
+ *
  * @deprecated use the new security API instead.
- * 
+ *
  * @see org.pdfbox.pdmodel.encryption.StandardSecurityHandler
  */
 public class DocumentEncryption
@@ -60,7 +60,7 @@ public class DocumentEncryption
     private PDFEncryption encryption = new PDFEncryption();
 
     private Set objects = new HashSet();
-    
+
     /**
      * A set that contains potential signature dictionaries.  This is used
      * because the Contents entry of the signature is not encrypted.
@@ -157,11 +157,11 @@ public class DocumentEncryption
 
         encParameters.setOwnerKey( o );
         encParameters.setUserKey( u );
-        
+
         document.setEncryptionDictionary( encParameters.getCOSDictionary() );
     }
-    
-    
+
+
 
     /**
      * This will decrypt the document.
@@ -223,10 +223,10 @@ public class DocumentEncryption
             throw new InvalidPasswordException( "Error: The supplied password does not match " +
                                                 "either the owner or user password in the document." );
         }
-        
+
         COSDictionary trailer = document.getTrailer();
         COSArray fields = (COSArray)trailer.getObjectFromPath( "Root/AcroForm/Fields" );
-        
+
         //We need to collect all the signature dictionaries, for some
         //reason the 'Contents' entry of signatures is not really encrypted
         if( fields != null )
@@ -246,7 +246,7 @@ public class DocumentEncryption
         }
         document.setEncryptionDictionary( null );
     }
-    
+
     private void addDictionaryAndSubDictionary( Set set, COSDictionary dic )
     {
         set.add( dic );
@@ -357,8 +357,8 @@ public class DocumentEncryption
             Object value = dictionary.getItem( key );
             //if we are a signature dictionary and contain a Contents entry then
             //we don't decrypt it.
-            if( !(key.getName().equals( "Contents" ) && 
-                  value instanceof COSString && 
+            if( !(key.getName().equals( "Contents" ) &&
+                  value instanceof COSString &&
                   potentialSignatures.contains( dictionary )))
             {
                 decrypt( value, objNum, genNum );

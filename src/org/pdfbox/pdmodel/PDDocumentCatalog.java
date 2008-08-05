@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ public class PDDocumentCatalog implements COSObjectable
     private PDDocument document;
 
     private PDAcroForm acroForm = null;
-    
+
     /**
      * Page mode where neither the outline nor the thumbnails
      * are displayed.
@@ -81,7 +81,7 @@ public class PDDocumentCatalog implements COSObjectable
      * Attachments panel is visible.
      */
     public static final String PAGE_MODE_USE_ATTACHMENTS = "UseAttachments";
-    
+
     /**
      * Display one page at a time.
      */
@@ -108,9 +108,9 @@ public class PDDocumentCatalog implements COSObjectable
      * @since PDF Version 1.5
      */
     public static final String PAGE_LAYOUT_TWO_PAGE_RIGHT = "TwoPageRight";
-    
-    
-    
+
+
+
     /**
      * Constructor.
      *
@@ -135,7 +135,7 @@ public class PDDocumentCatalog implements COSObjectable
         document = doc;
         root = rootDictionary;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -175,10 +175,10 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return acroForm;
     }
-    
+
     /**
      * Set the acro form for this catalog.
-     * 
+     *
      * @param acro The new acro form.
      */
     public void setAcroForm( PDAcroForm acro )
@@ -212,11 +212,11 @@ public class PDDocumentCatalog implements COSObjectable
         rootNode.getAllKids(retval);
         return retval;
     }
-    
+
     /**
      * Get the viewer preferences associated with this document or null if they
      * do not exist.
-     * 
+     *
      * @return The document's viewer preferences.
      */
     public PDViewerPreferences getViewerPreferences()
@@ -227,24 +227,24 @@ public class PDDocumentCatalog implements COSObjectable
         {
             retval = new PDViewerPreferences( dict );
         }
-        
+
         return retval;
     }
-    
+
     /**
      * Set the viewer preferences.
-     * 
+     *
      * @param prefs The new viewer preferences.
      */
     public void setViewerPreferences( PDViewerPreferences prefs )
     {
         root.setItem( "ViewerPreferences", prefs );
     }
-    
+
     /**
      * Get the outline associated with this document or null if it
      * does not exist.
-     * 
+     *
      * @return The document's outline.
      */
     public PDDocumentOutline getDocumentOutline()
@@ -255,23 +255,23 @@ public class PDDocumentCatalog implements COSObjectable
         {
             retval = new PDDocumentOutline( dict );
         }
-        
+
         return retval;
     }
-    
+
     /**
      * Set the document outlines.
-     * 
+     *
      * @param outlines The new document outlines.
      */
     public void setDocumentOutline( PDDocumentOutline outlines )
     {
         root.setItem( "Outlines", outlines );
     }
-    
+
     /**
      * Get the list threads for this pdf document.
-     * 
+     *
      * @return A list of PDThread objects.
      */
     public List getThreads()
@@ -289,21 +289,21 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return new COSArrayList( pdObjects, array );
     }
-    
+
     /**
      * Set the list of threads for this pdf document.
-     * 
+     *
      * @param threads The list of threads, or null to clear it.
      */
     public void setThreads( List threads )
     {
         root.setItem( "Threads", COSArrayList.converterToCOSArray( threads ) );
     }
-    
+
     /**
-     * Get the metadata that is part of the document catalog.  This will 
+     * Get the metadata that is part of the document catalog.  This will
      * return null if there is no meta data for this object.
-     * 
+     *
      * @return The metadata for this object.
      */
     public PDMetadata getMetadata()
@@ -316,20 +316,20 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the metadata for this object.  This can be null.
-     * 
+     *
      * @param meta The meta data for this object.
      */
     public void setMetadata( PDMetadata meta )
     {
         root.setItem( "Metadata", meta );
     }
-    
+
     /**
      * Set the Document Open Action for this object.
-     * 
+     *
      * @param action The action you want to perform.
      */
     public void setOpenAction( PDDestinationOrAction action )
@@ -341,7 +341,7 @@ public class PDDocumentCatalog implements COSObjectable
      * Get the Document Open Action for this object.
      *
      * @return The action to perform when the document is opened.
-     * 
+     *
      * @throws IOException If there is an error creating the destination
      * or action.
      */
@@ -349,7 +349,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         PDDestinationOrAction action = null;
         COSBase actionObj = root.getDictionaryObject("OpenAction");
-        
+
         if( actionObj == null )
         {
             //no op
@@ -366,11 +366,11 @@ public class PDDocumentCatalog implements COSObjectable
         {
             throw new IOException( "Unknown OpenAction " + actionObj );
         }
-        
+
         return action;
-    }    
+    }
     /**
-     * @return The Additional Actions for this Document 
+     * @return The Additional Actions for this Document
      */
     public PDDocumentCatalogAdditionalActions getActions()
     {
@@ -379,20 +379,20 @@ public class PDDocumentCatalog implements COSObjectable
         {
             addAct = new COSDictionary();
             root.setItem("AA", addAct);
-        }       
+        }
         return new PDDocumentCatalogAdditionalActions(addAct);
     }
-    
+
     /**
      * Set the additional actions for the document.
-     * 
+     *
      * @param actions The actions that are associated with this document.
      */
     public void setActions( PDDocumentCatalogAdditionalActions actions )
     {
         root.setItem("AA", actions );
     }
-    
+
     /**
      * @return The names dictionary for this document or null if none exist.
      */
@@ -403,25 +403,25 @@ public class PDDocumentCatalog implements COSObjectable
         if(names != null)
         {
             nameDic = new PDDocumentNameDictionary(this,names);
-        }       
+        }
         return nameDic;
     }
-    
+
     /**
      * Set the names dictionary for the document.
-     * 
+     *
      * @param names The names dictionary that is associated with this document.
      */
     public void setNames( PDDocumentNameDictionary names )
     {
         root.setItem("Names", names );
     }
-    
+
     /**
      * Get info about doc's usage of tagged features.  This will return
      * null if there is no information.
-     * 
-     * @return The new mark info. 
+     *
+     * @return The new mark info.
      */
     public PDMarkInfo getMarkInfo()
     {
@@ -433,17 +433,17 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set information about the doc's usage of tagged features.
-     * 
+     *
      * @param markInfo The new MarkInfo data.
      */
     public void setMarkInfo( PDMarkInfo markInfo )
     {
         root.setItem( "MarkInfo", markInfo );
     }
-    
+
     /**
      * Set the page display mode, see the PAGE_MODE_XXX constants.
      * @return A string representing the page mode.
@@ -452,7 +452,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         return root.getNameAsString( "PageMode", PAGE_MODE_USE_NONE );
     }
-    
+
     /**
      * Set the page mode.  See the PAGE_MODE_XXX constants for valid values.
      * @param mode The new page mode.
@@ -461,7 +461,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         root.setName( "PageMode", mode );
     }
-    
+
     /**
      * Set the page layout, see the PAGE_LAYOUT_XXX constants.
      * @return A string representing the page layout.
@@ -470,7 +470,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         return root.getNameAsString( "PageLayout", PAGE_LAYOUT_SINGLE_PAGE );
     }
-    
+
     /**
      * Set the page layout.  See the PAGE_LAYOUT_XXX constants for valid values.
      * @param layout The new page layout.
@@ -479,7 +479,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         root.setName( "PageLayout", layout );
     }
-    
+
     /**
      * Document level information in the URI.
      * @return Document level URI.
@@ -494,7 +494,7 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the document level uri.
      * @param uri The new document level uri.
@@ -503,10 +503,10 @@ public class PDDocumentCatalog implements COSObjectable
     {
         root.setItem( "URI", uri );
     }
-    
+
     /**
      * Get the document's structure tree root.
-     * 
+     *
      * @return The document's structure tree root or null if none exists.
      */
     public PDStructureTreeRoot getStructureTreeRoot()
@@ -519,30 +519,30 @@ public class PDDocumentCatalog implements COSObjectable
         }
         return treeRoot;
     }
-    
+
     /**
      * Set the document's structure tree root.
-     * 
+     *
      * @param treeRoot The new structure tree.
      */
     public void setStructureTreeRoot( PDStructureTreeRoot treeRoot )
     {
         root.setItem( "StructTreeRoot", treeRoot );
     }
-    
+
     /**
      * The language for the document.
-     * 
+     *
      * @return The language for the document.
      */
     public String getLanguage()
     {
         return root.getString( "Lang" );
     }
-    
+
     /**
      * Set the Language for the document.
-     * 
+     *
      * @param language The new document language.
      */
     public void setLanguage( String language )

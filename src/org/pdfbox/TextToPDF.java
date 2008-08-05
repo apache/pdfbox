@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,12 +41,12 @@ public class TextToPDF
 {
     private int fontSize = 10;
     private PDSimpleFont font = PDType1Font.HELVETICA;
-    
+
     /**
      * Create a PDF document with some text.
      *
      * @param text The stream of text data.
-     * 
+     *
      * @return The document with the text in it.
      *
      * @throws IOException If there is an error writing the data.
@@ -56,10 +56,10 @@ public class TextToPDF
         PDDocument doc = null;
         try
         {
-            
+
             int margin = 40;
             float height = font.getFontDescriptor().getFontBoundingBox().getHeight()/1000;
-            
+
             //calculate font height and increase by 5 percent.
             height = height*fontSize*1.05f;
             doc = new PDDocument();
@@ -71,11 +71,11 @@ public class TextToPDF
             float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
             while( (nextLine = data.readLine()) != null )
             {
-                
+
                 String[] lineWords = nextLine.trim().split( " " );
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
-                {   
+                {
                     StringBuffer nextLineToDraw = new StringBuffer();
                     float lengthIfUsingNextWord = 0;
                     do
@@ -86,11 +86,11 @@ public class TextToPDF
                         if( lineIndex < lineWords.length )
                         {
                             String lineWithNextWord = nextLineToDraw.toString() + lineWords[lineIndex];
-                            lengthIfUsingNextWord = 
+                            lengthIfUsingNextWord =
                                 (font.getStringWidth( lineWithNextWord )/1000) * fontSize;
                         }
                     }
-                    while( lineIndex < lineWords.length && 
+                    while( lineIndex < lineWords.length &&
                            lengthIfUsingNextWord < maxStringLength );
                     if( y < margin )
                     {
@@ -105,12 +105,12 @@ public class TextToPDF
                         contentStream.setFont( font, fontSize );
                         contentStream.beginText();
                         y = page.getMediaBox().getHeight() - margin + height;
-                        contentStream.moveTextPositionByAmount( 
+                        contentStream.moveTextPositionByAmount(
                             margin, y );
-                        
+
                     }
                     //System.out.println( "Drawing string at " + x + "," + y );
-                    
+
                     if( contentStream == null )
                     {
                         throw new IOException( "Error:Expected non-null content stream." );
@@ -119,9 +119,9 @@ public class TextToPDF
                     y -= height;
                     contentStream.drawString( nextLineToDraw.toString() );
                 }
-                
-                
-            }  
+
+
+            }
             if( contentStream != null )
             {
                 contentStream.endText();
@@ -145,7 +145,7 @@ public class TextToPDF
      * see usage() for commandline
      *
      * @param args Command line arguments.
-     * 
+     *
      * @throws IOException If there is an error with the PDF.
      */
     public static void main(String[] args) throws IOException
@@ -214,8 +214,8 @@ public class TextToPDF
         }
         System.err.println( "    -ttf <ttf file>         The TTF font to use.");
         System.err.println( "    -fontSize <fontSize>    default:10" );
-        
-        
+
+
     }
     /**
      * @return Returns the font.

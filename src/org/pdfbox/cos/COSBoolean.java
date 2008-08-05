@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,7 @@ public class COSBoolean extends COSBase
      * The false boolean token.
      */
     public static final byte[] FALSE_BYTES = new byte[]{ 102, 97, 108, 115, 101 }; //"false".getBytes( "ISO-8859-1" );
-    
+
     /**
      * The PDF true value.
      */
@@ -125,12 +125,12 @@ public class COSBoolean extends COSBase
     {
         return String.valueOf( value );
     }
-    
+
     /**
      * This will write this object out to a PDF stream.
-     * 
+     *
      * @param output The stream to write this object out to.
-     * 
+     *
      * @throws IOException If an error occurs while writing out this object.
      */
     public void writePDF( OutputStream output ) throws IOException
@@ -139,7 +139,7 @@ public class COSBoolean extends COSBase
         {
             output.write( TRUE_BYTES );
         }
-        else 
+        else
         {
             output.write( FALSE_BYTES );
         }

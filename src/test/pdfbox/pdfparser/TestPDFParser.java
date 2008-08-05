@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -81,12 +81,12 @@ public class TestPDFParser extends TestCase
         TestParser parser = new TestParser(new ByteArrayInputStream( "/PANTONE#20116#20CV".getBytes() ) );
         COSName name = parser.parseCOSName();
         assertTrue("Failed to parse COSName",name.getName().equals( "PANTONE 116 CV" ));
-        
+
     }
-    
+
     /**
      * Test some trouble PDFs, these should all parse without an issue.
-     * 
+     *
      * @throws Exception If there is an error parsing the PDF.
      */
     public void testParsingTroublePDFs() throws Exception
@@ -94,7 +94,7 @@ public class TestPDFParser extends TestCase
         PDDocument doc = null;
         try
         {
-           doc = PDDocument.load( "test/pdfparser/genko_oc_shiryo1.pdf"); 
+           doc = PDDocument.load( "test/pdfparser/genko_oc_shiryo1.pdf");
         }
         finally
         {
@@ -104,7 +104,7 @@ public class TestPDFParser extends TestCase
             }
         }
     }
-    
+
     /**
      * A simple class used to test parsing of the cos name.
      */
@@ -119,10 +119,10 @@ public class TestPDFParser extends TestCase
         {
             super( input );
         }
-        
+
         /**
          * Expose the parseCOSName as public.
-         * 
+         *
          * @return The parsed cos name.
          * @throws IOException If there is an error parsing the COSName.
          */

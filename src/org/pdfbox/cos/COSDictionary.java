@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ import org.pdfbox.util.DateConverter;
 public class COSDictionary extends COSBase
 {
     private static final String PATH_SEPARATOR = "/";
-    
+
     /**
      * These are all of the items in the dictionary.
      */
@@ -69,12 +69,12 @@ public class COSDictionary extends COSBase
         items = new HashMap( dict.items );
         keys = new ArrayList( dict.keys );
     }
-    
+
     /**
      * @see java.util.Map#containsValue(java.lang.Object)
-     * 
+     *
      * @param value The value to find in the map.
-     * 
+     *
      * @return true if the map contains this value.
      */
     public boolean containsValue( Object value )
@@ -86,11 +86,11 @@ public class COSDictionary extends COSBase
         }
         return contains;
     }
-    
+
     /**
      * Search in the map for the value that matches the parameter
      * and return the first key that maps to that value.
-     * 
+     *
      * @param value The value to search for in the map.
      * @return The key for the value in the map or null if it does not exist.
      */
@@ -103,14 +103,14 @@ public class COSDictionary extends COSBase
             Map.Entry next = (Map.Entry)iter.next();
             Object nextValue = next.getValue();
             if( nextValue.equals( value ) ||
-                (nextValue instanceof COSObject && 
+                (nextValue instanceof COSObject &&
                  ((COSObject)nextValue).getObject().equals( value))
                 )
             {
                 key = (COSName)next.getKey();
             }
         }
-        
+
         return key;
     }
 
@@ -146,14 +146,14 @@ public class COSDictionary extends COSBase
     {
         return getDictionaryObject( COSName.getPDFName( key ) );
     }
-    
+
     /**
      * This is a special case of getDictionaryObject that takes multiple keys, it will handle
      * the situation where multiple keys could get the same value, ie if either CS or ColorSpace
      * is used to get the colorspace.
      * This will get an object from this dictionary.  If the object is a reference then it will
      * dereference it and get it from the document.  If the object is COSNull then
-     * null will be returned.  
+     * null will be returned.
      *
      * @param firstKey The first key to try.
      * @param secondKey The second key to try.
@@ -169,14 +169,14 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a special case of getDictionaryObject that takes multiple keys, it will handle
      * the situation where multiple keys could get the same value, ie if either CS or ColorSpace
      * is used to get the colorspace.
      * This will get an object from this dictionary.  If the object is a reference then it will
      * dereference it and get it from the document.  If the object is COSNull then
-     * null will be returned.  
+     * null will be returned.
      *
      * @param keyList The list of keys to find a value.
      *
@@ -187,7 +187,7 @@ public class COSDictionary extends COSBase
         COSBase retval = null;
         for( int i=0; i<keyList.length && retval == null; i++ )
         {
-            retval = getDictionaryObject( COSName.getPDFName( keyList[i] ) ); 
+            retval = getDictionaryObject( COSName.getPDFName( keyList[i] ) );
         }
         return retval;
     }
@@ -330,10 +330,10 @@ public class COSDictionary extends COSBase
         }
         setItem( key, name );
     }
-    
+
     /**
      * Set the value of a date entry in the dictionary.
-     * 
+     *
      * @param key The key to the date value.
      * @param date The date value.
      */
@@ -341,10 +341,10 @@ public class COSDictionary extends COSBase
     {
         setDate( COSName.getPDFName( key ), date );
     }
-    
+
     /**
      * Set the date object.
-     * 
+     *
      * @param key The key to the date.
      * @param date The date to set.
      */
@@ -352,10 +352,10 @@ public class COSDictionary extends COSBase
     {
         setString( key, DateConverter.toString( date ) );
     }
-    
+
     /**
      * Set the value of a date entry in the dictionary.
-     * 
+     *
      * @param embedded The embedded dictionary.
      * @param key The key to the date value.
      * @param date The date value.
@@ -364,10 +364,10 @@ public class COSDictionary extends COSBase
     {
         setEmbeddedDate( embedded, COSName.getPDFName( key ), date );
     }
-    
+
     /**
      * Set the date object.
-     * 
+     *
      * @param embedded The embedded dictionary.
      * @param key The key to the date.
      * @param date The date to set.
@@ -414,7 +414,7 @@ public class COSDictionary extends COSBase
         }
         setItem( key, name );
     }
-    
+
     /**
      * This is a convenience method that will convert the value to a COSString
      * object.  If it is null then the object will be removed.
@@ -449,10 +449,10 @@ public class COSDictionary extends COSBase
             dic.setString( key, value );
         }
     }
-    
+
     /**
      * This is a convenience method that will convert the value to a COSInteger
-     * object.  
+     * object.
      *
      * @param key The key to the object,
      * @param value The int value for the name.
@@ -475,10 +475,10 @@ public class COSDictionary extends COSBase
         intVal = new COSInteger(value);
         setItem( key, intVal );
     }
-    
+
     /**
      * This is a convenience method that will convert the value to a COSInteger
-     * object.  
+     * object.
      *
      * @param key The key to the object,
      * @param value The int value for the name.
@@ -501,10 +501,10 @@ public class COSDictionary extends COSBase
         intVal = new COSInteger(value);
         setItem( key, intVal );
     }
-    
+
     /**
      * This is a convenience method that will convert the value to a COSInteger
-     * object.  
+     * object.
      *
      * @param embeddedDictionary The embedded dictionary.
      * @param key The key to the object,
@@ -533,10 +533,10 @@ public class COSDictionary extends COSBase
         }
         embedded.setInt( key, value );
     }
-    
+
     /**
      * This is a convenience method that will convert the value to a COSFloat
-     * object.  
+     * object.
      *
      * @param key The key to the object,
      * @param value The int value for the name.
@@ -590,7 +590,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -655,7 +655,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -688,7 +688,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -716,7 +716,7 @@ public class COSDictionary extends COSBase
     {
         return getEmbeddedString( embedded, key, null );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -752,7 +752,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -774,7 +774,7 @@ public class COSDictionary extends COSBase
      *
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
-     * 
+     *
      * @throws IOException If there is an error converting to a date.
      */
     public Calendar getDate( COSName key ) throws IOException
@@ -782,7 +782,7 @@ public class COSDictionary extends COSBase
         COSString date = (COSString)getDictionaryObject( key );
         return DateConverter.toCalendar( date );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a date.  Null is returned
@@ -817,7 +817,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a name and convert it to a string.  Null is returned
@@ -841,14 +841,14 @@ public class COSDictionary extends COSBase
      * @param embedded The embedded dictionary to get.
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
-     * 
+     *
      * @throws IOException If there is an error converting to a date.
      */
     public Calendar getEmbeddedDate( String embedded, COSName key ) throws IOException
     {
         return getEmbeddedDate( embedded, key, null );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a date.  Null is returned
@@ -920,55 +920,55 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * Get an integer from an embedded dictionary.  Useful for 1-1 mappings.  default:-1
-     * 
+     *
      * @param embeddedDictionary The name of the embedded dictionary.
      * @param key The key in the embedded dictionary.
-     * 
+     *
      * @return The value of the embedded integer.
      */
     public int getEmbeddedInt( String embeddedDictionary, String key )
     {
         return getEmbeddedInt( embeddedDictionary, COSName.getPDFName( key ) );
     }
-    
+
     /**
      * Get an integer from an embedded dictionary.  Useful for 1-1 mappings.  default:-1
-     * 
+     *
      * @param embeddedDictionary The name of the embedded dictionary.
      * @param key The key in the embedded dictionary.
-     * 
+     *
      * @return The value of the embedded integer.
      */
     public int getEmbeddedInt( String embeddedDictionary, COSName key )
     {
         return getEmbeddedInt( embeddedDictionary, key, -1 );
     }
-    
+
     /**
      * Get an integer from an embedded dictionary.  Useful for 1-1 mappings.
-     * 
+     *
      * @param embeddedDictionary The name of the embedded dictionary.
      * @param key The key in the embedded dictionary.
      * @param defaultValue The value if there is no embedded dictionary or it does not contain the key.
-     * 
+     *
      * @return The value of the embedded integer.
      */
     public int getEmbeddedInt( String embeddedDictionary, String key, int defaultValue )
     {
         return getEmbeddedInt( embeddedDictionary, COSName.getPDFName( key ), defaultValue );
     }
-    
-    
+
+
     /**
      * Get an integer from an embedded dictionary.  Useful for 1-1 mappings.
-     * 
+     *
      * @param embeddedDictionary The name of the embedded dictionary.
      * @param key The key in the embedded dictionary.
      * @param defaultValue The value if there is no embedded dictionary or it does not contain the key.
-     * 
+     *
      * @return The value of the embedded integer.
      */
     public int getEmbeddedInt( String embeddedDictionary, COSName key, int defaultValue )
@@ -981,7 +981,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an int.  -1 is returned if there is no value.
@@ -1005,7 +1005,7 @@ public class COSDictionary extends COSBase
     {
         return getInt( key, -1 );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an integer.  If the dictionary value is null then the
@@ -1025,7 +1025,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an integer.  If the dictionary value is null then the
@@ -1053,13 +1053,13 @@ public class COSDictionary extends COSBase
     {
         return getInt(key.getName(), defaultValue );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an long.  -1 is returned if there is no value.
      *
      * @param key The key to the item in the dictionary.
-     * 
+     *
      * @return The long value.
      */
     public long getLong( String key )
@@ -1078,7 +1078,7 @@ public class COSDictionary extends COSBase
     {
         return getLong( key, -1L );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an long.  If the dictionary value is null then the
@@ -1098,7 +1098,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an integer.  If the dictionary value is null then the
@@ -1126,7 +1126,7 @@ public class COSDictionary extends COSBase
     {
         return getLong(key.getName(), defaultValue );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be an int.  -1 is returned if there is no value.
@@ -1150,7 +1150,7 @@ public class COSDictionary extends COSBase
     {
         return getFloat( key, -1 );
     }
-    
+
     /**
      * This is a convenience method that will get the dictionary object that
      * is expected to be a float.  If the dictionary value is null then the
@@ -1208,8 +1208,8 @@ public class COSDictionary extends COSBase
     {
         return (COSBase)items.get( key );
     }
-    
-    
+
+
 
 
 
@@ -1263,10 +1263,10 @@ public class COSDictionary extends COSBase
             setItem( key, value );
         }
     }
-    
+
     /**
      * This will add all of the dictionarys keys/values to this dictionary, but only
-     * if they don't already exist.  If a key already exists in this dictionary then 
+     * if they don't already exist.  If a key already exists in this dictionary then
      * nothing is changed.
      *
      * @param dic The dic to get the keys from.
@@ -1284,7 +1284,7 @@ public class COSDictionary extends COSBase
             }
         }
     }
-    
+
     /**
      * Nice method, gives you every object you want
      * Arrays works properly too. Try "P/Annots/[k]/Rect"
@@ -1293,7 +1293,7 @@ public class COSDictionary extends COSBase
      * @param objPath the relative path to the object.
      * @return the object
      */
-    public COSBase getObjectFromPath(String objPath) 
+    public COSBase getObjectFromPath(String objPath)
     {
         COSBase retval = null;
         String[] path = objPath.split(PATH_SEPARATOR);

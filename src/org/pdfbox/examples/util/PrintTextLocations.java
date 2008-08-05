@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,14 +41,14 @@ public class PrintTextLocations extends PDFTextStripper
 {
     /**
      * Default constructor.
-     * 
+     *
      * @throws IOException If there is an error loading text stripper properties.
      */
     public PrintTextLocations() throws IOException
     {
         super.setSortByPosition( true );
     }
-    
+
     /**
      * This will print the documents data.
      *
@@ -102,7 +102,7 @@ public class PrintTextLocations extends PDFTextStripper
             }
         }
     }
-    
+
     /**
      * A method provided as an event interface to allow a subclass to perform
      * some specific functionality when a character needs to be displayed.
@@ -111,10 +111,10 @@ public class PrintTextLocations extends PDFTextStripper
      */
     protected void showCharacter( TextPosition text )
     {
-        System.out.println( "String[" + text.getX() + "," + 
-                text.getY() + " fs=" + text.getFontSize() + " xscale=" + 
+        System.out.println( "String[" + text.getX() + "," +
+                text.getY() + " fs=" + text.getFontSize() + " xscale=" +
                 text.getXScale() + " height=" + text.getHeight() + " space=" +
-                text.getWidthOfSpace() + " width=" + 
+                text.getWidthOfSpace() + " width=" +
                 text.getWidth() + "]" + text.getCharacter() );
     }
 

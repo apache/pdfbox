@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,7 +63,7 @@ public class ReplaceString
      * @throws IOException If there is an error writing the data.
      * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void doIt( String inputFile, String outputFile, String strToFind, String message) 
+    public void doIt( String inputFile, String outputFile, String strToFind, String message)
         throws IOException, COSVisitorException
     {
         // the document
@@ -109,13 +109,13 @@ public class ReplaceString
                                     String string = cosString.getString();
                                     string = string.replaceFirst( strToFind, message );
                                     cosString.reset();
-                                    cosString.append( string.getBytes() );                                    
+                                    cosString.append( string.getBytes() );
                                 }
                             }
                         }
                     }
                 }
-                //now that the tokens are updated we will replace the 
+                //now that the tokens are updated we will replace the
                 //page content stream.
                 PDStream updatedStream = new PDStream(doc);
                 OutputStream out = updatedStream.createOutputStream();
@@ -166,7 +166,7 @@ public class ReplaceString
      */
     private void usage()
     {
-        System.err.println( "usage: " + this.getClass().getName() + 
+        System.err.println( "usage: " + this.getClass().getName() +
             " <input-file> <output-file> <search-string> <Message>" );
     }
 }

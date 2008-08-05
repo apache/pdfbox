@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,7 @@ public class PDRectangle implements COSObjectable
         rectArray.add( new COSFloat( 0.0f ) );
         rectArray.add( new COSFloat( 0.0f ) );
     }
-    
+
     /**
      * Constructor.
      *
@@ -87,7 +87,7 @@ public class PDRectangle implements COSObjectable
     {
         rectArray = array;
     }
-    
+
     /**
      * Method to determine if the x/y point is inside this rectangle.
      * @param x The x-coordinate to test.
@@ -242,21 +242,21 @@ public class PDRectangle implements COSObjectable
     {
         return new Dimension( (int)getWidth(), (int)getHeight() );
     }
-    
+
     /**
     * This will move the rectangle the given relative amount.
-    * 
+    *
     * @param horizontalAmount positive values will move rectangle to the right, negative's to the left.
     * @param verticalAmount positive values will move the rectangle up, negative's down.
     */
-    public void move(float horizontalAmount, float verticalAmount) 
+    public void move(float horizontalAmount, float verticalAmount)
     {
         setUpperRightX(getUpperRightX() + horizontalAmount);
         setLowerLeftX(getLowerLeftX() + horizontalAmount);
         setUpperRightY(getUpperRightY() + verticalAmount);
         setLowerLeftY(getLowerLeftY() + verticalAmount);
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *

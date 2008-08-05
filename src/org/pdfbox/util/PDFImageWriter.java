@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,24 +47,24 @@ import org.pdfbox.pdmodel.PDPage;
  * @version $Revision: 1.1 $
  */
 public class PDFImageWriter extends PDFStreamEngine
-{   
+{
 
     /**
-     * Instantiate a new PDFImageWriter object.  
+     * Instantiate a new PDFImageWriter object.
      * @throws IOException If there is an error loading the properties.
      */
     public PDFImageWriter() throws IOException
     {
         super();// ResourceLoader.loadProperties( "Resources/PDFImageWriter.properties", true ) );
     }
-    
+
     /**
      * Instantiate a new PDFImageWriter object.  Loading all of the operator mappings
      * from the properties object that is passed in.
-     * 
-     * @param props The properties containing the mapping of operators to PDFOperator 
+     *
+     * @param props The properties containing the mapping of operators to PDFOperator
      * classes.
-     * 
+     *
      * @throws IOException If there is an error reading the properties.
      */
     public PDFImageWriter( Properties props ) throws IOException
@@ -72,13 +72,13 @@ public class PDFImageWriter extends PDFStreamEngine
         super( props );
     }
 
-    
+
     public boolean WriteImage(PDDocument document, String imageType, String password, int startPage, int endPage, String outputPrefix) throws IOException {
 	    boolean bSuccess = true;
 	     List pages = document.getDocumentCatalog().getAllPages();
                 for( int i=startPage-1; i<endPage && i<pages.size(); i++ )
                 {
-                    ImageOutputStream output = null; 
+                    ImageOutputStream output = null;
                     ImageWriter imageWriter = null;
                     try
                     {
@@ -87,7 +87,7 @@ public class PDFImageWriter extends PDFStreamEngine
                         String fileName = outputPrefix + (i+1) + "." + imageType;
                         System.out.println( "Writing:" + fileName );
                         output = ImageIO.createImageOutputStream( new File( fileName ) );
-                        
+
                         boolean foundWriter = false;
                         Iterator writerIter = ImageIO.getImageWritersByFormatName( imageType );
                         while( writerIter.hasNext() && !foundWriter )
@@ -101,8 +101,8 @@ public class PDFImageWriter extends PDFStreamEngine
                                     writerParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                                     writerParams.setCompressionQuality(1.0f);
                                 }
-                                
-                                
+
+
                                 imageWriter.setOutput( output );
                                 imageWriter.write( null, new IIOImage( image, null, null), writerParams );
                                 foundWriter = true;
@@ -123,7 +123,7 @@ public class PDFImageWriter extends PDFStreamEngine
                         {
 				bSuccess=false;
                             throw new RuntimeException( "Error: no writer found for image type '" + imageType + "'" );
-				
+
                         }
                 }
 		finally
@@ -138,5 +138,5 @@ public class PDFImageWriter extends PDFStreamEngine
         //}
 	return bSuccess;
 }
-    
+
 }

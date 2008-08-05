@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,14 +48,14 @@ public class PrintImageLocations extends PDFStreamEngine
 {
     /**
      * Default constructor.
-     * 
+     *
      * @throws IOException If there is an error loading text stripper properties.
      */
     public PrintImageLocations() throws IOException
     {
         super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
     }
-    
+
     /**
      * This will print the documents data.
      *
@@ -105,7 +105,7 @@ public class PrintImageLocations extends PDFStreamEngine
             }
         }
     }
-    
+
     /**
      * This is used to handle an operation.
      *
@@ -130,8 +130,8 @@ public class PrintImageLocations extends PDFStreamEngine
                     PDPage page = getCurrentPage();
                     Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
                     double rotationInRadians =(page.findRotation() * Math.PI)/180;
-                     
-                    
+
+
                     AffineTransform rotation = new AffineTransform();
                     rotation.setToRotation( rotationInRadians );
                     AffineTransform rotationInverse = rotation.createInverse();
@@ -139,12 +139,12 @@ public class PrintImageLocations extends PDFStreamEngine
                     rotationInverseMatrix.setFromAffineTransform( rotationInverse );
                     Matrix rotationMatrix = new Matrix();
                     rotationMatrix.setFromAffineTransform( rotation );
-                    
+
                     Matrix unrotatedCTM = ctm.multiply( rotationInverseMatrix );
                     float xScale = unrotatedCTM.getXScale();
                     float yScale = unrotatedCTM.getYScale();
-                    
-                    System.out.println( "Found image[" + objectName.getName() + "] " + 
+
+                    System.out.println( "Found image[" + objectName.getName() + "] " +
                             "at " + unrotatedCTM.getXPosition() + "," + unrotatedCTM.getYPosition() +
                             " size=" + (xScale/100f*image.getWidth()) + "," + (yScale/100f*image.getHeight() ));
                 }
@@ -158,7 +158,7 @@ public class PrintImageLocations extends PDFStreamEngine
         {
             super.processOperator( operator, arguments );
         }
-    } 
+    }
 
     /**
      * This will print the usage for this document.

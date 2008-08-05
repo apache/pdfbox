@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,12 +37,12 @@ import java.util.GregorianCalendar;
  * @version $Revision: 1.4 $
  */
 public class AddMetadataFromDocInfo
-{    
+{
     private AddMetadataFromDocInfo()
     {
         //utility class
     }
-    
+
     /**
      * This will print the documents data.
      *
@@ -59,7 +59,7 @@ public class AddMetadataFromDocInfo
         else
         {
             PDDocument document = null;
-            
+
             try
             {
                 document = PDDocument.load( args[0] );
@@ -70,28 +70,28 @@ public class AddMetadataFromDocInfo
                 }
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDDocumentInformation info = document.getDocumentInformation();
-                
+
                 XMPMetadata metadata = new XMPMetadata();
-                
+
                 XMPSchemaPDF pdfSchema = metadata.addPDFSchema();
                 pdfSchema.setKeywords( info.getKeywords() );
                 pdfSchema.setProducer( info.getProducer() );
-                
+
                 XMPSchemaBasic basicSchema = metadata.addBasicSchema();
                 basicSchema.setModifyDate( info.getModificationDate() );
                 basicSchema.setCreateDate( info.getCreationDate() );
                 basicSchema.setCreatorTool( info.getCreator() );
                 basicSchema.setMetadataDate( new GregorianCalendar() );
-                
+
                 XMPSchemaDublinCore dcSchema = metadata.addDublinCoreSchema();
                 dcSchema.setTitle( info.getTitle() );
                 dcSchema.addCreator( "PDFBox" );
                 dcSchema.setDescription( info.getSubject() );
-                
+
                 PDMetadata metadataStream = new PDMetadata(document);
                 metadataStream.importXMPMetadata( metadata );
                 catalog.setMetadata( metadataStream );
-                
+
                 document.save( args[1] );
             }
             finally

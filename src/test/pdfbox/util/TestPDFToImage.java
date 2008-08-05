@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,12 +70,12 @@ public class TestPDFToImage extends TestCase
     private PrintWriter log = null;
     private File mdirTest = null;
     private File mcurFile = null;
-        
+
     /**
      * Test class constructor.
      *
      * @param name The name of the test class.
-     * 
+     *
      * @throws IOException If there is an error creating the test.
      */
     public TestPDFToImage( String name ) throws IOException
@@ -107,10 +107,10 @@ public class TestPDFToImage extends TestCase
     {
 	String sCmd;
         PDDocument document = null;
-        
+
         log.println("\nPreparing to convert " + file.getName());
         log.flush();
-	
+
 	try
       {
         document =  PDDocument.load(file);
@@ -120,20 +120,20 @@ public class TestPDFToImage extends TestCase
       {
           this.bFail=true;
          System.err.println("Error converting file " + file.getName());
-         e.printStackTrace();  
-          
+         e.printStackTrace();
+
           log.println("Error converting file " + file.getName() + "\n" + e);
-          
+
       }
       finally{
           document.close();
       }
-        
+
       //Now check the resulting files ... did we get identical PNG(s)?
       try
       {
           mcurFile = file;
-          
+
       File[] outFiles = testDir().listFiles(new FilenameFilter()
             {
                 public boolean accept(File dir, String name)
@@ -148,16 +148,16 @@ public class TestPDFToImage extends TestCase
                         !filesAreIdentical(outFiles[n], outFile)){
                             this.bFail=true;
                             log.println("Input and output not identical for file: " + outFile.getName());
-                        }                
+                        }
                 }
         }
     catch(Exception e)
       {
           this.bFail=true;
          System.err.println("Error comparing file output for " + file.getName());
-         e.printStackTrace();  
+         e.printStackTrace();
       }
-      
+
     }
 
     /**
@@ -169,11 +169,11 @@ public class TestPDFToImage extends TestCase
         throws Exception
     {
         String filename = System.getProperty("test.pdfbox.util.TextStripper.file");
-        
+
         try
         {
             log = new PrintWriter( new FileWriter( "RenderImage.log" ) );
-    
+
             if ((filename == null) || (filename.length() == 0))
             {
                 File[] testFiles = testDir().listFiles(new FilenameFilter()
@@ -183,7 +183,7 @@ public class TestPDFToImage extends TestCase
                         return (name.endsWith(".pdf") || name.endsWith(".ai"));
                     }
                 });
-    
+
                 for (int n = 0; n < testFiles.length; n++)
                 {
                     doTestFile(testFiles[n], false);
@@ -193,7 +193,7 @@ public class TestPDFToImage extends TestCase
             {
                 doTestFile(new File(testDir(), filename), true);
             }
-    
+
             if (this.bFail)
             {
                 fail("One or more failures, see test log for details");
@@ -217,10 +217,10 @@ public class TestPDFToImage extends TestCase
     {
         return new TestSuite( TestPDFToImage.class );
     }
-    
+
     /**
      * Command line execution.
-     * 
+     *
      * @param args Command line arguments.
      */
     public static void main( String[] args )
@@ -228,11 +228,11 @@ public class TestPDFToImage extends TestCase
         String[] arg = {TestPDFToImage.class.getName() };
         junit.textui.TestRunner.main( arg );
     }
-    
+
     public static boolean filesAreIdentical(File left, File right) throws IOException
     {
 	    //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
-	    
+
 	    /* -- I reworked ASSERT's into IF statement -- dwilson
         assert left != null;
         assert right != null;
@@ -242,7 +242,7 @@ public class TestPDFToImage extends TestCase
 	if(left != null && right != null && left.exists() && right.exists()){
 		if (left.length() != right.length())
 		    return false;
-		
+
 		FileInputStream lin = new FileInputStream(left);
 		FileInputStream rin = new FileInputStream(right);
 		try
@@ -273,11 +273,11 @@ public class TestPDFToImage extends TestCase
 		return false;
 	}
     }
-    
+
     private File testDir(){
         if (null==mdirTest)
             mdirTest = new File("test/input/rendering");
-        
+
         return mdirTest;
     }
 }

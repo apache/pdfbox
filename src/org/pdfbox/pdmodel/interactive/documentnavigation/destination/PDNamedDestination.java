@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,27 +31,27 @@ import org.pdfbox.cos.COSString;
 public class PDNamedDestination extends PDDestination
 {
     private COSBase namedDestination;
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param dest The named destination.
      */
     public PDNamedDestination( COSString dest )
     {
         namedDestination = dest;
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param dest The named destination.
      */
     public PDNamedDestination( COSName dest )
     {
         namedDestination = dest;
     }
-    
+
     /**
      * Default constructor.
      */
@@ -59,17 +59,17 @@ public class PDNamedDestination extends PDDestination
     {
         //default, so do nothing
     }
-    
+
     /**
      * Default constructor.
-     * 
+     *
      * @param dest The named destination.
      */
     public PDNamedDestination( String dest )
     {
         namedDestination = new COSString( dest );
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -79,10 +79,10 @@ public class PDNamedDestination extends PDDestination
     {
         return namedDestination;
     }
-    
+
     /**
      * This will get the name of the destination.
-     * 
+     *
      * @return The name of the destination.
      */
     public String getNamedDestination()
@@ -96,15 +96,15 @@ public class PDNamedDestination extends PDDestination
         {
             retval = ((COSName)namedDestination).getName();
         }
-        
+
         return retval;
     }
-    
+
     /**
      * Set the named destination.
-     * 
+     *
      * @param dest The new named destination.
-     * 
+     *
      * @throws IOException If there is an error setting the named destination.
      */
     public void setNamedDestination( String dest ) throws IOException
@@ -124,5 +124,5 @@ public class PDNamedDestination extends PDDestination
             namedDestination = new COSString( dest );
         }
     }
-    
+
 }

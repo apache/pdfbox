@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ public class PDDocumentInformation implements COSObjectable
     private static final COSName TRAPPED = COSName.getPDFName( "Trapped" );
     private COSDictionary info;
 
-    
+
     /**
      * Default Constructor.
      */
@@ -55,7 +55,7 @@ public class PDDocumentInformation implements COSObjectable
     {
         info = new COSDictionary();
     }
-    
+
     /**
      * Constructor that is used for a preexisting dictionary.
      *
@@ -75,7 +75,7 @@ public class PDDocumentInformation implements COSObjectable
     {
         return info;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -210,7 +210,7 @@ public class PDDocumentInformation implements COSObjectable
      * This will get the creation date of the document.  This will return null if no creation date exists.
      *
      * @return The creation date of the document.
-     * 
+     *
      * @throws IOException If there is an error creating the date.
      */
     public Calendar getCreationDate() throws IOException
@@ -232,7 +232,7 @@ public class PDDocumentInformation implements COSObjectable
      * This will get the modification date of the document.  This will return null if no modification date exists.
      *
      * @return The modification date of the document.
-     * 
+     *
      * @throws IOException If there is an error creating the date.
      */
     public Calendar getModificationDate() throws IOException
@@ -260,25 +260,25 @@ public class PDDocumentInformation implements COSObjectable
     {
         return info.getNameAsString( TRAPPED );
     }
-    
+
     /**
      *  This will get the value of a custom metadata information field for the document.
      *  This will return null if one is not found.
      *
      * @param fieldName Name of custom metadata field from pdf document.
-     * 
+     *
      * @return String Value of metadata field
-     * 
+     *
      * @author  Gerardo Ortiz
      */
     public String getCustomMetadataValue(String fieldName)
     {
         return info.getString( fieldName );
     }
-    
+
     /**
      * Set the custom metadata value.
-     * 
+     *
      * @param fieldName The name of the custom metadata field.
      * @param fieldValue The value to the custom metadata field.
      */

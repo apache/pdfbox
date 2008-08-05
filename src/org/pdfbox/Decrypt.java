@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,8 +40,8 @@ public class Decrypt
     private static final String ALIAS = "-alias";
     private static final String PASSWORD = "-password";
     private static final String KEYSTORE = "-keyStore";
-    
-    
+
+
     /**
      * This is the entry point for the application.
      *
@@ -122,7 +122,7 @@ public class Decrypt
             {
                 password = "";
             }
-            
+
 
             PDDocument document = null;
 
@@ -135,9 +135,9 @@ public class Decrypt
                     DecryptionMaterial decryptionMaterial = null;
                     if( keyStore != null )
                     {
-                        KeyStore ks = KeyStore.getInstance("PKCS12");       
+                        KeyStore ks = KeyStore.getInstance("PKCS12");
                         ks.load(new FileInputStream(keyStore), password.toCharArray());
-                            
+
                         decryptionMaterial = new PublicKeyDecryptionMaterial(ks, alias, password);
                     }
                     else
@@ -160,7 +160,7 @@ public class Decrypt
                 {
                     System.err.println( "Error: Document is not encrypted." );
                 }
-            }            
+            }
             finally
             {
                 if( document != null )
@@ -176,9 +176,9 @@ public class Decrypt
      */
     private static void usage()
     {
-        System.err.println( "usage: java org.pdfbox.Decrypt " + 
+        System.err.println( "usage: java org.pdfbox.Decrypt " +
                             "[options] <inputfile> [outputfile]" );
-        System.err.println( "-alias      The alias of the key in the certificate file " + 
+        System.err.println( "-alias      The alias of the key in the certificate file " +
                                          "(mandatory if several keys are available)");
         System.err.println( "-password   The password to open the certificate and extract the private key from it." );
         System.err.println( "-keyStore   The KeyStore that holds the certificate." );

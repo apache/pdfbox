@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,7 +89,7 @@ public class PDInlinedImage
      * it.
      *
      * @return The image that this object represents.
-     * 
+     *
      * @throws IOException If there is an error creating the image.
      */
     public BufferedImage createImage() throws IOException
@@ -115,8 +115,8 @@ public class PDInlinedImage
         image.setData( raster );
         return image;
          */
-        
-        
+
+
         //verify again pci32.pdf before changing below
         PDColorSpace pcs = params.getColorSpace();
         ColorModel colorModel = null;
@@ -126,14 +126,14 @@ public class PDInlinedImage
                 params.getColorSpace().createColorModel(
                         params.getBitsPerComponent() );
         }
-        else 
+        else
         {
             byte[] transparentColors = new
             byte[]{(byte)0xFF,(byte)0xFF};
             byte[] colors=new byte[]{0, (byte)0xFF};
             colorModel = new IndexColorModel( 1, 2,
                     colors, colors, colors, transparentColors );
-        } 
+        }
         List filters = params.getFilters();
         byte[] finalData = null;
         if( filters == null )
@@ -150,7 +150,7 @@ public class PDInlinedImage
                 out.reset();
                 Filter filter = filterManager.getFilter( (String)filters.get( i ) );
                 filter.decode( in, out, params.getDictionary(), i );
-                in = new ByteArrayInputStream( out.toByteArray() ); 
+                in = new ByteArrayInputStream( out.toByteArray() );
             }
             finalData = out.toByteArray();
         }
@@ -163,7 +163,7 @@ public class PDInlinedImage
                 params.getBitsPerComponent(),
                 new Point(0,0) );
                 */
-        DataBuffer rasterBuffer = raster.getDataBuffer(); 
+        DataBuffer rasterBuffer = raster.getDataBuffer();
         if( rasterBuffer instanceof DataBufferByte )
         {
             DataBufferByte byteBuffer = (DataBufferByte)rasterBuffer;

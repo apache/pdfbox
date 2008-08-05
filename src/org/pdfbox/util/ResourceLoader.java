@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import java.util.Properties;
  */
 public class ResourceLoader
 {
-    
+
     /**
      * private constructor for utility class.
      */
@@ -46,7 +46,7 @@ public class ResourceLoader
      * @param resourceName The resource to try and load.
      *
      * @return The resource as a stream or null if it could not be found.
-     * 
+     *
      * @throws IOException If there is an error while attempting to load the resource.
      */
     public static InputStream loadResource( String resourceName ) throws IOException
@@ -54,12 +54,12 @@ public class ResourceLoader
         ClassLoader loader = ResourceLoader.class.getClassLoader();
 
         InputStream is = null;
-        
+
         if( loader != null )
         {
             is = loader.getResourceAsStream( resourceName );
         }
-        
+
         //see sourceforge bug 863053, this is a fix for a user that
         //needed to have PDFBox loaded by the bootstrap classloader
         if( is == null )
@@ -70,7 +70,7 @@ public class ResourceLoader
                 is = loader.getResourceAsStream( resourceName );
             }
         }
-        
+
         if( is == null )
         {
             File f = new File( resourceName );
@@ -82,7 +82,7 @@ public class ResourceLoader
 
         return is;
     }
-    
+
     /**
      * This will attempt to load the resource given the resource name.
      *
@@ -90,7 +90,7 @@ public class ResourceLoader
      * @param failIfNotFound Throw an error message if the properties were not found.
      *
      * @return The resource as a stream or null if it could not be found.
-     * 
+     *
      * @throws IOException If there is an error loading the properties.
      */
     public static Properties loadProperties( String resourceName, boolean failIfNotFound ) throws IOException
@@ -122,7 +122,7 @@ public class ResourceLoader
         }
         return properties;
     }
-    
+
     /**
      * This will attempt to load the resource given the resource name.
      *
@@ -130,7 +130,7 @@ public class ResourceLoader
      * @param defaults A stream of default properties.
      *
      * @return The resource as a stream or null if it could not be found.
-     * 
+     *
      * @throws IOException If there is an error loading the properties.
      */
     public static Properties loadProperties( String resourceName, Properties defaults ) throws IOException

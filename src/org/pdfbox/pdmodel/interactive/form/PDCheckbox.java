@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ public class PDCheckbox extends PDChoiceButton
         if( ap != null )
         {
             COSBase n = ap.getDictionaryObject(COSName.getPDFName("N"));
-    
+
             if( n instanceof COSDictionary )
             {
                 List li = ((COSDictionary)n).keyList();
@@ -63,7 +63,7 @@ public class PDCheckbox extends PDChoiceButton
                         value = name;
                     }
                 }
-                
+
             }
         }
         else
@@ -71,10 +71,10 @@ public class PDCheckbox extends PDChoiceButton
             value = (COSName)getDictionary().getDictionaryObject( "V" );
         }
     }
-    
+
     /**
      * This will tell if this radio button is currently checked or not.
-     * 
+     *
      * @return true If the radio button is checked.
      */
     public boolean isChecked()
@@ -86,7 +86,7 @@ public class PDCheckbox extends PDChoiceButton
         {
             retval = true;
         }
-        
+
         return retval;
     }
 
@@ -121,20 +121,20 @@ public class PDCheckbox extends PDChoiceButton
             getDictionary().setName( KEY, newValue );
         }
     }
-    
+
     /**
      * This will get the value of the radio button.
-     * 
+     *
      * @return The value of the radio button.
      */
     public String getOffValue()
     {
         return OFF_VALUE.getName();
     }
-    
+
     /**
      * This will get the value of the radio button.
-     * 
+     *
      * @return The value of the radio button.
      */
     public String getOnValue()

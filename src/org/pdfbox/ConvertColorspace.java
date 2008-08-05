@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ import org.pdfbox.pdmodel.common.PDStream;
 import org.pdfbox.util.PDFOperator;
 
 /**
- * This is the main program that simply parses the pdf document and replace 
+ * This is the main program that simply parses the pdf document and replace
  * change a PDF to use a specific colorspace.
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
@@ -145,11 +145,11 @@ public class ConvertColorspace
             contentWriter.writeTokens( editedPageTokens );
             currentPage.setContents( updatedPageContents );
 
-        } // For each document page            
+        } // For each document page
     }
-    
-    private void replaceRGBTokensWithCMYKTokens( List editedPageTokens, 
-                                                 List pageTokens, 
+
+    private void replaceRGBTokensWithCMYKTokens( List editedPageTokens,
+                                                 List pageTokens,
                                                  int counter,
                                                  Hashtable colorEquivalents )
     {
@@ -161,7 +161,7 @@ public class ConvertColorspace
         int intRed = Math.round(red * 255.0f);
         int intGreen = Math.round(green * 255.0f);
         int intBlue = Math.round(blue * 255.0f);
-        
+
         ColorSpaceInstance rgbColor = new ColorSpaceInstance();
         rgbColor.colorspace = "RGB";
         rgbColor.colorspaceValues = new int[] { intRed, intGreen, intBlue };
@@ -193,15 +193,15 @@ public class ConvertColorspace
         editedPageTokens.add( new COSFloat( cmyk[2] ) );
         editedPageTokens.add( new COSFloat( cmyk[3] ) );
     }
-    
-    private void replaceGrayTokensWithCMYKTokens( List editedPageTokens, 
-                                                  List pageTokens, 
-                                                  int counter, 
+
+    private void replaceGrayTokensWithCMYKTokens( List editedPageTokens,
+                                                  List pageTokens,
+                                                  int counter,
                                                   Hashtable colorEquivalents )
     {
 //      Get current RGB color.
         float gray = ((COSNumber)pageTokens.get( counter - 1 )).floatValue();
-        
+
         ColorSpaceInstance grayColor = new ColorSpaceInstance();
         grayColor.colorspace = "Grayscale";
         grayColor.colorspaceValues = new int[] { Math.round( gray * 100 ) };
@@ -231,7 +231,7 @@ public class ConvertColorspace
         editedPageTokens.add( new COSFloat( cmyk[2] ) );
         editedPageTokens.add( new COSFloat( cmyk[3] ) );
     }
-    
+
     private static float[] convertRGBToCMYK( float red, float green, float blue )
     {
         //
@@ -241,7 +241,7 @@ public class ConvertColorspace
         float c = 1.0f - red;
         float m = 1.0f - green;
         float y = 1.0f - blue;
-        float k = 1.0f; 
+        float k = 1.0f;
 
         k = Math.min( Math.min( Math.min( c,k ), m), y );
 
@@ -250,7 +250,7 @@ public class ConvertColorspace
         y = ( y - k ) / ( 1 - k );
         return new float[] { c,m,y,k};
     }
-    
+
     private static int[] stringToIntArray( String string )
     {
         String[] ints = string.split( "," );
@@ -277,7 +277,7 @@ public class ConvertColorspace
         String destColorspace = "CMYK";
 
         Pattern colorEquivalentPattern = Pattern.compile(
-            "^(.*):\\((.*)\\)" + 
+            "^(.*):\\((.*)\\)" +
             "=(.*):\\((.*)\\)$");
         Matcher colorEquivalentMatcher = null;
 
@@ -321,11 +321,11 @@ public class ConvertColorspace
               String srcColorvalues = colorEquivalentMatcher.group(2);
               String destColorSpace = colorEquivalentMatcher.group(3);
               String destColorvalues = colorEquivalentMatcher.group(4);
-              
+
               ConvertColorspace.ColorSpaceInstance source = new ColorSpaceInstance();
               source.colorspace = srcColorSpace;
               source.colorspaceValues = stringToIntArray( srcColorvalues );
-              
+
               ColorSpaceInstance dest = new ColorSpaceInstance();
               dest.colorspace = destColorSpace;
               dest.colorspaceValues = stringToIntArray( destColorvalues );
@@ -367,7 +367,7 @@ public class ConvertColorspace
                     doc.decrypt( password );
                 }
                 catch( InvalidPasswordException e )
-                { 
+                {
                     if( !password.equals( "" ) )//they supplied the wrong password
                     {
                         System.err.println( "Error: The supplied password is incorrect." );
@@ -392,10 +392,10 @@ public class ConvertColorspace
                 doc.close();
             }
         }
-        
+
 
     }
-    
+
 
     /**
      * This will print the usage requirements and exit.
@@ -420,16 +420,16 @@ public class ConvertColorspace
             );
         System.exit( 1 );
     }
-    
+
     /**
-     * 
+     *
      *
      */
     private static class ColorSpaceInstance
     {
         private String colorspace = null;
         private int[] colorspaceValues = null;
-        
+
         /**
          * {@inheritDoc}
          */
@@ -442,7 +442,7 @@ public class ConvertColorspace
             }
             return code;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -452,7 +452,7 @@ public class ConvertColorspace
             if( o instanceof ColorSpaceInstance )
             {
                 ColorSpaceInstance other = (ColorSpaceInstance)o;
-                if( this.colorspace.equals( other.colorspace ) && 
+                if( this.colorspace.equals( other.colorspace ) &&
                          colorspaceValues.length == other.colorspaceValues.length )
                 {
                     retval = true;

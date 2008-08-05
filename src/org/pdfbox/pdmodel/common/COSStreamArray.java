@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,10 +68,10 @@ public class COSStreamArray extends COSStream
             firstStream = (COSStream)array.getObject( 0 );
         }
     }
-    
+
     /**
      * This will get a stream (or the reference to a stream) from the array.
-     * 
+     *
      * @param index The index of the requested stream
      * @return The stream object or a reference to a stream
      */
@@ -79,17 +79,17 @@ public class COSStreamArray extends COSStream
     {
         return streams.get( index );
     }
-    
+
     /**
      * This will get the number of streams in the array.
-     * 
+     *
      * @return the numer of streams
      */
     public int getStreamCount()
     {
         return streams.size();
     }
-    
+
     /**
      * This will get the scratch file associated with this stream.
      *
@@ -298,10 +298,10 @@ public class COSStreamArray extends COSStream
     {
         return firstStream.createUnfilteredStream();
     }
-    
+
     /**
      * Appends a new stream to the array that represents this object's stream.
-     * 
+     *
      * @param streamToAppend The stream to append.
      */
     public void appendStream(COSStream streamToAppend)

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,18 +22,18 @@ import org.pdfbox.cos.COSName;
 /**
  * This is the class that represents a rubber stamp annotation.
  * Introduced in PDF 1.3 specification
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.2 $
  */
 public class PDAnnotationRubberStamp extends PDAnnotationMarkup
 {
-    
+
     /*
-     * The various values of the rubber stamp as defined in 
+     * The various values of the rubber stamp as defined in
      * the PDF 1.6 reference Table 8.28
      */
-    
+
     /**
      * Constant for the name of a rubber stamp.
      */
@@ -90,12 +90,12 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
      * Constant for the name of a rubber stamp.
      */
     public static final String NAME_SOLD = "Sold";
-    
+
     /**
      * The type of annotation.
      */
     public static final String SUB_TYPE = "Stamp";
-    
+
     /**
      * Constructor.
      */
@@ -130,7 +130,7 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
     /**
      * This will retrieve the name (and hence appearance, AP taking precedence)
      * For this annotation.  The default is DRAFT.
-     * 
+     *
      * @return The name of this rubber stamp, see the NAME_XXX constants.
      */
     public String getName()

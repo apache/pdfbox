@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,38 +61,38 @@ import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.pdmodel.PDDocument;
 
 /**
- * This class implements the public key security handler 
+ * This class implements the public key security handler
  * described in the PDF specification.
- * 
+ *
  * @see PDF Spec 1.6 p104
- * 
+ *
  * @see PublicKeyProtectionPolicy to see how to protect document with this security handler.
- * 
+ *
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
  * @version $Revision: 1.3 $
  */
-public class PublicKeySecurityHandler extends SecurityHandler 
+public class PublicKeySecurityHandler extends SecurityHandler
 {
-    
+
     /**
      * The filter name.
      */
     public static final String FILTER = "Adobe.PubSec";
-    
+
     private static final String SUBFILTER = "adbe.pkcs7.s4";
-    
+
     private PublicKeyProtectionPolicy policy = null;
-    
+
     /**
      * Constructor.
      */
     public PublicKeySecurityHandler()
     {
     }
-    
+
     /**
      * Constructor used for encryption.
-     * 
+     *
      * @param p The protection policy.
      */
     public PublicKeySecurityHandler(PublicKeyProtectionPolicy p)
@@ -100,13 +100,13 @@ public class PublicKeySecurityHandler extends SecurityHandler
         policy = p;
         this.keyLength = policy.getEncryptionKeyLength();
     }
-    
+
     /**
      * Decrypt the document.
-     * 
+     *
      * @param doc The document to decrypt.
      * @param decryptionMaterial The data used to decrypt the document.
-     * 
+     *
      * @throws CryptographyException If there is an error during decryption.
      * @throws IOException If there is an error accessing data.
      */
@@ -114,35 +114,35 @@ public class PublicKeySecurityHandler extends SecurityHandler
         throws CryptographyException, IOException
     {
         this.document = doc;
-        
+
         PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
-        
+
         if(dictionary.getLength() != 0)
         {
             this.keyLength = dictionary.getLength();
         }
-        
+
         if(!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
         {
             throw new CryptographyException(
                 "Provided decryption material is not compatible with the document");
         }
-        
-        PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial)decryptionMaterial;        
-        
+
+        PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial)decryptionMaterial;
+
         try
         {
-            boolean foundRecipient = false;            
-        
-            // the decrypted content of the enveloped data that match 
-            // the certificate in the decryption material provided    
-            byte[] envelopedData = null;            
-            
+            boolean foundRecipient = false;
+
+            // the decrypted content of the enveloped data that match
+            // the certificate in the decryption material provided
+            byte[] envelopedData = null;
+
             // the bytes of each recipient in the recipients array
             byte[][] recipientFieldsBytes = new byte[dictionary.getRecipientsLength()][];
-            
+
             int recipientFieldsLength = 0;
-            
+
             for(int i=0; i<dictionary.getRecipientsLength(); i++)
             {
                 COSString recipientFieldString = dictionary.getRecipientStringAt(i);
@@ -151,14 +151,14 @@ public class PublicKeySecurityHandler extends SecurityHandler
                 Iterator recipCertificatesIt = data.getRecipientInfos().getRecipients().iterator();
                 while(recipCertificatesIt.hasNext())
                 {
-                    RecipientInformation ri = 
+                    RecipientInformation ri =
                         (RecipientInformation)recipCertificatesIt.next();
-                    // Impl: if a matching certificate was previously found it is an error, 
+                    // Impl: if a matching certificate was previously found it is an error,
                     // here we just don't care about it
                     if(ri.getRID().match(material.getCertificate()) && !foundRecipient)
                     {
                         foundRecipient = true;
-                        envelopedData = ri.getContent(material.getPrivateKey(), "BC");            
+                        envelopedData = ri.getContent(material.getPrivateKey(), "BC");
                     }
                 }
                 recipientFieldsBytes[i] = recipientBytes;
@@ -174,40 +174,40 @@ public class PublicKeySecurityHandler extends SecurityHandler
             }
             // now envelopedData contains:
             // - the 20 bytes seed
-            // - the 4 bytes of permission for the current user                          
-            
+            // - the 4 bytes of permission for the current user
+
             byte[] accessBytes = new byte[4];
             System.arraycopy(envelopedData, 20, accessBytes, 0, 4);
-            
+
             currentAccessPermission = new AccessPermission(accessBytes);
             currentAccessPermission.setReadOnly();
-            
-             // what we will put in the SHA1 = the seed + each byte contained in the recipients array 
+
+             // what we will put in the SHA1 = the seed + each byte contained in the recipients array
             byte[] sha1Input = new byte[recipientFieldsLength + 20];
-            
+
             // put the seed in the sha1 input
-            System.arraycopy(envelopedData, 0, sha1Input, 0, 20); 
-            
+            System.arraycopy(envelopedData, 0, sha1Input, 0, 20);
+
             // put each bytes of the recipients array in the sha1 input
-            int sha1InputOffset = 20;            
+            int sha1InputOffset = 20;
             for(int i=0; i<recipientFieldsBytes.length; i++)
             {
                 System.arraycopy(
-                    recipientFieldsBytes[i], 0, 
+                    recipientFieldsBytes[i], 0,
                     sha1Input, sha1InputOffset, recipientFieldsBytes[i].length);
-                sha1InputOffset += recipientFieldsBytes[i].length;                
+                sha1InputOffset += recipientFieldsBytes[i].length;
             }
-            
-            MessageDigest md = MessageDigest.getInstance("SHA-1");            
+
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] mdResult = md.digest(sha1Input);
-            
+
             // we have the encryption key ...
-            encryptionKey = new byte[this.keyLength/8];            
+            encryptionKey = new byte[this.keyLength/8];
             System.arraycopy(mdResult, 0, encryptionKey, 0, this.keyLength/8);
-            
+
             proceedDecryption();
-            
-            
+
+
         }
         catch(CMSException e)
         {
@@ -225,115 +225,115 @@ public class PublicKeySecurityHandler extends SecurityHandler
         {
             throw new CryptographyException(e);
         }
-        
+
     }
-  
+
     /**
      * Prepare the document for encryption.
-     * 
+     *
      * @param doc The document that will be encrypted.
-     * 
+     *
      * @throws CryptographyException If there is an error while encrypting.
      */
-    public void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException 
+    public void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException
     {
-        
+
         try
         {
             Security.addProvider(new BouncyCastleProvider());
-            
+
             PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
-            
+
             dictionary.setFilter(FILTER);
-            dictionary.setLength(this.keyLength);            
+            dictionary.setLength(this.keyLength);
             dictionary.setVersion(2);
             dictionary.setSubFilter(SUBFILTER);
-            
-            byte[][] recipientsField = new byte[policy.getRecipientsNumber()][];            
-                        
+
+            byte[][] recipientsField = new byte[policy.getRecipientsNumber()][];
+
             // create the 20 bytes seed
 
             byte[] seed = new byte[20];
 
-            KeyGenerator key = KeyGenerator.getInstance("AES");            
+            KeyGenerator key = KeyGenerator.getInstance("AES");
             key.init(192, new SecureRandom());
-            SecretKey sk = key.generateKey();            
+            SecretKey sk = key.generateKey();
             System.arraycopy(sk.getEncoded(), 0, seed, 0, 20); // create the 20 bytes seed
-                
-            
+
+
             Iterator it = policy.getRecipientsIterator();
             int i = 0;
-            
-            
+
+
             while(it.hasNext())
             {
-                PublicKeyRecipient recipient = (PublicKeyRecipient)it.next();                
+                PublicKeyRecipient recipient = (PublicKeyRecipient)it.next();
                 X509Certificate certificate = recipient.getX509();
                 int permission = recipient.getPermission().getPermissionBytesForPublicKey();
-            
+
                 byte[] pkcs7input = new byte[24];
                 byte one = (byte)(permission);
                 byte two = (byte)(permission >>> 8);
                 byte three = (byte)(permission >>> 16);
                 byte four = (byte)(permission >>> 24);
-                            
+
                 System.arraycopy(seed, 0, pkcs7input, 0, 20); // put this seed in the pkcs7 input
-                                    
+
                 pkcs7input[20] = four;
-                pkcs7input[21] = three;                
+                pkcs7input[21] = three;
                 pkcs7input[22] = two;
                 pkcs7input[23] = one;
-                    
+
                 DERObject obj = createDERForRecipient(pkcs7input, certificate);
-                    
+
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    
+
                 DEROutputStream k = new DEROutputStream(baos);
-                    
+
                 k.writeObject(obj);
-                    
+
                 recipientsField[i] = baos.toByteArray();
-                    
+
                 i++;
             }
 
             dictionary.setRecipients(recipientsField);
-            
+
             int sha1InputLength = seed.length;
-            
+
             for(int j=0; j<dictionary.getRecipientsLength(); j++)
             {
                 COSString string = dictionary.getRecipientStringAt(j);
                 sha1InputLength += string.getBytes().length;
             }
-                        
-                        
-            byte[] sha1Input = new byte[sha1InputLength];            
-            
+
+
+            byte[] sha1Input = new byte[sha1InputLength];
+
             System.arraycopy(seed, 0, sha1Input, 0, 20);
-            
+
             int sha1InputOffset = 20;
 
-            
+
             for(int j=0; j<dictionary.getRecipientsLength(); j++)
             {
-                COSString string = dictionary.getRecipientStringAt(j);                
+                COSString string = dictionary.getRecipientStringAt(j);
                 System.arraycopy(
-                    string.getBytes(), 0, 
-                    sha1Input, sha1InputOffset, string.getBytes().length);                
+                    string.getBytes(), 0,
+                    sha1Input, sha1InputOffset, string.getBytes().length);
                 sha1InputOffset += string.getBytes().length;
-            }            
-            
+            }
+
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-            
+
             byte[] mdResult = md.digest(sha1Input);
-            
+
             this.encryptionKey = new byte[this.keyLength/8];
             System.arraycopy(mdResult, 0, this.encryptionKey, 0, this.keyLength/8);
-            
+
             doc.setEncryptionDictionary(dictionary);
-            doc.getDocument().setEncryptionDictionary(dictionary.encryptionDictionary);            
-            
+            doc.getDocument().setEncryptionDictionary(dictionary.encryptionDictionary);
+
         }
         catch(NoSuchAlgorithmException ex)
         {
@@ -348,18 +348,18 @@ public class PublicKeySecurityHandler extends SecurityHandler
             e.printStackTrace();
             throw new CryptographyException(e);
         }
-        
-    }    
-    
-    private DERObject createDERForRecipient(byte[] in, X509Certificate cert) 
-        throws IOException,  
-               GeneralSecurityException 
+
+    }
+
+    private DERObject createDERForRecipient(byte[] in, X509Certificate cert)
+        throws IOException,
+               GeneralSecurityException
     {
-        
+
         String s = "1.2.840.113549.3.2";
-        
+
         AlgorithmParameterGenerator algorithmparametergenerator = AlgorithmParameterGenerator.getInstance(s);
-        AlgorithmParameters algorithmparameters = algorithmparametergenerator.generateParameters();        
+        AlgorithmParameters algorithmparameters = algorithmparametergenerator.generateParameters();
         ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(algorithmparameters.getEncoded("ASN.1"));
         ASN1InputStream asn1inputstream = new ASN1InputStream(bytearrayinputstream);
         DERObject derobject = asn1inputstream.readObject();
@@ -373,25 +373,25 @@ public class PublicKeySecurityHandler extends SecurityHandler
         KeyTransRecipientInfo keytransrecipientinfo = computeRecipientInfo(cert, secretkey.getEncoded());
         DERSet derset = new DERSet(new RecipientInfo(keytransrecipientinfo));
         AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(new DERObjectIdentifier(s), derobject);
-        EncryptedContentInfo encryptedcontentinfo = 
+        EncryptedContentInfo encryptedcontentinfo =
             new EncryptedContentInfo(PKCSObjectIdentifiers.data, algorithmidentifier, deroctetstring);
         EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, null);
-        ContentInfo contentinfo = 
+        ContentInfo contentinfo =
             new ContentInfo(PKCSObjectIdentifiers.envelopedData, env);
-        return contentinfo.getDERObject();        
+        return contentinfo.getDERObject();
     }
-    
+
     private KeyTransRecipientInfo computeRecipientInfo(X509Certificate x509certificate, byte[] abyte0)
         throws GeneralSecurityException, IOException
     {
-        ASN1InputStream asn1inputstream = 
+        ASN1InputStream asn1inputstream =
             new ASN1InputStream(new ByteArrayInputStream(x509certificate.getTBSCertificate()));
-        TBSCertificateStructure tbscertificatestructure = 
+        TBSCertificateStructure tbscertificatestructure =
             TBSCertificateStructure.getInstance(asn1inputstream.readObject());
         AlgorithmIdentifier algorithmidentifier = tbscertificatestructure.getSubjectPublicKeyInfo().getAlgorithmId();
-        IssuerAndSerialNumber issuerandserialnumber = 
+        IssuerAndSerialNumber issuerandserialnumber =
             new IssuerAndSerialNumber(
-                tbscertificatestructure.getIssuer(), 
+                tbscertificatestructure.getIssuer(),
                 tbscertificatestructure.getSerialNumber().getValue());
         Cipher cipher = Cipher.getInstance(algorithmidentifier.getObjectId().getId());
         cipher.init(1, x509certificate.getPublicKey());
@@ -399,5 +399,5 @@ public class PublicKeySecurityHandler extends SecurityHandler
         RecipientIdentifier recipId = new RecipientIdentifier(issuerandserialnumber);
         return new KeyTransRecipientInfo( recipId, algorithmidentifier, deroctetstring);
     }
-        
+
 }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ public class PrintFields
      * This will print all the fields from the document.
      *
      * @param pdfDocument The PDF to get the fields from.
-     * 
+     *
      * @throws IOException If there is an error getting the fields.
      */
     public void printFields( PDDocument pdfDocument ) throws IOException
@@ -52,8 +52,8 @@ public class PrintFields
         PDAcroForm acroForm = docCatalog.getAcroForm();
         List fields = acroForm.getFields();
         Iterator fieldsIter = fields.iterator();
-        
-        System.out.println(new Integer(fields.size()).toString() + " top-level fields were found on the form"); 
+
+        System.out.println(new Integer(fields.size()).toString() + " top-level fields were found on the form");
 
         while( fieldsIter.hasNext())
         {
@@ -61,10 +61,10 @@ public class PrintFields
                processField(field, "|--", field.getPartialName());
         }
     }
-    
+
     private void processField(PDField field, String sLevel, String sParent) throws IOException
     {
-        List kids = field.getKids(); 
+        List kids = field.getKids();
         if(kids != null)
         {
             Iterator kidsIter = kids.iterator();
@@ -81,12 +81,12 @@ public class PrintFields
                {
                    PDField kid = (PDField)pdfObj;
                    processField(kid, "|  " + sLevel, sParent);
-               }                   
+               }
             }
          }
          else
          {
-             String outputString = sLevel + sParent + "." + field.getPartialName() + " = " + field.getValue() + 
+             String outputString = sLevel + sParent + "." + field.getPartialName() + " = " + field.getValue() +
                  ",  type=" + field.getClass().getName();
 
              System.out.println(outputString);

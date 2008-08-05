@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,12 +39,12 @@ public class Splitter
      * The source PDF document.
      */
     protected PDDocument pdfDocument;
-    
+
     /**
      * The current PDF document that contains the splitted page.
      */
     protected PDDocument currentDocument = null;
-    
+
     private int splitAtPage=1;
     private List newDocuments = null;
 
@@ -116,7 +116,7 @@ public class Splitter
             processNextPage( page );
         }
     }
-    
+
     /**
      * Interface method, you can control where a document gets split by implementing
      * this method.  By default a split occurs at every page.  If you wanted to split
@@ -133,30 +133,30 @@ public class Splitter
      *
      * @throws IOException If there is an error creating the new document.
      */
-    protected void createNewDocumentIfNecessary() throws IOException 
+    protected void createNewDocumentIfNecessary() throws IOException
     {
-        if (isNewDocNecessary()) 
+        if (isNewDocNecessary())
         {
             createNewDocument();
         }
     }
-    
+
     /**
      * Check if it is necessary to create a new document.
-     * 
+     *
      * @return true If a new document should be created.
      */
-    protected boolean isNewDocNecessary() 
+    protected boolean isNewDocNecessary()
     {
         return pageNumber % splitAtPage == 0 || currentDocument == null;
     }
-    
+
     /**
      * Create a new document to write the splitted contents to.
-     * 
+     *
      * @throws IOException If there is an problem creating the new document.
      */
-    protected void createNewDocument() throws IOException 
+    protected void createNewDocument() throws IOException
     {
         currentDocument = new PDDocument();
         currentDocument.setDocumentInformation(pdfDocument.getDocumentInformation());

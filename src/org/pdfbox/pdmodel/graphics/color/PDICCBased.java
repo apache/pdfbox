@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,10 +58,10 @@ public class PDICCBased extends PDColorSpace
 
     private COSArray array;
     private PDStream stream;
-    
+
     /**
      * Default constructor, creates empty stream.
-     * 
+     *
      * @param doc The document to store the icc data.
      */
     public PDICCBased( PDDocument doc )
@@ -101,10 +101,10 @@ public class PDICCBased extends PDColorSpace
     {
         return array;
     }
-    
+
     /**
      * Get the pd stream for this icc color space.
-     * 
+     *
      * @return Get the stream for this icc based color space.
      */
     public PDStream getPDStream()
@@ -138,12 +138,12 @@ public class PDICCBased extends PDColorSpace
         }
         return cSpace;
     }
-    
+
     /**
      * Create a Java color model for this colorspace.
      *
      * @param bpc The number of bits per component.
-     * 
+     *
      * @return A color model that can be used for Java AWT operations.
      *
      * @throws IOException If there is an error creating the color model.
@@ -151,14 +151,14 @@ public class PDICCBased extends PDColorSpace
     public ColorModel createColorModel( int bpc ) throws IOException
     {
         int[] nbBits = { bpc, bpc, bpc };
-        ComponentColorModel componentColorModel = 
-                new ComponentColorModel( createColorSpace(), 
-                                         nbBits, 
-                                         false,                     
-                                         false,              
+        ComponentColorModel componentColorModel =
+                new ComponentColorModel( createColorSpace(),
+                                         nbBits,
+                                         false,
+                                         false,
                                          Transparency.OPAQUE,
                                          DataBuffer.TYPE_BYTE );
-        
+
         return componentColorModel;
     }
 

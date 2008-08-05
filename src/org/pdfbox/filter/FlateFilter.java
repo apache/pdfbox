@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import org.pdfbox.cos.COSDictionary;
 
 /**
  * This is the used for the FlateDecode filter.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Marcel Kammer
  * @version $Revision: 1.12 $
@@ -62,12 +62,12 @@ public class FlateFilter implements Filter
         {
             //do nothing
         }
-        else 
+        else
         {
             throw new IOException( "Error: Expected COSArray or COSDictionary and not " + baseObj.getClass().getName() );
         }
-        
-        
+
+
         int predictor = -1;
         int colors = -1;
         int bitsPerPixel = -1;
@@ -113,7 +113,7 @@ public class FlateFilter implements Filter
                 {
                     throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
                 }
-                
+
                 baos = new ByteArrayOutputStream();
                 while ((amountRead = decompressor.read(buffer, 0, BUFFER_SIZE)) != -1)
                 {
@@ -137,9 +137,9 @@ public class FlateFilter implements Filter
                 }
                 bais.close();
                 bais = null;
-            }            
-            
-            
+            }
+
+
             result.flush();
         }
         finally
@@ -159,7 +159,7 @@ public class FlateFilter implements Filter
         }
     }
 
-    private byte[] decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream data) 
+    private byte[] decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream data)
         throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

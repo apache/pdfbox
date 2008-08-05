@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,14 +30,14 @@ import org.pdfbox.cos.COSName;
 
 /**
  * This is a filter for the CCITTFax Decoder.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Marcel Kammer
  * @author Paul King
  * @version $Revision: 1.13 $
  */
 public class CCITTFaxDecodeFilter implements Filter
-{   
+{
     // Filter will write 15 TAG's
     // If you add or remove TAG's you will have to modify this value
     private static final int TAG_COUNT = 15;
@@ -65,7 +65,7 @@ public class CCITTFaxDecodeFilter implements Filter
     {
         // log.warn( "Warning: CCITTFaxDecode.decode is not implemented yet,
         // skipping this stream." );
-        
+
 
         // Get ImageParams from PDF
         COSBase baseObj = options.getDictionaryObject(new String[] {"DecodeParms","DP"});
@@ -90,18 +90,18 @@ public class CCITTFaxDecodeFilter implements Filter
         {
             throw new IOException( "Error: DecodeParms cannot be null for CCITTFaxDecode" );
         }
-        else 
+        else
         {
             throw new IOException( "Error: Expected COSArray or COSDictionary and not " + baseObj.getClass().getName() );
         }
-        
+
         int width = options.getInt("Width");
         int height = options.getInt("Height");
         int length = options.getInt(COSName.LENGTH);
         int compressionType = dict.getInt("K");
-        boolean blackIs1 = dict.getBoolean("BlackIs1", false);        
-        
-        
+        boolean blackIs1 = dict.getBoolean("BlackIs1", false);
+
+
         // HEADER-INFO and starting point of TAG-DICTIONARY
         writeTagHeader(result, length);
 
@@ -110,17 +110,17 @@ public class CCITTFaxDecodeFilter implements Filter
         //int sum = 0;
         byte[] buffer = new byte[32768];
         int lentoread = length;
-        
+
         while ((lentoread > 0) && ((i = compressedData.read(buffer, 0, Math.min(lentoread, 32768))) != -1))
         {
             //sum += i;
             result.write(buffer, 0, i);
-            lentoread = lentoread - i;        
+            lentoread = lentoread - i;
         }
-        
+
         // If lentoread is > 0 then we need to write out some padding to equal the header
         // We'll use what we have in the buffer it's just padding after all
-        while (lentoread > 0) 
+        while (lentoread > 0)
         {
             result.write(buffer, 0, Math.min(lentoread, 32768));
             lentoread = lentoread - Math.min(lentoread, 32738);
@@ -182,7 +182,7 @@ public class CCITTFaxDecodeFilter implements Filter
         writeTagDateTime(result, new Date());
 
         // END OF TAG-DICT
-        writeTagTailer(result);        
+        writeTagTailer(result);
     }
 
     private void writeTagHeader(OutputStream result, int length) throws IOException
@@ -199,10 +199,10 @@ public class CCITTFaxDecodeFilter implements Filter
         int i2 = (offset-i1*16777216)/65536;
         int i3 = (offset-i1*16777216-i2*65536)/256;
         int i4 = offset % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
+        result.write(i3);
+        result.write(i4);
     }
 
     private void writeTagCount(OutputStream result) throws IOException
@@ -237,7 +237,7 @@ public class CCITTFaxDecodeFilter implements Filter
         result.write(width%256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-    
+
     }
 
     private void writeTagHeight(OutputStream result, int height) throws IOException
@@ -246,26 +246,26 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 101
         result.write(1);
         result.write(1);
-    
+
 
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-        
+
 
         // TAG-LENGTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE
         result.write(height/256);
         result.write(height%256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagBitsPerSample(OutputStream result, int value) throws IOException
@@ -273,30 +273,30 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 102
         result.write(1);
         result.write(2);
-        
+
 
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-    
+
         // TAG-LENGTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE
         result.write(value/256);
         result.write(value%256);
         result.write(0);//SHORT=0
         result.write(0);//SHORT=0
-        
+
     }
-    
+
     /**
      * Write the tag compression.
-     * 
+     *
      * @param result The stream to write to.
      * @param type The type to write.
      * @throws IOException If there is an error writing to the stream.
@@ -306,18 +306,18 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 103
         result.write(1);
         result.write(3);
-        
+
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-        
+
 
         // TAG-LEGNTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
         // TAG-VALUE
         //@todo typ eintragen; hier immer 4
         result.write(0);
@@ -335,7 +335,7 @@ public class CCITTFaxDecodeFilter implements Filter
         }
         result.write(0);
         result.write(0);
-        
+
     }
 
     private void writeTagPhotometric(OutputStream result, boolean blackIs1) throws IOException
@@ -343,19 +343,19 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 106
         result.write(1);
         result.write(6);
-        
+
 
         // TAG-TYPE SHORT
         result.write(0);
         result.write(3);
-        
+
 
         // TAG-LENGTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE
         result.write(0);
@@ -369,7 +369,7 @@ public class CCITTFaxDecodeFilter implements Filter
         }
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagStripOffset(OutputStream result, int value) throws IOException
@@ -377,29 +377,29 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 111
         result.write(1);
         result.write(17);
-        
+
         // TAG-TYPE LONG=4
         result.write(0);
         result.write(4);
-        
+
 
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE = 8 //VOR TAG-DICTIONARY
         int i1 = value/16777216;//=value/(256*256*256)
         int i2 = (value-i1*16777216)/65536;
         int i3 = (value-i1*16777216-i2*65536)/256;
         int i4 = value % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-    
+        result.write(i3);
+        result.write(i4);
+
     }
 
     private void writeTagSamplesPerPixel(OutputStream result, int value) throws IOException
@@ -407,26 +407,26 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 115
         result.write(1);
         result.write(21);
-        
+
 
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-        
+
 
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE
         result.write(value / 256);
         result.write(value % 256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagRowsPerStrip(OutputStream result, int value) throws IOException
@@ -434,26 +434,26 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 116
         result.write(1);
         result.write(22);
-        
+
 
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-    
+
 
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-    
+
 
         // TAG-VALUE
         result.write(value / 256);
         result.write(value % 256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagStripByteCount(OutputStream result, int value) throws IOException
@@ -462,28 +462,28 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 117
         result.write(1);
         result.write(23);
-    
+
         // TAG-TYPE LONG=4
         result.write(0);
         result.write(4);
-    
+
 
         // TAG-LENGTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
         // TAG-VALUE
         int i1 = value/16777216;//=value/(256*256*256)
         int i2 = (value-i1*16777216)/65536;
         int i3 = (value-i1*16777216-i2*65536)/256;
         int i4 = value % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-        
+        result.write(i3);
+        result.write(i4);
+
     }
 
     private void writeTagXRes(OutputStream result, int value1, int value2) throws IOException
@@ -491,17 +491,17 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 11A
         result.write(1);
         result.write(26);
-        
+
         // TAG-TYPE RATIONAL=5
         result.write(0);
         result.write(5);
-        
+
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE=OFFSET TO RATIONAL
         int valueOffset = offset + 6 + 12 * TAG_COUNT + tailer.size();
@@ -509,11 +509,11 @@ public class CCITTFaxDecodeFilter implements Filter
         int i2 = (valueOffset-i1*16777216)/65536;
         int i3 = (valueOffset-i1*16777216-i2*65536)/256;
         int i4 = valueOffset % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-        
+        result.write(i3);
+        result.write(i4);
+
         i1 = value1 /16777216;
         i2 = (value1-i1*16777216)/65536;
         i3 = (value1-i1*16777216 - i2*65536)/256;
@@ -522,7 +522,7 @@ public class CCITTFaxDecodeFilter implements Filter
         tailer.write(i2);
         tailer.write(i3);
         tailer.write(i4);
-        
+
         i1 = value2 /16777216;
         i2 = (value2-i1*16777216)/65536;
         i3 = (value2-i1*16777216 - i2*65536)/256;
@@ -531,7 +531,7 @@ public class CCITTFaxDecodeFilter implements Filter
         tailer.write(i2);
         tailer.write(i3);
         tailer.write(i4);
-        
+
         tailingBytesCount += 8;
     }
 
@@ -540,18 +540,18 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 11B
         result.write(1);
         result.write(27);
-        
+
 
         // TAG-TYPE RATIONAL=5
         result.write(0);
         result.write(5);
-        
+
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
 
         // TAG-VALUE=OFFSET TO RATIONAL
         int valueOffset = offset + 6 + 12 * TAG_COUNT + tailer.size();
@@ -559,11 +559,11 @@ public class CCITTFaxDecodeFilter implements Filter
         int i2 = (valueOffset-i1*16777216)/65536;
         int i3 = (valueOffset-i1*16777216-i2*65536)/256;
         int i4 = valueOffset % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-        
+        result.write(i3);
+        result.write(i4);
+
         i1 = value1 /16777216;
         i2 = (value1-i1*16777216)/65536;
         i3 = (value1-i1*16777216 - i2*65536)/256;
@@ -572,7 +572,7 @@ public class CCITTFaxDecodeFilter implements Filter
         tailer.write(i2);
         tailer.write(i3);
         tailer.write(i4);
-        
+
         i1 = value2 /16777216;
         i2 = (value2-i1*16777216)/65536;
         i3 = (value2-i1*16777216 - i2*65536)/256;
@@ -581,7 +581,7 @@ public class CCITTFaxDecodeFilter implements Filter
         tailer.write(i2);
         tailer.write(i3);
         tailer.write(i4);
-        
+
         tailingBytesCount += 8;
     }
 
@@ -590,23 +590,23 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 128
         result.write(1);
         result.write(40);
-        
+
         // TAG-TYPE SHORT=3
         result.write(0);
         result.write(3);
-        
+
         // TAG-LENGTH = 1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
         // TAG-VALUE
         result.write(value/256);
         result.write(value%256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagOrientation(OutputStream result, int value) throws IOException
@@ -614,24 +614,24 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 112
         result.write(1);
         result.write(18);
-        
+
         // TAG-TYPE SHORT = 3
         result.write(0);
         result.write(3);
-        
+
 
         // TAG-LENGTH=1
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(1);
-        
+
         // TAG-VALUE
         result.write(value / 256);
         result.write(value % 256);
         result.write(0);// SHORT=0
         result.write(0);// SHORT=0
-        
+
     }
 
     private void writeTagTailer(OutputStream result) throws IOException
@@ -641,7 +641,7 @@ public class CCITTFaxDecodeFilter implements Filter
         result.write(0);
         result.write(0);
         result.write(0);
-        
+
         // TAILER WITH VALUES OF RATIONALFIELD's
         result.write(tailer.toByteArray());
     }
@@ -651,29 +651,29 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 131
         result.write(1);
         result.write(49);
-        
+
         // TAG-TYPE ASCII=2
         result.write(0);
         result.write(2);
-        
+
 
         // TAG-LENGTH=id.length+1
         result.write(0);
         result.write(0);
         result.write((text.length + 1) / 256);
         result.write((text.length + 1) % 256);
-        
+
         // TAG-VALUE
         int valueOffset = offset + 6 + 12 * TAG_COUNT + tailer.size();
         int i1 = valueOffset/16777216;//=value/(256*256*256)
         int i2 = (valueOffset-i1*16777216)/65536;
         int i3 = (valueOffset-i1*16777216-i2*65536)/256;
         int i4 = valueOffset % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-        
+        result.write(i3);
+        result.write(i4);
+
 
         tailer.write(text);
         tailer.write(0);
@@ -685,19 +685,19 @@ public class CCITTFaxDecodeFilter implements Filter
         // TAG-ID 132
         result.write(1);
         result.write(50);
-        
+
 
         // TAG-TYPE ASCII=2
         result.write(0);
         result.write(2);
-        
+
 
         // TAG-LENGTH=20
         result.write(0);
         result.write(0);
         result.write(0);
         result.write(20);
-    
+
 
         // TAG-VALUE
         int valueOffset = offset + 6 + 12 * TAG_COUNT + tailer.size();
@@ -705,11 +705,11 @@ public class CCITTFaxDecodeFilter implements Filter
         int i2 = (valueOffset-i1*16777216)/65536;
         int i3 = (valueOffset-i1*16777216-i2*65536)/256;
         int i4 = valueOffset % 256;
-        result.write(i1);                
+        result.write(i1);
         result.write(i2);
-        result.write(i3);        
-        result.write(i4);        
-        
+        result.write(i3);
+        result.write(i4);
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
         String datetime = sdf.format(date);
         tailer.write(datetime.getBytes());

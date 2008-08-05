@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,12 +43,12 @@ public class PDDeviceRGB extends PDColorSpace
      * The abbreviated name of this color space.
      */
     public static final String ABBREVIATED_NAME = "RGB";
-    
+
     /**
      * This is the single instance of this class.
      */
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
-    
+
     /**
      * This class is immutable.
      */
@@ -87,30 +87,30 @@ public class PDDeviceRGB extends PDColorSpace
      * @throws IOException If there is an error creating the color space.
      */
     public ColorSpace createColorSpace() throws IOException
-    {        
-        return ColorSpace.getInstance( ColorSpace.CS_sRGB );        
+    {
+        return ColorSpace.getInstance( ColorSpace.CS_sRGB );
     }
-    
+
     /**
      * Create a Java color model for this colorspace.
      *
      * @param bpc The number of bits per component.
-     * 
+     *
      * @return A color model that can be used for Java AWT operations.
      *
      * @throws IOException If there is an error creating the color model.
      */
     public ColorModel createColorModel( int bpc ) throws IOException
-    {        
+    {
         int[] nbBits = { bpc, bpc, bpc };
-        ComponentColorModel componentColorModel = 
-                new ComponentColorModel( createColorSpace(), 
-                                         nbBits, 
-                                         false,                     
-                                         false,              
+        ComponentColorModel componentColorModel =
+                new ComponentColorModel( createColorSpace(),
+                                         nbBits,
+                                         false,
+                                         false,
                                          Transparency.OPAQUE,
                                          DataBuffer.TYPE_BYTE );
-        
+
         return componentColorModel;
     }
 }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,10 +34,10 @@ import org.pdfbox.pdmodel.PDDocument;
  */
 public class PDMetadata extends PDStream
 {
-    
+
     /**
      * This will create a new PDMetadata object.
-     * 
+     *
      * @param document The document that the stream will be part of.
      */
     public PDMetadata( PDDocument document )
@@ -46,7 +46,7 @@ public class PDMetadata extends PDStream
         getStream().setName( "Type", "Metadata" );
         getStream().setName( "Subtype", "XML" );
     }
-    
+
     /**
      * Constructor.  Reads all data from the input stream and embeds it into the
      * document, this will close the InputStream.
@@ -72,29 +72,29 @@ public class PDMetadata extends PDStream
     {
         super( str );
     }
-    
+
     /**
      * Extract the XMP metadata and create and build an in memory object.
      * To persist changes back to the PDF you must call importXMPMetadata.
-     * 
+     *
      * @return A parsed XMP object.
-     * 
+     *
      * @throws IOException If there is an error parsing the XMP data.
      */
     public XMPMetadata exportXMPMetadata() throws IOException
     {
         return XMPMetadata.load( createInputStream() );
     }
- 
+
     /**
      * Import an XMP stream into the PDF document.
-     * 
+     *
      * @param xmp The XMP data.
-     *  
+     *
      * @throws IOException If there is an error generating the XML document.
      * @throws TransformerException If there is an error generating the XML document.
      */
-    public void importXMPMetadata( XMPMetadata xmp ) 
+    public void importXMPMetadata( XMPMetadata xmp )
         throws IOException, TransformerException
     {
         xmp.save( createOutputStream() );

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,7 +46,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         dic = new COSDictionary();
         dic.setName( "Type", "FontDescriptor" );
     }
-    
+
     /**
      * Constructor.
      *
@@ -66,7 +66,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     {
         return dic;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -497,10 +497,10 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         }
         dic.setItem( COSName.getPDFName( "CharSet" ), name );
     }
-    
+
     /**
      * A stream containing a Type 1 font program.
-     * 
+     *
      * @return A stream containing a Type 1 font program.
      */
     public PDStream getFontFile()
@@ -513,20 +513,20 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         }
         return retval;
     }
-    
+
     /**
      * Set the type 1 font program.
-     * 
+     *
      * @param type1Stream The type 1 stream.
      */
     public void setFontFile( PDStream type1Stream )
     {
         dic.setItem( "FontFile", type1Stream );
     }
-    
+
     /**
      * A stream containing a true type font program.
-     * 
+     *
      * @return A stream containing a true type font program.
      */
     public PDStream getFontFile2()
@@ -539,20 +539,20 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         }
         return retval;
     }
-    
+
     /**
      * Set the true type font program.
-     * 
+     *
      * @param ttfStream The true type stream.
      */
     public void setFontFile2( PDStream ttfStream )
     {
         dic.setItem( "FontFile2", ttfStream );
     }
-    
+
     /**
      * A stream containing a font program that is not true type or type 1.
-     * 
+     *
      * @return A stream containing a font program.
      */
     public PDStream getFontFile3()
@@ -565,10 +565,10 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         }
         return retval;
     }
-    
+
     /**
      * Set a stream containing a font program that is not true type or type 1.
-     * 
+     *
      * @param stream The font program stream.
      */
     public void setFontFile3( PDStream stream )

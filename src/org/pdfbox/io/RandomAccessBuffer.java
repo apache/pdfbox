@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,21 +32,21 @@ public class RandomAccessBuffer implements RandomAccess
     private byte[] buffer;
     private long pointer;
     private long size;
-    
+
     /**
      * Default constructor.
      */
-    public RandomAccessBuffer() 
+    public RandomAccessBuffer()
     {
         buffer = new byte[EXTRA_SPACE];
         pointer = 0;
         size = EXTRA_SPACE;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void close() throws IOException 
+    public void close() throws IOException
     {
         buffer = null;
         pointer = 0;
@@ -56,17 +56,17 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void seek(long position) throws IOException 
+    public void seek(long position) throws IOException
     {
-        this.pointer = position; 
+        this.pointer = position;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int read() throws IOException 
+    public int read() throws IOException
     {
-        if (pointer >= this.size) 
+        if (pointer >= this.size)
         {
             return -1;
         }
@@ -78,9 +78,9 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public int read(byte[] b, int offset, int length) throws IOException 
+    public int read(byte[] b, int offset, int length) throws IOException
     {
-        if (pointer >= this.size) 
+        if (pointer >= this.size)
         {
             return 0;
         }
@@ -93,7 +93,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public long length() throws IOException 
+    public long length() throws IOException
     {
         return size;
     }
@@ -101,7 +101,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void write(int b) throws IOException 
+    public void write(int b) throws IOException
     {
         write(new byte[] {(byte) b}, 0, 1);
     }
@@ -109,9 +109,9 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void write(byte[] b, int offset, int length) throws IOException 
+    public void write(byte[] b, int offset, int length) throws IOException
     {
-        if (pointer+length >= buffer.length) 
+        if (pointer+length >= buffer.length)
         {
             // expand buffer
             byte[] temp = new byte[buffer.length+length+EXTRA_SPACE];
@@ -121,7 +121,7 @@ public class RandomAccessBuffer implements RandomAccess
         }
         System.arraycopy(b, offset, buffer, (int)pointer, length);
         pointer += length;
-        if (pointer > this.size) 
+        if (pointer > this.size)
         {
             this.size = pointer;
         }

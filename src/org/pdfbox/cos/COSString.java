@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,15 +74,15 @@ public class COSString extends COSBase
      * FF escape characters.
      */
     public static final byte[] FF_ESCAPE = new byte[]{ 92, 102 }; //"\\f".getBytes( "ISO-8859-1" );
-    
+
     private ByteArrayOutputStream out = null;
 
-    /** 
-     * Forces the string to be serialized in literal form but not hexa form. 
+    /**
+     * Forces the string to be serialized in literal form but not hexa form.
      */
     private boolean forceLiteralForm = false;
-    
-    
+
+
     /**
      * Constructor.
      */
@@ -106,7 +106,7 @@ public class COSString extends COSBase
             {
                 if( chars[i] > 255 )
                 {
-                    unicode16 = true; 
+                    unicode16 = true;
                 }
             }
             if( unicode16 )
@@ -149,22 +149,22 @@ public class COSString extends COSBase
             //should never happen
         }
     }
-    
+
     /**
-     * Forces the string to be written in literal form instead of hexadecimal form. 
-     * 
+     * Forces the string to be written in literal form instead of hexadecimal form.
+     *
      * @param v if v is true the string will be written in literal form, otherwise it will
      * be written in hexa if necessary.
      */
-    
+
     public void setForceLiteralForm(boolean v)
     {
         forceLiteralForm = v;
     }
-    
+
     /**
      * This will create a COS string from a string of hex characters.
-     * 
+     *
      * @param hex A hex string.
      * @return A cos string with the hex characters converted to their actual bytes.
      * @throws IOException If there is an error with the hex string.
@@ -192,10 +192,10 @@ public class COSString extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * This will take this string and create a hex representation of the bytes that make the string.
-     * 
+     *
      * @return A hex string representing the bytes in this string.
      */
     public String getHexString()
@@ -206,7 +206,7 @@ public class COSString extends COSBase
         {
             retval.append( COSHEXTable.HEX_TABLE[ (data[i]+256)%256 ] );
         }
-        
+
         return retval.toString();
     }
 
@@ -296,10 +296,10 @@ public class COSString extends COSBase
     {
         return "COSString{" + new String( getBytes() ) + "}";
     }
-    
+
     /**
      * This will output this string as a PDF object.
-     *  
+     *
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,10 +62,10 @@ public class FDFDictionary implements COSObjectable
     {
         fdf = fdfDictionary;
     }
-    
+
     /**
      * This will create an FDF dictionary from an XFDF XML document.
-     * 
+     *
      * @param fdfXML The XML document that contains the XFDF data.
      * @throws IOException If there is an error reading from the dom.
      */
@@ -84,7 +84,7 @@ public class FDFDictionary implements COSObjectable
                     PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
                     fs.setFile( child.getAttribute( "href" ) );
                     setFile(fs);
-                
+
                 }
                 else if( child.getTagName().equals( "ids" ) )
                 {
@@ -130,12 +130,12 @@ public class FDFDictionary implements COSObjectable
             }
         }
     }
-    
+
     /**
      * This will write this element as an XML document.
-     * 
+     *
      * @param output The stream to write the xml to.
-     * 
+     *
      * @throws IOException If there is an error writing the XML.
      */
     public void writeXML( Writer output ) throws IOException
@@ -190,7 +190,7 @@ public class FDFDictionary implements COSObjectable
      * this FDF file was exported from or is intended to be imported into.
      *
      * @return The F entry of the FDF dictionary.
-     * 
+     *
      * @throws IOException If there is an error creating the file spec.
      */
     public PDFileSpecification getFile() throws IOException
@@ -345,7 +345,7 @@ public class FDFDictionary implements COSObjectable
      * or null if the entry is not set.
      *
      * @return A list of FDF annotations.
-     * 
+     *
      * @throws IOException If there is an error creating the annotation list.
      */
     public List getAnnotations() throws IOException
@@ -420,7 +420,7 @@ public class FDFDictionary implements COSObjectable
      * This will return a list of PDFileSpecification objects.
      *
      * @return A list of embedded FDF files.
-     * 
+     *
      * @throws IOException If there is an error creating the file spec.
      */
     public List getEmbeddedFDFs() throws IOException

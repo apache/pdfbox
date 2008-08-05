@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,8 +59,8 @@ public abstract class PDField implements COSObjectable
      * A Ff flag.
      */
     public static final int FLAG_NO_EXPORT = 1 << 2;
-    
-    
+
+
     private PDAcroForm acroForm;
 
     private COSDictionary dictionary;
@@ -110,13 +110,13 @@ public abstract class PDField implements COSObjectable
     {
         getDictionary().setString( "T", name );
     }
-    
+
     /**
      * Returns the fully qualified name of the field, which is a concatenation of
      * the names of all the parents fields.
      *
      * @return the name of the field
-     * 
+     *
      * @throws IOException If there is an error generating the fully qualified name.
      */
     public String getFullyQualifiedName() throws IOException
@@ -134,36 +134,36 @@ public abstract class PDField implements COSObjectable
         }
         return finalName;
     }
-    
+
     /**
      * Get the FT entry of the field.  This is a read only field and is set depending
      * on the actual type.  The field type is an inheritable attribute.  This method will
-     * return only the direct value on this object.  Use the findFieldType for an upward 
+     * return only the direct value on this object.  Use the findFieldType for an upward
      * recursive search.
-     * 
+     *
      * @return The Field type.
-     * 
+     *
      * @see PDField#findFieldType()
      */
     public String getFieldType()
     {
         return getDictionary().getNameAsString( "FT" );
     }
-    
+
     /**
      * Find the field type and optionally do a recursive upward search.  Sometimes the fieldtype
      * will be specified on the parent instead of the direct object.  This will look at this
      * object for the field type, if none is specified then it will look to the parent if there
      * is a parent.  If there is no parent and no field type has been found then this
      * will return null.
-     * 
+     *
      * @return The field type or null if none was found.
      */
     public String findFieldType()
     {
         return findFieldType( getDictionary() );
     }
-    
+
     private String findFieldType( COSDictionary dic )
     {
         String retval = dic.getNameAsString( "FT" );
@@ -176,7 +176,7 @@ public abstract class PDField implements COSObjectable
             }
         }
         return retval;
-        
+
     }
 
 
@@ -188,7 +188,7 @@ public abstract class PDField implements COSObjectable
      * @throws IOException If there is an error creating the appearance stream.
      */
     public abstract void setValue(String value) throws IOException;
-    
+
     /**
      * getValue gets the fields value to as a string.
      *
@@ -216,7 +216,7 @@ public abstract class PDField implements COSObjectable
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_READ_ONLY );
     }
-    
+
     /**
      * sets the field to be required.
      *
@@ -235,7 +235,7 @@ public abstract class PDField implements COSObjectable
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_REQUIRED );
     }
-    
+
     /**
      * sets the field to be not exported..
      *
@@ -438,12 +438,12 @@ public abstract class PDField implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Get the parent field to this field, or null if none exists.
-     * 
+     *
      * @return The parent field.
-     * 
+     *
      * @throws IOException If there is an error creating the parent field.
      */
     public PDField getParent() throws IOException
@@ -456,23 +456,23 @@ public abstract class PDField implements COSObjectable
         }
         return parent;
     }
-    
+
     /**
      * Set the parent of this field.
-     * 
+     *
      * @param parent The parent to this field.
      */
     public void setParent( PDField parent )
     {
         getDictionary().setItem( "Parent", parent );
     }
-    
+
     /**
      * This will find one of the child elements.  The name array are the components
      * of the name to search down the tree of names.  The nameIndex is where to
      * start in that array.  This method is called recursively until it finds
      * the end point based on the name array.
-     * 
+     *
      * @param name An array that picks the path to the field.
      * @param nameIndex The index into the array.
      * @return The field at the endpoint or null if none is found.
@@ -599,11 +599,11 @@ public abstract class PDField implements COSObjectable
     {
         return dictionary;
     }
-    
+
     /**
      * Get the additional actions for this field.  This will return null
      * if there are no additional actions for this field.
-     * 
+     *
      * @return The actions of the field.
      */
     public PDFormFieldAdditionalActions getActions()
@@ -616,10 +616,10 @@ public abstract class PDField implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the actions of the field.
-     * 
+     *
      * @param actions The field actions.
      */
     public void setActions( PDFormFieldAdditionalActions actions )

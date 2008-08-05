@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -130,13 +130,13 @@ public class PDFToImage
             {
                 outputPrefix = pdfFile.substring( 0, pdfFile.lastIndexOf( '.' ));
             }
-    
+
             PDDocument document = null;
             try
             {
                 document = PDDocument.load( pdfFile );
-    
-    
+
+
                 //document.print();
                 if( document.isEncrypted() )
                 {
@@ -159,7 +159,7 @@ public class PDFToImage
                         }
                     }
                 }
-               
+
 		//Make the call
 		PDFImageWriter W = new PDFImageWriter();
 		W.WriteImage(document, imageType, password, startPage, endPage, outputPrefix);
@@ -183,7 +183,7 @@ public class PDFToImage
     {
         System.err.println( "Usage: java org.pdfbox.PDFToImage [OPTIONS] <PDF file>\n" +
             "  -password  <password>          Password to decrypt document\n" +
-            "  -imageType <image type>        (" + getImageFormats() + ")\n" + 
+            "  -imageType <image type>        (" + getImageFormats() + ")\n" +
             "  -outputPrefix <output prefix>  Filename prefix for image files\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
@@ -191,7 +191,7 @@ public class PDFToImage
             );
         System.exit( 1 );
     }
-    
+
     private static String getImageFormats()
     {
         StringBuffer retval = new StringBuffer();

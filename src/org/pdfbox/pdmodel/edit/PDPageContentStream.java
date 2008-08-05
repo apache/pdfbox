@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,21 +73,21 @@ public class PDPageContentStream
     private PDResources resources;
     private Map fonts;
     private Map xobjects;
-    
+
     private PDColorSpace currentStrokingColorSpace = new PDDeviceGray();
     private PDColorSpace currentNonStrokingColorSpace = new PDDeviceGray();
-    
+
     //cached storage component for getting color values
     private float[] colorComponents = new float[4];
-    
+
     private NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
-    
+
     private static final String BEGIN_TEXT = "BT\n";
     private static final String END_TEXT = "ET\n";
     private static final String SET_FONT = "Tf\n";
     private static final String MOVE_TEXT_POSITION = "Td\n";
     private static final String SHOW_TEXT = "Tj\n";
-    
+
     private static final String SAVE_GRAPHICS_STATE = "q\n";
     private static final String RESTORE_GRAPHICS_STATE = "Q\n";
     private static final String CONCATENATE_MATRIX = "cm\n";
@@ -104,24 +104,24 @@ public class PDPageContentStream
     private static final String MOVE_TO = "m\n";
     private static final String STROKE = "S\n";
     private static final String LINE_WIDTH = "w\n";
-    
-    
+
+
     private static final String SET_STROKING_COLORSPACE = "CS\n";
     private static final String SET_NON_STROKING_COLORSPACE = "cs\n";
-    
+
     private static final String SET_STROKING_COLOR_SIMPLE="SC\n";
     private static final String SET_STROKING_COLOR_COMPLEX="SCN\n";
     private static final String SET_NON_STROKING_COLOR_SIMPLE="sc\n";
     private static final String SET_NON_STROKING_COLOR_COMPLEX="scn\n";
-    
-    
-    
+
+
+
     private static final int SPACE = 32;
-    
-    
+
+
     /**
      * Create a new PDPage content stream.
-     * 
+     *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
      * @throws IOException If there is an error writing to the page contents.
@@ -130,17 +130,17 @@ public class PDPageContentStream
     {
         this(document,sourcePage,false,true);
     }
-    
+
     /**
      * Create a new PDPage content stream.
-     * 
+     *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
      * @param appendContent Indicates whether content will be overwritten. If false all previous content is deleted.
      * @param compress Tell if the content stream should compress the page contents.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress ) 
+    public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress )
         throws IOException
     {
         page = sourcePage;
@@ -157,13 +157,13 @@ public class PDPageContentStream
         {
             // Get the pdstream from the source page instead of creating a new one
             PDStream contents = sourcePage.getContents();
-            
-            // Create a pdstream to append new content 
+
+            // Create a pdstream to append new content
             PDStream contentsToAppend = new PDStream( document );
-            
+
             // This will be the resulting COSStreamArray after existing and new streams are merged
             COSStreamArray compoundStream = null;
-            
+
             // If contents is already an array, a new stream is simply appended to it
             if(contents.getStream() instanceof COSStreamArray)
             {
@@ -172,26 +172,26 @@ public class PDPageContentStream
             }
             else
             {
-                // Creates the COSStreamArray and adds the current stream plus a new one to it 
+                // Creates the COSStreamArray and adds the current stream plus a new one to it
                 COSArray newArray = new COSArray();
                 newArray.add(contents.getCOSObject());
                 newArray.add(contentsToAppend.getCOSObject());
-                compoundStream = new COSStreamArray(newArray);                
+                compoundStream = new COSStreamArray(newArray);
             }
-            
+
             if( compress )
             {
                 List filters = new ArrayList();
                 filters.add( COSName.FLATE_DECODE );
                 contentsToAppend.setFilters( filters );
             }
-            
-            // Sets the compoundStream as page contents 
+
+            // Sets the compoundStream as page contents
             sourcePage.setContents( new PDStream(compoundStream) );
             output = contentsToAppend.createOutputStream();
         }
         else
-        {        
+        {
             PDStream contents = new PDStream( document );
             if( compress )
             {
@@ -200,16 +200,16 @@ public class PDPageContentStream
                 contents.setFilters( filters );
             }
             sourcePage.setContents( contents );
-            output = contents.createOutputStream();            
+            output = contents.createOutputStream();
         }
         formatDecimal.setMaximumFractionDigits( 10 );
         formatDecimal.setGroupingUsed( false );
     }
-    
+
     /**
      * Begin some text operations.
-     * 
-     * @throws IOException If there is an error writing to the stream or if you attempt to 
+     *
+     * @throws IOException If there is an error writing to the stream or if you attempt to
      *         nest beginText calls.
      */
     public void beginText() throws IOException
@@ -221,11 +221,11 @@ public class PDPageContentStream
         appendRawCommands( BEGIN_TEXT );
         inTextMode = true;
     }
-    
+
     /**
      * End some text operations.
-     * 
-     * @throws IOException If there is an error writing to the stream or if you attempt to 
+     *
+     * @throws IOException If there is an error writing to the stream or if you attempt to
      *         nest endText calls.
      */
     public void endText() throws IOException
@@ -237,10 +237,10 @@ public class PDPageContentStream
         appendRawCommands( END_TEXT );
         inTextMode = false;
     }
-    
+
     /**
      * Set the font to draw text with.
-     * 
+     *
      * @param font The font to use.
      * @param fontSize The font size to draw the text.
      * @throws IOException If there is an error writing the font information.
@@ -259,32 +259,32 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( fontSize ) );
         appendRawCommands( SPACE );
-        appendRawCommands( SET_FONT );        
+        appendRawCommands( SET_FONT );
     }
-    
+
     /**
      * Draw an image at the x,y coordinates, with the default size of the image.
-     * 
+     *
      * @param image The image to draw.
      * @param x The x-coordinate to draw the image.
      * @param y The y-coordinate to draw the image.
-     * 
+     *
      * @throws IOException If there is an error writing to the stream.
      */
     public void drawImage( PDXObjectImage image, float x, float y ) throws IOException
     {
         drawXObject( image, x, y, image.getWidth(), image.getHeight() );
     }
-    
+
     /**
      * Draw an xobject(form or image) at the x,y coordinates and a certain width and height.
-     * 
+     *
      * @param xobject The xobject to draw.
      * @param x The x-coordinate to draw the image.
      * @param y The y-coordinate to draw the image.
      * @param width The width of the image to draw.
      * @param height The height of the image to draw.
-     * 
+     *
      * @throws IOException If there is an error writing to the stream.
      */
     public void drawXObject( PDXObject xobject, float x, float y, float width, float height ) throws IOException
@@ -298,7 +298,7 @@ public class PDPageContentStream
         {
             xObjectPrefix = "Form";
         }
-        
+
         String objMapping = (String)xobjectMappings.get( xobject );
         if( objMapping == null )
         {
@@ -326,9 +326,9 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( XOBJECT_DO );
         appendRawCommands( SPACE );
-        appendRawCommands( RESTORE_GRAPHICS_STATE ); 
+        appendRawCommands( RESTORE_GRAPHICS_STATE );
     }
-    
+
     /**
      * The Td operator.
      * @param x The x coordinate.
@@ -347,10 +347,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( MOVE_TEXT_POSITION );
     }
-    
+
     /**
      * This will draw a string at the current location on the screen.
-     * 
+     *
      * @param text The text to draw.
      * @throws IOException If an io exception occurs.
      */
@@ -367,11 +367,11 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( SHOW_TEXT );
     }
-    
+
     /**
      * Set the stroking color space.  This will add the colorspace to the PDResources
      * if necessary.
-     * 
+     *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
      */
@@ -380,11 +380,11 @@ public class PDPageContentStream
         writeColorSpace( colorSpace );
         appendRawCommands( SET_STROKING_COLORSPACE );
     }
-    
+
     /**
      * Set the stroking color space.  This will add the colorspace to the PDResources
      * if necessary.
-     * 
+     *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
      */
@@ -393,7 +393,7 @@ public class PDPageContentStream
         writeColorSpace( colorSpace );
         appendRawCommands( SET_NON_STROKING_COLORSPACE );
     }
-    
+
     private void writeColorSpace( PDColorSpace colorSpace ) throws IOException
     {
         COSName key = null;
@@ -405,7 +405,7 @@ public class PDPageContentStream
         }
         else
         {
-            COSDictionary colorSpaces = 
+            COSDictionary colorSpaces =
                 (COSDictionary)resources.getCOSDictionary().getDictionaryObject(COSName.COLORSPACE);
             if( colorSpaces == null )
             {
@@ -413,7 +413,7 @@ public class PDPageContentStream
                 resources.getCOSDictionary().setItem( COSName.COLORSPACE, colorSpaces );
             }
             key = colorSpaces.getKeyForValue( colorSpace.getCOSObject() );
-            
+
             if( key == null )
             {
                 int counter = 0;
@@ -429,10 +429,10 @@ public class PDPageContentStream
         key.writePDF( output );
         appendRawCommands( SPACE );
     }
-    
+
     /**
      * Set the color components of current stroking colorspace.
-     * 
+     *
      * @param components The components to set for the current color.
      * @throws IOException If there is an error while writing to the stream.
      */
@@ -455,10 +455,10 @@ public class PDPageContentStream
             appendRawCommands( SET_STROKING_COLOR_SIMPLE );
         }
     }
-    
+
     /**
      * Set the stroking color, specified as RGB.
-     * 
+     *
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -484,10 +484,10 @@ public class PDPageContentStream
             throw new IOException( "Error: unknown colorspace:" + colorSpace );
         }
     }
-    
+
     /**
      * Set the non stroking color, specified as RGB.
-     * 
+     *
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -513,10 +513,10 @@ public class PDPageContentStream
             throw new IOException( "Error: unknown colorspace:" + colorSpace );
         }
     }
-    
+
     /**
      * Set the stroking color, specified as RGB, 0-255.
-     * 
+     *
      * @param r The red value.
      * @param g The green value.
      * @param b The blue value.
@@ -532,10 +532,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( RG_STROKING );
     }
-    
+
     /**
      * Set the stroking color, specified as CMYK, 0-255.
-     * 
+     *
      * @param c The cyan value.
      * @param m The magenta value.
      * @param y The yellow value.
@@ -554,10 +554,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( K_STROKING );
     }
-    
+
     /**
      * Set the stroking color, specified as CMYK, 0.0-1.0.
-     * 
+     *
      * @param c The cyan value.
      * @param m The magenta value.
      * @param y The yellow value.
@@ -576,10 +576,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( K_STROKING );
     }
-    
+
     /**
      * Set the stroking color, specified as grayscale, 0-255.
-     * 
+     *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -589,10 +589,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( G_STROKING );
     }
-    
+
     /**
      * Set the stroking color, specified as Grayscale 0.0-1.0.
-     * 
+     *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -602,10 +602,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( G_STROKING );
     }
-    
+
     /**
      * Set the color components of current non stroking colorspace.
-     * 
+     *
      * @param components The components to set for the current color.
      * @throws IOException If there is an error while writing to the stream.
      */
@@ -628,10 +628,10 @@ public class PDPageContentStream
             appendRawCommands( SET_NON_STROKING_COLOR_SIMPLE );
         }
     }
-    
+
     /**
      * Set the non stroking color, specified as RGB, 0-255.
-     * 
+     *
      * @param r The red value.
      * @param g The green value.
      * @param b The blue value.
@@ -647,10 +647,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( RG_NON_STROKING );
     }
-    
+
     /**
      * Set the non stroking color, specified as CMYK, 0-255.
-     * 
+     *
      * @param c The cyan value.
      * @param m The magenta value.
      * @param y The yellow value.
@@ -669,10 +669,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( K_NON_STROKING );
     }
-    
+
     /**
      * Set the non stroking color, specified as CMYK, 0.0-1.0.
-     * 
+     *
      * @param c The cyan value.
      * @param m The magenta value.
      * @param y The yellow value.
@@ -691,10 +691,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( K_NON_STROKING );
     }
-    
+
     /**
      * Set the non stroking color, specified as grayscale, 0-255.
-     * 
+     *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -704,10 +704,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( G_NON_STROKING );
     }
-    
+
     /**
      * Set the non stroking color, specified as Grayscale 0.0-1.0.
-     * 
+     *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
@@ -717,10 +717,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( G_NON_STROKING );
     }
-    
+
     /**
      * Draw a rectangle on the page using the current non stroking color.
-     * 
+     *
      * @param x The lower left x coordinate.
      * @param y The lower left y coordinate.
      * @param width The width of the rectangle.
@@ -740,10 +740,10 @@ public class PDPageContentStream
         appendRawCommands( APPEND_RECTANGLE );
         appendRawCommands( FILL );
     }
-    
+
     /**
      * Draw a line on the page using the current non stroking color and the current line width.
-     * 
+     *
      * @param xStart The start x coordinate.
      * @param yStart The start y coordinate.
      * @param xEnd The end x coordinate.
@@ -766,16 +766,16 @@ public class PDPageContentStream
         appendRawCommands( LINE_TO );
         // stroke
         appendRawCommands( STROKE );
-        
+
     }
-     
+
      /**
      * Set linewidth to the given value.
-     * 
+     *
      * @param lineWidth The width which is used for drwaing.
      * @throws IOException If there is an error while drawing on the screen.
      */
-    public void setLineWidth(float lineWidth) throws IOException 
+    public void setLineWidth(float lineWidth) throws IOException
     {
         appendRawCommands( formatDecimal.format( lineWidth ) );
         appendRawCommands( SPACE );
@@ -783,7 +783,7 @@ public class PDPageContentStream
     }
     /**
      * This will append raw commands to the content stream.
-     * 
+     *
      * @param commands The commands to append to the stream.
      * @throws IOException If an error occurs while writing to the stream.
      */
@@ -791,10 +791,10 @@ public class PDPageContentStream
     {
         appendRawCommands( commands.getBytes( "ISO-8859-1" ) );
     }
-    
+
     /**
      * This will append raw commands to the content stream.
-     * 
+     *
      * @param commands The commands to append to the stream.
      * @throws IOException If an error occurs while writing to the stream.
      */
@@ -802,19 +802,19 @@ public class PDPageContentStream
     {
         output.write( commands );
     }
-    
+
     /**
      * This will append raw commands to the content stream.
-     * 
+     *
      * @param data Append a raw byte to the stream.
-     * 
+     *
      * @throws IOException If an error occurs while writing to the stream.
      */
     public void appendRawCommands( int data ) throws IOException
     {
         output.write( data );
     }
-    
+
     /**
      * Close the content stream.  This must be called when you are done with this
      * object.

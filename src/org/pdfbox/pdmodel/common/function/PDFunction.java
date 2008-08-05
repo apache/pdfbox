@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,11 +36,11 @@ public abstract class PDFunction implements COSObjectable
 {
     /**
      * Create the correct PD Model function based on the COS base function.
-     * 
+     *
      * @param function The COS function dictionary.
-     * 
+     *
      * @return The PDModel Function object.
-     * 
+     *
      * @throws IOException If we are unable to create the PDFunction object.
      */
     public static PDFunction create( COSBase function ) throws IOException
@@ -82,9 +82,9 @@ public abstract class PDFunction implements COSObjectable
                 else
                 {
                     throw new IOException( "Error: Unknown dictionary function type " + functionType );
-                }       
+                }
             }
-            
+
         }
         else
         {
@@ -92,14 +92,14 @@ public abstract class PDFunction implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * This will get the number of output parameters that
      * have a range specified.  A range for output parameters
      * is optional so this may return zero for a function
      * that does have output parameters, this will simply return the
      * number that have the rnage specified.
-     * 
+     *
      * @return The number of input parameters that have a range
      * specified.
      */
@@ -127,7 +127,7 @@ public abstract class PDFunction implements COSObjectable
     /**
      * This will get the number of input parameters that
      * have a domain specified.
-     * 
+     *
      * @return The number of input parameters that have a domain
      * specified.
      */

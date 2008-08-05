@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @version $Revision: 1.5 $
  */
 
-public class SetTextFont extends OperatorProcessor 
+public class SetTextFont extends OperatorProcessor
 {
     /**
      * Tf selectfont Set text font and size.
@@ -46,7 +46,7 @@ public class SetTextFont extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        //there are some documents that are incorrectly structured and 
+        //there are some documents that are incorrectly structured and
         //arguments are in the wrong spot, so we will silently ignore them
         //if there are no arguments
         if( arguments.size() >= 2 )
@@ -55,7 +55,7 @@ public class SetTextFont extends OperatorProcessor
             COSName fontName = (COSName)arguments.get( 0 );
             float fontSize = ((COSNumber)arguments.get( 1 ) ).floatValue();
             context.getGraphicsState().getTextState().setFontSize( fontSize );
-    
+
             //old way
             //graphicsState.getTextState().getFont() = (COSObject)stream.getDictionaryObject( fontName );
             //if( graphicsState.getTextState().getFont() == null )

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,16 +39,16 @@ import org.pdfbox.cos.COSString;
 public class DateConverter
 {
     private static final SimpleDateFormat PDF_DATE_FORMAT = new SimpleDateFormat( "yyyyMMddHHmmss" );
-    
+
     //The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF documents
     //will use that date, so I have added a couple other potential formats
     //to try if the original one does not work.
-    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] { 
+    private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
         new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
         new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
         new SimpleDateFormat("MM/dd/yyyy hh:mm:ss"),
         new SimpleDateFormat("MM/dd/yyyy")};
-    
+
     private DateConverter()
     {
         //utility class should not be constructed.
@@ -72,7 +72,7 @@ public class DateConverter
             long hours = Math.abs( offsetInMinutes/60 );
             long minutes = Math.abs( offsetInMinutes%60 );
             buffer.append( "D:" );
-            buffer.append( PDF_DATE_FORMAT.format( date.getTime() ) ); 
+            buffer.append( PDF_DATE_FORMAT.format( date.getTime() ) );
             if( offsetInMinutes == 0 )
             {
                 buffer.append( "Z" );
@@ -98,11 +98,11 @@ public class DateConverter
             buffer.append( minutes );
             buffer.append( "'" );
             retval = buffer.toString();
-            
+
         }
         return retval;
     }
-    
+
     /**
      * This will convert a string to a calendar.
      *
@@ -119,7 +119,7 @@ public class DateConverter
         {
             retval = toCalendar( date.getString() );
         }
-        
+
         return retval;
     }
 
@@ -177,7 +177,7 @@ public class DateConverter
                 {
                     second = Integer.parseInt( date.substring( 12, 14 ) );
                 }
-                
+
                 if( date.length() >= 15 )
                 {
                     char sign = date.charAt( 14 );
@@ -210,13 +210,13 @@ public class DateConverter
                 }
                 if( zone != null )
                 {
-                    retval = new GregorianCalendar( zone );                    
+                    retval = new GregorianCalendar( zone );
                 }
                 else
                 {
                     retval = new GregorianCalendar();
                 }
-                
+
                 retval.set(year, month-1, day, hour, minute, second );
             }
             catch( NumberFormatException e )
@@ -225,7 +225,7 @@ public class DateConverter
                 {
                     try
                     {
-                        Date utilDate = POTENTIAL_FORMATS[i].parse( date ); 
+                        Date utilDate = POTENTIAL_FORMATS[i].parse( date );
                         retval = new GregorianCalendar();
                         retval.setTime( utilDate );
                     }
@@ -243,7 +243,7 @@ public class DateConverter
         }
         return retval;
     }
-    
+
     private static final void zeroAppend( StringBuffer out, int number )
     {
         if( number < 10 )
@@ -252,17 +252,17 @@ public class DateConverter
         }
         out.append( number );
     }
-    
+
     /**
      * Convert the date to iso 8601 string format.
-     * 
+     *
      * @param cal The date to convert.
      * @return The date represented as an ISO 8601 string.
      */
     public static String toISO8601( Calendar cal )
     {
         StringBuffer retval = new StringBuffer();
-        
+
         retval.append( cal.get( Calendar.YEAR ) );
         retval.append( "-" );
         zeroAppend( retval, cal.get( Calendar.MONTH )+1 );
@@ -274,7 +274,7 @@ public class DateConverter
         zeroAppend( retval, cal.get( Calendar.MINUTE ));
         retval.append( ":" );
         zeroAppend( retval, cal.get( Calendar.SECOND ));
-        
+
         int timeZone = cal.get( Calendar.ZONE_OFFSET ) + cal.get(Calendar.DST_OFFSET );
         if( timeZone < 0 )
         {
@@ -299,7 +299,7 @@ public class DateConverter
             retval.append( "0" );
         }
         retval.append( Integer.toString( minutes ) );
-        
+
         return retval.toString();
     }
 }

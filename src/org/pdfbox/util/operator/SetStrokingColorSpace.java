@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,12 +33,12 @@ import java.io.IOException;
  * <p>Structal modification of the PDFEngine class :
  * the long sequence of conditions in processOperator is remplaced by
  * this strategy pattern.</p>
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $
  */
 
-public class SetStrokingColorSpace extends OperatorProcessor 
+public class SetStrokingColorSpace extends OperatorProcessor
 {
     private static final float[] EMPTY_FLOAT_ARRAY = new float[0];
 
@@ -79,7 +79,7 @@ public class SetStrokingColorSpace extends OperatorProcessor
             }
         }
         colorInstance.setColorSpaceValue( values );
-        
+
         if (context instanceof PageDrawer){
             PageDrawer drawer = (PageDrawer)context;
             drawer.ColorChanged (true);

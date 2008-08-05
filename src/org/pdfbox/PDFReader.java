@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * An application to read PDF documents.  This will provide Acrobat Reader like
  * funtionality.
- * 
+ *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $
  */
@@ -64,7 +64,7 @@ public class PDFReader extends javax.swing.JFrame
     private javax.swing.JMenuItem printMenuItem;
     private JPanel documentPanel = new JPanel();
     private ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
-    
+
     private PDDocument document = null;
 
     /**
@@ -129,7 +129,7 @@ public class PDFReader extends javax.swing.JFrame
         });
 
         fileMenu.add(openMenuItem);
-        
+
         printMenuItem.setText( "Print" );
         printMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
@@ -219,7 +219,7 @@ public class PDFReader extends javax.swing.JFrame
             }
         }
     }//GEN-LAST:event_openMenuItemActionPerformed
-    
+
     private void exitApplication()
     {
         try
@@ -264,7 +264,7 @@ public class PDFReader extends javax.swing.JFrame
         input = new FileInputStream(f);
         document = parseDocument( input );
         setTitle( "PDFBox - " + f.getAbsolutePath() );
-        
+
         List pages = document.getDocumentCatalog().getAllPages();
         for( int i=0; i<pages.size(); i++ )
         {
@@ -306,7 +306,7 @@ public class PDFReader extends javax.swing.JFrame
 
     /**
      * Get the bottom status panel.
-     * 
+     *
      * @return The bottom status panel.
      */
     public ReaderBottomPanel getBottomStatusPanel()

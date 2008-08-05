@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ import org.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestinati
 public class PDAnnotationLink extends PDAnnotation
 {
 
-    
+
     /**
      * Constant values of the Text as defined in the PDF 1.6 reference Table 8.19.
      */
@@ -52,13 +52,13 @@ public class PDAnnotationLink extends PDAnnotation
      * Constant values of the Text as defined in the PDF 1.6 reference Table 8.19.
      */
     public static final String HIGHLIGHT_MODE_PUSH = "P";
-    
-    
+
+
     /**
      * The type of annotation.
      */
     public static final String SUB_TYPE = "Link";
-    
+
     /**
      * Constructor.
      */
@@ -82,54 +82,54 @@ public class PDAnnotationLink extends PDAnnotation
     /**
      * Get the destination to be displayed when the annotation is activated.  Either
      * this or the A should be set but not both.
-     * 
+     *
      * @return The destination for this annotation.
-     * 
+     *
      * @throws IOException If there is an error creating the destination.
      */
     public PDDestination getDestination() throws IOException
     {
         COSBase base = getDictionary().getDictionaryObject( COSName.DEST );
-        PDDestination retval = PDDestination.create( base ); 
-            
+        PDDestination retval = PDDestination.create( base );
+
         return retval;
     }
-    
+
     /**
      * The new destination value.
-     * 
+     *
      * @param dest The updated destination.
      */
     public void setDestination( PDDestination dest )
     {
         getDictionary().setItem( COSName.DEST, dest );
     }
-    
+
     /**
-     * Set the highlight mode for when the mouse is depressed.  
+     * Set the highlight mode for when the mouse is depressed.
      * See the HIGHLIGHT_MODE_XXX constants.
-     * 
+     *
      * @return The string representation of the highlight mode.
      */
     public String getHighlightMode()
     {
         return getDictionary().getNameAsString( COSName.H, HIGHLIGHT_MODE_INVERT );
     }
-    
+
     /**
      * Set the highlight mode.  See the HIGHLIGHT_MODE_XXX constants.
-     * 
+     *
      * @param mode The new highlight mode.
      */
     public void setHighlightMode( String mode )
     {
         getDictionary().setName( COSName.H, mode );
     }
-    
+
     /**
      * This will set the previous URI action, in case it
      * needs to be retrieved at later date.
-     * 
+     *
      * @param pa The previous URI.
      */
     public void setPreviousURI( PDActionURI pa )
@@ -140,13 +140,13 @@ public class PDAnnotationLink extends PDAnnotation
     /**
      * This will set the previous URI action, in case it's
      * needed.
-     * 
+     *
      * @return The previous URI.
      */
-    public PDActionURI getPreviousURI() 
+    public PDActionURI getPreviousURI()
     {
         COSDictionary pa = (COSDictionary) getDictionary().getDictionaryObject("PA");
-        if ( pa != null ) 
+        if ( pa != null )
         {
             return new PDActionURI( pa );
         }
@@ -155,11 +155,11 @@ public class PDAnnotationLink extends PDAnnotation
             return null;
         }
     }
-    
+
     /**
      * This will set the set of quadpoints which encompass the areas of this
      * annotation which will activate.
-     * 
+     *
      * @param quadPoints
      *            an array representing the set of area covered.
      */
@@ -173,7 +173,7 @@ public class PDAnnotationLink extends PDAnnotation
     /**
      * This will retrieve the set of quadpoints which encompass the areas of
      * this annotation which will activate.
-     * 
+     *
      * @return An array of floats representing the quad points.
      */
     public float[] getQuadPoints()
@@ -182,7 +182,7 @@ public class PDAnnotationLink extends PDAnnotation
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();
-        } 
+        }
         else
         {
             return null; // Should never happen as this is a required item

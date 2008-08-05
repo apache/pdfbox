@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,12 +43,12 @@ import org.pdfbox.persistence.util.COSObjectKey;
 public class COSDocument extends COSBase
 {
     private float version;
-    
+
     /**
      * added objects (actually preserving original sequence).
      */
     private List objects = new ArrayList();
-    
+
     /**
      * a pool of objects read/referenced so far
      * used to resolve indirect object references.
@@ -64,9 +64,9 @@ public class COSDocument extends COSBase
      * This file will store the streams in order to conserve memory.
      */
     private RandomAccess scratchFile = null;
-    
+
     private File tmpFile = null;
-    
+
     private String headerString = "%PDF-1.4";
 
     /**
@@ -128,7 +128,7 @@ public class COSDocument extends COSBase
     {
         return getObjectByType( COSName.getPDFName( type ) );
     }
-    
+
     /**
      * This will get the first dictionary object by type.
      *
@@ -157,12 +157,12 @@ public class COSDocument extends COSBase
 		}catch (ClassCastException e){
 			logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
 		}
-		
+
             }
         }
         return retval;
     }
-    
+
     /**
      * This will get all dictionary objects by type.
      *
@@ -174,7 +174,7 @@ public class COSDocument extends COSBase
     {
         return getObjectsByType( COSName.getPDFName( type ) );
     }
-    
+
     /**
      * This will get a dictionary object by type.
      *
@@ -417,22 +417,22 @@ public class COSDocument extends COSBase
     /**
      * @return Returns the headerString.
      */
-    public String getHeaderString() 
+    public String getHeaderString()
     {
         return headerString;
     }
     /**
      * @param header The headerString to set.
      */
-    public void setHeaderString(String header) 
+    public void setHeaderString(String header)
     {
         headerString = header;
     }
-    
+
     /**
      * This method will search the list of objects for types of ObjStm.  If it finds
      * them then it will parse out all of the objects from the stream that is contains.
-     * 
+     *
      * @throws IOException If there is an error parsing the stream.
      */
     public void dereferenceObjectStreams() throws IOException
@@ -454,15 +454,15 @@ public class COSDocument extends COSBase
             }
         }
     }
-    
+
     /**
      * This will add an object to this document.
      * the method checks if obj is already present as there may be cyclic dependencies
      *
      * @param obj The object to add to the document.
-     * @return The object that was actually added to this document, if an object reference already 
+     * @return The object that was actually added to this document, if an object reference already
      * existed then that will be returned.
-     * 
+     *
      * @throws IOException If there is an error adding the object.
      */
     public COSObject addObject(COSObject obj) throws IOException
@@ -476,7 +476,7 @@ public class COSDocument extends COSBase
         fromPool.setObject( obj.getObject() );
         return fromPool;
     }
-    
+
     /**
      * This will get an object from the pool.
      *
@@ -503,9 +503,9 @@ public class COSDocument extends COSBase
                 obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
                 objectPool.put(key, obj);
             }
-            objects.add( obj );            
+            objects.add( obj );
         }
-        
+
         return obj;
     }
 }

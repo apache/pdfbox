@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,10 +42,10 @@ public class COSArrayList implements List
 {
     private COSArray array;
     private List actual;
-    
+
     private COSDictionary parentDict;
     private String dictKey;
-    
+
     /**
      * Default constructor.
      */
@@ -66,9 +66,9 @@ public class COSArrayList implements List
         actual = actualList;
         array = cosArray;
     }
-    
+
     /**
-     * This is a really special constructor.  Sometimes the PDF spec says 
+     * This is a really special constructor.  Sometimes the PDF spec says
      * that a dictionary entry can either be a single item or an array of those
      * items.  But in the PDModel interface we really just want to always return
      * a java.util.List.  In the case were we get the list and never modify it
@@ -88,7 +88,7 @@ public class COSArrayList implements List
         array.add( item );
         actual = new ArrayList();
         actual.add( actualObject );
-        
+
         parentDict = dictionary;
         dictKey = dictionaryKey;
     }
@@ -147,7 +147,7 @@ public class COSArrayList implements List
      */
     public boolean add(Object o)
     {
-        //when adding if there is a parentDict then change the item 
+        //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null )
         {
@@ -206,7 +206,7 @@ public class COSArrayList implements List
      */
     public boolean addAll(Collection c)
     {
-        //when adding if there is a parentDict then change the item 
+        //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null && c.size() > 0)
         {
@@ -224,7 +224,7 @@ public class COSArrayList implements List
      */
     public boolean addAll(int index, Collection c)
     {
-        //when adding if there is a parentDict then change the item 
+        //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null && c.size() > 0)
         {
@@ -233,7 +233,7 @@ public class COSArrayList implements List
             //a usecase for keeping the parentDict around but not now.
             parentDict = null;
         }
-        
+
         if( c.size() >0 && c.toArray()[0] instanceof DualCOSObjectable )
         {
             array.addAll( index*2, toCOSObjectList( c ) );
@@ -488,7 +488,7 @@ public class COSArrayList implements List
      */
     public void clear()
     {
-        //when adding if there is a parentDict then change the item 
+        //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null )
         {
@@ -559,7 +559,7 @@ public class COSArrayList implements List
      */
     public void add(int index, Object element)
     {
-        //when adding if there is a parentDict then change the item 
+        //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null )
         {

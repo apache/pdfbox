@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,13 @@ import org.pdfbox.pdmodel.graphics.color.PDGamma;
 /**
  * This is the class that represents a line annotation.
  * Introduced in PDF 1.3 specification
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
 public class PDAnnotationLine extends PDAnnotationMarkup
 {
-    
+
 
     /*
      * The various values for intent (get/setIT, see the PDF 1.6 reference Table
@@ -122,7 +122,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * Creates a Line annotation from a COSDictionary, expected to be a correct
      * object definition.
-     * 
+     *
      * @param field
      *            the PDF objet to represent as a field.
      */
@@ -134,7 +134,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will set start and end coordinates of the line (or leader line if LL
      * entry is set).
-     * 
+     *
      * @param l
      *            array of 4 floats [x1, y1, x2, y2] line start and end points
      *            in default user space.
@@ -149,7 +149,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will retrieve the start and end coordinates of the line (or leader
      * line if LL entry is set).
-     * 
+     *
      * @return array of floats [x1, y1, x2, y2] line start and end points in
      *         default user space.
      */
@@ -158,11 +158,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         COSArray l = (COSArray) getDictionary().getDictionaryObject( "L" );
         return l.toFloatArray();
     }
-    
+
     /**
-     * This will set the line ending style for the start point, 
+     * This will set the line ending style for the start point,
      * see the LE_ constants for the possible values.
-     * 
+     *
      * @param style The new style.
      */
     public void setStartPointEndingStyle( String style )
@@ -184,11 +184,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
             array.setName( 0, style );
         }
     }
-    
+
     /**
-     * This will retrieve the line ending style for the start point, 
+     * This will retrieve the line ending style for the start point,
      * possible values shown in the LE_ constants section.
-     * 
+     *
      * @return The ending style for the start point.
      */
     public String getStartPointEndingStyle()
@@ -199,14 +199,14 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         {
             retval = array.getName( 0 );
         }
-        
+
         return retval;
     }
-    
+
     /**
-     * This will set the line ending style for the end point, 
+     * This will set the line ending style for the end point,
      * see the LE_ constants for the possible values.
-     * 
+     *
      * @param style The new style.
      */
     public void setEndPointEndingStyle( String style )
@@ -228,11 +228,11 @@ public class PDAnnotationLine extends PDAnnotationMarkup
             array.setName( 1, style );
         }
     }
-    
+
     /**
-     * This will retrieve the line ending style for the end point, 
+     * This will retrieve the line ending style for the end point,
      * possible values shown in the LE_ constants section.
-     * 
+     *
      * @return The ending style for the end point.
      */
     public String getEndPointEndingStyle()
@@ -243,17 +243,17 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         {
             retval = array.getName( 1 );
         }
-        
+
         return retval;
     }
 
     /**
      * This will set interior colour of the line endings defined in the LE
      * entry. Colour is in DeviceRGB colourspace.
-     * 
+     *
      * @param ic
      *            colour in the DeviceRGB colourspace.
-     * 
+     *
      */
     public void setInteriorColour( PDGamma ic )
     {
@@ -263,10 +263,10 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will retrieve the interior colour of the line endings defined in the
      * LE entry. Colour is in DeviceRGB colourspace.
-     * 
-     * 
+     *
+     *
      * @return PDGamma object representing the colour.
-     * 
+     *
      */
     public PDGamma getInteriorColour()
     {
@@ -275,7 +275,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         if (ic != null)
         {
             return new PDGamma( ic );
-        } 
+        }
         else
         {
             return null;
@@ -284,7 +284,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
 
     /**
      * This will set if the contents are shown as a caption to the line.
-     * 
+     *
      * @param cap
      *            Boolean value.
      */
@@ -295,7 +295,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
 
     /**
      * This will retrieve if the contents are shown as a caption or not.
-     * 
+     *
      * @return boolean if the content is shown as a caption.
      */
     public boolean getCaption()

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,9 +36,9 @@ public abstract class PDStreamFunction extends PDFunction
     private PDStream function = null;
 
     /**
-     * Constructor to create a new blank function, should only be called by 
+     * Constructor to create a new blank function, should only be called by
      * subclasses.
-     * 
+     *
      *  @param doc The document that this function is part of.
      *  @param functionType An integer describing the function type, only 0,2,3,4
      *  are defined by the PDF sepc.
@@ -78,7 +78,7 @@ public abstract class PDStreamFunction extends PDFunction
     {
         return function.getStream();
     }
-    
+
     private COSArray getRangeArray( String fieldName, int n )
     {
         COSArray rangeArray = (COSArray)function.getStream().getDictionaryObject( COSName.getPDFName( "Range" ) );
@@ -94,14 +94,14 @@ public abstract class PDStreamFunction extends PDFunction
         }
         return rangeArray;
     }
-    
+
     /**
      * This will get the number of output parameters that
      * have a range specified.  A range for output parameters
      * is optional so this may return zero for a function
      * that does have output parameters, this will simply return the
      * number that have the rnage specified.
-     * 
+     *
      * @return The number of input parameters that have a range
      * specified.
      */
@@ -138,11 +138,11 @@ public abstract class PDStreamFunction extends PDFunction
         rangeArray.set( n*2, new COSFloat( range.getMin() ) );
         rangeArray.set( n*2+1, new COSFloat( range.getMax() ) );
     }
-    
+
     /**
      * This will get the number of input parameters that
      * have a domain specified.
-     * 
+     *
      * @return The number of input parameters that have a domain
      * specified.
      */
@@ -151,7 +151,7 @@ public abstract class PDStreamFunction extends PDFunction
         COSArray array = getRangeArray( "Domain", 0 );
         return array.size() / 2;
     }
-    
+
     /**
      * This will get the range for a certain input parameter.  This is will never
      * return null.  If it is not present then the range 0 to 0 will

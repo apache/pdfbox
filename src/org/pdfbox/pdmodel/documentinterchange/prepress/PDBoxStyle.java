@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,9 +41,9 @@ public class PDBoxStyle implements COSObjectable
      * Style for guideline.
      */
     public static final String GUIDELINE_STYLE_DASHED = "D";
-    
+
     private COSDictionary dictionary;
-    
+
     /**
      * Default Constructor.
      *
@@ -52,17 +52,17 @@ public class PDBoxStyle implements COSObjectable
     {
         dictionary = new COSDictionary();
     }
-    
+
     /**
      * Constructor for an existing BoxStyle element.
-     * 
+     *
      * @param dic The existing dictionary.
      */
     public PDBoxStyle( COSDictionary dic )
     {
         dictionary = dic;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -72,7 +72,7 @@ public class PDBoxStyle implements COSObjectable
     {
         return dictionary;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -82,12 +82,12 @@ public class PDBoxStyle implements COSObjectable
     {
         return dictionary;
     }
-    
+
     /**
-     * Get the color to be used for the guidelines.  This is guaranteed to 
-     * not return null.  The color space will always be DeviceRGB and the 
+     * Get the color to be used for the guidelines.  This is guaranteed to
+     * not return null.  The color space will always be DeviceRGB and the
      * default color is [0,0,0].
-     * 
+     *
      *@return The guideline color.
      */
     public PDColorSpaceInstance getGuidelineColor()
@@ -105,11 +105,11 @@ public class PDBoxStyle implements COSObjectable
         instance.setColorSpace( PDDeviceRGB.INSTANCE );
         return instance;
     }
-    
+
     /**
-     * Set the color space instance for this box style.  This must be a 
+     * Set the color space instance for this box style.  This must be a
      * PDDeviceRGB!
-     * 
+     *
      * @param color The new colorspace value.
      */
     public void setGuideLineColor( PDColorSpaceInstance color )
@@ -121,31 +121,31 @@ public class PDBoxStyle implements COSObjectable
         }
         dictionary.setItem( "C", values );
     }
-    
+
     /**
-     * Get the width of the of the guideline in default user space units.  
+     * Get the width of the of the guideline in default user space units.
      * The default is 1.
-     * 
+     *
      * @return The width of the guideline.
      */
     public float getGuidelineWidth()
     {
         return dictionary.getFloat( "W", 1 );
     }
-    
+
     /**
      * Set the guideline width.
-     * 
+     *
      * @param width The width in default user space units.
      */
     public void setGuidelineWidth( float width )
     {
         dictionary.setFloat( "W", width );
     }
-    
+
     /**
      * Get the style for the guideline.  The default is "S" for solid.
-     * 
+     *
      * @return The guideline style.
      * @see PDBoxStyle#GUIDELINE_STYLE_DASHED
      * @see PDBoxStyle#GUIDELINE_STYLE_SOLID
@@ -154,10 +154,10 @@ public class PDBoxStyle implements COSObjectable
     {
         return dictionary.getNameAsString( "S", GUIDELINE_STYLE_SOLID );
     }
-    
+
     /**
      * Set the style for the box.
-     * 
+     *
      * @param style The style for the box line.
      * @see PDBoxStyle#GUIDELINE_STYLE_DASHED
      * @see PDBoxStyle#GUIDELINE_STYLE_SOLID
@@ -166,11 +166,11 @@ public class PDBoxStyle implements COSObjectable
     {
         dictionary.setName( "S", style );
     }
-    
+
     /**
      * Get the line dash pattern for this box style.  This is guaranteed to not
      * return null.  The default is [3],0.
-     * 
+     *
      * @return The line dash pattern.
      */
     public PDLineDashPattern getLineDashPattern()
@@ -190,10 +190,10 @@ public class PDBoxStyle implements COSObjectable
         pattern = new PDLineDashPattern( lineArray );
         return pattern;
     }
-    
+
     /**
      * Set the line dash pattern associated with this box style.
-     * 
+     *
      * @param pattern The patter for this box style.
      */
     public void setLineDashPattern( PDLineDashPattern pattern )

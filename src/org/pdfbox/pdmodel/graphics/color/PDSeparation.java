@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,33 +95,33 @@ public class PDSeparation extends PDColorSpace
     {
         //throw new IOException( "Not implemented" );
         try{
-            
+
             ///dump some information to help figure these things out
-            //logger().info( array.toString()); 
-            
+            //logger().info( array.toString());
+
             PDColorSpace alt = getAlternateColorSpace();
-            
+
             //logger().info(alt.toString());
-            
+
             ColorSpace CS = alt.createColorSpace();///dwilson 12/15/07
             //logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
-            
+
             return CS;
         }catch (IOException IOe){
             logger().severe(FullStackTrace(IOe));
-            
+
             throw IOe;
         }catch (Exception e){
             logger().severe(FullStackTrace(e));
             throw new IOException("Failed to Create ColorSpace");
         }
     }
-    
+
     /**
      * Create a Java color model for this colorspace.
      *
      * @param bpc The number of bits per component.
-     * 
+     *
      * @return A color model that can be used for Java AWT operations.
      *
      * @throws IOException If there is an error creating the color model.
@@ -129,7 +129,7 @@ public class PDSeparation extends PDColorSpace
     public ColorModel createColorModel( int bpc ) throws IOException
     {
         //throw new IOException( "Not implemented" );
-        return getAlternateColorSpace().createColorModel(bpc); 
+        return getAlternateColorSpace().createColorModel(bpc);
     }
 
     /**
@@ -164,9 +164,9 @@ public class PDSeparation extends PDColorSpace
     {
         COSBase alternate = array.getObject( 2 );
         PDColorSpace cs = PDColorSpaceFactory.createColorSpace( alternate );
-        
+
         //logger().info("Returning " + cs.toString() + " for input " + alternate.toString());
-        
+
         return cs;
     }
 
@@ -189,7 +189,7 @@ public class PDSeparation extends PDColorSpace
      * This will get the tint transform function.
      *
      * @return The tint transform function.
-     * 
+     *
      * @throws IOException If there is an error creating the PDFunction
      */
     public PDFunction getTintTransform() throws IOException

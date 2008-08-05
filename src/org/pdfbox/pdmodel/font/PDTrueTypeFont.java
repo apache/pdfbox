@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,12 +74,12 @@ public class PDTrueTypeFont extends PDSimpleFont
      * to load a Font when a mapping does not exist for the current font.
      */
     public static final String UNKNOWN_FONT = "UNKNOWN_FONT";
-    
+
     private Font awtFont = null;
-    
+
     private static Properties externalFonts = new Properties();
     private static Map loadedExternalFonts = new HashMap();
-    
+
     static
     {
         try
@@ -92,8 +92,8 @@ public class PDTrueTypeFont extends PDSimpleFont
             throw new RuntimeException( "Error loading font resources" );
         }
     }
-    
-    
+
+
     /**
      * Constructor.
      */
@@ -112,24 +112,24 @@ public class PDTrueTypeFont extends PDSimpleFont
     {
         super( fontDictionary );
     }
-    
+
     /**
      * This will load a TTF font from a font file.
-     * 
+     *
      * @param doc The PDF document that will hold the embedded font.
      * @param file The file on the filesystem that holds the font file.
      * @return A true type font.
      * @throws IOException If there is an error loading the file data.
      */
     public static PDTrueTypeFont loadTTF( PDDocument doc, String file ) throws IOException
-    {      
+    {
         return loadTTF( doc, new File( file ) );
     }
-    
+
     /**
      * This will load a TTF to be embedding into a document.
-     * 
-     * @param doc The PDF document that will hold the embedded font. 
+     *
+     * @param doc The PDF document that will hold the embedded font.
      * @param file A TTF file stream.
      * @return A PDF TTF.
      * @throws IOException If there is an error loading the data.
@@ -166,7 +166,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                     fd.setFontFamily( nr.getString() );
                 }
             }
-            
+
             OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
             fd.setNonSymbolic( true );
             switch( os2.getFamilyClass() )
@@ -221,14 +221,14 @@ public class PDTrueTypeFont extends PDSimpleFont
                     //do nothing
             }
             fd.setFontWeight( os2.getWeightClass() );
-            
+
             //todo retval.setFixedPitch
             //todo retval.setNonSymbolic
             //todo retval.setItalic
             //todo retval.setAllCap
             //todo retval.setSmallCap
             //todo retval.setForceBold
-            
+
             HeaderTable header = ttf.getHeader();
             PDRectangle rect = new PDRectangle();
             rect.setLowerLeftX( header.getXMin() * 1000f/header.getUnitsPerEm() );
@@ -236,18 +236,18 @@ public class PDTrueTypeFont extends PDSimpleFont
             rect.setUpperRightX( header.getXMax() * 1000f/header.getUnitsPerEm() );
             rect.setUpperRightY( header.getYMax() * 1000f/header.getUnitsPerEm() );
             fd.setFontBoundingBox( rect );
-            
+
             HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
             fd.setAscent( hHeader.getAscender() * 1000f/header.getUnitsPerEm() );
             fd.setDescent( hHeader.getDescender() * 1000f/header.getUnitsPerEm() );
-            
+
             GlyphTable glyphTable = ttf.getGlyph();
             GlyphData[] glyphs = glyphTable.getGlyphs();
-            
+
             PostScriptTable ps = ttf.getPostScript();
             fd.setFixedPitch( ps.getIsFixedPitch() > 0 );
             fd.setItalicAngle( ps.getItalicAngle() );
-            
+
             String[] names = ps.getGlyphNames();
             if( names != null )
             {
@@ -266,11 +266,11 @@ public class PDTrueTypeFont extends PDSimpleFont
                     }
                 }
             }
-            
-            //hmm there does not seem to be a clear definition for StemV, 
+
+            //hmm there does not seem to be a clear definition for StemV,
             //this is close enough and I am told it doesn't usually get used.
             fd.setStemV( (fd.getFontBoundingBox().getWidth() * .13f) );
-            
+
 
             CMAPTable cmapTable = ttf.getCMAP();
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
@@ -297,7 +297,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 && widths.get( glyphToCCode[i]-firstChar) == zero )
                 {
-                    widths.set( glyphToCCode[i]-firstChar, 
+                    widths.set( glyphToCCode[i]-firstChar,
                         new Integer( (int)(widthValues[i]* 1000f)/header.getUnitsPerEm() ) );
                 }
             }
@@ -313,14 +313,14 @@ public class PDTrueTypeFont extends PDSimpleFont
                 ttf.close();
             }
         }
-        
+
         return retval;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, 
+    public void drawString( String string, Graphics g, float fontSize,
         float xScale, float yScale, float x, float y ) throws IOException
     {
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
@@ -336,10 +336,10 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
                 else
                 {
-                    //throw new IOException( "Error:TTF Stream is null");            
+                    //throw new IOException( "Error:TTF Stream is null");
                     // Embedded true type programs are optional,
                     // if there is no stream, we must use an external
-                    // file. 
+                    // file.
                     TrueTypeFont ttf = getExternalFontFile2( fd );
                     if( ttf != null )
                     {
@@ -363,14 +363,14 @@ public class PDTrueTypeFont extends PDSimpleFont
         g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
         g2d.drawString( string, (int)x, (int)y );
     }
-    
+
     /**
      * Permit to load an external TTF Font program file
      *
      * Created by Pascal Allain
      * Vertical7 Inc.
      *
-     * @param fd The font descriptor currently used  
+     * @param fd The font descriptor currently used
      *
      * @return A PDStream with the Font File program, null if fd is null
      *
@@ -380,13 +380,13 @@ public class PDTrueTypeFont extends PDSimpleFont
         throws IOException
     {
         TrueTypeFont retval = null;
-        
+
         if ( fd != null )
         {
             String baseFont = getBaseFont();
             String fontResource = externalFonts.getProperty( UNKNOWN_FONT );
             if( (baseFont != null) &&
-                 (externalFonts.containsKey(baseFont)) ) 
+                 (externalFonts.containsKey(baseFont)) )
             {
                 fontResource = externalFonts.getProperty(baseFont);
             }
@@ -406,7 +406,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
         }
-        
+
         return retval;
     }
 }

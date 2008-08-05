@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import org.pdfbox.pdmodel.common.PDRectangle;
 /**
  * This is the class that represents a rectangular or eliptical annotation
  * Introduced in PDF 1.3 specification .
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -46,10 +46,10 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         // Must be constructed with a subType or dictionary parameter
     }
 
-    
+
     /**
      * Creates a Circle or Square annotation of the specified sub type.
-     * 
+     *
      * @param subType the subtype the annotation represents.
          */
     public PDAnnotationSquareCircle( String subType )
@@ -61,7 +61,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * Creates a Line annotation from a COSDictionary, expected to be a correct
      * object definition.
-     * 
+     *
      * @param field
      *            the PDF objet to represent as a field.
      */
@@ -74,10 +74,10 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * This will set interior colour of the drawn area
      * Colour is in DeviceRGB colourspace.
-     * 
+     *
      * @param ic
      *            colour in the DeviceRGB colourspace.
-     * 
+     *
      */
     public void setInteriorColour( PDGamma ic )
     {
@@ -87,10 +87,10 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * This will retrieve the interior colour of the drawn area
      * Colour is in DeviceRGB colourspace.
-     * 
-     * 
+     *
+     *
      * @return PDGamma object representing the colour.
-     * 
+     *
      */
     public PDGamma getInteriorColour()
     {
@@ -100,7 +100,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         if (ic != null)
         {
             return new PDGamma( ic );
-        } 
+        }
         else
         {
             return null;
@@ -111,9 +111,9 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * This will set the border effect dictionary, specifying effects to be applied
      * when drawing the line.
-     * 
+     *
      * @param be The border effect dictionary to set.
-     * 
+     *
      */
     public void setBorderEffect( PDBorderEffectDictionary be )
     {
@@ -123,7 +123,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * This will retrieve the border effect dictionary, specifying effects to be
      * applied used in drawing the line.
-     * 
+     *
      * @return The border effect dictionary
      */
     public PDBorderEffectDictionary getBorderEffect()
@@ -132,7 +132,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         if (be != null)
         {
             return new PDBorderEffectDictionary( be );
-        } 
+        }
         else
         {
             return null;
@@ -143,9 +143,9 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * This will set the rectangle difference rectangle. Giving the difference
      * between the annotations rectangle and where the drawing occurs.
          * (To take account of any effects applied through the BE entry forexample)
-     * 
+     *
      * @param rd the rectangle difference
-     * 
+     *
      */
     public void setRectDifference( PDRectangle rd )
     {
@@ -156,7 +156,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * This will get the rectangle difference rectangle. Giving the difference
      * between the annotations rectangle and where the drawing occurs.
          * (To take account of any effects applied through the BE entry forexample)
-     * 
+     *
      * @return the rectangle difference
      */
     public PDRectangle getRectDifference()
@@ -165,7 +165,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         if (rd != null)
         {
             return new PDRectangle( rd );
-        } 
+        }
         else
         {
             return null;
@@ -175,7 +175,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * This will set the sub type (and hence appearance, AP taking precedence) For
      * this annotation. See the SUB_TYPE_XXX constants for valid values.
-     * 
+     *
      * @param subType The subtype of the annotation
      */
     public void setSubtype( String subType )
@@ -185,8 +185,8 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
 
     /**
      * This will retrieve the sub type (and hence appearance, AP taking precedence)
-     * For this annotation. 
-     * 
+     * For this annotation.
+     *
      * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
      */
     public String getSubtype()

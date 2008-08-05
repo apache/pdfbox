@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
 {
     private PDColorSpace colorSpace = new PDDeviceGray();
     private COSArray colorSpaceValue = new COSArray();
-    
+
     /**
      * Default constructor.
      *
@@ -43,7 +43,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
     {
         setColorSpaceValue( new float[] {0});
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -55,7 +55,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
         retval.colorSpaceValue.addAll( this.colorSpaceValue );
         return retval;
     }
-    
+
     /**
      * Create the current color from the colorspace and values.
      * @return The current awt color.
@@ -64,9 +64,9 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
     public Color createColor() throws IOException
     {
         Color retval = null;
-	float[] components = colorSpaceValue.toFloatArray();  
-        try{          
-            
+	float[] components = colorSpaceValue.toFloatArray();
+        try{
+
             if( components.length == 3 )
             {
                 //for some reason, when using RGB and the RGB colorspace
@@ -77,11 +77,11 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
             }
             else
             {
-                                
+
                 ColorSpace cs = colorSpace.createColorSpace();
-                
+
                 if (colorSpace.getName() == PDSeparation.NAME && components.length == 1){
-                    
+
                     //Use that component as a single-integer RGB value
                     retval = new Color((int)components[0]);
                 }
@@ -95,23 +95,23 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
 		for(int i=0; i< components.length; i++){
 			Values = Values + components[i] + "\t";
 		}
-		
+
 	    logger().severe(IAe.toString() + "\n" + Values + "\n at\n" + FullStackTrace(IAe));
-	    
+
 	    throw IAe;
         }catch (IOException IOe){
             logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
-            
+
             throw IOe;
         }catch (Exception e){
             logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
             throw new IOException("Failed to Create Color");
          }
     }
-    
+
     /**
      * Constructor with an existing color set.  Default colorspace is PDDeviceGray.
-     * 
+     *
      * @param csValues The color space values.
      */
     public PDColorSpaceInstance( COSArray csValues )
@@ -149,7 +149,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
     {
         return colorSpaceValue.toFloatArray();
     }
-    
+
     /**
      * This will get the color space values.  Either 1 for gray or 3 for RGB.
      *

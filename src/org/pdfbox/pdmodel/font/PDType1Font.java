@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -94,8 +94,8 @@ public class PDType1Font extends PDSimpleFont
      * Standard Base 14 Font.
      */
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font( "ZapfDingbats" );
-    
-    
+
+
     private static final Map STANDARD_14 = new HashMap();
     static
     {
@@ -114,9 +114,9 @@ public class PDType1Font extends PDSimpleFont
         STANDARD_14.put( SYMBOL.getBaseFont(), SYMBOL );
         STANDARD_14.put( ZAPF_DINGBATS.getBaseFont(), ZAPF_DINGBATS );
     }
-    
+
     private Font awtFont = null;
-    
+
     /**
      * Constructor.
      */
@@ -135,7 +135,7 @@ public class PDType1Font extends PDSimpleFont
     {
         super( fontDictionary );
     }
-    
+
     /**
      * Constructor.
      *
@@ -146,33 +146,33 @@ public class PDType1Font extends PDSimpleFont
         this();
         setBaseFont( baseFont );
     }
-    
+
     /**
      * A convenience method to get one of the standard 14 font from name.
-     * 
+     *
      * @param name The name of the font to get.
-     * 
+     *
      * @return The font that matches the name or null if it does not exist.
      */
     public static PDType1Font getStandardFont( String name )
     {
         return (PDType1Font)STANDARD_14.get( name );
     }
-    
+
     /**
      * This will get the names of the standard 14 fonts.
-     * 
+     *
      * @return An array of the names of the standard 14 fonts.
      */
     public static String[] getStandard14Names()
     {
         return (String[])STANDARD_14.keySet().toArray( new String[14] );
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, 
+    public void drawString( String string, Graphics g, float fontSize,
         float xScale, float yScale, float x, float y ) throws IOException
     {
         if( awtFont == null )
@@ -262,11 +262,11 @@ public class PDType1Font extends PDSimpleFont
         }
         AffineTransform at = new AffineTransform();
         at.scale( xScale, yScale );
-        
+
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
-        
+
         g2d.drawString( string, (int)x, (int)y );
     }
 }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ import org.pdfbox.pdmodel.font.PDTrueTypeFont;
  * @author <a href="mailto:m.g.n@gmx.de">Michael Niedermair</a>
  * @version $Revision: 1.2 $
  */
-public class HelloWorldTTF 
+public class HelloWorldTTF
 {
 
     /**
@@ -47,12 +47,12 @@ public class HelloWorldTTF
      * @throws COSVisitorException If there is an error writing the PDF.
      */
     public void doIt(final String file, final String message,
-            final String fontfile) throws IOException, COSVisitorException 
+            final String fontfile) throws IOException, COSVisitorException
     {
 
         // the document
         PDDocument doc = null;
-        try 
+        try
         {
             doc = new PDDocument();
 
@@ -70,10 +70,10 @@ public class HelloWorldTTF
             contentStream.close();
             doc.save(file);
             System.out.println(file + " created!");
-        } 
-        finally 
+        }
+        finally
         {
-            if (doc != null) 
+            if (doc != null)
             {
                 doc.close();
             }
@@ -88,22 +88,22 @@ public class HelloWorldTTF
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
 
         HelloWorldTTF app = new HelloWorldTTF();
-        try 
+        try
         {
-            if (args.length != 3) 
+            if (args.length != 3)
             {
                 app.usage();
-            } 
-            else 
+            }
+            else
             {
                 app.doIt(args[0], args[1], args[2]);
             }
-        } 
-        catch (Exception e) 
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -112,7 +112,7 @@ public class HelloWorldTTF
     /**
      * This will print out a message telling how to use this example.
      */
-    private void usage() 
+    private void usage()
     {
         System.err.println("usage: " + this.getClass().getName()
                 + " <output-file> <Message> <ttf-file>");

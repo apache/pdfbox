@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -81,10 +81,10 @@ public class FDFDocument
     {
         document = doc;
     }
-    
+
     /**
      * This will create an FDF document from an XFDF XML document.
-     * 
+     *
      * @param doc The XML document that contains the XFDF data.
      * @throws IOException If there is an error reading from the dom.
      */
@@ -94,31 +94,31 @@ public class FDFDocument
         Element xfdf = doc.getDocumentElement();
         if( !xfdf.getNodeName().equals( "xfdf" ) )
         {
-            throw new IOException( "Error while importing xfdf document, " + 
+            throw new IOException( "Error while importing xfdf document, " +
                 "root should be 'xfdf' and not '" + xfdf.getNodeName() + "'" );
         }
         FDFCatalog cat = new FDFCatalog( xfdf );
         setCatalog( cat );
     }
-    
+
     /**
      * This will write this element as an XML document.
-     * 
+     *
      * @param output The stream to write the xml to.
-     * 
+     *
      * @throws IOException If there is an error writing the XML.
      */
     public void writeXML( Writer output ) throws IOException
     {
         output.write( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
         output.write( "<xfdf xmlns=\"http://ns.adobe.com/xfdf/\" xml:space=\"preserve\">\n" );
-            
+
         getCatalog().writeXML( output );
-    
+
         output.write( "</xfdf>\n" );
     }
-    
-    
+
+
 
     /**
      * This will get the low level document.
@@ -206,7 +206,7 @@ public class FDFDocument
         parser.parse();
         return parser.getFDFDocument();
     }
-    
+
     /**
      * This will load a document from a file.
      *
@@ -249,7 +249,7 @@ public class FDFDocument
         Document doc = XMLUtil.parse( input );
         return new FDFDocument( doc );
     }
-    
+
     /**
      * This will save this document to the filesystem.
      *
@@ -301,7 +301,7 @@ public class FDFDocument
             }
         }
     }
-    
+
     /**
      * This will save this document to the filesystem.
      *

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,17 +58,17 @@ public class PDFStreamEngine extends LoggingObject
     private Matrix textLineMatrix = null;
     private Stack graphicsStack = new Stack();
     //private PDResources resources = null;
-    
+
     private Map operators = new HashMap();
-    
+
     private Stack streamResourcesStack = new Stack();
-    
+
     private PDPage page;
-    
+
     private Map documentFontCache = new HashMap();
-    
+
     /**
-     * This is a simple internal class used by the Stream engine to handle the 
+     * This is a simple internal class used by the Stream engine to handle the
      * resources stack.
      */
     private static class StreamResources
@@ -87,14 +87,14 @@ public class PDFStreamEngine extends LoggingObject
     {
         //default constructor
     }
-    
+
     /**
      * Constructor with engine properties.  The property keys are all
      * PDF operators, the values are class names used to execute those
      * operators.
-     * 
+     *
      * @param properties The engine properties.
-     * 
+     *
      * @throws IOException If there is an error setting the engine properties.
      */
     public PDFStreamEngine( Properties properties ) throws IOException
@@ -118,10 +118,10 @@ public class PDFStreamEngine extends LoggingObject
             throw new WrappedIOException( e );
         }
     }
-    
+
     /**
      * Register a custom operator processor with the engine.
-     * 
+     *
      * @param operator The operator as a string.
      * @param op Processor instance.
      */
@@ -130,9 +130,9 @@ public class PDFStreamEngine extends LoggingObject
         op.setContext( this );
         operators.put( operator, op );
     }
-    
+
     /**
-     * This method must be called between processing documents.  The 
+     * This method must be called between processing documents.  The
      * PDFStreamEngine caches information for the document between pages
      * and this will release the cached information.  This only needs
      * to be called if processing a new document.
@@ -149,7 +149,7 @@ public class PDFStreamEngine extends LoggingObject
      * @param aPage The page.
      * @param resources The location to retrieve resources.
      * @param cosStream the Stream to execute.
-     * 
+     *
      *
      * @throws IOException if there is an error accessing the stream.
      */
@@ -160,17 +160,17 @@ public class PDFStreamEngine extends LoggingObject
         textLineMatrix = null;
         graphicsStack.clear();
         streamResourcesStack.clear();
-        
+
         processSubStream( aPage, resources, cosStream );
     }
-    
+
     /**
      * Process a sub stream of the current stream.
-     * 
+     *
      * @param aPage The page used for drawing.
      * @param resources The resources used when processing the stream.
      * @param cosStream The stream to process.
-     * 
+     *
      * @throws IOException If there is an exception while processing the stream.
      */
     public void processSubStream( PDPage aPage, PDResources resources, COSStream cosStream ) throws IOException
@@ -220,7 +220,7 @@ public class PDFStreamEngine extends LoggingObject
                 streamResourcesStack.pop();
             }
         }
-        
+
     }
 
     /**
@@ -242,14 +242,14 @@ public class PDFStreamEngine extends LoggingObject
      *
      * @throws IOException If there is an error showing the string
      */
-    
+
     public void showString( byte[] string ) throws IOException
     {
         float[] individualWidths = new float[2048];
         float spaceWidth = 0;
         float spacing = 0;
         StringBuffer stringResult = new StringBuffer(string.length);
-        
+
         float characterHorizontalDisplacement = 0;
         float characterVerticalDisplacement = 0;
         float spaceDisplacement = 0;
@@ -264,10 +264,10 @@ public class PDFStreamEngine extends LoggingObject
         //we process the byte data(could be two bytes each) but
         //it won't ever be more than string.length*2(there are some cases
         //were a single byte will result in two output characters "fi"
-        
-        
+
+
         PDFont font = graphicsState.getTextState().getFont();
-        
+
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
         float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
@@ -288,7 +288,7 @@ public class PDFStreamEngine extends LoggingObject
         //this
         int codeLength = 1;
         Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-        
+
         //lets see what the space displacement should be
         spaceDisplacement = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
         if( spaceDisplacement == 0 )
@@ -317,7 +317,7 @@ public class PDFStreamEngine extends LoggingObject
             trm.setValue( 2,1, x );
         }
         float xScale = trm.getXScale();
-        float yScale = trm.getYScale(); 
+        float yScale = trm.getYScale();
         float xPos = trm.getXPosition();
         float yPos = trm.getYPosition();
         spaceWidth = spaceDisplacement * xScale * fontSize;
@@ -325,7 +325,7 @@ public class PDFStreamEngine extends LoggingObject
         float totalStringWidth = 0;
         for( int i=0; i<string.length; i+=codeLength )
         {
-            
+
             codeLength = 1;
 
             String c = font.encode( string, i, codeLength );
@@ -337,10 +337,10 @@ public class PDFStreamEngine extends LoggingObject
             }
 
             //todo, handle horizontal displacement
-            characterHorizontalDisplacement = (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor); 
-            characterVerticalDisplacement = 
-                Math.max( 
-                    characterVerticalDisplacement, 
+            characterHorizontalDisplacement = (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor);
+            characterVerticalDisplacement =
+                Math.max(
+                    characterVerticalDisplacement,
                     font.getFontHeight( string, i, codeLength)/glyphSpaceToTextSpaceFactor);
 
 
@@ -370,7 +370,7 @@ public class PDFStreamEngine extends LoggingObject
             {
                 spacing = characterSpacing;
             }
-            
+
             // We want to update the textMatrix using the width, in text space units.
             //
             //The adjustment will always be zero.  The adjustment as shown in the
@@ -380,12 +380,12 @@ public class PDFStreamEngine extends LoggingObject
             float ty = 0;
             float tx = ((characterHorizontalDisplacement-adjustment/glyphSpaceToTextSpaceFactor)*fontSize + spacing)
                        *horizontalScaling;
-            
-            
+
+
             Matrix td = new Matrix();
             td.setValue( 2, 0, tx );
-            td.setValue( 2, 1, ty );            
-            
+            td.setValue( 2, 1, ty );
+
             float xPosBefore = textMatrix.getXPosition();
             float yPosBefore = textMatrix.getYPosition();
             textMatrix = td.multiply( textMatrix );
@@ -421,13 +421,13 @@ public class PDFStreamEngine extends LoggingObject
                     }
                 }
             }
-            
+
             totalStringWidth += width;
             stringResult.append( c );
         }
         float totalStringHeight = characterVerticalDisplacement * fontSize * yScale;
         String resultingString = stringResult.toString();
-        
+
         if( individualWidths.length != resultingString.length() )
         {
             float[] tmp = new float[resultingString.length()];
@@ -453,7 +453,7 @@ public class PDFStreamEngine extends LoggingObject
                     fontSize,
                     wordSpacingDisplacement ));
     }
-    
+
     /**
      * This is used to handle an operation.
      *
@@ -496,112 +496,112 @@ public class PDFStreamEngine extends LoggingObject
         {
             logger().warning (e.toString() + "\n at\n" + FullStackTrace(e));
         }
-    } 
-   
+    }
+
     /**
      * @return Returns the colorSpaces.
      */
-    public Map getColorSpaces() 
+    public Map getColorSpaces()
     {
         return ((StreamResources) streamResourcesStack.peek()).colorSpaces;
     }
-    
+
     /**
      * @return Returns the colorSpaces.
      */
-    public Map getXObjects() 
+    public Map getXObjects()
     {
         return ((StreamResources) streamResourcesStack.peek()).xobjects;
     }
-    
+
     /**
      * @param value The colorSpaces to set.
      */
-    public void setColorSpaces(Map value) 
+    public void setColorSpaces(Map value)
     {
         ((StreamResources) streamResourcesStack.peek()).colorSpaces = value;
     }
     /**
      * @return Returns the fonts.
      */
-    public Map getFonts() 
+    public Map getFonts()
     {
         return ((StreamResources) streamResourcesStack.peek()).fonts;
     }
     /**
      * @param value The fonts to set.
      */
-    public void setFonts(Map value) 
+    public void setFonts(Map value)
     {
         ((StreamResources) streamResourcesStack.peek()).fonts = value;
     }
     /**
      * @return Returns the graphicsStack.
      */
-    public Stack getGraphicsStack() 
+    public Stack getGraphicsStack()
     {
         return graphicsStack;
     }
     /**
      * @param value The graphicsStack to set.
      */
-    public void setGraphicsStack(Stack value) 
+    public void setGraphicsStack(Stack value)
     {
         graphicsStack = value;
     }
     /**
      * @return Returns the graphicsState.
      */
-    public PDGraphicsState getGraphicsState() 
+    public PDGraphicsState getGraphicsState()
     {
         return graphicsState;
     }
     /**
      * @param value The graphicsState to set.
      */
-    public void setGraphicsState(PDGraphicsState value) 
+    public void setGraphicsState(PDGraphicsState value)
     {
         graphicsState = value;
     }
     /**
      * @return Returns the graphicsStates.
      */
-    public Map getGraphicsStates() 
+    public Map getGraphicsStates()
     {
         return ((StreamResources) streamResourcesStack.peek()).graphicsStates;
     }
     /**
      * @param value The graphicsStates to set.
      */
-    public void setGraphicsStates(Map value) 
+    public void setGraphicsStates(Map value)
     {
         ((StreamResources) streamResourcesStack.peek()).graphicsStates = value;
     }
     /**
      * @return Returns the textLineMatrix.
      */
-    public Matrix getTextLineMatrix() 
+    public Matrix getTextLineMatrix()
     {
         return textLineMatrix;
     }
     /**
      * @param value The textLineMatrix to set.
      */
-    public void setTextLineMatrix(Matrix value) 
+    public void setTextLineMatrix(Matrix value)
     {
         textLineMatrix = value;
     }
     /**
      * @return Returns the textMatrix.
      */
-    public Matrix getTextMatrix() 
+    public Matrix getTextMatrix()
     {
         return textMatrix;
     }
     /**
      * @param value The textMatrix to set.
      */
-    public void setTextMatrix(Matrix value) 
+    public void setTextMatrix(Matrix value)
     {
         textMatrix = value;
     }
@@ -612,10 +612,10 @@ public class PDFStreamEngine extends LoggingObject
     {
         return ((StreamResources) streamResourcesStack.peek()).resources;
     }
-    
+
     /**
      * Get the current page that is being processed.
-     * 
+     *
      * @return The page being processed.
      */
     public PDPage getCurrentPage()

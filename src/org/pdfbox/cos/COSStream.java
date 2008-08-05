@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -176,14 +176,14 @@ public class COSStream extends COSDictionary
 //            if ( (file != null) &&
 //                    (file.length() > 0) )
 //            {
-//                retval = new RandomAccessFileInputStream( file, 
+//                retval = new RandomAccessFileInputStream( file,
 //                                                          0,
 //                                                          file.length() );
 //            }
 //            else
 //            {
                 //if there is no stream data then simply return an empty stream.
-                retval = new ByteArrayInputStream( new byte[0] ); 
+                retval = new ByteArrayInputStream( new byte[0] );
 //            }
         }
         return retval;
@@ -271,7 +271,7 @@ public class COSStream extends COSDictionary
             {
                 try
                 {
-                    input = new BufferedInputStream( 
+                    input = new BufferedInputStream(
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                     unFilteredStream = new RandomAccessFileOutputStream( file );
                     filter.decode( input, unFilteredStream, this, filterIndex );
@@ -285,7 +285,7 @@ public class COSStream extends COSDictionary
             }
             if( !done )
             {
-                //if no good stream was found then lets try again but with the 
+                //if no good stream was found then lets try again but with the
                 //length of data that was actually read and not length
                 //defined in the dictionary
                 length = unFilteredStream.getLengthWritten();
@@ -293,7 +293,7 @@ public class COSStream extends COSDictionary
                 {
                     try
                     {
-                        input = new BufferedInputStream( 
+                        input = new BufferedInputStream(
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                         unFilteredStream = new RandomAccessFileOutputStream( file );
                         filter.decode( input, unFilteredStream, this, filterIndex );
@@ -304,7 +304,7 @@ public class COSStream extends COSDictionary
                         length--;
                         exception = io;
                     }
-                }                
+                }
             }
         }
         if( !done )
@@ -357,8 +357,8 @@ public class COSStream extends COSDictionary
         Filter filter = manager.getFilter( filterName );
         InputStream input;
 
-        input = new BufferedInputStream( 
-            new RandomAccessFileInputStream( file, filteredStream.getPosition(), 
+        input = new BufferedInputStream(
+            new RandomAccessFileInputStream( file, filteredStream.getPosition(),
                                                    filteredStream.getLength() ), BUFFER_SIZE );
         filteredStream = new RandomAccessFileOutputStream( file );
         filter.encode( input, filteredStream, this, filterIndex );

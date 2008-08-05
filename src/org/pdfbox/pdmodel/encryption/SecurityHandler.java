@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,73 +42,73 @@ import org.pdfbox.pdmodel.PDDocument;
 
 /**
  * This class represents a security handler as described in the PDF specifications.
- * A security handler is responsible of documents protection.  
- * 
+ * A security handler is responsible of documents protection.
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- * 
+ *
  * @version $Revision: 1.4 $
  */
 
-public abstract class SecurityHandler 
+public abstract class SecurityHandler
 {
-    
+
     /* ------------------------------------------------
      * CONSTANTS
      -------------------------------------------------- */
-    
-    private static final int DEFAULT_KEY_LENGTH = 40;    
-    
+
+    private static final int DEFAULT_KEY_LENGTH = 40;
+
     /**
      * The value of V field of the Encryption dictionary.
-     */    
+     */
     protected int version;
-    
+
     /**
      * The length of the secret key used to encrypt the document.
-     */        
+     */
     protected int keyLength = DEFAULT_KEY_LENGTH;
-    
+
     /**
      * The encryption key that will used to encrypt / decrypt.
      */
-    protected byte[] encryptionKey;    
-    
+    protected byte[] encryptionKey;
+
     /**
      * The document whose security is handled by this security handler.
      */
-    
+
     protected PDDocument document;
-    
+
     /**
      * The RC4 implementation used for cryptographic functions.
      */
     protected ARCFour rc4 = new ARCFour();
-    
+
     private Set objects = new HashSet();
-    
+
     private Set potentialSignatures = new HashSet();
-    
+
     /**
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
      */
-    
+
     protected AccessPermission currentAccessPermission = null;
-    
+
     /**
      * Prepare the document for encryption.
-     * 
+     *
      * @param doc The document that will be encrypted.
-     * 
+     *
      * @throws CryptographyException If there is an error while preparing.
      * @throws IOException If there is an error with the document.
      */
     public abstract void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException;
-    
+
     /**
      * Prepare the document for decryption.
-     * 
+     *
      * @param doc The document to decrypt.
      * @param mat Information required to decrypt the document.
      * @throws CryptographyException If there is an error while preparing.
@@ -116,21 +116,21 @@ public abstract class SecurityHandler
      */
     public abstract void decryptDocument(PDDocument doc, DecryptionMaterial mat)
         throws CryptographyException, IOException;
-    
-    
+
+
     /**
-     * This method must be called by an implementation of this class to really proceed 
+     * This method must be called by an implementation of this class to really proceed
      * to decryption.
      *
      * @throws IOException If there is an error in the decryption.
      * @throws CryptographyException If there is an error in the decryption.
      */
-    protected void proceedDecryption() throws IOException, CryptographyException 
-    {            
-    
+    protected void proceedDecryption() throws IOException, CryptographyException
+    {
+
         COSDictionary trailer = document.getDocument().getTrailer();
         COSArray fields = (COSArray)trailer.getObjectFromPath( "Root/AcroForm/Fields" );
-    
+
         //We need to collect all the signature dictionaries, for some
         //reason the 'Contents' entry of signatures is not really encrypted
         if( fields != null )
@@ -150,7 +150,7 @@ public abstract class SecurityHandler
         }
         document.setEncryptionDictionary( null );
     }
-    
+
     private void addDictionaryAndSubDictionary( Set set, COSDictionary dic )
     {
         set.add( dic );
@@ -165,20 +165,20 @@ public abstract class SecurityHandler
             addDictionaryAndSubDictionary( set, (COSDictionary)value );
         }
     }
-    
-    
+
+
     /**
      * Encrypt a set of data.
-     * 
+     *
      * @param objectNumber The data object number.
      * @param genNumber The data generation number.
      * @param data The data to encrypt.
      * @param output The output to write the encrypted data to.
-     * 
+     *
      * @throws CryptographyException If there is an error during the encryption.
      * @throws IOException If there is an error reading the data.
      */
-    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output) 
+    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output)
         throws CryptographyException, IOException
     {
         byte[] newKey = new byte[ encryptionKey.length + 5 ];
@@ -215,10 +215,10 @@ public abstract class SecurityHandler
         rc4.setKey( finalKey );
         rc4.write( data, output );
         output.flush();
-        
+
     }
-    
-    
+
+
     /**
      * This will decrypt an object in the document.
      *
@@ -313,8 +313,8 @@ public abstract class SecurityHandler
             Object value = dictionary.getItem( key );
             //if we are a signature dictionary and contain a Contents entry then
             //we don't decrypt it.
-            if( !(key.getName().equals( "Contents" ) && 
-                  value instanceof COSString && 
+            if( !(key.getName().equals( "Contents" ) &&
+                  value instanceof COSString &&
                   potentialSignatures.contains( dictionary )))
             {
                 decrypt( value, objNum, genNum );
@@ -359,32 +359,32 @@ public abstract class SecurityHandler
         {
             decrypt( array.get( i ), objNum, genNum );
         }
-    }    
-        
+    }
+
     /**
      * Getter of the property <tt>keyLength</tt>.
      * @return  Returns the keyLength.
      * @uml.property  name="keyLength"
      */
-    public int getKeyLength() 
+    public int getKeyLength()
     {
         return keyLength;
     }
-    
+
     /**
      * Setter of the property <tt>keyLength</tt>.
-     * 
+     *
      * @param keyLen  The keyLength to set.
      */
-    public void setKeyLength(int keyLen) 
+    public void setKeyLength(int keyLen)
     {
         this.keyLength = keyLen;
     }
-    
+
     /**
      * Returns the access permissions that were computed during document decryption.
      * The returned object is in read only mode.
-     * 
+     *
      * @return the access permissions or null if the document was not decrypted.
      */
     public AccessPermission getCurrentAccessPermission()

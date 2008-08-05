@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ import javax.media.jai.PlanarImage;
 public class PDPage extends LoggingObject implements COSObjectable, Printable
 {
     private COSDictionary page;
-    
+
     /**
      * A page size of LETTER or 8.5x11.
      */
@@ -99,7 +99,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
      * A page size of A6 Paper.
      */
     public static final PDRectangle PAGE_SIZE_A6 = new PDRectangle( 298, 421 );
-    
+
 
     /**
      * Creates a new instance of PDPage with a size of 8.5x11.
@@ -575,11 +575,11 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
     {
         page.setItem( COSName.CONTENTS, contents );
     }
-    
+
     /**
      * This will get a list of PDThreadBead objects, which are article threads in the
      * document.  This will return an empty list of there are no thread beads.
-     * 
+     *
      * @return A list of article threads on this page.
      */
     public List getThreadBeads()
@@ -602,23 +602,23 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
             pdObjects.add( bead );
         }
         return new COSArrayList(pdObjects, beads);
-        
+
     }
-    
+
     /**
      * This will set the list of thread beads.
-     * 
+     *
      * @param beads A list of PDThreadBead objects or null.
      */
     public void setThreadBeads( List beads )
     {
         page.setItem( COSName.B, COSArrayList.converterToCOSArray( beads ) );
     }
-    
+
     /**
-     * Get the metadata that is part of the document catalog.  This will 
+     * Get the metadata that is part of the document catalog.  This will
      * return null if there is no meta data for this object.
-     * 
+     *
      * @return The metadata for this object.
      */
     public PDMetadata getMetadata()
@@ -631,22 +631,22 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         }
         return retval;
     }
-    
+
     /**
      * Set the metadata for this object.  This can be null.
-     * 
+     *
      * @param meta The meta data for this object.
      */
     public void setMetadata( PDMetadata meta )
     {
         page.setItem( COSName.METADATA, meta );
     }
-    
+
     /**
      * Convert this page to an output image.
-     * 
+     *
      * @return A graphical representation of this page.
-     * 
+     *
      * @throws IOException If there is an error drawing to the image.
      */
     public BufferedImage convertToImage() throws IOException
@@ -656,7 +656,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         int width = (int)(mBox.getWidth());//*2);
         int height = (int)(mBox.getHeight());//*2);
         Dimension pageDimension = new Dimension( width, height );
-        
+
         //note we are doing twice as many pixels because
         //the default size is not really good resolution,
         //so create an image that is twice the size
@@ -668,7 +668,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
-            
+
 	    try{
             int rotation = findRotation();
             if (rotation == 90 || rotation == 270) {
@@ -687,11 +687,11 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
 
         return retval;
     }
-    
+
     /**
      * Get the page actions.
-     * 
-     * @return The Actions for this Page 
+     *
+     * @return The Actions for this Page
      */
     public PDPageAdditionalActions getActions()
     {
@@ -700,42 +700,42 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         {
             addAct = new COSDictionary();
             page.setItem(COSName.AA, addAct);
-        }        
+        }
         return new PDPageAdditionalActions(addAct);
     }
-    
+
     /**
      * Set the page actions.
-     * 
+     *
      * @param actions The actions for the page.
      */
     public void setActions( PDPageAdditionalActions actions )
     {
         page.setItem( COSName.AA, actions );
     }
-    
+
     /**
      * This will return a list of the Annotations for this page.
      *
      * @return List of the PDAnnotation objects.
-     * 
+     *
      * @throws IOException If there is an error while creating the annotations.
      */
     public List getAnnotations() throws IOException
     {
         COSArrayList retval = null;
-        COSArray annots = (COSArray)page.getDictionaryObject(COSName.ANNOTS); 
-        if (annots == null) 
+        COSArray annots = (COSArray)page.getDictionaryObject(COSName.ANNOTS);
+        if (annots == null)
         {
             annots = new COSArray();
             page.setItem(COSName.ANNOTS, annots);
             retval = new COSArrayList(new ArrayList(), annots);
         }
         else
-        {        
+        {
             List actuals = new ArrayList();
-        
-            for (int i=0; i < annots.size(); i++) 
+
+            for (int i=0; i < annots.size(); i++)
             {
                 COSBase item = annots.getObject(i);
                 actuals.add( PDAnnotation.createAnnotation( item ) );
@@ -744,17 +744,17 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         }
         return retval;
     }
-    
+
     /**
      * This will set the list of annotations.
-     * 
-     * @param annots The new list of annotations. 
+     *
+     * @param annots The new list of annotations.
      */
     public void setAnnotations( List annots )
     {
         page.setItem( COSName.ANNOTS, COSArrayList.converterToCOSArray( annots ) );
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -774,7 +774,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         }
         return retval;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -782,7 +782,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
     {
         return other instanceof PDPage && ((PDPage)other).getCOSObject() == this.getCOSObject();
     }
-    
+
     /**
      * {@inheritDoc}
      */

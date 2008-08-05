@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,7 @@ public class PDPageXYZDestination extends PDPageDestination
      * The type of this destination.
      */
     protected static final String TYPE = "XYZ";
-    
+
     /**
      * Default constructor.
      *
@@ -43,33 +43,33 @@ public class PDPageXYZDestination extends PDPageDestination
         super();
         array.growToSize(5);
         array.setName( 1, TYPE );
-        
+
     }
-    
+
     /**
      * Constructor from an existing destination array.
-     * 
+     *
      * @param arr The destination array.
      */
     public PDPageXYZDestination( COSArray arr )
     {
         super( arr );
     }
-    
+
     /**
      * Get the left x coordinate.  A return value of -1 implies that the current x-coordinate
      * will be used.
-     * 
+     *
      * @return The left x coordinate.
      */
     public int getLeft()
     {
         return array.getInt( 2 );
     }
-    
+
     /**
      * Set the left x-coordinate, a value of -1 implies that the current x-coordinate
-     * will be used. 
+     * will be used.
      * @param x The left x coordinate.
      */
     public void setLeft( int x )
@@ -84,21 +84,21 @@ public class PDPageXYZDestination extends PDPageDestination
             array.setInt( 2, x );
         }
     }
-    
+
     /**
      * Get the top y coordinate.  A return value of -1 implies that the current y-coordinate
      * will be used.
-     * 
+     *
      * @return The top y coordinate.
      */
     public int getTop()
     {
         return array.getInt( 3 );
     }
-    
+
     /**
      * Set the top y-coordinate, a value of -1 implies that the current y-coordinate
-     * will be used. 
+     * will be used.
      * @param y The top ycoordinate.
      */
     public void setTop( int y )
@@ -113,21 +113,21 @@ public class PDPageXYZDestination extends PDPageDestination
             array.setInt( 3, y );
         }
     }
-    
+
     /**
      * Get the zoom value.  A return value of -1 implies that the current zoom
      * will be used.
-     * 
+     *
      * @return The zoom value for the page.
      */
     public int getZoom()
     {
         return array.getInt( 4 );
     }
-    
+
     /**
      * Set the zoom value for the page, a value of -1 implies that the current zoom
-     * will be used. 
+     * will be used.
      * @param zoom The zoom value.
      */
     public void setZoom( int zoom )

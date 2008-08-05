@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import org.pdfbox.util.PDFOperator;
 
 /**
  * A class that will take a list of tokens and write out a stream with them.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.8 $
  */
@@ -47,25 +47,25 @@ public class ContentStreamWriter
      * space character.
      */
     public static final byte[] SPACE = new byte[] { 32 };
-    
+
     /**
      * standard line separator on this platform.
      */
     public static final byte[] EOL = System.getProperty("line.separator").getBytes();
-    
+
     /**
      * This will create a new content stream writer.
-     * 
-     * @param out The stream to write the data to. 
+     *
+     * @param out The stream to write the data to.
      */
     public ContentStreamWriter( OutputStream out )
     {
         output = out;
     }
-    
+
     /**
      * This will write out the list of tokens to the stream.
-     *  
+     *
      * @param tokens The tokens to write to the stream.
      * @param start The start index into the list of tokens.
      * @param end The end index into the list of tokens.
@@ -82,7 +82,7 @@ public class ContentStreamWriter
         }
         output.flush();
     }
-    
+
     private void writeObject( Object o ) throws IOException
     {
         if( o instanceof COSString )
@@ -114,10 +114,10 @@ public class ContentStreamWriter
                 writeObject( array.get( i ) );
                 output.write( SPACE );
             }
-            
+
             output.write( COSWriter.ARRAY_CLOSE );
         }
-        else if( o instanceof COSDictionary ) 
+        else if( o instanceof COSDictionary )
         {
             COSDictionary obj = (COSDictionary)o;
             output.write( COSWriter.DICT_OPEN );
@@ -172,10 +172,10 @@ public class ContentStreamWriter
             throw new IOException( "Error:Unknown type in content stream:" + o );
         }
     }
-    
+
     /**
      * This will write out the list of tokens to the stream.
-     *  
+     *
      * @param tokens The tokens to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */

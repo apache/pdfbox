@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,11 +68,11 @@ public class EmbeddedFiles
         try
         {
             doc = new PDDocument();
-            
+
             PDPage page = new PDPage();
             doc.addPage( page );
             PDFont font = PDType1Font.HELVETICA_BOLD;
-            
+
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             contentStream.beginText();
             contentStream.setFont( font, 12 );
@@ -80,17 +80,17 @@ public class EmbeddedFiles
             contentStream.drawString( "Go to Document->File Attachments to View Embedded Files" );
             contentStream.endText();
             contentStream.close();
-            
+
             //embedded files are stored in a named tree
             PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
-            
-            
+
+
             //first create the file specification, which holds the embedded file
             PDComplexFileSpecification fs = new PDComplexFileSpecification();
             fs.setFile( "Test.txt" );
             //create a dummy file stream, this would probably normally be a FileInputStream
             byte[] data = "This is the contents of the embedded file".getBytes();
-            ByteArrayInputStream fakeFile = 
+            ByteArrayInputStream fakeFile =
                 new ByteArrayInputStream( data );
             PDEmbeddedFile ef = new PDEmbeddedFile(doc, fakeFile );
             //now lets some of the optional parameters
@@ -98,7 +98,7 @@ public class EmbeddedFiles
             ef.setSize( data.length );
             ef.setCreationDate( new GregorianCalendar() );
             fs.setEmbeddedFile( ef );
-            
+
             //now add the entry to the embedded file tree and set in the document.
             Map efMap = new HashMap();
             efMap.put( "My first attachment", fs );
@@ -106,8 +106,8 @@ public class EmbeddedFiles
             PDDocumentNameDictionary names = new PDDocumentNameDictionary( doc.getDocumentCatalog() );
             names.setEmbeddedFiles( efTree );
             doc.getDocumentCatalog().setNames( names );
-            
-            
+
+
             doc.save( file );
         }
         finally

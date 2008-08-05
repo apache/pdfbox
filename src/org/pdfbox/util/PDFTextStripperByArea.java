@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,7 +42,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
     private Map regionArea = new HashMap();
     private Map regionCharacterList = new HashMap();
     private Map regionText = new HashMap();
-    
+
     /**
      * Constructor.
      * @throws IOException If there is an error loading properties.
@@ -52,10 +52,10 @@ public class PDFTextStripperByArea extends PDFTextStripper
         super();
         setPageSeparator( "" );
     }
-    
+
     /**
      * Add a new region to group text by.
-     * 
+     *
      * @param regionName The name of the region.
      * @param rect The rectangle area to retrieve the text from.
      */
@@ -64,20 +64,20 @@ public class PDFTextStripperByArea extends PDFTextStripper
         regions.add( regionName );
         regionArea.put( regionName, rect );
     }
-    
+
     /**
-     * Get the list of regions that have been setup.  
-     * 
+     * Get the list of regions that have been setup.
+     *
      * @return A list of java.lang.String objects to identify the region names.
      */
     public List getRegions()
     {
         return regions;
     }
-    
+
     /**
      * Get the text for the region, this should be called after extractRegions().
-     * 
+     *
      * @param regionName The name of the region to get the text from.
      * @return The text that was identified in that region.
      */
@@ -86,10 +86,10 @@ public class PDFTextStripperByArea extends PDFTextStripper
         StringWriter text = (StringWriter)regionText.get( regionName );
         return text.toString();
     }
-    
+
     /**
      * Process the page to extract the region text.
-     * 
+     *
      * @param page The page to extract the regions from.
      * @throws IOException If there is an error while extracting text.
      */
@@ -106,7 +106,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             regionCharacterList.put( regionName, regionCharactersByArticle );
             regionText.put( regionName, new StringWriter() );
         }
-        
+
         PDStream contentStream = page.getContents();
         if( contentStream != null )
         {
@@ -114,7 +114,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             processPage( page, contents );
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -128,11 +128,11 @@ public class PDFTextStripperByArea extends PDFTextStripper
             if( rect.contains( text.getX(), text.getY() ) )
             {
                 charactersByArticle = (Vector)regionCharacterList.get( region );
-                super.showCharacter( text );                
+                super.showCharacter( text );
             }
         }
     }
-    
+
     /**
      * This will print the text to the output stream.
      *

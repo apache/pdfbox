@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -88,17 +88,17 @@ public class PDAppearance
     {
         acroForm = theAcroForm;
         parent = field;
-        
+
         widgets = field.getKids();
         if( widgets == null )
         {
             widgets = new ArrayList();
             widgets.add( field.getWidget() );
         }
-        
+
         defaultAppearance = getDefaultAppearance();
 
-        
+
     }
 
     /**
@@ -108,7 +108,7 @@ public class PDAppearance
      */
     private COSString getDefaultAppearance()
     {
-        
+
         COSString dap = parent.getDefaultAppearance();
         if (dap == null)
         {
@@ -125,7 +125,7 @@ public class PDAppearance
         }
         return dap;
     }
-    
+
     private int getQ()
     {
         int q = parent.getQ();
@@ -159,7 +159,7 @@ public class PDAppearance
         }
         return tokens;
     }
-    
+
     private List getStreamTokens( COSString string ) throws IOException
     {
         PDFStreamParser parser;
@@ -174,7 +174,7 @@ public class PDAppearance
         }
         return tokens;
     }
-    
+
     private List getStreamTokens( COSStream stream ) throws IOException
     {
         PDFStreamParser parser;
@@ -196,7 +196,7 @@ public class PDAppearance
      */
     private boolean containsMarkedContent( List stream )
     {
-        return stream.contains( PDFOperator.getOperator( "BMC" ) ); 
+        return stream.contains( PDFOperator.getOperator( "BMC" ) );
     }
 
     /**
@@ -235,8 +235,8 @@ public class PDAppearance
             {
                 actions = field.getActions();
             }
-            if( actions != null && 
-                actions.getF() != null && 
+            if( actions != null &&
+                actions.getF() != null &&
                 widget.getDictionary().getDictionaryObject( "AP" ) ==null)
             {
                 //do nothing because the field will be formatted by acrobat
@@ -244,14 +244,14 @@ public class PDAppearance
             }
             else
             {
-            
+
                 PDAppearanceDictionary appearance = widget.getAppearance();
                 if( appearance == null )
                 {
                     appearance = new PDAppearanceDictionary();
                     widget.setAppearance( appearance );
                 }
-    
+
                 Map normalAppearance = appearance.getNormalAppearance();
                 PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
                 if( appearanceStream == null )
@@ -261,21 +261,21 @@ public class PDAppearance
                     appearanceStream.setBoundingBox( widget.getRectangle().createRetranslatedRectangle() );
                     appearance.setNormalAppearance( appearanceStream );
                 }
-                
+
                 List tokens = getStreamTokens( appearanceStream );
                 List daTokens = getStreamTokens( getDefaultAppearance() );
                 PDFont pdFont = getFontAndUpdateResources( tokens, appearanceStream );
-                
+
                 if (!containsMarkedContent( tokens ))
                 {
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
-        
+
                     //BJL 9/25/2004 Must prepend existing stream
                     //because it might have operators to draw things like
                     //rectangles and such
                     ContentStreamWriter writer = new ContentStreamWriter( output );
                     writer.writeTokens( tokens );
-        
+
                     output.write( " /Tx BMC\n".getBytes() );
                     insertGeneratedAppearance( widget, output, pdFont, tokens, appearanceStream );
                     output.write( " EMC".getBytes() );
@@ -306,7 +306,7 @@ public class PDAppearance
                             if( tokens.get( i ) instanceof COSString )
                             {
                                 foundString = true;
-                                COSString drawnString =((COSString)tokens.get(i)); 
+                                COSString drawnString =((COSString)tokens.get(i));
                                 drawnString.reset();
                                 drawnString.append( apValue.getBytes() );
                             }
@@ -315,13 +315,13 @@ public class PDAppearance
                         tokens.set( setFontIndex-1, new COSFloat( fontSize ) );
                         if( foundString )
                         {
-                            writer.writeTokens( tokens );   
+                            writer.writeTokens( tokens );
                         }
                         else
                         {
                             int bmcIndex = tokens.indexOf( PDFOperator.getOperator( "BMC" ) );
                             int emcIndex = tokens.indexOf( PDFOperator.getOperator( "EMC" ) );
-    
+
                             if( bmcIndex != -1 )
                             {
                                 writer.writeTokens( tokens, 0, bmcIndex+1 );
@@ -331,7 +331,7 @@ public class PDAppearance
                                 writer.writeTokens( tokens );
                             }
                             output.write( "\n".getBytes() );
-                            insertGeneratedAppearance( widget, output, 
+                            insertGeneratedAppearance( widget, output,
                                 pdFont, tokens, appearanceStream );
                             if( emcIndex != -1 )
                             {
@@ -349,7 +349,7 @@ public class PDAppearance
         }
     }
 
-    private void insertGeneratedAppearance( PDAnnotationWidget fieldWidget, OutputStream output, 
+    private void insertGeneratedAppearance( PDAnnotationWidget fieldWidget, OutputStream output,
         PDFont pdFont, List tokens, PDAppearanceStream appearanceStream ) throws IOException
     {
         PrintWriter printWriter = new PrintWriter( output, true );
@@ -418,7 +418,7 @@ public class PDAppearance
                 streamResources = new PDResources();
                 appearanceStream.setResources( streamResources );
             }
-            
+
             COSString da = getDefaultAppearance();
             if( da != null )
             {
@@ -476,21 +476,21 @@ public class PDAppearance
      */
     private float getLineWidth( List tokens )
     {
-        
+
         float retval = 1;
-        if( tokens != null ) 
+        if( tokens != null )
         {
             int btIndex = tokens.indexOf(PDFOperator.getOperator( "BT" ));
             int wIndex = tokens.indexOf(PDFOperator.getOperator( "w" ));
             //the w should only be used if it is before the first BT.
-            if( (wIndex > 0) && (wIndex < btIndex) ) 
+            if( (wIndex > 0) && (wIndex < btIndex) )
             {
                 retval = ((COSNumber)tokens.get(wIndex-1)).floatValue();
             }
         }
         return retval;
     }
-    
+
     private PDRectangle getSmallestDrawnRectangle( PDRectangle boundingBox, List tokens )
     {
         PDRectangle smallest = boundingBox;
@@ -514,7 +514,7 @@ public class PDAppearance
                 {
                     smallest = potentialSmallest;
                 }
-                
+
             }
         }
         return smallest;
@@ -527,14 +527,14 @@ public class PDAppearance
      *
      * @throws IOException If there is an error getting the font height.
      */
-    private float calculateFontSize( PDFont pdFont, PDRectangle boundingBox, List tokens, List daTokens ) 
+    private float calculateFontSize( PDFont pdFont, PDRectangle boundingBox, List tokens, List daTokens )
         throws IOException
     {
         float fontSize = 0;
         if( daTokens != null )
         {
             //daString looks like   "BMC /Helv 3.4 Tf EMC"
-            
+
             int fontIndex = daTokens.indexOf( PDFOperator.getOperator( "Tf" ) );
             if(fontIndex != -1 )
             {
@@ -564,9 +564,9 @@ public class PDAppearance
                 height = pdFont.getAverageFontWidth();
             }
             height = height/1000f;
-    
+
             float availHeight = getAvailableHeight( boundingBox, lineWidth );
-            fontSize =(availHeight/height); 
+            fontSize =(availHeight/height);
         }
         return fontSize;
     }
@@ -580,7 +580,7 @@ public class PDAppearance
      *
      * @throws IOException If there is an error calculating the text position.
      */
-    private String getTextPosition( PDRectangle boundingBox, PDFont pdFont, float fontSize, List tokens ) 
+    private String getTextPosition( PDRectangle boundingBox, PDFont pdFont, float fontSize, List tokens )
         throws IOException
     {
         float lineWidth = getLineWidth( tokens );
@@ -616,7 +616,7 @@ public class PDAppearance
         float xInset = 2+ 2*(boundingBox.getWidth() - innerBox.getWidth());
         return Math.round(xInset) + " "+ pos + " Td";
     }
-    
+
     /**
      * calculates the available width of the box.
      * @return the calculated available width of the box

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -69,7 +69,7 @@ public class TestFields extends TestCase
 
     /**
      * This will test setting field flags on the PDField.
-     * 
+     *
      * @throws IOException If there is an error creating the field.
      */
     public void testFlags() throws IOException
@@ -80,43 +80,43 @@ public class TestFields extends TestCase
             doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
             PDTextbox textBox = new PDTextbox(form);
-            
+
             //assert that default is false.
             assertFalse( textBox.shouldComb() );
-            
+
             //try setting and clearing a single field
             textBox.setComb( true );
             assertTrue( textBox.shouldComb() );
             textBox.setComb( false );
             assertFalse( textBox.shouldComb() );
-            
+
             //try setting and clearing multiple fields
             textBox.setComb( true );
             textBox.setDoNotScroll( true );
             assertTrue( textBox.shouldComb() );
             assertTrue( textBox.doNotScroll() );
-            
+
             textBox.setComb( false );
             textBox.setDoNotScroll( false );
             assertFalse( textBox.shouldComb() );
             assertFalse( textBox.doNotScroll() );
-            
+
             //assert that setting a field to false multiple times works
             textBox.setComb( false );
             assertFalse( textBox.shouldComb() );
             textBox.setComb( false );
             assertFalse( textBox.shouldComb() );
-            
+
             //assert that setting a field to true multiple times works
             textBox.setComb( true );
             assertTrue( textBox.shouldComb() );
             textBox.setComb( true );
             assertTrue( textBox.shouldComb() );
-            
-            
-            
-            
-            
+
+
+
+
+
         }
         finally
         {
@@ -126,5 +126,5 @@ public class TestFields extends TestCase
             }
         }
     }
-    
+
 }

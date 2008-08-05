@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ public class GoToSecondBookmarkOnOpen
     {
         //utility class
     }
-    
+
     /**
      * This will print the documents data.
      *
@@ -64,7 +64,7 @@ public class GoToSecondBookmarkOnOpen
                     System.err.println( "Error: Cannot add bookmark destination to encrypted documents." );
                     System.exit( 1 );
                 }
-                
+
                 List pages = document.getDocumentCatalog().getAllPages();
                 if( pages.size() < 2 )
                 {
@@ -77,10 +77,10 @@ public class GoToSecondBookmarkOnOpen
                 }
                 PDOutlineItem item = bookmarks.getFirstChild().getNextSibling();
                 PDDestination dest = item.getDestination();
-                PDActionGoTo action = new PDActionGoTo(); 
-                action.setDestination(dest);         
-                document.getDocumentCatalog().setOpenAction(action); 
-                
+                PDActionGoTo action = new PDActionGoTo();
+                action.setDestination(dest);
+                document.getDocumentCatalog().setOpenAction(action);
+
                 document.save( args[1] );
             }
             finally

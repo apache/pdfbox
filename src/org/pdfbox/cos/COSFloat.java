@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,10 +63,10 @@ public class COSFloat extends COSNumber
             throw new IOException( "Error expected floating point number actual='" +aFloat + "'" );
         }
     }
-    
+
     /**
      * Set the value of the float object.
-     * 
+     *
      * @param floatValue The new float value.
      */
     public void setValue( float floatValue )
@@ -149,10 +149,10 @@ public class COSFloat extends COSNumber
     {
         return visitor.visitFromFloat(this);
     }
-    
+
     /**
      * This will output this string as a PDF object.
-     *  
+     *
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */

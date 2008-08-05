@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,10 +38,10 @@ public class TextPosition
     private PDFont font;
     private float fontSize;
     private float wordSpacing;
-    
+
     protected TextPosition()
     {
-        
+
     }
 
     /**
@@ -128,7 +128,7 @@ public class TextPosition
     {
         return totalWidth;
     }
-    
+
     /**
      * This will get the maximum height of all characters in this string.
      *
@@ -209,30 +209,30 @@ public class TextPosition
     {
         yScale = scale;
     }
- 
+
     /**
      * Get the widths of each individual character.
-     * 
+     *
      * @return An array that is the same length as the length of the string.
      */
     public float[] getIndividualWidths()
     {
         return widths;
     }
-    
+
     /**
      * Set the individual widths of every character.
-     * 
+     *
      * @param individualWidths The individual widths of characters.
      */
     public void setIndividualWidths( float[] individualWidths )
     {
         widths = individualWidths;
     }
-    
+
     /**
      * Show the string data for this text position.
-     * 
+     *
      * @return A human readable form of this object.
      */
     public String toString()

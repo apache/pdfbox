@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,19 +59,19 @@ public class ShowColorBoxes
         try
         {
             doc = new PDDocument();
-            
+
             PDPage page = new PDPage();
             doc.addPage( page );
-            
+
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             //first fill the entire background with cyan
             contentStream.setNonStrokingColor( Color.CYAN );
             contentStream.fillRect( 0,0, page.findMediaBox().getWidth(), page.findMediaBox().getHeight() );
-            
+
             //then draw a red box in the lower left hand corner
             contentStream.setNonStrokingColor( Color.RED );
             contentStream.fillRect( 10, 10, 100, 100 );
-            
+
             contentStream.close();
             doc.save( file );
         }

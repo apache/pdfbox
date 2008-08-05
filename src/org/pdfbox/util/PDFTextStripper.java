@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,7 +56,7 @@ import org.pdfbox.exceptions.WrappedIOException;
  * @version $Revision: 1.70 $
  */
 public class PDFTextStripper extends PDFStreamEngine
-{   
+{
     private int currentPageNo = 0;
     private int startPage = 1;
     private int endPage = Integer.MAX_VALUE;
@@ -68,36 +68,36 @@ public class PDFTextStripper extends PDFStreamEngine
     private boolean suppressDuplicateOverlappingText = true;
     private boolean shouldSeparateByBeads = true;
     private boolean sortByPosition = false;
-    
+
     private List pageArticles = null;
     /**
      * The charactersByArticle is used to extract text by article divisions.  For example
      * a PDF that has two columns like a newspaper, we want to extract the first column and
      * then the second column.  In this example the PDF would have 2 beads(or articles), one for
-     * each column.  The size of the charactersByArticle would be 5, because not all text on the 
+     * each column.  The size of the charactersByArticle would be 5, because not all text on the
      * screen will fall into one of the articles.  The five divisions are shown below
-     * 
+     *
      * Text before first article
      * first article text
      * text between first article and second article
      * second article text
      * text after second article
-     * 
+     *
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
     protected Vector charactersByArticle = new Vector();
-    
+
     private Map characterListMapping = new HashMap();
-    
+
     private String lineSeparator = System.getProperty("line.separator");
     private String pageSeparator = System.getProperty("line.separator");
     private String wordSeparator = " ";
-    
+
     /**
      * The stream to write the output to.
      */
     protected Writer output;
-    
+
     /**
      * Instantiate a new PDFTextStripper object.  This object will load properties from
      * Resources/PDFTextStripper.properties.
@@ -107,14 +107,14 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
     }
-    
+
     /**
      * Instantiate a new PDFTextStripper object.  Loading all of the operator mappings
      * from the properties object that is passed in.
-     * 
-     * @param props The properties containing the mapping of operators to PDFOperator 
+     *
+     * @param props The properties containing the mapping of operators to PDFOperator
      * classes.
-     * 
+     *
      * @throws IOException If there is an error reading the properties.
      */
     public PDFTextStripper( Properties props ) throws IOException
@@ -219,12 +219,12 @@ public class PDFTextStripper extends PDFStreamEngine
         {
             startBookmarkPageNumber = getPageNumber( startBookmark, pages );
         }
-        
+
         if( endBookmark != null )
         {
             endBookmarkPageNumber = getPageNumber( endBookmark, pages );
         }
-        
+
         if( startBookmarkPageNumber == -1 && startBookmark != null &&
             endBookmarkPageNumber == -1 && endBookmark != null &&
             startBookmark.getCOSObject() == endBookmark.getCOSObject() )
@@ -235,7 +235,7 @@ public class PDFTextStripper extends PDFStreamEngine
             startBookmarkPageNumber = 0;
             endBookmarkPageNumber = 0;
         }
-        
+
 
         Iterator pageIter = pages.iterator();
         while( pageIter.hasNext() )
@@ -250,8 +250,8 @@ public class PDFTextStripper extends PDFStreamEngine
             }
         }
     }
-    
-    private int getPageNumber( PDOutlineItem bookmark, List allPages ) throws IOException 
+
+    private int getPageNumber( PDOutlineItem bookmark, List allPages ) throws IOException
     {
         int pageNumber = -1;
         PDPage page = bookmark.findDestinationPage( document );
@@ -261,27 +261,27 @@ public class PDFTextStripper extends PDFStreamEngine
         }
         return pageNumber;
     }
-    
+
     /**
      * This method is available for subclasses of this class.  It will be called before processing
      * of the document start.
-     * 
+     *
      * @param pdf The PDF document that is being processed.
      * @throws IOException If an IO error occurs.
      */
-    protected void startDocument(PDDocument pdf) throws IOException 
+    protected void startDocument(PDDocument pdf) throws IOException
     {
-        // no default implementation, but available for subclasses    
+        // no default implementation, but available for subclasses
     }
-    
+
     /**
      * This method is available for subclasses of this class.  It will be called after processing
      * of the document finishes.
-     * 
+     *
      * @param pdf The PDF document that is being processed.
      * @throws IOException If an IO error occurs.
      */
-    protected void endDocument(PDDocument pdf ) throws IOException 
+    protected void endDocument(PDDocument pdf ) throws IOException
     {
         // no default implementation, but available for subclasses
     }
@@ -297,7 +297,7 @@ public class PDFTextStripper extends PDFStreamEngine
     protected void processPage( PDPage page, COSStream content ) throws IOException
     {
         if( currentPageNo >= startPage && currentPageNo <= endPage &&
-            (startBookmarkPageNumber == -1 || currentPageNo >= startBookmarkPageNumber ) && 
+            (startBookmarkPageNumber == -1 || currentPageNo >= startBookmarkPageNumber ) &&
             (endBookmarkPageNumber == -1 || currentPageNo <= endBookmarkPageNumber ))
         {
             startPage( page );
@@ -320,56 +320,56 @@ public class PDFTextStripper extends PDFStreamEngine
                     charactersByArticle.set( i, new ArrayList() );
                 }
             }
-            
+
             characterListMapping.clear();
             processStream( page, page.findResources(), content );
             flushText();
             endPage( page );
         }
-        
+
     }
-    
+
     /**
      * Start a new paragraph.  Default implementation is to do nothing.  Subclasses
      * may provide additional information.
-     * 
+     *
      * @throws IOException If there is any error writing to the stream.
      */
     protected void startParagraph() throws IOException
     {
         //default is to do nothing.
     }
-    
+
     /**
      * End a paragraph.  Default implementation is to do nothing.  Subclasses
      * may provide additional information.
-     * 
+     *
      * @throws IOException If there is any error writing to the stream.
      */
     protected void endParagraph() throws IOException
     {
         //default is to do nothing
     }
-    
+
     /**
      * Start a new page.  Default implementation is to do nothing.  Subclasses
      * may provide additional information.
-     * 
+     *
      * @param page The page we are about to process.
-     * 
+     *
      * @throws IOException If there is any error writing to the stream.
      */
     protected void startPage( PDPage page ) throws IOException
     {
         //default is to do nothing.
     }
-    
+
     /**
      * End a page.  Default implementation is to do nothing.  Subclasses
      * may provide additional information.
-     * 
+     *
      * @param page The page we are about to process.
-     * 
+     *
      * @throws IOException If there is any error writing to the stream.
      */
     protected void endPage( PDPage page ) throws IOException
@@ -391,7 +391,7 @@ public class PDFTextStripper extends PDFStreamEngine
         float lastWordSpacing = -1;
         float maxHeightForLine = -1;
         TextPosition lastProcessedCharacter = null;
-        
+
         for( int i=0; i<charactersByArticle.size(); i++)
         {
             startParagraph();
@@ -406,10 +406,10 @@ public class PDFTextStripper extends PDFStreamEngine
             {
                 TextPosition position = (TextPosition)textIter.next();
                 String characterValue = position.getCharacter();
-                
+
                 //wordSpacing = position.getWordSpacing();
                 float wordSpacing = 0;
-                
+
                 if( wordSpacing == 0 )
                 {
                     //try to get width of a space character
@@ -421,8 +421,8 @@ public class PDFTextStripper extends PDFStreamEngine
                         wordSpacing = position.getWidth();
                     }
                 }
-                
-                
+
+
                 // RDD - We add a conservative approximation for space determination.
                 // basically if there is a blank area between two characters that is
                 //equal to some percentage of the word spacing then that will be the
@@ -435,9 +435,9 @@ public class PDFTextStripper extends PDFStreamEngine
                 {
                     startOfNextWordX = endOfLastTextX + (((wordSpacing+lastWordSpacing)/2f)* 0.50f);
                 }
-                
+
                 lastWordSpacing = wordSpacing;
-    
+
                 // RDD - We will suppress text that is very close to the current line
                 // and which overwrites previously rendered text on this line.
                 // This is done specifically to handle a reasonably common situation
@@ -458,7 +458,7 @@ public class PDFTextStripper extends PDFStreamEngine
                     }
                     continue;
                 }*/
-    
+
                 // RDD - Here we determine whether this text object is on the current
                 // line.  We use the lastBaselineFontSize to handle the superscript
                 // case, and the size of the current font to handle the subscript case.
@@ -487,7 +487,7 @@ public class PDFTextStripper extends PDFStreamEngine
                         lastBaselineFontSize = -1;
                     }
                 }
-    
+
                 if (startOfNextWordX != -1 && startOfNextWordX < position.getX() &&
                    lastProcessedCharacter != null &&
                    //only bother adding a space if the last character was not a space
@@ -500,20 +500,20 @@ public class PDFTextStripper extends PDFStreamEngine
                 {
                     //System.out.println( "Not a word separtor " + position.getCharacter() +  " start=" + startOfNextWordX + " x=" + position.getX() );
                 }
-    
+
                 currentY = Math.max(currentY,position.getY());
-    
+
                 if (currentY == position.getY())
                 {
                     lastBaselineFontSize = position.getFontSize();
                 }
-    
+
                 // RDD - endX is what PDF considers to be the x coordinate of the
                 // end position of the text.  We use it in computing our metrics below.
                 //
                 endOfLastTextX = position.getX() + position.getWidth();
-    
-    
+
+
                 if (characterValue != null)
                 {
                     writeCharacters( position );
@@ -527,7 +527,7 @@ public class PDFTextStripper extends PDFStreamEngine
             }
             endParagraph();
         }
-        
+
 
         // RDD - newline at end of flush - required for end of page (so that the top
         // of the next page starts on its own line.
@@ -536,26 +536,26 @@ public class PDFTextStripper extends PDFStreamEngine
 
         output.flush();
     }
-    
+
     private boolean overlap( float y1, float height1, float y2, float height2 )
     {
         return within( y1, y2, .1f) || (y2 <= y1 && y2 >= y1-height1) ||
                (y1 <= y2 && y1 >= y2-height2);
     }
-    
+
     protected void processLineSeparator( TextPosition currentText ) throws IOException
     {
         output.write(getLineSeparator());
     }
-    
+
     protected void processWordSeparator( TextPosition lastText, TextPosition currentText ) throws IOException
     {
         output.write(getWordSeparator());
     }
-    
+
     /**
      * Write the string to the output stream.
-     *  
+     *
      * @param text The text to write to the stream.
      * @throws IOException If there is an error when writing the text.
      */
@@ -597,7 +597,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 sameTextCharacters = new ArrayList();
                 characterListMapping.put( textCharacter, sameTextCharacters );
             }
-    
+
             // RDD - Here we compute the value that represents the end of the rendered
             // text.  This value is used to determine whether subsequent text rendered
             // on the same line overwrites the current text.
@@ -618,12 +618,12 @@ public class PDFTextStripper extends PDFStreamEngine
                 float charX = character.getX();
                 float charY = character.getY();
                 //only want to suppress
-                
+
                 if( charCharacter != null &&
                     //charCharacter.equals( textCharacter ) &&
                     within( charX, textX, tolerance ) &&
-                    within( charY, 
-                            textY, 
+                    within( charY,
+                            textY,
                             tolerance ) )
                 {
                     suppressCharacter = true;
@@ -635,7 +635,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 showCharacter = true;
             }
         }
-        
+
         if( showCharacter )
         {
             //if we are showing the character then we need to determine which
@@ -673,7 +673,7 @@ public class PDFTextStripper extends PDFStreamEngine
                                 notFoundButFirstAboveArticleDivisionIndex == -1)
                         {
                             notFoundButFirstAboveArticleDivisionIndex = i*2;
-                        }                        
+                        }
                     }
                     else
                     {
@@ -831,45 +831,45 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         return suppressDuplicateOverlappingText;
     }
-    
+
     /**
      * Get the current page number that is being processed.
-     * 
+     *
      * @return A 1 based number representing the current page.
      */
-    protected int getCurrentPageNo() 
+    protected int getCurrentPageNo()
     {
         return currentPageNo;
     }
 
     /**
      * The output stream that is being written to.
-     * 
+     *
      * @return The stream that output is being written to.
      */
-    protected Writer getOutput() 
+    protected Writer getOutput()
     {
         return output;
     }
-    
+
     /**
      * Character strings are grouped by articles.  It is quite common that there
      * will only be a single article.  This returns a List that contains List objects,
      * the inner lists will contain TextPosition objects.
-     * 
+     *
      * @return A double List of TextPositions for all text strings on the page.
      */
     protected List getCharactersByArticle()
     {
         return charactersByArticle;
     }
-    
+
     /**
      * By default the text stripper will attempt to remove text that overlapps each other.
      * Word paints the same character several times in order to make it look bold.  By setting
-     * this to false all text will be extracted, which means that certain sections will be 
+     * this to false all text will be extracted, which means that certain sections will be
      * duplicated, but better performance will be noticed.
-     * 
+     *
      * @param suppressDuplicateOverlappingTextValue The suppressDuplicateOverlappingText to set.
      */
     public void setSuppressDuplicateOverlappingText(
@@ -877,60 +877,60 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         this.suppressDuplicateOverlappingText = suppressDuplicateOverlappingTextValue;
     }
-    
+
     /**
      * This will tell if the text stripper should separate by beads.
-     * 
+     *
      * @return If the text will be grouped by beads.
      */
     public boolean shouldSeparateByBeads()
     {
         return shouldSeparateByBeads;
     }
-    
+
     /**
      * Set if the text stripper should group the text output by a list of beads.  The default value is true!
-     * 
+     *
      * @param aShouldSeparateByBeads The new grouping of beads.
      */
     public void setShouldSeparateByBeads(boolean aShouldSeparateByBeads)
     {
         this.shouldSeparateByBeads = aShouldSeparateByBeads;
     }
-    
+
     /**
      * Get the bookmark where text extraction should end, inclusive.  Default is null.
-     * 
+     *
      * @return The ending bookmark.
      */
     public PDOutlineItem getEndBookmark()
     {
         return endBookmark;
     }
-    
+
     /**
      * Set the bookmark where the text extraction should stop.
-     * 
+     *
      * @param aEndBookmark The ending bookmark.
      */
     public void setEndBookmark(PDOutlineItem aEndBookmark)
     {
         endBookmark = aEndBookmark;
     }
-    
+
     /**
      * Get the bookmark where text extraction should start, inclusive.  Default is null.
-     * 
+     *
      * @return The starting bookmark.
      */
     public PDOutlineItem getStartBookmark()
     {
         return startBookmark;
     }
-    
+
     /**
      * Set the bookmark where text extraction should start, inclusive.
-     * 
+     *
      * @param aStartBookmark The starting bookmark.
      */
     public void setStartBookmark(PDOutlineItem aStartBookmark)
@@ -941,10 +941,10 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * This will tell if the text stripper should sort the text tokens
      * before writing to the stream.
-     * 
+     *
      * @return true If the text tokens will be sorted before being written.
      */
-    public boolean shouldSortByPosition() 
+    public boolean shouldSortByPosition()
     {
         return sortByPosition;
     }
@@ -959,10 +959,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * A PDF writer could choose to write each character in a different order.  By
      * default PDFBox does <b>not</b> sort the text tokens before processing them due to
      * performance reasons.
-     *     
+     *
      * @param newSortByPosition Tell PDFBox to sort the text positions.
      */
-    public void setSortByPosition(boolean newSortByPosition) 
+    public void setSortByPosition(boolean newSortByPosition)
     {
         sortByPosition = newSortByPosition;
     }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import java.io.IOException;
 
 /**
  * Implementation of content stream operator for page drawer.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.1 $
  */
@@ -37,17 +37,17 @@ public class FillNonZeroAndStrokePath extends org.pdfbox.util.operator.SetLineWi
      * fill and stroke the path.
      * @param operator The operator that is being executed.
      * @param arguments List
-     * 
+     *
      * @throws IOException If an error occurs while processing the font.
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
         GeneralPath currentPath = (GeneralPath)drawer.getLinePath().clone();
-        
+
         context.processOperator( "f", arguments );
         drawer.setLinePath( currentPath );
-        
+
         context.processOperator( "S", arguments );
     }
 }

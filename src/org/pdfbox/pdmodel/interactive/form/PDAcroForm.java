@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -122,10 +122,10 @@ public class PDAcroForm implements COSObjectable
             }
         }
     }
-    
+
     /**
      * This will export all FDF form data.
-     * 
+     *
      * @return An FDF document used to export the document.
      * @throws IOException If there is an error when exporting the document.
      */
@@ -135,7 +135,7 @@ public class PDAcroForm implements COSObjectable
         FDFCatalog catalog = fdf.getCatalog();
         FDFDictionary fdfDict = new FDFDictionary();
         catalog.setFDF( fdfDict );
-        
+
         List fdfFields = new ArrayList();
         List fields = getFields();
         Iterator fieldIter = fields.iterator();
@@ -151,7 +151,7 @@ public class PDAcroForm implements COSObjectable
         }
         return fdf;
     }
-    
+
     private void addFieldAndChildren( PDField docField, List fdfFields ) throws IOException
     {
         Object fieldValue = docField.getValue();
@@ -162,7 +162,7 @@ public class PDAcroForm implements COSObjectable
         List childFDFFields = new ArrayList();
         if( kids != null )
         {
-            
+
             for( int i=0; i<kids.size(); i++ )
             {
                 addFieldAndChildren( (PDField)kids.get( i ), childFDFFields );
@@ -191,7 +191,7 @@ public class PDAcroForm implements COSObjectable
         COSArray fields =
             (COSArray) acroForm.getDictionaryObject(
                 COSName.getPDFName("Fields"));
-        
+
         if( fields != null )
         {
             List actuals = new ArrayList();
@@ -211,10 +211,10 @@ public class PDAcroForm implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the fields that are part of this AcroForm.
-     * 
+     *
      * @param fields The fields that are part of this form.
      */
     public void setFields( List fields )
@@ -266,7 +266,7 @@ public class PDAcroForm implements COSObjectable
      * @param name The name of the field to get.
      *
      * @return The field with that name of null if one was not found.
-     * 
+     *
      * @throws IOException If there is an error getting the field type.
      */
     public PDField getField( String name ) throws IOException
@@ -294,7 +294,7 @@ public class PDAcroForm implements COSObjectable
                         fieldName.getString().equals( nameSubSection[0] ) )
                     {
                         PDField root = PDFieldFactory.createField( this, element );
-                        
+
                         if( nameSubSection.length > 1 )
                         {
                             PDField kid = root.findKid( nameSubSection, 1 );
@@ -348,7 +348,7 @@ public class PDAcroForm implements COSObjectable
         }
         acroForm.setItem( COSName.getPDFName( "DR" ), drDict );
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -356,10 +356,10 @@ public class PDAcroForm implements COSObjectable
     {
         return acroForm;
     }
-    
+
     /**
      * Get the XFA resource, the XFA resource is only used for PDF 1.5+ forms.
-     * 
+     *
      * @return The xfa resource or null if it does not exist.
      */
     public PDXFA getXFA()
@@ -372,10 +372,10 @@ public class PDAcroForm implements COSObjectable
         }
         return xfa;
     }
-    
+
     /**
      * Set the XFA resource, this is only used for PDF 1.5+ forms.
-     * 
+     *
      * @param xfa The xfa resource.
      */
     public void setXFA( PDXFA xfa )

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
     /**
      * This is a byte array that will be used for comparisons.
      */
-    public static final byte[] ENDSTREAM = 
+    public static final byte[] ENDSTREAM =
         new byte[] {101,110,100,115,116,114,101,97,109};//"endstream".getBytes( "ISO-8859-1" );
 
     /**
@@ -82,7 +82,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
      * Constructor.
      *
      * @param input The input stream to read the data from.
-     * 
+     *
      * @throws IOException If there is an error reading the input stream.
      */
     public BaseParser( InputStream input) throws IOException
@@ -90,22 +90,22 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
         //pdfSource = new PushBackByteArrayStream( input );
         pdfSource = new PushBackInputStream( new BufferedInputStream( input, 16384 ), 4096 );
     }
-    
+
     /**
      * Constructor.
      *
      * @param input The array to read the data from.
-     * 
+     *
      * @throws IOException If there is an error reading the byte data.
      */
     protected BaseParser(byte[] input) throws IOException
     {
         pdfSource = new ByteArrayPushBackInputStream(input);
     }
-    
+
     /**
      * Set the document for this stream.
-     * 
+     *
      * @param doc The current document.
      */
     public void setDocument( COSDocument doc )
@@ -115,8 +115,8 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
 
     private static boolean isHexDigit(char ch)
     {
-        return (ch >= '0' && ch <= '9') || 
-        (ch >= 'a' && ch <= 'f') || 
+        return (ch >= '0' && ch <= '9') ||
+        (ch >= 'a' && ch <= 'f') ||
         (ch >= 'A' && ch <= 'F');
         // the line below can lead to problems with certain versions of the IBM JIT compiler
         // (and is slower anyway)
@@ -254,9 +254,9 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
             //a CRLF or LF but nothing else.
 
             int whitespace = pdfSource.read();
-            
+
             //see brother_scan_cover.pdf, it adds whitespaces
-            //after the stream but before the start of the 
+            //after the stream but before the start of the
             //data, so just read those first
             while (whitespace == 0x20)
             {
@@ -483,7 +483,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
                 braces--;
                 byte[] nextThreeBytes = new byte[3];
                 int amountRead = pdfSource.read(nextThreeBytes);
-                
+
                 //lets handle the special case seen in Bull  River Rules and Regulations.pdf
                 //The dictionary looks like this
                 //    2 0 obj
@@ -578,7 +578,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
                             {
                                 octal.append( digit );
                             }
-                            else 
+                            else
                             {
                                 nextc = c;
                             }
@@ -586,7 +586,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
                         else
                         {
                             nextc = c;
-                        }   
+                        }
 
                         int character = 0;
                         try
@@ -629,7 +629,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
             {
                 c = nextc;
             }
-            else 
+            else
             {
                 c = pdfSource.read();
             }
@@ -1037,7 +1037,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
         skipSpaces();
 
         int c = pdfSource.read();
-        
+
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
         StringBuffer buffer = new StringBuffer(length);
@@ -1068,14 +1068,14 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
     {
         return isClosing(pdfSource.peek());
     }
-    
+
     /**
      * This will tell if the next character is a closing brace( close of PDF array ).
      *
      * @param c The character to check against end of line
      * @return true if the next byte is ']', false otherwise.
      */
-    protected boolean isClosing(int c) 
+    protected boolean isClosing(int c)
     {
         return c == ']';
     }
@@ -1095,7 +1095,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
             c = pdfSource.read();
         }
         StringBuffer buffer = new StringBuffer( 11 );
-        
+
         while( !isEOL(c) && c != -1 )
         {
             buffer.append( (char)c );
@@ -1123,7 +1123,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
     {
         return isEOL(pdfSource.peek());
     }
-    
+
     /**
      * This will tell if the next byte to be read is an end of line byte.
      *
@@ -1182,7 +1182,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
                     c = pdfSource.read();
                 }
             }
-            else 
+            else
             {
                 c = pdfSource.read();
             }
@@ -1221,7 +1221,7 @@ public abstract class BaseParser extends org.pdfbox.exceptions.LoggingObject
         {
             pdfSource.unread( lastByte );
         }
-             
+
         try
         {
             retval = Integer.parseInt( intBuffer.toString() );

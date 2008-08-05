@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,9 +32,9 @@ import org.pdfbox.exceptions.CryptographyException;
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.15 $
- * 
+ *
  * @deprecated use the new security layer instead
- * 
+ *
  * @see org.pdfbox.pdmodel.encryption.StandardSecurityHandler
  */
 public final class PDFEncryption
@@ -188,12 +188,12 @@ public final class PDFEncryption
                 result.write( dataToEncrypt, 0, dataToEncrypt.length );
                 */
                 byte[] iterationKey = new byte[ rc4Key.length ];
-                
-              
-                byte[] otemp = new byte[ o.length ]; //sm 
+
+
+                byte[] otemp = new byte[ o.length ]; //sm
                 System.arraycopy( o, 0, otemp, 0, o.length ); //sm
                 rc4.write( o, result);//sm
-                
+
                 for( int i=19; i>=0; i-- )
                 {
                     System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
@@ -204,7 +204,7 @@ public final class PDFEncryption
                     rc4.setKey( iterationKey );
                     result.reset();  //sm
                     rc4.write( otemp, result ); //sm
-                    otemp = result.toByteArray(); //sm                
+                    otemp = result.toByteArray(); //sm
                 }
             }
 

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import org.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * This class represents a PDF /BE entry the border effect dictionary.
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -57,7 +57,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * Constructor.
-     * 
+     *
      * @param dict
      *            a border style dictionary.
      */
@@ -68,7 +68,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * returns the dictionary.
-     * 
+     *
      * @return the dictionary
      */
     public COSDictionary getDictionary()
@@ -78,7 +78,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * returns the dictionary.
-     * 
+     *
      * @return the dictionary
      */
     public COSBase getCOSObject()
@@ -88,7 +88,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * This will set the intensity of the applied effect.
-     * 
+     *
      * @param i
      *            the intensity of the effect values 0 to 2
      */
@@ -99,7 +99,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * This will retrieve the intensity of the applied effect.
-     * 
+     *
      * @return the intensity value 0 to 2
      */
     public float getIntensity()
@@ -109,7 +109,7 @@ public class PDBorderEffectDictionary implements COSObjectable
 
     /**
      * This will set the border effect, see the STYLE_* constants for valid values.
-     * 
+     *
      * @param s
      *            the border effect to use
      */
@@ -121,7 +121,7 @@ public class PDBorderEffectDictionary implements COSObjectable
     /**
      * This will retrieve the border effect, see the STYLE_* constants for valid
      * values.
-     * 
+     *
      * @return the effect of the border
      */
     public String getStyle()

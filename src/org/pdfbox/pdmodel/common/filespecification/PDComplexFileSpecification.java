@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -88,7 +88,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
     {
         fs.setString( "F", file );
     }
-    
+
     /**
      * This will get the name representing a Dos file.
      *
@@ -108,7 +108,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
     {
         fs.setString( "DOS", file );
     }
-    
+
     /**
      * This will get the name representing a Mac file.
      *
@@ -128,7 +128,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
     {
         fs.setString( "Mac", file );
     }
-    
+
     /**
      * This will get the name representing a Unix file.
      *
@@ -148,31 +148,31 @@ public class PDComplexFileSpecification extends PDFileSpecification
     {
         fs.setString( "Unix", file );
     }
-    
+
     /**
      * Tell if the underlying file is volatile and should not be cached by the
      * reader application.  Default: false
-     * 
+     *
      * @param fileIsVolatile The new value for the volatility of the file.
      */
     public void setVolatile( boolean fileIsVolatile )
     {
         fs.setBoolean( "V", fileIsVolatile );
     }
-    
+
     /**
      * Get if the file is volatile.  Default: false
-     * 
+     *
      * @return True if the file is volatile attribute is set.
      */
     public boolean isVolatile()
     {
         return fs.getBoolean( "V", false );
     }
-    
+
     /**
      * Get the embedded file.
-     * 
+     *
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFile()
@@ -185,10 +185,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
         }
         return file;
     }
-    
+
     /**
      * Set the embedded file for this spec.
-     * 
+     *
      * @param file The file to be embedded.
      */
     public void setEmbeddedFile( PDEmbeddedFile file )
@@ -204,10 +204,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
             ef.setItem( "F", file );
         }
     }
-    
+
     /**
      * Get the embedded dos file.
-     * 
+     *
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileDos()
@@ -220,10 +220,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
         }
         return file;
     }
-    
+
     /**
      * Set the embedded dos file for this spec.
-     * 
+     *
      * @param file The dos file to be embedded.
      */
     public void setEmbeddedFileDos( PDEmbeddedFile file )
@@ -239,10 +239,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
             ef.setItem( "DOS", file );
         }
     }
-    
+
     /**
      * Get the embedded Mac file.
-     * 
+     *
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileMac()
@@ -255,10 +255,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
         }
         return file;
     }
-    
+
     /**
      * Set the embedded Mac file for this spec.
-     * 
+     *
      * @param file The Mac file to be embedded.
      */
     public void setEmbeddedFileMac( PDEmbeddedFile file )
@@ -274,10 +274,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
             ef.setItem( "Mac", file );
         }
     }
-    
+
     /**
      * Get the embedded Unix file.
-     * 
+     *
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileUnix()
@@ -290,10 +290,10 @@ public class PDComplexFileSpecification extends PDFileSpecification
         }
         return file;
     }
-    
+
     /**
      * Set the embedded Unix file for this spec.
-     * 
+     *
      * @param file The Unix file to be embedded.
      */
     public void setEmbeddedFileUnix( PDEmbeddedFile file )

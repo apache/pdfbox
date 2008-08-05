@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,46 +115,46 @@ public final class LucenePDFDocument
     // given caveat of increased search times when using
     //MICROSECOND, only use SECOND by default
     private DateTools.Resolution dateTimeResolution = DateTools.Resolution.SECOND;
-    
+
     private PDFTextStripper stripper = null;
-    
+
     /**
      * Constructor.
      */
     public LucenePDFDocument()
     {
     }
-    
+
     /**
      * Set the text stripper that will be used during extraction.
-     * 
+     *
      * @param aStripper The new pdf text stripper.
      */
     public void setTextStripper( PDFTextStripper aStripper )
     {
         stripper = aStripper;
     }
-    
+
     /**
      * Get the Lucene data time resolution.
-     * 
+     *
      * @return current date/time resolution
      */
     public DateTools.Resolution getDateTimeResolution()
     {
         return dateTimeResolution;
     }
-    
+
     /**
      * Set the Lucene data time resolution.
-     * 
+     *
      * @param resolution set new date/time resolution
      */
     public void setDateTimeResolution( DateTools.Resolution resolution )
     {
         dateTimeResolution = resolution;
     }
-    
+
     //
     // compatibility methods for lucene-1.9+
     //
@@ -162,66 +162,66 @@ public final class LucenePDFDocument
     {
         return DateTools.timeToString( time, dateTimeResolution );
     }
-    
+
     private void addKeywordField( Document document, String name, String value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             document.add( new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
         }
     }
-    
+
     private void addTextField( Document document, String name, Reader value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             document.add( new Field( name, value ) );
         }
     }
-    
+
     private void addTextField( Document document, String name, String value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             document.add( new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED ) );
         }
     }
-    
+
     private void addTextField( Document document, String name, Date value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             addTextField( document, name, DateTools.dateToString( value, dateTimeResolution ) );
         }
     }
-    
+
     private void addTextField( Document document, String name, Calendar value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             addTextField( document, name, value.getTime() );
         }
     }
-    
+
     private static void addUnindexedField( Document document, String name, String value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             document.add( new Field( name, value, Field.Store.YES, Field.Index.NO ) );
         }
     }
-    
+
     private void addUnstoredKeywordField( Document document, String name, String value )
     {
-        if ( value != null ) 
+        if ( value != null )
         {
             document.add( new Field( name, value, Field.Store.NO, Field.Index.UN_TOKENIZED ) );
         }
     }
-    
+
     /**
      * Convert the PDF stream to a lucene document.
-     * 
+     *
      * @param is The input stream.
      * @return The input stream converted to a lucene document.
      * @throws IOException If there is an error converting the PDF.
@@ -231,15 +231,15 @@ public final class LucenePDFDocument
         Document document = new Document();
         addContent( document, is, "<inputstream>" );
         return document;
-        
+
     }
-    
+
     /**
      * This will take a reference to a PDF document and create a lucene document.
-     * 
+     *
      * @param file A reference to a PDF document.
      * @return The converted lucene document.
-     * 
+     *
      * @throws IOException If there is an exception while converting the document.
      */
     public Document convertDocument( File file ) throws IOException
@@ -257,7 +257,7 @@ public final class LucenePDFDocument
         addKeywordField( document, "modified", timeToString( file.lastModified() ) );
 
         String uid = file.getPath().replace(FILE_SEPARATOR,'\u0000')
-                     + "\u0000" 
+                     + "\u0000"
                      + timeToString( file.lastModified() );
 
         // Add the uid as a field, so that index can be incrementally maintained.
@@ -284,10 +284,10 @@ public final class LucenePDFDocument
 
         return document;
     }
-    
+
     /**
      * Convert the document from a PDF to a lucene document.
-     * 
+     *
      * @param url A url to a PDF document.
      * @return The PDF converted to a lucene document.
      * @throws IOException If there is an error while converting the document.
@@ -307,7 +307,7 @@ public final class LucenePDFDocument
         addKeywordField( document, "modified", timeToString(connection.getLastModified() ) );
 
         String uid = url.toExternalForm().replace(FILE_SEPARATOR, '\u0000')
-                     + "\u0000" 
+                     + "\u0000"
                      + timeToString( connection.getLastModified() );
 
         // Add the uid as a field, so that index can be incrementally maintained.
@@ -332,7 +332,7 @@ public final class LucenePDFDocument
         // return the document
         return document;
     }
-    
+
     /**
      * This will get a lucene document from a PDF file.
      *
@@ -425,7 +425,7 @@ public final class LucenePDFDocument
             addTextField( document, "contents", reader );
 
             PDDocumentInformation info = pdfDocument.getDocumentInformation();
-            if( info != null ) 
+            if( info != null )
             {
                 addTextField( document, "Author", info.getAuthor() );
                 try
@@ -464,8 +464,8 @@ public final class LucenePDFDocument
         catch( InvalidPasswordException e )
         {
             //they didn't suppply a password and the default of "" was wrong.
-            throw new IOException( 
-                "Error: The document(" + documentLocation + 
+            throw new IOException(
+                "Error: The document(" + documentLocation +
                 ") is encrypted and will not be indexed." );
         }
         finally

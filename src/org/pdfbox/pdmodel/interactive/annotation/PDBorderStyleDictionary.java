@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import org.pdfbox.pdmodel.graphics.PDLineDashPattern;
 
 /**
  * This class represents a PDF /BS entry the border style dictionary.
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -75,7 +75,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * Constructor.
-     * 
+     *
      * @param dict
      *            a border style dictionary.
      */
@@ -86,7 +86,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * returns the dictionary.
-     * 
+     *
      * @return the dictionary
      */
     public COSDictionary getDictionary()
@@ -96,7 +96,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * returns the dictionary.
-     * 
+     *
      * @return the dictionary
      */
     public COSBase getCOSObject()
@@ -106,7 +106,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * This will set the border width in points, 0 = no border.
-     * 
+     *
      * @param w
      *            float the width in points
      */
@@ -117,7 +117,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * This will retrieve the border width in points, 0 = no border.
-     * 
+     *
      * @return flaot the width of the border in points
      */
     public float getWidth()
@@ -127,7 +127,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * This will set the border style, see the STYLE_* constants for valid values.
-     * 
+     *
      * @param s
      *            the border style to use
      */
@@ -139,7 +139,7 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * This will retrieve the border style, see the STYLE_* constants for valid
      * values.
-     * 
+     *
      * @return the style of the border
      */
     public String getStyle()
@@ -149,7 +149,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * This will set the dash style used for drawing the border.
-     * 
+     *
      * @param d
      *            the dash style to use
      */
@@ -165,7 +165,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 
     /**
      * This will retrieve the dash style used for drawing the border.
-     * 
+     *
      * @return the dash style of the border
      */
     public PDLineDashPattern getDashStyle()

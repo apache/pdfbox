@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -166,7 +166,7 @@ public class COSWriter implements ICOSVisitor
 
     // maps the object to the keys generated in the writer
     // these are used for indirect refrences in other objects
-    //A hashtable is used on purpose over a hashmap 
+    //A hashtable is used on purpose over a hashmap
     //so that null entries will not get added.
     private Map objectKeys = new Hashtable();
 
@@ -185,11 +185,11 @@ public class COSWriter implements ICOSVisitor
     //the actual for that object, so we will track
     //actuals separately.
     private Set actualsAdded = new HashSet();
-    
+
     private COSObjectKey currentObjectKey = null;
-   
+
     private PDDocument document = null;
-    
+
     private boolean willEncrypt = false;
 
     /**
@@ -353,22 +353,22 @@ public class COSWriter implements ICOSVisitor
         {
             addObjectToWrite( info );
         }
-        
+
 
         while( objectsToWrite.size() > 0 )
         {
             COSBase nextObject = (COSBase)objectsToWrite.remove( 0 );
             doWriteObject( nextObject );
         }
-        
-        
+
+
         willEncrypt = false;
-        
+
         if( encrypt != null )
         {
             addObjectToWrite( encrypt );
         }
-        
+
         while( objectsToWrite.size() > 0 )
         {
             COSBase nextObject = (COSBase)objectsToWrite.remove( 0 );
@@ -388,10 +388,10 @@ public class COSWriter implements ICOSVisitor
     {
         COSBase actual = object;
         if( actual instanceof COSObject )
-        {  
+        {
             actual = ((COSObject)actual).getObject();
         }
-        
+
         if( !writtenObjects.contains( object ) &&
             !objectsToWrite.contains( object ) &&
             !actualsAdded.contains( actual ) )
@@ -673,7 +673,7 @@ public class COSWriter implements ICOSVisitor
      */
     public Object visitFromBoolean(COSBoolean obj) throws COSVisitorException
     {
-        
+
         try
         {
             obj.writePDF( getStandardOutput() );
@@ -787,7 +787,7 @@ public class COSWriter implements ICOSVisitor
      */
     public Object visitFromFloat(COSFloat obj) throws COSVisitorException
     {
-        
+
         try
         {
             obj.writePDF( getStandardOutput() );
@@ -905,15 +905,15 @@ public class COSWriter implements ICOSVisitor
             if(willEncrypt)
             {
                 document.getSecurityHandler().decryptStream(
-                    obj, 
-                    currentObjectKey.getNumber(), 
+                    obj,
+                    currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
             }
-            
+
             InputStream input = obj.getFilteredStream();
             // set the length of the stream and write stream dictionary
             COSObject lengthObject = new COSObject( null );
-            
+
             obj.setItem(COSName.LENGTH, lengthObject);
             //obj.accept(this);
             // write the stream content
@@ -952,15 +952,15 @@ public class COSWriter implements ICOSVisitor
     public Object visitFromString(COSString obj) throws COSVisitorException
     {
         try
-        {        
+        {
             if(willEncrypt)
-            {                    
+            {
                 document.getSecurityHandler().decryptString(
-                    obj, 
-                    currentObjectKey.getNumber(), 
-                    currentObjectKey.getGeneration());                    
+                    obj,
+                    currentObjectKey.getNumber(),
+                    currentObjectKey.getGeneration());
             }
-                        
+
             obj.writePDF( getStandardOutput() );
         }
         catch (Exception e)
@@ -993,12 +993,12 @@ public class COSWriter implements ICOSVisitor
     public void write(PDDocument doc) throws COSVisitorException
     {
         document = doc;
-        
+
         SecurityHandler securityHandler = document.getSecurityHandler();
         if(securityHandler != null)
         {
-            try 
-            {            
+            try
+            {
                 securityHandler.prepareDocumentForEncryption(document);
                 this.willEncrypt = true;
             }
@@ -1015,7 +1015,7 @@ public class COSWriter implements ICOSVisitor
         {
                 this.willEncrypt = false;
         }
-                
+
         COSDocument cosDoc = document.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
         COSArray idArray = (COSArray)trailer.getDictionaryObject( "ID" );
@@ -1023,7 +1023,7 @@ public class COSWriter implements ICOSVisitor
         {
             try
             {
-                
+
                 //algothim says to use time/path/size/values in doc to generate
                 //the id.  We don't have path or size, so do the best we can
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
@@ -1038,7 +1038,7 @@ public class COSWriter implements ICOSVisitor
                     }
                 }
                 idArray = new COSArray();
-                COSString id = new COSString( md.digest() ); 
+                COSString id = new COSString( md.digest() );
                 idArray.add( id );
                 idArray.add( id );
                 trailer.setItem( "ID", idArray );
@@ -1048,7 +1048,7 @@ public class COSWriter implements ICOSVisitor
                 throw new COSVisitorException( e );
             }
         }
-        
+
         /*
         List objects = doc.getObjects();
         Iterator iter = objects.iterator();

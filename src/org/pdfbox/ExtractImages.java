@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,10 +40,10 @@ import org.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 public class ExtractImages
 {
     private int imageCounter = 1;
-    
+
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
-    
+
     /**
      * This is the entry point for the application.
      *
@@ -106,28 +106,28 @@ public class ExtractImages
                 {
                     prefix = pdfFile.substring( 0, pdfFile.length() -4 );
                 }
-    
+
                 PDDocument document = null;
-    
+
                 try
                 {
                     document = PDDocument.load( pdfFile );
-    
+
                     if( document.isEncrypted() )
                     {
-                    
+
                         StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
                         document.openProtection(spm);
                         AccessPermission ap = document.getCurrentAccessPermission();
-                            
-                        
+
+
                         if( ! ap.canExtractContent() )
                         {
                             throw new IOException(
                                 "Error: You do not have permission to extract images." );
                         }
                     }
-                    
+
                     List pages = document.getDocumentCatalog().getAllPages();
                     Iterator iter = pages.iterator();
                     while( iter.hasNext() )
@@ -159,7 +159,7 @@ public class ExtractImages
             }
         }
     }
-    
+
     private String getUniqueFileName( String prefix, String suffix )
     {
         String uniqueName = null;

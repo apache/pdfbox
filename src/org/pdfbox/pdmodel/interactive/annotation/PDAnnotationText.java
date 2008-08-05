@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import org.pdfbox.cos.COSName;
 
 /**
  * This is the class that represents a text annotation.
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -86,7 +86,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     /**
      * Creates a Text annotation from a COSDictionary, expected to be a correct
      * object definition.
-     * 
+     *
      * @param field
      *            the PDF objet to represent as a field.
      */
@@ -97,7 +97,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
 
     /**
      * This will set inital state of the annotation, open or closed.
-     * 
+     *
      * @param open
      *            Boolean value, true = open false = closed
      */
@@ -109,7 +109,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     /**
      * This will retrieve the initial state of the annotation, open Or closed
      * (default closed).
-     * 
+     *
      * @return The initial state, true = open false = closed
      */
     public boolean getOpen()
@@ -120,7 +120,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     /**
      * This will set the name (and hence appearance, AP taking precedence) For
      * this annotation. See the NAME_XXX constants for valid values.
-     * 
+     *
      * @param name
      *            The name of the annotation
      */
@@ -132,7 +132,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     /**
      * This will retrieve the name (and hence appearance, AP taking precedence)
      * For this annotation. The default is NOTE.
-     * 
+     *
      * @return The name of this annotation, see the NAME_XXX constants.
      */
     public String getName()

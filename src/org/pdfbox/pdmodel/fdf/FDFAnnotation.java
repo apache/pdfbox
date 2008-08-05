@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,24 +65,24 @@ public abstract class FDFAnnotation implements COSObjectable
     {
         annot = a;
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param element An XFDF element.
-     * 
+     *
      * @throws IOException If there is an error extracting data from the element.
      */
     public FDFAnnotation( Element element ) throws IOException
     {
         this();
-        
+
         String page = element.getAttribute( "page" );
         if( page != null )
         {
             setPage( Integer.parseInt( page ) );
         }
-        
+
         String color = element.getAttribute( "color" );
         if( color != null )
         {
@@ -92,9 +92,9 @@ public abstract class FDFAnnotation implements COSObjectable
                 setColor( new Color(colorValue) );
             }
         }
-        
+
         setDate( element.getAttribute( "date" ) );
-        
+
         String flags = element.getAttribute( "flags" );
         if( flags != null )
         {
@@ -138,11 +138,11 @@ public abstract class FDFAnnotation implements COSObjectable
                     setToggleNoView( true );
                 }
             }
-            
+
         }
-        
+
         setName( element.getAttribute( "name" ) );
-        
+
         String rect = element.getAttribute( "rect" );
         if( rect != null )
         {
@@ -156,7 +156,7 @@ public abstract class FDFAnnotation implements COSObjectable
             array.setFloatArray( values );
             setRectangle( new PDRectangle( array ) );
         }
-        
+
         setName( element.getAttribute( "title" ) );
         setCreationDate( DateConverter.toCalendar( element.getAttribute( "creationdate" ) ) );
         String opac = element.getAttribute( "opacity" );
@@ -166,14 +166,14 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         setSubject( element.getAttribute( "subject" ) );
     }
-    
+
     /**
      * Create the correct FDFAnnotation.
-     * 
+     *
      * @param fdfDic The FDF dictionary.
-     * 
+     *
      * @return A newly created FDFAnnotation
-     * 
+     *
      * @throws IOException If there is an error accessing the FDF information.
      */
     public static FDFAnnotation create( COSDictionary fdfDic ) throws IOException
@@ -182,7 +182,7 @@ public abstract class FDFAnnotation implements COSObjectable
         if( fdfDic == null )
         {
             //do nothing and return null
-        } 
+        }
         else if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
         {
             retval = new FDFAnnotationText( fdfDic );
@@ -239,10 +239,10 @@ public abstract class FDFAnnotation implements COSObjectable
     {
         annot.setItem( "Page", new COSInteger( page ) );
     }
-    
+
     /**
      * Get the annotation color.
-     * 
+     *
      * @return The annotation color, or null if there is none.
      */
     public Color getColor()
@@ -259,10 +259,10 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the annotation color.
-     * 
+     *
      * @param c The annotation color.
      */
     public void setColor( Color c )
@@ -276,220 +276,220 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         annot.setItem( "color", color );
     }
- 
+
     /**
      * Modification date.
-     * 
+     *
      * @return The date as a string.
      */
     public String getDate()
     {
         return annot.getString( "date" );
     }
-    
+
     /**
      * The annotation modification date.
-     * 
+     *
      * @param date The date to store in the FDF annotation.
      */
     public void setDate( String date )
     {
         annot.setString( "date", date );
     }
-    
+
     /**
      * Get the invisible flag.
-     * 
+     *
      * @return The invisible flag.
      */
     public boolean isInvisible()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_INVISIBLE );
     }
-    
+
     /**
      * Set the invisible flag.
-     * 
+     *
      * @param invisible The new invisible flag.
      */
     public void setInvisible( boolean invisible )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_INVISIBLE, invisible );
     }
-    
+
     /**
      * Get the hidden flag.
-     * 
+     *
      * @return The hidden flag.
      */
     public boolean isHidden()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_HIDDEN );
     }
-    
+
     /**
      * Set the hidden flag.
-     * 
+     *
      * @param hidden The new hidden flag.
      */
     public void setHidden( boolean hidden )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_HIDDEN, hidden );
     }
-    
+
     /**
      * Get the printed flag.
-     * 
+     *
      * @return The printed flag.
      */
     public boolean isPrinted()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_PRINTED );
     }
-    
+
     /**
      * Set the printed flag.
-     * 
+     *
      * @param printed The new printed flag.
      */
     public void setPrinted( boolean printed )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_PRINTED, printed );
     }
-    
+
     /**
      * Get the noZoom flag.
-     * 
+     *
      * @return The noZoom flag.
      */
     public boolean isNoZoom()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_ZOOM );
     }
-    
+
     /**
      * Set the noZoom flag.
-     * 
+     *
      * @param noZoom The new noZoom flag.
      */
     public void setNoZoom( boolean noZoom )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_ZOOM, noZoom );
     }
-    
+
     /**
      * Get the noRotate flag.
-     * 
+     *
      * @return The noRotate flag.
      */
     public boolean isNoRotate()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_ROTATE );
     }
-    
+
     /**
      * Set the noRotate flag.
-     * 
+     *
      * @param noRotate The new noRotate flag.
      */
     public void setNoRotate( boolean noRotate )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_ROTATE, noRotate );
     }
-    
+
     /**
      * Get the noView flag.
-     * 
+     *
      * @return The noView flag.
      */
     public boolean isNoView()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_VIEW );
     }
-    
+
     /**
      * Set the noView flag.
-     * 
+     *
      * @param noView The new noView flag.
      */
     public void setNoView( boolean noView )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_VIEW, noView );
     }
-    
+
     /**
      * Get the readOnly flag.
-     * 
+     *
      * @return The readOnly flag.
      */
     public boolean isReadOnly()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_READ_ONLY );
     }
-    
+
     /**
      * Set the readOnly flag.
-     * 
+     *
      * @param readOnly The new readOnly flag.
      */
     public void setReadOnly( boolean readOnly )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_READ_ONLY, readOnly );
     }
-    
+
     /**
      * Get the locked flag.
-     * 
+     *
      * @return The locked flag.
      */
     public boolean isLocked()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_LOCKED );
     }
-    
+
     /**
      * Set the locked flag.
-     * 
+     *
      * @param locked The new locked flag.
      */
     public void setLocked( boolean locked )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_LOCKED, locked );
     }
-    
+
     /**
      * Get the toggleNoView flag.
-     * 
+     *
      * @return The toggleNoView flag.
      */
     public boolean isToggleNoView()
     {
         return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_TOGGLE_NO_VIEW );
     }
-    
+
     /**
      * Set the toggleNoView flag.
-     * 
+     *
      * @param toggleNoView The new toggleNoView flag.
      */
     public void setToggleNoView( boolean toggleNoView )
     {
         BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_TOGGLE_NO_VIEW, toggleNoView );
     }
-    
+
     /**
      * Set a unique name for an annotation.
-     * 
+     *
      * @param name The unique annotation name.
      */
     public void setName( String name )
     {
         annot.setString( "NM", name );
     }
-    
+
     /**
      * Get the annotation name.
-     * 
+     *
      * @return The unique name of the annotation.
      */
     public String getName()
@@ -499,17 +499,17 @@ public abstract class FDFAnnotation implements COSObjectable
 
     /**
      * Set the rectangle associated with this annotation.
-     * 
+     *
      * @param rectangle The annotation rectangle.
      */
     public void setRectangle( PDRectangle rectangle )
     {
         annot.setItem( "Rect", rectangle );
     }
-    
+
     /**
      * The rectangle associated with this annotation.
-     * 
+     *
      * @return The annotation rectangle.
      */
     public PDRectangle getRectangle()
@@ -520,86 +520,86 @@ public abstract class FDFAnnotation implements COSObjectable
         {
             retval = new PDRectangle( rectArray );
         }
-        
+
         return retval;
     }
 
     /**
      * Set a unique title for an annotation.
-     * 
+     *
      * @param title The annotation title.
      */
     public void setTitle( String title )
     {
         annot.setString( "T", title );
     }
-    
+
     /**
      * Get the annotation title.
-     * 
+     *
      * @return The title of the annotation.
      */
     public String getTitle()
     {
         return annot.getString( "T" );
     }
-    
+
     /**
      * The annotation create date.
-     * 
+     *
      * @return The date of the creation of the annotation date
-     * 
+     *
      * @throws IOException If there is an error converting the string to a Calendar object.
      */
     public Calendar getCreationDate() throws IOException
     {
         return annot.getDate( "CreationDate" );
     }
-    
+
     /**
      * Set the creation date.
-     * 
+     *
      * @param date The date the annotation was created.
      */
     public void setCreationDate( Calendar date )
     {
         annot.setDate( "CreationDate", date );
     }
- 
+
     /**
      * Set the annotation opacity.
-     * 
+     *
      * @param opacity The new opacity value.
      */
     public void setOpacity( float opacity )
     {
         annot.setFloat( "CA", opacity );
     }
-    
+
     /**
      * Get the opacity value.
-     * 
+     *
      * @return The opacity of the annotation.
      */
     public float getOpacity()
     {
         return annot.getFloat( "CA", 1f );
-    
+
     }
-    
+
     /**
      * A short description of the annotation.
-     * 
+     *
      * @param subject The annotation subject.
      */
     public void setSubject( String subject )
     {
         annot.setString( "Subj", subject );
     }
-    
+
     /**
      * Get the description of the annotation.
-     * 
+     *
      * @return The subject of the annotation.
      */
     public String getSubject()

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +27,8 @@ import java.util.Calendar;
 
 /**
  * This class represents the additonal fields of a Markup type Annotation.
- * 
- * 
+ *
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -60,7 +60,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * Constructor.
-     * 
+     *
      * @param dict
      *            The annotations dictionary.
      */
@@ -72,7 +72,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * Retrieve the string used as the title of the popup window shown when open
      * and active (by convention this identifies who added the annotation).
-     * 
+     *
      * @return The title of the popup.
      */
     public String getTitlePopup()
@@ -83,7 +83,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * Set the string used as the title of the popup window shown when open and
      * active (by convention this identifies who added the annotation).
-     * 
+     *
      * @param t
      *            The title of the popup.
      */
@@ -95,7 +95,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will retrieve the popup annotation used for entering/editing the
      * text for this annotation.
-     * 
+     *
      * @return the popup annotation.
      */
     public PDAnnotationPopup getPopup()
@@ -104,7 +104,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
         if (popup != null)
         {
             return new PDAnnotationPopup( popup );
-        } 
+        }
         else
         {
             return null;
@@ -114,7 +114,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will set the popup annotation used for entering/editing the text for
      * this annotation.
-     * 
+     *
      * @param popup
      *            the popup annotation.
      */
@@ -126,7 +126,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will retrieve the constant opacity value used when rendering the
      * annotation (excluing any popup).
-     * 
+     *
      * @return the constant opacity value.
      */
     public float getConstantOpacity()
@@ -137,7 +137,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will set the constant opacity value used when rendering the
      * annotation (excluing any popup).
-     * 
+     *
      * @param ca
      *            the constant opacity value.
      */
@@ -149,7 +149,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will retrieve the rich text stream which is displayed in the popup
      * window.
-     * 
+     *
      * @return the rich text stream.
      */
     public PDTextStream getRichContents()
@@ -158,7 +158,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
         if (rc != null)
         {
             return PDTextStream.createTextStream( rc );
-        } 
+        }
         else
         {
             return null;
@@ -167,7 +167,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * This will set the rich text stream which is displayed in the popup window.
-     * 
+     *
      * @param rc
      *            the rich text stream.
      */
@@ -178,7 +178,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * This will retrieve the date and time the annotation was created.
-     * 
+     *
      * @return the creation date/time.
      * @throws IOException
      *             if there is a format problem when converting the date.
@@ -190,7 +190,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * This will set the the date and time the annotation was created.
-     * 
+     *
      * @param creationDate
      *            the date and time the annotation was created.
      */
@@ -202,7 +202,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will retrieve the annotation to which this one is "In Reply To" the
      * actual relationship is specified by the RT entry.
-     * 
+     *
      * @return the other annotation.
      * @throws IOException
      *             if there is an error with the annotation.
@@ -216,7 +216,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will set the annotation to which this one is "In Reply To" the
      * actual relationship is specified by the RT entry.
-     * 
+     *
      * @param irt
      *            the annotation this one is "In Reply To".
      */
@@ -227,7 +227,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * This will retrieve the short description of the subject of the annotation.
-     * 
+     *
      * @return the subject.
      */
     public String getSubject()
@@ -237,7 +237,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 
     /**
      * This will set the short description of the subject of the annotation.
-     * 
+     *
      * @param subj
      *            short description of the subject.
      */
@@ -249,7 +249,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will retrieve the Reply Type (relationship) with the annotation in
      * the IRT entry See the RT_* constants for the available values.
-     * 
+     *
      * @return the relationship.
      */
     public String getReplyType()
@@ -260,7 +260,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will set the Reply Type (relationship) with the annotation in the
      * IRT entry See the RT_* constants for the available values.
-     * 
+     *
      * @param rt
      *            the reply type.
      */
@@ -273,7 +273,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
      * This will retrieve the intent of the annotation The values and meanings
      * are specific to the actual annotation See the IT_* constants for the
      * annotation classes.
-     * 
+     *
      * @return the intent
      */
     public String getIntent()
@@ -285,7 +285,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
      * This will set the intent of the annotation The values and meanings are
      * specific to the actual annotation See the IT_* constants for the
      * annotation classes.
-     * 
+     *
      * @param it
      *            the intent
      */

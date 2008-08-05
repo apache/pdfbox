@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -92,8 +92,8 @@ public class TestFDF extends TestCase
             PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
             PDTextbox field = (PDTextbox)form.getField( "f67_1" );
             field.setValue( "2" );
-            
-            String expected = 
+
+            String expected =
                 "/Tx BMC " +
                 "BT " +
                 "/Helv 9 Tf " +
@@ -103,7 +103,7 @@ public class TestFDF extends TestCase
                 "(2) Tj " +
                 "ET " +
                 "EMC";
-            
+
             testContentStreams( fdeb, field, expected );
         }
         finally
@@ -113,9 +113,9 @@ public class TestFDF extends TestCase
                 fdeb.close();
             }
         }
-        
+
     }
-    
+
     /**
      * This will test a pdf with lots of fields.
      *
@@ -130,8 +130,8 @@ public class TestFDF extends TestCase
             PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
             PDTextbox feld2 = (PDTextbox)form.getField( "Feld.2" );
             feld2.setValue( "Benjamin" );
-            
-            String expected = 
+
+            String expected =
             "1 1 0.8000000119 rg " +
             " 0 0 127.5 19.8299999237 re " +
             " f " +
@@ -163,16 +163,16 @@ public class TestFDF extends TestCase
             " 0 0 0 rg " +
             " 4 4.721 Td " +
             "(Benjamin) Tj " +
-            "ET " + 
+            "ET " +
             "EMC";
-            
+
             testContentStreams( fdeb, feld2, expected );
-            
+
             PDRadioCollection feld3 = (PDRadioCollection)form.getField( "Feld.3" );
             feld3.setValue("RB1");
             assertEquals( "RB1", feld3.getValue() );
             //assertEquals( ((PDCheckbox)feld3.getKids().get( 0 )).getValue(), "RB1" );
-            
+
         }
         finally
         {
@@ -182,10 +182,10 @@ public class TestFDF extends TestCase
             }
         }
     }
-    
+
     /**
      * This will test the Freedom pdf.
-     * 
+     *
      * @throws Exception If there is an error while testing.
      */
     public void testFDFFreedomExpressions() throws Exception
@@ -204,12 +204,12 @@ public class TestFDF extends TestCase
             PDField secondKid = (PDField)kids.get( 1 );
             testContentStreamContains( freedom, firstKid, "Steve" );
             testContentStreamContains( freedom, secondKid, "Steve" );
-            
+
             //the appearance stream is suppose to be null because there
             //is an F action in the AA dictionary that populates that field.
             PDField totalAmt = form.getField( "eeSuppTotalAmt" );
             assertTrue( totalAmt.getDictionary().getDictionaryObject( "AP" ) == null );
-            
+
         }
         finally
         {
@@ -223,25 +223,25 @@ public class TestFDF extends TestCase
             }
         }
     }
-    
+
     private void testContentStreamContains( PDDocument doc, PDField field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
         Map normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
         COSStream actual = appearanceStream.getStream();
-        
+
         List actualTokens = getStreamTokens( doc, actual );
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
     }
-    
+
     private void testContentStreams( PDDocument doc, PDField field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
         Map normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
         COSStream actual = appearanceStream.getStream();
-        
+
         List actualTokens = getStreamTokens( doc, actual );
         List expectedTokens = getStreamTokens( doc, expected );
         assertEquals( actualTokens.size(), expectedTokens.size() );
@@ -252,7 +252,7 @@ public class TestFDF extends TestCase
             assertEquals( actualToken, expectedToken );
         }
     }
-    
+
     private List getStreamTokens( PDDocument doc, String string ) throws IOException
     {
         PDFStreamParser parser;
@@ -267,7 +267,7 @@ public class TestFDF extends TestCase
         }
         return tokens;
     }
-    
+
     private List getStreamTokens( PDDocument doc, COSStream stream ) throws IOException
     {
         PDFStreamParser parser;

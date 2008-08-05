@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import org.pdfbox.pdmodel.PDPage;
 public class TextPositionComparator implements Comparator
 {
     private PDPage thePage = null;
-    
+
     /**
      * Constuctor, comparison of TextPosition depends on the rotation
      * of the page.
@@ -39,7 +39,7 @@ public class TextPositionComparator implements Comparator
     {
         thePage = page;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -86,7 +86,7 @@ public class TextPositionComparator implements Comparator
 
         float yDifference = Math.abs( pos1YBottom-pos2YBottom);
         //we will do a simple tolerance comparison.
-        if( yDifference < .1 || 
+        if( yDifference < .1 ||
             (pos2YBottom >= pos1YTop && pos2YBottom <= pos1YBottom) ||
             (pos1YBottom >= pos2YTop && pos1YBottom <= pos2YBottom))
         {
@@ -111,8 +111,8 @@ public class TextPositionComparator implements Comparator
         {
             return 1;
         }
-        
+
         return retval;
     }
-    
+
 }

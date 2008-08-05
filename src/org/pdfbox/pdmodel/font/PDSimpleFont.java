@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ public abstract class PDSimpleFont extends PDFont
 {
     private HashMap mFontSizes = new HashMap(128);
     private float avgFontWidth = 0.0f;
-    
+
     /**
      * Constructor.
      */
@@ -66,12 +66,12 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, 
+    public void drawString( String string, Graphics g, float fontSize,
         float xScale, float yScale, float x, float y ) throws IOException
     {
         System.err.println( "Not yet implemented:" + getClass().getName() );
     }
-    
+
     /**
      * This will get the font width for a character.
      *
@@ -151,7 +151,7 @@ public abstract class PDSimpleFont extends PDFont
             Float fontWidthF = (Float) mFontSizes.get(codeI);
             fontWidth = fontWidthF.floatValue();
         }
-        else 
+        else
         {
             //hmm should this be in a subclass??
             COSInteger firstChar = (COSInteger)font.getDictionaryObject( COSName.FIRST_CHAR );
@@ -196,7 +196,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             average = avgFontWidth;
         }
-        else 
+        else
         {
             float totalWidth = 0.0f;
             float characterCount = 0.0f;
@@ -269,10 +269,10 @@ public abstract class PDSimpleFont extends PDFont
         }
         font.setItem( COSName.getPDFName( "FontDescriptor" ), dic );
     }
-    
+
     /**
      * This will get the ToUnicode stream.
-     * 
+     *
      * @return The ToUnicode stream.
      * @throws IOException If there is an error getting the stream.
      */
@@ -280,22 +280,22 @@ public abstract class PDSimpleFont extends PDFont
     {
         return PDStream.createFromCOS( font.getDictionaryObject( "ToUnicode" ) );
     }
-    
+
     /**
      * This will set the ToUnicode stream.
-     * 
+     *
      * @param unicode The unicode stream.
      */
     public void setToUnicode( PDStream unicode )
     {
         font.setItem( "ToUnicode", unicode );
     }
-    
+
     /**
      * This will get the fonts bounding box.
      *
      * @return The fonts bouding box.
-     * 
+     *
      * @throws IOException If there is an error getting the bounding box.
      */
     public PDRectangle getFontBoundingBox() throws IOException

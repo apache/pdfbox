@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,7 +56,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     {
         lineDashPattern = ldp;
     }
-    
+
     /**
      * Constructs a line dash pattern from an existing array.
      *
@@ -69,7 +69,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
         lineDashPattern.add( ldp );
         lineDashPattern.add( new COSInteger( phase ) );
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -123,10 +123,10 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
         COSArray dashPatterns = (COSArray)lineDashPattern.get( 0 );
         return COSArrayList.convertIntegerCOSArrayToList( dashPatterns );
     }
-    
+
     /**
      * Get the line dash pattern as a COS object.
-     * 
+     *
      * @return The cos array line dash pattern.
      */
     public COSArray getCOSDashPattern()

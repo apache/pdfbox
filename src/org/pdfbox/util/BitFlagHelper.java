@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ public class BitFlagHelper
     {
         //helper class should not be constructed
     }
-    
+
     /**
      * Sets the given boolean value at bitPos in the flags.
      *
@@ -52,15 +52,15 @@ public class BitFlagHelper
         }
         dic.setInt( field, currentFlags );
     }
-    
+
     /**
      * Gets the boolean value from the flags at the given bit
      * position.
-     * 
+     *
      * @param dic The dictionary to get the field from.
      * @param field The name of the field to get the flag from.
      * @param bitFlag the bitPosition to get the value from.
-     * 
+     *
      * @return true if the number at bitPos is '1'
      */
     public static final boolean getFlag(COSDictionary dic, String field, int bitFlag)

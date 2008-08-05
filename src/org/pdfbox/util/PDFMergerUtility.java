@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,13 +48,13 @@ import org.pdfbox.pdmodel.interactive.form.PDField;
 import org.pdfbox.pdmodel.interactive.form.PDFieldFactory;
 
 /**
- * This class will take a list of pdf documents and merge them, saving the result 
- * in a new document. 
+ * This class will take a list of pdf documents and merge them, saving the result
+ * in a new document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class PDFMergerUtility 
+public class PDFMergerUtility
 {
 
     private List sources;
@@ -63,7 +63,7 @@ public class PDFMergerUtility
     /**
      * Instantiate a new PDFMergerUtility.
      */
-    public PDFMergerUtility() 
+    public PDFMergerUtility()
     {
         sources = new ArrayList();
     }
@@ -72,7 +72,7 @@ public class PDFMergerUtility
      * Get the name of the destination file.
      * @return Returns the destination.
      */
-    public String getDestinationFileName() 
+    public String getDestinationFileName()
     {
         return destinationFileName;
     }
@@ -82,27 +82,27 @@ public class PDFMergerUtility
      * @param destination
      *            The destination to set.
      */
-    public void setDestinationFileName(String destination) 
+    public void setDestinationFileName(String destination)
     {
         this.destinationFileName = destination;
     }
 
     /**
      * Add a source file to the list of files to merge.
-     * 
+     *
      * @param source Full path and file name of source document.
      */
-    public void addSource(String source) 
+    public void addSource(String source)
     {
         sources.add(new File(source));
     }
 
     /**
      * Add a source file to the list of files to mere.
-     * 
+     *
      * @param source File representing source document
      */
-    public void addSource(File source) 
+    public void addSource(File source)
     {
         sources.add(source);
     }
@@ -118,22 +118,22 @@ public class PDFMergerUtility
         PDDocument destination = null;
         File sourceFile;
         PDDocument source;
-        if (sources != null && sources.size() > 0) 
+        if (sources != null && sources.size() > 0)
         {
-            try 
+            try
             {
                 Iterator sit = sources.iterator();
                 sourceFile = (File) sit.next();
                 destination = PDDocument.load(sourceFile);
-                while (sit.hasNext()) 
+                while (sit.hasNext())
                 {
                     sourceFile = (File) sit.next();
                     source = PDDocument.load(sourceFile);
-                    try 
+                    try
                     {
                         appendDocument(destination, source);
-                    } 
-                    finally 
+                    }
+                    finally
                     {
                         if (source != null)
                         {
@@ -142,8 +142,8 @@ public class PDFMergerUtility
                     }
                 }
                 destination.save(destinationFileName);
-            } 
-            finally 
+            }
+            finally
             {
                 if (destination != null)
                 {
@@ -175,7 +175,7 @@ public class PDFMergerUtility
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
         destInfo.getDictionary().mergeInto( srcInfo.getDictionary() );
-        
+
         PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
 
@@ -199,10 +199,10 @@ public class PDFMergerUtility
             }
         }
 
-        COSArray destThreads = (COSArray)destCatalog.getCOSDictionary().getDictionaryObject( 
+        COSArray destThreads = (COSArray)destCatalog.getCOSDictionary().getDictionaryObject(
                 COSName.getPDFName( "Threads" ));
-        COSArray srcThreads = (COSArray)cloneForNewDocument( 
-                destination, 
+        COSArray srcThreads = (COSArray)cloneForNewDocument(
+                destination,
                 destCatalog.getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Threads" )));
         if( destThreads == null )
         {
@@ -228,26 +228,26 @@ public class PDFMergerUtility
                 destNames.getCOSDictionary().mergeInto( (COSDictionary)cloneForNewDocument( destination, srcNames ) );
             }
         }
-        
+
         PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
         PDDocumentOutline srcOutline = srcCatalog.getDocumentOutline();
         if( srcOutline != null )
         {
             if( destOutline == null )
             {
-                PDDocumentOutline cloned = 
+                PDDocumentOutline cloned =
                     new PDDocumentOutline( (COSDictionary)cloneForNewDocument( destination, srcOutline ) );
                 destCatalog.setDocumentOutline( cloned );
             }
             else
             {
                 PDOutlineItem first = srcOutline.getFirstChild();
-                PDOutlineItem clonedFirst = new PDOutlineItem( (COSDictionary)cloneForNewDocument( 
+                PDOutlineItem clonedFirst = new PDOutlineItem( (COSDictionary)cloneForNewDocument(
                         destination, first ));
                 destOutline.appendChild( clonedFirst );
             }
         }
-        
+
         String destPageMode = destCatalog.getPageMode();
         String srcPageMode = srcCatalog.getPageMode();
         if( destPageMode == null )
@@ -284,7 +284,7 @@ public class PDFMergerUtility
 		    }
 	     }
         }
-        
+
         COSName metadata = COSName.getPDFName( "Metadata" );
         COSStream destMetadata = (COSStream)destCatalog.getCOSDictionary().getDictionaryObject( metadata );
         COSStream srcMetadata = (COSStream)srcCatalog.getCOSDictionary().getDictionaryObject( metadata );
@@ -302,13 +302,13 @@ public class PDFMergerUtility
         while( pageIter.hasNext() )
         {
             PDPage page = (PDPage)pageIter.next();
-            PDPage newPage = 
+            PDPage newPage =
                 new PDPage( (COSDictionary)cloneForNewDocument( destination, page.getCOSDictionary() ) );
             destination.addPage( newPage );
         }
     }
     Map clonedVersion = new HashMap();
-    
+
     private COSBase cloneForNewDocument( PDDocument destination, Object base ) throws IOException
     {
         if( base == null )
@@ -337,7 +337,7 @@ public class PDFMergerUtility
         }
         else if( base instanceof COSObject )
         {
-            COSObject object = (COSObject)base; 
+            COSObject object = (COSObject)base;
             retval = cloneForNewDocument( destination, object.getObject() );
             clonedVersion.put( base, retval );
         }
@@ -386,11 +386,11 @@ public class PDFMergerUtility
     }
 
     private int nextFieldNum = 1;
-    
+
     /**
-     * Merge the contents of the source form into the destination form 
+     * Merge the contents of the source form into the destination form
      * for the destination file.
-     * 
+     *
      * @param destination the destination document
      * @param destAcroForm the destination form
      * @param srcAcroForm the source form
@@ -409,16 +409,16 @@ public class PDFMergerUtility
                 destAcroForm.setFields( destFields );
             }
             Iterator srcFieldsIterator = srcFields.iterator();
-            while (srcFieldsIterator.hasNext()) 
+            while (srcFieldsIterator.hasNext())
             {
                 PDField srcField = (PDField)srcFieldsIterator.next();
-                PDField destField = 
-                    PDFieldFactory.createField( 
-                        destAcroForm, 
+                PDField destField =
+                    PDFieldFactory.createField(
+                        destAcroForm,
                         (COSDictionary)cloneForNewDocument(destination, srcField.getDictionary() ));
-                // if the form already has a field with this name then we need to rename this field 
+                // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
-                if ( destAcroForm.getField(destField.getFullyQualifiedName()) != null ) 
+                if ( destAcroForm.getField(destField.getFullyQualifiedName()) != null )
                 {
                     destField.setPartialName("dummyFieldName"+(nextFieldNum++));
                 }
@@ -426,5 +426,5 @@ public class PDFMergerUtility
             }
         }
     }
-    
+
 }

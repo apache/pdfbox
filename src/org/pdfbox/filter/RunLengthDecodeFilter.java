@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,8 @@ import org.pdfbox.cos.COSDictionary;
 
 /**
  * This is a filter for the RunLength Decoder.
- * 
- * From the PDF Reference 
+ *
+ * From the PDF Reference
  * <pre>
  * The RunLengthDecode filter decodes data that has been encoded in a simple
  * byte-oriented format based on run length. The encoded data is a sequence of
@@ -34,7 +34,7 @@ import org.pdfbox.cos.COSDictionary;
  * are copied literally during decompression. If length is in the range 129 to 255, the
  * following single byte is to be copied 257 ? length (2 to 128) times during decompression.
  * A length value of 128 denotes EOD.
- * 
+ *
  * The compression achieved by run-length encoding depends on the input data. In
  * the best case (all zeros), a compression of approximately 64:1 is achieved for long
  * files. The worst case (the hexadecimal sequence 00 alternating with FF) results in
@@ -45,7 +45,7 @@ import org.pdfbox.cos.COSDictionary;
  * @version $Revision: 1.6 $
  */
 public class RunLengthDecodeFilter implements Filter
-{   
+{
     private static final int RUN_LENGTH_EOD = 128;
 
     /**

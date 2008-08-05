@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,12 +36,12 @@ import org.pdfbox.persistence.util.COSHEXTable;
 public final class COSName extends COSBase implements Comparable
 {
     /**
-     * Note: This is synchronized because a HashMap must be synchronized if accessed by 
+     * Note: This is synchronized because a HashMap must be synchronized if accessed by
      * multiple threads.
      */
     private static Map nameMap = Collections.synchronizedMap( new HashMap(8192) );
 
-    
+
     /**
      * A common COSName value.
      */
@@ -438,7 +438,7 @@ public final class COSName extends COSBase implements Comparable
     * A common COSName value.
     */
     public static final COSName XOBJECT = new COSName( "XObject" );
-    
+
     /**
      * The prefix to a PDF name.
      */
@@ -525,7 +525,7 @@ public final class COSName extends COSBase implements Comparable
     {
         return hashCode;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -548,10 +548,10 @@ public final class COSName extends COSBase implements Comparable
     {
         return visitor.visitFromName(this);
     }
-    
+
     /**
      * This will output this string as a PDF object.
-     *  
+     *
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
@@ -583,7 +583,7 @@ public final class COSName extends COSBase implements Comparable
             }
         }
     }
-    
+
      /**
       * Not usually needed except if resources need to be reclaimed in a ong
       * running process.
@@ -594,7 +594,7 @@ public final class COSName extends COSBase implements Comparable
      {
          // Clear them all
          nameMap.clear();
- 
+
          // Add the statics back in
          java.lang.reflect.Field f[] = COSName.class.getFields();
          if (f != null && f.length > 0)

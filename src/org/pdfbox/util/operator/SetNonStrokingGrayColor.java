@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,11 +29,11 @@ import java.io.IOException;
 
 /**
  * <p>Set the non stroking color space.</p>
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.1 $
  */
-public class SetNonStrokingGrayColor extends OperatorProcessor 
+public class SetNonStrokingGrayColor extends OperatorProcessor
 {
     /**
      * rg Set color space for non stroking operations.
@@ -47,7 +47,7 @@ public class SetNonStrokingGrayColor extends OperatorProcessor
         PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
         colorInstance.setColorSpace( cs );
         float[] values = new float[1];
-        if( arguments.size() >= 1 ) 
+        if( arguments.size() >= 1 )
         {
             values[0] = ((COSNumber)arguments.get( 0 )).floatValue();
         }
@@ -56,7 +56,7 @@ public class SetNonStrokingGrayColor extends OperatorProcessor
             throw new IOException( "Error: Expected at least one argument when setting non stroking gray color");
         }
         colorInstance.setColorSpaceValue( values );
-        
+
         if (context instanceof PageDrawer){
             PageDrawer drawer = (PageDrawer)context;
             drawer.ColorChanged (false);

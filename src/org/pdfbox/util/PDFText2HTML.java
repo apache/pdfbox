@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,12 +26,12 @@ import org.pdfbox.pdmodel.PDDocument;
 /**
  * Wrap stripped text in simple HTML, trying to form HTML paragraphs.
  * Paragraphs broken by pages, columns, or figures are not mended.
- * 
- * 
+ *
+ *
  * @author jjb - http://www.johnjbarton.com
  * @version  $Revision: 1.3 $
  */
-public class PDFText2HTML extends PDFTextStripper 
+public class PDFText2HTML extends PDFTextStripper
 {
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
@@ -40,13 +40,13 @@ public class PDFText2HTML extends PDFTextStripper
     private String titleGuess;
     private boolean suppressParagraphs;
     private boolean onFirstPage = true;
-   
+
     /**
      * Constructor.
-     * 
+     *
      * @throws IOException If there is an error during initialization.
      */
-    public PDFText2HTML() throws IOException 
+    public PDFText2HTML() throws IOException
     {
         titleGuess = "";
         beginTitle = null;
@@ -56,10 +56,10 @@ public class PDFText2HTML extends PDFTextStripper
 
     /**
      * Write the header to the output document.
-     * 
+     *
      * @throws IOException If there is a problem writing out the header to the document.
      */
-    protected void writeHeader() throws IOException 
+    protected void writeHeader() throws IOException
     {
         StringBuffer buf = new StringBuffer(INITIAL_PDF_TO_HTML_BYTES);
         buf.append("<html><head>");
@@ -70,25 +70,25 @@ public class PDFText2HTML extends PDFTextStripper
         buf.append("<body>\n");
         getOutput().write(buf.toString());
     }
-   
+
     /**
      * The guess to the document title.
-     * 
+     *
      * @return A string that is the title of this document.
      */
-    protected String getTitleGuess() 
+    protected String getTitleGuess()
     {
         return titleGuess;
     }
-   
+
     /**
      * {@inheritDoc}
      */
-    protected void flushText() throws IOException 
+    protected void flushText() throws IOException
     {
         Iterator textIter = getCharactersByArticle().iterator();
-      
-        if (onFirstPage) 
+
+        if (onFirstPage)
         {
             guessTitle(textIter);
             writeHeader();
@@ -96,61 +96,61 @@ public class PDFText2HTML extends PDFTextStripper
         }
         super.flushText();
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public void endDocument(PDDocument pdf) throws IOException 
+    public void endDocument(PDDocument pdf) throws IOException
     {
-        output.write("</body></html>");      
+        output.write("</body></html>");
     }
 
     /**
      * This method will attempt to guess the title of the document.
-     * 
+     *
      * @param textIter The characters on the first page.
      * @return The text position that is guessed to be the title.
      */
-    protected TextPosition guessTitle(Iterator textIter) 
+    protected TextPosition guessTitle(Iterator textIter)
     {
         float lastFontSize = -1.0f;
         int stringsInFont = 0;
         StringBuffer titleText = new StringBuffer();
-        while (textIter.hasNext()) 
+        while (textIter.hasNext())
         {
             Iterator textByArticle = ((List)textIter.next()).iterator();
             while( textByArticle.hasNext() )
             {
                 TextPosition position = (TextPosition) textByArticle.next();
                 float currentFontSize = position.getFontSize();
-                if (currentFontSize != lastFontSize) 
+                if (currentFontSize != lastFontSize)
                 {
-                    if (beginTitle != null) 
+                    if (beginTitle != null)
                     { // font change in candidate title.
-                        if (stringsInFont == 0) 
+                        if (stringsInFont == 0)
                         {
                             beginTitle = null; // false alarm
                             titleText.setLength(0);
-                        } 
-                        else 
+                        }
+                        else
                         {
                             // had a significant font with some words: call it a title
                             titleGuess = titleText.toString();
                             afterEndTitle = position;
                             return beginTitle;
                         }
-                    } 
-                    else 
+                    }
+                    else
                     { // font change and begin == null
-                        if (currentFontSize > 13.0f) 
+                        if (currentFontSize > 13.0f)
                         { // most body text is 12pt max I guess
                             beginTitle = position;
                         }
                     }
-         
+
                     lastFontSize = currentFontSize;
                     stringsInFont = 0;
-                } 
+                }
                 stringsInFont++;
                 if (beginTitle != null)
                 {
@@ -160,61 +160,61 @@ public class PDFText2HTML extends PDFTextStripper
         }
         return beginTitle; // null
     }
-    
+
     /**
      * Write out the paragraph separator.
-     * 
+     *
      * @throws IOException If there is an error writing to the stream.
      */
-    protected void startParagraph() throws IOException 
+    protected void startParagraph() throws IOException
     {
-        if (! suppressParagraphs) 
+        if (! suppressParagraphs)
         {
             getOutput().write("<p>");
         }
     }
     /**
      * Write out the paragraph separator.
-     * 
+     *
      * @throws IOException If there is an error writing to the stream.
      */
-    protected void endParagraph() throws IOException 
+    protected void endParagraph() throws IOException
     {
-        if (! suppressParagraphs) 
+        if (! suppressParagraphs)
         {
             getOutput().write("</p>");
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    protected void writeCharacters(TextPosition position ) throws IOException 
+    protected void writeCharacters(TextPosition position ) throws IOException
     {
-        if (position == beginTitle) 
+        if (position == beginTitle)
         {
             output.write("<H1>");
             suppressParagraphs = true;
-        } 
-        if (position == afterEndTitle) 
+        }
+        if (position == afterEndTitle)
         {
             output.write("</H1>");  // end title and start first paragraph
             suppressParagraphs = false;
         }
-      
+
         String chars = position.getCharacter();
 
-        for (int i = 0; i < chars.length(); i++) 
+        for (int i = 0; i < chars.length(); i++)
         {
             char c = chars.charAt(i);
-            if ((c < 32) || (c > 126)) 
+            if ((c < 32) || (c > 126))
             {
                 int charAsInt = c;
                 output.write("&#" + charAsInt + ";");
-            } 
-            else 
+            }
+            else
             {
-                switch (c) 
+                switch (c)
                 {
                     case 34:
                         output.write("&quot;");
@@ -234,7 +234,7 @@ public class PDFText2HTML extends PDFTextStripper
             }
         }
     }
-    
+
     /**
      * @return Returns the suppressParagraphs.
      */

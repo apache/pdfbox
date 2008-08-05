@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,26 +30,26 @@ package org.pdfbox.pdmodel.encryption;
  * <li>assemble the document</li>
  * <li>print in degraded quality</li>
  * </ul>
- * 
- * This class can be used to protect a document by assigning access permissions to recipients. 
+ *
+ * This class can be used to protect a document by assigning access permissions to recipients.
  * In this case, it must be used with a specific ProtectionPolicy.
- *  
- *  
+ *
+ *
  * When a document is decrypted, it has a currentAccessPermission property which is the access permissions
  * granted to the user who decrypted the document.
  *
  * @see ProtectionPolicy
  * @see org.pdfbox.pdmodel.PDDocument#getCurrentAccessPermission()
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
  *
  * @version $Revision: 1.4 $
  */
 
-public class AccessPermission 
+public class AccessPermission
 {
-    
+
     private static final int DEFAULT_PERMISSIONS = 0xFFFFFFFF ^ 3;//bits 0 & 1 need to be zero
     private static final int PRINT_BIT = 3;
     private static final int MODIFICATION_BIT = 4;
@@ -59,27 +59,27 @@ public class AccessPermission
     private static final int EXTRACT_FOR_ACCESSIBILITY_BIT = 10;
     private static final int ASSEMBLE_DOCUMENT_BIT = 11;
     private static final int DEGRADED_PRINT_BIT = 12;
-    
+
     private int bytes = DEFAULT_PERMISSIONS;
-    
+
     private boolean readOnly = false;
-    
+
     /**
-     * Create a new access permission object. 
+     * Create a new access permission object.
      * By default, all permissions are granted.
      */
     public AccessPermission()
     {
         bytes = DEFAULT_PERMISSIONS;
-    } 
-    
+    }
+
     /**
-     * Create a new access permission object from a byte array. 
+     * Create a new access permission object from a byte array.
      * Bytes are ordered most significant byte first.
-     * 
+     *
      * @param b the bytes as defined in PDF specs
      */
-    
+
     public AccessPermission(byte[] b)
     {
         bytes = 0;
@@ -91,17 +91,17 @@ public class AccessPermission
         bytes <<= 8;
         bytes |= b[3] & 0xFF;
     }
-    
+
     /**
      * Creates a new access permission object from a single integer.
-     * 
+     *
      * @param permissions The permission bits.
      */
     public AccessPermission( int permissions )
     {
         bytes = permissions;
     }
-    
+
     private boolean isPermissionBitOn( int bit )
     {
         return (bytes & (1 << (bit-1))) != 0;
@@ -122,35 +122,35 @@ public class AccessPermission
 
         return (bytes & (1 << (bit-1))) != 0;
     }
-    
-    
 
-    
+
+
+
     /**
-     * This will tell if the access permission corresponds to owner 
+     * This will tell if the access permission corresponds to owner
      * access permission (no restriction).
-     *  
+     *
      * @return true if the access permission does not restrict the use of the document
      */
-    public boolean isOwnerPermission() 
+    public boolean isOwnerPermission()
     {
-        return (this.canAssembleDocument() 
+        return (this.canAssembleDocument()
                 && this.canExtractContent()
                 && this.canExtractForAccessibility()
-                && this.canFillInForm() 
+                && this.canFillInForm()
                 && this.canModify()
                 && this.canModifyAnnotations()
                 && this.canPrint()
                 && this.canPrintDegraded()
                 );
-    }   
-    
+    }
+
     /**
      * returns an access permission object for a document owner.
-     * 
+     *
      * @return A standard owner access permission set.
      */
-    
+
     public static AccessPermission getOwnerAccessPermission()
     {
         AccessPermission ret = new AccessPermission();
@@ -164,16 +164,16 @@ public class AccessPermission
         ret.setCanPrintDegraded(true);
         return ret;
     }
-    
+
     /**
-     * This returns an integer representing the access permissions. 
-     * This integer can be used for public key encryption. This format 
+     * This returns an integer representing the access permissions.
+     * This integer can be used for public key encryption. This format
      * is not documented in the PDF specifications but is necessary for compatibility
      * with Adobe Acrobat and Adobe Reader.
-     * 
+     *
      * @return the integer representing access permissions
      */
-    
+
     public int getPermissionBytesForPublicKey()
     {
         setPermissionBit(1, true);
@@ -182,22 +182,22 @@ public class AccessPermission
         for(int i=13; i<=32; i++)
         {
             setPermissionBit(i, false);
-        }            
+        }
         return bytes;
     }
-    
+
     /**
      * The returns an integer representing the access permissions.
      * This integer can be used for standard PDF encryption as specified
      * in the PDF specifications.
-     * 
+     *
      * @return the integer representing the access permissions
      */
     public int getPermissionBytes()
-    {                    
+    {
         return bytes;
     }
-    
+
     /**
      * This will tell if the user can print.
      *
@@ -288,7 +288,7 @@ public class AccessPermission
      *
      * @param allowAnnotationModification A boolean determining if the user can modify annotations.
      */
-    public void setCanModifyAnnotations( boolean allowAnnotationModification )    
+    public void setCanModifyAnnotations( boolean allowAnnotationModification )
     {
         if(!readOnly)
         {
@@ -385,36 +385,36 @@ public class AccessPermission
 
     /**
      * Set if the user can print the document in a degraded format.
-     * This method will have no effect if the object is in read only mode 
+     * This method will have no effect if the object is in read only mode
      *
      * @param allowAssembly A boolean determining if the user can print the
      *        document in a degraded format.
      */
-    public void setCanPrintDegraded( boolean allowAssembly )    
+    public void setCanPrintDegraded( boolean allowAssembly )
     {
         if(!readOnly)
         {
             setPermissionBit( DEGRADED_PRINT_BIT, allowAssembly );
         }
     }
-    
+
     /**
      * Locks the access permission read only (ie, the setters will have no effects).
      * After that, the object cannot be unlocked.
      * This method is used for the currentAccessPermssion of a document to avoid
      * users to change access permission.
-     */    
+     */
     public void setReadOnly()
     {
         readOnly = true;
     }
-    
+
     /**
      * This will tell if the object has been set as read only.
-     * 
+     *
      * @return true if the object is in read only mode.
      */
-    
+
     public boolean isReadOnly()
     {
         return readOnly;

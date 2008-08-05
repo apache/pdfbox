@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,8 +31,8 @@ import org.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 /**
- * The prototype for all PDImages. 
- * 
+ * The prototype for all PDImages.
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author mathiak
  * @version $Revision: 1.9 $
@@ -43,60 +43,60 @@ public abstract class PDXObjectImage extends PDXObject
      * The XObject subtype.
      */
     public static final String SUB_TYPE = "Image";
-    
+
     /**
      * This contains the suffix used when writing to file.
      */
     private String suffix;
-    
+
     /**
-     * Standard constuctor. 
-     * 
+     * Standard constuctor.
+     *
      * @param imageStream The XObject is passed as a COSStream.
      * @param fileSuffix The file suffix, jpg/png.
      */
-    public PDXObjectImage(PDStream imageStream, String fileSuffix) 
+    public PDXObjectImage(PDStream imageStream, String fileSuffix)
     {
         super( imageStream );
         suffix = fileSuffix;
     }
-    
+
     /**
-     * Standard constuctor. 
-     * 
+     * Standard constuctor.
+     *
      * @param doc The document to store the stream in.
      * @param fileSuffix The file suffix, jpg/png.
      */
-    public PDXObjectImage(PDDocument doc, String fileSuffix) 
+    public PDXObjectImage(PDDocument doc, String fileSuffix)
     {
         super( doc );
         getCOSStream().setName( COSName.SUBTYPE, SUB_TYPE );
         suffix = fileSuffix;
     }
-    
+
     /**
-     * Returns an java.awt.Image, that can be used for display etc.  
-     * 
+     * Returns an java.awt.Image, that can be used for display etc.
+     *
      * @return This PDF object as an AWT image.
-     * 
+     *
      * @throws IOException If there is an error creating the image.
      */
     public abstract BufferedImage getRGBImage() throws IOException;
-    
+
     /**
-     * Writes the Image to out. 
-     * @param out the OutputStream that the Image is written to. 
+     * Writes the Image to out.
+     * @param out the OutputStream that the Image is written to.
      * @throws IOException when somethings wrong with out
      */
     public abstract void write2OutputStream(OutputStream out) throws IOException;
-    
+
     /**
-     * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg". 
-     * The suffix is automatically set by the   
+     * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg".
+     * The suffix is automatically set by the
      * @param filename the filename
-     * @throws IOException When somethings wrong with the corresponding file. 
+     * @throws IOException When somethings wrong with the corresponding file.
      */
-    public void write2file(String filename) throws IOException 
+    public void write2file(String filename) throws IOException
     {
         FileOutputStream out = null;
         try
@@ -113,7 +113,7 @@ public abstract class PDXObjectImage extends PDXObject
             }
         }
     }
-    
+
         /**
      * Writes the image to a file with the filename + an appropriate
 suffix, like "Image.jpg".
@@ -139,47 +139,47 @@ file.
             }
         }
     }
-    
+
     /**
      * Get the height of the image.
-     * 
+     *
      * @return The height of the image.
      */
     public int getHeight()
     {
         return getCOSStream().getInt( "Height", -1 );
     }
-    
+
     /**
      * Set the height of the image.
-     * 
+     *
      * @param height The height of the image.
      */
     public void setHeight( int height )
     {
         getCOSStream().setInt( "Height", height );
     }
-    
+
     /**
      * Get the width of the image.
-     * 
+     *
      * @return The width of the image.
      */
     public int getWidth()
     {
         return getCOSStream().getInt( "Width", -1 );
     }
-    
+
     /**
      * Set the width of the image.
-     * 
+     *
      * @param width The width of the image.
      */
     public void setWidth( int width )
     {
         getCOSStream().setInt( "Width", width );
     }
-    
+
     /**
      * The bits per component of this image.  This will return -1 if one has not
      * been set.
@@ -200,7 +200,7 @@ file.
     {
         getCOSStream().setInt( "BitsPerComponent", bpc );
     }
-    
+
     /**
      * This will get the color space or null if none exists.
      *
@@ -244,10 +244,10 @@ file.
         }
         getCOSStream().setItem( COSName.getPDFName( "ColorSpace" ), base );
     }
-    
+
     /**
      * This will get the suffix for this image type, jpg/png.
-     * 
+     *
      * @return The image suffix.
      */
     public String getSuffix()

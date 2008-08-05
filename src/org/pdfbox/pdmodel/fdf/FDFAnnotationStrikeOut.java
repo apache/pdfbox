@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ public class FDFAnnotationStrikeOut extends FDFAnnotation
      * COS Model value for SubType entry.
      */
     public static final String SUBTYPE ="StrikeOut";
-    
+
     /**
      * Default constructor.
      */
@@ -43,22 +43,22 @@ public class FDFAnnotationStrikeOut extends FDFAnnotation
         super();
         annot.setName( COSName.SUBTYPE, SUBTYPE );
     }
- 
+
     /**
      * Constructor
-     * 
+     *
      * @param a An existing FDF Annotation.
      */
     public FDFAnnotationStrikeOut( COSDictionary a )
     {
         super( a );
     }
-    
+
     /**
      * Constructor.
-     * 
+     *
      *  @param element An XFDF element.
-     *  
+     *
      *  @throws IOException If there is an error extracting information from the element.
      */
     public FDFAnnotationStrikeOut( Element element ) throws IOException

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@ package org.pdfbox;
 import org.pdfbox.util.PDFMergerUtility;
 
 /**
- * This is the main program that will take a list of pdf documents and merge them, 
+ * This is the main program that will take a list of pdf documents and merge them,
  * saving the result in a new document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -44,7 +44,7 @@ public class PDFMerger
     {
         String destinationFileName = "";
         String sourceFileName = null;
-        
+
         if ( args.length < 3 )
         {
             usage();
@@ -56,11 +56,11 @@ public class PDFMerger
             sourceFileName = args[i];
             merger.addSource(sourceFileName);
         }
-        
+
         destinationFileName = args[args.length-1];
-        
+
         merger.setDestinationFileName(destinationFileName);
-        
+
         merger.mergeDocuments();
     }
 

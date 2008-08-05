@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ import org.pdfbox.util.operator.OperatorProcessor;
 
 /**
  * Implementation of content stream operator for page drawer.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
  */
@@ -70,21 +70,21 @@ public class Invoke extends OperatorProcessor
                     return;//TODO PKOCH
                 }
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
-                
+
                 int width = awtImage.getWidth();
                 int height = awtImage.getHeight();
 
                 Matrix scalingParams = ctm.extractScaling();
                 Matrix scalingMatrix = Matrix.getScaleInstance(1f/width,1f/height);
                 scalingParams = scalingParams.multiply( scalingMatrix );
-                
+
                 Matrix translationParams = ctm.extractTranslating();
                 Matrix translationMatrix = null;
                 translationParams.setValue(2,1, -translationParams.getValue( 2,1 ));
                 translationMatrix = Matrix.getTranslatingInstance(0, (float)pageSize.getHeight()-height*scalingParams.getYScale() );
                 translationParams = translationParams.multiply( translationMatrix );
 
-                AffineTransform at = new AffineTransform( 
+                AffineTransform at = new AffineTransform(
                         scalingParams.getValue( 0,0), 0,
                         0, scalingParams.getValue( 1, 1),
                         translationParams.getValue(2,0), translationParams.getValue( 2,1 )
@@ -113,8 +113,8 @@ public class Invoke extends OperatorProcessor
         {
             //unknown xobject type
         }
-        
-        
+
+
         //invoke named object.
     }
 }

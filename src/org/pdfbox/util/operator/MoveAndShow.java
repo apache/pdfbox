@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import java.io.IOException;
  * @author Huault : huault@free.fr
  * @version $Revision: 1.5 $
  */
-public class MoveAndShow extends OperatorProcessor 
+public class MoveAndShow extends OperatorProcessor
 {
     /**
      * ' Move to next line and show text.
@@ -40,7 +40,7 @@ public class MoveAndShow extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @throws IOException If there is an error processing the operator.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
         // Move to start of next text line, and show text
         //

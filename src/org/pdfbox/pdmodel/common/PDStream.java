@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ import org.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 public class PDStream implements COSObjectable
 {
     private COSStream stream;
-    
+
     /**
      * This will create a new PDStream object.
      */
@@ -57,17 +57,17 @@ public class PDStream implements COSObjectable
     {
         //should only be called by PDMemoryStream
     }
-    
+
     /**
      * This will create a new PDStream object.
-     * 
+     *
      * @param document The document that the stream will be part of.
      */
     public PDStream( PDDocument document )
     {
         stream = new COSStream( document.getDocument().getScratchFile() );
     }
-    
+
     /**
      * Constructor.
      *
@@ -77,7 +77,7 @@ public class PDStream implements COSObjectable
     {
         stream = str;
     }
-    
+
     /**
      * Constructor.  Reads all data from the input stream and embeds it into the
      * document, this will close the InputStream.
@@ -90,7 +90,7 @@ public class PDStream implements COSObjectable
     {
         this( doc, str, false );
     }
-    
+
     /**
      * Constructor.  Reads all data from the input stream and embeds it into the
      * document, this will close the InputStream.
@@ -133,7 +133,7 @@ public class PDStream implements COSObjectable
             }
         }
     }
-    
+
     /**
      * If there are not compression filters on the current stream then this
      * will add a compression filter, flate compression for example.
@@ -148,7 +148,7 @@ public class PDStream implements COSObjectable
             setFilters( filters );
         }
     }
-    
+
     /**
      * Create a pd stream from either a regular COSStream on a COSArray of cos streams.
      * @param base Either a COSStream or COSArray.
@@ -186,35 +186,35 @@ public class PDStream implements COSObjectable
     {
         return stream;
     }
-    
+
     /**
      * This will get a stream that can be written to.
-     * 
+     *
      * @return An output stream to write data to.
-     * 
+     *
      * @throws IOException If an IO error occurs during writing.
      */
     public OutputStream createOutputStream() throws IOException
     {
         return stream.createUnfilteredStream();
     }
-    
+
     /**
      * This will get a stream that can be read from.
-     * 
+     *
      * @return An input stream that can be read from.
-     * 
+     *
      * @throws IOException If an IO error occurs during reading.
      */
     public InputStream createInputStream() throws IOException
     {
         return stream.getUnfilteredStream();
     }
-    
+
     /**
      * This will get a stream with some filters applied but not others.  This is useful
      * when doing images, ie filters = [flate,dct], we want to remove flate but leave dct
-     * 
+     *
      * @param stopFilters A list of filters to stop decoding at.
      * @return A stream with decoded data.
      * @throws IOException If there is an error processing the stream.
@@ -244,7 +244,7 @@ public class PDStream implements COSObjectable
         }
         return is;
     }
-    
+
     /**
      * Get the cos stream associated with this object.
      *
@@ -254,18 +254,18 @@ public class PDStream implements COSObjectable
     {
         return stream;
     }
-    
+
     /**
-     * This will get the length of the filtered/compressed stream.  This is readonly in the 
+     * This will get the length of the filtered/compressed stream.  This is readonly in the
      * PD Model and will be managed by this class.
-     * 
+     *
      * @return The length of the filtered stream.
      */
     public int getLength()
     {
         return stream.getInt( "Length", 0 );
     }
-    
+
     /**
      * This will get the list of filters that are associated with this stream.  Or
      * null if there are none.
@@ -286,10 +286,10 @@ public class PDStream implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * This will set the filters that are part of this stream.
-     * 
+     *
      * @param filters The filters that are part of this stream.
      */
     public void setFilters( List filters )
@@ -297,19 +297,19 @@ public class PDStream implements COSObjectable
         COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray( filters );
         stream.setItem( "Filter", obj );
     }
-    
+
     /**
-     * Get the list of decode parameters.  Each entry in the list will refer to 
+     * Get the list of decode parameters.  Each entry in the list will refer to
      * an entry in the filters list.
-     * 
+     *
      * @return The list of decode parameters.
-     * 
+     *
      * @throws IOException if there is an error retrieving the parameters.
      */
     public List getDecodeParams() throws IOException
     {
         List retval = null;
-        
+
         COSBase dp = stream.getDictionaryObject( "DecodeParms" );
         if( dp == null )
         {
@@ -327,19 +327,19 @@ public class PDStream implements COSObjectable
             List actuals = new ArrayList();
             for( int i=0; i<array.size(); i++ )
             {
-                actuals.add( 
-                    COSDictionaryMap.convertBasicTypesToMap( 
+                actuals.add(
+                    COSDictionaryMap.convertBasicTypesToMap(
                         (COSDictionary)array.getObject( i ) ) );
             }
             retval = new COSArrayList(actuals, array);
         }
-        
+
         return retval;
     }
-    
+
     /**
      * This will set the list of decode params.
-     * 
+     *
      * @param decodeParams The list of decode params.
      */
     public void setDecodeParams( List decodeParams )
@@ -347,13 +347,13 @@ public class PDStream implements COSObjectable
         stream.setItem(
             "DecodeParams", COSArrayList.converterToCOSArray( decodeParams ) );
     }
-    
+
     /**
      * This will get the file specification for this stream.  This is only
      * required for external files.
-     * 
+     *
      * @return The file specification.
-     * 
+     *
      * @throws IOException If there is an error creating the file spec.
      */
     public PDFileSpecification getFile() throws IOException
@@ -362,7 +362,7 @@ public class PDStream implements COSObjectable
         PDFileSpecification retval = PDFileSpecification.createFS( f );
         return retval;
     }
-    
+
     /**
      * Set the file specification.
      * @param f The file specification.
@@ -371,7 +371,7 @@ public class PDStream implements COSObjectable
     {
         stream.setItem( "F", f );
     }
-    
+
     /**
      * This will get the list of filters that are associated with this stream.  Or
      * null if there are none.
@@ -392,10 +392,10 @@ public class PDStream implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * This will set the filters that are part of this stream.
-     * 
+     *
      * @param filters The filters that are part of this stream.
      */
     public void setFileFilters( List filters )
@@ -403,19 +403,19 @@ public class PDStream implements COSObjectable
         COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray( filters );
         stream.setItem( "FFilter", obj );
     }
-    
+
     /**
-     * Get the list of decode parameters.  Each entry in the list will refer to 
+     * Get the list of decode parameters.  Each entry in the list will refer to
      * an entry in the filters list.
-     * 
+     *
      * @return The list of decode parameters.
-     * 
+     *
      * @throws IOException if there is an error retrieving the parameters.
      */
     public List getFileDecodeParams() throws IOException
     {
         List retval = null;
-        
+
         COSBase dp = stream.getDictionaryObject( "FDecodeParms" );
         if( dp instanceof COSDictionary )
         {
@@ -428,19 +428,19 @@ public class PDStream implements COSObjectable
             List actuals = new ArrayList();
             for( int i=0; i<array.size(); i++ )
             {
-                actuals.add( 
-                    COSDictionaryMap.convertBasicTypesToMap( 
+                actuals.add(
+                    COSDictionaryMap.convertBasicTypesToMap(
                         (COSDictionary)array.getObject( i ) ) );
             }
             retval = new COSArrayList(actuals, array);
         }
-        
+
         return retval;
     }
-    
+
     /**
      * This will set the list of decode params.
-     * 
+     *
      * @param decodeParams The list of decode params.
      */
     public void setFileDecodeParams( List decodeParams )
@@ -448,10 +448,10 @@ public class PDStream implements COSObjectable
         stream.setItem(
             "FDecodeParams", COSArrayList.converterToCOSArray( decodeParams ) );
     }
-    
+
     /**
-     * This will copy the stream into a byte array. 
-     * 
+     * This will copy the stream into a byte array.
+     *
      * @return The byte array of the filteredStream
      * @throws IOException When getFilteredStream did not work
      */
@@ -478,27 +478,27 @@ public class PDStream implements COSObjectable
         }
         return output.toByteArray();
     }
-    
+
     /**
      * A convenience method to get this stream as a string.  Uses
-     * the default system encoding. 
-     * 
+     * the default system encoding.
+     *
      * @return a String representation of this (input) stream, with the
      * platform default encoding.
-     * 
-     * @throws IOException if there is an error while converting the stream 
+     *
+     * @throws IOException if there is an error while converting the stream
      *                     to a string.
      */
-    public String getInputStreamAsString() throws IOException 
+    public String getInputStreamAsString() throws IOException
     {
         byte[] bStream = getByteArray();
         return new String(bStream);
     }
-    
+
     /**
-     * Get the metadata that is part of the document catalog.  This will 
+     * Get the metadata that is part of the document catalog.  This will
      * return null if there is no meta data for this object.
-     * 
+     *
      * @return The metadata for this object.
      */
     public PDMetadata getMetadata()
@@ -511,10 +511,10 @@ public class PDStream implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the metadata for this object.  This can be null.
-     * 
+     *
      * @param meta The meta data for this object.
      */
     public void setMetadata( PDMetadata meta )

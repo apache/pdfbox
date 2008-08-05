@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ import org.pdfbox.pdfviewer.PageDrawer;
  * @version $Revision: 1.5 $
  */
 
-public class Concatenate extends OperatorProcessor 
+public class Concatenate extends OperatorProcessor
 {
 
     /**
@@ -53,7 +53,7 @@ public class Concatenate extends OperatorProcessor
         COSNumber d = (COSNumber) arguments.get(3);
         COSNumber e = (COSNumber) arguments.get(4);
         COSNumber f = (COSNumber) arguments.get(5);
-    
+
         Matrix newMatrix = new Matrix();
         newMatrix.setValue(0, 0, a.floatValue());
         newMatrix.setValue(0, 1, b.floatValue());
@@ -61,11 +61,11 @@ public class Concatenate extends OperatorProcessor
         newMatrix.setValue(1, 1, d.floatValue());
         newMatrix.setValue(2, 0, e.floatValue());
         newMatrix.setValue(2, 1, f.floatValue());
-    
+
         //this line has changed
         context.getGraphicsState().setCurrentTransformationMatrix(
                 newMatrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix() ) );
-        
-        
+
+
     }
 }

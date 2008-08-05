@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ public class PDNameTreeNode implements COSObjectable
 
     /**
      * Constructor.
-     * 
+     *
      * @param valueClass The PD Model type of object that is the value.
      */
     public PDNameTreeNode( Class valueClass )
@@ -83,15 +83,15 @@ public class PDNameTreeNode implements COSObjectable
     {
         return node;
     }
-    
+
     /**
      * Return the children of this node.  This list will contain PDNameTreeNode objects.
-     * 
+     *
      * @return The list of children or null if there are no children.
      */
     public List getKids()
     {
-        
+
         List retval = null;
         COSArray kids = (COSArray)node.getDictionaryObject( "Kids" );
         if( kids != null )
@@ -103,27 +103,27 @@ public class PDNameTreeNode implements COSObjectable
             }
             retval = new COSArrayList(pdObjects,kids);
         }
-        
+
         return retval;
     }
-    
+
     /**
      * Set the children of this named tree.
-     * 
+     *
      * @param kids The children of this named tree.
      */
     public void setKids( List kids )
     {
         node.setItem( "Kids", COSArrayList.converterToCOSArray( kids ) );
     }
-    
+
     /**
      * The name to retrieve.
-     * 
+     *
      * @param name The name in the tree.
-     * 
+     *
      * @return The value of the name in the tree.
-     * 
+     *
      * @throws IOException If an there is a problem creating the destinations.
      */
     public Object getValue( String name ) throws IOException
@@ -149,14 +149,14 @@ public class PDNameTreeNode implements COSObjectable
         }
         return retval;
     }
-    
-    
+
+
     /**
      * This will return a map of names.  The key will be a java.lang.String the value will
      * depend on where this class is being used.
-     * 
+     *
      * @return A map of cos objects.
-     * 
+     *
      * @throws IOException If there is an error while creating the sub types.
      */
     public Map getNames() throws IOException
@@ -171,20 +171,20 @@ public class PDNameTreeNode implements COSObjectable
                 COSString key = (COSString)namesArray.getObject(i);
                 COSBase cosValue = namesArray.getObject( i+1 );
                 Object pdValue = convertCOSToPD( cosValue );
-                
+
                 names.put( key.getString(), pdValue );
             }
             names = Collections.unmodifiableMap(names);
         }
-        
+
         return names;
     }
-    
+
     /**
      * Method to convert the COS value in the name tree to the PD Model object.  The
      * default implementation will simply use reflection to create the correct object
      * type.  Subclasses can do whatever they want.
-     * 
+     *
      * @param base The COS object to convert.
      * @return The converted PD Model object.
      * @throws IOException If there is an error during creation.
@@ -200,14 +200,14 @@ public class PDNameTreeNode implements COSObjectable
         catch( Throwable t )
         {
             throw new IOException( "Error while trying to create value in named tree:" + t.getMessage());
-            
+
         }
         return retval;
     }
-    
+
     /**
      * Create a child node object.
-     * 
+     *
      * @param dic The dictionary for the child node object to refer to.
      * @return The new child node object.
      */
@@ -215,12 +215,12 @@ public class PDNameTreeNode implements COSObjectable
     {
         return new PDNameTreeNode(dic,valueType);
     }
-    
+
     /**
-     * Set the names of for this node.  The keys should be java.lang.String and the 
+     * Set the names of for this node.  The keys should be java.lang.String and the
      * values must be a COSObjectable.  This method will set the appropriate upper and lower
      * limits based on the keys in the map.
-     * 
+     *
      * @param names The map of names to objects.
      */
     public void setNames( Map names )
@@ -254,10 +254,10 @@ public class PDNameTreeNode implements COSObjectable
             node.setItem( "Names", array );
         }
     }
-    
+
     /**
      * Get the highest value for a key in the name map.
-     * 
+     *
      * @return The highest value for a key in the map.
      */
     public String getUpperLimit()
@@ -270,10 +270,10 @@ public class PDNameTreeNode implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the highest value for the key in the map.
-     * 
+     *
      * @param upper The new highest value for a key in the map.
      */
     private void setUpperLimit( String upper )
@@ -287,10 +287,10 @@ public class PDNameTreeNode implements COSObjectable
         }
         arr.setString( 1, upper );
     }
-    
+
     /**
      * Get the lowest value for a key in the name map.
-     * 
+     *
      * @return The lowest value for a key in the map.
      */
     public String getLowerLimit()
@@ -303,10 +303,10 @@ public class PDNameTreeNode implements COSObjectable
         }
         return retval;
     }
-    
+
     /**
      * Set the lowest value for the key in the map.
-     * 
+     *
      * @param lower The new lowest value for a key in the map.
      */
     private void setLowerLimit( String lower )

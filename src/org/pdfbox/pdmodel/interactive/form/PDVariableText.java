@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,8 +61,8 @@ public abstract class PDVariableText extends PDField
      * A Ff flag.
      */
     public static final int FLAG_RICH_TEXT = 1 << 25;
-    
-    
+
+
     /**
      * DA    Default appearance.
      */
@@ -88,14 +88,14 @@ public abstract class PDVariableText extends PDField
 
     /**
      * @see PDField#PDField(PDAcroForm,COSDictionary)
-     * 
+     *
      * @param theAcroForm The acroform.
      */
     public PDVariableText( PDAcroForm theAcroForm )
     {
         super( theAcroForm );
     }
-    
+
     /**
      * @see org.pdfbox.pdmodel.interactive.form.PDField#PDField(PDAcroForm,COSDictionary)
      *
@@ -130,7 +130,7 @@ public abstract class PDVariableText extends PDField
         }
         appearance.setAppearanceValue(value);
     }
-    
+
     /**
      * getValue gets the fields value to as a string.
      *
@@ -150,17 +150,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_MULTILINE );
     }
-    
+
     /**
      * Set the multiline bit.
-     * 
+     *
      * @param multiline The value for the multiline.
      */
     public void setMultiline( boolean multiline )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_MULTILINE, multiline );
     }
-    
+
     /**
      * @return true if the field is a password field.
      */
@@ -168,17 +168,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_PASSWORD );
     }
-    
+
     /**
      * Set the password bit.
-     * 
+     *
      * @param password The value for the password.
      */
     public void setPassword( boolean password )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_PASSWORD, password );
     }
-    
+
     /**
      * @return true if the field is a file select field.
      */
@@ -186,17 +186,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_FILE_SELECT );
     }
-    
+
     /**
      * Set the file select bit.
-     * 
+     *
      * @param fileSelect The value for the fileSelect.
      */
     public void setFileSelect( boolean fileSelect )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_FILE_SELECT, fileSelect );
     }
-    
+
     /**
      * @return true if the field is not suppose to spell check.
      */
@@ -204,17 +204,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_DO_NOT_SPELL_CHECK );
     }
-    
+
     /**
      * Set the doNotSpellCheck bit.
-     * 
+     *
      * @param doNotSpellCheck The value for the doNotSpellCheck.
      */
     public void setDoNotSpellCheck( boolean doNotSpellCheck )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
     }
-    
+
     /**
      * @return true if the field is not suppose to scroll.
      */
@@ -222,17 +222,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_DO_NOT_SCROLL );
     }
-    
+
     /**
      * Set the doNotScroll bit.
-     * 
+     *
      * @param doNotScroll The value for the doNotScroll.
      */
     public void setDoNotScroll( boolean doNotScroll )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_DO_NOT_SCROLL, doNotScroll );
     }
-    
+
     /**
      * @return true if the field is not suppose to comb the text display.
      */
@@ -240,17 +240,17 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_COMB );
     }
-    
+
     /**
      * Set the comb bit.
-     * 
+     *
      * @param comb The value for the comb.
      */
     public void setComb( boolean comb )
     {
         BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_COMB, comb );
     }
-    
+
     /**
      * @return true if the field is a rich text field.
      */
@@ -258,10 +258,10 @@ public abstract class PDVariableText extends PDField
     {
         return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_RICH_TEXT );
     }
-    
+
     /**
      * Set the richText bit.
-     * 
+     *
      * @param richText The value for the richText.
      */
     public void setRichText( boolean richText )

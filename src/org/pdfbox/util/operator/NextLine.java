@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,14 +26,14 @@ import org.pdfbox.util.PDFOperator;
 /**
  *
  * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of 
+ * <p>Description : Structal modification of the PDFEngine class : the long sequence of
  *    conditions in processOperator is remplaced by this strategy pattern</p>
  * <p>Copyright : Copyright (c) 2004</p>
  * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.5 $
  */
-public class NextLine extends OperatorProcessor 
+public class NextLine extends OperatorProcessor
 {
     /**
      * process : T* Move to start of next text line.
@@ -47,11 +47,11 @@ public class NextLine extends OperatorProcessor
         //move to start of next text line
         ArrayList args = new ArrayList();
         args.add(new COSFloat(0.0f));
-        // this must be -leading instead of just leading as written in the 
+        // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way
         args.add(new COSFloat(-1*context.getGraphicsState().getTextState().getLeading()));
         // use Td instead of repeating code
         context.processOperator("Td", args);
-        
+
     }
 }

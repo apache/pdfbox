@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,41 +30,41 @@ import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.pdmodel.PDDocument;
 
 /**
- * 
+ *
  * The class implements the standard security handler as decribed
  * in the PDF specifications. This security handler protects document
  * with password.
- * 
+ *
  * @see StandardProtectionPolicy to see how to protect document with this security handler.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
  *
  * @version $Revision: 1.5 $
  */
 
-public class StandardSecurityHandler extends SecurityHandler 
+public class StandardSecurityHandler extends SecurityHandler
 {
     /**
      * Type of security handler.
      */
     public static final String FILTER = "Standard";
-    
+
     private static final int DEFAULT_VERSION = 1;
-    
+
     private static final int DEFAULT_REVISION = 3;
-    
+
     private int revision = DEFAULT_REVISION;
-    
+
     private StandardProtectionPolicy policy;
-    
+
     private ARCFour rc4 = new ARCFour();
-    
+
     /**
      * Protection policy class for this handler.
      */
     public static final Class PROTECTION_POLICY_CLASS = StandardProtectionPolicy.class;
-    
+
     /**
      * Standard padding for encryption.
      */
@@ -78,67 +78,67 @@ public class StandardSecurityHandler extends SecurityHandler
         (byte)0x0C, (byte)0xA9, (byte)0xFE, (byte)0x64, (byte)0x53,
         (byte)0x69, (byte)0x7A
     };
-    
+
     /**
      * Constructor.
      */
     public StandardSecurityHandler()
-    {        
+    {
     }
-    
+
     /**
      * Constructor used for encryption.
-     * 
+     *
      * @param p The protection policy.
-     */    
+     */
     public StandardSecurityHandler(StandardProtectionPolicy p)
     {
         policy = p;
         keyLength = policy.getEncryptionKeyLength();
     }
-    
+
 
     /**
-     * Computes the version number of the StandardSecurityHandler 
+     * Computes the version number of the StandardSecurityHandler
      * regarding the encryption key length.
      * See PDF Spec 1.6 p 93
-     *  
+     *
      * @return The computed cersion number.
-     */    
+     */
     private int computeVersionNumber()
     {
         if(keyLength == 40)
         {
             return DEFAULT_VERSION;
         }
-        return 2;        
+        return 2;
     }
-    
+
     /**
      * Computes the revision version of the StandardSecurityHandler to
      * use regarding the version number and the permissions bits set.
      * See PDF Spec 1.6 p98
-     * 
+     *
      * @return The computed revision number.
      */
     private int computeRevisionNumber()
-    {        
-        if(version == 2 
+    {
+        if(version == 2
             && !policy.getPermissions().canFillInForm()
-            && !policy.getPermissions().canExtractForAccessibility() 
+            && !policy.getPermissions().canExtractForAccessibility()
             && !policy.getPermissions().canPrintDegraded() )
         {
             return 2;
         }
         return 3;
     }
-    
+
     /**
      * Decrypt the document.
-     * 
+     *
      * @param doc The document to be decrypted.
      * @param decryptionMaterial Information used to decrypt the document.
-     * 
+     *
      * @throws IOException If there is an error accessing data.
      * @throws CryptographyException If there is an error with decryption.
      */
@@ -146,26 +146,26 @@ public class StandardSecurityHandler extends SecurityHandler
         throws CryptographyException, IOException
     {
         document = doc;
-        
+
         PDEncryptionDictionary dictionary = document.getEncryptionDictionary();
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
         {
             throw new CryptographyException("Provided decryption material is not compatible with the document");
         }
-        
+
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;
-        
+
         String password = material.getPassword();
         if(password == null)
         {
             password = "";
         }
-        
+
         int dicPermissions = dictionary.getPermissions();
         int dicRevision = dictionary.getRevision();
         int dicLength = dictionary.getLength()/8;
 
-        //some documents may have not document id, see 
+        //some documents may have not document id, see
         //test\encryption\encrypted_doc_no_id.pdf
         COSArray documentIDArray = document.getDocument().getDocumentID();
         byte[] documentIDBytes = null;
@@ -178,78 +178,78 @@ public class StandardSecurityHandler extends SecurityHandler
         {
             documentIDBytes = new byte[0];
         }
-        
+
         byte[] u = dictionary.getUserKey();
         byte[] o = dictionary.getOwnerKey();
 
-        boolean isUserPassword = 
-            isUserPassword( 
-                password.getBytes(), 
-                u, 
-                o, 
-                dicPermissions, 
-                documentIDBytes, 
-                dicRevision, 
+        boolean isUserPassword =
+            isUserPassword(
+                password.getBytes(),
+                u,
+                o,
+                dicPermissions,
+                documentIDBytes,
+                dicRevision,
                 dicLength );
-        boolean isOwnerPassword = 
-            isOwnerPassword( 
-                password.getBytes(), 
-                u, 
-                o, 
-                dicPermissions, 
-                documentIDBytes, 
-                dicRevision, 
+        boolean isOwnerPassword =
+            isOwnerPassword(
+                password.getBytes(),
+                u,
+                o,
+                dicPermissions,
+                documentIDBytes,
+                dicRevision,
                 dicLength );
 
         if( isUserPassword )
         {
             currentAccessPermission = new AccessPermission( dicPermissions );
-            encryptionKey = 
+            encryptionKey =
                 computeEncryptedKey(
-                    password.getBytes(), 
-                    o, 
-                    dicPermissions, 
-                    documentIDBytes, 
-                    dicRevision, 
+                    password.getBytes(),
+                    o,
+                    dicPermissions,
+                    documentIDBytes,
+                    dicRevision,
                     dicLength );
         }
         else if( isOwnerPassword )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
             byte[] computedUserPassword = getUserPassword(password.getBytes(),o,dicRevision,dicLength );
-            encryptionKey = 
+            encryptionKey =
                 computeEncryptedKey(
-                    computedUserPassword, 
-                    o, 
-                    dicPermissions, 
-                    documentIDBytes, 
-                    dicRevision, 
+                    computedUserPassword,
+                    o,
+                    dicPermissions,
+                    documentIDBytes,
+                    dicRevision,
                     dicLength );
         }
         else
         {
-            throw new CryptographyException( 
+            throw new CryptographyException(
                 "Error: The supplied password does not match either the owner or user password in the document." );
         }
-        
+
         this.proceedDecryption();
     }
-    
+
     /**
      * Prepare document for encryption.
-     * 
+     *
      * @param doc The documeent to encrypt.
-     * 
+     *
      * @throws IOException If there is an error accessing data.
      * @throws CryptographyException If there is an error with decryption.
      */
-    public void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException 
-    {        
+    public void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException
+    {
         document = doc;
         PDEncryptionDictionary encryptionDictionary = document.getEncryptionDictionary();
         if(encryptionDictionary == null)
         {
-            encryptionDictionary = new PDEncryptionDictionary();    
+            encryptionDictionary = new PDEncryptionDictionary();
         }
         version = computeVersionNumber();
         revision = computeRevisionNumber();
@@ -257,7 +257,7 @@ public class StandardSecurityHandler extends SecurityHandler
         encryptionDictionary.setVersion(version);
         encryptionDictionary.setRevision(revision);
         encryptionDictionary.setLength(keyLength);
-        
+
         String ownerPassword = policy.getOwnerPassword();
         String userPassword = policy.getUserPassword();
         if( ownerPassword == null )
@@ -268,13 +268,13 @@ public class StandardSecurityHandler extends SecurityHandler
         {
             userPassword = "";
         }
-        
+
         int permissionInt = policy.getPermissions().getPermissionBytes();
-        
+
         encryptionDictionary.setPermissions(permissionInt);
-        
+
         int length = keyLength/8;
-        
+
         COSArray idArray = document.getDocument().getDocumentID();
 
         //check if the document has an id yet.  If it does not then
@@ -306,9 +306,9 @@ public class StandardSecurityHandler extends SecurityHandler
                 throw new CryptographyException( e );
             }
         }
-        
-        COSString id = (COSString)idArray.getObject( 0 );        
-        
+
+        COSString id = (COSString)idArray.getObject( 0 );
+
         byte[] o = computeOwnerPassword(
             ownerPassword.getBytes("ISO-8859-1"),
             userPassword.getBytes("ISO-8859-1"), revision, length);
@@ -321,16 +321,16 @@ public class StandardSecurityHandler extends SecurityHandler
             userPassword.getBytes("ISO-8859-1"), o, permissionInt, id.getBytes(), revision, length);
 
         encryptionDictionary.setOwnerKey(o);
-        encryptionDictionary.setUserKey(u);        
-        
+        encryptionDictionary.setUserKey(u);
+
         document.setEncryptionDictionary( encryptionDictionary );
         document.getDocument().setEncryptionDictionary(encryptionDictionary.getCOSDictionary());
-        
+
     }
 
     /**
      * Check for owner password.
-     * 
+     *
      * @param ownerPassword The owner password.
      * @param u The u entry of the encryption dictionary.
      * @param o The o entry of the encryption dictionary.
@@ -338,9 +338,9 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id.
      * @param encRevision The encryption algorithm revision.
      * @param length The encryption key length.
-     * 
+     *
      * @return True If the ownerPassword param is the owner password.
-     * 
+     *
      * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
@@ -354,20 +354,20 @@ public class StandardSecurityHandler extends SecurityHandler
             int length)
             throws CryptographyException, IOException
     {
-        byte[] userPassword = getUserPassword( ownerPassword, o, encRevision, length );            
+        byte[] userPassword = getUserPassword( ownerPassword, o, encRevision, length );
         return isUserPassword( userPassword, u, o, permissions, id, encRevision, length );
     }
-    
+
     /**
      * Get the user password based on the owner password.
-     * 
+     *
      * @param ownerPassword The plaintext owner password.
      * @param o The o entry of the encryption dictionary.
      * @param encRevision The encryption revision number.
      * @param length The key length.
-     * 
+     *
      * @return The u entry of the encryption dictionary.
-     * 
+     *
      * @throws CryptographyException If there is an error generating the user password.
      * @throws IOException If there is an error accessing data while generating the user password.
      */
@@ -436,12 +436,12 @@ public class StandardSecurityHandler extends SecurityHandler
                 result.write( dataToEncrypt, 0, dataToEncrypt.length );
                 */
                 byte[] iterationKey = new byte[ rc4Key.length ];
-                
-              
-                byte[] otemp = new byte[ o.length ]; //sm 
+
+
+                byte[] otemp = new byte[ o.length ]; //sm
                 System.arraycopy( o, 0, otemp, 0, o.length ); //sm
                 rc4.write( o, result);//sm
-                
+
                 for( int i=19; i>=0; i-- )
                 {
                     System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
@@ -452,7 +452,7 @@ public class StandardSecurityHandler extends SecurityHandler
                     rc4.setKey( iterationKey );
                     result.reset();  //sm
                     rc4.write( otemp, result ); //sm
-                    otemp = result.toByteArray(); //sm                
+                    otemp = result.toByteArray(); //sm
                 }
             }
 
@@ -465,19 +465,19 @@ public class StandardSecurityHandler extends SecurityHandler
             throw new CryptographyException( e );
         }
     }
-    
+
     /**
      * Compute the encryption key.
-     * 
+     *
      * @param password The password to compute the encrypted key.
      * @param o The o entry of the encryption dictionary.
      * @param permissions The permissions for the document.
      * @param id The document id.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
-     * 
+     *
      * @return The encrypted key bytes.
-     * 
+     *
      * @throws CryptographyException If there is an error with encryption.
      */
     public final byte[] computeEncryptedKey(
@@ -543,7 +543,7 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             return result;
         }
-    
+
     /**
      * This will compute the user password hash.
      *
@@ -559,7 +559,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @throws CryptographyException If there is an error computing the user password.
      * @throws IOException If there is an IO error.
      */
-    
+
     public final byte[] computeUserPassword(
             byte[] password,
             byte[] o,
@@ -621,17 +621,17 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             return result.toByteArray();
         }
-    
+
     /**
      * Compute the owner entry in the encryption dictionary.
-     * 
+     *
      * @param ownerPassword The plaintext owner password.
      * @param userPassword The plaintext user password.
      * @param encRevision The revision number of the encryption algorithm.
      * @param length The length of the encryption key.
-     * 
+     *
      * @return The o entry of the encryption dictionary.
-     * 
+     *
      * @throws CryptographyException If there is an error with encryption.
      * @throws IOException If there is an error accessing data.
      */
@@ -708,7 +708,7 @@ public class StandardSecurityHandler extends SecurityHandler
                 throw new CryptographyException( e.getMessage() );
             }
         }
-    
+
 
     /**
      * This will take the password and truncate or pad it as necessary.
@@ -725,10 +725,10 @@ public class StandardSecurityHandler extends SecurityHandler
         System.arraycopy( ENCRYPT_PADDING, 0, padded, bytesBeforePad, ENCRYPT_PADDING.length-bytesBeforePad );
         return padded;
     }
-    
+
     /**
      * Check if a plaintext password is the user password.
-     * 
+     *
      * @param password The plaintext password.
      * @param u The u entry of the encryption dictionary.
      * @param o The o entry of the encryption dictionary.
@@ -736,9 +736,9 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
-     * 
+     *
      * @return true If the plaintext password is the user password.
-     * 
+     *
      * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
@@ -771,7 +771,7 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             return matches;
         }
-    
+
     private static final boolean arraysEqual( byte[] first, byte[] second, int count )
     {
         boolean equal = first.length >= count && second.length >= count;

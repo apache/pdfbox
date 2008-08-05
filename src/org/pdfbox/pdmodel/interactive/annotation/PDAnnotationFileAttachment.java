@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import org.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
  * @version $Revision: 1.2 $
  */
 public class PDAnnotationFileAttachment extends PDAnnotation
-{   
+{
     /**
      * See get/setAttachmentName.
      */
@@ -46,12 +46,12 @@ public class PDAnnotationFileAttachment extends PDAnnotation
      * See get/setAttachmentName.
      */
     public static final String ATTACHMENT_NAME_TAG = "Tag";
-    
+
     /**
      * The type of annotation.
      */
     public static final String SUB_TYPE = "FileAttachment";
-    
+
     /**
      * Constructor.
      */
@@ -74,41 +74,41 @@ public class PDAnnotationFileAttachment extends PDAnnotation
 
     /**
      * Return the attached file.
-     * 
+     *
      * @return The attached file.
-     * 
+     *
      * @throws IOException If there is an error creating the file spec.
      */
     public PDFileSpecification getFile() throws IOException
     {
         return PDFileSpecification.createFS( getDictionary().getDictionaryObject( "FS" ) );
     }
-    
+
     /**
      * Set the attached file.
-     * 
+     *
      * @param file The file that is attached.
      */
     public void setFile( PDFileSpecification file )
     {
         getDictionary().setItem( "FS", file );
     }
-    
+
     /**
-     * This is the name used to draw the type of attachment.  
+     * This is the name used to draw the type of attachment.
      * See the ATTACHMENT_NAME_XXX constants.
-     *  
+     *
      * @return The name that describes the visual cue for the attachment.
      */
     public String getAttachmentName()
     {
         return getDictionary().getNameAsString( "Name", ATTACHMENT_NAME_PUSH_PIN );
     }
-    
+
     /**
      * Set the name used to draw the attachement icon.
      * See the ATTACHMENT_NAME_XXX constants.
-     * 
+     *
      * @param name The name of the visual icon to draw.
      */
     public void setAttachementName( String name )

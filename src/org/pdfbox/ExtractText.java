@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -170,7 +170,7 @@ public class ExtractText
                     String fileName = url.getFile();
                     if( textFile == null && fileName.length() >4 )
                     {
-                        File outputFile = 
+                        File outputFile =
                             new File( fileName.substring( 0, fileName.length() -4 ) + ".txt" );
                         textFile = outputFile.getName();
                     }
@@ -183,15 +183,15 @@ public class ExtractText
                         textFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ".txt";
                     }
                 }
-    
+
                 //document.print();
                 if( document.isEncrypted() )
                 {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );                    
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
                     document.openProtection( sdm );
                     AccessPermission ap = document.getCurrentAccessPermission();
-                    
-                    if( ! ap.canExtractContent() ) 
+
+                    if( ! ap.canExtractContent() )
                     {
                         throw new IOException( "You do not have permission to extract text" );
                     }
@@ -214,13 +214,13 @@ public class ExtractText
                             new FileOutputStream( textFile ) );
                     }
                 }
-    
+
                 PDFTextStripper stripper = null;
-                if(toHTML) 
+                if(toHTML)
                 {
                    stripper = new PDFText2HTML();
-                } 
-                else 
+                }
+                else
                 {
                    stripper = new PDFTextStripper();
                 }

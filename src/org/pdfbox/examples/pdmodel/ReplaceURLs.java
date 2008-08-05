@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,13 +46,13 @@ public class ReplaceURLs
     }
 
     /**
-     * This will read in a document and replace all of the urls with 
+     * This will read in a document and replace all of the urls with
      * http://www.pdfbox.org.
      * <br />
      * see usage() for commandline
      *
      * @param args Command line arguments.
-     * 
+     *
      * @throws Exception If there is an error during the process.
      */
     public static void main(String[] args) throws Exception
@@ -72,7 +72,7 @@ public class ReplaceURLs
                 {
                     PDPage page = (PDPage)allPages.get( i );
                     List annotations = page.getAnnotations();
-                    
+
                     for( int j=0; j<annotations.size(); j++ )
                     {
                         PDAnnotation annot = (PDAnnotation)annotations.get( j );

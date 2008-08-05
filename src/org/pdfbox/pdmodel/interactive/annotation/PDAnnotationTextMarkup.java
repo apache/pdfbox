@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import org.pdfbox.cos.COSName;
 /**
  * This is the abstract class that represents a text markup annotation
  * Introduced in PDF 1.3 specification, except Squiggly lines in 1.4.
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
@@ -48,14 +48,14 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     public static final String SUB_TYPE_STRIKEOUT = "StrikeOut";
 
 
-    private PDAnnotationTextMarkup() 
+    private PDAnnotationTextMarkup()
     {
         // Must be constructed with a subType or dictionary parameter
     }
 
     /**
      * Creates a TextMarkup annotation of the specified sub type.
-     * 
+     *
      * @param subType the subtype the annotation represents
      */
     public PDAnnotationTextMarkup(String subType)
@@ -70,7 +70,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     /**
      * Creates a TextMarkup annotation from a COSDictionary, expected to be a
      * correct object definition.
-     * 
+     *
      * @param field the PDF objet to represent as a field.
      */
     public PDAnnotationTextMarkup( COSDictionary field )
@@ -81,7 +81,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     /**
      * This will set the set of quadpoints which encompass the areas of this
      * annotation.
-     * 
+     *
      * @param quadPoints
      *            an array representing the set of area covered
      */
@@ -95,7 +95,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     /**
      * This will retrieve the set of quadpoints which encompass the areas of
      * this annotation.
-     * 
+     *
      * @return An array of floats representing the quad points.
      */
     public float[] getQuadPoints()
@@ -104,7 +104,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();
-        } 
+        }
         else
         {
             return null; // Should never happen as this is a required item
@@ -114,7 +114,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     /**
      * This will set the sub type (and hence appearance, AP taking precedence) For
      * this annotation. See the SUB_TYPE_XXX constants for valid values.
-     * 
+     *
      * @param subType The subtype of the annotation
      */
     public void setSubtype( String subType )
@@ -124,8 +124,8 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
 
     /**
      * This will retrieve the sub type (and hence appearance, AP taking precedence)
-     * For this annotation. 
-     * 
+     * For this annotation.
+     *
      * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
      */
     public String getSubtype()

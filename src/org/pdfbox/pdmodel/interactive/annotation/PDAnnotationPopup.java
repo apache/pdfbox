@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@ import org.pdfbox.cos.COSName;
 /**
  * This is the class that represents a popup annotation.
  * Introduced in PDF 1.3 specification
- * 
+ *
  * @author Paul King
  * @version $Revision: 1.2 $
  */
@@ -49,7 +49,7 @@ public class PDAnnotationPopup extends PDAnnotation
     /**
      * Creates a popup annotation from a COSDictionary, expected to be a correct
      * object definition.
-     * 
+     *
      * @param field
      *            the PDF objet to represent as a field.
      */
@@ -60,7 +60,7 @@ public class PDAnnotationPopup extends PDAnnotation
 
     /**
      * This will set inital state of the annotation, open or closed.
-     * 
+     *
      * @param open
      *            Boolean value, true = open false = closed.
      */
@@ -72,7 +72,7 @@ public class PDAnnotationPopup extends PDAnnotation
     /**
      * This will retrieve the initial state of the annotation, open Or closed
      * (default closed).
-     * 
+     *
      * @return The initial state, true = open false = closed.
      */
     public boolean getOpen()
@@ -82,7 +82,7 @@ public class PDAnnotationPopup extends PDAnnotation
 
     /**
      * This will set the markup annotation which this popup relates to.
-     * 
+     *
      * @param annot
      *            the markup annotation.
      */
@@ -93,7 +93,7 @@ public class PDAnnotationPopup extends PDAnnotation
 
     /**
      * This will retrieve the markup annotation which this popup relates to.
-     * 
+     *
      * @return The parent markup annotation.
      */
     public PDAnnotationMarkup getParent()
@@ -101,7 +101,7 @@ public class PDAnnotationPopup extends PDAnnotation
         PDAnnotationMarkup am = null;
         try
         {
-            am = (PDAnnotationMarkup) 
+            am = (PDAnnotationMarkup)
                 PDAnnotation.createAnnotation( getDictionary().getDictionaryObject( "Parent", "P" ) );
         }
         catch (IOException ioe)

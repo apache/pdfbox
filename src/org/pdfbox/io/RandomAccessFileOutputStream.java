@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,11 +62,11 @@ public class RandomAccessFileOutputStream extends OutputStream
     {
         return position;
     }
-    
+
     /**
      * Get the amount of data that was actually written to the stream, in theory this
      * should be the same as the length specified but in some cases it doesn't match.
-     * 
+     *
      * @return The number of bytes actually written to this stream.
      */
     public long getLengthWritten()

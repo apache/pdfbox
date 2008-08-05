@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,7 +76,7 @@ public class PDResources implements COSObjectable
     {
         return resources;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -86,12 +86,12 @@ public class PDResources implements COSObjectable
     {
         return resources;
     }
-    
+
     /**
      * This will get the map of fonts.  This will never return null.  The keys are string
      * and the values are PDFont objects.
      *
-     * @param fontCache A map of existing PDFont objects to reuse. 
+     * @param fontCache A map of existing PDFont objects to reuse.
      * @return The map of fonts.
      *
      * @throws IOException If there is an error getting the fonts.
@@ -137,25 +137,25 @@ public class PDResources implements COSObjectable
     {
         return getFonts( null );
     }
-    
+
     /**
      * This will get the map of PDXObjects that are in the resource dictionary.
-     *   
+     *
      * @return The map of xobjects.
-     * 
+     *
      * @throws IOException If there is an error creating the xobjects.
      */
     public Map getXObjects() throws IOException
     {
         Map retval = null;
         COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( "XObject" );
-        
+
         if( xobjects == null )
         {
             xobjects = new COSDictionary();
             resources.setItem( "XObject", xobjects );
         }
-    
+
         Map actuals = new HashMap();
         retval = new COSDictionaryMap( actuals, xobjects );
         Iterator imageNames = xobjects.keyList().iterator();
@@ -165,19 +165,19 @@ public class PDResources implements COSObjectable
             COSBase cosObject = xobjects.getDictionaryObject(objName);
             PDXObject xobject = PDXObject.createXObject( cosObject );
             if( xobject !=null )
-            {     
+            {
                 actuals.put( objName.getName(), xobject);
-            } 
+            }
         }
         return retval;
     }
-    
+
     /**
      * This will get the map of images.  An empty map will be returned if there
      * are no underlying images.
      * So far the keys are COSName of the image
      * and the value is the corresponding PDXObjectImage.
-     *   
+     *
      * @author By BM
      * @return The map of images.
      * @throws IOException If there is an error writing the picture.
@@ -186,7 +186,7 @@ public class PDResources implements COSObjectable
     {
         Map retval = null;
         COSDictionary images = (COSDictionary)resources.getDictionaryObject( "XObject" );
-        
+
         if( images == null )
         {
             images = new COSDictionary();
@@ -200,15 +200,15 @@ public class PDResources implements COSObjectable
         {
             COSName imageName = (COSName)imageNames.next();
             COSStream image = (COSStream)(images.getDictionaryObject(imageName));
-            
-            COSName subType =(COSName)image.getDictionaryObject(COSName.SUBTYPE); 
+
+            COSName subType =(COSName)image.getDictionaryObject(COSName.SUBTYPE);
             if( subType.equals(COSName.IMAGE) )
             {
                 PDXObjectImage ximage = (PDXObjectImage)PDXObject.createXObject( image );
                 if( ximage !=null )
-                {     
+                {
                     actuals.put( imageName.getName(), ximage);
-                } 
+                }
             }
         }
         return retval;

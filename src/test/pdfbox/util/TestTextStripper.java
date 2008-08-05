@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,7 +89,7 @@ public class TestTextStripper extends TestCase
      * Test class constructor.
      *
      * @param name The name of the test class.
-     * 
+     *
      * @throws IOException If there is an error creating the test.
      */
     public TestTextStripper( String name ) throws IOException
@@ -207,15 +207,15 @@ public class TestTextStripper extends TestCase
     public void doTestFile(File file, boolean bLogResult)
         throws Exception
     {
-        
+
         log.println("Preparing to parse " + file.getName());
-        
+
         OutputStream os = null;
         Writer writer = null;
         PDDocument document = null;
         try
         {
-            
+
             document = PDDocument.load(file);
             File outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
             os = new FileOutputStream(outFile);
@@ -239,7 +239,7 @@ public class TestTextStripper extends TestCase
             {
                 this.bFail = true;
                 log.println(
-                    "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() + 
+                    "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
                     " did not exist");
                 return;
             }
@@ -309,7 +309,7 @@ public class TestTextStripper extends TestCase
         try
         {
             log = new PrintWriter( new FileWriter( "textextract.log" ) );
-    
+
             if ((filename == null) || (filename.length() == 0))
             {
                 File[] testFiles = testDir.listFiles(new FilenameFilter()
@@ -319,7 +319,7 @@ public class TestTextStripper extends TestCase
                         return (name.endsWith(".pdf"));
                     }
                 });
-    
+
                 for (int n = 0; n < testFiles.length; n++)
                 {
                     doTestFile(testFiles[n], false);
@@ -329,7 +329,7 @@ public class TestTextStripper extends TestCase
             {
                 doTestFile(new File(testDir, filename), true);
             }
-    
+
             if (this.bFail)
             {
                 fail("One or more failures, see test log for details");
@@ -353,10 +353,10 @@ public class TestTextStripper extends TestCase
     {
         return new TestSuite( TestTextStripper.class );
     }
-    
+
     /**
      * Command line execution.
-     * 
+     *
      * @param args Command line arguments.
      */
     public static void main( String[] args )

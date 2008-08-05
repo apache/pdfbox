@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -143,7 +143,7 @@ public class PDFParser extends BaseParser
 
             try
             {
-                float pdfVersion = Float.parseFloat( 
+                float pdfVersion = Float.parseFloat(
                     header.substring( PDF_HEADER.length(), Math.min( header.length(), PDF_HEADER.length()+3) ) );
                 document.setVersion( pdfVersion );
             }
@@ -236,7 +236,7 @@ public class PDFParser extends BaseParser
     {
         skipSpaces();
         int c = pdfSource.peek();
-        
+
         if( !Character.isDigit( (char)c ) )
         {
             // Fill bytes conform with PDF reference (but without comment sign)
@@ -326,7 +326,7 @@ public class PDFParser extends BaseParser
             {
                 object = parseXrefSection();
             }
-            
+
             //if peeked char is xref or startxref
             if( peekedChar == 'x' || peekedChar == 's')
             {
@@ -417,7 +417,7 @@ public class PDFParser extends BaseParser
                 genNum = readInt();
 
                 objectKey = readString( 3 );
-                //System.out.println( "parseObject() num=" + number + 
+                //System.out.println( "parseObject() num=" + number +
                 //" genNumber=" + genNum + " key='" + objectKey + "'" );
                 if( !objectKey.equals( "obj" ) )
                 {
@@ -477,7 +477,7 @@ public class PDFParser extends BaseParser
                             {
                                 //found a case with 17506.pdf object 41 that was like this
                                 //41 0 obj [/Pattern /DeviceGray] ] endobj
-                                //notice the second array close, here we are reading it 
+                                //notice the second array close, here we are reading it
                                 //and ignoring and attempting to continue
                                 pdfSource.read();
                             }
@@ -521,7 +521,7 @@ public class PDFParser extends BaseParser
      * This will parse the xref table from the stream.
      *
      * It stores the starting object number and the count
-     * 
+     *
      * @param params The start and count parameters
      *
      * @throws IOException If an IO error occurs.

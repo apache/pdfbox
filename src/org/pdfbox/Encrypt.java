@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,13 +59,13 @@ public class Encrypt
         else
         {
             AccessPermission ap = new AccessPermission();
-            
+
             String infile = null;
             String outfile = null;
             String certFile = null;
             String userPassword = "";
             String ownerPassword = "";
-            
+
             int keyLength = 40;
 
             PDDocument document = null;
@@ -161,25 +161,25 @@ public class Encrypt
                         PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
                         PublicKeyRecipient recip = new PublicKeyRecipient();
                         recip.setPermission(ap);
-                        
-                        
-                        CertificateFactory cf = CertificateFactory.getInstance("X.509");                            
+
+
+                        CertificateFactory cf = CertificateFactory.getInstance("X.509");
                         InputStream inStream = new FileInputStream(certFile);
                         X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
                         inStream.close();
-                        
+
                         recip.setX509(certificate);
-                        
+
                         ppp.addRecipient(recip);
-                        
+
                         ppp.setEncryptionKeyLength(keyLength);
-                        
+
                         document.protect(ppp);
                     }
                     else
                     {
-                        StandardProtectionPolicy spp = 
-                            new StandardProtectionPolicy(ownerPassword, userPassword, ap);                        
+                        StandardProtectionPolicy spp =
+                            new StandardProtectionPolicy(ownerPassword, userPassword, ap);
                         spp.setEncryptionKeyLength(keyLength);
                         document.protect(spp);
                     }
@@ -208,7 +208,7 @@ public class Encrypt
         System.err.println( "usage: java org.pdfbox.Encrypt [options] <inputfile> [outputfile]" );
         System.err.println( "   -O <password>                            " +
                                             "Set the owner password(ignored if cert is set)" );
-        System.err.println( "   -U <password>                            " + 
+        System.err.println( "   -U <password>                            " +
                                             "Set the user password(ignored if cert is set)" );
         System.err.println( "   -certFile <path to cert>                 Path to X.509 certificate" );
         System.err.println( "   -canAssemble <true|false>                Set the assemble permission" );

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import java.io.IOException;
 
 /**
  * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of conditions 
+ * <p>Description : Structal modification of the PDFEngine class : the long sequence of conditions
  *    in processOperator is remplaced by this strategy pattern</p>
  * <p>Copyright : Copyright (c) 2004</p>
  * <p>Société : DBGS</p>
@@ -31,7 +31,7 @@ import java.io.IOException;
  * @version $Revision: 1.6 $
  */
 
-public class SetMoveAndShow extends OperatorProcessor 
+public class SetMoveAndShow extends OperatorProcessor
 {
     /**
      * " Set word and character spacing, move to next line, and show text.
@@ -39,7 +39,7 @@ public class SetMoveAndShow extends OperatorProcessor
      * @param arguments List.
      * @throws IOException If there is an error processing the operator.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException 
+    public void process(PDFOperator operator, List arguments) throws IOException
     {
         //Set word and character spacing, move to next line, and show text
         //

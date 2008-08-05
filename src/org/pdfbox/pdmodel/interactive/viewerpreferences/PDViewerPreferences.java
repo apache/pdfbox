@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class PDViewerPreferences implements COSObjectable
      * From PDF Reference: "Optional content group panel visible".
      */
     public static final String NON_FULL_SCREEN_PAGE_MODE_USE_OPTIONAL_CONTENT = "UseOC";
-    
+
     /**
      * Reading direction.
      */
@@ -54,7 +54,7 @@ public class PDViewerPreferences implements COSObjectable
      * Reading direction.
      */
     public static final String READING_DIRECTION_R2L = "R2L";
-    
+
     /**
      * Boundary constant.
      */
@@ -75,8 +75,8 @@ public class PDViewerPreferences implements COSObjectable
      * Boundary constant.
      */
     public static final String BOUNDARY_ART_BOX = "ArtBox";
-    
-    
+
+
     private COSDictionary prefs;
 
     /**
@@ -98,7 +98,7 @@ public class PDViewerPreferences implements COSObjectable
     {
         return prefs;
     }
-    
+
     /**
      * Convert this standard java object to a COS object.
      *
@@ -108,244 +108,244 @@ public class PDViewerPreferences implements COSObjectable
     {
         return prefs;
     }
-    
+
     /**
      * Get the toolbar preference.
-     * 
+     *
      * @return the toolbar preference.
      */
     public boolean hideToolbar()
     {
         return prefs.getBoolean( "HideToolbar", false );
     }
-    
+
     /**
      * Set the toolbar preference.
-     * 
+     *
      * @param value Set the toolbar preference.
      */
     public void setHideToolbar( boolean value )
     {
         prefs.setBoolean( "HideToolbar", value );
     }
-    
+
     /**
      * Get the menubar preference.
-     * 
+     *
      * @return the menubar preference.
      */
     public boolean hideMenubar()
     {
         return prefs.getBoolean( "HideMenubar", false );
     }
-    
+
     /**
      * Set the menubar preference.
-     * 
+     *
      * @param value Set the menubar preference.
      */
     public void setHideMenubar( boolean value )
     {
         prefs.setBoolean( "HideMenubar", value );
     }
-    
+
     /**
      * Get the window UI preference.
-     * 
+     *
      * @return the window UI preference.
      */
     public boolean hideWindowUI()
     {
         return prefs.getBoolean( "HideWindowUI", false );
     }
-    
+
     /**
      * Set the window UI preference.
-     * 
+     *
      * @param value Set the window UI preference.
      */
     public void setHideWindowUI( boolean value )
     {
         prefs.setBoolean( "HideWindowUI", value );
-    }    
-    
+    }
+
     /**
      * Get the fit window preference.
-     * 
+     *
      * @return the fit window preference.
      */
     public boolean fitWindow()
     {
         return prefs.getBoolean( "FitWindow", false );
     }
-    
+
     /**
      * Set the fit window preference.
-     * 
+     *
      * @param value Set the fit window preference.
      */
     public void setFitWindow( boolean value )
     {
         prefs.setBoolean( "FitWindow", value );
     }
-    
+
     /**
      * Get the center window preference.
-     * 
+     *
      * @return the center window preference.
      */
     public boolean centerWindow()
     {
         return prefs.getBoolean( "CenterWindow", false );
     }
-    
+
     /**
      * Set the center window preference.
-     * 
+     *
      * @param value Set the center window preference.
      */
     public void setCenterWindow( boolean value )
     {
         prefs.setBoolean( "CenterWindow", value );
     }
-    
+
     /**
      * Get the display doc title preference.
-     * 
+     *
      * @return the display doc title preference.
      */
     public boolean displayDocTitle()
     {
         return prefs.getBoolean( "DisplayDocTitle", false );
     }
-    
+
     /**
      * Set the display doc title preference.
-     * 
+     *
      * @param value Set the display doc title preference.
      */
     public void setDisplayDocTitle( boolean value )
     {
         prefs.setBoolean( "DisplayDocTitle", value );
     }
-    
+
     /**
      * Get the non full screen page mode preference.
-     * 
+     *
      * @return the non full screen page mode preference.
      */
     public String getNonFullScreenPageMode()
     {
         return prefs.getNameAsString( "NonFullScreenPageMode", NON_FULL_SCREEN_PAGE_MODE_USE_NONE);
     }
-    
+
     /**
      * Set the non full screen page mode preference.
-     * 
+     *
      * @param value Set the non full screen page mode preference.
      */
     public void setNonFullScreenPageMode( String value )
     {
         prefs.setName( "NonFullScreenPageMode", value );
     }
-    
+
     /**
      * Get the reading direction preference.
-     * 
+     *
      * @return the reading direction preference.
      */
     public String getReadingDirection()
     {
         return prefs.getNameAsString( "Direction", READING_DIRECTION_L2R);
     }
-    
+
     /**
      * Set the reading direction preference.
-     * 
+     *
      * @param value Set the reading direction preference.
      */
     public void setReadingDirection( String value )
     {
         prefs.setName( "Direction", value );
     }
-    
+
     /**
      * Get the ViewArea preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @return the ViewArea preference.
      */
     public String getViewArea()
     {
         return prefs.getNameAsString( "ViewArea", BOUNDARY_CROP_BOX);
     }
-    
+
     /**
      * Set the ViewArea preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @param value Set the ViewArea preference.
      */
     public void setViewArea( String value )
     {
         prefs.setName( "ViewArea", value );
-    }   
-    
+    }
+
     /**
      * Get the ViewClip preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @return the ViewClip preference.
      */
     public String getViewClip()
     {
         return prefs.getNameAsString( "ViewClip", BOUNDARY_CROP_BOX);
     }
-    
+
     /**
      * Set the ViewClip preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @param value Set the ViewClip preference.
      */
     public void setViewClip( String value )
     {
         prefs.setName( "ViewClip", value );
     }
-    
+
     /**
      * Get the PrintArea preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @return the PrintArea preference.
      */
     public String getPrintArea()
     {
         return prefs.getNameAsString( "PrintArea", BOUNDARY_CROP_BOX);
     }
-    
+
     /**
      * Set the PrintArea preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @param value Set the PrintArea preference.
      */
     public void setPrintArea( String value )
     {
         prefs.setName( "PrintArea", value );
-    }   
-    
+    }
+
     /**
      * Get the PrintClip preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @return the PrintClip preference.
      */
     public String getPrintClip()
     {
         return prefs.getNameAsString( "PrintClip", BOUNDARY_CROP_BOX);
     }
-    
+
     /**
      * Set the PrintClip preference.  See BOUNDARY_XXX constants.
-     * 
+     *
      * @param value Set the PrintClip preference.
      */
     public void setPrintClip( String value )
     {
         prefs.setName( "PrintClip", value );
-    }  
+    }
 }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,8 +33,8 @@ public class PushBackInputStream extends java.io.PushbackInputStream
      *
      * @param input The input stream.
      * @param size The size of the push back buffer.
-     * 
-     * @throws IOException If there is an error with the stream. 
+     *
+     * @throws IOException If there is an error with the stream.
      */
     public PushBackInputStream( InputStream input, int size ) throws IOException
     {
@@ -74,13 +74,13 @@ public class PushBackInputStream extends java.io.PushbackInputStream
         int peek = peek();
         return peek == -1;
     }
-    
+
     /**
      * This is a method used to fix PDFBox issue 974661, the PDF parsing code needs
      * to know if there is at least x amount of data left in the stream, but the available()
      * method returns how much data will be available without blocking.  PDFBox is willing to
      * block to read the data, so we will first fill the internal buffer.
-     * 
+     *
      * @throws IOException If there is an error filling the buffer.
      */
     public void fillBuffer() throws IOException

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,18 +27,18 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class RandomAccessFile implements RandomAccess 
+public class RandomAccessFile implements RandomAccess
 {
     private java.io.RandomAccessFile ras;
- 
+
     /**
      * Constructor.
-     * 
+     *
      * @param file The file to write the data to.
      * @param mode The writing mode.
      * @throws FileNotFoundException If the file cannot be created.
      */
-    public RandomAccessFile(File file, String mode) throws FileNotFoundException 
+    public RandomAccessFile(File file, String mode) throws FileNotFoundException
     {
         ras = new java.io.RandomAccessFile(file, mode);
     }
@@ -46,7 +46,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void close() throws IOException 
+    public void close() throws IOException
     {
         ras.close();
     }
@@ -54,7 +54,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void seek(long position) throws IOException 
+    public void seek(long position) throws IOException
     {
         ras.seek(position);
     }
@@ -62,7 +62,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public int read() throws IOException 
+    public int read() throws IOException
     {
         return ras.read();
     }
@@ -70,7 +70,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public int read(byte[] b, int offset, int length) throws IOException 
+    public int read(byte[] b, int offset, int length) throws IOException
     {
         return ras.read(b, offset, length);
     }
@@ -78,7 +78,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public long length() throws IOException 
+    public long length() throws IOException
     {
         return ras.length();
     }
@@ -86,7 +86,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void write(byte[] b, int offset, int length) throws IOException 
+    public void write(byte[] b, int offset, int length) throws IOException
     {
         ras.write(b, offset, length);
     }
@@ -94,7 +94,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
-    public void write(int b) throws IOException 
+    public void write(int b) throws IOException
     {
         ras.write(b);
     }

@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,12 @@ import java.util.Random;
 
 /**
  * Implements different PNG predictor algorithms that is used in PDF files.
- * 
+ *
  * @author xylifyx@yahoo.co.uk
  * @version $Revision: 1.4 $
  * @see <a href="http://www.w3.org/TR/PNG-Filters.html">PNG Filters</a>
  */
-public abstract class PredictorAlgorithm 
+public abstract class PredictorAlgorithm
 {
     private int width;
 
@@ -36,17 +36,17 @@ public abstract class PredictorAlgorithm
     /**
      * check that buffer sizes matches width,height,bpp. This implementation is
      * used by most of the filters, but not Uptimum.
-     * 
+     *
      * @param src The source buffer.
      * @param dest The destination buffer.
      */
-    public void checkBufsiz(byte[] src, byte[] dest) 
+    public void checkBufsiz(byte[] src, byte[] dest)
     {
-        if (src.length != dest.length) 
+        if (src.length != dest.length)
         {
             throw new IllegalArgumentException("src.length != dest.length");
         }
-        if (src.length != getWidth() * getHeight() * getBpp()) 
+        if (src.length != getWidth() * getHeight() * getBpp())
         {
             throw new IllegalArgumentException(
                     "src.length != width * height * bpp");
@@ -56,7 +56,7 @@ public abstract class PredictorAlgorithm
     /**
      * encode line of pixel data in src from srcOffset and width*bpp bytes
      * forward, put the decoded bytes into dest.
-     * 
+     *
      * @param src
      *            raw image data
      * @param dest
@@ -76,7 +76,7 @@ public abstract class PredictorAlgorithm
     /**
      * decode line of pixel data in src from src_offset and width*bpp bytes
      * forward, put the decoded bytes into dest.
-     * 
+     *
      * @param src
      *            encoded image data
      * @param dest
@@ -95,10 +95,10 @@ public abstract class PredictorAlgorithm
 
     /**
      * Simple command line program to test the algorithm.
-     * 
+     *
      * @param args The command line arguments.
      */
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         Random rnd = new Random();
         int width = 5;
@@ -108,7 +108,7 @@ public abstract class PredictorAlgorithm
         rnd.nextBytes(raw);
         System.out.println("raw:   ");
         dump(raw);
-        for (int i = 10; i < 15; i++) 
+        for (int i = 10; i < 15; i++)
         {
             byte[] decoded = new byte[width * height * bpp];
             byte[] encoded = new byte[width * height * bpp];
@@ -126,56 +126,56 @@ public abstract class PredictorAlgorithm
 
     /**
      * Get the left pixel from the buffer.
-     * 
+     *
      * @param buf The buffer.
      * @param offset The offset into the buffer.
      * @param dy The dy value.
      * @param x The x value.
-     * 
+     *
      * @return The left pixel.
      */
-    public int leftPixel(byte[] buf, int offset, int dy, int x) 
+    public int leftPixel(byte[] buf, int offset, int dy, int x)
     {
         return x >= getBpp() ? buf[offset + x - getBpp()] : 0;
     }
 
     /**
      * Get the above pixel from the buffer.
-     * 
+     *
      * @param buf The buffer.
      * @param offset The offset into the buffer.
      * @param dy The dy value.
      * @param x The x value.
-     * 
+     *
      * @return The above pixel.
      */
-    public int abovePixel(byte[] buf, int offset, int dy, int x) 
+    public int abovePixel(byte[] buf, int offset, int dy, int x)
     {
         return offset >= dy ? buf[offset + x - dy] : 0;
     }
 
     /**
      * Get the above-left pixel from the buffer.
-     * 
+     *
      * @param buf The buffer.
      * @param offset The offset into the buffer.
      * @param dy The dy value.
      * @param x The x value.
-     * 
+     *
      * @return The above-left pixel.
      */
-    public int aboveLeftPixel(byte[] buf, int offset, int dy, int x) 
+    public int aboveLeftPixel(byte[] buf, int offset, int dy, int x)
     {
         return offset >= dy && x >= getBpp() ? buf[offset + x - dy - getBpp()]
                 : 0;
     }
-    
+
     /**
      * Simple helper to print out a buffer.
-     * 
+     *
      * @param raw The bytes to print out.
      */
-    private static void dump(byte[] raw) 
+    private static void dump(byte[] raw)
     {
         for (int i = 0; i < raw.length; i++)
         {
@@ -187,7 +187,7 @@ public abstract class PredictorAlgorithm
     /**
      * @return Returns the bpp.
      */
-    public int getBpp() 
+    public int getBpp()
     {
         return bpp;
     }
@@ -196,7 +196,7 @@ public abstract class PredictorAlgorithm
      * @param newBpp
      *            The bpp to set.
      */
-    public void setBpp(int newBpp) 
+    public void setBpp(int newBpp)
     {
         bpp = newBpp;
     }
@@ -204,7 +204,7 @@ public abstract class PredictorAlgorithm
     /**
      * @return Returns the height.
      */
-    public int getHeight() 
+    public int getHeight()
     {
         return height;
     }
@@ -213,7 +213,7 @@ public abstract class PredictorAlgorithm
      * @param newHeight
      *            The height to set.
      */
-    public void setHeight(int newHeight) 
+    public void setHeight(int newHeight)
     {
         height = newHeight;
     }
@@ -221,7 +221,7 @@ public abstract class PredictorAlgorithm
     /**
      * @return Returns the width.
      */
-    public int getWidth() 
+    public int getWidth()
     {
         return width;
     }
@@ -230,26 +230,26 @@ public abstract class PredictorAlgorithm
      * @param newWidth
      *            The width to set.
      */
-    public void setWidth(int newWidth) 
+    public void setWidth(int newWidth)
     {
         this.width = newWidth;
     }
-    
+
 
     /**
      * encode a byte array full of image data using the filter that this object
      * implements.
-     * 
+     *
      * @param src
      *            buffer
      * @param dest
      *            buffer
      */
-    public void encode(byte[] src, byte[] dest) 
+    public void encode(byte[] src, byte[] dest)
     {
         checkBufsiz(dest, src);
         int dy = getWidth()*getBpp();
-        for (int y = 0; y < height; y++) 
+        for (int y = 0; y < height; y++)
         {
             int yoffset = y * dy;
             encodeLine(src, dest, dy, yoffset, dy, yoffset);
@@ -259,17 +259,17 @@ public abstract class PredictorAlgorithm
     /**
      * decode a byte array full of image data using the filter that this object
      * implements.
-     * 
+     *
      * @param src
      *            buffer
      * @param dest
      *            buffer
      */
-    public void decode(byte[] src, byte[] dest) 
+    public void decode(byte[] src, byte[] dest)
     {
         checkBufsiz(src, dest);
         int dy = width * bpp;
-        for (int y = 0; y < height; y++) 
+        for (int y = 0; y < height; y++)
         {
             int yoffset = y * dy;
             decodeLine(src, dest, dy, yoffset, dy, yoffset);
@@ -288,13 +288,13 @@ public abstract class PredictorAlgorithm
      *            <li>14 PNG prediction (on encoding, PNG Paeth on all rows)
      *            <li>15 PNG prediction (on encoding, PNG optimum)
      *            </ul>
-     * 
+     *
      * @return The predictor class based on the predictor code.
      */
-    public static PredictorAlgorithm getFilter(int predictor) 
+    public static PredictorAlgorithm getFilter(int predictor)
     {
         PredictorAlgorithm filter;
-        switch (predictor) 
+        switch (predictor)
         {
             case 10:
                 filter = new None();
