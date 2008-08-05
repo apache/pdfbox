@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,24 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - How to build PDFBox</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - How to build PDFBox</title>
+  </header>
+  <body>
     <section>
       <title>Building PDFBox</title>
       <p>
-      	This page will describe how to build PDFBox.  Most users should find the binary releases adequate, but 
+      	This page will describe how to build PDFBox.  Most users should find the binary releases adequate, but
       	if you are contributing to PDFBox then you will need to know how to properly build the project.
       </p>
-      
+
       <p>
-      	You can obtain the latest source of PDFBox from CVS, see the 
+      	You can obtain the latest source of PDFBox from CVS, see the
       	<a href="http://sourceforge.net/cvs/?group_id=78314">SourceForge</a> site for information
       	about how to connect to CVS.  The below instructions should also work for a released/nightly distribution.
       </p>
-      
+
       <p>
       	<ol>
       		<li>Install <a href="http://ant.apache.org/">ANT</a>, PDFBox currently uses 1.6.2 but other
@@ -54,7 +54,7 @@
       		<li>(Optional)Place the junit.jar file in the ANT_HOME\lib directory.  This is required
       		    to run the junit tests but not to compile PDFBox.</li>
       		<li>(Optional)Setup IKVM, if you want to build the .NET DLL version of PDFBox.
-      		
+
       			<ol>
       				<li><a href="http://www.ikvm.net/">IKVM</a> binaries</li>
       				<li>In the build.properties, set the ikvm.dir property
@@ -69,7 +69,7 @@
       		</li>
       		<li>Run 'ant' from the root PDFBox directory.  This will create the .zip package
       		    distribution.  See the build file for other ant targets.</li>
-      		
+
       	</ol>
       	<note>If you want to run PDFBox from an IDE them you will need to add the 'Resources' directory
       	      to the project classpath in your IDE.
@@ -92,7 +92,7 @@
     			<li>The "Add Folder" radio button should be selected, press ok</li>
     			<li>Select the root of the pdfbox project, this will make the "Resources" folder available on the classpath.</li>
     		</ol>
-    		
+
     	</p>
     </section>
   </body>

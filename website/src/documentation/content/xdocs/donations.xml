@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,16 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - Donations</title> 
-  </header> 
+<document>
+  <header>
+    <title>PDFBox - Donations</title>
+  </header>
   <body>
   	<section>
   	    <title>Donations</title>
   	    <p>PDFBox is free software, if have found it useful or has saved you money over a commercial alternative then consider making a donation to the project.
   	    Donations help keep the project active and support development of new features.<br /><br />
-  	    
+
   	    There are many ways that you can donate to the PDFBox project, below are some suggested ways:
   	    </p>
   	    <table>
@@ -39,13 +39,13 @@
   	                on Adobe's site which will increase the user community of PDFBox.
   	                Please contact <a href="mailto:ben@benlitchfield.com">Ben</a> to make arrangements.<br/><br/>
   	                <strong>Note:</strong>The premium membership includes Acrobat 7.0 Professional, which is the next item on the list!
-  	                
+
   	            </td>
   	        </tr>
   	        <tr>
   	            <td>Adobe&reg; Acrobat 7.0 Professional</td>
   	            <td>In order for PDFBox to produce correct results it is sometimes necessary to create a PDF using an Adobe tool
-  	                and then compare the results with what PDFBox produced.  The 7.0 product suite contains lots of useful features 
+  	                and then compare the results with what PDFBox produced.  The 7.0 product suite contains lots of useful features
   	                that would be nice to be able to verify against PDFBox.  Amazon currently lists this as $409, but may be cheaper else where.
   	                Please contact <a href="mailto:ben@benlitchfield.com">Ben</a> to make arrangements.(Legal donations only please)<br/><br/>
   	                <strong>Note:</strong>Many open issues are related to AcroForms, this donation will make it easier to implement a robust solution!
@@ -53,7 +53,7 @@
   	        </tr>
   	        <tr>
   	            <td>SourceForge subscription</td>
-  	            <td><strike>An annual SF subscription is currently $40 and provides some niceties for PDFBox developers.  
+  	            <td><strike>An annual SF subscription is currently $40 and provides some niceties for PDFBox developers.
   	                Please contact <a href="mailto:ben@benlitchfield.com">Ben</a> to make arrangements.</strike> Covered for 2005/2006!!</td>
   	        </tr>
   	        <tr>
@@ -65,7 +65,7 @@
 					Donate directly <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" />
 					<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
 					" />
-					</form> 
+					</form>
 					Cash donations will be used for
 					<ul>
 					    <li>Project expenses such as domain registration and web hosting</li>

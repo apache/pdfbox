@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,11 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - PDF Fonts</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - PDF Fonts</title>
+  </header>
+  <body>
   	<section>
   		<title>Standard 14 Fonts</title>
   		<p>
@@ -54,13 +54,13 @@
       <source>
       PDDocument doc = PDDocument.load( ... );
       PDFont font = PDTrueTypeFont.loadTTF( doc, new File( "SpecialFont.ttf" ) );</source>
-      	
+
       </section>
       <section>
       	<title>External TrueType Fonts</title>
       	<p>
       	While it is recommended to embed all fonts for greatest portability not all PDF producer applications
-      	will do this.  When displaying a PDF it is necessary to find an external font to use.  
+      	will do this.  When displaying a PDF it is necessary to find an external font to use.
       	PDFBox will look for a mapping file to use when substituting fonts.<br />
       	<br/>
       	PDFBox will load <i>Resources/PDFBox_External_Fonts.properties</i> off of the classpath to map

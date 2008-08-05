@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@
         </p>
       </answer>
     </faq>
-    
+
     <faq id="log4j_config">
       <question>
           I am getting the below Log4J warning message, how do I remove it?
@@ -49,11 +49,11 @@
 	</td></tr>
   </table>
         <p>
-        This message means that you need to configure the log4j logging system.  
+        This message means that you need to configure the log4j logging system.
         See the <link href="http://logging.apache.org/log4j/docs/documentation.html">log4j documentation</link> for more information.
         </p>
         <p>
-        PDFBox comes with a sample log4j configuration file.  To use it you set a 
+        PDFBox comes with a sample log4j configuration file.  To use it you set a
 		system property like this
 		</p>
 		<p>
@@ -66,23 +66,23 @@
         log4j.configuration=file:///&lt;path to config file&gt;<br />
         <br/>
         Please see <a href="https://sourceforge.net/forum/forum.php?thread_id=1254229&amp;forum_id=267205">this</a> forum thread for more information.
-        
+
         </p>
       </answer>
     </faq>
-    
+
     <faq id="pdfbox_threadsafe">
       <question>
       Is PDFBox thread safe?
       </question>
       <answer>
         <p>
-        No!  Only one thread may access a single document at a time.  
+        No!  Only one thread may access a single document at a time.
         You can have multiple threads each accessing there own PDDocument object.
         </p>
       </answer>
     </faq>
-    
+
     <faq id="pdfbox_close_warning">
       <question>
       Why do I get a "Warning: You did not close the PDF Document"?
@@ -90,8 +90,8 @@
       <answer>
         <p>
         You need to call close() on the PDDocument inside the finally block, if you
-        don't then the document will not be closed properly.  Also, you must close all 
-        PDDocument objects that get created.  The following code creates <b>two</b> 
+        don't then the document will not be closed properly.  Also, you must close all
+        PDDocument objects that get created.  The following code creates <b>two</b>
         PDDocument objects; one from the "new PDDocument()" and the second by the load method.
         </p>
         <pre>
@@ -108,13 +108,13 @@
         }
     }
         </pre>
-        
+
       </answer>
     </faq>
 
-    
+
   </part>
-  
+
   <part id="text_extraction">
     <title>Text Extraction</title>
     <faq id="no_text_extraction">
@@ -132,7 +132,7 @@
           	then PDFBox should be able to as well and it is a bug if it is not.  If Acrobat cannot extract text then
           	PDFBox 'probably' cannot either.</li>
           	<li>It might really be an image instead of text.  Some PDF documents are just images that have
-          	been scanned in.  You can tell by using the selection tool in Acrobat, if you can't select 
+          	been scanned in.  You can tell by using the selection tool in Acrobat, if you can't select
           	any text then it is probably an image.</li>
           </ul>
 
@@ -144,7 +144,7 @@
       </question>
       <answer>
         <p>
-          This is because the characters in a PDF document can use a custom encoding 
+          This is because the characters in a PDF document can use a custom encoding
           instead of unicode or ASCII.  When you see gibberish text then it
           probably means that a meaningless internal encoding is being used.  The
 		   only way to access the text is to use OCR.  This may be a future
@@ -158,8 +158,8 @@
       </question>
       <answer>
         <p>
-          This probably means that the "Resources" directory is not in your classpath.  The 
-          Resources directory is included in the PDFBox jar so this is only a problem if you 
+          This probably means that the "Resources" directory is not in your classpath.  The
+          Resources directory is included in the PDFBox jar so this is only a problem if you
           are building PDFBox yourself and not using the binary.
         </p>
       </answer>
@@ -170,10 +170,10 @@
       </question>
       <answer>
         <p>
-          PDF documents have certain security permissions that can 
-          be applied to them and two passwords associated with them, a user password and a master password. 
-          If the "cannot extract text" permission bit is set then you need 
-          to decrypt the document with the master password in order to extract the text. 
+          PDF documents have certain security permissions that can
+          be applied to them and two passwords associated with them, a user password and a master password.
+          If the "cannot extract text" permission bit is set then you need
+          to decrypt the document with the master password in order to extract the text.
         </p>
       </answer>
     </faq>
@@ -181,7 +181,7 @@
         <question>Can't we just extract the text without parsing the whole document or extract text as it is parsed.</question>
         <answer>
         <p>
-        Not really, for a couple reasons.  
+        Not really, for a couple reasons.
         </p>
         <ol>
             <li>If the document is encrypted then you need to parse at least until the encryption dictionary before you can decrypt.</li>

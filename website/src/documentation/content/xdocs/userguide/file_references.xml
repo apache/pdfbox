@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,11 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - PDF File References</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - PDF File References</title>
+  </header>
+  <body>
     <section>
       <title>File Specification</title>
       <p>
@@ -31,15 +31,15 @@
       	It is also possible to embed a binary file into a PDF document.
       </p>
       <p>
-      There are two classes that can be used when referencing a file.  
-      <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDSimpleFileSpecification.html">PDSimpleFileSpecification</a> 
+      There are two classes that can be used when referencing a file.
+      <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDSimpleFileSpecification.html">PDSimpleFileSpecification</a>
       is a simple string reference to a file(e.g. "./movies/BigMovie.avi").  The simple file specification does not allow for any parameters to be
-      set.  The <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDComplexFileSpecification.html">PDComplexFileSpecification</a> 
+      set.  The <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDComplexFileSpecification.html">PDComplexFileSpecification</a>
       is more feature rich and allows for advanced settings on the file reference.
       </p>
-      
+
       <p>
-      It is also possible to embed a file directly into a PDF.  Instead of setting the file attribute of the PDComplexFileSpecification, the 
+      It is also possible to embed a file directly into a PDF.  Instead of setting the file attribute of the PDComplexFileSpecification, the
       EmbeddedFile attribute can be used instead.
       </p>
     </section>
@@ -51,7 +51,7 @@
       </p>
       <source>
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
-        
+
         //first create the file specification, which holds the embedded file
         PDComplexFileSpecification fs = new PDComplexFileSpecification();
         fs.setFile( "Test.txt" );
@@ -62,7 +62,7 @@
         ef.setSize( data.length );
         ef.setCreationDate( new GregorianCalendar() );
         fs.setEmbeddedFile( ef );
-        
+
         //now add the entry to the embedded file tree and set in the document.
         Map efMap = new HashMap();
         efMap.put( "My first attachment", fs );

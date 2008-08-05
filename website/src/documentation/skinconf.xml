@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ which will be used to configure the chosen Forrest skin.
   <!--<search name="PDFBox" domain="pdfbox.org" provider="google"/>-->
 
   <!-- Disable the print link? If enabled, invalid HTML 4.0.1 -->
-  <disable-print-link>true</disable-print-link>  
+  <disable-print-link>true</disable-print-link>
   <!-- Disable the PDF link? -->
   <disable-pdf-link>false</disable-pdf-link>
   <!-- Disable the POD link? -->
@@ -50,8 +50,8 @@ which will be used to configure the chosen Forrest skin.
   <!-- Disable navigation icons on all external links? -->
   <disable-external-link-image>false</disable-external-link-image>
 
-  <!-- Disable w3c compliance links? 
-    Use e.g. align="center" to move the compliance links logos to 
+  <!-- Disable w3c compliance links?
+    Use e.g. align="center" to move the compliance links logos to
     an alternate location default is left.
     (if the skin supports it) -->
   <disable-compliance-links>true</disable-compliance-links>
@@ -106,9 +106,9 @@ which will be used to configure the chosen Forrest skin.
     Omit the location attribute to display the trail in the default location.
     Use location="none" to not display the trail (if the skin supports it).
     For some skins just set the attributes to blank.
-    
+
     NOTE: If a breadcrumb entry points at a local file the href must
-    be complete, that is it must point to the file itself, not to a 
+    be complete, that is it must point to the file itself, not to a
     directory.
   -->
   <trail location="none">
@@ -120,7 +120,7 @@ which will be used to configure the chosen Forrest skin.
   <!-- Configure the TOC, i.e. the Table of Contents.
   @max-depth
    how many "section" levels need to be included in the
-   generated Table of Contents (TOC). 
+   generated Table of Contents (TOC).
   @min-sections
    Minimum required to create a TOC.
   @location ("page","menu","page,menu", "none")
@@ -130,7 +130,7 @@ which will be used to configure the chosen Forrest skin.
 
   <!-- Heading types can be clean|underlined|boxed  -->
   <headings type="boxed"/>
-  
+
   <!-- The optional feedback element will be used to construct a
     feedback link in the footer with the page pathname appended:
     <a href="@href">{@to}</a>
@@ -173,15 +173,15 @@ which will be used to configure the chosen Forrest skin.
 -->
 
   <!--
-    extra-css - here you can define custom css-elements that are 
-    A) overriding the fallback elements or 
-    B) adding the css definition from new elements that you may have 
+    extra-css - here you can define custom css-elements that are
+    A) overriding the fallback elements or
+    B) adding the css definition from new elements that you may have
        used in your documentation.
     -->
   <extra-css>
     <!--Example of reason B:
         To define the css definition of a new element that you may have used
-        in the class attribute of a <p> node. 
+        in the class attribute of a <p> node.
         e.g. <p class="quote"/>
     -->
     p.quote {
@@ -237,14 +237,14 @@ which will be used to configure the chosen Forrest skin.
     <color name="published" value="#4C6C8F" font="#FFFFFF"/>
     <color name="feedback" value="#4C6C8F" font="#FFFFFF" align="center"/>
     <color name="navstrip" value="#4a6d8c" font="#ffffff" link="#0F3660" vlink="#0F3660" hlink="#000066"/>
-    <color name="menu" value="#4a6d8c" font="#cedfef" link="#ffffff" vlink="#ffffff" hlink="#ffcf00"/>    
+    <color name="menu" value="#4a6d8c" font="#cedfef" link="#ffffff" vlink="#ffffff" hlink="#ffcf00"/>
     <color name="toolbox" value="#4a6d8c"/>
     <color name="border" value="#294563"/>
     <color name="dialog" value="#4a6d8c"/>
     <color name="searchbox" value="#4a6d8c" font="#000000"/>
     <color name="body" value="#ffffff" link="#0F3660" vlink="#009999" hlink="#000066"/>
-    <color name="table" value="#7099C5"/>    
-    <color name="table-cell" value="#f0f0ff"/>    
+    <color name="table" value="#7099C5"/>
+    <color name="table-cell" value="#f0f0ff"/>
     <color name="highlight" value="#ffff00"/>
     <color name="fixme" value="#cc6600"/>
     <color name="note" value="#006699"/>
@@ -264,28 +264,28 @@ which will be used to configure the chosen Forrest skin.
 
     <color name="heading" value="#a5b6c6"/>
     <color name="subheading" value="#CFDCED"/>
-        
+
     <color name="navstrip" value="#CFDCED" font="#000000" link="#000000" vlink="#000000" hlink="#000000"/>
     <color name="toolbox" value="#a5b6c6"/>
     <color name="border" value="#a5b6c6"/>
-        
-    <color name="menu" value="#F7F7F7" link="#000000" vlink="#000000" hlink="#000000"/>    
+
+    <color name="menu" value="#F7F7F7" link="#000000" vlink="#000000" hlink="#000000"/>
     <color name="dialog" value="#F7F7F7"/>
-            
+
     <color name="body"    value="#ffffff" link="#0F3660" vlink="#009999" hlink="#000066"/>
-    
-    <color name="table" value="#a5b6c6"/>    
-    <color name="table-cell" value="#ffffff"/>    
+
+    <color name="table" value="#a5b6c6"/>
+    <color name="table-cell" value="#ffffff"/>
     <color name="highlight" value="#ffff00"/>
     <color name="fixme" value="#cc6600"/>
     <color name="note" value="#006699"/>
     <color name="warning" value="#990000"/>
     <color name="code" value="#a5b6c6"/>
-        
+
     <color name="footer" value="#a5b6c6"/>
 -->
 
-  <!-- Color group: Collabnet --> 
+  <!-- Color group: Collabnet -->
 <!--
     <color name="header"    value="#003366"/>
 
@@ -296,24 +296,24 @@ which will be used to configure the chosen Forrest skin.
 
     <color name="heading" value="#003366"/>
     <color name="subheading" value="#888888"/>
-    
+
     <color name="navstrip" value="#dddddd" font="#555555"/>
     <color name="toolbox" value="#dddddd" font="#555555"/>
     <color name="border" value="#999999"/>
-    
-    <color name="menu" value="#ffffff"/>    
+
+    <color name="menu" value="#ffffff"/>
     <color name="dialog" value="#eeeeee"/>
-            
+
     <color name="body"      value="#ffffff"/>
-    
-    <color name="table" value="#ccc"/>    
-    <color name="table-cell" value="#ffffff"/>   
+
+    <color name="table" value="#ccc"/>
+    <color name="table-cell" value="#ffffff"/>
     <color name="highlight" value="#ffff00"/>
     <color name="fixme" value="#cc6600"/>
     <color name="note" value="#006699"/>
     <color name="warning" value="#990000"/>
     <color name="code" value="#003366"/>
-        
+
     <color name="footer" value="#ffffff"/>
 -->
  <!-- Color group: Lenya using pelt-->
@@ -385,10 +385,10 @@ which will be used to configure the chosen Forrest skin.
 
     <color name="footer" value="#E5E4D9"/>
   </colors>
- 
+
   <!-- Settings specific to PDF output. -->
   <pdf>
-    <!-- 
+    <!--
        Supported page sizes are a0, a1, a2, a3, a4, a5, executive,
        folio, legal, ledger, letter, quarto, tabloid (default letter).
        Supported page orientations are portrait, landscape (default
@@ -397,7 +397,7 @@ which will be used to configure the chosen Forrest skin.
     -->
     <page size="letter" orientation="portrait" text-align="left"/>
 
-    <!-- 
+    <!--
        Pattern of the page numbering in the footer - Default is "Page x".
        first occurrence of '1' digit represents the current page number,
        second occurrence of '1' digit represents the total page number,
@@ -440,10 +440,10 @@ which will be used to configure the chosen Forrest skin.
     <disable-copyright-footer>false</disable-copyright-footer>
   </pdf>
 
-  <!-- 
+  <!--
     Credits are typically rendered as a set of small clickable
     images in the page footer.
-    
+
     Use box-location="alt" to move the credits to an alternate location
     (if the skin supports it).
 
@@ -456,7 +456,7 @@ which will be used to configure the chosen Forrest skin.
       at the bottom of the screen.
 
     Comment out the whole <credit>-element if you want no credits in the
-    web pages  
+    web pages
    -->
   <credits>
     <!--<credit box-location="alt">

@@ -54,7 +54,7 @@
     <developer>
       <name>Ben Litchfield</name>
       <id>benlitchfield</id>
-      <email>ben@benlitchfield.com</email>     
+      <email>ben@benlitchfield.com</email>
       <roles>
         <role>committer</role>
       </roles>
@@ -70,19 +70,19 @@
         <artifactId>fontbox</artifactId>
         <version>0.1.0</version>
     </dependency>
-    
+
     <dependency>
         <groupId>jempbox</groupId>
         <artifactId>jempbox</artifactId>
         <version>0.2.0</version>
     </dependency>
-    
+
     <dependency>
         <groupId>bouncycastle</groupId>
         <artifactId>bcmail-jdk14</artifactId>
         <version>136</version>
     </dependency>
-    
+
     <dependency>
         <groupId>bouncycastle</groupId>
         <artifactId>bcprov-jdk14</artifactId>

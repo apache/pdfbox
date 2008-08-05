@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,16 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - References</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - References</title>
+  </header>
+  <body>
     <section>
       <title>PDFBox References</title>
       <p>
-      This page lists projects that utilize PDFBox and articles that have been written about PDFBox.  
-      Send <a href="mailto:ben@benlitchfield.com">me</a> an e-mail if your article 
+      This page lists projects that utilize PDFBox and articles that have been written about PDFBox.
+      Send <a href="mailto:ben@benlitchfield.com">me</a> an e-mail if your article
       or project is missing.
       </p>
     </section>
@@ -156,7 +156,7 @@
       	</tr>
       </table>
     </section>
-    
+
     <section>
       <title>Articles/Books</title>
       <p><br/></p>
@@ -172,13 +172,13 @@
       		<a href="http://www.oreillynet.com/pub/a/mac/2004/12/17/ipod_reader.html">Part 2</a> - Document Reading Engine<br/>
       		<a href="http://www.oreillynet.com/pub/a/mac/2005/01/07/ipod_reader.html">Part 3</a> - *Integration with PDFBox*<br/>
       		</td>
-      		<td>A three part article that discusses the implementation of the PodReader application.  PodReader is Cocoa application 
+      		<td>A three part article that discusses the implementation of the PodReader application.  PodReader is Cocoa application
       		written in Objective-C and article discusses how to use the Cocoa-Java bridge to integrate with the Java
       		version of PDFBox.</td>
       	</tr>
       	<tr>
       		<td><a href="http://www.lucenebook.com/">Lucene In Action</a></td>
-      		<td>A book that discusses integrating with the lucene search engine.  One chapter 
+      		<td>A book that discusses integrating with the lucene search engine.  One chapter
       		discusses how to index various file formats and highlights PDFBox for indexing PDF documents.</td>
       	</tr>
       	<tr>

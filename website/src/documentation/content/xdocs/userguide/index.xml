@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,17 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - User Guide</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - User Guide</title>
+  </header>
+  <body>
     <section>
         <title>Introduction</title>
         <p>
         	This page will discuss the internals of PDF documents and those internal map to PDFBox classes.
-        	Users should reference the javadoc to see what classes and methods are available.  The 
-        	<a href="http://partners.adobe.com/public/developer/pdf/index_reference.html">Adobe PDF Reference</a> 
+        	Users should reference the javadoc to see what classes and methods are available.  The
+        	<a href="http://partners.adobe.com/public/developer/pdf/index_reference.html">Adobe PDF Reference</a>
         	can be used to determine detailed information about fields and their meanings.
         </p>
     </section>
@@ -86,7 +86,7 @@
       	<tr>
       		<td>Object</td>
       		<td>A wrapper to any of the other objects, this can be used to reference an object multiple times.
-      		  An object is referenced by using two numbers, an object number an a generation number.  Initially 
+      		  An object is referenced by using two numbers, an object number an a generation number.  Initially
       		  the generation number will be zero unless the object get replaced later in the stream.
       		</td>
       		<td>12 0 obj &lt;&lt; /Type /XObject &gt;&gt; endobj</td>
@@ -94,7 +94,7 @@
       	</tr>
       	<tr>
       		<td>Stream</td>
-      		<td>A stream of data, typically compressed.  This is used for page contents, images and 
+      		<td>A stream of data, typically compressed.  This is used for page contents, images and
       		embedded font streams.
       		</td>
       		<td>12 0 obj &lt;&lt; /Type /XObject &gt;&gt; stream 030004040404040404 endstream</td>
@@ -109,7 +109,7 @@
       	</tr>
       </table>
       <p>
-      A page in a pdf document is represented with a COSDictionary.  The entries that are available for 
+      A page in a pdf document is represented with a COSDictionary.  The entries that are available for
       a page can be seen in the PDF Reference and an example of a page looks like this:
       </p>
       <table>
@@ -122,9 +122,9 @@
 &gt;&gt;</pre>
       </td></tr>
       </table>
-      
+
       <p>Some Java code to access fields</p>
-      
+
       <table>
       <tr><td>
       <pre>COSDictionary page = ...;
@@ -136,9 +136,9 @@ System.out.println( "Width:" + mediaBox.get( 3 ) );
     </section>
     <section>
     	<title>PD Model</title>
-    	<p>The COS Model allows access to all aspects of a PDF document.  This type of programming is 
+    	<p>The COS Model allows access to all aspects of a PDF document.  This type of programming is
     	tedious and error prone though because the user must know all of the names of the parameters
-    	and no helper methods are available.  The PD Model was created to help alleviate this problem.  
+    	and no helper methods are available.  The PD Model was created to help alleviate this problem.
     	Each type of object(page, font, image) has a set of defined attributes that can be available
     	in the dictionary.  A PD Model class is available for each of these so that strongly typed
     	methods are available to access the attributes.  The same code from above to get the page width
@@ -151,7 +151,7 @@ PDRectangle mediaBox = page.getMediaBox();
 System.out.println( "Width:" + mediaBox.getWidth() );</pre>
       </td></tr>
       </table>
-      <p>PD Model objects sit on top of COS model.  Typically, the classes in the PD Model 
+      <p>PD Model objects sit on top of COS model.  Typically, the classes in the PD Model
          will only store a COS object and all setter/getter methods will modify data that
          is stored in the COS object.  For example, when you call PDPage.getLastModified() the method
          will do a lookup in the COSDictionary with the key "LastModified", if it is found the value is

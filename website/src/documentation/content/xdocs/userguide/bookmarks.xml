@@ -5,9 +5,9 @@
  ! The ASF licenses this file to You under the Apache License, Version 2.0
  ! (the "License"); you may not use this file except in compliance with
  ! the License.  You may obtain a copy of the License at
- ! 
+ !
  !      http://www.apache.org/licenses/LICENSE-2.0
- ! 
+ !
  ! Unless required by applicable law or agreed to in writing, software
  ! distributed under the License is distributed on an "AS IS" BASIS,
  ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,11 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
-<document> 
-  <header> 
-    <title>PDFBox - PDF Bookmarks</title> 
-  </header> 
-  <body> 
+<document>
+  <header>
+    <title>PDFBox - PDF Bookmarks</title>
+  </header>
+  <body>
     <section>
       <title>Accessing Bookmarks</title>
       <p>
@@ -27,12 +27,12 @@
       See example:<a href="../javadoc/org/pdfbox/examples/pdmodel/PrintBookmarks.html">PrintBookmarks</a>
       </p>
       <p>
-      	A PDF can contain an outline of a document and jump to pages within a PDF document.  
+      	A PDF can contain an outline of a document and jump to pages within a PDF document.
       	An outline is a hierarchical tree structure of nodes that point to pages.
       </p>
-      
+
       <p>
-      To access the root of the outline you go through the 
+      To access the root of the outline you go through the
       <a href="../javadoc/org/pdfbox/pdmodel/PDDocumentCatalog.html">PDDocumentOutline</a>
       </p>
       <source>
@@ -70,21 +70,21 @@
       //first create the document outline and add it to the page
       PDDocumentOutline outline = new PDDocumentOutline();
       doc.getDocumentCatalog().setDocumentOutline( outline );
-      
+
       //Create a root element to show in the tree
       PDOutlineItem root = new PDOutlineItem();
       root.setTitle( "Root of Document" );
       outline.appendChild( root)
-      
+
       //Get the page to refer to
       PDPage firstPage = (PDPage)doc.getAllPages().get( 0 );
-      
+
       //Create the outline item to refer to the first page.
       PDOutlineItem firstPageItem = new PDOutlineItem();
       firstPageItem.setTitle( "First Page of document" );
-      firstPageItem.setDestination( firstPage );      
+      firstPageItem.setDestination( firstPage );
       root.appendChild( firstPageItem );
-      
+
       </source>
       <note>
       By default all nodes in the outline tree are closed.  You need to call openNode() if you want
