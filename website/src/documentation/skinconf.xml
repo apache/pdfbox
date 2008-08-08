@@ -65,25 +65,20 @@ which will be used to configure the chosen Forrest skin.
 
   <!-- mandatory project logo
        default skin: renders it at the top -->
-  <project-name></project-name>
-  <project-description></project-description>
-  <project-url></project-url>
-  <project-logo></project-logo>
+  <project-name>Apache PDFBox</project-name>
+  <project-description>Apache PDFBox (incubating): Java PDF Library</project-description>
+  <project-url>http://incubator.apache.org/pdfbox/</project-url>
+  <project-logo>images/Logo.gif</project-logo>
   <!-- Alternative static image:
   <project-logo>images/project-logo.gif</project-logo> -->
 
   <!-- optional group logo
        default skin: renders it at the top-left corner -->
-  <!--<group-name>MyGroup</group-name>
-  <group-description>MyGroup Description</group-description>
-  <group-url>http://mygroup.org</group-url>
-  <group-logo>images/group.png</group-logo>-->
-  <!-- Alternative static image:
-  <group-logo>images/group-logo.gif</group-logo> -->
-  <group-description>PDFBox: Java PDF Library</group-description>
-  <group-url>http://www.pdfbox.org</group-url>
-  <group-logo>images/Logo.gif</group-logo>
-
+  <group-name>Apache Incubator</group-name>
+  <group-description>The Apache Software Foundation (Incubator)</group-description>
+  <group-url>http://incubator.apache.org</group-url>
+  <group-logo>http://incubator.apache.org/images/apache-incubator-logo.png</group-logo>
+  
   <!-- optional host logo (e.g. sourceforge logo)
        default skin: renders it at the bottom-left corner -->
   <host-url></host-url>
@@ -93,8 +88,8 @@ which will be used to configure the chosen Forrest skin.
   <favicon-url></favicon-url>
 
   <!-- The following are used to construct a copyright statement -->
-  <year>2002-2007</year>
-  <vendor>PDFBox.org</vendor>
+  <year>2008</year> <!-- 2002-2008 ???? -->
+  <vendor>The Apache Software Foundation</vendor>
   <!-- The optional copyright-link URL will be used as a link in the
     copyright statement
   <copyright-link>http://www.apache.org/licenses/</copyright-link>
@@ -111,10 +106,10 @@ which will be used to configure the chosen Forrest skin.
     be complete, that is it must point to the file itself, not to a
     directory.
   -->
-  <trail location="none">
-    <link1 name="myGroup" href="http://www.apache.org/"/>
-    <link2 name="myProject" href="http://forrest.apache.org/"/>
-    <link3 name="" href=""/>
+  <trail location="alt">
+    <link1 name="The Apache Software Foundation" href="http://www.apache.org/"/>
+    <link2 name="Incubator" href="http://incubator.apache.org/"/>
+    <link3 name="Apache PDFBox" href="http://incubator.apache.org/pdfbox/"/>
   </trail>
 
   <!-- Configure the TOC, i.e. the Table of Contents.
@@ -135,8 +130,8 @@ which will be used to configure the chosen Forrest skin.
     feedback link in the footer with the page pathname appended:
     <a href="@href">{@to}</a>
     -->
-  <feedback to="webmaster@pdfbox.org"
-    href="mailto:webmaster@pdfbox.org?subject=Feedback&#160;" >
+  <feedback to="pdfbox-dev@incubator.apache.org"
+    href="mailto:pdfbox-dev@incubator.apache.org?subject=Feedback&#160;" >
     Send feedback about the website to:
   </feedback>
 
@@ -459,13 +454,20 @@ which will be used to configure the chosen Forrest skin.
     web pages
    -->
   <credits>
-    <!--<credit box-location="alt">
+    <credit box-location="alt">
       <name>Built with Apache Forrest</name>
       <url>http://forrest.apache.org/</url>
       <image>images/built-with-forrest-button.png</image>
       <width>88</width>
       <height>31</height>
-    </credit>-->
+    </credit>
+    <credit box-location="alt2">
+      <name>ApacheCon US 2008</name>
+      <url>http://us.apachecon.com/</url>
+      <image>http://apache.org/ads/ApacheCon/2008-usa-125x125.png</image>
+      <width>125</width>
+      <height>125</height>
+    </credit>
     <!-- A credit with @role="pdf" will be used to compose a footer
      for each page in the PDF, using either "name" or "url" or both.
     -->

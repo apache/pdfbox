@@ -32,15 +32,25 @@ See http://forrest.apache.org/docs/linking.html for more info
 <site label="PDFBox" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
   <about label="About">
     <index label="Index" href="index.html" description="Welcome to PDFBox"/>
-    <download label="Download" href="http://sourceforge.net/project/showfiles.php?group_id=78314" description="Download PDFBox" />
+    <download label="Download" href="download.html" description="Download PDFBox" />
+    <license label="License" href="http://www.apache.org/licenses/LICENSE-2.0" description="Apache License" />
+    <!--
     <nightly_release label="Nightly Build" href="http://www.pdfbox.org/dist/" description="Download a nightly release of PDFBox" />
     <forums label="Forums" href="http://sourceforge.net/forum/?group_id=78314" description="Discuss PDFBox" />
-    <issues label="Issues" href="http://sourceforge.net/tracker/?group_id=78314&amp;atid=552832" description="Submit an issue" />
-    <sourceforge label="SourceForge" href="http://www.sf.net/projects/pdfbox" description="SourceForge Site" />
-    <references label="References" href="references.html" description="References" />
-    <donations label="Donations" href="donations.html" description="Donations" />
-    <license label="License" href="http://www.apache.org/licenses/LICENSE-2.0" description="Apache License" />
+    -->
+    <mailing-list label="Mailing List" href="mailing-list.html" description="Discuss PDFBox" />
+    <issues label="Issue Tracker" href="https://issues.apache.org/jira/browse/PDFBOX" description="Submit an issue" />
     <releaasenotes label="Release Notes" href="changes.html" description="Release Notes" />
+    <incubator-status label="Incubator Status Page" href="http://incubator.apache.org/projects/pdfbox.html" description="Where we track PDFBox's incubator status"/>
+    <!--
+    <sourceforge label="SourceForge" href="http://www.sf.net/projects/pdfbox" description="SourceForge Site" />
+    -->
+    <references label="References" href="references.html" description="References" />
+    <!--
+    <donations label="Donations" href="donations.html" description="Donations" />
+    -->
+    <asf-sponsorship label="ASF Sponsorship Program" href="http://www.apache.org/foundation/sponsorship.html"/>"
+    <asf-thanks label="ASF Thanks" href="http://www.apache.org/foundation/thanks.html"/>"
   </about>
   <commandline label="Command Line Utilities">
     <index label="Index" href="commandlineutilities/index.html" description="Index"/>

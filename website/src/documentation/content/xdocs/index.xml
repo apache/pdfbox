@@ -17,15 +17,39 @@
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
 <document>
   <header>
-    <title>PDFBox - Java PDF Library</title>
+    <title>Apache PDFBox - Java PDF Library</title>
     <meta name="keywords">Java PDF Library, pdfbox, pdftotext, print pdf</meta>
   </header>
   <body>
     <section>
       <title>Introduction</title>
-      <p>PDFBox is an open source Java PDF library for working with PDF documents. This project allows creation of new
-      PDF documents, manipulation of existing documents and the ability to extract content from documents.  PDFBox
-      also includes several command line utilities.</p>
+      <p>
+        Apache PDFBox is an open source Java PDF library for working with PDF documents.
+        This project allows creation of new PDF documents, manipulation of existing documents
+        and the ability to extract content from documents. Apache PDFBox also includes several
+        command line utilities. Apache PDFBox is published under the
+        <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>. 
+      </p>
+      <note label="Disclaimer">
+        Apache PDFBox is an effort undergoing incubation at The Apache Software Foundation (ASF),
+        sponsored by the Apache Incubator PMC. Incubation is required of all newly accepted
+        projects until a further review indicates that the infrastructure, communications, and
+        decision making process have stabilized in a manner consistent with other successful
+        ASF projects. While incubation status is not necessarily a reflection of the completeness
+        or stability of the code, it does indicate that the project has yet to be fully
+        endorsed by the ASF.
+      </note>
+      <p>
+        The project is a volunteer effort and we're always looking for interested people
+        to help us improve PDFBox. There are a multitude of ways that you can help us depending
+        on your skills. Subscribe to the <a href="mailing-list.html#dev">developer mailing list</a>
+        and find out how you can help.
+      </p>
+      <p>
+        To get help on using PDFBox, please subscribe to the
+        <a href="mailing-list.html#users">users mailing list</a> and post your questions there.
+        We're happy to help.
+      </p>
     </section>
     <section>
       <title>Features</title>

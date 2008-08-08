@@ -1,0 +1,96 @@
+<!--
+ ! Licensed to the Apache Software Foundation (ASF) under one or more
+ ! contributor license agreements.  See the NOTICE file distributed with
+ ! this work for additional information regarding copyright ownership.
+ ! The ASF licenses this file to You under the Apache License, Version 2.0
+ ! (the "License"); you may not use this file except in compliance with
+ ! the License.  You may obtain a copy of the License at
+ !
+ !      http://www.apache.org/licenses/LICENSE-2.0
+ !
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ !-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
+  <header>
+    <title>Download</title>
+  </header>
+  <body>
+    <section>
+      <title>Download</title>
+      <p>
+        There are several ways you can obtain the PDFBox binaries or sources:
+      </p>
+      <ul>
+        <li><a href="#distribution">Download a distribution</a></li>
+        <!--
+        <li><a href="#snapshot">Download a snapshot</a></li>
+        -->
+        <li><a href="#subversion">Get the source from the Subversion repository</a></li>
+        <li><a href="#old-releases">Download old releases</a></li>
+      </ul>
+    </section>
+    <section id="distribution">
+      <title>Download a distribution</title>
+      <p>
+        Apache PDFBox is undergoing incubation at the Apache Software Foundation and has since
+        not published a new release. We're trying to fix that as soon as possible.
+      </p>
+    </section>
+    <!-- TODO Enable me when available
+    <section id="snapshot">
+      <title>Download a snapshot</title>
+      <p>
+        Apache PDFBox is undergoing incubation at the Apache Software Foundation and has since
+        not published a new release. We're trying to fix that as soon as possible.
+      </p>
+    </section> -->
+    <section id="subversion">
+      <title>Subversion Repository</title>
+      <p>
+        To fetch the latest source code from the trunk in the Subversion repository,
+        just run the following command:
+      </p>
+      <source>svn checkout http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/</source>
+      <table>
+        <tr>
+          <td>Main Repository (US)</td>
+          <td><a href="http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/">http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/</a></td>
+        </tr>
+        <tr>
+          <td>Mirror (EU)</td>
+          <td><a href="http://svn.eu.apache.org/repos/asf/incubator/pdfbox/trunk/">http://svn.eu.apache.org/repos/asf/incubator/pdfbox/trunk/</a></td>
+        </tr>
+      </table>
+     
+      <p>
+        You can also browse the Subversion repository using ViewVC:
+      </p>
+      <table>
+        <tr>
+          <td>Main Repository (US)</td>
+          <td><a href="http://svn.apache.org/viewvc/incubator/pdfbox/">http://svn.apache.org/viewvc/incubator/pdfbox/</a></td>
+        </tr>
+        <tr>
+          <td>Mirror (EU)</td>
+          <td><a href="http://svn.eu.apache.org/viewvc/incubator/pdfbox/">http://svn.eu.apache.org/viewvc/incubator/pdfbox/</a></td>
+        </tr>
+      </table>
+    </section>
+    <section id="old-releases">
+      <title>Download old releases</title>
+      <p>
+        The old releases (up to version 0.7.3) published from
+        <a href="http://www.sourceforge.net">SourceForge</a> are
+        still available. They can be downloaded from this location: 
+      </p>
+      <p>
+        <a href="http://sourceforge.net/project/showfiles.php?group_id=78314">http://sourceforge.net/project/showfiles.php?group_id=78314</a>
+      </p>
+    </section>
+  </body>
+</document>
