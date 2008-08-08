@@ -17,7 +17,6 @@
 package org.pdfbox.pdfviewer;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -25,23 +24,20 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.pdfbox.util.Matrix;
 
 import org.pdfbox.pdmodel.PDPage;
 import org.pdfbox.pdmodel.PDResources;
-
 import org.pdfbox.pdmodel.common.PDRectangle;
 import org.pdfbox.pdmodel.font.PDFont;
 import org.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.pdfbox.pdmodel.text.PDTextState;
-
+import org.pdfbox.util.Matrix;
 import org.pdfbox.util.PDFStreamEngine;
 import org.pdfbox.util.ResourceLoader;
 import org.pdfbox.util.TextPosition;
@@ -302,7 +298,7 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     //If you need to do anything when a color changes, do it here ... or in an override of this function
-    public void ColorChanged(Boolean bStroking) throws IOException{
+    public void ColorChanged(boolean bStroking) throws IOException{
         logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
     }
 
