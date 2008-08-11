@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+This is the publishing file for ForrestBot.
+
+Running "ant -f publish.xml" will build the website and upload it to SVN. It has then
+to be checked out on people.apache.org to be deployed.
+
+$Id$
+-->
+<project name="forrest-docs" default="main">
+
+  <property name="build.work-dir" location="./build/forrest/work"/>
+  <property name="build.log-dir" location="./build/forrest/log"/>
+
+  <property name="getsrc.local.root-dir" location="."/>
+  <!--property name="getsrc.svn.url" value="https://svn.apache.org/repos/asf/incubator/pdfbox/trunk/website"/-->
+  <target name="getsrc" depends="getsrc.clean-workdir, getsrc.local"/>
+  
+  <target name="build.fixCRLF" depends="build.forrest">
+    <fixcrlf srcdir="./build/forrest-docs" eol="lf">
+      <include name="**/.htaccess"/>
+      <include name="**/*.htm*"/>
+      <include name="**/*.css"/>
+      <include name="**/*.xsl*"/>
+      <include name="**/*.js"/>
+      <include name="**/*.rdf"/>
+      <include name="**/*.txt"/>
+      <include name="**/*.xml"/>
+      <include name="**/*.fo"/>
+      <include name="**/*.svg"/>
+    </fixcrlf>
+  </target>
+  
+  <target name="build" depends="build.forrest, build.fixCRLF"/>
+
+  <import file="../deploy.svn.settings" optional="true"/>
+
+  <property name="deploy.svn.url" value="https://svn.apache.org/repos/asf/incubator/pdfbox/site/"/>
+  <target name="deploy" depends="deploy.svn"/>
+
+  <property environment="env"/>
+  <import file="${env.FORREST_HOME}/tools/forrestbot/core/forrestbot.xml"/>
+</project>
