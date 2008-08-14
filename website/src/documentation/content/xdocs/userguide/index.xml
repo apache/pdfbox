@@ -159,7 +159,7 @@ System.out.println( "Width:" + mediaBox.getWidth() );</pre>
          then the Calendar is converted to a string in the COSDictionary.
       </p>
       <p>Here is a visual depiction of the COS Model and PD Model design.</p>
-      <center><img src="/images/cos-pdmodel diagram.png" /></center>
+      <center><img src="../images/cos-pdmodel diagram.png" /></center>
       <p>
       This design presents many advantages and disadvantages.<br /><br/>
       <b>Advantages:</b></p>
