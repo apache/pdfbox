@@ -47,7 +47,7 @@
       <title>File Attachments</title>
       <p>
       PDF documents can contain file attachments that are accessed from the Document->File Attachments menu.  PDFBox allows attachments
-      to be added and extracted to PDF documents.  Attachments are part of the named tree that is attached to the document catalog.
+      to be added to and extracted from PDF documents.  Attachments are part of the named tree that is attached to the document catalog.
       </p>
       <source>
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();

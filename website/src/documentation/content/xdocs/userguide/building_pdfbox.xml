@@ -28,9 +28,10 @@
       </p>
 
       <p>
-      	You can obtain the latest source of PDFBox from CVS, see the
-      	<a href="http://sourceforge.net/cvs/?group_id=78314">SourceForge</a> site for information
-      	about how to connect to CVS.  The below instructions should also work for a released/nightly distribution.
+      	You can obtain the latest source of PDFBox from SVN, see the
+      	<a href="http://incubator.apache.org/pdfbox/download.html">Apache Incubator</a>
+      	site for information
+      	about how to connect to SVN.  The below instructions should also work for a released/nightly distribution.
       </p>
 
       <p>
@@ -79,11 +80,11 @@
     <section>
     	<title>Running/Debugging PDFBox in Eclipse</title>
     	<p>
-    		In order to run PDFBox from within eclipse there is a couple things that need to be setup.  Certain
+    		In order to run PDFBox from within Eclipse there are a couple things that need to be setup.  Certain
     		pieces of functionality require access to the Resources folder.  Here is an example of what you need
     		to do to run the ExtractText command line application.
     		<ol>
-    			<li>In eclise click on "run..." or "debug..."</li>
+    			<li>In Eclipse click on "run..." or "debug..."</li>
     			<li>In the tree on the left select "Java Application" and click "New"</li>
     			<li>Name it, select the correct project, and the main class</li>
     			<li>Select the "Arguments" tab and enter the command line arguments to the app</li>
