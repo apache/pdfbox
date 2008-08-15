@@ -2,6 +2,7 @@
 
     <!-- Use the following file to alter any of the below properties -->
     <property file="build.properties" />
+    <property file="build-local.properties" />
     <property environment="env"/>
 
     <property name="build.compiler" value="modern" />
@@ -25,8 +26,6 @@
     <property name="jar.dir" value="external" />
 
     <property name="ant.jar" value="${jar.dir}/ant.jar" />
-
-    <property name="checkstyle.jar" value="${jar.dir}/checkstyle-all-*.jar" />
 
     <property name="fontbox.name" value="FontBox-0.2.0-dev" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
@@ -179,22 +178,24 @@
         </pdf2text>
     </target>
 
-    <target name="checkstyle" depends="compile">
+    <property name="checkstyle.lib" value="${checkstyle.home.dir}"/>
+    <path id="libs-checkstyle">
+      <fileset dir="${checkstyle.lib}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <target name="checkstyle-avail" unless="checkstyle.home.dir">
+      <echo message="Checkstyle Support NOT Present. Please download it from http://checkstyle.sf.net/ and set checkstyle.home.dir in build-local.properties"/>
+    </target>
+    <target name="checkstyle" depends="checkstyle-avail, compile" if="checkstyle.home.dir">
         <!--
         This doesn't work when run from netbeans for some reason-->
         <taskdef name="checkstyle"
                  classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
-                 classpathref="build.classpath" />
+                 classpathref="libs-checkstyle" />
         <checkstyle config="${checkstyle.config}" classpathref="build.classpath" failOnViolation="false">
             <fileset dir="${src.dir}" />
         </checkstyle>
-        <!--<java fork="yes" failonerror="yes" classname="com.puppycrawl.tools.checkstyle.Main"
-              classpathref="build.classpath">
-            <arg value="-p" />
-            <arg value="${checkstyle.properties}" />
-            <arg value="-r" />
-            <arg value="${src.dir}" />
-        </java>-->
     </target>
 
     <target name="package" depends="compile" description="Package pdfbox into a jar file">
