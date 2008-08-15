@@ -50,11 +50,6 @@
             <td>Yes</td>
         </tr>
         <tr>
-            <td><a href="http://www.gnu.org/licenses/lgpl-3.0.txt" title="LGPL">Checkstyle</a></td>
-            <td>Build tool to verify code style compliance</td>
-            <td>No</td>
-        </tr>
-        <tr>
             <td><a href="https://olex.openlogic.com/licenses/45" title="BSD">FontBox</a></td>
             <td>Font Library</td>
             <td>Yes</td>
