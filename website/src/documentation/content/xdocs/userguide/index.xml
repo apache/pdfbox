@@ -23,7 +23,8 @@
     <section>
         <title>Introduction</title>
         <p>
-        	This page will discuss the internals of PDF documents and those internal map to PDFBox classes.
+        	This page will discuss the internals of PDF documents
+        	and how those internals map to PDFBox classes.
         	Users should reference the javadoc to see what classes and methods are available.  The
         	<a href="http://partners.adobe.com/public/developer/pdf/index_reference.html">Adobe PDF Reference</a>
         	can be used to determine detailed information about fields and their meanings.
@@ -86,8 +87,8 @@
       	<tr>
       		<td>Object</td>
       		<td>A wrapper to any of the other objects, this can be used to reference an object multiple times.
-      		  An object is referenced by using two numbers, an object number an a generation number.  Initially
-      		  the generation number will be zero unless the object get replaced later in the stream.
+      		  An object is referenced by using two numbers, an object number and a generation number.  Initially
+      		  the generation number will be zero unless the object got replaced later in the stream.
       		</td>
       		<td>12 0 obj &lt;&lt; /Type /XObject &gt;&gt; endobj</td>
       		<td>org.pdfbox.cos.COSObject</td>

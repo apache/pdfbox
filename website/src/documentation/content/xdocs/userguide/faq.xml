@@ -28,8 +28,9 @@
       </question>
       <answer>
         <p>
-          As fixes are made and integrated into CVS these changes are documented in the
-          <link href="../changes.html">release notes</link>.  I will give an estimate of when
+          As fixes are made and integrated into the repository these changes are documented in the
+          <link href="../changes.html">release notes</link>.  An
+          estimate will be given of when
           the next version will be released. <br /><br />
           Of course, this is only an estimate and could change.
         </p>
@@ -78,7 +79,7 @@
       <answer>
         <p>
         No!  Only one thread may access a single document at a time.
-        You can have multiple threads each accessing there own PDDocument object.
+        You can have multiple threads each accessing their own PDDocument object.
         </p>
       </answer>
     </faq>
@@ -129,7 +130,7 @@
         </p>
           <ul>
           	<li>Open the PDF in Acrobat and try to extract text from there.  If Acrobat can extract text
-          	then PDFBox should be able to as well and it is a bug if it is not.  If Acrobat cannot extract text then
+          	then PDFBox should be able to as well and it is a bug if it cannot.  If Acrobat cannot extract text then
           	PDFBox 'probably' cannot either.</li>
           	<li>It might really be an image instead of text.  Some PDF documents are just images that have
           	been scanned in.  You can tell by using the selection tool in Acrobat, if you can't select
@@ -185,7 +186,7 @@
         </p>
         <ol>
             <li>If the document is encrypted then you need to parse at least until the encryption dictionary before you can decrypt.</li>
-            <li>Sometime the PDFont contains vital information needed for text extraction.</li>
+            <li>Sometimes the PDFont contains vital information needed for text extraction.</li>
             <li>Text on a page does not have to be drawn in reading order.  For example; if the page said "Hello World", the pdf could
                 have been written such that "World" gets drawn and then the cursor moves to the left and the word "Hello" is drawn.</li>
         </ol>
