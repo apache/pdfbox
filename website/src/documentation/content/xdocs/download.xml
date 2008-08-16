@@ -33,6 +33,10 @@
         <li><a href="#subversion">Get the source from the Subversion repository</a></li>
         <li><a href="#old-releases">Download old releases</a></li>
       </ul>
+      <p>
+        See also the <a href="#export">export control</a> information
+        related to the encryption features included in Apache PDFBox.
+      </p>
     </section>
     <section id="distribution">
       <title>Download a distribution</title>
@@ -91,6 +95,39 @@
       <p>
         <a href="http://sourceforge.net/project/showfiles.php?group_id=78314">http://sourceforge.net/project/showfiles.php?group_id=78314</a>
       </p>
+    </section>
+    <section id="export">
+      <title>Export control</title>
+      <p>
+        This distribution includes cryptographic software. The country in
+        which you currently reside may have restrictions on the import,
+        possession, use, and/or re-export to another country, of encryption
+        software. BEFORE using any encryption software, please check your
+        country's laws, regulations and policies concerning the import,
+        possession, or use, and re-export of encryption software, to see
+        if this is permitted.  See
+        &lt;<a href="http://www.wassenaar.org/">http://www.wassenaar.org/</a>&gt;
+        for more information.
+      </p>
+      <p>
+        The U.S. Government Department of Commerce, Bureau of Industry and
+        Security (BIS), has classified this software as Export Commodity
+        Control Number (ECCN) 5D002.C.1, which includes information
+        security software using or performing cryptographic functions with
+        asymmetric algorithms.  The form and manner of this Apache Software
+        Foundation distribution makes it eligible for export under the
+        License Exception ENC Technology Software Unrestricted (TSU)
+        exception (see the BIS Export Administration Regulations, Section
+        740.13) for both object code and source code.
+      </p>
+      <p>
+        The following provides more details on the included cryptographic
+        software:
+      <p>
+      <blockquote>
+        Apache PDFBox uses the Java Cryptography Architecture (JCA) and the
+        Bouncy Castle libraries for handling encryption in PDF documents.
+      </blockquote>
     </section>
   </body>
 </document>
