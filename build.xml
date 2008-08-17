@@ -6,7 +6,8 @@
     <property environment="env"/>
 
     <property name="build.compiler" value="modern" />
-    <property name="src.dir" value="src" />
+    <property name="src.dir" value="src/main/java" />
+    <property name="test.dir" value="src/test/java" />
     <property name="dest.dir" value="classes" />
     <property name="bin.dir" value="bin" />
     <property name="website.dir" value="website" />
@@ -16,7 +17,7 @@
     <property name="war.dir" value="pdfbox.war" />
     <property name="licenses.dir" value="licenses" />
     <property name="dist.dir" value="dist" />
-    <property name="resources.dir" value="Resources" />
+    <property name="resources.dir" value="src/main/resources" />
     <property name="checkstyle.config" value="pdfbox-checkstyle.xml" />
 
     <property name="project.name" value="PDFBox"/>
@@ -66,7 +67,7 @@
             <include name="**/*.jar" />
         </fileset>
         <pathelement path="${dest.dir}" />
-        <pathelement path="." />
+        <pathelement path="${resources.dir}" />
     </path>
 
     <target name="clean" description="Remove all generated files">
@@ -90,6 +91,7 @@
     <target name="compile" depends="pdfbox.init" description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
         <javac srcdir="${src.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
+        <javac srcdir="${test.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
     </target>
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
@@ -108,7 +110,7 @@
                 <pathelement path="${jai_codec.jar}" />
                 <pathelement path="${jai_core.jar}" />
                 <pathelement path="${dest.dir}"/>
-                <pathelement path="." />
+                <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="test.pdfbox.util.TestTextStripper" />
@@ -132,7 +134,7 @@
                 <pathelement path="${jai_codec.jar}" />
                 <pathelement path="${jai_core.jar}" />
                 <pathelement path="${dest.dir}"/>
-                <pathelement path="." />
+                <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="test.pdfbox.util.TestPDFToImage" />
@@ -152,7 +154,7 @@
                 <pathelement path="${jai_codec.jar}" />
                 <pathelement path="${jai_core.jar}" />
                 <pathelement path="${dest.dir}"/>
-                <pathelement path="." />
+                <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="test.pdfbox.TestAll" />
@@ -200,7 +202,7 @@
 
     <target name="package" depends="compile" description="Package pdfbox into a jar file">
         <property name="release.name" value="${project.name}-${project.version}" />
-        <propertyfile file="${resources.dir}/pdfbox.version">
+        <propertyfile file="${resources.dir}/Resources/pdfbox.version">
             <entry  key="pdfbox.version" value="${release.name}"/>
         </propertyfile>
 
@@ -208,9 +210,7 @@
             <fileset dir="${dest.dir}">
                 <include name="**/*.class"/>
             </fileset>
-            <fileset dir=".">
-                <include name="${resources.dir}/**/*" />
-            </fileset>
+            <fileset dir="${resources.dir}"/>
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
                 <section name="common">
@@ -256,6 +256,8 @@
                 <include name="${licenses.dir}/**/*"/>
                 <include name="${src.dir}/**/*.java"/>
                 <include name="${src.dir}/**/*.html"/>
+                <include name="${test.dir}/**/*.java"/>
+                <include name="${test.dir}/**/*.html"/>
                 <include name="${resources.dir}/**/*" />
                 <include name="${ant.jar}" />
                 <include name="${lucene.jar}" />
