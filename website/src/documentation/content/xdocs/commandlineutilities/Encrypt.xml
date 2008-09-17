@@ -23,7 +23,7 @@
     <section>
       <title>Description</title>
       <p>This application will encrypt a PDF document.</p>
-      <p>usage: java org.pdfbox.Encrypt [OPTIONS] &lt;password&gt; &lt;inputfile&gt;</p>
+      <p>usage: java org.apache.pdfbox.Encrypt [OPTIONS] &lt;password&gt; &lt;inputfile&gt;</p>
       <table>
           <tr>
       		<th>Command Line Parameter</th>

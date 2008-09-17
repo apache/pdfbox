@@ -45,7 +45,7 @@
       <answer>
   <table>
   	<tr><td>
-  	log4j:WARN No appenders could be found for logger (org.pdfbox.util.ResourceLoader).<br />
+  	log4j:WARN No appenders could be found for logger (org.apache.pdfbox.util.ResourceLoader).<br />
 	log4j:WARN Please initialize the log4j system properly.
 	</td></tr>
   </table>
@@ -59,7 +59,7 @@
 		</p>
 		<p>
 
-		java -Dlog4j.configuration=log4j.xml org.pdfbox.ExtractText &lt;PDF-file&gt; &lt;output-text-file&gt;
+		java -Dlog4j.configuration=log4j.xml org.apache.pdfbox.ExtractText &lt;PDF-file&gt; &lt;output-text-file&gt;
         </p>
         <p>
         If this is not working for you then you may have to specify the log4j config file using a URL path, like this:<br/>

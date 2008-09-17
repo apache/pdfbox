@@ -23,8 +23,8 @@
     <section>
       <title>File Specification</title>
       <p>
-      See package:<a href="../javadoc/org/pdfbox/pdmodel/common/filespecification/package-summary.html">org.pdfbox.pdmodel.common.filespecification</a> <br/>
-      See example:<a href="../javadoc/org/pdfbox/examples/pdmodel/EmbeddedFiles.html">EmbeddedFiles</a>
+      See package:<a href="../javadoc/org/apache/pdfbox/pdmodel/common/filespecification/package-summary.html">org.apache.pdfbox.pdmodel.common.filespecification</a> <br/>
+      See example:<a href="../javadoc/org/apache/pdfbox/examples/pdmodel/EmbeddedFiles.html">EmbeddedFiles</a>
       </p>
       <p>
       	A PDF can contain references to external files via the file system or a URL to a remote location.
@@ -32,9 +32,9 @@
       </p>
       <p>
       There are two classes that can be used when referencing a file.
-      <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDSimpleFileSpecification.html">PDSimpleFileSpecification</a>
+      <a href="../javadoc/org/apache/pdfbox/examples/pdmodel/common/filespecification/PDSimpleFileSpecification.html">PDSimpleFileSpecification</a>
       is a simple string reference to a file(e.g. "./movies/BigMovie.avi").  The simple file specification does not allow for any parameters to be
-      set.  The <a href="../javadoc/org/pdfbox/examples/pdmodel/common/filespecification/PDComplexFileSpecification.html">PDComplexFileSpecification</a>
+      set.  The <a href="../javadoc/org/apache/pdfbox/examples/pdmodel/common/filespecification/PDComplexFileSpecification.html">PDComplexFileSpecification</a>
       is more feature rich and allows for advanced settings on the file reference.
       </p>
 

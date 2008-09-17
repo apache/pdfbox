@@ -14,8 +14,8 @@
  ! See the License for the specific language governing permissions and
  ! limitations under the License.
  !-->
-<%@ page import="org.pdfbox.pdmodel.PDDocument"%>
-<%@ page import="org.pdfbox.util.PDFHighlighter"%>
+<%@ page import="org.apache.pdfbox.pdmodel.PDDocument"%>
+<%@ page import="org.apache.pdfbox.util.PDFHighlighter"%>
 <%@ page import="java.net.URL"%>
 
 <%

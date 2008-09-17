@@ -24,14 +24,14 @@
     <section>
         <title>Extracting Text</title>
         <p>
-            See class:<a href="../javadoc/org/pdfbox/util/PDFTextStripper.html">org.pdfbox.util.PDFTextStripper</a> <br/>
-            See class:<a href="../javadoc/org/pdfbox/searchengine/lucene/LucenePDFDocument.html">org.pdfbox.searchengine.lucene.LucenePDFDocument</a> <br/>
+            See class:<a href="../javadoc/org/apache/pdfbox/util/PDFTextStripper.html">org.apache.pdfbox.util.PDFTextStripper</a> <br/>
+            See class:<a href="../javadoc/org/apache/pdfbox/searchengine/lucene/LucenePDFDocument.html">org.apache.pdfbox.searchengine.lucene.LucenePDFDocument</a> <br/>
             See command line app:<a href="../commandlineutilities/ExtractText.html">ExtractText</a> <br/>
         </p>
         <p>
             One of the main features of PDFBox is its ability to quickly and accurately extract text from a variety of PDF documents.
-            This functionality is encapsulated in the <a href="../javadoc/org/pdfbox/util/PDFTextStripper.html">org.pdfbox.util.PDFTextStripper</a> and
-            can be easily executed on the command line with <a href="../javadoc/org/pdfbox/ExtractText.html">org.pdfbox.ExtractText</a>.
+            This functionality is encapsulated in the <a href="../javadoc/org/apache/pdfbox/util/PDFTextStripper.html">org.apache.pdfbox.util.PDFTextStripper</a> and
+            can be easily executed on the command line with <a href="../javadoc/org/apache/pdfbox/ExtractText.html">org.apache.pdfbox.ExtractText</a>.
         </p>
         <section>
           <title>Lucene Integration</title>
@@ -44,7 +44,7 @@
           <p>
           Now that you hava a Lucene Document object, you can add it to the Lucene index just like you would if it had been
           created from a text or HTML file.
-          The <a href="../javadoc/org/pdfbox/searchengine/lucene/LucenePDFDocument.html">LucenePDFDocument</a> automatically extracts
+          The <a href="../javadoc/org/apache/pdfbox/searchengine/lucene/LucenePDFDocument.html">LucenePDFDocument</a> automatically extracts
           a variety of metadata fields from the PDF to be added to the index, the javadoc shows details on those fields.
           This approach is very simple and should be sufficient for most users, if not then you can use some of the advanced text extraction
           techniques described in the next section.
@@ -54,7 +54,7 @@
             <title>Advanced Text Extraction</title>
             <p>Some applications will have complex text extraction requiments and neither the command line application nor the LucenePDFDocument
             will be able to fulfill those requirements.  It is possible for users to utilize or extend the
-            <a href="../javadoc/org/pdfbox/util/PDFTextStripper.html">PDFTextStripper</a> class to meet some of these requirements.</p>
+            <a href="../javadoc/org/apache/pdfbox/util/PDFTextStripper.html">PDFTextStripper</a> class to meet some of these requirements.</p>
             <section>
                 <title>Limiting The Extracted Text</title>
                 <p>

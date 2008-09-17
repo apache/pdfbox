@@ -24,7 +24,7 @@
       <title>Description</title>
       <p>This application will decrypt a PDF document.</p>
       <note>You must have the owner password to decrypt the document!</note>
-      <p>usage: java org.pdfbox.Decrypt [OPTIONS] &lt;inputfile&gt; [outputfile]</p>
+      <p>usage: java org.apache.pdfbox.Decrypt [OPTIONS] &lt;inputfile&gt; [outputfile]</p>
       <table>
           <tr>
       		<th>Command Line Parameter</th>
