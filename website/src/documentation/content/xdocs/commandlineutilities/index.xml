@@ -37,7 +37,7 @@
 	      PDFBox uses log4j for logging, if you do not set up log4j then you will get a warning like this
 	  </p>
       <note>
-        log4j:WARN No appenders could be found for logger (org.pdfbox.util.ResourceLoader).<br/>
+        log4j:WARN No appenders could be found for logger (org.apache.pdfbox.util.ResourceLoader).<br/>
 		log4j:WARN Please initialize the log4j system properly.
       </note>
 	  <p>

@@ -32,15 +32,16 @@
     </section>
     <section>
         <title>Examples</title>
-        <p>A variety of examples can be found in the src/org/pdfbox/examples folder.  This guide will refer to
-        specific examples as needed.
+        <p>A variety of examples can be found in the
+        src/main/java/org/apache/pdfbox/examples folder.
+        This guide will refer to specific examples as needed.
         </p>
     </section>
     <section>
       <title>PDF File Format Overview</title>
       <p>
       A PDF document is a stream of basic object types.  The low level objects are represented in PDFBox
-      in the <i>org.pdfbox.cos</i> package.  The basic types in a PDF are:
+      in the <i>org.apache.pdfbox.cos</i> package.  The basic types in a PDF are:
       </p>
       <table>
       	<tr>
@@ -53,13 +54,13 @@
       		<td>Array</td>
       		<td>An ordered list of items</td>
       		<td>[1 2 3]</td>
-      		<td>org.pdfbox.cos.COSArray</td>
+      		<td>org.apache.pdfbox.cos.COSArray</td>
       	</tr>
       	<tr>
       		<td>Boolean</td>
       		<td>Standard True/False values</td>
       		<td>true</td>
-      		<td>org.pdfbox.cos.COSBoolean</td>
+      		<td>org.apache.pdfbox.cos.COSBoolean</td>
       	</tr>
       	<tr>
       		<td>Dictionary</td>
@@ -70,19 +71,19 @@
       		    /Size 1<br/>
       		    &gt;&gt;
       		 </td>
-      		<td>org.pdfbox.cos.COSDictionary</td>
+      		<td>org.apache.pdfbox.cos.COSDictionary</td>
       	</tr>
       	<tr>
       		<td>Number</td>
       		<td>Integer and Floating point numbers</td>
       		<td>1 2.3</td>
-      		<td>org.pdfbox.cos.COSFloat<br />org.pdfbox.cos.COSInteger</td>
+      		<td>org.apache.pdfbox.cos.COSFloat<br />org.apache.pdfbox.cos.COSInteger</td>
       	</tr>
       	<tr>
       		<td>Name</td>
       		<td>A predefined value in a PDF document, typically used as a key in a dictionary</td>
       		<td>/Type</td>
-      		<td>org.pdfbox.cos.COSName</td>
+      		<td>org.apache.pdfbox.cos.COSName</td>
       	</tr>
       	<tr>
       		<td>Object</td>
@@ -91,7 +92,7 @@
       		  the generation number will be zero unless the object got replaced later in the stream.
       		</td>
       		<td>12 0 obj &lt;&lt; /Type /XObject &gt;&gt; endobj</td>
-      		<td>org.pdfbox.cos.COSObject</td>
+      		<td>org.apache.pdfbox.cos.COSObject</td>
       	</tr>
       	<tr>
       		<td>Stream</td>
@@ -99,14 +100,14 @@
       		embedded font streams.
       		</td>
       		<td>12 0 obj &lt;&lt; /Type /XObject &gt;&gt; stream 030004040404040404 endstream</td>
-      		<td>org.pdfbox.cos.COSStream</td>
+      		<td>org.apache.pdfbox.cos.COSStream</td>
       	</tr>
       	<tr>
       		<td>String</td>
       		<td>A sequence of characters
       		</td>
       		<td>(This is a string)</td>
-      		<td>org.pdfbox.cos.COSString</td>
+      		<td>org.apache.pdfbox.cos.COSString</td>
       	</tr>
       </table>
       <p>

@@ -98,7 +98,7 @@
 
     <target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
-            <sysproperty key="test.pdfbox.util.TextStripper.file" value="${file}"/>
+            <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
             <classpath>
                 <pathelement path="${ant.jar}" />
                 <pathelement path="${lucene.jar}" />
@@ -113,7 +113,7 @@
                 <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
-            <test name="test.pdfbox.util.TestTextStripper" />
+            <test name="org.apache.pdfbox.util.TestTextStripper" />
         </junit>
     </target>
 
@@ -122,7 +122,7 @@
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
 
-            <sysproperty key="test.pdfbox.util.TextStripper.file" value="${file}"/>
+            <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
             <classpath>
                 <pathelement path="${ant.jar}" />
                 <pathelement path="${lucene.jar}" />
@@ -137,7 +137,7 @@
                 <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
-            <test name="test.pdfbox.util.TestPDFToImage" />
+            <test name="org.apache.pdfbox.util.TestPDFToImage" />
         </junit>
     </target>
 
@@ -157,12 +157,12 @@
                 <pathelement path="${resources.dir}" />
             </classpath>
             <formatter usefile="false" type="plain" />
-            <test name="test.pdfbox.TestAll" />
+            <test name="org.apache.pdfbox.TestAll" />
         </junit>
     </target>
 
     <target name="indexTestDocuments" depends="compile">
-        <java fork="yes" classname="org.pdfbox.searchengine.lucene.IndexFiles" classpathref="build.classpath">
+        <java fork="yes" classname="org.apache.pdfbox.searchengine.lucene.IndexFiles" classpathref="build.classpath">
             <arg value="-create" />
             <arg value="-index" />
             <arg value="index" />
@@ -171,7 +171,7 @@
     </target>
 
     <target name="testPDF2Text" depends="compile">
-        <taskdef name="pdf2text" classname="org.pdfbox.ant.PDFToTextTask" classpathref="build.classpath" />
+        <taskdef name="pdf2text" classname="org.apache.pdfbox.ant.PDFToTextTask" classpathref="build.classpath" />
         <pdf2text>
             <fileset dir="test-pdf">
                 <include name="**/*.pdf" />
@@ -400,77 +400,77 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\Decrypt.exe" />
-            <arg value="classes\org\pdfbox\Decrypt.class" />
+            <arg value="classes\org\apache\pdfbox\Decrypt.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\Encrypt.exe" />
-            <arg value="classes\org\pdfbox\Encrypt.class" />
+            <arg value="classes\org\apache\pdfbox\Encrypt.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ExportFDF.exe" />
-            <arg value="classes\org\pdfbox\ExportFDF.class" />
+            <arg value="classes\org\apache\pdfbox\ExportFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ExportXFDF.exe" />
-            <arg value="classes\org\pdfbox\ExportXFDF.class" />
+            <arg value="classes\org\apache\pdfbox\ExportXFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ExtractImages.exe" />
-            <arg value="classes\org\pdfbox\ExtractImages.class" />
+            <arg value="classes\org\apache\pdfbox\ExtractImages.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ExtractText.exe" />
-            <arg value="classes\org\pdfbox\ExtractText.class" />
+            <arg value="classes\org\apache\pdfbox\ExtractText.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ImportFDF.exe" />
-            <arg value="classes\org\pdfbox\ImportFDF.class" />
+            <arg value="classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\ImportXFDF.exe" />
-            <arg value="classes\org\pdfbox\ImportXFDF.class" />
+            <arg value="classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\Overlay.exe" />
-            <arg value="classes\org\pdfbox\Overlay.class" />
+            <arg value="classes\org\apache\pdfbox\Overlay.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\PDFSplit.exe" />
-            <arg value="classes\org\pdfbox\PDFSplit.class" />
+            <arg value="classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\PDFReader.exe" />
-            <arg value="classes\org\pdfbox\PDFReader.class" />
+            <arg value="classes\org\apache\pdfbox\PDFReader.class" />
         </exec>
         <!--The Swing/AWT support in classpath is not quite good enough to make this
             work, so for now we will just leave blank.-->
@@ -479,7 +479,7 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\PDFDebugger.exe" />
-            <arg value="classes\org\pdfbox\PDFDebugger.class" />
+            <arg value="classes\org\apache\pdfbox\PDFDebugger.class" />
         </exec>-->
     </target>
 

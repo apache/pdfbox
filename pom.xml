@@ -65,6 +65,7 @@
         <url>http://pdfbox.cvs.sourceforge.net/pdfbox/</url>
     </scm>
 
+  <dependencies>
     <dependency>
         <groupId>fontbox</groupId>
         <artifactId>fontbox</artifactId>
@@ -88,5 +89,7 @@
         <artifactId>bcprov-jdk14</artifactId>
         <version>136</version>
     </dependency>
+  </dependencies>
+
 </project>
 

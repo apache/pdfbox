@@ -24,8 +24,8 @@
     <section>
       <title>Accessing Metadata</title>
       <p>
-      See class:<a href="../javadoc/org/pdfbox/pdmodel/common/PDMetadata.html">org.pdfbox.pdmodel.common.PDMetadata</a> <br/>
-      See example:<a href="../javadoc/org/pdfbox/examples/pdmodel/AddMetadataFromDocInfo.html">AddMetadataFromDocInfo</a> <br/>
+      See class:<a href="../javadoc/org/apache/pdfbox/pdmodel/common/PDMetadata.html">org.apache.pdfbox.pdmodel.common.PDMetadata</a> <br/>
+      See example:<a href="../javadoc/org/apache/pdfbox/examples/pdmodel/AddMetadataFromDocInfo.html">AddMetadataFromDocInfo</a> <br/>
       See Adobe Documentation:<a href="http://partners.adobe.com/public/developer/en/xmp/sdk/xmpspecification.pdf">XMP Specification</a>
       </p>
       <p>
