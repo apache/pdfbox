@@ -4,6 +4,35 @@ Apache PDFBox <http://incubator.apache.org/pdfbox/>
 
 PDFBox is an open source Java library for working with PDF documents.
 
+You need Apache Ant <http://ant.apache.org/> to build PDFBox. Once you
+have installed Ant, you can build the sources by running "ant" in
+this directory.
+
+The Ant build will create a Checkstyle report if you have Checkstyle
+<http://checkstyle.sourceforge.net/> installed. Set the checkstyle.home.dir
+property in a build-local.properties file to enable the report.
+
+The Ant build will build the PDFBox web site if you have Apache Forrest
+<http://forrest.apache.org/> installed. Set the FORREST_HOME environment
+variable to enable the web site build.
+
+Known Limitations and Problems
+==============================
+
+1. You get text like "G38G43G36G51G5" instead of what you expect when you are
+   extracting text. This is because the characters are a meaningless internal
+   encoding that point to glyphs that are embedded in the PDF document. The
+   only way to access the text is to use OCR. This may be a future
+   enhancement.
+
+2. You get an error message like "java.io.IOException: Can't handle font width"
+   this MIGHT be due to the fact that you don't have the Resources directory
+   in your classpath. The easiest solution is to simply include the
+   apache-pdfbox-x.x.x.jar in your classpath.
+
+See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
+the full list of known issues and requested features.
+
 Disclaimer
 ==========
 
