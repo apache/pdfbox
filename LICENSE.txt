@@ -293,6 +293,16 @@ Bouncy Castle encryption libraries
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE.
 
+Font Metrics for PDF Core 14 Fonts
+
+   This file and the 14 PostScript(R) AFM files it accompanies may be used,
+   copied, and distributed for any purpose and without charge, with or without
+   modification, provided that all copyright notices are retained; that the
+   AFM files are not distributed without this file; that all modifications
+   to this file or any of the AFM files are prominently noted in the modified
+   file(s); and that this paragraph is not modified. Adobe Systems has no
+   responsibility or obligation to support the use of the AFM files. 
+
 The JUnit test framework (http://junit.org/)
 
    Common Public License - v 1.0
