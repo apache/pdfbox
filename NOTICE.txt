@@ -6,3 +6,6 @@ The Apache Software Foundation (http://www.apache.org/).
 
 Based on source code originally developed at www.pdfbox.org.
 Copyright (c) 2002-2007, www.pdfbox.org
+
+This product contains the FontBox and JempBox libraries.
+Copyright (c) 2003-2005, www.fontbox.org
