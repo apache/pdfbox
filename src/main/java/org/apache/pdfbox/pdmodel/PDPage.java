@@ -40,8 +40,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.renderable.ParameterBlock;
+import java.awt.image.ImagingOpException;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -52,10 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
+import java.util.logging.Level;
 
 /**
  * This represents a single page in a PDF document.
@@ -669,21 +668,17 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
 
-	    try{
+        try{
             int rotation = findRotation();
             if (rotation == 90 || rotation == 270) {
-                ParameterBlock pb = new ParameterBlock();
-                pb.addSource(retval);               // The source image
-                pb.add(0.0F);                       // The x origin
-                pb.add(0.0F);                       // The y origin
-                pb.add((float)(rotation * Math.PI) / 180);                   // The rotation angle
-                pb.add(Interpolation.getInstance(Interpolation.INTERP_BILINEAR)); // The interpolation
-                // Create the rotate operation
-                retval = PlanarImage.wrapRenderedImage(JAI.create("Rotate", pb, null)).getAsBufferedImage();
+                AffineTransformOp transform = new AffineTransformOp(
+                        AffineTransform.getRotateInstance(Math.toRadians(rotation)),
+                        AffineTransformOp.TYPE_BILINEAR);
+                retval = transform.filter(retval, null);
             }
-		}catch(Throwable T){
-			logger().severe(T.getMessage() + "\n at\n" + FullStackTrace(T));
-		}
+        } catch (ImagingOpException e){
+            logger().log(Level.WARNING, "Unable to rotate page image", e);
+        }
 
         return retval;
     }
