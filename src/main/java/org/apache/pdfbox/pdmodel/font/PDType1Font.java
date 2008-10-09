@@ -95,6 +95,15 @@ public class PDType1Font extends PDSimpleFont
      */
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font( "ZapfDingbats" );
 
+    /**
+     * Hardcoded copy of the Font.TYPE1_FONT constant in Java 5. PDFBox should
+     * compile and work also with Java 1.4, so we can't rely on Java 5 features
+     * being always available. The code that uses this constant will fail
+     * gracefully if support for Type 1 fonts are not available.
+     *
+     * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-379">PDFBOX-379</a>
+     */
+    private static final int TYPE1_FONT = 1;
 
     private static final Map STANDARD_14 = new HashMap();
     static
@@ -242,7 +251,7 @@ public class PDType1Font extends PDSimpleFont
 			if( ffStream != null )
 			{
 			    try {
-					awtFont = Font.createFont( Font.TYPE1_FONT, ffStream.createInputStream() );
+					awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
 				} catch (FontFormatException e) {
 					logger().info("substituting Arial because we couldn't read the embedded Font " + fd.getFontName() );
 					awtFont = new Font( "Arial", Font.PLAIN, 1 );
