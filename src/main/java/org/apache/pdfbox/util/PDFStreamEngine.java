@@ -420,6 +420,10 @@ public class PDFStreamEngine extends LoggingObject
                         individualWidths[stringResult.length()+j] = widthOfEachCharacterForCode;
                     }
                 }
+            } else {
+                // PDFBOX-373: Replace a null entry with "?" so it is
+                // not printed as "(null)" 
+                c = "?";
             }
 
             totalStringWidth += width;
