@@ -24,8 +24,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -36,9 +35,6 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.ImageDecoder;
 
 /**
  * An image class for CCITT Fax.
@@ -106,11 +102,14 @@ public class PDCcitt extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {
-        ImageDecoder dec = ImageCodec.createImageDecoder("tiff",
-        new TiffWrapper(getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),getCOSStream()), null);
-
-        return ((PlanarImage)JAI.create("null", dec.decodeAsRenderedImage())).getAsBufferedImage();
-
+        InputStream tiff = new TiffWrapper(
+                getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
+                getCOSStream());
+        try {
+            return ImageIO.read(tiff);
+        } finally {
+            tiff.close();
+        }
     }
 
     /**
