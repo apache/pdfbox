@@ -17,6 +17,7 @@
 package org.apache.pdfbox.util;
 
 import java.io.File;
+
 import javax.swing.filechooser.FileFilter;
 
 
@@ -48,6 +49,10 @@ public class ExtensionFileFilter extends FileFilter
      */
     public boolean accept(File pathname)
     {
+        if (pathname.isDirectory())
+        {
+            return true;
+        }
         boolean acceptable = false;
         String name = pathname.getName().toUpperCase();
         for( int i=0; !acceptable && i<extensions.length; i++ )
