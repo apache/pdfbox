@@ -41,6 +41,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -347,6 +348,7 @@ public class PDFDebugger extends javax.swing.JFrame
      */
     public static void main(String[] args) throws Exception
     {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         PDFDebugger viewer = new PDFDebugger();
         if( args.length >0 )
         {
