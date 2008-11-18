@@ -51,9 +51,9 @@
     </dependency>
 
     <dependency>
-        <groupId>org.jempbox</groupId>
+        <groupId>org.apache.pdfbox</groupId>
         <artifactId>jempbox</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.0-incubator-SNAPSHOT</version>
     </dependency>
 
     <dependency>
