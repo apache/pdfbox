@@ -361,7 +361,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
-        g2d.drawString( string, (int)x, (int)y );
+        g2d.drawString( string, x, y );
     }
 
     /**
