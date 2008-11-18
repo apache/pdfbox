@@ -96,7 +96,7 @@ public class PDFParser extends BaseParser
     }
 
     /**
-     * This will prase the stream and create the PDF document.  This will close
+     * This will parse the stream and create the PDF document.  This will close
      * the stream when it is done parsing.
      *
      * @throws IOException If there is an error reading from the stream.
@@ -121,37 +121,9 @@ public class PDFParser extends BaseParser
                 document = new COSDocument( raf );
             }
             setDocument( document );
-            String header = readLine();
-            document.setHeaderString( header );
 
-            if( header.length() < PDF_HEADER.length()+1 )
-            {
-                throw new IOException( "Error: Header is corrupt '" + header + "'" );
-            }
-
-            //sometimes there are some garbage bytes in the header before the header
-            //actually starts, so lets try to find the header first.
-            int headerStart = header.indexOf( PDF_HEADER );
-
-            //greater than zero because if it is zero then
-            //there is no point of trimming
-            if( headerStart > 0 )
-            {
-                //trim off any leading characters
-                header = header.substring( headerStart, header.length() );
-            }
-
-            try
-            {
-                float pdfVersion = Float.parseFloat(
-                    header.substring( PDF_HEADER.length(), Math.min( header.length(), PDF_HEADER.length()+3) ) );
-                document.setVersion( pdfVersion );
-            }
-            catch( NumberFormatException e )
-            {
-                throw new IOException( "Error getting pdf version:" + e );
-            }
-
+            parseHeader();
+            
             skipHeaderFillBytes();
 
 
@@ -226,6 +198,54 @@ public class PDFParser extends BaseParser
         }
     }
 
+    private   void  parseHeader()  throws  IOException
+    {
+    	// read first line
+    	String header = readLine();
+    	// some pdf-documents are broken and the pdf-version is in one of the following lines
+        if (header.indexOf( PDF_HEADER ) == -1)
+        {
+                header = readLine();
+                while (header.indexOf( PDF_HEADER ) == -1)
+                {
+                	// if a line starts with a digit, it has to be the first one with data in it
+                	if (Character. isDigit (header.charAt(0)))
+                		break ;
+                	header = readLine();
+                }
+        }
+
+        // nothing found
+        if (header.indexOf( PDF_HEADER ) == -1)
+        {
+            throw new IOException( "Error: Header doesn't contain versioninfo" );
+        }
+
+        document .setHeaderString( header );
+
+        //sometimes there are some garbage bytes in the header before the header
+        //actually starts, so lets try to find the header first.
+        int headerStart = header.indexOf( PDF_HEADER );
+
+        //greater than zero because if it is zero then
+        //there is no point of trimming
+        if ( headerStart > 0 )
+        {
+            //trim off any leading characters
+            header = header.substring( headerStart, header.length() );
+        }
+
+        try
+        {
+            float pdfVersion = Float. parseFloat (
+                header.substring( PDF_HEADER .length(), Math. min ( header.length(), PDF_HEADER .length()+3) ) );
+            document .setVersion( pdfVersion );
+        }
+        catch ( NumberFormatException e )
+        {
+            throw new IOException( "Error getting pdf version:" + e );
+        }
+    } 
     /**
      * This will skip a header's binary fill bytes.  This is in accordance to
      * PDF Specification 1.5 pg 68 section 3.4.1 "Syntax.File Structure.File Header"
