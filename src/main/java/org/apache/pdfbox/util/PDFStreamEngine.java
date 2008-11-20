@@ -245,34 +245,43 @@ public class PDFStreamEngine extends LoggingObject
 
     public void showString( byte[] string ) throws IOException
     {
-        float[] individualWidths = new float[2048];
-        float spaceWidth = 0;
-        float spacing = 0;
-        StringBuffer stringResult = new StringBuffer(string.length);
-
-        float characterHorizontalDisplacement = 0;
-        float characterVerticalDisplacement = 0;
-        float spaceDisplacement = 0;
-        float fontSize = graphicsState.getTextState().getFontSize();
-        float horizontalScaling = graphicsState.getTextState().getHorizontalScalingPercent()/100f;
-        float verticalScaling = horizontalScaling;//not sure if this is right but what else to do???
-        float rise = graphicsState.getTextState().getRise();
-        final float wordSpacing = graphicsState.getTextState().getWordSpacing();
-        final float characterSpacing = graphicsState.getTextState().getCharacterSpacing();
-        float wordSpacingDisplacement = 0;
+    	/* Note on variable names.  There are three different units being used
+    	 * in this code.  Character sizes are given in glyph units, text locations
+    	 * are initially given in text units, and we want to save the data in 
+    	 * display units. The variable names should end with Text or Disp to 
+    	 * represent if the values are in text or disp units (no glyph units are saved).
+    	 */
+        final float fontSizeText = graphicsState.getTextState().getFontSize();
+        final float horizontalScalingText = graphicsState.getTextState().getHorizontalScalingPercent()/100f;
+        //float verticalScalingText = horizontalScaling;//not sure if this is right but what else to do???
+        final float riseText = graphicsState.getTextState().getRise();
+        final float wordSpacingText = graphicsState.getTextState().getWordSpacing();
+        final float characterSpacingText = graphicsState.getTextState().getCharacterSpacing();
+        
         //We won't know the actual number of characters until
         //we process the byte data(could be two bytes each) but
         //it won't ever be more than string.length*2(there are some cases
         //were a single byte will result in two output characters "fi"
-
-
-        PDFont font = graphicsState.getTextState().getFont();
-
+        
+        final PDFont font = graphicsState.getTextState().getFont();
+        
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
-        float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
-        float averageWidth = font.getAverageFontWidth();
+        final float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
+        
 
+      	// lets see what the space displacement should be
+        float spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
+        if( spaceWidthText == 0 )
+        {
+            spaceWidthText = (font.getAverageFontWidth()/glyphSpaceToTextSpaceFactor);
+            //The average space width appears to be higher than necessary
+            //so lets make it a little bit smaller.
+            spaceWidthText *= .80f;
+        }
+        
+        
+        /* Convert textMatrix to display units */
         Matrix initialMatrix = new Matrix();
         initialMatrix.setValue(0,0,1);
         initialMatrix.setValue(0,1,0);
@@ -281,53 +290,27 @@ public class PDFStreamEngine extends LoggingObject
         initialMatrix.setValue(1,1,1);
         initialMatrix.setValue(1,2,0);
         initialMatrix.setValue(2,0,0);
-        initialMatrix.setValue(2,1,rise);
+        initialMatrix.setValue(2,1,riseText);	
         initialMatrix.setValue(2,2,1);
-
-
-        //this
+    
+        final Matrix ctm = graphicsState.getCurrentTransformationMatrix();
+        final Matrix textMatrixStDisp = initialMatrix.multiply( textMatrix ).multiply( ctm );
+        
+        final float xScaleDisp = textMatrixStDisp.getXScale();
+        final float yScaleDisp = textMatrixStDisp.getYScale(); 
+        
+        final float spaceWidthDisp = spaceWidthText * xScaleDisp * fontSizeText;
+        final float wordSpacingDisp = wordSpacingText * xScaleDisp * fontSizeText; 
+        
+        float maxVerticalDisplacementText = 0;
+        float[] individualWidthsText = new float[2048];
+        StringBuffer stringResult = new StringBuffer(string.length);
+        
         int codeLength = 1;
-        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-
-        //lets see what the space displacement should be
-        spaceDisplacement = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
-        if( spaceDisplacement == 0 )
-        {
-            spaceDisplacement = (averageWidth/glyphSpaceToTextSpaceFactor);
-            //The average space width appears to be higher than necessary
-            //so lets make it a little bit smaller.
-            spaceDisplacement *= .80f;
-        }
-        int pageRotation = page.findRotation();
-        Matrix trm = initialMatrix.multiply( textMatrix ).multiply( ctm );
-        float x = trm.getValue(2,0);
-        float y = trm.getValue(2,1);
-        if( pageRotation == 0 )
-        {
-            trm.setValue( 2,1, -y + page.findMediaBox().getHeight() );
-        }
-        else if( pageRotation == 90 || pageRotation == -270 )
-        {
-            trm.setValue( 2,0, y );
-            trm.setValue( 2,1, x );
-        }
-        else if( pageRotation == 270 || pageRotation == -90 )
-        {
-            trm.setValue( 2,0, -y  + page.findMediaBox().getHeight() );
-            trm.setValue( 2,1, x );
-        }
-        float xScale = trm.getXScale();
-        float yScale = trm.getYScale();
-        float xPos = trm.getXPosition();
-        float yPos = trm.getYPosition();
-        spaceWidth = spaceDisplacement * xScale * fontSize;
-        wordSpacingDisplacement = wordSpacing*xScale * fontSize;
-        float totalStringWidth = 0;
         for( int i=0; i<string.length; i+=codeLength )
         {
-
+        	// Decode the value to a Unicode character
             codeLength = 1;
-
             String c = font.encode( string, i, codeLength );
             if( c == null && i+1<string.length)
             {
@@ -337,12 +320,12 @@ public class PDFStreamEngine extends LoggingObject
             }
 
             //todo, handle horizontal displacement
-            characterHorizontalDisplacement = (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor);
-            characterVerticalDisplacement =
-                Math.max(
-                    characterVerticalDisplacement,
+            // get the width and height of this character in text units 
+            float characterHorizontalDisplacementText = (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor); 
+            maxVerticalDisplacementText = 
+                Math.max( 
+                    maxVerticalDisplacementText, 
                     font.getFontHeight( string, i, codeLength)/glyphSpaceToTextSpaceFactor);
-
 
             // PDF Spec - 5.5.2 Word Spacing
             //
@@ -362,100 +345,98 @@ public class PDFStreamEngine extends LoggingObject
             // applying word spacing to either the non-32 space or to the character
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
+            float spacingText = characterSpacingText;
             if( (string[i] == 0x20) && c != null && c.equals( " " ) )
             {
-                spacing = wordSpacing + characterSpacing;
-            }
-            else
-            {
-                spacing = characterSpacing;
+                spacingText += wordSpacingText;
             }
 
-            // We want to update the textMatrix using the width, in text space units.
-            //
+            // get the X location before we update the text matrix
+            float xPosBeforeText = textMatrix.getXPosition();
+            
+            /* The text matrix gets updated after each glyph is placed.  The updated
+             * version will have the X and Y coordinates for the next glyph.
+             */
+            
             //The adjustment will always be zero.  The adjustment as shown in the
             //TJ operator will be handled separately.
             float adjustment=0;
-            //todo, need to compute the vertical displacement
-            float ty = 0;
-            float tx = ((characterHorizontalDisplacement-adjustment/glyphSpaceToTextSpaceFactor)*fontSize + spacing)
-                       *horizontalScaling;
-
-
+            /* todo: tx should be set for horizontal text and ty for vertical text, which
+             * seems to be specified in the font (not the direction in the matrix). 
+             */
+            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText + spacingText)
+                       *horizontalScalingText;
+            float ty = 0;              
+            
             Matrix td = new Matrix();
             td.setValue( 2, 0, tx );
-            td.setValue( 2, 1, ty );
-
-            float xPosBefore = textMatrix.getXPosition();
-            float yPosBefore = textMatrix.getYPosition();
+            td.setValue( 2, 1, ty );            
+            
             textMatrix = td.multiply( textMatrix );
 
-            float width = 0;
-            if( pageRotation == 0 )
-            {
-                width = (textMatrix.getXPosition() - xPosBefore);
-            }
-            else if( pageRotation == 90 || pageRotation == -270)
-            {
-                width = (textMatrix.getYPosition() - yPosBefore);
-            }
-            else if( pageRotation == 270 || pageRotation == -90 )
-            {
-                width = (yPosBefore - textMatrix.getYPosition());
-            }
+            // determine the width of this character
+            // XXX: Note that if we handled vertical text, we should be using Y here
+            float widthText = (textMatrix.getXPosition() - xPosBeforeText);
+            
             //there are several cases where one character code will
             //output multiple characters.  For example "fi" or a
             //glyphname that has no mapping like "visiblespace"
             if( c != null )
             {
-                float widthOfEachCharacterForCode = width/c.length();
+            	// assume each character is the same size
+                float widthOfEachCharacterForCode = widthText/c.length();
+            	
                 for( int j=0; j<c.length(); j++)
                 {
-                    if( stringResult.length()+j <individualWidths.length )
+                    if( stringResult.length()+j <individualWidthsText.length )
                     {
                         if( c.equals("-"))
                         {
                             //System.out.println( "stringResult.length()+j=" + (widthOfEachCharacterForCode));
                         }
-                        individualWidths[stringResult.length()+j] = widthOfEachCharacterForCode;
+                        individualWidthsText[stringResult.length()+j] = widthOfEachCharacterForCode;
                     }
                 }
-            } else {
-                // PDFBOX-373: Replace a null entry with "?" so it is
-                // not printed as "(null)" 
-                c = "?";
             }
-
-            totalStringWidth += width;
+            else {
+            	// PDFBOX-373: Replace a null entry with "?" so it is
+            	// not printed as "(null)"
+            	c = "?";
+            }
+            
             stringResult.append( c );
         }
-        float totalStringHeight = characterVerticalDisplacement * fontSize * yScale;
+        
+        
         String resultingString = stringResult.toString();
-
-        if( individualWidths.length != resultingString.length() )
+        
+        if( individualWidthsText.length != resultingString.length() )
         {
             float[] tmp = new float[resultingString.length()];
-            System.arraycopy( individualWidths, 0, tmp, 0, Math.min( individualWidths.length, resultingString.length() ));
-            individualWidths = tmp;
+            System.arraycopy( individualWidthsText, 0, tmp, 0, Math.min( individualWidthsText.length, resultingString.length() ));
+            individualWidthsText = tmp;
             if( resultingString.equals( "- " ))
             {
                 //System.out.println( "EQUALS " + individualWidths[0] );
             }
         }
+        
+        float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * yScaleDisp;
+        // convert textMatrix at the end of the string to display units
+        Matrix textMatrixEndDisp = initialMatrix.multiply( textMatrix ).multiply( ctm );
+        
         showCharacter(
                 new TextPosition(
-                    xPos,
-                    yPos,
-                    xScale,
-                    yScale,
-                    totalStringWidth,
-                    individualWidths,
-                    totalStringHeight,
-                    spaceWidth,
-                    stringResult.toString(),
-                    font,
-                    fontSize,
-                    wordSpacingDisplacement ));
+                		page,
+                		textMatrixStDisp,
+                		textMatrixEndDisp,
+                		totalVerticalDisplacementDisp,
+                		individualWidthsText,
+                		spaceWidthDisp,
+                		stringResult.toString(),
+                		font,
+                		fontSizeText,
+                		wordSpacingDisp ));
     }
 
     /**

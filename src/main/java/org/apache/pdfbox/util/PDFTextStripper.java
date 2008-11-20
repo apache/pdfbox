@@ -383,61 +383,83 @@ public class PDFTextStripper extends PDFStreamEngine
      * @throws IOException If there is an error writing the text.
      */
     protected void flushText() throws IOException
-    {
-        float currentY = -1;
-        float lastBaselineFontSize = -1;
+    { 
+        float maxYForLine = -1;
+        float minYTopForLine = Float.MAX_VALUE;
+        //float lastBaselineFontSize = -1;
         float endOfLastTextX = -1;
-        float startOfNextWordX = -1;
+        //float endOfLastTextY = -1;
+        float expectedStartOfNextWordX = -1;
         float lastWordSpacing = -1;
         float maxHeightForLine = -1;
-        TextPosition lastProcessedCharacter = null;
-
+        //float lastHeightForLine = -1;
+        TextPosition lastPosition = null;
         for( int i=0; i<charactersByArticle.size(); i++)
         {
             startParagraph();
-            List textList = (List)charactersByArticle.get( i );
+            List<TextPosition> textList = (List<TextPosition>)charactersByArticle.get( i );
             if( sortByPosition )
             {
-                TextPositionComparator comparator = new TextPositionComparator( getCurrentPage() );
+                TextPositionComparator comparator = new TextPositionComparator();
                 Collections.sort( textList, comparator );
             }
-            Iterator textIter = textList.iterator();
+            
+            Iterator<TextPosition> textIter = textList.iterator();
             while( textIter.hasNext() )
             {
-                TextPosition position = (TextPosition)textIter.next();
+                TextPosition position = textIter.next();
                 String characterValue = position.getCharacter();
-
-                //wordSpacing = position.getWordSpacing();
+                
+                float positionX;
+                float positionY;
+                float positionWidth;
+                float positionHeight;
+                
+                /* If we are sorting, then we need to use the text direction 
+                 * adjusted coordinates, because they were used in the sorting. */
+                if (sortByPosition) {
+                	positionX = position.getXDirAdj();
+                	positionY = position.getYDirAdj();
+                	positionWidth = position.getWidthDirAdj();
+                	positionHeight = position.getHeightDir();
+                }
+                else {
+                	positionX = position.getX();
+                	positionY = position.getY();
+                	positionWidth = position.getWidth();
+                	positionHeight = position.getHeight();
+                }
+                
+                
                 float wordSpacing = 0;
-
+                /* float wordSpacing = position.getWordSpacing();	BC: When I re-enabled this for a a test, lots of extra spaces were added
                 if( wordSpacing == 0 )
                 {
+                */
                     //try to get width of a space character
                     wordSpacing = position.getWidthOfSpace();
                     //if still zero fall back to getting the width of the current
                     //character
                     if( wordSpacing == 0 )
                     {
-                        wordSpacing = position.getWidth();
+                      wordSpacing = positionWidth;
                     }
-                }
-
-
+                //}
+                
+                
                 // RDD - We add a conservative approximation for space determination.
                 // basically if there is a blank area between two characters that is
                 //equal to some percentage of the word spacing then that will be the
                 //start of the next word
                 if( lastWordSpacing <= 0 )
                 {
-                    startOfNextWordX = endOfLastTextX + (wordSpacing* 0.50f);
+                    expectedStartOfNextWordX = endOfLastTextX + (wordSpacing* 0.50f);
                 }
                 else
                 {
-                    startOfNextWordX = endOfLastTextX + (((wordSpacing+lastWordSpacing)/2f)* 0.50f);
+                    expectedStartOfNextWordX = endOfLastTextX + (((wordSpacing+lastWordSpacing)/2f)* 0.50f);
                 }
-
-                lastWordSpacing = wordSpacing;
-
+    
                 // RDD - We will suppress text that is very close to the current line
                 // and which overwrites previously rendered text on this line.
                 // This is done specifically to handle a reasonably common situation
@@ -458,62 +480,66 @@ public class PDFTextStripper extends PDFStreamEngine
                     }
                     continue;
                 }*/
-
+    
                 // RDD - Here we determine whether this text object is on the current
                 // line.  We use the lastBaselineFontSize to handle the superscript
                 // case, and the size of the current font to handle the subscript case.
                 // Text must overlap with the last rendered baseline text by at least
                 // a small amount in order to be considered as being on the same line.
                 //
-                int verticalScaling = 1;
-                if( lastBaselineFontSize < 0 || position.getFontSize() < 0 )
+                
+                //int verticalScaling = 1;
+                //if( lastBaselineFontSize < 0 || position.getFontSize() < 0 )
+                //{
+                //    verticalScaling = -1;
+                //}
+                
+                if( lastPosition != null )
                 {
-                    verticalScaling = -1;
-                }
-                if( lastProcessedCharacter != null )
-                {
-                    float currentHeight = position.getHeight();
                     //if (currentY != -1 &&
                     //    ((position.getY() < (currentY - (lastBaselineFontSize * 0.9f * verticalScaling))) ||
                     //     (position.getY() > (currentY + (position.getFontSize() * 0.9f * verticalScaling)))))
                     //{
-                    if( !overlap( position.getY(), currentHeight, currentY, maxHeightForLine ) )
+                    /* XXX BC: In theory, this check should really check if the next char is in full range 
+                     * seen in this line. This is what I tried to do with minYTopForLine, but this caused a lot
+                     * of regression test failures.  So, I'm leaving it be for now. */
+                    if( ( !overlap( positionY, positionHeight, maxYForLine, maxHeightForLine ) )) 
+                    		//maxYForLine - minYTopForLine))) 
                     {
                         processLineSeparator( position );
                         endOfLastTextX = -1;
-                        startOfNextWordX = -1;
-                        currentY = -1;
+                        expectedStartOfNextWordX = -1;
+                        maxYForLine = -1;
                         maxHeightForLine = -1;
-                        lastBaselineFontSize = -1;
+                        //lastBaselineFontSize = -1;
+                        minYTopForLine = Float.MAX_VALUE;
+                        //lastHeightForLine = -1;
                     }
+                
+    
+	                if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
+	                   //only bother adding a space if the last character was not a space
+	                   lastPosition.getCharacter() != null &&
+	                   !lastPosition.getCharacter().endsWith( " " ) )
+	                {
+	                    processWordSeparator( lastPosition, position );
+	                }
+	                else
+	                {
+	                    //System.out.println( "Not a word separator " + position.getCharacter() +  " start=" + startOfNextWordX + " x=" + position.getX() );
+	                }
                 }
-
-                if (startOfNextWordX != -1 && startOfNextWordX < position.getX() &&
-                   lastProcessedCharacter != null &&
-                   //only bother adding a space if the last character was not a space
-                   lastProcessedCharacter.getCharacter() != null &&
-                   !lastProcessedCharacter.getCharacter().endsWith( " " ) )
-                {
-                    processWordSeparator( lastProcessedCharacter, position );
+    
+                if (positionY >= maxYForLine) {
+                	maxYForLine = positionY;
+                    //lastBaselineFontSize = position.getFontSize();
                 }
-                else
-                {
-                    //System.out.println( "Not a word separtor " + position.getCharacter() +  " start=" + startOfNextWordX + " x=" + position.getX() );
-                }
-
-                currentY = Math.max(currentY,position.getY());
-
-                if (currentY == position.getY())
-                {
-                    lastBaselineFontSize = position.getFontSize();
-                }
-
+    
                 // RDD - endX is what PDF considers to be the x coordinate of the
                 // end position of the text.  We use it in computing our metrics below.
-                //
-                endOfLastTextX = position.getX() + position.getWidth();
-
-
+                endOfLastTextX = positionX + positionWidth;
+                //endOfLastTextY = positionY;
+    
                 if (characterValue != null)
                 {
                     writeCharacters( position );
@@ -522,12 +548,15 @@ public class PDFTextStripper extends PDFStreamEngine
                 {
                     //Position.getString() is null so not writing anything
                 }
-                maxHeightForLine = Math.max( maxHeightForLine, position.getHeight() );
-                lastProcessedCharacter = position;
+                maxHeightForLine = Math.max( maxHeightForLine, positionHeight );
+                minYTopForLine = Math.min(minYTopForLine, positionY - positionHeight); 
+                lastPosition = position;
+                //lastHeightForLine = position.getHeight();
+                lastWordSpacing = wordSpacing;
             }
             endParagraph();
         }
-
+        
 
         // RDD - newline at end of flush - required for end of page (so that the top
         // of the next page starts on its own line.
@@ -622,8 +651,8 @@ public class PDFTextStripper extends PDFStreamEngine
                 if( charCharacter != null &&
                     //charCharacter.equals( textCharacter ) &&
                     within( charX, textX, tolerance ) &&
-                    within( charY,
-                            textY,
+                    within( charY, 
+                    		textY,
                             tolerance ) )
                 {
                     suppressCharacter = true;
