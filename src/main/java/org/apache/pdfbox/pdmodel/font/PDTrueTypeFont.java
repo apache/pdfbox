@@ -320,8 +320,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize,
-        float xScale, float yScale, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
     {
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
         if( awtFont == null )
@@ -356,8 +355,6 @@ public class PDTrueTypeFont extends PDSimpleFont
                 throw new WrappedIOException( f );
             }
         }
-        AffineTransform at = new AffineTransform();
-        at.scale( xScale, yScale );
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );

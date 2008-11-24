@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 
 import java.io.IOException;
 
@@ -88,8 +89,7 @@ public abstract class PDCIDFont extends PDFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize,
-        float xScale, float yScale, float x, float y )
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y )
     {
         throw new RuntimeException( "Not yet implemented" );
     }
