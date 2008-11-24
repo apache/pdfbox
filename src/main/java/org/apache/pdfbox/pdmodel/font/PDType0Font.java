@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -55,11 +56,10 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize,
-        float xScale, float yScale, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
     {
         //throw new RuntimeException( "Not yet implemented" );
-        super.drawString(string, g, fontSize, xScale, yScale, x, y);
+        super.drawString(string, g, fontSize, at, x, y);
         logger().info("Called Type1Font.drawString since Type0 is not yet implemented");
     }
 

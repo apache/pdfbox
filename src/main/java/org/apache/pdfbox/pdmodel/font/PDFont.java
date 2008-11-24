@@ -47,6 +47,7 @@ import org.apache.pdfbox.exceptions.LoggingObject;
 import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -218,15 +219,14 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
      * @param string The string to draw.
      * @param g The graphics to draw onto.
      * @param fontSize The size of the font to draw.
-     * @param xScale The x scaling percent.
-     * @param yScale The y scaling percent.
+     * @param at The transformation matrix with all infos for scaling and shearing of the font.
      * @param x The x coordinate to draw at.
      * @param y The y coordinate to draw at.
      *
      * @throws IOException If there is an error drawing the specific string.
      */
     public abstract void drawString( String string, Graphics g, float fontSize,
-        float xScale, float yScale, float x, float y ) throws IOException;
+        AffineTransform at, float x, float y ) throws IOException;
 
     /**
      * Used for multibyte encodings.

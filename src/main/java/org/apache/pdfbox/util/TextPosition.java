@@ -111,6 +111,15 @@ public class TextPosition
     }
 
     /**
+     * Return the Matrix textPos stored in this object
+     *  
+     * @return The Matrix containing all infos of the starting textposition
+     */
+    public Matrix getTextPos() {
+    	return textPos;
+    }
+
+    /**
      * Return the direction/orientation of the string in this object
      * based on its text matrix.
      * @return The direction of the text (0, 90, 180, or 270)

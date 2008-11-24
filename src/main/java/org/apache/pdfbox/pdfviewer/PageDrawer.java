@@ -153,8 +153,20 @@ public class PageDrawer extends PDFStreamEngine
                 //need to implement....
             }
             PDFont font = text.getFont();
-            font.drawString( text.getCharacter(), graphics, text.getFontSize(), text.getXScale(), text.getYScale(),
-                             text.getX(), text.getY() );
+
+            Matrix textPos = text.getTextPos().copy();
+            float x = textPos.getXPosition();
+            // the 0,0-reference has to be moved from the lower left (PDF) to the upper left (AWT-graphics)
+            float y = pageSize.height - textPos.getYPosition();
+    		// Set translation to 0,0. We only need the scaling and shearing
+            textPos.setValue(2, 0, 0);
+            textPos.setValue(2, 1, 0);
+            AffineTransform at = textPos.createAffineTransform();
+    		// If there is a rotation, we have to add a additional rotation by 180°. 
+    		// Don't no why.yet. I guess there is a problem with clockwise- and counterclockwise-rotation
+            if (at.getShearX() != 0 || at.getShearY() != 0)
+            	at.quadrantRotate(2);
+            font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
         }
         catch( IOException io )
         {
