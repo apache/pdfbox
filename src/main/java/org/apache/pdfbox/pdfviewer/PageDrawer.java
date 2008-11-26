@@ -165,7 +165,7 @@ public class PageDrawer extends PDFStreamEngine
     		// If there is a rotation, we have to add a additional rotation by 180°. 
     		// Don't no why.yet. I guess there is a problem with clockwise- and counterclockwise-rotation
             if (at.getShearX() != 0 || at.getShearY() != 0)
-            	at.quadrantRotate(2);
+            	at.rotate(Math.PI);
             font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
         }
         catch( IOException io )
