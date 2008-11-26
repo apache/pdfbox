@@ -31,7 +31,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.1 $
  */
-public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineWidth
+public class SetLineDashPattern extends org.apache.pdfbox.util.operator.OperatorProcessor
 {
 
     /**
