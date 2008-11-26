@@ -17,6 +17,9 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -27,31 +30,28 @@ import java.io.IOException;
 /**
  * Implementation of content stream operator for page drawer.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author <a href="mailto:andreas@lehmi.de>Andreas Lehmkühler</a>
+ * @version $Revision: 1.0 $
  */
-public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
+public class SetLineCapStyle extends org.apache.pdfbox.util.operator.SetLineCapStyle
 {
 
     /**
-     * w Set line width.
+     * Set the line cap style
      * @param operator The operator that is being executed.
      * @param arguments List
+     *
      * @throws IOException If an error occurs while processing the font.
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
         super.process( operator, arguments );
-        float lineWidth = (float)context.getGraphicsState().getLineWidth();
-        if( lineWidth == 0 )
-        {
-            lineWidth = 1;
-        }
+        int lineCapStyle = context.getGraphicsState().getLineCap();
         Graphics2D graphics = ((PageDrawer)context).getGraphics();
         BasicStroke stroke = (BasicStroke)graphics.getStroke();
         if (stroke == null)
-        	graphics.setStroke( new BasicStroke( lineWidth ) );
+        	graphics.setStroke( new BasicStroke(1,lineCapStyle,BasicStroke.JOIN_MITER) );
         else
-        	graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
+        	graphics.setStroke( new BasicStroke(stroke.getLineWidth(), lineCapStyle, stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
     }
 }
