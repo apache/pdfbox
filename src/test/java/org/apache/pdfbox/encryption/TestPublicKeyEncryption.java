@@ -14,21 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.encryption;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import junit.framework.Assert;
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
+import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -45,148 +44,115 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 public class TestPublicKeyEncryption extends TestCase
 {
 
-    private AccessPermission accessPermission;
-    private AccessPermission accessPermission2;
+    private AccessPermission permission1;
+    private AccessPermission permission2;
 
-    private File publicCert1;
-    private File privateCert1;
-    private File publicCert2;
-    private File privateCert2;
-    private File input;
-    private File output;
+    private PublicKeyRecipient recipient1;
+    private PublicKeyRecipient recipient2;
 
-    private String password1 = "test1";
-    private String password2 = "test2";
+    private PublicKeyDecryptionMaterial decryption1;
+    private PublicKeyDecryptionMaterial decryption2;
 
     /**
-     * Constructor.
-     *
-     * @param name The junit test class name.
+     * Simple test document that gets encrypted by the test cases.
      */
-    public TestPublicKeyEncryption( String name )
-    {
-        super( name );
-        accessPermission = new AccessPermission();
-        accessPermission.setCanAssembleDocument(false);
-        accessPermission.setCanExtractContent(false);
-        accessPermission.setCanExtractForAccessibility(true);
-        accessPermission.setCanFillInForm(false);
-        accessPermission.setCanModify(false);
-        accessPermission.setCanModifyAnnotations(false);
-        accessPermission.setCanPrint(false);
-        accessPermission.setCanPrintDegraded(false);
+    private PDDocument document;
 
-        accessPermission2 = new AccessPermission();
-        accessPermission2.setCanAssembleDocument(false);
-        accessPermission2.setCanExtractContent(false);
-        accessPermission2.setCanExtractForAccessibility(true);
-        accessPermission2.setCanFillInForm(false);
-        accessPermission2.setCanModify(false);
-        accessPermission2.setCanModifyAnnotations(false);
-        accessPermission2.setCanPrint(true); // it is true now !
-        accessPermission2.setCanPrintDegraded(false);
+    protected void setUp() throws Exception {
+        permission1 = new AccessPermission();
+        permission1.setCanAssembleDocument(false);
+        permission1.setCanExtractContent(false);
+        permission1.setCanExtractForAccessibility(true);
+        permission1.setCanFillInForm(false);
+        permission1.setCanModify(false);
+        permission1.setCanModifyAnnotations(false);
+        permission1.setCanPrint(false);
+        permission1.setCanPrintDegraded(false);
 
-        publicCert1 = new File("test/encryption/test1.der");
-        privateCert1 = new File("test/encryption/test1.pfx");
-        publicCert2 = new File("test/encryption/test2.der");
-        privateCert2 = new File("test/encryption/test2.pfx");
-        input = new File("test/input/Exolab.pdf");
-        output = new File("test/encryption/output.pdf");
+        permission2 = new AccessPermission();
+        permission2.setCanAssembleDocument(false);
+        permission2.setCanExtractContent(false);
+        permission2.setCanExtractForAccessibility(true);
+        permission2.setCanFillInForm(false);
+        permission2.setCanModify(false);
+        permission2.setCanModifyAnnotations(false);
+        permission2.setCanPrint(true); // it is true now !
+        permission2.setCanPrintDegraded(false);
 
-        Assert.assertTrue(publicCert1.exists() && publicCert1.isFile());
-        Assert.assertTrue(privateCert1.exists() && privateCert1.isFile());
+        recipient1 = getRecipient("test1.der", permission1);
+        recipient2 = getRecipient("test2.der", permission2);
 
-        Assert.assertTrue(publicCert2.exists() && publicCert2.isFile());
-        Assert.assertTrue(privateCert2.exists() && privateCert2.isFile());
+        decryption1 = getDecryptionMaterial("test1.pfx", "test1");
+        decryption2 = getDecryptionMaterial("test2.pfx", "test2");
 
-        Assert.assertTrue(input.exists() && input.isFile());
+        InputStream input =
+            TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
+        try {
+            document = PDDocument.load(input);
+        } finally {
+            input.close();
+        }
+    }
 
+    protected void tearDown() throws Exception {
+        document.close();
     }
 
     /**
-     * This will get the suite of test that this class holds.
+     * Protect a document with certificate 1 and try to open it with
+     * certificate 2 and catch the exception.
      *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestPublicKeyEncryption.class );
-    }
-
-    /**
-     * Protect a document with certificate 1 and try to open it with certificate 2
-     * and catch the exception.
-     *
-     * @throws Exception If there is an error during the test.
+     * @throws Exception If there is an unexpected error during the test.
      */
     public void testProtectionError() throws Exception
     {
+        PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
+        policy.addRecipient(recipient1);
+        document.protect(policy);
 
-        PDDocument doc = PDDocument.load(input);
-        protect(doc, publicCert1.getAbsolutePath());
-
-        doc.save(output.getAbsolutePath());
-
-        doc.close();
-
-        PDDocument doc2 = PDDocument.load(output);
-
-        Exception e = null;
-
-        try
-        {
-            open(doc2, privateCert2.getAbsolutePath(), password2);
-        }
-        catch(CryptographyException ex)
-        {
-            e = ex;
-            System.out.println(ex.getMessage());
-        }
-        finally
-        {
-            Assert.assertNotNull(e);
+        PDDocument encrypted = reload(document);
+        try {
+            Assert.assertTrue(encrypted.isEncrypted());
+            encrypted.openProtection(decryption2);
+            fail("No exception when using an incorrect decryption key");
+        } catch(CryptographyException expected) {
+            // do nothing
+        } finally {
+            encrypted.close();
         }
     }
 
 
     /**
-     * Protect a document with the public certificate and try to open it with
-     * the private certificate.
+     * Protect a document with a public certificate and try to open it
+     * with the corresponding private certificate.
      *
-     * @throws Exception If there is an error during the test.
+     * @throws Exception If there is an unexpected error during the test.
      */
     public void testProtection() throws Exception
     {
-        PDDocument doc = PDDocument.load(input);
-        protect(doc, publicCert1.getAbsolutePath());
+        PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
+        policy.addRecipient(recipient1);
+        document.protect(policy);
 
-        //Assert.assertTrue(doc.isEncrypted());
+        PDDocument encrypted = reload(document);
+        try {
+            Assert.assertTrue(encrypted.isEncrypted());
+            encrypted.openProtection(decryption1);
 
-        doc.save(output.getAbsolutePath());
-
-        doc.close();
-
-        PDDocument doc2 = PDDocument.load(output);
-
-        Assert.assertNotNull(doc2);
-
-        open(doc2, privateCert1.getAbsolutePath(), password1);
-
-        Assert.assertTrue(doc2.isEncrypted());
-
-        AccessPermission currentAp = doc2.getCurrentAccessPermission();
-
-        Assert.assertFalse(currentAp.canAssembleDocument());
-        Assert.assertFalse(currentAp.canExtractContent());
-        Assert.assertTrue(currentAp.canExtractForAccessibility());
-        Assert.assertFalse(currentAp.canFillInForm());
-        Assert.assertFalse(currentAp.canModify());
-        Assert.assertFalse(currentAp.canModifyAnnotations());
-        Assert.assertFalse(currentAp.canPrint());
-        Assert.assertFalse(currentAp.canPrintDegraded());
-
-        doc2.close();
-
+            AccessPermission permission =
+                encrypted.getCurrentAccessPermission();
+            Assert.assertFalse(permission.canAssembleDocument());
+            Assert.assertFalse(permission.canExtractContent());
+            Assert.assertTrue(permission.canExtractForAccessibility());
+            Assert.assertFalse(permission.canFillInForm());
+            Assert.assertFalse(permission.canModify());
+            Assert.assertFalse(permission.canModifyAnnotations());
+            Assert.assertFalse(permission.canPrint());
+            Assert.assertFalse(permission.canPrintDegraded());
+        } finally {
+            encrypted.close();
+        }
     }
 
 
@@ -197,93 +163,107 @@ public class TestPublicKeyEncryption extends TestCase
      */
     public void testMultipleRecipients() throws Exception
     {
+        PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
+        policy.addRecipient(recipient1);
+        policy.addRecipient(recipient2);
+        document.protect(policy);
 
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        // open first time
+        PDDocument encrypted1 = reload(document);
+        try {
+            encrypted1.openProtection(decryption1);
 
-        PDDocument doc = PDDocument.load(input);
+            AccessPermission permission =
+                encrypted1.getCurrentAccessPermission();
+            Assert.assertFalse(permission.canAssembleDocument());
+            Assert.assertFalse(permission.canExtractContent());
+            Assert.assertTrue(permission.canExtractForAccessibility());
+            Assert.assertFalse(permission.canFillInForm());
+            Assert.assertFalse(permission.canModify());
+            Assert.assertFalse(permission.canModifyAnnotations());
+            Assert.assertFalse(permission.canPrint());
+            Assert.assertFalse(permission.canPrintDegraded());
+        } finally {
+            encrypted1.close();
+        }
 
-        PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
+        // open second time
+        PDDocument encrypted2 = reload(document);
+        try {
+            encrypted2.openProtection(decryption2);
 
-        PublicKeyRecipient recip1 = new PublicKeyRecipient();
-        PublicKeyRecipient recip2 = new PublicKeyRecipient();
-
-        recip1.setPermission(accessPermission);
-        recip2.setPermission(accessPermission2);
-
-        InputStream inStream = new FileInputStream(publicCert1);
-        Assert.assertNotNull(cf);
-        X509Certificate certificate1 = (X509Certificate)cf.generateCertificate(inStream);
-        inStream.close();
-
-        InputStream inStream2 = new FileInputStream(publicCert2);
-        Assert.assertNotNull(cf);
-        X509Certificate certificate2 = (X509Certificate)cf.generateCertificate(inStream2);
-        inStream.close();
-
-        recip1.setX509(certificate1);
-        recip2.setX509(certificate2);
-
-        ppp.addRecipient(recip1);
-        ppp.addRecipient(recip2);
-
-        doc.protect(ppp);
-        doc.save(output.getAbsolutePath());
-        doc.close();
-
-        /* open first time */
-
-        PDDocument docOpen1 = PDDocument.load(output);
-
-        KeyStore ks1 = KeyStore.getInstance("PKCS12");
-        ks1.load(new FileInputStream(privateCert1), password1.toCharArray());
-        PublicKeyDecryptionMaterial pdm = new PublicKeyDecryptionMaterial(ks1, null, password1);
-        docOpen1.openProtection(pdm);
-        docOpen1.close();
-
-        /* open second time */
-
-        PDDocument docOpen2 = PDDocument.load(output);
-
-        KeyStore ks2 = KeyStore.getInstance("PKCS12");
-        ks2.load(new FileInputStream(privateCert2), password2.toCharArray());
-        PublicKeyDecryptionMaterial pdm2 = new PublicKeyDecryptionMaterial(ks2, null, password2);
-        docOpen2.openProtection(pdm2);
-        docOpen2.close();
-
+            AccessPermission permission =
+                encrypted2.getCurrentAccessPermission();
+            Assert.assertFalse(permission.canAssembleDocument());
+            Assert.assertFalse(permission.canExtractContent());
+            Assert.assertTrue(permission.canExtractForAccessibility());
+            Assert.assertFalse(permission.canFillInForm());
+            Assert.assertFalse(permission.canModify());
+            Assert.assertFalse(permission.canModifyAnnotations());
+            Assert.assertTrue(permission.canPrint());
+            Assert.assertFalse(permission.canPrintDegraded());
+        } finally {
+            encrypted2.close();
+        }
     }
 
-
-
-    private void protect(PDDocument doc, String certPath) throws Exception
-    {
-        InputStream inStream = new FileInputStream(certPath);
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Assert.assertNotNull(cf);
-        X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
-        Assert.assertNotNull(certificate);
-        inStream.close();
-
-        PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
-        PublicKeyRecipient recip = new PublicKeyRecipient();
-        recip.setPermission(accessPermission);
-        recip.setX509(certificate);
-
-        ppp.addRecipient(recip);
-
-        doc.protect(ppp);
-
+    /**
+     * Reloads the given document by writing it to a temporary byte array
+     * and loading a fresh document from that byte array.
+     *
+     * @param document input document
+     * @return reloaded document
+     * @throws Exception if 
+     */
+    private PDDocument reload(PDDocument document) {
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            document.save(buffer);
+            return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()));
+        } catch (IOException e) {
+            throw new IllegalStateException("Unexpected failure");
+        } catch (COSVisitorException e) {
+            throw new IllegalStateException("Unexpected failure");
+        }
     }
 
+    /**
+     * Returns a recipient specification with the given access permissions
+     * and an X.509 certificate read from the given classpath resource.
+     *
+     * @param certificate X.509 certificate resource, relative to this class
+     * @param permission access permissions
+     * @return recipient specification
+     * @throws Exception if the certificate could not be read
+     */
+    private PublicKeyRecipient getRecipient(
+            String certificate, AccessPermission permission) throws Exception {
+        InputStream input =
+            TestPublicKeyEncryption.class.getResourceAsStream(certificate);
+        try {
+            CertificateFactory factory =
+                CertificateFactory.getInstance("X.509");
+            PublicKeyRecipient recipient = new PublicKeyRecipient();
+            recipient.setPermission(permission);
+            recipient.setX509(
+                    (X509Certificate) factory.generateCertificate(input));
+            return recipient;
+        } finally {
+            input.close();
+        }
+    }
 
-    private void open(PDDocument doc, String certPath, String password) throws Exception
-    {
-        KeyStore ks = KeyStore.getInstance("PKCS12");
-        ks.load(new FileInputStream(certPath), password.toCharArray());
-
-        PublicKeyDecryptionMaterial pdm = new PublicKeyDecryptionMaterial(ks, null, password);
-
-        doc.openProtection(pdm);
-
+    private PublicKeyDecryptionMaterial getDecryptionMaterial(
+            String name, String password) throws Exception {
+        InputStream input = 
+            TestPublicKeyEncryption.class.getResourceAsStream(name);
+        try {
+            KeyStore keystore = KeyStore.getInstance("PKCS12");
+            keystore.load(input, password.toCharArray());
+            return new PublicKeyDecryptionMaterial(keystore, null, password);
+        } finally {
+            input.close();
+        }
     }
 
 }
