@@ -17,14 +17,9 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.color.ColorSpace;
-import java.awt.color.ICC_ColorSpace;
-import java.awt.color.ICC_Profile;
 import java.awt.image.ColorModel;
-
-import java.io.InputStream;
 import java.io.IOException;
 
-import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This class represents a CMYK color space.
@@ -88,22 +83,7 @@ public class PDDeviceCMYK extends PDColorSpace
     public ColorSpace createColorSpace() throws IOException
     {
         if( cSpace == null )
-        {
-            InputStream profile = null;
-            try
-            {
-                profile = ResourceLoader.loadResource( "Resources/colorspace-profiles/CMYK.pf" );
-                ICC_Profile iccProfile = ICC_Profile.getInstance( profile );
-                cSpace = new ICC_ColorSpace( iccProfile );
-            }
-            finally
-            {
-                if( profile != null )
-                {
-                    profile.close();
-                }
-            }
-        }
+        	cSpace = new ColorSpaceCMYK();
         return cSpace;
     }
 
