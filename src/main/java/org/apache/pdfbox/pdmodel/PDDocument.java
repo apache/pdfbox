@@ -925,9 +925,8 @@ public class PDDocument implements Pageable
         PDEncryptionDictionary dict = this.getEncryptionDictionary();
         if(dict.getFilter() != null)
         {
-            SecurityHandler handler = SecurityHandlersManager.getInstance().getSecurityHandler(dict.getFilter());
-            securityHandler = null;
-            handler.decryptDocument(this, pm);
+            securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler(dict.getFilter());
+            securityHandler.decryptDocument(this, pm);
             document.dereferenceObjectStreams();
             document.setEncryptionDictionary( null );
         }
