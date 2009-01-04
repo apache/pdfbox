@@ -19,7 +19,6 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,19 +30,15 @@ import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSStream;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.WrappedIOException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 
 
 /**
@@ -383,7 +378,7 @@ public class PDFTextStripper extends PDFStreamEngine
      * @throws IOException If there is an error writing the text.
      */
     protected void flushText() throws IOException
-    { 
+    {
         float maxYForLine = -1;
         float minYTopForLine = Float.MAX_VALUE;
         //float lastBaselineFontSize = -1;
@@ -394,28 +389,28 @@ public class PDFTextStripper extends PDFStreamEngine
         float maxHeightForLine = -1;
         //float lastHeightForLine = -1;
         TextPosition lastPosition = null;
-        for( int i=0; i<charactersByArticle.size(); i++)
+        for( int i = 0; i < charactersByArticle.size(); i++)
         {
             startParagraph();
-            List<TextPosition> textList = (List<TextPosition>)charactersByArticle.get( i );
+            List textList = (List)charactersByArticle.get( i );
             if( sortByPosition )
             {
                 TextPositionComparator comparator = new TextPositionComparator();
                 Collections.sort( textList, comparator );
             }
-            
-            Iterator<TextPosition> textIter = textList.iterator();
+
+            Iterator textIter = textList.iterator();
             while( textIter.hasNext() )
             {
-                TextPosition position = textIter.next();
+                TextPosition position = (TextPosition)textIter.next();
                 String characterValue = position.getCharacter();
-                
+
                 float positionX;
                 float positionY;
                 float positionWidth;
                 float positionHeight;
-                
-                /* If we are sorting, then we need to use the text direction 
+
+                /* If we are sorting, then we need to use the text direction
                  * adjusted coordinates, because they were used in the sorting. */
                 if (sortByPosition) {
                 	positionX = position.getXDirAdj();
@@ -429,8 +424,8 @@ public class PDFTextStripper extends PDFStreamEngine
                 	positionWidth = position.getWidth();
                 	positionHeight = position.getHeight();
                 }
-                
-                
+
+
                 float wordSpacing = 0;
                 /* float wordSpacing = position.getWordSpacing();	BC: When I re-enabled this for a a test, lots of extra spaces were added
                 if( wordSpacing == 0 )
@@ -445,8 +440,8 @@ public class PDFTextStripper extends PDFStreamEngine
                       wordSpacing = positionWidth;
                     }
                 //}
-                
-                
+
+
                 // RDD - We add a conservative approximation for space determination.
                 // basically if there is a blank area between two characters that is
                 //equal to some percentage of the word spacing then that will be the
@@ -459,7 +454,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 {
                     expectedStartOfNextWordX = endOfLastTextX + (((wordSpacing+lastWordSpacing)/2f)* 0.50f);
                 }
-    
+
                 // RDD - We will suppress text that is very close to the current line
                 // and which overwrites previously rendered text on this line.
                 // This is done specifically to handle a reasonably common situation
@@ -480,31 +475,31 @@ public class PDFTextStripper extends PDFStreamEngine
                     }
                     continue;
                 }*/
-    
+
                 // RDD - Here we determine whether this text object is on the current
                 // line.  We use the lastBaselineFontSize to handle the superscript
                 // case, and the size of the current font to handle the subscript case.
                 // Text must overlap with the last rendered baseline text by at least
                 // a small amount in order to be considered as being on the same line.
                 //
-                
+
                 //int verticalScaling = 1;
                 //if( lastBaselineFontSize < 0 || position.getFontSize() < 0 )
                 //{
                 //    verticalScaling = -1;
                 //}
-                
+
                 if( lastPosition != null )
                 {
                     //if (currentY != -1 &&
                     //    ((position.getY() < (currentY - (lastBaselineFontSize * 0.9f * verticalScaling))) ||
                     //     (position.getY() > (currentY + (position.getFontSize() * 0.9f * verticalScaling)))))
                     //{
-                    /* XXX BC: In theory, this check should really check if the next char is in full range 
+                    /* XXX BC: In theory, this check should really check if the next char is in full range
                      * seen in this line. This is what I tried to do with minYTopForLine, but this caused a lot
                      * of regression test failures.  So, I'm leaving it be for now. */
-                    if( ( !overlap( positionY, positionHeight, maxYForLine, maxHeightForLine ) )) 
-                    		//maxYForLine - minYTopForLine))) 
+                    if( ( !overlap( positionY, positionHeight, maxYForLine, maxHeightForLine ) ))
+                    		//maxYForLine - minYTopForLine)))
                     {
                         processLineSeparator( position );
                         endOfLastTextX = -1;
@@ -515,8 +510,8 @@ public class PDFTextStripper extends PDFStreamEngine
                         minYTopForLine = Float.MAX_VALUE;
                         //lastHeightForLine = -1;
                     }
-                
-    
+
+
 	                if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
 	                   //only bother adding a space if the last character was not a space
 	                   lastPosition.getCharacter() != null &&
@@ -529,17 +524,17 @@ public class PDFTextStripper extends PDFStreamEngine
 	                    //System.out.println( "Not a word separator " + position.getCharacter() +  " start=" + startOfNextWordX + " x=" + position.getX() );
 	                }
                 }
-    
+
                 if (positionY >= maxYForLine) {
                 	maxYForLine = positionY;
                     //lastBaselineFontSize = position.getFontSize();
                 }
-    
+
                 // RDD - endX is what PDF considers to be the x coordinate of the
                 // end position of the text.  We use it in computing our metrics below.
                 endOfLastTextX = positionX + positionWidth;
                 //endOfLastTextY = positionY;
-    
+
                 if (characterValue != null)
                 {
                     writeCharacters( position );
@@ -549,14 +544,14 @@ public class PDFTextStripper extends PDFStreamEngine
                     //Position.getString() is null so not writing anything
                 }
                 maxHeightForLine = Math.max( maxHeightForLine, positionHeight );
-                minYTopForLine = Math.min(minYTopForLine, positionY - positionHeight); 
+                minYTopForLine = Math.min(minYTopForLine, positionY - positionHeight);
                 lastPosition = position;
                 //lastHeightForLine = position.getHeight();
                 lastWordSpacing = wordSpacing;
             }
             endParagraph();
         }
-        
+
 
         // RDD - newline at end of flush - required for end of page (so that the top
         // of the next page starts on its own line.
@@ -651,7 +646,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 if( charCharacter != null &&
                     //charCharacter.equals( textCharacter ) &&
                     within( charX, textX, tolerance ) &&
-                    within( charY, 
+                    within( charY,
                     		textY,
                             tolerance ) )
                 {
