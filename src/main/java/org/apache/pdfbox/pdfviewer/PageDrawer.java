@@ -161,11 +161,10 @@ public class PageDrawer extends PDFStreamEngine
     		// Set translation to 0,0. We only need the scaling and shearing
             textPos.setValue(2, 0, 0);
             textPos.setValue(2, 1, 0);
+            // because of the moved 0,0-reference, we have to shear in the opposite direction
+            textPos.setValue(0, 1, (-1)*textPos.getValue(0, 1));
+            textPos.setValue(1, 0, (-1)*textPos.getValue(1, 0));
             AffineTransform at = textPos.createAffineTransform();
-    		// If there is a rotation, we have to add a additional rotation by 180°. 
-    		// Don't no why.yet. I guess there is a problem with clockwise- and counterclockwise-rotation
-            if (at.getShearX() != 0 || at.getShearY() != 0)
-            	at.rotate(Math.PI);
             font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
         }
         catch( IOException io )
