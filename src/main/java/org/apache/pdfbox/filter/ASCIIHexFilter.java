@@ -34,20 +34,56 @@ public class ASCIIHexFilter implements Filter
 {
 
     /**
-     * {@inheritDoc}
+     * Whitespace
+     *   0  0x00  Null (NUL)
+     *   9  0x09  Tab (HT)
+     *  10  0x0A  Line feed (LF)
+     *  12  0x0C  Form feed (FF)
+     *  13  0x0D  Carriage return (CR)
+     *  32  0x20  Space (SP)  
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+
+    protected boolean isWhitespace(int c) 
     {
-        int value =0;
+        return c == 0 || c == 9 || c == 10 || c == 12 || c == 13 || c == 32;
+    }
+	   
+    protected boolean isEOD(int c) 
+    {
+        return (c == 62); // '>' - EOD
+    }
+    
+    /**
+      * {@inheritDoc}
+      */
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException 
+    {
+        int value = 0;
         int firstByte = 0;
         int secondByte = 0;
-        while( (firstByte = compressedData.read()) != -1 )
+        while ((firstByte = compressedData.read()) != -1) 
         {
+            // always after first char
+            while(isWhitespace(firstByte))
+                firstByte = compressedData.read();
+            if(isEOD(firstByte))
+                break;
+       
+            if(REVERSE_HEX[firstByte] == -1)
+                System.out.println("Invalid Hex Code; int: " + firstByte + " char: " + (char) firstByte);
             value = REVERSE_HEX[firstByte] * 16;
             secondByte = compressedData.read();
-            if( secondByte >= 0 )
+       
+            if(isEOD(secondByte)) {
+                // second value behaves like 0 in case of EOD
+                result.write( value );
+                break;
+            }
+            if(secondByte >= 0) 
             {
-                value += REVERSE_HEX[ secondByte ];
+                if(REVERSE_HEX[secondByte] == -1)
+                    System.out.println("Invalid Hex Code; int: " + secondByte + " char: " + (char) secondByte);
+                value += REVERSE_HEX[secondByte];
             }
             result.write( value );
         }
