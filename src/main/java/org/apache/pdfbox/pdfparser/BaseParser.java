@@ -23,6 +23,7 @@ import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.pdfbox.io.ByteArrayPushBackInputStream;
 import org.apache.pdfbox.io.PushBackInputStream;
@@ -668,10 +669,20 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             pbo = parseDirObject();
             if( pbo instanceof COSObject )
             {
-                COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                COSInteger number = (COSInteger)po.remove( po.size() -1 );
-                COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
-                pbo = document.getObjectFromPool(key);
+                 // We have to check if the expected values are there or not PDFBOX-385 
+                 if (po.get(po.size()-1) instanceof COSInteger) {
+                	 COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
+                     if (po.get(po.size()-1) instanceof COSInteger) {
+                    	 COSInteger number = (COSInteger)po.remove( po.size() -1 );
+                    	 COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
+                    	 pbo = document.getObjectFromPool(key);
+                     }
+                     else
+                    	 // the object reference is somehow wrong
+                    	 pbo = null;
+                 }
+                 else
+                	 pbo = null;
             }
             if( pbo != null )
             {
@@ -679,6 +690,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else
             {
+                 logger().log(Level.WARNING, "Corrupt object reference" );
                 //it could be a bad object in the array which is just skipped
             }
             skipSpaces();
