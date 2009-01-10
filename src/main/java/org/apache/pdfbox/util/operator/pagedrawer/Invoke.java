@@ -61,7 +61,6 @@ public class Invoke extends OperatorProcessor
         PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
         if( xobject instanceof PDXObjectImage )
         {
-        	System.out.println("JUHU PDXObjectImage");
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
