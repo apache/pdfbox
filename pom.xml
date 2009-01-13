@@ -92,6 +92,13 @@
     </dependency>
 
     <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+        <version>3.8</version>
+        <optional>true</optional>
+    </dependency>
+
+    <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.5</version>

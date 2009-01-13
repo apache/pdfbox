@@ -130,11 +130,11 @@ public class PageDrawer extends PDFStreamEngine
 
     /**
      * You should override this method if you want to perform an action when a
-     * string is being shown.
+     * text is being processed. 
      *
-     * @param text The string to display.
+     * @param text The text to process 
      */
-    protected void showCharacter( TextPosition text )
+    protected void processTextPosition( TextPosition text )
     {
         //should use colorspaces for the font color but for now assume that
         //the font color is black

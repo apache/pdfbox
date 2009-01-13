@@ -69,6 +69,7 @@
     <property name="jai_core.jar" value="${jar.dir}/${jai_core.name}.jar" />
 
     <property name="junit.jar" value="${jar.dir}/junit.jar" />
+    <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
 
     <property name="testoutput.dir" value="test/output"/>
 
@@ -116,6 +117,7 @@
         <junit printsummary="off" fork="on" dir=".">
             <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
             <classpath>
+                <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
@@ -125,6 +127,7 @@
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${jai_codec.jar}" />
                 <pathelement path="${jai_core.jar}" />
+                <pathelement path="${icu4j.jar}" />
                 <pathelement path="${dest.dir}"/>
                 <pathelement path="${resources.dir}" />
             </classpath>
@@ -140,6 +143,7 @@
 
             <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
             <classpath>
+                <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
@@ -149,6 +153,7 @@
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${jai_codec.jar}" />
                 <pathelement path="${jai_core.jar}" />
+                <pathelement path="${icu4j.jar}" />
                 <pathelement path="${dest.dir}"/>
                 <pathelement path="${resources.dir}" />
             </classpath>
@@ -160,6 +165,7 @@
     <target name="test-junit" depends="clean,compile" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
             <classpath>
+                <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
@@ -286,6 +292,7 @@
                 <include name="${jai_codec.jar}" />
                 <include name="${jai_core.jar}" />
                 <include name="${checkstyle.jar}" />
+                <include name="${icu4j.jar}" />
                 <include name="${bin.dir}/**/*" />
                 <include name="pom.xml" />
                 <include name="build.xml" />

@@ -224,26 +224,44 @@ public class PDFStreamEngine extends LoggingObject
     }
 
     /**
-     * A method provided as an event interface to allow a subclass to perform
-     * some specific functionality when a character needs to be displayed.
-     *
-     * @param text The character to be displayed.
+     * @deprecated
+     * @see processTextPosition(TextPosition)
      */
     protected void showCharacter( TextPosition text )
+    {
+    	processTextPosition(text);
+    }
+    
+    /**
+     * A method provided as an event interface to allow a subclass to perform
+     * some specific functionality when text needs to be processed.
+     *
+     * @param text The text to be processed.
+     */
+    protected void processTextPosition( TextPosition text )
     {
         //subclasses can override to provide specific functionality.
     }
 
+    
     /**
-     * You should override this method if you want to perform an action when a
-     * string is being shown.
-     *
-     * @param string The string to display.
-     *
-     * @throws IOException If there is an error showing the string
+     * @deprecated
+     * @see processEncodedText(byte[])
      */
-
-    public void showString( byte[] string ) throws IOException
+    public void showString( byte[] string ) throws IOException {
+    	processEncodedText(string);
+    }
+    
+    /**
+     * Process encoded text from the PDF Stream. 
+     * You should override this method if you want to perform an action when 
+     * encoded text is being processed.
+     *
+     * @param string The encoded text
+     *
+     * @throws IOException If there is an error processing the string
+     */
+    public void processEncodedText( byte[] string ) throws IOException
     {
     	/* Note on variable names.  There are three different units being used
     	 * in this code.  Character sizes are given in glyph units, text locations
@@ -425,7 +443,8 @@ public class PDFStreamEngine extends LoggingObject
         // convert textMatrix at the end of the string to display units
         Matrix textMatrixEndDisp = initialMatrix.multiply( textMatrix ).multiply( ctm );
         
-        showCharacter(
+        // process the decoded text
+        processTextPosition(
                 new TextPosition(
                 		page,
                 		textMatrixStDisp,
