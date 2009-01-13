@@ -116,9 +116,17 @@ public class PDFTextStripperByArea extends PDFTextStripper
     }
 
     /**
+     * @deprecated
      * {@inheritDoc}
      */
-    protected void showCharacter( TextPosition text )
+    protected void showCharacter( TextPosition text ) {
+        processTextPosition(text);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected void processTextPosition( TextPosition text )
     {
         Iterator regionIter = regionArea.keySet().iterator();
         while( regionIter.hasNext() )
@@ -128,17 +136,26 @@ public class PDFTextStripperByArea extends PDFTextStripper
             if( rect.contains( text.getX(), text.getY() ) )
             {
                 charactersByArticle = (Vector)regionCharacterList.get( region );
-                super.showCharacter( text );
+                super.processTextPosition( text );
             }
         }
     }
 
+    
     /**
-     * This will print the text to the output stream.
+     * @deprecated
+     * {@inheritDoc}
+     */
+    protected void flushText() throws IOException {
+    	writePage();
+    }
+    
+    /**
+     * This will print the processed page text to the output stream.
      *
      * @throws IOException If there is an error writing the text.
      */
-    protected void flushText() throws IOException
+    protected void writePage() throws IOException
     {
         Iterator regionIter = regionArea.keySet().iterator();
         while( regionIter.hasNext() )
@@ -146,7 +163,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             String region = (String)regionIter.next();
             charactersByArticle = (Vector)regionCharacterList.get( region );
             output = (StringWriter)regionText.get( region );
-            super.flushText();
+            super.writePage();
         }
     }
 }

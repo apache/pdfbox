@@ -30,6 +30,15 @@ Known Limitations and Problems
    in your classpath. The easiest solution is to simply include the
    apache-pdfbox-x.x.x.jar in your classpath.
 
+3. You get text that has the correct characters, but in the wrong
+   order.  This mght be because you have not enabled sorting.  The text
+   in PDF files is stored in chunks and the chunks do not need to be stored 
+   in the order that they are displayed on a page.  By default, PDFBox does 
+   not sort the text.  Also, if you have text in a language that reads right to left 
+   (such as Arabic or Hebrew), make sure you have the ICU4J jar file in your 
+   classpath.  This library is needed to properly hande right to left text.
+
+
 See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
 the full list of known issues and requested features.
 

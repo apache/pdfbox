@@ -46,6 +46,10 @@ import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
  * formatting and such.  Please note; it is up to clients of this class to verify that
  * a specific user has the correct permissions to extract text from the
  * PDF document.
+ * 
+ * The basic flow of this process is that we get a document and use a series of 
+ * processXXX() functions that work on smaller and smaller chunks of the page.  
+ * Eventually, we fully process each page and then print it. 
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.70 $
@@ -93,6 +97,12 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected Writer output;
 
+    /**
+     * The normalizer is used to remove text ligatures/presentation forms
+     * and to correct the direction of right to left text, such as Arabic and Hebrew.
+     */
+    private TextNormalize normalize = null;
+    
     /**
      * Instantiate a new PDFTextStripper object.  This object will load properties from
      * Resources/PDFTextStripper.properties.
@@ -318,7 +328,7 @@ public class PDFTextStripper extends PDFStreamEngine
 
             characterListMapping.clear();
             processStream( page, page.findResources(), content );
-            flushText();
+            writePage();
             endPage( page );
         }
 
@@ -373,11 +383,22 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * This will print the text to the output stream.
+     * @deprecated
+     * @see writePage(). 
+     */
+    protected void flushText() throws IOException {
+        writePage();
+    }
+
+    /**
+     * This will print the text of the processed page to "output".
+     * It will estimate, based on the coordinates of the text, where
+     * newlines and word spacings should be placed. The text will be
+     * sorted only if that feature was enabled. 
      *
      * @throws IOException If there is an error writing the text.
      */
-    protected void flushText() throws IOException
+    protected void writePage() throws IOException    
     {
         float maxYForLine = -1;
         float minYTopForLine = Float.MAX_VALUE;
@@ -389,6 +410,11 @@ public class PDFTextStripper extends PDFStreamEngine
         float maxHeightForLine = -1;
         //float lastHeightForLine = -1;
         TextPosition lastPosition = null;
+        
+        if (normalize == null) {
+            normalize = new TextNormalize();
+        }
+        
         for( int i = 0; i < charactersByArticle.size(); i++)
         {
             startParagraph();
@@ -400,6 +426,63 @@ public class PDFTextStripper extends PDFStreamEngine
             }
 
             Iterator textIter = textList.iterator();
+                        
+            /* Before we can display the text, we need to do some normalizing.
+             * Arabic and Hebrew text is right to left and is typically stored
+             * in its logical format, which means that the rightmost character is 
+             * stored first, followed by the second character from the right etc.
+             * However, PDF stores the text in presentation form, which is left to 
+             * right.  We need to do some normalization to convert the PDF data to
+             * the proper logical output format. 
+             * 
+             * Note that if we did not sort the text, then the output of reversing the
+             * text is undefined and can sometimes produce worse output then not trying
+             * to reverse the order.  Sorting should be done for these languages.
+             * */
+
+            /* First step is to determine if we have any right to left text, and 
+             * if so, is it dominant. */ 
+            int ltrCnt = 0;
+            int rtlCnt = 0;
+
+            while( textIter.hasNext() )
+            {
+                TextPosition position = (TextPosition)textIter.next();
+                String stringValue = position.getCharacter();
+
+                for (int a = 0; a < stringValue.length(); a++) {
+                    byte dir = Character.getDirectionality(stringValue.charAt(a));
+                    if ((dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT ) || 
+                            (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING) ||
+                            (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE )) {
+                        ltrCnt++;
+                    }
+                    else if ((dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ) ||
+                            (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) ||
+                            (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING) ||
+                            (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE )) {
+                        rtlCnt++;
+                    }
+                }
+            }
+
+            // choose the dominant direction
+            boolean isRtlDominant = false; 
+            if (rtlCnt > ltrCnt) {
+                isRtlDominant = true;
+            }
+
+            // we will later use this to skip reordering
+            boolean hasRtl = false;
+            if (rtlCnt > 0)
+                hasRtl = true;
+
+            /* Now cycle through to print the text.  
+             * We queue up a line at a time before we print so that we can convert
+             * the line from presentation form to logical form (if needed). */
+            String lineStr = "";
+            
+            textIter = textList.iterator();    // start from the beginning again
             while( textIter.hasNext() )
             {
                 TextPosition position = (TextPosition)textIter.next();
@@ -501,7 +584,22 @@ public class PDFTextStripper extends PDFStreamEngine
                     if( ( !overlap( positionY, positionHeight, maxYForLine, maxHeightForLine ) ))
                     		//maxYForLine - minYTopForLine)))
                     {
-                        processLineSeparator( position );
+                        // If we have RTL text on the page, change the direction
+                        if (hasRtl)
+                            lineStr = normalize.makeLineLogicalOrder(lineStr, isRtlDominant);
+
+                        /* normalize string to remove presentation forms.
+                         * Note that this must come after the line direction 
+                         * conversion because the process looks ahead to the next
+                         * logical character. 
+                         */
+                        lineStr = normalize.normalizePres(lineStr);
+
+                        writeString(lineStr);
+                        lineStr = "";
+
+                        writeLineSeparator( );
+
                         endOfLastTextX = -1;
                         expectedStartOfNextWordX = -1;
                         maxYForLine = -1;
@@ -512,12 +610,12 @@ public class PDFTextStripper extends PDFStreamEngine
                     }
 
 
-	                if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
-	                   //only bother adding a space if the last character was not a space
-	                   lastPosition.getCharacter() != null &&
-	                   !lastPosition.getCharacter().endsWith( " " ) )
-	                {
-	                    processWordSeparator( lastPosition, position );
+                    if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
+                            //only bother adding a space if the last character was not a space
+                            lastPosition.getCharacter() != null &&
+                            !lastPosition.getCharacter().endsWith( " " ) )
+                    {
+	                    lineStr += getWordSeparator();
 	                }
 	                else
 	                {
@@ -535,9 +633,10 @@ public class PDFTextStripper extends PDFStreamEngine
                 endOfLastTextX = positionX + positionWidth;
                 //endOfLastTextY = positionY;
 
+                // add it to the list
                 if (characterValue != null)
                 {
-                    writeCharacters( position );
+                    lineStr += characterValue;
                 }
                 else
                 {
@@ -549,16 +648,22 @@ public class PDFTextStripper extends PDFStreamEngine
                 //lastHeightForLine = position.getHeight();
                 lastWordSpacing = wordSpacing;
             }
+            
+            // print the final line
+            if (lineStr.length() > 0) {
+                if (hasRtl)
+                    lineStr = normalize.makeLineLogicalOrder(lineStr, isRtlDominant);
+
+                // normalize string to remove presentation forms
+                lineStr = normalize.normalizePres(lineStr);
+
+                writeString(lineStr);
+            }
+            
             endParagraph();
         }
 
-
-        // RDD - newline at end of flush - required for end of page (so that the top
-        // of the next page starts on its own line.
-        //
-        output.write(getPageSeparator());
-
-        output.flush();
+        writePageSeperator();;
     }
 
     private boolean overlap( float y1, float height1, float y2, float height2 )
@@ -567,18 +672,57 @@ public class PDFTextStripper extends PDFStreamEngine
                (y1 <= y2 && y1 >= y2-height2);
     }
 
-    protected void processLineSeparator( TextPosition currentText ) throws IOException
+    /**
+     * Write the page separator value to the output stream
+     * @throws IOException
+     */
+    protected void writePageSeperator() throws IOException
+    {
+        // RDD - newline at end of flush - required for end of page (so that the top
+        // of the next page starts on its own line.
+        //
+        output.write(getPageSeparator());
+        output.flush();
+    }
+    
+    /**
+     * Write the line separator value to the output stream
+     * @throws IOException
+     */
+    protected void writeLineSeparator( ) throws IOException
     {
         output.write(getLineSeparator());
     }
-
-    protected void processWordSeparator( TextPosition lastText, TextPosition currentText ) throws IOException
+    
+    /**
+     * @deprecated
+     * @see writeLineSeparator()
+     */
+    protected void processLineSeparator( TextPosition currentText ) throws IOException
     {
-        output.write(getWordSeparator());
+    	writeLineSeparator();
     }
 
     /**
-     * Write the string to the output stream.
+     * Write the word separator value to the output stream
+     * @throws IOException
+     */
+    protected void writeWordSeparator() throws IOException
+    {
+        output.write(getWordSeparator());
+    }
+    
+    /**
+     * @deprecated
+     * @see writeWordSeparator() 
+     */
+    protected void processWordSeparator( TextPosition lastText, TextPosition currentText ) throws IOException
+    {
+    	writeWordSeparator();
+    }
+
+    /**
+     * Write the string in TextPosition to the output stream.
      *
      * @param text The text to write to the stream.
      * @throws IOException If there is an error when writing the text.
@@ -586,6 +730,17 @@ public class PDFTextStripper extends PDFStreamEngine
     protected void writeCharacters( TextPosition text ) throws IOException
     {
         output.write( text.getCharacter() );
+    }
+    
+    /**
+     * Write a Java string to the output stream.
+     *
+     * @param text The text to write to the stream.
+     * @throws IOException If there is an error when writing the text.
+     */
+    protected void writeString( String text ) throws IOException
+    {
+        output.write( text );
     }
 
     /**
@@ -600,13 +755,24 @@ public class PDFTextStripper extends PDFStreamEngine
         return second > first - variance && second < first + variance;
     }
 
+    
     /**
-     * This will show add a character to the list of characters to be printed to
-     * the text file.
-     *
-     * @param text The description of the character to display.
+     * @deprecated
+     * {@inheritDoc}
      */
     protected void showCharacter( TextPosition text )
+    {
+    	processTextPosition(text);
+    }
+    
+    /**
+     * This will process a TextPosition object and add the
+     * text to the list of characters on a page.  It takes care of
+     * overlapping text.
+     *
+     * @param text The text to process.
+     */
+    protected void processTextPosition( TextPosition text )
     {
         boolean showCharacter = true;
         if( suppressDuplicateOverlappingText )

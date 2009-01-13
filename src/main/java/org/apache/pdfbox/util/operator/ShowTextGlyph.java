@@ -63,7 +63,7 @@ public class ShowTextGlyph extends OperatorProcessor
             }
             else if( next instanceof COSString )
             {
-                context.showString( ((COSString)next).getBytes() );
+                context.processEncodedText( ((COSString)next).getBytes() );
             }
             else
             {

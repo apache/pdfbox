@@ -105,11 +105,11 @@ public class PrintTextLocations extends PDFTextStripper
 
     /**
      * A method provided as an event interface to allow a subclass to perform
-     * some specific functionality when a character needs to be displayed.
+     * some specific functionality when text needs to be processed
      *
-     * @param text The character to be displayed.
+     * @param text The text to be processed
      */
-    protected void showCharacter( TextPosition text )
+    protected void processTextPosition( TextPosition text )
     {
         System.out.println( "String[" + text.getX() + "," +
                 text.getY() + " fs=" + text.getFontSize() + " xscale=" +

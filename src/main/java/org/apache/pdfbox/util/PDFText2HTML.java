@@ -68,7 +68,7 @@ public class PDFText2HTML extends PDFTextStripper
         buf.append("</title>");
         buf.append("</head>");
         buf.append("<body>\n");
-        getOutput().write(buf.toString());
+        super.writeString(buf.toString());
     }
 
     /**
@@ -82,9 +82,17 @@ public class PDFText2HTML extends PDFTextStripper
     }
 
     /**
+     * @deprecated
      * {@inheritDoc}
      */
-    protected void flushText() throws IOException
+    protected void flushText() throws IOException {
+        writePage();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void writePage() throws IOException
     {
         Iterator textIter = getCharactersByArticle().iterator();
 
@@ -94,7 +102,7 @@ public class PDFText2HTML extends PDFTextStripper
             writeHeader();
             onFirstPage = false;
         }
-        super.flushText();
+        super.writePage();
     }
 
     /**
@@ -102,7 +110,7 @@ public class PDFText2HTML extends PDFTextStripper
      */
     public void endDocument(PDDocument pdf) throws IOException
     {
-        output.write("</body></html>");
+        super.writeString("</body></html>");
     }
 
     /**
@@ -170,7 +178,7 @@ public class PDFText2HTML extends PDFTextStripper
     {
         if (! suppressParagraphs)
         {
-            getOutput().write("<p>");
+            super.writeString("<p>");
         }
     }
     /**
@@ -182,10 +190,46 @@ public class PDFText2HTML extends PDFTextStripper
     {
         if (! suppressParagraphs)
         {
-            getOutput().write("</p>");
+            super.writeString("</p>");
         }
     }
 
+    /**
+     * Write a string to the output stream and escape some HTML characters
+     */
+    protected void writeString(String chars) throws IOException
+    {
+        for (int i = 0; i < chars.length(); i++)
+        {
+            char c = chars.charAt(i);
+            if ((c < 32) || (c > 126))
+            {
+                int charAsInt = c;
+                super.writeString("&#" + charAsInt + ";");
+            }
+            else
+            {
+                switch (c)
+                {
+                case 34:
+                    super.writeString("&quot;");
+                    break;
+                case 38:
+                    super.writeString("&amp;");
+                    break;
+                case 60:
+                    super.writeString("&lt;");
+                    break;
+                case 62:
+                    super.writeString("&gt;");
+                    break;
+                default:
+                    super.writeString(String.valueOf(c));
+                }
+            }
+        }
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -193,47 +237,18 @@ public class PDFText2HTML extends PDFTextStripper
     {
         if (position == beginTitle)
         {
-            output.write("<H1>");
+            super.writeString("<H1>");
             suppressParagraphs = true;
         }
         if (position == afterEndTitle)
         {
-            output.write("</H1>");  // end title and start first paragraph
+            super.writeString("</H1>");  // end title and start first paragraph
             suppressParagraphs = false;
         }
 
-        String chars = position.getCharacter();
-
-        for (int i = 0; i < chars.length(); i++)
-        {
-            char c = chars.charAt(i);
-            if ((c < 32) || (c > 126))
-            {
-                int charAsInt = c;
-                output.write("&#" + charAsInt + ";");
-            }
-            else
-            {
-                switch (c)
-                {
-                    case 34:
-                        output.write("&quot;");
-                        break;
-                    case 38:
-                        output.write("&amp;");
-                        break;
-                    case 60:
-                        output.write("&lt;");
-                        break;
-                    case 62:
-                        output.write("&gt;");
-                        break;
-                    default:
-                        output.write(c);
-                }
-            }
-        }
+        writeString(position.getCharacter());
     }
+    
 
     /**
      * @return Returns the suppressParagraphs.
