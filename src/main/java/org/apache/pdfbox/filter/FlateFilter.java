@@ -87,14 +87,15 @@ public class FlateFilter implements Filter
         {
             // Decompress data to temporary ByteArrayOutputStream
             decompressor = new InflaterInputStream(compressedData);
-            byte[] buffer = new byte[BUFFER_SIZE];
             int amountRead;
+            int mayRead = compressedData.available();
+            byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
 
             // Decode data using given predictor
             if (predictor==-1 || predictor == 1 || predictor == 10)
             {
                 // decoding not needed
-                while ((amountRead = decompressor.read(buffer, 0, BUFFER_SIZE)) != -1)
+                while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
                 {
                     result.write(buffer, 0, amountRead);
                 }
@@ -115,7 +116,7 @@ public class FlateFilter implements Filter
                 }
 
                 baos = new ByteArrayOutputStream();
-                while ((amountRead = decompressor.read(buffer, 0, BUFFER_SIZE)) != -1)
+                while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
                 {
                     baos.write(buffer, 0, amountRead);
                 }
@@ -289,9 +290,10 @@ public class FlateFilter implements Filter
     public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
     {
         DeflaterOutputStream out = new DeflaterOutputStream(result);
-        byte[] buffer = new byte[BUFFER_SIZE];
         int amountRead = 0;
-        while ((amountRead = rawData.read(buffer, 0, BUFFER_SIZE)) != -1)
+        int mayRead = rawData.available();
+        byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
+        while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
         {
             out.write(buffer, 0, amountRead);
         }
