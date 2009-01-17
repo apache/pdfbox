@@ -185,88 +185,43 @@ public class PDType1Font extends PDSimpleFont
     {
         if( awtFont == null )
         {
-            String baseFont = this.getBaseFont();
-            if( baseFont.equals( TIMES_ROMAN.getBaseFont() ) )
-            {
-                awtFont = new Font( "Times New Roman", Font.PLAIN, 1 );
-            }
-            else if( baseFont.equals( TIMES_ITALIC.getBaseFont() ) )
-            {
-                awtFont = new Font( "Times New Roman", Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( TIMES_BOLD.getBaseFont() ) )
-            {
-                awtFont = new Font( "Times New Roman", Font.BOLD, 1 );
-            }
-            else if( baseFont.equals( TIMES_BOLD_ITALIC.getBaseFont() ) )
-            {
-                awtFont = new Font( "Times New Roman", Font.BOLD | Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( HELVETICA.getBaseFont() ) )
-            {
-                awtFont = new Font( "Helvetica", Font.PLAIN, 1 );
-            }
-            else if( baseFont.equals( HELVETICA_BOLD.getBaseFont() ) )
-            {
-                awtFont = new Font( "Helvetica", Font.BOLD, 1 );
-            }
-            else if( baseFont.equals( HELVETICA_BOLD_OBLIQUE.getBaseFont() ) )
-            {
-                awtFont = new Font( "Helvetica", Font.BOLD | Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( HELVETICA_OBLIQUE.getBaseFont() ) )
-            {
-                awtFont = new Font( "Helvetica", Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( COURIER.getBaseFont() ) )
-            {
-                awtFont = new Font( "Courier", Font.PLAIN, 1 );
-            }
-            else if( baseFont.equals( COURIER_BOLD.getBaseFont() ) )
-            {
-                awtFont = new Font( "Courier", Font.BOLD, 1 );
-            }
-            else if( baseFont.equals( COURIER_BOLD_OBLIQUE.getBaseFont() ) )
-            {
-                awtFont = new Font( "Courier", Font.BOLD | Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( COURIER_OBLIQUE.getBaseFont() ) )
-            {
-                awtFont = new Font( "Courier", Font.ITALIC, 1 );
-            }
-            else if( baseFont.equals( SYMBOL.getBaseFont() ) )
-            {
-                awtFont = new Font( "Symbol", Font.PLAIN, 1 );
-            }
-            else if( baseFont.equals( ZAPF_DINGBATS.getBaseFont() ) )
-            {
-                awtFont = new Font( "ZapfDingbats", Font.PLAIN, 1 );
-            }
-            else
-            {
-                PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
-		if (fd != null){
-			PDStream ffStream = fd.getFontFile();
-			if( ffStream != null )
-			{
-			    try {
-					awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
-				} catch (FontFormatException e) {
-					logger().info("substituting Arial because we couldn't read the embedded Font " + fd.getFontName() );
-					awtFont = new Font( "Arial", Font.PLAIN, 1 );
+            String baseFont = getBaseFont();
+        	PDFontDescriptor fd = getFontDescriptor();
+			if (fd != null && fd instanceof PDFontDescriptorDictionary){
+				PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
+				PDStream ffStream = fdDictionary.getFontFile();
+				if( ffStream == null && fdDictionary.getFontFile3() != null)
+					// TODO FontFile3-streams containing CIDFontType0C or OpenType fonts aren't yet supported 
+					logger().info("Embedded font-type is not supported " + fd.getFontName() );
+				if( ffStream != null )
+				{
+				    try {
+	                	// create a font with the embedded data
+						awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
+					} catch (FontFormatException e) {
+						logger().info("Can't read the embedded font " + fd.getFontName() );
+					}
+				}
+				else {
+	            	// check if the font is part of our environment
+					awtFont = FontManager.getAwtFont(fd.getFontName());
+					if (awtFont == null) 
+						logger().info("Can't find the specified font " + fd.getFontName() );
 				}
 			}
-			else {
-				// TODO try to load external Font. see also PDTrueTypeFont
-						logger().info("substituting Arial because the specified font isn't embedded " + fd.getFontName() );
-				awtFont = new Font( "Arial", Font.PLAIN, 1 );
+			else
+			{
+            	// check if the font is part of our environment
+				awtFont = FontManager.getAwtFont(baseFont);
+				if (awtFont == null) 
+					logger().info("Can't find the specified basefont " + baseFont );
 			}
-		}
-		else{
-			logger().info("substituting Arial because we failed to get a FontDescriptor" );
-			awtFont = new Font( "Arial", Font.PLAIN, 1 );
-		}
-            }
+			if (awtFont == null) 
+			{
+				// we can't find anything, so we have to use the standard font
+				awtFont = FontManager.getStandardFont();
+				logger().info("Using font "+awtFont.getName()+ " instead");
+			}
         }
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
@@ -274,4 +229,5 @@ public class PDType1Font extends PDSimpleFont
 
         g2d.drawString( string, x, y );
     }
+    
 }

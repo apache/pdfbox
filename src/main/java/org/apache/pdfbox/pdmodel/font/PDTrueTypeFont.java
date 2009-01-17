@@ -32,15 +32,10 @@ import org.fontbox.ttf.TrueTypeFont;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
-import org.apache.pdfbox.exceptions.WrappedIOException;
-
 import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.Font;
@@ -325,34 +320,46 @@ public class PDTrueTypeFont extends PDSimpleFont
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
         if( awtFont == null )
         {
-            try
+            PDStream ff2Stream = fd.getFontFile2();
+            if( ff2Stream != null )
             {
-                PDStream ff2Stream = fd.getFontFile2();
-                String fontName = fd.getFontName();
-                if( ff2Stream != null )
+                try
                 {
-                    awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
+                	// create a font with the embedded data
+                	awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
                 }
-                else
+                catch( FontFormatException f )
                 {
-                    //throw new IOException( "Error:TTF Stream is null");
-                    // Embedded true type programs are optional,
-                    // if there is no stream, we must use an external
-                    // file.
-                    TrueTypeFont ttf = getExternalFontFile2( fd );
-                    if( ttf != null )
-                    {
-                        awtFont = Font.createFont( Font.TRUETYPE_FONT, ttf.getOriginalData() );
-                    }
-                    else
-                    {
-                        awtFont = Font.getFont( fontName, null );
-                    }
+					logger().info("Can't read the embedded font " + fd.getFontName() );
                 }
             }
-            catch( FontFormatException f )
+            else
             {
-                throw new WrappedIOException( f );
+            	// check if the font is part of our environment
+				awtFont = FontManager.getAwtFont(fd.getFontName());
+				if (awtFont == null) 
+				{ 
+					logger().info("Can't find the specified font " + fd.getFontName() );
+                    // check if there is a font mapping for an external font file
+                    TrueTypeFont ttf = getExternalFontFile2( fd );
+                    if( ttf != null ) 
+                    {
+                        try
+                    	{
+                        	awtFont = Font.createFont( Font.TRUETYPE_FONT, ttf.getOriginalData() );
+                        }
+	                    catch( FontFormatException f )
+	                    {
+	    					logger().info("Can't read the external fontfile " + fd.getFontName() );
+	                    }
+                    }
+				}
+            }
+			if (awtFont == null) 
+			{
+				// we can't find anything, so we have to use the standard font
+				awtFont = FontManager.getStandardFont();
+				logger().info("Using font "+awtFont.getName()+ " instead");
             }
         }
         Graphics2D g2d = (Graphics2D)g;
