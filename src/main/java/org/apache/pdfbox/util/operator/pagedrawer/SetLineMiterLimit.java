@@ -42,6 +42,7 @@ public class SetLineMiterLimit extends org.apache.pdfbox.util.operator.SetLineMi
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
+    	super.process(operator, arguments);
         float miterLimit = (float)context.getGraphicsState().getMiterLimit();
         Graphics2D graphics = ((PageDrawer)context).getGraphics();
         BasicStroke stroke = (BasicStroke)graphics.getStroke();
