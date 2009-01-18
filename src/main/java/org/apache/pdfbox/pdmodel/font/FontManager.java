@@ -112,12 +112,12 @@ public class FontManager {
     	// Terminate trailing characters up to the "+".
     	// As far as I know, these characters are used in names of embedded fonts
     	// If the embedded font can't be read, we'll try to find it here
-    	if (normalizedFontname.contains("+"))
+    	if (normalizedFontname.indexOf("+") > -1)
     		normalizedFontname = normalizedFontname.substring(normalizedFontname.indexOf("+")+1);
     	// normalize all kinds of fonttypes. There are several possible version which have to be normalized
     	// e.g. Arial,Bold Arial-BoldMT Helevtica-oblique ...
-    	boolean isBold = normalizedFontname.contains("bold");
-		boolean isItalic = normalizedFontname.contains("italic") || normalizedFontname.contains("oblique");
+    	boolean isBold = normalizedFontname.indexOf("bold") > -1;
+		boolean isItalic = normalizedFontname.indexOf("italic") > -1 || normalizedFontname.indexOf("oblique") > -1;
 		normalizedFontname = normalizedFontname.toLowerCase().replaceAll("bold" , "").replaceAll("italic" , "").replaceAll("oblique" , "");
     	if (isBold)
     		normalizedFontname += "bold";
@@ -203,10 +203,10 @@ public class FontManager {
      */
     private static boolean isBold(java.awt.Font font) {
     	String name = font.getName().toLowerCase();
-    	if (name.contains("bold"))
+    	if (name.indexOf("bold") > -1)
     		return true;
     	String psname = font.getPSName().toLowerCase();
-    	if (psname.contains("bold"))
+    	if (psname.indexOf("bold") > -1)
     		return true;
     	return false;
     }
@@ -221,10 +221,10 @@ public class FontManager {
     private static boolean isItalic(java.awt.Font font) {
     	String name = font.getName().toLowerCase();
     	// oblique is the same as italic
-    	if (name.contains("italic") || name.contains("oblique"))
+    	if (name.indexOf("italic") > -1 || name.indexOf("oblique") > -1)
     		return true;
     	String psname = font.getPSName().toLowerCase();
-    	if (psname.contains("italic") || psname.contains("oblique"))
+    	if (psname.indexOf("italic") > -1 || psname.indexOf("oblique") > -1)
     		return true;
     	return false;
     }
