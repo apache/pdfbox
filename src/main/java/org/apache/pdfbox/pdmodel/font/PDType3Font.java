@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 
 import java.io.IOException;
 
@@ -99,7 +100,7 @@ public class PDType3Font extends PDSimpleFont
      *
      * @throws IOException If there is an error drawing the image on the screen.
      */
-    public void drawString( String string, Graphics g, float fontSize, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
     {
         //if( string.equals( "V" )|| string.equals( "o" ) )
         {
