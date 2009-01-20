@@ -57,7 +57,7 @@ public class ICU4JImpl {
     }
 
     /**
-     * Normalize presentation forms of characters to the seperate parts.
+     * Normalize presentation forms of characters to the separate parts.
      * @see TextNormalize.normalizePres(String)
      * 
      * @param a_str String to normalize
@@ -69,10 +69,10 @@ public class ICU4JImpl {
             /* We only normalize if the codepoint is in a given range. Otherwise, 
              * NFKC converts too many things that would cause confusion. For example,
              * it converts the micro symbol in extended latin to the value in the greek
-             * script. 
+             * script. We normalize the Unicode Alphabetic and Arabic A&B Presentation forms.
              */
-            if (((a_str.codePointAt(i) >= 0xFB00) && (a_str.codePointAt(i) <= 0xFDFF)) ||
-                    ((a_str.codePointAt(i) >= 0xFE70) && (a_str.codePointAt(i) <= 0xFEFF)))	{
+            if (((a_str.charAt(i) >= 0xFB00) && (a_str.charAt(i) <= 0xFDFF)) ||
+                    ((a_str.charAt(i) >= 0xFE70) && (a_str.charAt(i) <= 0xFEFF)))	{
                 retStr += Normalizer.normalize(a_str.charAt(i), Normalizer.NFKC);
             }
             else {
