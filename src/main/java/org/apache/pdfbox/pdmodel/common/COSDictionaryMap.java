@@ -242,7 +242,7 @@ public class COSDictionaryMap implements Map
                 }
                 else if( cosObj instanceof COSFloat )
                 {
-                    actualObject = new Float( ((COSInteger)cosObj).floatValue() );
+                    actualObject = new Float( ((COSFloat)cosObj).floatValue() );
                 }
                 else if( cosObj instanceof COSBoolean )
                 {
