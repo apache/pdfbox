@@ -34,11 +34,25 @@ public class FontManager {
     private static HashMap envFonts = new HashMap();
 	// the standard font
     private static String standardFont = null;
+	private static Properties fontMapping = new Properties(); 
     
     static {
+        try
+        {
+            ResourceLoader.loadProperties( "Resources/FontMapping.properties", fontMapping );
+        }
+        catch( IOException io )
+        {
+            io.printStackTrace();
+            throw new RuntimeException( "Error loading font mapping" );
+        }
     	loadFonts();
-    	loadFontMapping();
+    	// There could be some recursive mappings in the fontmapping, so that we have to 
+    	// read the list until no more additional mapping is added to it 
+    	while (loadFontMapping() > 0) 
+    		; 
     	loadBasefontMapping();
+    	setStandardFont();
     }
     
     /**
@@ -91,6 +105,9 @@ public class FontManager {
 				envFonts.put(family, font);
 			}
 		}
+    }
+
+    private static void setStandardFont() {
 		// One of the following fonts will be the standard-font 
 		if (envFonts.containsKey("arial"))
 			standardFont = "arial";
@@ -135,38 +152,32 @@ public class FontManager {
      * @param mappedName The name of the mapped font.
      * 
      */
-    private static void addFontMapping(String font, String mappedName) {
+    private static boolean addFontMapping(String font, String mappedName) {
     	String fontname = normalizeFontname(font);
     	// is there already a font mapping ?
     	if (envFonts.containsKey(fontname))
-    		return;
+    		return false;
     	String mappedFontname = normalizeFontname(mappedName);
     	// is the mapped font available ?
     	if (!envFonts.containsKey(mappedFontname))
-    		return;
+    		return false;
     	envFonts.put(fontname, envFonts.get(mappedFontname));
+    	return true;
     }
     
     /**
      * Load the mapping for the well knwon font-substitutions
      *
      */
-    private static void loadFontMapping() {
-    	Properties fontMapping = new Properties();; 
-        try
-        {
-            ResourceLoader.loadProperties( "Resources/FontMapping.properties", fontMapping );
-        }
-        catch( IOException io )
-        {
-            io.printStackTrace();
-            throw new RuntimeException( "Error loading font mapping" );
-        }
+    private static int loadFontMapping() {
         Enumeration keys = fontMapping.keys();
+        int counter = 0;
         while (keys.hasMoreElements()) {
         	String key = (String)keys.nextElement();
-        	addFontMapping(key,(String)fontMapping.get(key));
+        	if (addFontMapping(key,(String)fontMapping.get(key)))
+        		counter++;
         }
+        return counter;
     }
 
     /**
