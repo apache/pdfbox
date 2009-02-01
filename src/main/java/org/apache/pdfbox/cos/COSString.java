@@ -401,6 +401,6 @@ public class COSString extends COSBase
      */
     public int hashCode()
     {
-        return getBytes().hashCode();
+        return getString().hashCode();
     }
 }
