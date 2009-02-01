@@ -150,7 +150,10 @@ public class PageDrawer extends PDFStreamEngine
             }
             else
             {
-                //need to implement....
+            	// TODO: need to implement....
+            	logger().info("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
+            	logger().info("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
+                graphics.setColor( this.getGraphicsState().getNonStrokingColorSpace().createColor() );
             }
             PDFont font = text.getFont();
 
