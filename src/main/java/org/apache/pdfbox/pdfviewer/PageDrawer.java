@@ -206,6 +206,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fix the y coordinate based on page rotation.
      *
+     * @deprecated
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @return The updated y coordinate.
@@ -213,6 +214,17 @@ public class PageDrawer extends PDFStreamEngine
     public double fixY( double x, double y )
     {
     	return pageSize.getHeight() - y;
+    }
+
+    /**
+     * Fix the y coordinate
+     *
+     * @param y The y coordinate.
+     * @return The updated y coordinate.
+     */
+    public double fixY( double y )
+    {
+		return pageSize.getHeight() - y;
     }
 
     /**
@@ -314,41 +326,25 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     //This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
+    /**
+     * use the current transformatrion matrix to transform a single point.
+     * @param x x-coordinate of the point to be transform
+     * @param x y-coordinate of the point to be transform
+     * @return the transformed coordinates as Point2D.Double
+     */
     public java.awt.geom.Point2D.Double TransformedPoint (double x, double y){
-
-        double scaleX = 0.0;
-        double scaleY = 0.0;
-        double transX = 0.0;
-        double transY = 0.0;
-
-        double finalX = x;
-        double finalY = y;
-
-        //Get the transformation matrix
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        AffineTransform at = ctm.createAffineTransform();
-
-    	scaleX = at.getScaleX();
-        scaleY = at.getScaleY();
-        transX = at.getTranslateX();
-        transY = at.getTranslateY();
-
-        Point2D Pscale = ScaledPoint (finalX, finalY, scaleX, scaleY);
-        finalX = Pscale.getX();
-        finalY = Pscale.getY();
-
-        finalX += transX;
-      	finalY += transY;
-
-        finalY = fixY( finalX, finalY );
-        finalY -= .6;
-
-        return new java.awt.geom.Point2D.Double(finalX, finalY);
+        double[] position = {x,y}; 
+        getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(position, 0, position, 0, 1);
+        position[1] = fixY(position[1]);
+        return new Point2D.Double(position[0],position[1]);
     }
 
     //Use ScaledPoint rather than TransformedPoint in situations where most of the translation
     //need not be repeated.
     //Consider, for example, the second coordinate of a rectangle.
+    /**
+     * @deprecated
+     */
     public java.awt.geom.Point2D.Double ScaledPoint (double x, double y, double scaleX, double scaleY){
 
         double finalX = 0.0;
@@ -366,6 +362,9 @@ public class PageDrawer extends PDFStreamEngine
         return new java.awt.geom.Point2D.Double(finalX, finalY);
     }
 
+    /**
+     * @deprecated
+     */
     public java.awt.geom.Point2D.Double ScaledPoint (double x, double y){
 
         double scaleX = 0.0;

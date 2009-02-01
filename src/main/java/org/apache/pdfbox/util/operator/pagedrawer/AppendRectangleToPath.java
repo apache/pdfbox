@@ -16,9 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -26,7 +23,6 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -54,33 +50,32 @@ public class AppendRectangleToPath extends OperatorProcessor
         COSNumber w = (COSNumber)arguments.get( 2 );
         COSNumber h = (COSNumber)arguments.get( 3 );
 
-        double finalX = x.floatValue();
-        double finalY = y.floatValue();
-        double finalW = w.floatValue();
-        double finalH = h.floatValue();
+        double x1 = x.floatValue();
+        double y1 = y.floatValue();
+        // create a pair of coordinates for the transformation 
+        double x2 = w.floatValue()+x1;
+        double y2 = h.floatValue()+y1;
 
-        Point2D Ppos = drawer.TransformedPoint(finalX, finalY);
-        Point2D Psize = drawer.ScaledPoint(finalW, finalH);
+        Point2D startCoords = drawer.TransformedPoint(x1,y1);
+        Point2D endCoords = drawer.TransformedPoint(x2,y2);
 
-        finalY = Ppos.getY() - Psize.getY();
-
-
-        if(finalY < 0)
+        double width = endCoords.getX()-startCoords.getX();
+        double height =  endCoords.getY()-startCoords.getY();
+        double xStart = startCoords.getX();
+        double yStart = startCoords.getY();
+        // we have to calculate the width and height from the two pairs of coordinates
+        // if the endCoords are above the startCoords we have to switch them
+        if (width < 0) 
         {
-        	finalY = 0;
+        	xStart += width;
+        	width = -width;
         }
-
-
-        //logger().info("Rectangle coords: " + Ppos.getX() + "," +  finalY + "," +  Psize.getX() + "," +  Psize.getY() );
-        Rectangle2D rect = new Rectangle2D.Double(Ppos.getX(), finalY, Psize.getX(), Psize.getY());
-
+        if (height < 0) {
+        	yStart += height;
+        	height = -height;
+        }
+        Rectangle2D rect = new Rectangle2D.Double(xStart, yStart, width, height);
         drawer.getLinePath().reset();
-
-        //System.out.println( "Bounds before=" + drawer.getLinePath().getBounds() );
         drawer.getLinePath().append( rect, false );
-        //graphics.drawRect((int)x.doubleValue(), (int)(pageSize.getHeight() - y.doubleValue()),
-        //                  (int)w.doubleValue(),(int)h.doubleValue() );
-        //System.out.println( "<re x=\"" + x.getValue() + "\" y=\"" + y.getValue() + "\" width=\"" +
-        //                                 width.getValue() + "\" height=\"" + height.getValue() + "\" >" );
     }
 }
