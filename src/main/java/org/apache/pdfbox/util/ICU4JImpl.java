@@ -71,10 +71,44 @@ public class ICU4JImpl {
              * it converts the micro symbol in extended latin to the value in the greek
              * script. We normalize the Unicode Alphabetic and Arabic A&B Presentation forms.
              */
-            if (((a_str.charAt(i) >= 0xFB00) && (a_str.charAt(i) <= 0xFDFF)) ||
-                    ((a_str.charAt(i) >= 0xFE70) && (a_str.charAt(i) <= 0xFEFF)))	{
-                retStr += Normalizer.normalize(a_str.charAt(i), Normalizer.NFKC);
-            }
+            char c = a_str.charAt(i);
+            if (((c >= 0xFB00) && (c <= 0xFDFF)) ||
+                    ((c >= 0xFE70) && (c <= 0xFEFF)))	{
+                /* The following ligatures have a space in them
+                 * when they are decomposed. PDF files adjust for
+                 * this using TJ spacing, but currently a space
+                 * gets created in the word by the normalization.
+                 * The current fix is to hard code the decomposition
+                 * without the space.
+                 */
+                if(c == 0xFC5E){
+                    retStr += "\u064c\u0651";
+                }
+                else if(c == 0xFC5F){
+                    retStr += "\u064d\u0651";
+                }
+                else if(c == 0xFC60){
+                    retStr += "\u064e\u0651";
+                }
+                else if(c == 0xFC61){
+                    retStr += "\u064f\u0651";
+                }
+                else if(c == 0xFC62){
+                    retStr += "\u0650\u0651";
+                }
+                else if(c == 0xFC63){
+                    retStr += "\u0651\u0670";
+                }
+                /* Some fonts map U+FDF2 differently than the Unicode spec.
+                 * They add an extra U+0627 character to compensate.  
+                 * This removes the extra character for those fonts. */ 
+                else if((c == 0xFDF2) && (i > 0) && ((a_str.charAt(i-1) == 0x0627) || (a_str.charAt(i-1) == 0xFE8D))) {
+                    retStr += "\u0644\u0644\u0647";
+                }
+                else{
+                    retStr += Normalizer.normalize(c, Normalizer.NFKC); 
+                }
+            }      
             else {
                 retStr += a_str.charAt(i);
             }
