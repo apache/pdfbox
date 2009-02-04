@@ -50,7 +50,9 @@ import org.apache.pdfbox.util.PDFTextStripper;
  *
  * The output file is then tested against a known good result file from
  * the input directory (again, with the same name as the tested PDF file,
- * but with the additional ".txt" suffix).
+ * but with the additional ".txt" suffix).  The process is performed both
+ * with and without sorting enabled.  The sorted files have a "-sorted.txt" 
+ * suffix. 
  *
  * So for the file "test/input/hello.pdf", an output file will be generated
  * named "test/output/hello.pdf.txt".  Then that file will be compared to
@@ -114,7 +116,7 @@ public class TestTextStripper extends TestCase
      * Determine whether two strings are equal, where two null strings are
      * considered equal.
      *
-     * @param expected Excpected string
+     * @param expected Expected string
      * @param actual Actual String
      * @return <code>true</code> is the strings are both null,
      * or if their contents are the same, otherwise <code>false</code>.
@@ -202,13 +204,18 @@ public class TestTextStripper extends TestCase
      *
      * @param file The file to validate
      * @param bLogResult Whether to log the extracted text
+     * @param bSort Whether or not the extracted text is sorted
      * @throws Exception when there is an exception
      */
-    public void doTestFile(File file, boolean bLogResult)
-        throws Exception
+    public void doTestFile(File file, boolean bLogResult, boolean bSort)
+    throws Exception
     {
-
-        log.println("Preparing to parse " + file.getName());
+        if(bSort){
+            log.println("Preparing to parse " + file.getName() + " for sorted test");
+        }
+        else{
+            log.println("Preparing to parse " + file.getName() + " for standard test");
+        }
 
         OutputStream os = null;
         Writer writer = null;
@@ -217,14 +224,26 @@ public class TestTextStripper extends TestCase
         {
 
             document = PDDocument.load(file);
-            File outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
+            File outFile = null;
+            File expectedFile = null;
+
+            if(bSort){
+                outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + "-sorted.txt");
+                expectedFile = new File(file.getParentFile().getParentFile(), "input/" + file.getName() + "-sorted.txt");
+            }
+            else{
+                outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
+                expectedFile = new File(file.getParentFile().getParentFile(), "input/" + file.getName() + ".txt");
+            }
+
             os = new FileOutputStream(outFile);
             os.write( 0xFF );
             os.write( 0xFE );
             writer = new OutputStreamWriter(os,"UTF-16LE");
 
+            //Allows for sorted tests 
+            stripper.setSortByPosition(bSort);
             stripper.writeText(document, writer);
-
 
 
             if (bLogResult)
@@ -232,22 +251,19 @@ public class TestTextStripper extends TestCase
                 log.println("Text for " + file.getName() + ":\r\n" + stripper.getText(document));
             }
 
-            File expectedFile = new File(file.getParentFile().getParentFile(), "input/" + file.getName() + ".txt");
-            File actualFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
-
             if (!expectedFile.exists())
             {
                 this.bFail = true;
                 log.println(
-                    "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
-                    " did not exist");
+                        "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
+                " did not exist");
                 return;
             }
 
             LineNumberReader expectedReader =
                 new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile),"UTF-16LE"));
             LineNumberReader actualReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(actualFile), "UTF-16LE"));
+                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), "UTF-16LE"));
 
             while (true)
             {
@@ -265,10 +281,10 @@ public class TestTextStripper extends TestCase
                 {
                     this.bFail = true;
                     log.println("FAILURE: Line mismatch for file " + file.getName() +
-                              " at expected line: " + expectedReader.getLineNumber() +
-                              " at actual line: " + actualReader.getLineNumber() +
-                              "\r\n  expected line was: \"" + expectedLine + "\"" +
-                              "\r\n  actual line was:   \"" + actualLine + "\"");
+                            " at expected line: " + expectedReader.getLineNumber() +
+                            " at actual line: " + actualReader.getLineNumber() +
+                            "\r\n  expected line was: \"" + expectedLine + "\"" +
+                            "\r\n  actual line was:   \"" + actualLine + "\"");
                     //lets report all lines, even though this might produce some verbose logging
                     //break;
                 }
@@ -302,7 +318,7 @@ public class TestTextStripper extends TestCase
      * @throws Exception when there is an exception
      */
     public void testExtract()
-        throws Exception
+    throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
         File testDir = new File("test/input");
@@ -322,12 +338,18 @@ public class TestTextStripper extends TestCase
 
                 for (int n = 0; n < testFiles.length; n++)
                 {
-                    doTestFile(testFiles[n], false);
+                    //Test without sorting
+                    doTestFile(testFiles[n], false, false);
+                    //Test with sorting
+                    doTestFile(testFiles[n], false, true);
                 }
             }
             else
             {
-                doTestFile(new File(testDir, filename), true);
+                //Test without sorting
+                doTestFile(new File(testDir, filename), true, false);
+                //Test with sorting
+                doTestFile(new File(testDir, filename), true, true);
             }
 
             if (this.bFail)
