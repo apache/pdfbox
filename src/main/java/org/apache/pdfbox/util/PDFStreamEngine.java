@@ -66,6 +66,9 @@ public class PDFStreamEngine extends LoggingObject
     private PDPage page;
 
     private Map documentFontCache = new HashMap();
+    
+    private int validCharCnt;
+    private int totalCharCnt;
 
     /**
      * This is a simple internal class used by the Stream engine to handle the
@@ -86,6 +89,8 @@ public class PDFStreamEngine extends LoggingObject
     public PDFStreamEngine()
     {
         //default constructor
+        validCharCnt = 0;
+        totalCharCnt = 0;
     }
 
     /**
@@ -117,6 +122,8 @@ public class PDFStreamEngine extends LoggingObject
         {
             throw new WrappedIOException( e );
         }
+        validCharCnt = 0;
+        totalCharCnt = 0;
     }
 
     /**
@@ -141,6 +148,8 @@ public class PDFStreamEngine extends LoggingObject
     public void resetEngine()
     {
         documentFontCache.clear();
+        validCharCnt = 0;
+        totalCharCnt = 0;
     }
 
     /**
@@ -415,12 +424,14 @@ public class PDFStreamEngine extends LoggingObject
                         individualWidthsText[stringResult.length()+j] = widthOfEachCharacterForCode;
                     }
                 }
+                validCharCnt += c.length();
             }
             else {
             	// PDFBOX-373: Replace a null entry with "?" so it is
             	// not printed as "(null)"
             	c = "?";
             }
+            totalCharCnt += c.length();
             
             stringResult.append( c );
         }
@@ -625,5 +636,25 @@ public class PDFStreamEngine extends LoggingObject
     public PDPage getCurrentPage()
     {
         return page;
+    }
+    
+    /** 
+     * Get the total number of valid characters in the doc 
+     * that could be decoded in processEncodedText(). 
+     * @return The number of valid characters. 
+     */
+    public int getValidCharCnt()
+    {
+        return validCharCnt;
+    }
+
+    /**
+     * Get the total number of characters in the doc
+     * (including ones that could not be mapped).  
+     * @return The number of characters. 
+     */
+    public int getTotalCharCnt()
+    {
+        return totalCharCnt;
     }
 }
