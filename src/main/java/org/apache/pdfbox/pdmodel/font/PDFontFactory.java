@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -35,33 +34,6 @@ public class PDFontFactory
      */
     private PDFontFactory()
     {
-    }
-
-    /**
-     * Create a font from the dictionary.  Use the fontCache to get the existing
-     * object instead of creating it.
-     *
-     * @param dic The font dictionary.
-     * @param fontCache The font cache.
-     * @return The PDModel object for the cos dictionary.
-     * @throws IOException If there is an error creating the font.
-     */
-    public static PDFont createFont( COSDictionary dic, Map fontCache ) throws IOException
-    {
-        PDFont font = null;
-        if( fontCache != null )
-        {
-            font = (PDFont)fontCache.get( dic );
-        }
-        if( font == null )
-        {
-            font = createFont( dic );
-            if( fontCache != null )
-            {
-                fontCache.put( dic, font );
-            }
-        }
-        return font;
     }
 
     /**
