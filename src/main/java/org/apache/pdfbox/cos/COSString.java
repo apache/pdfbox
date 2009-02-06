@@ -76,6 +76,7 @@ public class COSString extends COSBase
     public static final byte[] FF_ESCAPE = new byte[]{ 92, 102 }; //"\\f".getBytes( "ISO-8859-1" );
 
     private ByteArrayOutputStream out = null;
+    private String str = null;
 
     /**
      * Forces the string to be serialized in literal form but not hexa form.
@@ -107,6 +108,7 @@ public class COSString extends COSBase
                 if( chars[i] > 255 )
                 {
                     unicode16 = true;
+                    break;
                 }
             }
             if( unicode16 )
@@ -217,6 +219,10 @@ public class COSString extends COSBase
      */
     public String getString()
     {
+    	if (this.str != null)
+    	{
+    		return this.str;
+    	}
         String retval;
         String encoding = "ISO-8859-1";
         byte[] data = getBytes();
@@ -244,6 +250,7 @@ public class COSString extends COSBase
             e.printStackTrace();
             retval = new String( getBytes() );
         }
+        this.str = retval;
         return retval;
     }
 
@@ -257,6 +264,7 @@ public class COSString extends COSBase
     public void append( byte[] data ) throws IOException
     {
         out.write( data );
+        this.str = null;
     }
 
     /**
@@ -269,6 +277,7 @@ public class COSString extends COSBase
     public void append( int in ) throws IOException
     {
         out.write( in );
+        this.str = null;
     }
 
     /**
@@ -277,6 +286,7 @@ public class COSString extends COSBase
     public void reset()
     {
         out.reset();
+        this.str = null;
     }
 
     /**
@@ -294,7 +304,7 @@ public class COSString extends COSBase
      */
     public String toString()
     {
-        return "COSString{" + new String( getBytes() ) + "}";
+        return "COSString{" + this.getString() + "}";
     }
 
     /**
@@ -393,7 +403,13 @@ public class COSString extends COSBase
      */
     public boolean equals(Object obj)
     {
-        return (obj instanceof COSString) && java.util.Arrays.equals(((COSString) obj).getBytes(), getBytes());
+    	if (obj instanceof COSString)
+    	{
+    		obj = ((COSString) obj).getString();
+            return this.getString().equals(obj);
+    	}
+    	else 
+    		return false;
     }
 
     /**
