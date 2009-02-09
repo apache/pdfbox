@@ -72,6 +72,7 @@
     <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
 
     <property name="testoutput.dir" value="test/output"/>
+    <property name="testoutput-ext.dir" value="test/output-ext"/>
 
     <property name="file" value=""/>
 
@@ -94,6 +95,7 @@
         <delete dir="${bin.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
+        <delete dir="${testoutput-ext.dir}"/>
     </target>
 
     <target name="pdfbox.init">
@@ -103,6 +105,7 @@
         <mkdir dir="${dist.dir}" />
         <mkdir dir="${bin.dir}" />
         <mkdir dir="${testoutput.dir}" />
+        <mkdir dir="${testoutput-ext.dir}" />
     </target>
 
     <target name="compile" depends="pdfbox.init" description="Compile Java source files">
