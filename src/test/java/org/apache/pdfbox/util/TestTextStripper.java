@@ -46,7 +46,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
  * files and known good output for each.  The default mode of testAll()
  * is to process each *.pdf file in "test/input".  An output file is
  * created in "test/output" with the same name as the PDF file, plus an
- * additional ".txt" suffix.
+ * additional ".txt" suffix.  
  *
  * The output file is then tested against a known good result file from
  * the input directory (again, with the same name as the tested PDF file,
@@ -57,6 +57,9 @@ import org.apache.pdfbox.util.PDFTextStripper;
  * So for the file "test/input/hello.pdf", an output file will be generated
  * named "test/output/hello.pdf.txt".  Then that file will be compared to
  * the known good file "test/input/hello.pdf.txt", if it exists.
+ * 
+ * To support testing with files that are not officially distributed 
+ * with PDFBox, this test will also look in the "test/input-ext" directory. 
  *
  * Any errors are logged, and at the end of processing all *.pdf files, if
  * there were any errors, the test fails.  The logging is at INFO, as the
@@ -202,19 +205,20 @@ public class TestTextStripper extends TestCase
     /**
      * Validate text extraction on a single file.
      *
-     * @param file The file to validate
+     * @param inFile The PDF file to validate
+     * @param outDir The directory to store the output in
      * @param bLogResult Whether to log the extracted text
      * @param bSort Whether or not the extracted text is sorted
      * @throws Exception when there is an exception
      */
-    public void doTestFile(File file, boolean bLogResult, boolean bSort)
+    public void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
     throws Exception
     {
         if(bSort){
-            log.println("Preparing to parse " + file.getName() + " for sorted test");
+            log.println("Preparing to parse " + inFile.getName() + " for sorted test");
         }
         else{
-            log.println("Preparing to parse " + file.getName() + " for standard test");
+            log.println("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
         OutputStream os = null;
@@ -222,18 +226,23 @@ public class TestTextStripper extends TestCase
         PDDocument document = null;
         try
         {
-
-            document = PDDocument.load(file);
+            if (outDir.exists() == false) {
+                if (outDir.mkdirs() == false) {
+                    throw (new Exception ("Error creating " + outDir.getAbsolutePath() + " directory"));
+                }
+            }
+            
+            document = PDDocument.load(inFile);
             File outFile = null;
             File expectedFile = null;
 
             if(bSort){
-                outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + "-sorted.txt");
-                expectedFile = new File(file.getParentFile().getParentFile(), "input/" + file.getName() + "-sorted.txt");
+                outFile = new File(outDir,  inFile.getName() + "-sorted.txt");
+                expectedFile = new File(inFile.getParentFile(), inFile.getName() + "-sorted.txt");
             }
             else{
-                outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
-                expectedFile = new File(file.getParentFile().getParentFile(), "input/" + file.getName() + ".txt");
+                outFile = new File(outDir, inFile.getName() + ".txt");
+                expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
 
             os = new FileOutputStream(outFile);
@@ -248,7 +257,7 @@ public class TestTextStripper extends TestCase
 
             if (bLogResult)
             {
-                log.println("Text for " + file.getName() + ":\r\n" + stripper.getText(document));
+                log.println("Text for " + inFile.getName() + ":\r\n" + stripper.getText(document));
             }
 
             if (!expectedFile.exists())
@@ -280,7 +289,7 @@ public class TestTextStripper extends TestCase
                 if (!stringsEqual(log, expectedLine, actualLine))
                 {
                     this.bFail = true;
-                    log.println("FAILURE: Line mismatch for file " + file.getName() +
+                    log.println("FAILURE: Line mismatch for file " + inFile.getName() +
                             " at expected line: " + expectedReader.getLineNumber() +
                             " at actual line: " + actualReader.getLineNumber() +
                             "\r\n  expected line was: \"" + expectedLine + "\"" +
@@ -313,6 +322,26 @@ public class TestTextStripper extends TestCase
     }
 
     /**
+     * Process each file in the specified directory.
+     * @param inDir Input directory search for PDF files in.
+     * @param outDir Output directory where the temp files will be created.
+     */
+    private void doTestDir(File inDir, File outDir) throws Exception {
+        File[] testFiles = inDir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return (name.endsWith(".pdf"));
+            }
+        });
+
+        for (int n = 0; n < testFiles.length; n++) {
+            //Test without sorting
+            doTestFile(testFiles[n], outDir, false, false);
+            //Test with sorting
+            doTestFile(testFiles[n], outDir, false, true);
+        }
+    }
+    
+    /**
      * Test to validate text extraction of file set.
      *
      * @throws Exception when there is an exception
@@ -321,35 +350,25 @@ public class TestTextStripper extends TestCase
     throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        File testDir = new File("test/input");
+        File inDir = new File("test/input");
+        File outDir = new File("test/output");
+        File inDirExt = new File("test/input-ext");
+        File outDirExt = new File("test/output-ext");
+        
         try
         {
             log = new PrintWriter( new FileWriter( "textextract.log" ) );
 
-            if ((filename == null) || (filename.length() == 0))
-            {
-                File[] testFiles = testDir.listFiles(new FilenameFilter()
-                {
-                    public boolean accept(File dir, String name)
-                    {
-                        return (name.endsWith(".pdf"));
-                    }
-                });
-
-                for (int n = 0; n < testFiles.length; n++)
-                {
-                    //Test without sorting
-                    doTestFile(testFiles[n], false, false);
-                    //Test with sorting
-                    doTestFile(testFiles[n], false, true);
-                }
+            if ((filename == null) || (filename.length() == 0)) {
+                doTestDir(inDir, outDir);
+                if (inDirExt.exists())
+                    doTestDir(inDirExt, outDirExt);
             }
-            else
-            {
+            else {
                 //Test without sorting
-                doTestFile(new File(testDir, filename), true, false);
+                doTestFile(new File(inDir, filename), outDir, true, false);
                 //Test with sorting
-                doTestFile(new File(testDir, filename), true, true);
+                doTestFile(new File(inDir, filename), outDir, true, true);
             }
 
             if (this.bFail)
