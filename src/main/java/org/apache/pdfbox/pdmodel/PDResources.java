@@ -121,13 +121,17 @@ public class PDResources implements COSObjectable
             {
                 COSDictionary fontDictionary = (COSDictionary)font;
                 PDFont newFont = null;
-                if (fontCache.containsKey(fontName.getName()))
-                	newFont = (PDFont)fontCache.get(fontName.getName());
-                else {
-                	newFont = PDFontFactory.createFont( fontDictionary );
-                	fontCache.put(fontName.getName(), newFont);
+                if (fontCache != null) {
+	                if (fontCache.containsKey(fontName.getName()))
+	                	newFont = (PDFont)fontCache.get(fontName.getName());
+	                else {
+	                	newFont = PDFontFactory.createFont( fontDictionary );
+	                	fontCache.put(fontName.getName(), newFont);
+	                }
                 }
-                actuals.put( fontName.getName(), newFont);
+                else
+                	newFont = PDFontFactory.createFont( fontDictionary );
+	            actuals.put( fontName.getName(), newFont);
             }
         }
         return retval;
