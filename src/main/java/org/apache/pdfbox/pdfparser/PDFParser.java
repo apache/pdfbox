@@ -47,6 +47,7 @@ public class PDFParser extends BaseParser
     private static final int SPACE_BYTE = 32;
 
     private static final String PDF_HEADER = "%PDF-";
+    private static final String FDF_HEADER = "%FDF-";
     private COSDocument document;
 
     /**
@@ -192,25 +193,25 @@ public class PDFParser extends BaseParser
     	// read first line
     	String header = readLine();
     	// some pdf-documents are broken and the pdf-version is in one of the following lines
-        if (header.indexOf( PDF_HEADER ) == -1)
-        {
-                header = readLine();
-                while (header.indexOf( PDF_HEADER ) == -1)
-                {
-                	// if a line starts with a digit, it has to be the first one with data in it
-                	if (Character. isDigit (header.charAt(0)))
-                		break ;
-                	header = readLine();
-                }
-        }
+    	if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)) 
+    	{
+    	    header = readLine();
+    	    while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+    	    {
+    	        // if a line starts with a digit, it has to be the first one with data in it
+    	        if (Character.isDigit (header.charAt(0)))
+    	            break ;
+    	        header = readLine();
+    	    }
+    	}
 
         // nothing found
-        if (header.indexOf( PDF_HEADER ) == -1)
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
         {
             throw new IOException( "Error: Header doesn't contain versioninfo" );
         }
 
-        document .setHeaderString( header );
+        document.setHeaderString( header );
 
         //sometimes there are some garbage bytes in the header before the header
         //actually starts, so lets try to find the header first.
@@ -226,9 +227,16 @@ public class PDFParser extends BaseParser
 
         try
         {
-            float pdfVersion = Float. parseFloat (
-                header.substring( PDF_HEADER .length(), Math. min ( header.length(), PDF_HEADER .length()+3) ) );
-            document .setVersion( pdfVersion );
+            if (header.indexOf( PDF_HEADER ) != -1) {
+                float pdfVersion = Float. parseFloat (
+                        header.substring( PDF_HEADER .length(), Math. min ( header.length(), PDF_HEADER .length()+3) ) );
+                document.setVersion( pdfVersion );
+            }
+            else {
+                float pdfVersion = Float. parseFloat (
+                        header.substring( FDF_HEADER .length(), Math. min ( header.length(), FDF_HEADER .length()+3) ) );
+                document.setVersion( pdfVersion );
+            }
         }
         catch ( NumberFormatException e )
         {

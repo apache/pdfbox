@@ -67,7 +67,6 @@ public class TestAll extends TestCase
         suite.addTest( TestFilters.suite() );
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );
-        suite.addTest( TestFDF.suite() );
         suite.addTest( TestCOSString.suite() );
         return suite;
     }
