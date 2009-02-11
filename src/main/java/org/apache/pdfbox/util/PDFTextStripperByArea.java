@@ -115,13 +115,6 @@ public class PDFTextStripperByArea extends PDFTextStripper
         }
     }
 
-    /**
-     * @deprecated
-     * {@inheritDoc}
-     */
-    protected void showCharacter( TextPosition text ) {
-        processTextPosition(text);
-    }
     
     /**
      * {@inheritDoc}
@@ -141,14 +134,6 @@ public class PDFTextStripperByArea extends PDFTextStripper
         }
     }
 
-    
-    /**
-     * @deprecated
-     * {@inheritDoc}
-     */
-    protected void flushText() throws IOException {
-    	writePage();
-    }
     
     /**
      * This will print the processed page text to the output stream.

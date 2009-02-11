@@ -382,13 +382,6 @@ public class PDFTextStripper extends PDFStreamEngine
         //default is to do nothing
     }
 
-    /**
-     * @deprecated
-     * @see writePage(). 
-     */
-    protected void flushText() throws IOException {
-        writePage();
-    }
 
     /**
      * This will print the text of the processed page to "output".
@@ -694,14 +687,6 @@ public class PDFTextStripper extends PDFStreamEngine
         output.write(getLineSeparator());
     }
     
-    /**
-     * @deprecated
-     * @see writeLineSeparator()
-     */
-    protected void processLineSeparator( TextPosition currentText ) throws IOException
-    {
-    	writeLineSeparator();
-    }
 
     /**
      * Write the word separator value to the output stream
@@ -710,15 +695,6 @@ public class PDFTextStripper extends PDFStreamEngine
     protected void writeWordSeparator() throws IOException
     {
         output.write(getWordSeparator());
-    }
-    
-    /**
-     * @deprecated
-     * @see writeWordSeparator() 
-     */
-    protected void processWordSeparator( TextPosition lastText, TextPosition currentText ) throws IOException
-    {
-    	writeWordSeparator();
     }
 
     /**
@@ -754,16 +730,7 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         return second > first - variance && second < first + variance;
     }
-
     
-    /**
-     * @deprecated
-     * {@inheritDoc}
-     */
-    protected void showCharacter( TextPosition text )
-    {
-    	processTextPosition(text);
-    }
     
     /**
      * This will process a TextPosition object and add the

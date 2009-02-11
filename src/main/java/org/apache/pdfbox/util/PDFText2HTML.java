@@ -81,13 +81,6 @@ public class PDFText2HTML extends PDFTextStripper
         return titleGuess;
     }
 
-    /**
-     * @deprecated
-     * {@inheritDoc}
-     */
-    protected void flushText() throws IOException {
-        writePage();
-    }
 
     /**
      * {@inheritDoc}
