@@ -96,10 +96,11 @@ public class PDFParser extends BaseParser
     }
 
     /**
-     * This will parse the stream and create the PDF document.  This will close
+     * This will parse the stream and populate the COSDocument object.  This will close
      * the stream when it is done parsing.
      *
-     * @throws IOException If there is an error reading from the stream.
+     * @throws IOException If there is an error reading from the stream or corrupt data
+     * is found.
      */
     public void parse() throws IOException
     {
@@ -126,27 +127,19 @@ public class PDFParser extends BaseParser
             
             skipHeaderFillBytes();
 
-
-            Object nextObject;
-            boolean wasLastParsedObjectAnXref = false;
-            try
-            {
-                while( (nextObject = parseObject()) != null )
-                {
-                    if( nextObject instanceof PDFXref )
-                    {
-                        PDFXref xref = (PDFXref)nextObject;
-                        addXref(xref);
-                        wasLastParsedObjectAnXref = true;
+            boolean wasLastParsedObjectEOF = false;
+            try{
+                while(true){
+                    if(pdfSource.isEOF()){
+                        break;
                     }
-                    else
-                    {
-                        wasLastParsedObjectAnXref = false;
-                    }
+                    wasLastParsedObjectEOF = parseObject();
+                    
                     skipSpaces();
                 }
-                if( document.getTrailer() == null )
-                {
+                //Test if we saw a trailer section. If not, look for an XRef Stream (Cross-Reference Stream) 
+                //For PDF 1.5 and above 
+                if( document.getTrailer() == null ){
                     COSDictionary trailer = new COSDictionary();
                     Iterator xrefIter = document.getObjectsByType( "XRef" ).iterator();
                     while( xrefIter.hasNext() )
@@ -161,18 +154,14 @@ public class PDFParser extends BaseParser
                     document.dereferenceObjectStreams();
                 }
             }
-            catch( IOException e )
-            {
-                if( wasLastParsedObjectAnXref )
-                {
-                    //Then we assume that there is just random garbage after
-                    //the xref, not sure why the PDF spec allows this but it does.
-                }
-                else
-                {
-                    //some other error so just pass it along
+            catch( IOException e ){
+                /*
+                 * PDF files may have random data after the EOF marker. Ignore errors if
+                 * last object processed is EOF. 
+                 */
+                if( !wasLastParsedObjectEOF ){
                     throw e;
-                }
+                } 
             }
         }
         catch( Throwable t )
@@ -257,7 +246,7 @@ public class PDFParser extends BaseParser
         skipSpaces();
         int c = pdfSource.peek();
 
-        if( !Character.isDigit( (char)c ) )
+        if( !Character.isDigit( (char)c ))
         {
             // Fill bytes conform with PDF reference (but without comment sign)
             // => skip until EOL
@@ -311,100 +300,54 @@ public class PDFParser extends BaseParser
     }
 
     /**
-     * This will parse a document object from the stream.
+     * This will parse the next object from the stream and add it to 
+     * the local state. 
      *
-     * @return The parsed object.
+     * @return Returns true if the processed object had an endOfFile marker
      *
      * @throws IOException If an IO error occurs.
      */
-    private Object parseObject() throws IOException
-    {
-        Object object = null;
+    private boolean parseObject() throws IOException{
+        boolean isEndOfFile = false; 
         skipSpaces();
+        //peek at the next character to determine the type of object we are parsing
         char peekedChar = (char)pdfSource.peek();
-        while( peekedChar == 'e' )
-        {
+        
+        //ignore endobj and endstream sections.
+        while( peekedChar == 'e' ){
             //there are times when there are multiple endobj, so lets
             //just read them and move on.
             readString();
             skipSpaces();
             peekedChar = (char)pdfSource.peek();
         }
-        if( pdfSource.isEOF() )
-        {
+        if( pdfSource.isEOF()){
             //"Skipping because of EOF" );
-            //end of file we will return a null object and call it a day.
+            //end of file we will return a false and call it a day.
         }
-        else if( peekedChar == 'x' ||
-                 peekedChar == 't' ||
-                 peekedChar == 's')
-        {
-            //System.out.println( "parseObject() parsing xref" );
-
-            //FDF documents do not always have the xref
-            if( peekedChar == 'x' || peekedChar == 't' )
-            {
-                object = parseXrefSection();
+        //xref table. Note: The contents of the Xref table are currently ignored
+        else if( peekedChar == 'x') {
+            parseXrefTable();
+        }
+        // Note: startxref can occur in either a trailer section or by itself 
+        else if (peekedChar == 't' || peekedChar == 's') {
+            if(peekedChar == 't'){
+                parseTrailer();
+                peekedChar = (char)pdfSource.peek(); 
             }
-
-            //if peeked char is xref or startxref
-            if( peekedChar == 'x' || peekedChar == 's')
-            {
-                skipSpaces();
-                while( pdfSource.peek() == 'x' )
+            if (peekedChar == 's'){  
+                parseStartXref();
+                //verify that EOF exists 
+                String eof = readExpectedString( "%%EOF" );
+                if( eof.indexOf( "%%EOF" )== -1 && !pdfSource.isEOF() )
                 {
-                    parseXrefSection();
+                    throw new IOException( "expected='%%EOF' actual='" + eof + "' next=" + readString() +
+                            " next=" +readString() );
                 }
-                String startxref = readString();
-                if( !startxref.equals( "startxref" ) )
-                {
-                    throw new IOException( "expected='startxref' actual='" + startxref + "' " + pdfSource );
-                }
-                skipSpaces();
-                //read some integer that is in the stream but PDFBox doesn't use
-                readInt();
-            }
-
-            //This MUST be readLine because readString strips out comments
-            //and it will think that %% is a comment in from of the EOF
-            String eof = readExpectedString( "%%EOF" );
-            if( eof.indexOf( "%%EOF" )== -1 && !pdfSource.isEOF() )
-            {
-                throw new IOException( "expected='%%EOF' actual='" + eof + "' next=" + readString() +
-                                       " next=" +readString() );
-            }
-            else if( !pdfSource.isEOF() )
-            {
-                //we might really be at the end of the file, there might just be some crap at the
-                //end of the file.
-                pdfSource.fillBuffer();
-                if( pdfSource.available() < 1000 )
-                {
-                    //We need to determine if we are at the end of the file.
-                    byte[] data = new byte[ 1000 ];
-
-                    int amountRead = pdfSource.read( data );
-                    if( amountRead != -1 )
-                    {
-                        pdfSource.unread( data, 0, amountRead );
-                    }
-                    boolean atEndOfFile = true;//we assume yes unless we find another.
-                    for( int i=0; i<amountRead-3 && atEndOfFile; i++ )
-                    {
-                        atEndOfFile = !(data[i] == 'E' &&
-                                        data[i+1] == 'O' &&
-                                        data[i+2] == 'F' );
-                    }
-                    if( atEndOfFile )
-                    {
-                        while( pdfSource.read( data, 0, data.length ) != -1 )
-                        {
-                            //read until done.
-                        }
-                    }
-                }
+                isEndOfFile = true; 
             }
         }
+        //we are going to parse an normal object
         else
         {
             int number = -1;
@@ -441,7 +384,7 @@ public class PDFParser extends BaseParser
                 //" genNumber=" + genNum + " key='" + objectKey + "'" );
                 if( !objectKey.equals( "obj" ) )
                 {
-                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource );
+                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
                 }
             }
             else
@@ -453,6 +396,7 @@ public class PDFParser extends BaseParser
             skipSpaces();
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
+            
             if( endObjectKey.equals( "stream" ) )
             {
                 pdfSource.unread( endObjectKey.getBytes() );
@@ -471,15 +415,13 @@ public class PDFParser extends BaseParser
             }
             COSObjectKey key = new COSObjectKey( number, genNum );
             COSObject pdfObject = document.getObjectFromPool( key );
-            object = pdfObject;
             pdfObject.setObject(pb);
 
             if( !endObjectKey.equals( "endobj" ) )
             {
                 if( !pdfSource.isEOF() )
                 {
-                    try
-                    {
+                    try{
                         //It is possible that the endobj  is missing, there
                         //are several PDFs out there that do that so skip it and move on.
                         Float.parseFloat( endObjectKey );
@@ -513,62 +455,94 @@ public class PDFParser extends BaseParser
                 }
             }
             skipSpaces();
-
         }
-        //System.out.println( "parsed=" + object );
-        //logger().fine( "parsed=" + object );
-        return object;
-    }
-
-
-    /**
-     * This will parse the xref table and trailers from the stream.
-     *
-     * @return a new PDFXref
-     *
-     * @throws IOException If an IO error occurs.
-     */
-    protected PDFXref parseXrefSection() throws IOException
-    {
-        int[] params = new int[2];
-        parseXrefTable(params);
-        parseTrailer();
-
-        return new PDFXref(params[0], params[1]);
+        return isEndOfFile;
     }
 
     /**
-     * This will parse the xref table from the stream.
-     *
-     * It stores the starting object number and the count
-     *
-     * @param params The start and count parameters
-     *
+     * This will parse the startxref section from the stream.
+     * The startxref value is ignored.
+     *            
+     * @return false on parsing error 
      * @throws IOException If an IO error occurs.
      */
-    protected void parseXrefTable(int[] params) throws IOException
-    {
-        String nextLine = null;
-
-        nextLine = readLine();
-        if( nextLine.equals( "xref" ) )
-        {
-            params[0] = readInt();
-            params[1] = readInt();
-            nextLine = readString();
+    private boolean parseStartXref() throws IOException{
+        if(pdfSource.peek() != 's'){
+            return false; 
+        }
+        String nextLine = readLine();
+        if( !nextLine.equals( "startxref" ) ) {
+            return false;
         }
         skipSpaces();
-        while( !nextLine.equals( "trailer" ) && !pdfSource.isEOF() && !isEndOfName((char)pdfSource.peek()))
-        {
-            //skip past all the xref entries.
-            nextLine = readString();
+        /* This integer is the byte offset of the first object referenced by the xref or xref stream
+         * Not needed for PDFbox
+         */
+        readInt();
+        return true;
+    }
+
+
+    /**
+     * This will parse the xref table from the stream and add it to the state
+     * The XrefTable contents are ignored.
+     *            
+     * @return false on parsing error 
+     * @throws IOException If an IO error occurs.
+     */
+    private boolean parseXrefTable() throws IOException{
+        if(pdfSource.peek() != 'x'){
+            return false;
+        }
+        String nextLine = readLine();
+        if( !nextLine.equals( "xref" ) ) {
+            return false;
+        }
+        /*
+         * Xref tables can have multiple sections. 
+         * Each starts with a starting object id and a count.
+         */
+        while(true){
+            int start = readInt(); // first obj id
+            int count = readInt(); // the number of objects in the xref table
             skipSpaces();
+            for(int i = 0; i < count; i++){
+                if(pdfSource.isEOF() || isEndOfName((char)pdfSource.peek())){
+                    break;
+                }
+                if(pdfSource.peek() == 't'){
+                    break;
+                }
+                //Ignore table contents
+                readLine();
+                skipSpaces();
+            }
+            addXref(new PDFXref(start, count));
+            skipSpaces();
+            char c = (char)pdfSource.peek();
+            if(c < '0' || c > '9'){
+                break;
+            }
         }
-        skipSpaces();
+        return true;
     }
 
-    private void parseTrailer() throws IOException
+    /**
+     * This will parse the trailer from the stream and add it to the state
+     *            
+     * @return false on parsing error
+     * @throws IOException If an IO error occurs.
+     */
+    private boolean parseTrailer() throws IOException
     {
+        if(pdfSource.peek() != 't'){
+            return false;
+        }
+        //read "trailer"
+        String nextLine = readLine();
+        if( !nextLine.equals( "trailer" ) ) {
+            return false;
+        }
         COSDictionary parsedTrailer = parseCOSDictionary();
         COSDictionary docTrailer = document.getTrailer();
         if( docTrailer == null )
@@ -579,5 +553,7 @@ public class PDFParser extends BaseParser
         {
             docTrailer.addAll( parsedTrailer );
         }
+        skipSpaces();
+        return true;
     }
 }
