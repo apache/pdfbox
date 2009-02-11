@@ -232,14 +232,6 @@ public class PDFStreamEngine extends LoggingObject
 
     }
 
-    /**
-     * @deprecated
-     * @see processTextPosition(TextPosition)
-     */
-    protected void showCharacter( TextPosition text )
-    {
-    	processTextPosition(text);
-    }
     
     /**
      * A method provided as an event interface to allow a subclass to perform
@@ -252,14 +244,6 @@ public class PDFStreamEngine extends LoggingObject
         //subclasses can override to provide specific functionality.
     }
 
-    
-    /**
-     * @deprecated
-     * @see processEncodedText(byte[])
-     */
-    public void showString( byte[] string ) throws IOException {
-    	processEncodedText(string);
-    }
     
     /**
      * Process encoded text from the PDF Stream. 
