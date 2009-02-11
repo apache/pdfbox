@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -34,6 +35,35 @@ public class PDFontFactory
      */
     private PDFontFactory()
     {
+    }
+
+    /**
+     * This will create the correct font based on information in the dictionary.
+     *
+     * @param dic The populated dictionary.
+     *
+     * @param fontCache A Map to cache already created fonts
+     *
+     * @return The corrent implementation for the font.
+     *
+     * @throws IOException If the dictionary is not valid.
+     */
+    public static PDFont createFont(COSDictionary dic, Map fontCache) throws IOException
+    {
+    	PDFont retval = null;
+        if (fontCache != null) {
+            String fontKey = dic.getNameAsString(COSName.BASE_FONT) + dic.getNameAsString(COSName.NAME)+dic.getNameAsString(COSName.SUBTYPE);
+        	if (dic.getItem(COSName.ENCODING) != null)
+        		fontKey += dic.getItem(COSName.ENCODING).toString();
+            if (fontCache.containsKey(fontKey))
+            	retval = (PDFont)fontCache.get(fontKey);
+            else 
+            {
+            	retval = PDFontFactory.createFont( dic );
+            	fontCache.put(fontKey, retval);
+            }
+        }
+        return retval;
     }
 
     /**

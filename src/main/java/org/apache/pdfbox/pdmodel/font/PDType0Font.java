@@ -34,7 +34,9 @@ import java.io.IOException;
  */
 public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
 {
-    /**
+
+	private PDFont descendentFont;
+	/**
      * Constructor.
      */
     public PDType0Font()
@@ -88,12 +90,14 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getFontWidth( byte[] c, int offset, int length ) throws IOException
     {
-        COSArray descendantFontArray =
-            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
-
-        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-        PDFont descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-
+        if (descendentFont == null) 
+        {
+	    	COSArray descendantFontArray =
+	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	
+	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
+	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+        }
         return descendentFont.getFontWidth( c, offset, length );
     }
 
@@ -110,12 +114,14 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getFontHeight( byte[] c, int offset, int length ) throws IOException
     {
-        COSArray descendantFontArray =
-            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
-
-        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-        PDFont descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-
+        if (descendentFont == null) 
+        {
+	    	COSArray descendantFontArray =
+	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	
+	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
+	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+        }
         return descendentFont.getFontHeight( c, offset, length );
     }
 
@@ -128,12 +134,14 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getAverageFontWidth() throws IOException
     {
-        COSArray descendantFontArray =
-            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
-
-        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-        PDFont descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-
+    	if (descendentFont == null) 
+    	{
+	    	COSArray descendantFontArray =
+	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	
+	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
+	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+    	}
         return descendentFont.getAverageFontWidth();
     }
 }
