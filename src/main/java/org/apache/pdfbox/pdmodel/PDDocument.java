@@ -814,6 +814,10 @@ public class PDDocument implements Pageable
      */
     public void print(PrinterJob printJob) throws PrinterException
     {
+        if(printJob == null)
+        {
+            throw new PrinterException( "The delivered printJob is null." );
+        }
         AccessPermission currentPermissions = this.getCurrentAccessPermission();
 
         if(!currentPermissions.canPrint())
@@ -866,15 +870,18 @@ public class PDDocument implements Pageable
      *
      * @throws PrinterException If there is an error while printing.
      */
-    public void silentPrint( PrinterJob job ) throws PrinterException
+    public void silentPrint( PrinterJob printJob ) throws PrinterException
     {
+        if(printJob == null)
+        {
+            throw new PrinterException( "The delivered printJob is null." );
+        }
         AccessPermission currentPermissions = this.getCurrentAccessPermission();
 
         if(!currentPermissions.canPrint())
         {
             throw new PrinterException( "You do not have permission to print this document." );
         }
-        PrinterJob printJob = PrinterJob.getPrinterJob();
         printJob.setPageable(this);
         printJob.print();
     }
