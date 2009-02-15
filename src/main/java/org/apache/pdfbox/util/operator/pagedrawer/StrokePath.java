@@ -19,9 +19,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.util.List;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
-
-import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
+import org.apache.pdfbox.util.operator.*;
 import java.io.IOException;
 
 /**
@@ -30,7 +28,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class StrokePath extends org.apache.pdfbox.util.operator.SetLineWidth
+public class StrokePath extends OperatorProcessor
 {
 
     /**
