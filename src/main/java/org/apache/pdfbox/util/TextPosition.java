@@ -370,16 +370,6 @@ public class TextPosition
     }
 
     /**
-     * Set the individual widths of every character.
-     *
-     * @param individualWidths The individual widths of characters.
-     */
-    public void setIndividualWidths( float[] individualWidths )
-    {
-        widths = individualWidths;
-    }
-
-    /**
      * Show the string data for this text position.
      *
      * @return A human readable form of this object.
@@ -387,5 +377,97 @@ public class TextPosition
     public String toString()
     {
         return getCharacter();
+    }
+
+
+    /**
+     * Determine if this TextPosition logically contains
+     * another (i.e. they overlap and should be rendered on top
+     * of each other).
+     * @param tp2 The other TestPosition to compare against
+     *
+     * @return True if tp2 is contained in the bounding box of this text.
+     */
+    public boolean contains( TextPosition tp2)
+    {
+        // get the center of the rectangle being tested
+        double xcenter = tp2.getXDirAdj() + tp2.getWidthDirAdj()/2.0;
+        double ydelta = tp2.getHeightDir()/2.0;
+        double ycenter = tp2.getYDirAdj() + ydelta;
+        
+        // If the x-coordinate of tp2's center is within this obj's x-coordinates
+        // and the y-coordinate of tp2's center is in this obj's rectangle expanded
+        // by ydelta, then at least 50% (with respect to the x-direction) of tp2
+        // is within this obj 
+        if ( (xcenter > getXDirAdj()) && 
+                (xcenter < getXDirAdj() + getWidthDirAdj()) &&
+                (ycenter > getYDirAdj() - ydelta) &&
+                (ycenter < getYDirAdj() + getHeightDir() + ydelta))  
+            return true;
+        else 
+            return false;
+    }
+    
+    /**
+     * Merge a single character TextPosition into the current object.
+     * This is to be used only for cases where we have a diacritic that
+     * overlaps an existing TextPosition.  In a graphical display, we could
+     * overlay them, but for text extraction we need to merge them. Use the
+     * contains() method to test if two objects overlap. 
+     * 
+     * @param diacritic TextPosition to merge into the current TextPosition.
+     */
+    public void mergeDiacritic (TextPosition diacritic)
+    {
+        if (diacritic.getCharacter().length() > 1)
+            return;
+        
+        float xdiac = diacritic.getXDirAdj() + diacritic.getWidthDirAdj()/2;
+        float xcurr = getXDirAdj();
+        
+        int lastChIx = str.length();
+        for (int i = 0; i < lastChIx; i++) {
+            
+            // The diacritic modifies this character.
+            if (xdiac >= xcurr && xdiac <= (xcurr + widths[i])) {
+                StringBuffer buf = new StringBuffer();
+                
+                buf.append(str.substring(0,i));
+                
+                float[] widths2 = new float[widths.length+1];
+                System.arraycopy(widths, 0, widths2, 0, i);
+               
+                /* we add the diacritic to the right or left of the character
+                 * depending on the direction of the character.  Note that this
+                 * is only required because the text is currently stored in 
+                 * presentation order and not in logical order. 
+                 */
+                int dir = Character.getDirectionality(str.charAt(i));
+                if ((dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT)
+                        || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC)
+                        || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING)
+                        || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)) {
+                    buf.append(diacritic.getCharacter());
+                    widths2[i] = 0;
+                    buf.append(str.charAt(i));
+                    widths2[i+1] = widths[i];
+                } 
+                else {
+                    buf.append(str.charAt(i));
+                    widths2[i] = widths[i];
+                    buf.append(diacritic.getCharacter());
+                    widths2[i+1] = 0;
+                }
+                
+                // Get the rest of the string
+                buf.append(str.substring(i+1, lastChIx));
+                System.arraycopy(widths, i+1, widths2, i+2, widths.length-i-1);
+                
+                str = buf.toString();
+                widths = widths2;
+                break;
+            }
+            xcurr += widths[i];
+        }
     }
 }

@@ -863,8 +863,38 @@ public class PDFTextStripper extends PDFStreamEngine
             {
                 articleDivisionIndex = charactersByArticle.size()-1;
             }
+            
             List textList = (List) charactersByArticle.get( articleDivisionIndex );
-            textList.add( text );
+            
+            
+            
+            /* In the wild, some PDF encoded documents put diacritics (accents on 
+             * top of characters) into a separate Tj element.  When displaying them 
+             * graphically, the two chunks get overlayed.  With text output though, 
+             * we need to do the overlay. This code recombines the diacritic with 
+             * its associated character.
+             */ 
+            // First, do we even care. The assumption is we do IFF
+            // we have a single diacritic.
+            boolean wasMerged = false;
+            String cText = text.getCharacter();
+            if (cText.length() == 1 &&  Character.getType(cText.charAt(0)) == Character.NON_SPACING_MARK) {
+                /* test if we overlap the previous entry.  
+                 * Note that we are making an assumption that we need to only look back
+                 * one TextPosition to find what we are overlapping.  
+                 * This may not always be true. */
+                if(!textList.isEmpty()){
+                    TextPosition previous = (TextPosition)textList.get(textList.size()-1);
+                    if ((previous != null) && previous.contains(text)) {
+                        previous.mergeDiacritic(text);
+                        wasMerged = true;
+                    }
+                }
+            }
+            
+            // if we could not merge with the previous entry, add it to the list
+            if (wasMerged == false)
+                textList.add(text);
         }
     }
 
