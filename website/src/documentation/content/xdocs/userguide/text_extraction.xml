@@ -134,6 +134,14 @@
                 <note>PDFTextStripper will check both the startPage/endPage and the startBookmark/endBookmark to determine if text should
                       be extracted from the current page.</note>
             </section>
+            <section>
+                <title>External Glyph List</title>
+                <p>Some PDF files need to map between glyph names and Unicode values during text extraction.  PDFBox comes with an <a href="http://partners.adobe.com/public/developer/en/opentype/glyphlist.txt">Adobe Glyph List</a>, but you may encounter files with glyph names that are not in that map. To use  your own glyphlist file, supply the file name to the <tt>glyphlist_ext</tt> JVM property. </p>
+           </section>
+           <section>
+                <title>Right to Left Text</title>
+                <p>Extracting text in languages whose text goes from right to left (such as Arabic and Hebrew) in PDF files can result in text that is backwards.  PDFBox can normalize and reverse the text if the <a href="http://icu-project.org/">ICU4J</a> jar file has been placed on the classpath (it is an optional dependency). Note that you should also enable sorting with either <a href="../javadoc/org/apache/pdfbox/util/PDFTextStripper.html">org.apache.pdfbox.util.PDFTextStripper</a> or <a href="../javadoc/org/apache/pdfbox/ExtractText.html">org.apache.pdfbox.ExtractText</a> to ensure accurate output.</p>
+           </section>
         </section>
 
     </section>
