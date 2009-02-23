@@ -17,20 +17,18 @@
 package org.apache.pdfbox.encoding;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.io.File;
 
 import org.apache.pdfbox.cos.COSName;
-
-import org.apache.pdfbox.util.ResourceLoader;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This is an interface to a text encoder.
@@ -40,8 +38,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public abstract class Encoding implements COSObjectable
 {
-
-
     /**
      * This is a mapping from a character code to a character name.
      */
@@ -56,10 +52,44 @@ public abstract class Encoding implements COSObjectable
 
     static
     {
+        //Loads the official Adobe Glyph List
+        loadGlyphList("Resources/glyphlist.txt");
+
+        // Load an external glyph list file that user can give as JVM property
+        String location = System.getProperty("glyphlist_ext");
+        if(location != null){
+            File external = new File(location);
+            if(external.exists()){
+                loadGlyphList(location);
+            }
+        }
+
+        NAME_TO_CHARACTER.put( COSName.getPDFName( ".notdef" ), "" );
+        NAME_TO_CHARACTER.put( COSName.getPDFName( "fi" ), "fi" );
+        NAME_TO_CHARACTER.put( COSName.getPDFName( "fl" ), "fl" );
+        NAME_TO_CHARACTER.put( COSName.getPDFName( "ffi" ), "ffi" );
+        NAME_TO_CHARACTER.put( COSName.getPDFName( "ff" ), "ff" );
+        NAME_TO_CHARACTER.put( COSName.getPDFName( "pi" ), "pi" );
+
+        Iterator keys = NAME_TO_CHARACTER.keySet().iterator();
+        while( keys.hasNext() )
+        {
+            Object key = keys.next();
+            Object value = NAME_TO_CHARACTER.get( key );
+            CHARACTER_TO_NAME.put( value, key );
+        }
+    }
+    
+    /**
+     * Loads a glyph list from a given location and populates the NAME_TO_CHARACTER hashmap
+     * for character lookups
+     * @param location - The string location of the glyphlist file 
+     */
+    private static void loadGlyphList(String location){
         BufferedReader glyphStream = null;
         try
         {
-            InputStream resource = ResourceLoader.loadResource( "Resources/glyphlist.txt" );
+            InputStream resource = ResourceLoader.loadResource( location );
             glyphStream = new BufferedReader( new InputStreamReader( resource ) );
             String line = null;
             while( (line = glyphStream.readLine()) != null )
@@ -82,7 +112,6 @@ public abstract class Encoding implements COSObjectable
                                 int characterCode = Integer.parseInt( tokenizer.nextToken(), 16 );
                                 value += (char)characterCode;
                             }
-
                             NAME_TO_CHARACTER.put( COSName.getPDFName( characterName ), value );
                         }
                         catch( NumberFormatException nfe )
@@ -112,23 +141,8 @@ public abstract class Encoding implements COSObjectable
 
             }
         }
-
-
-        NAME_TO_CHARACTER.put( COSName.getPDFName( ".notdef" ), "" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "fi" ), "fi" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "fl" ), "fl" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "ffi" ), "ffi" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "ff" ), "ff" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "pi" ), "pi" );
-
-        Iterator keys = NAME_TO_CHARACTER.keySet().iterator();
-        while( keys.hasNext() )
-        {
-            Object key = keys.next();
-            Object value = NAME_TO_CHARACTER.get( key );
-            CHARACTER_TO_NAME.put( value, key );
-        }
     }
+    
 
 
     /**
