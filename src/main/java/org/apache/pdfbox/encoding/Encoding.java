@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.File;
 
 import org.apache.pdfbox.cos.COSName;
@@ -242,11 +244,50 @@ public abstract class Encoding implements COSObjectable
      */
     public static String getCharacter( COSName name )
     {
-        String character = (String)NAME_TO_CHARACTER.get( name );
+        COSName baseName = name;
+        String nameStr = baseName.getName();
+
+        // test if we have a suffix and if so remove it
+        if ( nameStr.indexOf('.') > 0 ) {
+            nameStr = nameStr.substring( 0, nameStr.indexOf('.') );
+            baseName = COSName.getPDFName( nameStr );
+        }
+
+        String character = (String)NAME_TO_CHARACTER.get( baseName );
         if( character == null )
         {
-            character = name.getName();
+            // test for Unicode name
+            // (uniXXXX - XXXX must be a multiple of four;
+            // each representing a hexadecimal Unicode code point)
+            if ( nameStr.startsWith( "uni" ) )
+            {
+                StringBuffer uniStr = new StringBuffer();
+
+                for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 ) {
+
+                    try {
+
+                        int characterCode = Integer.parseInt( nameStr.substring( chPos, chPos + 4), 16 );
+
+                        if ( ( characterCode > 0xD7FF ) && ( characterCode < 0xE000 ) )
+                            Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
+                                    "Unicode character name with not allowed code area: " +
+                                    nameStr );
+                        else
+                            uniStr.append( (char) characterCode );
+
+                    } catch (NumberFormatException nfe) {
+                        Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
+                                "Not a number in Unicode character name: " +
+                                nameStr );
+                    }
+                }
+                character = uniStr.toString();
+            }
+            else {
+                character = nameStr;
+            }
         }
         return character;
-    }
+    } 
 }
