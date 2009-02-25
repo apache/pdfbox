@@ -24,74 +24,55 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
- * Wrap stripped text in simple HTML, trying to form HTML paragraphs.
- * Paragraphs broken by pages, columns, or figures are not mended.
- *
- *
+ * Wrap stripped text in simple HTML, trying to form HTML paragraphs. Paragraphs
+ * broken by pages, columns, or figures are not mended.
+ * 
+ * 
  * @author jjb - http://www.johnjbarton.com
- * @version  $Revision: 1.3 $
+ * @version $Revision: 1.3 $
  */
-public class PDFText2HTML extends PDFTextStripper
-{
+public class PDFText2HTML extends PDFTextStripper {
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
-    private TextPosition beginTitle;
-    private TextPosition afterEndTitle;
-    private String titleGuess;
-    private boolean suppressParagraphs;
     private boolean onFirstPage = true;
+    private String encoding;
 
     /**
      * Constructor.
-     *
-     * @throws IOException If there is an error during initialization.
+     * 
+     * @throws IOException
+     *             If there is an error during initialization.
      */
-    public PDFText2HTML() throws IOException
-    {
-        titleGuess = "";
-        beginTitle = null;
-        afterEndTitle = null;
-        suppressParagraphs = false;
+    public PDFText2HTML(String encoding) throws IOException {
+        this.encoding = encoding;
+        this.lineSeparator = "<br>" + System.getProperty("line.separator");
     }
 
     /**
-     * Write the header to the output document.
-     *
-     * @throws IOException If there is a problem writing out the header to the document.
+     * Write the header to the output document. Now also writes the tag defining
+     * the character encoding.
+     * 
+     * @throws IOException
+     *             If there is a problem writing out the header to the document.
      */
-    protected void writeHeader() throws IOException
-    {
+    protected void writeHeader() throws IOException {
         StringBuffer buf = new StringBuffer(INITIAL_PDF_TO_HTML_BYTES);
+        buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"" + "\n" + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
         buf.append("<html><head>");
-        buf.append("<title>");
-        buf.append(getTitleGuess());
-        buf.append("</title>");
-        buf.append("</head>");
+        buf.append("<title>" + getTitle() + "</title>\n");
+        if(encoding != null){
+            buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + this.encoding + "\">\n");
+        }
+        buf.append("</head>\n");
         buf.append("<body>\n");
         super.writeString(buf.toString());
     }
 
     /**
-     * The guess to the document title.
-     *
-     * @return A string that is the title of this document.
-     */
-    protected String getTitleGuess()
-    {
-        return titleGuess;
-    }
-
-
-    /**
      * {@inheritDoc}
      */
-    protected void writePage() throws IOException
-    {
-        Iterator textIter = getCharactersByArticle().iterator();
-
-        if (onFirstPage)
-        {
-            guessTitle(textIter);
+    protected void writePage() throws IOException {
+        if (onFirstPage) {
             writeHeader();
             onFirstPage = false;
         }
@@ -101,109 +82,91 @@ public class PDFText2HTML extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
-    public void endDocument(PDDocument pdf) throws IOException
-    {
+    public void endDocument(PDDocument pdf) throws IOException {
         super.writeString("</body></html>");
     }
 
     /**
-     * This method will attempt to guess the title of the document.
-     *
-     * @param textIter The characters on the first page.
-     * @return The text position that is guessed to be the title.
+     * This method will attempt to guess the title of the document using
+     * either the document properties or the first lines of text.
+     * 
+     * @return returns the title.
      */
-    protected TextPosition guessTitle(Iterator textIter)
-    {
-        float lastFontSize = -1.0f;
-        int stringsInFont = 0;
-        StringBuffer titleText = new StringBuffer();
-        while (textIter.hasNext())
-        {
-            Iterator textByArticle = ((List)textIter.next()).iterator();
-            while( textByArticle.hasNext() )
-            {
-                TextPosition position = (TextPosition) textByArticle.next();
-                float currentFontSize = position.getFontSize();
-                if (currentFontSize != lastFontSize)
-                {
-                    if (beginTitle != null)
-                    { // font change in candidate title.
-                        if (stringsInFont == 0)
-                        {
-                            beginTitle = null; // false alarm
-                            titleText.setLength(0);
-                        }
-                        else
-                        {
-                            // had a significant font with some words: call it a title
-                            titleGuess = titleText.toString();
-                            afterEndTitle = position;
-                            return beginTitle;
-                        }
-                    }
-                    else
-                    { // font change and begin == null
-                        if (currentFontSize > 13.0f)
-                        { // most body text is 12pt max I guess
-                            beginTitle = position;
-                        }
-                    }
+    protected String getTitle() {
+        String titleGuess = document.getDocumentInformation().getTitle();
+        if(titleGuess != null && titleGuess.length() > 0){
+            return titleGuess;
+        }
+        else {
+            Iterator textIter = getCharactersByArticle().iterator();
+            float lastFontSize = -1.0f;
 
-                    lastFontSize = currentFontSize;
-                    stringsInFont = 0;
-                }
-                stringsInFont++;
-                if (beginTitle != null)
-                {
-                    titleText.append(position.getCharacter()+" ");
+            StringBuffer titleText = new StringBuffer();
+            while (textIter.hasNext()) {
+
+                Iterator textByArticle = ((List) textIter.next()).iterator();
+                while (textByArticle.hasNext()) {
+                    TextPosition position = (TextPosition) textByArticle.next();
+
+                    float currentFontSize = position.getFontSize();
+                    //If we're past 64 chars we will assume that we're past the title
+                    //64 is arbitrary 
+                    if (currentFontSize != lastFontSize || titleText.length() > 64) {
+                        if (titleText.length() > 0) {
+                            return titleText.toString();
+                        }
+                        lastFontSize = currentFontSize;
+                    }
+                    if (currentFontSize > 13.0f) { // most body text is 12pt
+                        titleText.append(position.getCharacter());
+                    }
                 }
             }
         }
-        return beginTitle; // null
+        return "";
+    }
+
+
+    /**
+     * Write out the article separator (div tag) with proper text direction
+     * information.
+     * 
+     * @param true if direction of text is left to right
+     * @throws IOException
+     *             If there is an error writing to the stream.
+     */
+    protected void startArticle(boolean isltr) throws IOException {
+        if (isltr) {
+            super.writeString("<div>");
+        } 
+        else {
+            super.writeString("<div dir=\"RTL\">");
+        }
     }
 
     /**
-     * Write out the paragraph separator.
-     *
-     * @throws IOException If there is an error writing to the stream.
+     * Write out the article separator.
+     * 
+     * @throws IOException
+     *             If there is an error writing to the stream.
      */
-    protected void startParagraph() throws IOException
-    {
-        if (! suppressParagraphs)
-        {
-            super.writeString("<p>");
-        }
-    }
-    /**
-     * Write out the paragraph separator.
-     *
-     * @throws IOException If there is an error writing to the stream.
-     */
-    protected void endParagraph() throws IOException
-    {
-        if (! suppressParagraphs)
-        {
-            super.writeString("</p>");
-        }
+    protected void endArticle() throws IOException {
+        super.writeString("</div>");
     }
 
     /**
      * Write a string to the output stream and escape some HTML characters
      */
-    protected void writeString(String chars) throws IOException
-    {
-        for (int i = 0; i < chars.length(); i++)
-        {
+    protected void writeString(String chars) throws IOException {
+        for (int i = 0; i < chars.length(); i++) {
             char c = chars.charAt(i);
-            if ((c < 32) || (c > 126))
-            {
+            // write non-ASCII as named entities
+            if ((c < 32) || (c > 126)) {
                 int charAsInt = c;
                 super.writeString("&#" + charAsInt + ";");
-            }
-            else
-            {
-                switch (c)
-                {
+            } 
+            else {
+                switch (c) {
                 case 34:
                     super.writeString("&quot;");
                     break;
@@ -221,40 +184,5 @@ public class PDFText2HTML extends PDFTextStripper
                 }
             }
         }
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected void writeCharacters(TextPosition position ) throws IOException
-    {
-        if (position == beginTitle)
-        {
-            super.writeString("<H1>");
-            suppressParagraphs = true;
-        }
-        if (position == afterEndTitle)
-        {
-            super.writeString("</H1>");  // end title and start first paragraph
-            suppressParagraphs = false;
-        }
-
-        writeString(position.getCharacter());
-    }
-    
-
-    /**
-     * @return Returns the suppressParagraphs.
-     */
-    public boolean isSuppressParagraphs()
-    {
-        return suppressParagraphs;
-    }
-    /**
-     * @param shouldSuppressParagraphs The suppressParagraphs to set.
-     */
-    public void setSuppressParagraphs(boolean shouldSuppressParagraphs)
-    {
-        this.suppressParagraphs = shouldSuppressParagraphs;
     }
 }

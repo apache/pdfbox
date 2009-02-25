@@ -39,20 +39,6 @@ import org.apache.pdfbox.util.PDFTextStripper;
  */
 public class ExtractText
 {
-    /**
-     * This is the default encoding of the text to be output.
-     */
-    public static final String DEFAULT_ENCODING =
-        null;
-        //"ISO-8859-1";
-        //"ISO-8859-6"; //arabic
-        //"US-ASCII";
-        //"UTF-8";
-        //"UTF-16";
-        //"UTF-16BE";
-        //"UTF-16LE";
-
-
     private static final String PASSWORD = "-password";
     private static final String ENCODING = "-encoding";
     private static final String CONSOLE = "-console";
@@ -82,9 +68,11 @@ public class ExtractText
         boolean toHTML = false;
         boolean sort = false;
         String password = "";
-        String encoding = DEFAULT_ENCODING;
+        String encoding = null;
         String pdfFile = null;
-        String textFile = null;
+        String outputFile = null;
+        // Defaults to text files
+        String ext = ".txt";
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
         for( int i=0; i<args.length; i++ )
@@ -119,6 +107,7 @@ public class ExtractText
             else if( args[i].equals( HTML ) )
             {
                 toHTML = true;
+                ext = ".html";
             }
             else if( args[i].equals( SORT ) )
             {
@@ -145,7 +134,7 @@ public class ExtractText
                 }
                 else
                 {
-                    textFile = args[i];
+                    outputFile = args[i];
                 }
             }
         }
@@ -168,19 +157,17 @@ public class ExtractText
                     URL url = new URL( pdfFile );
                     document = PDDocument.load( url );
                     String fileName = url.getFile();
-                    if( textFile == null && fileName.length() >4 )
+                    if( outputFile == null && fileName.length() >4 )
                     {
-                        File outputFile =
-                            new File( fileName.substring( 0, fileName.length() -4 ) + ".txt" );
-                        textFile = outputFile.getName();
+                        outputFile = new File( fileName.substring( 0, fileName.length() -4 ) + ext ).getName();
                     }
                 }
                 catch( MalformedURLException e )
                 {
                     document = PDDocument.load( pdfFile );
-                    if( textFile == null && pdfFile.length() >4 )
+                    if( outputFile == null && pdfFile.length() >4 )
                     {
-                        textFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ".txt";
+                        outputFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ext;
                     }
                 }
 
@@ -196,6 +183,10 @@ public class ExtractText
                         throw new IOException( "You do not have permission to extract text" );
                     }
                 }
+
+                if ((encoding == null) && (toHTML))
+                    encoding = "UTF-8";
+
                 if( toConsole )
                 {
                     output = new OutputStreamWriter( System.out );
@@ -205,24 +196,24 @@ public class ExtractText
                     if( encoding != null )
                     {
                         output = new OutputStreamWriter(
-                            new FileOutputStream( textFile ), encoding );
+                                new FileOutputStream( outputFile ), encoding );
                     }
                     else
                     {
                         //use default encoding
                         output = new OutputStreamWriter(
-                            new FileOutputStream( textFile ) );
+                                new FileOutputStream( outputFile ) );
                     }
                 }
 
                 PDFTextStripper stripper = null;
                 if(toHTML)
                 {
-                   stripper = new PDFText2HTML();
+                    stripper = new PDFText2HTML(encoding);
                 }
                 else
                 {
-                   stripper = new PDFTextStripper();
+                    stripper = new PDFTextStripper();
                 }
                 stripper.setSortByPosition( sort );
                 stripper.setStartPage( startPage );
