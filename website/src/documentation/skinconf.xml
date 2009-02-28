@@ -462,9 +462,9 @@ which will be used to configure the chosen Forrest skin.
       <height>31</height>
     </credit>
     <credit box-location="alt2">
-      <name>ApacheCon US 2008</name>
-      <url>http://us.apachecon.com/</url>
-      <image>http://apache.org/ads/ApacheCon/2008-usa-125x125.png</image>
+      <name>ApacheCon</name>
+      <url>http://www.apache.org/events/current-event.html</url>
+      <image>http://apache.org/events/current-event-125x125.png</image>
       <width>125</width>
       <height>125</height>
     </credit>
