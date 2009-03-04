@@ -63,6 +63,8 @@ public class PDFontFactory
             	fontCache.put(fontKey, retval);
             }
         }
+        else
+        	retval = PDFontFactory.createFont( dic );
         return retval;
     }
 
