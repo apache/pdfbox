@@ -17,17 +17,17 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import org.fontbox.afm.AFMParser;
-
 import org.fontbox.afm.FontMetric;
-
 import org.fontbox.cmap.CMapParser;
-
 import org.fontbox.cmap.CMap;
+import org.apache.pdfbox.encoding.conversion.EncodingConversionManager;
+import org.apache.pdfbox.encoding.conversion.EncodingConverter;
 
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -69,7 +69,7 @@ import java.util.StringTokenizer;
 public abstract class PDFont extends LoggingObject implements COSObjectable
 {
 
-    /**
+	/**
      * The cos dictionary for this font.
      */
     protected COSDictionary font;
@@ -226,7 +226,7 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
      * @throws IOException If there is an error drawing the specific string.
      */
     public abstract void drawString( String string, Graphics g, float fontSize,
-        AffineTransform at, float x, float y ) throws IOException;
+    	AffineTransform at, float x, float y ) throws IOException;
 
     /**
      * Used for multibyte encodings.
@@ -387,6 +387,7 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
                         else
                         {
                             String cmapName = encodingName.getName();
+                            cmapName = CMapSubstitution.substituteCMap( cmapName );
                             String resourceRoot = "Resources/cmap/";
                             String resourceName = resourceRoot + cmapName;
                             parseCmap( resourceRoot, ResourceLoader.loadResource( resourceName ), encodingName );
@@ -434,6 +435,22 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
         if( retval == null && cmap != null )
         {
             retval = cmap.lookup( c, offset, length );
+        }
+        COSBase encoding_COS = font.getDictionaryObject(COSName.ENCODING);
+
+        if ( encoding_COS instanceof COSName ) {
+        	EncodingConverter converter = EncodingConversionManager.getConverter(((COSName)encoding_COS).getName());
+
+        	if ( converter != null ) {
+
+        		if ( retval != null )
+        			retval = converter.convertString(retval);
+        		  else
+        			retval = converter.convertBytes(c, offset, length, cmap);
+
+        		return retval;
+        	}
+
         }
         //if we havn't found a value yet and
         //we are still on the first byte and
@@ -540,9 +557,9 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
                 }
             }
             /**
-             * Si la clé /Encoding existe dans le dictionnaire fonte il y a deux possibilités :
-             * 1er cas : elle est associé à une reference contenant un dictionnaire de type encoding.
-             * Ce dictionnaire PDF est représenté par un DictionaryEncoding.
+             * Si la clï¿½ /Encoding existe dans le dictionnaire fonte il y a deux possibilitï¿½s :
+             * 1er cas : elle est associï¿½ ï¿½ une reference contenant un dictionnaire de type encoding.
+             * Ce dictionnaire PDF est reprï¿½sentï¿½ par un DictionaryEncoding.
              * If the /Encoding Key does exist in the font dictionary, there are two cases :
              * case one : The value associated with /Encoding is a reference to a dictionary.
              * This dictionary is represented by an instance of DictionaryEncoding class
@@ -555,7 +572,7 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
                 //file
                 COSName baseEncodingName = (COSName) encodingDic.getDictionaryObject(
                     COSName.BASE_ENCODING);
-                //on ajoute une entrée /BaseEncoding dans /Encoding uniquement si elle en est absente
+                //on ajoute une entrï¿½e /BaseEncoding dans /Encoding uniquement si elle en est absente
                 //if not find in Encoding dictinary target, we try to find it from else where
                 if( baseEncodingName == null)
                 {
@@ -729,8 +746,8 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
 
         COSName retvalue = null;
         //recuperer le programme de fonte dans son stream qui doit se trouver
-        //dans le flux référencé par à la clé FileFont lui même situé dans
-        //le dictionnaire associé à /FontDescriptor du dictionnaire de type /Font courrant
+        //dans le flux rï¿½fï¿½rencï¿½ par ï¿½ la clï¿½ FileFont lui mï¿½me situï¿½ dans
+        //le dictionnaire associï¿½ ï¿½ /FontDescriptor du dictionnaire de type /Font courrant
         //get the font program in the stream which should be located in
          //the /FileFont Stream object himself in the /FontDescriptior of the current
         //font dictionary
