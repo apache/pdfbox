@@ -294,10 +294,12 @@ public class FlateFilter implements Filter
         DeflaterOutputStream out = new DeflaterOutputStream(result);
         int amountRead = 0;
         int mayRead = rawData.available();
-        byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
-        while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
-        {
-            out.write(buffer, 0, amountRead);
+        if (mayRead > 0) {
+            byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
+            while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+            {
+                out.write(buffer, 0, amountRead);
+            }
         }
         out.close();
         result.flush();
