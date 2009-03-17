@@ -89,57 +89,59 @@ public class FlateFilter implements Filter
             decompressor = new InflaterInputStream(compressedData);
             int amountRead;
             int mayRead = compressedData.available();
-            byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
 
-            // Decode data using given predictor
-            if (predictor==-1 || predictor == 1 || predictor == 10)
-            {
-                // decoding not needed
-                while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+            if (mayRead > 0) {
+                byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
+
+                // Decode data using given predictor
+                if (predictor==-1 || predictor == 1 || predictor == 10)
                 {
-                    result.write(buffer, 0, amountRead);
+                    // decoding not needed
+                    while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+                    {
+                        result.write(buffer, 0, amountRead);
+                    }
+                }
+                else
+                {
+                    if( colors==-1 )
+                    {
+                        throw new IOException("Error: Could not read 'colors' attribute to decompress flate stream.");
+                    }
+                    if( bitsPerPixel==-1 )
+                    {
+                        throw new IOException("Error: Could not read 'bitsPerPixel' attribute to decompress flate stream.");
+                    }
+                    if( columns==-1 )
+                    {
+                        throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
+                    }
+
+                    baos = new ByteArrayOutputStream();
+                    while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+                    {
+                        baos.write(buffer, 0, amountRead);
+                    }
+                    baos.flush();
+
+                    // Copy data to ByteArrayInputStream for reading
+                    bais = new ByteArrayInputStream(baos.toByteArray());
+                    baos.close();
+                    baos = null;
+
+                    byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
+                    bais.close();
+                    bais = new ByteArrayInputStream(decodedData);
+
+                    // write decoded data to result
+                    while ((amountRead = bais.read(buffer)) != -1)
+                    {
+                        result.write(buffer, 0, amountRead);
+                    }
+                    bais.close();
+                    bais = null;
                 }
             }
-            else
-            {
-                if( colors==-1 )
-                {
-                    throw new IOException("Error: Could not read 'colors' attribute to decompress flate stream.");
-                }
-                if( bitsPerPixel==-1 )
-                {
-                    throw new IOException("Error: Could not read 'bitsPerPixel' attribute to decompress flate stream.");
-                }
-                if( columns==-1 )
-                {
-                    throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
-                }
-
-                baos = new ByteArrayOutputStream();
-                while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
-                {
-                    baos.write(buffer, 0, amountRead);
-                }
-                baos.flush();
-
-                // Copy data to ByteArrayInputStream for reading
-                bais = new ByteArrayInputStream(baos.toByteArray());
-                baos.close();
-                baos = null;
-
-                byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
-                bais.close();
-                bais = new ByteArrayInputStream(decodedData);
-
-                // write decoded data to result
-                while ((amountRead = bais.read(buffer)) != -1)
-                {
-                    result.write(buffer, 0, amountRead);
-                }
-                bais.close();
-                bais = null;
-            }
-
 
             result.flush();
         }
