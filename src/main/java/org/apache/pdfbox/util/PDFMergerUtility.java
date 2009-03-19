@@ -304,6 +304,9 @@ public class PDFMergerUtility
             PDPage page = (PDPage)pageIter.next();
             PDPage newPage =
                 new PDPage( (COSDictionary)cloneForNewDocument( destination, page.getCOSDictionary() ) );
+            newPage.setCropBox( page.findCropBox() );
+            newPage.setMediaBox( page.findMediaBox() );
+            newPage.setRotation( page.findRotation() );
             destination.addPage( newPage );
         }
     }
