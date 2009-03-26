@@ -33,7 +33,7 @@ public class PDMMType1Font extends PDSimpleFont
     public PDMMType1Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.getPDFName( "MMType1" ) );
+        font.setItem( COSName.SUBTYPE, COSName.MM_TYPE1 );
     }
 
     /**

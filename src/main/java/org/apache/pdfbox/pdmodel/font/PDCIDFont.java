@@ -114,7 +114,7 @@ public abstract class PDCIDFont extends PDFont
     public long getDefaultWidth()
     {
         long dw = 1000;
-        COSNumber number = (COSNumber)font.getDictionaryObject( COSName.getPDFName( "DW" ) );
+        COSNumber number = (COSNumber)font.getDictionaryObject( COSName.DW);
         if( number != null )
         {
             dw = number.intValue();
@@ -129,7 +129,7 @@ public abstract class PDCIDFont extends PDFont
      */
     public void setDefaultWidth( long dw )
     {
-        font.setItem( COSName.getPDFName( "DW" ), new COSInteger( dw ) );
+        font.setItem( COSName.DW, new COSInteger( dw ) );
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class PDCIDFont extends PDFont
         Float widthFloat = (Float)widthCache.get( new Integer( code ) );
         if( widthFloat == null )
         {
-            COSArray widths = (COSArray)font.getDictionaryObject( COSName.getPDFName( "W" ) );
+            COSArray widths = (COSArray)font.getDictionaryObject( COSName.W );
 
             if( widths != null )
             {
@@ -249,7 +249,7 @@ public abstract class PDCIDFont extends PDFont
         float totalWidths = 0.0f;
         float characterCount = 0.0f;
         float defaultWidth = getDefaultWidth();
-        COSArray widths = (COSArray)font.getDictionaryObject( COSName.getPDFName( "W" ) );
+        COSArray widths = (COSArray)font.getDictionaryObject( COSName.W );
 
         if( widths != null )
         {

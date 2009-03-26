@@ -42,7 +42,7 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     public PDType0Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.getPDFName( "Type0" ) );
+        font.setItem( COSName.SUBTYPE, COSName.TYPE0 );
     }
 
     /**
@@ -93,7 +93,7 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
         if (descendentFont == null) 
         {
 	    	COSArray descendantFontArray =
-	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	            (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
 	
 	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
 	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );
@@ -117,7 +117,7 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
         if (descendentFont == null) 
         {
 	    	COSArray descendantFontArray =
-	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	            (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
 	
 	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
 	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );
@@ -137,7 +137,7 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     	if (descendentFont == null) 
     	{
 	    	COSArray descendantFontArray =
-	            (COSArray)font.getDictionaryObject( COSName.getPDFName( "DescendantFonts" ) );
+	            (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
 	
 	        COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
 	        descendentFont = PDFontFactory.createFont( descendantFontDictionary );

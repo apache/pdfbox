@@ -238,7 +238,7 @@ public abstract class PDSimpleFont extends PDFont
     public PDFontDescriptor getFontDescriptor() throws IOException
     {
         PDFontDescriptor retval = null;
-        COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.getPDFName( "FontDescriptor" ) );
+        COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
         if( fd == null )
         {
             FontMetric afm = getAFM();
@@ -267,7 +267,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             dic = fontDescriptor.getCOSDictionary();
         }
-        font.setItem( COSName.getPDFName( "FontDescriptor" ), dic );
+        font.setItem( COSName.FONT_DESC, dic );
     }
 
     /**

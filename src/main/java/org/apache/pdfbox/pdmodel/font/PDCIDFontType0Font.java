@@ -33,7 +33,7 @@ public class PDCIDFontType0Font extends PDCIDFont
     public PDCIDFontType0Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.getPDFName( "CIDFontType0" ) );
+        font.setItem( COSName.SUBTYPE, COSName.CID_FONT_TYPE0 );
     }
 
     /**

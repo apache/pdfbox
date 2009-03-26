@@ -85,7 +85,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public String getFontName()
     {
         String retval = null;
-        COSName name = (COSName)dic.getDictionaryObject( COSName.getPDFName( "FontName" ) );
+        COSName name = (COSName)dic.getDictionaryObject( COSName.FONT_NAME );
         if( name != null )
         {
             retval = name.getName();
@@ -105,7 +105,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         {
             name = COSName.getPDFName( fontName );
         }
-        dic.setItem( COSName.getPDFName( "FontName" ), name );
+        dic.setItem( COSName.FONT_NAME, name );
     }
 
     /**
@@ -116,7 +116,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public String getFontFamily()
     {
         String retval = null;
-        COSString name = (COSString)dic.getDictionaryObject( COSName.getPDFName( "FontFamily" ) );
+        COSString name = (COSString)dic.getDictionaryObject( COSName.FONT_FAMILY );
         if( name != null )
         {
             retval = name.getString();
@@ -136,7 +136,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         {
             name = new COSString( fontFamily );
         }
-        dic.setItem( COSName.getPDFName( "FontFamily" ), name );
+        dic.setItem( COSName.FONT_FAMILY, name );
     }
 
     /**
@@ -173,7 +173,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public String getFontStretch()
     {
         String retval = null;
-        COSName name = (COSName)dic.getDictionaryObject( COSName.getPDFName( "FontStretch" ) );
+        COSName name = (COSName)dic.getDictionaryObject( COSName.FONT_STRETCH );
         if( name != null )
         {
             retval = name.getName();
@@ -193,7 +193,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         {
             name = COSName.getPDFName( fontStretch );
         }
-        dic.setItem( COSName.getPDFName( "FontStretch" ), name );
+        dic.setItem( COSName.FONT_STRETCH, name );
     }
 
     /**
@@ -223,7 +223,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public PDRectangle getFontBoundingBox()
     {
-        COSArray rect = (COSArray)dic.getDictionaryObject( COSName.getPDFName( "FontBBox" ) );
+        COSArray rect = (COSArray)dic.getDictionaryObject( COSName.FONT_BBOX );
         PDRectangle retval = null;
         if( rect != null )
         {
@@ -244,7 +244,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         {
             array = rect.getCOSArray();
         }
-        dic.setItem( COSName.getPDFName( "FontBBox" ), array );
+        dic.setItem( COSName.FONT_BBOX, array );
     }
 
     /**
@@ -483,7 +483,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public String getCharSet()
     {
         String retval = null;
-        COSString name = (COSString)dic.getDictionaryObject( COSName.getPDFName( "CharSet" ) );
+        COSString name = (COSString)dic.getDictionaryObject( COSName.CHAR_SET );
         if( name != null )
         {
             retval = name.getString();
@@ -503,7 +503,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         {
             name = new COSString( charSet );
         }
-        dic.setItem( COSName.getPDFName( "CharSet" ), name );
+        dic.setItem( COSName.CHAR_SET, name );
     }
 
     /**

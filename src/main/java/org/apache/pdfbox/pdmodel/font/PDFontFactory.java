@@ -88,31 +88,31 @@ public class PDFontFactory
         }
 
         COSName subType = (COSName)dic.getDictionaryObject( COSName.SUBTYPE );
-        if( subType.equals( COSName.getPDFName( "Type1" ) ) )
+        if( subType.equals( COSName.TYPE1) )
         {
             retval = new PDType1Font( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "MMType1" ) ) )
+        else if( subType.equals( COSName.MM_TYPE1 ) )
         {
             retval = new PDMMType1Font( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "TrueType" ) ) )
+        else if( subType.equals( COSName.TRUE_TYPE ) )
         {
             retval = new PDTrueTypeFont( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "Type3" ) ) )
+        else if( subType.equals( COSName.TYPE3 ) )
         {
             retval = new PDType3Font( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "Type0" ) ) )
+        else if( subType.equals( COSName.TYPE0 ) )
         {
             retval = new PDType0Font( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "CIDFontType0" ) ) )
+        else if( subType.equals( COSName.CID_FONT_TYPE0 ) )
         {
             retval = new PDCIDFontType0Font( dic );
         }
-        else if( subType.equals( COSName.getPDFName( "CIDFontType2" ) ) )
+        else if( subType.equals( COSName.CID_FONT_TYPE2 ) )
         {
             retval = new PDCIDFontType2Font( dic );
         }
