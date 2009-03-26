@@ -253,6 +253,8 @@ public class COSStream extends COSDictionary
         IOException exception = null;
         long position = unFilteredStream.getPosition();
         long length = unFilteredStream.getLength();
+        // in case we need it later
+        long writtenLength = unFilteredStream.getLengthWritten();  
 
         if( length == 0 )
         {
@@ -288,7 +290,7 @@ public class COSStream extends COSDictionary
                 //if no good stream was found then lets try again but with the
                 //length of data that was actually read and not length
                 //defined in the dictionary
-                length = unFilteredStream.getLengthWritten();
+                length = writtenLength;
                 for( int tryCount=0; !done && tryCount<5; tryCount++ )
                 {
                     try
