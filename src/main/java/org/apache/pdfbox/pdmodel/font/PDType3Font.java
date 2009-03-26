@@ -47,7 +47,7 @@ public class PDType3Font extends PDSimpleFont
     public PDType3Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.getPDFName( "Type3" ) );
+        font.setItem( COSName.SUBTYPE, COSName.TYPE3 );
     }
 
     /**
@@ -72,7 +72,7 @@ public class PDType3Font extends PDSimpleFont
         Image retval = (Image)images.get( c );
         if( retval == null )
         {
-            COSDictionary charProcs = (COSDictionary)font.getDictionaryObject( COSName.getPDFName( "CharProcs" ) );
+            COSDictionary charProcs = (COSDictionary)font.getDictionaryObject( COSName.CHAR_PROCS );
             COSStream stream = (COSStream)charProcs.getDictionaryObject( COSName.getPDFName( "" + character ) );
             if( stream != null )
             {

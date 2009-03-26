@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.Map;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -39,7 +39,7 @@ public final class COSName extends COSBase implements Comparable
      * Note: This is synchronized because a HashMap must be synchronized if accessed by
      * multiple threads.
      */
-    private static Map nameMap = Collections.synchronizedMap( new HashMap(8192) );
+    private static Map nameMap = Collections.synchronizedMap( new WeakHashMap(8192) );
 
 
     /**
@@ -125,6 +125,22 @@ public final class COSName extends COSBase implements Comparable
     /**
     * A common COSName value.
     */
+    public static final COSName CHAR_PROCS = new COSName( "CharProcs" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName CHAR_SET = new COSName( "CharSet" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName CID_FONT_TYPE0 = new COSName( "CIDFontType0" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName CID_FONT_TYPE2 = new COSName( "CIDFontType2" );
+    /**
+    * A common COSName value.
+    */
     public static final COSName COLORSPACE = new COSName( "ColorSpace" );
     /**
     * A common COSName value.
@@ -181,6 +197,10 @@ public final class COSName extends COSBase implements Comparable
     /**
     * A common COSName value.
     */
+    public static final COSName DW = new COSName( "DW" );
+    /**
+    * A common COSName value.
+    */
     public static final COSName ENCODING = new COSName( "Encoding" );
     /**
      * A common COSName value.
@@ -225,6 +245,14 @@ public final class COSName extends COSBase implements Comparable
     /**
      * A common COSName value.
      */
+    public static final COSName FONT_BBOX = new COSName( "FontBBox" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName FONT_FAMILY = new COSName("FontFamily");
+    /**
+     * A common COSName value.
+     */
     public static final COSName FONT_FILE = new COSName("FontFile");
     /**
      * A common COSName value.
@@ -242,6 +270,14 @@ public final class COSName extends COSBase implements Comparable
      * A common COSName value.
      */
     public static final COSName FONT_MATRIX = new COSName("FontMatrix" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName FONT_NAME = new COSName("FontName" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName FONT_STRETCH = new COSName("FontStretch" );
     /**
     * A common COSName value.
     */
@@ -326,6 +362,10 @@ public final class COSName extends COSBase implements Comparable
      * A common COSName value.
      */
     public static final COSName METADATA = new COSName(  "Metadata" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName MM_TYPE1 = new COSName(  "MMType1" );
     /**
     * A common COSName value.
     */
@@ -421,14 +461,26 @@ public final class COSName extends COSBase implements Comparable
     /**
     * A common COSName value.
     */
+    public static final COSName TYPE1 = new COSName(  "Type1" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName TYPE3 = new COSName(  "Type3" );
+    /**
+    * A common COSName value.
+    */
     public static final COSName V = new COSName( "V" );
     /**
      * A common COSName value.
      */
      public static final COSName VERSION = new COSName( "Version" );
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
+    public static final COSName W = new COSName( "W" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName WIDTHS = new COSName( "Widths" );
     /**
     * A common COSName value.

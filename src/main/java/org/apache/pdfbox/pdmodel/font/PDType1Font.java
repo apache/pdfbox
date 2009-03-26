@@ -132,7 +132,7 @@ public class PDType1Font extends PDSimpleFont
     public PDType1Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.getPDFName( "Type1" ) );
+        font.setItem( COSName.SUBTYPE, COSName.TYPE1 );
     }
 
     /**
