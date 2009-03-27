@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 import java.util.Map;
 
@@ -40,6 +41,12 @@ public final class COSName extends COSBase implements Comparable
      * multiple threads.
      */
     private static Map nameMap = Collections.synchronizedMap( new WeakHashMap(8192) );
+    
+    /**
+     * All common COSName values are stored in a simple HashMap. They are already defined as
+     * static constants and don't need to be synchronized for multithreaded environments.
+     */
+    private static Map commonNameMap = new HashMap() ;
 
 
     /**
@@ -515,11 +522,17 @@ public final class COSName extends COSBase implements Comparable
         COSName name = null;
         if( aName != null )
         {
-            name = (COSName)nameMap.get( aName );
+        	// Is it a common COSName ??
+            name = (COSName)commonNameMap.get( aName );
             if( name == null )
             {
-                //name is added to map in the constructor
-                name = new COSName( aName );
+            	// It seems to be a document specific COSName
+            	name = (COSName)nameMap.get( aName );
+            	if( name == null )
+            	{
+            		//name is added to the synchronized map in the constructor
+            		name = new COSName( aName, false );
+            	}	
             }
         }
         return name;
@@ -530,12 +543,27 @@ public final class COSName extends COSBase implements Comparable
      * that are created.
      *
      * @param aName The name of the COSName object.
+     * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without synchronizing.
+     */
+    private COSName( String aName, boolean staticValue )
+    {
+        name = aName;
+        if ( staticValue )
+        	commonNameMap.put( aName, this);
+        else
+        	nameMap.put( aName, this );
+        hashCode = name.hashCode();
+    }
+
+    /**
+     * Private constructor.  This will limit the number of COSName objects.
+     * that are created.
+     *
+     * @param aName The name of the COSName object.
      */
     private COSName( String aName )
     {
-        name = aName;
-        nameMap.put( aName, this );
-        hashCode = name.hashCode();
+    	this( aName, true );
     }
 
     /**
@@ -646,24 +674,5 @@ public final class COSName extends COSBase implements Comparable
      {
          // Clear them all
          nameMap.clear();
-
-         // Add the statics back in
-         java.lang.reflect.Field f[] = COSName.class.getFields();
-         if (f != null && f.length > 0)
-         {
-             for (int i=0; i<f.length; i++)
-             {
-                 try
-                 {
-                     Object obj = f[i].get(null);
-                     if (obj != null && obj instanceof COSName)
-                     {
-                         COSName cosname = (COSName)obj;
-                         nameMap.put(cosname.getName(),cosname);
-                     }
-                 }
-                 catch (Exception ignore) {}
-             }
-         }
      }
 }
