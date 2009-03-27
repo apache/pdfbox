@@ -84,8 +84,11 @@ public class PageDrawer extends PDFStreamEngine
         pageSize = pageDimension;
 
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        PDResources resources = page.findResources();
-        processStream( page, resources, page.getContents().getStream() );
+        // Only if there is some content, we have to process it. Otherwise we are done here and we will produce an empty page
+        if ( page.getContents() != null) {
+        	PDResources resources = page.findResources();
+        	processStream( page, resources, page.getContents().getStream() );
+        }
         List annotations = page.getAnnotations();
         for( int i=0; i<annotations.size(); i++ )
         {
