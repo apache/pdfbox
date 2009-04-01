@@ -115,55 +115,67 @@ public class PDPixelMap extends PDXObjectImage
             return image;
         }
 
-        //byte[] index =
-        //ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        int width = getWidth();
-        int height = getHeight();
-        int bpc = getBitsPerComponent();
-        //COSInteger length =
-        //        (COSInteger) stream.getStream().getDictionary().getDictionaryObject(COSName.LENGTH);
-        //byte[] array = new byte[stream.getFilteredStream().];
-        byte[] array = getPDStream().getByteArray();
+	try{
+		//byte[] index =
+		//ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		int width = getWidth();
+		int height = getHeight();
+		int bpc = getBitsPerComponent();
+		//COSInteger length =
+		//        (COSInteger) stream.getStream().getDictionary().getDictionaryObject(COSName.LENGTH);
+		//byte[] array = new byte[stream.getFilteredStream().];
+		byte[] array = getPDStream().getByteArray();
 
-//      Get the ColorModel right
-        PDColorSpace colorspace = getColorSpace();
-        ColorModel cm = colorspace.createColorModel( bpc );
-        WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
-        //DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-        DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-        byte[] bufferData = buffer.getData();
-        //System.arraycopy( array, 0, bufferData, 0, array.length );
-        int predictor = getPredictor();
-        List filters = getPDStream().getFilters();
+	//      Get the ColorModel right
+		PDColorSpace colorspace = getColorSpace();
+		if (colorspace == null){
+			//throw new IOException("getColorSpace() returned NULL");
+			logger().severe("getColorSpace() returned NULL");
+			return null;
+		}
+		ColorModel cm = colorspace.createColorModel( bpc );
+		WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
+		//DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
+		DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
+		byte[] bufferData = buffer.getData();
+		//System.arraycopy( array, 0, bufferData, 0, array.length );
+		int predictor = getPredictor();
+		List filters = getPDStream().getFilters();
 
-        /**
-         * PDF Spec 1.6 3.3.3 LZW and Flate predictor function
-         *
-         * Basically if predictor > 10 and LZW or Flate is being used then the
-         * predictor is not used.
-         *
-         * "For LZWDecode and FlateDecode, a Predictor value greater than or equal to 10
-         * merely indicates that a PNG predictor is in use; the specific predictor function
-         * used is explicitly encoded in the incoming data. The value of Predictor supplied
-         * by the decoding filter need not match the value used when the data was encoded
-         * if they are both greater than or equal to 10."
-         */
-        if( predictor < 10 ||
-            filters == null || !(filters.contains( COSName.LZW_DECODE.getName()) ||
-                                 filters.contains( COSName.FLATE_DECODE.getName()) ) )
-        {
-            PredictorAlgorithm filter = PredictorAlgorithm.getFilter(predictor);
-            filter.setWidth(width);
-            filter.setHeight(height);
-            filter.setBpp((bpc * 3) / 8);
-            filter.decode(array, bufferData);
-        }
-        else
-        {
-            System.arraycopy( array, 0,bufferData, 0, bufferData.length );
-        }
-        image = new BufferedImage(cm, raster, false, null);
-        return image;
+		/**
+		 * PDF Spec 1.6 3.3.3 LZW and Flate predictor function
+		 *
+		 * Basically if predictor > 10 and LZW or Flate is being used then the
+		 * predictor is not used.
+		 *
+		 * "For LZWDecode and FlateDecode, a Predictor value greater than or equal to 10
+		 * merely indicates that a PNG predictor is in use; the specific predictor function
+		 * used is explicitly encoded in the incoming data. The value of Predictor supplied
+		 * by the decoding filter need not match the value used when the data was encoded
+		 * if they are both greater than or equal to 10."
+		 */
+		if( predictor < 10 ||
+		    filters == null || !(filters.contains( COSName.LZW_DECODE.getName()) ||
+					 filters.contains( COSName.FLATE_DECODE.getName()) ) )
+		{
+		    PredictorAlgorithm filter = PredictorAlgorithm.getFilter(predictor);
+		    filter.setWidth(width);
+		    filter.setHeight(height);
+		    filter.setBpp((bpc * 3) / 8);
+		    filter.decode(array, bufferData);
+		}
+		else
+		{
+		    System.arraycopy( array, 0,bufferData, 0, bufferData.length );
+		}
+		image = new BufferedImage(cm, raster, false, null);
+		return image;
+	} catch (IOException IOe){
+		logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
+		//A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
+		//Returning the NULL falls through to Phlip Koch's TODO section.
+		return null;
+	}
     }
 
     /**
