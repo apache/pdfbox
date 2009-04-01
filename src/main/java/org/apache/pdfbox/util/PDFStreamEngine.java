@@ -363,8 +363,8 @@ public class PDFStreamEngine extends LoggingObject
             }
 
             // get the X location before we update the text matrix
-            float xPosBeforeText = textMatrix.getXPosition();
-            
+            float xPosBeforeText = initialMatrix.multiply( textMatrix ).multiply( ctm ).getXPosition();
+
             /* The text matrix gets updated after each glyph is placed.  The updated
              * version will have the X and Y coordinates for the next glyph.
              */
@@ -372,7 +372,7 @@ public class PDFStreamEngine extends LoggingObject
             //The adjustment will always be zero.  The adjustment as shown in the
             //TJ operator will be handled separately.
             float adjustment=0;
-            /* todo: tx should be set for horizontal text and ty for vertical text, which
+            /* TODO: tx should be set for horizontal text and ty for vertical text, which
              * seems to be specified in the font (not the direction in the matrix). 
              */
             float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText + spacingText)
@@ -387,7 +387,8 @@ public class PDFStreamEngine extends LoggingObject
 
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
-            float widthText = (textMatrix.getXPosition() - xPosBeforeText);
+            
+            float widthText = initialMatrix.multiply( textMatrix ).multiply( ctm ).getXPosition() - xPosBeforeText;
             
             //there are several cases where one character code will
             //output multiple characters.  For example "fi" or a
