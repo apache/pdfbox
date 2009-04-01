@@ -67,6 +67,11 @@ public class PDFTextStripper extends PDFStreamEngine
     private boolean suppressDuplicateOverlappingText = true;
     private boolean shouldSeparateByBeads = true;
     private boolean sortByPosition = false;
+    
+    // We will need to estimate where to add spaces.  
+    // These are used to help guess. 
+    private float spacingTolerance = .5f;
+    private float averageCharTolerance = .3f;
 
     private List pageArticles = null;
     /**
@@ -413,7 +418,6 @@ public class PDFTextStripper extends PDFStreamEngine
         float maxYForLine = -1;
         float minYTopForLine = Float.MAX_VALUE;
         float endOfLastTextX = -1;
-        float expectedStartOfNextWordX = -1;
         float lastWordSpacing = -1;
         float maxHeightForLine = -1;
         TextPosition lastPosition = null;
@@ -491,10 +495,28 @@ public class PDFTextStripper extends PDFStreamEngine
             String lineStr = "";
 
             textIter = textList.iterator();    // start from the beginning again
+
+            /* PDF files don't always store spaces. We will need to guess where we should add
+             * spaces based on the distances between TextPositions. Historically, this was done
+             * based on the size of the space character provided by the font. In general, this worked
+             * but there were cases where it did not work. Calculating the average character width
+             * and using that as a metric works better in some cases but fails in some cases where the 
+             * spacing worked. So we use both. NOTE: Adobe reader also fails on some of these examples. 
+             */
+
+            //Keeps track of the previous average character width
+            float previousAveCharWidth = -1;
             while( textIter.hasNext() )
             {
                 TextPosition position = (TextPosition)textIter.next();
                 String characterValue = position.getCharacter();
+
+                //Resets the average character width when we see a change in font 
+                // or a change in the font size
+                if(lastPosition != null && ((position.getFont() != lastPosition.getFont()) 
+                        || (position.getFontSize() != lastPosition.getFontSize()))){
+                    previousAveCharWidth = -1;
+                }
 
                 float positionX;
                 float positionY;
@@ -516,36 +538,53 @@ public class PDFTextStripper extends PDFStreamEngine
                     positionHeight = position.getHeight();
                 }
 
-                //try to get width of a space character
+                //The current amount of characters in a word
+                int wordCharCount = position.getIndividualWidths().length;
+
+                /* Estimate the expected width of the space based on the 
+                 * space character with some margin. */
                 float wordSpacing = position.getWidthOfSpace();
-                //if still zero fall back to getting the width of the current
-                //character
-                if( wordSpacing == 0 )
-                {
-                    wordSpacing = positionWidth;
+                float deltaSpace = 0;
+                if( lastWordSpacing < 0 ){
+                    deltaSpace = (wordSpacing * spacingTolerance);
+                }
+                else{
+                    deltaSpace = (((wordSpacing+lastWordSpacing)/2f)* spacingTolerance);
                 }
 
-                // RDD - We add a conservative approximation for space determination.
-                // basically if there is a blank area between two characters that is
-                //equal to some percentage of the word spacing then that will be the
-                //start of the next word
-                if( lastWordSpacing <= 0 )
-                {
-                    expectedStartOfNextWordX = endOfLastTextX + (wordSpacing* 0.50f);
+                /* Estimate the expected width of the space based on the 
+                 * average character width with some margin. This calculation does not
+                 * make a true average (average of averages) but we found that it gave the
+                 * best results after numerous experiments. Based on experiments we also found that
+                 * .3 worked well. */                       
+                float averageCharWidth = -1;
+                if(previousAveCharWidth < 0){
+                    averageCharWidth = (positionWidth/wordCharCount);
                 }
-                else
-                {
-                    expectedStartOfNextWordX = endOfLastTextX + (((wordSpacing+lastWordSpacing)/2f)* 0.50f);
+                else{
+                    averageCharWidth = (previousAveCharWidth + (positionWidth/wordCharCount))/2f;
                 }
-
-                // RDD - Here we determine whether this text object is on the current
-                // line.  We use the lastBaselineFontSize to handle the superscript
-                // case, and the size of the current font to handle the subscript case.
-                // Text must overlap with the last rendered baseline text by at least
-                // a small amount in order to be considered as being on the same line.
-                //
+                float deltaCharWidth = (averageCharWidth * averageCharTolerance);
+                
+                //Compares the values obtained by the average method and the wordSpacing method and picks
+                //the smaller number. 
+                float expectedStartOfNextWordX = -1;
+                if(endOfLastTextX != -1){
+                    if(deltaCharWidth > deltaSpace){
+                        expectedStartOfNextWordX = endOfLastTextX + deltaSpace;
+                    }
+                    else{
+                        expectedStartOfNextWordX = endOfLastTextX + deltaCharWidth;
+                    }
+                }   
 
                 if( lastPosition != null ){  
+                    // RDD - Here we determine whether this text object is on the current
+                    // line.  We use the lastBaselineFontSize to handle the superscript
+                    // case, and the size of the current font to handle the subscript case.
+                    // Text must overlap with the last rendered baseline text by at least
+                    // a small amount in order to be considered as being on the same line.
+
                     /* XXX BC: In theory, this check should really check if the next char is in full range
                      * seen in this line. This is what I tried to do with minYTopForLine, but this caused a lot
                      * of regression test failures.  So, I'm leaving it be for now. */
@@ -573,15 +612,13 @@ public class PDFTextStripper extends PDFStreamEngine
                         minYTopForLine = Float.MAX_VALUE;
                     }
 
-
+                    //Test if our TextPosition starts after a new word would be expected to start. 
                     if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
                             //only bother adding a space if the last character was not a space
                             lastPosition.getCharacter() != null &&
-                            !lastPosition.getCharacter().endsWith( " " ) )
-                    {
+                            !lastPosition.getCharacter().endsWith( " " ) ) {
                         lineStr += getWordSeparator();
                     }
-
                 }
 
                 if (positionY >= maxYForLine) {
@@ -593,14 +630,14 @@ public class PDFTextStripper extends PDFStreamEngine
                 endOfLastTextX = positionX + positionWidth;
 
                 // add it to the list
-                if (characterValue != null)
-                {
+                if (characterValue != null) {
                     lineStr += characterValue;
                 }
                 maxHeightForLine = Math.max( maxHeightForLine, positionHeight );
                 minYTopForLine = Math.min(minYTopForLine, positionY - positionHeight);
                 lastPosition = position;
                 lastWordSpacing = wordSpacing;
+                previousAveCharWidth = averageCharWidth;
             }
 
             // print the final line
@@ -1113,5 +1150,51 @@ public class PDFTextStripper extends PDFStreamEngine
     public void setSortByPosition(boolean newSortByPosition)
     {
         sortByPosition = newSortByPosition;
+    }
+
+    /**
+     * Get the current space width-based tolerance value that is being used
+     * to estimate where spaces in text should be added.  Note that the
+     * default value for this has been determined from trial and error. 
+     * 
+     * @return The current tolerance / scaling factor
+     */
+    public float getSpacingTolerance() {
+        return spacingTolerance;
+    }
+
+    /**
+     * Set the space width-based tolerance value that is used
+     * to estimate where spaces in text should be added.  Note that the
+     * default value for this has been determined from trial and error.
+     * Setting this value larger will reduce the number of spaces added. 
+     * 
+     * @param spacingTolerance tolerance / scaling factor to use
+     */
+    public void setSpacingTolerance(float spacingTolerance) {
+        this.spacingTolerance = spacingTolerance;
+    }
+
+    /**
+     * Get the current character width-based tolerance value that is being used
+     * to estimate where spaces in text should be added.  Note that the
+     * default value for this has been determined from trial and error.
+     * 
+     * @return The current tolerance / scaling factor
+     */
+    public float getAverageCharTolerance() {
+        return averageCharTolerance;
+    }
+
+    /**
+     * Set the character width-based tolerance value that is used
+     * to estimate where spaces in text should be added.  Note that the
+     * default value for this has been determined from trial and error.
+     * Setting this value larger will reduce the number of spaces added. 
+     * 
+     * @param spacingTolerance tolerance / scaling factor to use
+     */
+    public void setAverageCharTolerance(float averageCharTolerance) {
+        this.averageCharTolerance = averageCharTolerance;
     }
 }
