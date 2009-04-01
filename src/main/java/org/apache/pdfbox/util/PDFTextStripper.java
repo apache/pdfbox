@@ -545,11 +545,16 @@ public class PDFTextStripper extends PDFStreamEngine
                  * space character with some margin. */
                 float wordSpacing = position.getWidthOfSpace();
                 float deltaSpace = 0;
-                if( lastWordSpacing < 0 ){
-                    deltaSpace = (wordSpacing * spacingTolerance);
+                if ((wordSpacing == 0) || (wordSpacing == Float.NaN)) {
+                    deltaSpace = Float.MAX_VALUE;
                 }
-                else{
-                    deltaSpace = (((wordSpacing+lastWordSpacing)/2f)* spacingTolerance);
+                else {
+                    if( lastWordSpacing < 0 ){
+                        deltaSpace = (wordSpacing * spacingTolerance);
+                    }
+                    else{
+                        deltaSpace = (((wordSpacing+lastWordSpacing)/2f)* spacingTolerance);
+                    }
                 }
 
                 /* Estimate the expected width of the space based on the 
