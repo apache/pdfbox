@@ -75,7 +75,6 @@ public class AppendRectangleToPath extends OperatorProcessor
         	height = -height;
         }
         Rectangle2D rect = new Rectangle2D.Double(xStart, yStart, width, height);
-        drawer.getLinePath().reset();
         drawer.getLinePath().append( rect, false );
     }
 }
