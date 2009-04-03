@@ -451,6 +451,7 @@ public class PDFStreamEngine extends LoggingObject
                 		stringResult.toString(),
                 		font,
                 		fontSizeText,
+                		(int)(fontSizeText * textMatrix.getXScale()),
                 		wordSpacingDisp ));
     }
 
