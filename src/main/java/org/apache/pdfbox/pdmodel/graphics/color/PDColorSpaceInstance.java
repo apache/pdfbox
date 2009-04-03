@@ -64,10 +64,10 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
     public Color createColor() throws IOException
     {
         Color retval = null;
-	float[] components = colorSpaceValue.toFloatArray();
+        float[] components = colorSpaceValue.toFloatArray();
         try{
 
-            if( components.length == 3 )
+            if( colorSpace.getName().equals(PDDeviceRGB.NAME) && components.length == 3 )
             {
                 //for some reason, when using RGB and the RGB colorspace
                 //the new Color doesn't maintain exactly the same values
@@ -80,7 +80,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
 
                 ColorSpace cs = colorSpace.createColorSpace();
 
-                if (colorSpace.getName() == PDSeparation.NAME && components.length == 1){
+                if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1){
 
                     //Use that component as a single-integer RGB value
                     retval = new Color((int)components[0]);

@@ -50,6 +50,8 @@ public class SetNonStrokingColor extends OperatorProcessor
 	   	    	newOperator = new SetNonStrokingCMYKColor();
 	    	else if (colorSpace instanceof PDICCBased)
 		    	newOperator = new SetNonStrokingICCBasedColor();
+	    	else if (colorSpace instanceof PDCalRGB)
+		    	newOperator = new SetNonStrokingCalRGBColor();
 	    	if (newOperator != null) 
 	    	{
 	    		newOperator.setContext(getContext());
