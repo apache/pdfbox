@@ -44,6 +44,7 @@ public class PDCalRGB extends PDColorSpace
 
     private COSArray array;
     private COSDictionary dictionary;
+    private ColorSpace cSpace = null;
 
     /**
      * Constructor.
@@ -98,7 +99,9 @@ public class PDCalRGB extends PDColorSpace
      */
     public ColorSpace createColorSpace() throws IOException
     {
-        throw new IOException( "Not implemented" );
+    	if (cSpace == null)
+    		cSpace = new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
+    	return cSpace;
     }
 
     /**
