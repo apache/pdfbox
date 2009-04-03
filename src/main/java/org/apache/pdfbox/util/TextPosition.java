@@ -44,6 +44,7 @@ public class TextPosition
     private String str; 
     private PDFont font;
     private float fontSize;
+    private int fontSizeInPt;
     private float wordSpacing;  // word spacing value, in display units
 
     protected TextPosition()
@@ -63,6 +64,7 @@ public class TextPosition
      * @param string The character to be displayed.
      * @param currentFont The current for for this text position.
      * @param fontSizeValue The new font size.
+     * @param fontSizeValue The font size in pt units.
      * @param ws The word spacing parameter (in display units)
      */
     public TextPosition(
@@ -75,6 +77,7 @@ public class TextPosition
             String string,
             PDFont currentFont,
             float fontSizeValue,
+            int fontSizeInPt,
             float ws
     )
     {
@@ -97,6 +100,7 @@ public class TextPosition
         this.str = string;
         this.font = currentFont;
         this.fontSize = fontSizeValue;
+        this.fontSizeInPt = fontSizeInPt;
         this.wordSpacing = ws;
     }
 
@@ -310,6 +314,17 @@ public class TextPosition
     public float getFontSize()
     {
         return fontSize;
+    }
+
+    /**
+     * This will get the font size in pt
+     * To get this size we have to multiply the pdf-fontsize and the scaling from the textmatrix
+     *
+     * @return The font size in pt.
+     */
+    public float getFontSizeInPt()
+    {
+        return fontSizeInPt;
     }
 
     /**
