@@ -16,10 +16,10 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.jempbox.xmp.XMPMetadata;
-import org.jempbox.xmp.XMPSchemaBasic;
-import org.jempbox.xmp.XMPSchemaDublinCore;
-import org.jempbox.xmp.XMPSchemaPDF;
+import org.apache.jempbox.xmp.XMPMetadata;
+import org.apache.jempbox.xmp.XMPSchemaBasic;
+import org.apache.jempbox.xmp.XMPSchemaDublinCore;
+import org.apache.jempbox.xmp.XMPSchemaPDF;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;

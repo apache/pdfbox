@@ -47,7 +47,7 @@
     <property name="fontbox.name" value="FontBox-0.2.0-dev" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
-    <property name="jempbox.name" value="JempBox-0.2.0" />
+    <property name="jempbox.name" value="jempbox-0.8.0-incubating" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
     <property name="lucene.name" value="lucene-core-2.4.1" />

@@ -53,20 +53,20 @@
     <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>jempbox</artifactId>
-        <version>0.3.0-incubator-SNAPSHOT</version>
+        <version>0.8.0-incubator</version>
     </dependency>
 
     <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
-        <version>2.2.0</version>
+        <version>2.4.1</version>
         <optional>true</optional>
     </dependency>
     
     <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-demos</artifactId>
-        <version>2.2.0</version>
+        <version>2.4.1</version>
         <optional>true</optional>
     </dependency>
     
