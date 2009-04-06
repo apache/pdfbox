@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 import javax.xml.transform.TransformerException;
 
-import org.jempbox.xmp.XMPMetadata;
+import org.apache.jempbox.xmp.XMPMetadata;
 import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
