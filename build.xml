@@ -50,10 +50,10 @@
     <property name="jempbox.name" value="JempBox-0.2.0" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
-    <property name="lucene.name" value="lucene-core-2.2.0" />
+    <property name="lucene.name" value="lucene-core-2.4.1" />
     <property name="lucene.jar" value="${jar.dir}/${lucene.name}.jar" />
 
-    <property name="lucene-demos.name" value="lucene-demos-2.2.0" />
+    <property name="lucene-demos.name" value="lucene-demos-2.4.1" />
     <property name="lucene-demos.jar" value="${jar.dir}/${lucene-demos.name}.jar" />
 
     <property name="bcprov.name" value="bcprov-jdk14-132" />
