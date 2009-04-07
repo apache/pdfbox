@@ -35,7 +35,6 @@ public class PDFText2HTML extends PDFTextStripper {
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
     private boolean onFirstPage = true;
-    private String encoding;
 
     /**
      * Constructor.

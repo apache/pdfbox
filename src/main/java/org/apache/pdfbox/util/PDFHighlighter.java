@@ -45,6 +45,7 @@ public class PDFHighlighter extends PDFTextStripper
     private String[] searchedWords;
     private ByteArrayOutputStream textOS = null;
     private Writer textWriter = null;
+    private static final String encoding = "UTF-16";
 
     /**
      * Default constructor.
@@ -53,7 +54,7 @@ public class PDFHighlighter extends PDFTextStripper
      */
     public PDFHighlighter() throws IOException
     {
-        super();
+        super(encoding);
         super.setLineSeparator( "" );
         super.setPageSeparator( "" );
         super.setWordSeparator( "" );
@@ -95,7 +96,7 @@ public class PDFHighlighter extends PDFTextStripper
                                 //" mode=active " + */
                                 " version=2>\n<Highlight>\n");
         textOS = new ByteArrayOutputStream();
-        textWriter = new OutputStreamWriter( textOS, "UTF-16" );
+        textWriter = new OutputStreamWriter( textOS, encoding);
         writeText(pdDocument, textWriter);
         highlighterOutput.write("</Highlight>\n</Body>\n</XML>");
         highlighterOutput.flush();
@@ -108,7 +109,7 @@ public class PDFHighlighter extends PDFTextStripper
     {
         textWriter.flush();
 
-        String page = new String( textOS.toByteArray(), "UTF-16" );
+        String page = new String( textOS.toByteArray(), encoding );
         textOS.reset();
         //page = page.replaceAll( "\n", "" );
         //page = page.replaceAll( "\r", "" );

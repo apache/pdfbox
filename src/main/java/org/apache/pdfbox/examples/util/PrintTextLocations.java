@@ -111,11 +111,11 @@ public class PrintTextLocations extends PDFTextStripper
      */
     protected void processTextPosition( TextPosition text )
     {
-        System.out.println( "String[" + text.getX() + "," +
-                text.getY() + " fs=" + text.getFontSize() + " xscale=" +
-                text.getXScale() + " height=" + text.getHeight() + " space=" +
+        System.out.println( "String[" + text.getXDirAdj() + "," +
+                text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale=" +
+                text.getXScale() + " height=" + text.getHeightDir() + " space=" +
                 text.getWidthOfSpace() + " width=" +
-                text.getWidth() + "]" + text.getCharacter() );
+                text.getWidthDirAdj() + "]" + text.getCharacter() );
     }
 
     /**

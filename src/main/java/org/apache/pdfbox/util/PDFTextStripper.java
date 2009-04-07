@@ -96,6 +96,7 @@ public class PDFTextStripper extends PDFStreamEngine
     protected String lineSeparator = System.getProperty("line.separator");
     private String pageSeparator = System.getProperty("line.separator");
     private String wordSeparator = " ";
+    protected String encoding;    // encoding that text will be written in (or null)
 
     /**
      * The stream to write the output to.
@@ -110,17 +111,22 @@ public class PDFTextStripper extends PDFStreamEngine
 
     /**
      * Instantiate a new PDFTextStripper object.  This object will load properties from
-     * Resources/PDFTextStripper.properties.
+     * Resources/PDFTextStripper.properties and will not do anything special to 
+     * convert the text to a more encoding-specific output.  
      * @throws IOException If there is an error loading the properties.
      */
     public PDFTextStripper() throws IOException
     {
         super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
+        this.encoding = null;
+        normalize = new TextNormalize(this.encoding);
     }
+
 
     /**
      * Instantiate a new PDFTextStripper object.  Loading all of the operator mappings
-     * from the properties object that is passed in.
+     * from the properties object that is passed in.  Does not convert the text
+     * to more encoding-specific output.
      *
      * @param props The properties containing the mapping of operators to PDFOperator
      * classes.
@@ -130,6 +136,23 @@ public class PDFTextStripper extends PDFStreamEngine
     public PDFTextStripper( Properties props ) throws IOException
     {
         super( props );
+        this.encoding = null;
+        normalize = new TextNormalize(this.encoding);
+    }
+    /**
+     * Instantiate a new PDFTextStripper object. This object will load properties from
+     * Resources/PDFTextStripper.properties and will apply encoding-specific
+     * conversions to the output text.  
+     *
+     * @param encoding The encoding that the output will be written in.
+     *
+     * @throws IOException If there is an error reading the properties.
+     */
+    public PDFTextStripper( String encoding ) throws IOException
+    {
+        super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ));
+        this.encoding = encoding;
+        normalize = new TextNormalize(this.encoding);
     }
 
     /**
@@ -422,10 +445,6 @@ public class PDFTextStripper extends PDFStreamEngine
         float maxHeightForLine = -1;
         TextPosition lastPosition = null;
 
-        if (normalize == null) {
-            normalize = new TextNormalize();
-        }
-
         for( int i = 0; i < charactersByArticle.size(); i++)
         {
             List textList = (List)charactersByArticle.get( i );
@@ -658,8 +677,7 @@ public class PDFTextStripper extends PDFStreamEngine
 
             endArticle();
         }
-
-        writePageSeperator();;
+        writePageSeperator();
     }
 
     private boolean overlap( float y1, float height1, float y2, float height2 )
@@ -885,12 +903,12 @@ public class PDFTextStripper extends PDFStreamEngine
                  * This may not always be true. */
                 TextPosition previousTextPosition = (TextPosition)textList.get(textList.size()-1);
                 if(text.isDiacritic() && previousTextPosition.contains(text)){
-                    previousTextPosition.mergeDiacritic(text);
+                    previousTextPosition.mergeDiacritic(text, normalize);
                 }
                 /* If the previous TextPosition was the diacritic, merge it into this
                  * one and remove it from the list. */
                 else if(previousTextPosition.isDiacritic() && text.contains(previousTextPosition)){
-                    text.mergeDiacritic(previousTextPosition);
+                    text.mergeDiacritic(previousTextPosition, normalize);
                     textList.remove(textList.size()-1);
                     textList.add(text);
                 }
