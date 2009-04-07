@@ -213,7 +213,7 @@ public class ExtractText
                 }
                 else
                 {
-                    stripper = new PDFTextStripper();
+                    stripper = new PDFTextStripper(encoding);
                 }
                 stripper.setSortByPosition( sort );
                 stripper.setStartPage( startPage );

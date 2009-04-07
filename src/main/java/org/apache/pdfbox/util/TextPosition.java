@@ -451,8 +451,9 @@ public class TextPosition
      * contains() method to test if two objects overlap. 
      * 
      * @param diacritic TextPosition to merge into the current TextPosition.
+     * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    public void mergeDiacritic (TextPosition diacritic)
+    public void mergeDiacritic (TextPosition diacritic, TextNormalize normalize)
     {
         if (diacritic.getCharacter().length() > 1)
             return;
@@ -476,7 +477,7 @@ public class TextPosition
              */
             if(diacXStart < currCharXStart && diacXEnd <= currCharXEnd){               
                 if(i == 0){
-                    insertDiacritic(i, diacritic);
+                    insertDiacritic(i, diacritic, normalize);
                 }
                 else{    
                     float distanceOverlapping1 = diacXEnd - currCharXStart;
@@ -486,10 +487,10 @@ public class TextPosition
                     float percentage2 = distanceOverlapping2/widths[i-1];
 
                     if(percentage1 >= percentage2){
-                        insertDiacritic(i, diacritic);
+                        insertDiacritic(i, diacritic, normalize);
                     }
                     else{
-                        insertDiacritic(i-1, diacritic);
+                        insertDiacritic(i-1, diacritic, normalize);
                     }
                 }
                 wasAdded = true;
@@ -497,20 +498,20 @@ public class TextPosition
             //diacritic completely covers this character and therefore we assume that
             //this is the character the diacritic belongs to
             else if(diacXStart < currCharXStart && diacXEnd > currCharXEnd){
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
             //Otherwise, The diacritic modifies this character because its completely
             //contained by the character width
             else if(diacXStart >= currCharXStart && diacXEnd <= currCharXEnd) {
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;   
             }
             /*
              * Last character in the TextPosition so we add diacritic to the end
              */
             else if(diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == (strLen - 1)){
-                insertDiacritic(i, diacritic);
+                insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }        
             /*
@@ -525,8 +526,9 @@ public class TextPosition
      * and updates the widths array to include the extra character width.
      * @param i current character
      * @param diacritic The diacritic TextPosition
+     * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    private void insertDiacritic(int i, TextPosition diacritic){
+    private void insertDiacritic(int i, TextPosition diacritic, TextNormalize normalize){
         /* we add the diacritic to the right or left of the character
          * depending on the direction of the character.  Note that this
          * is only required because the text is currently stored in 
@@ -544,7 +546,7 @@ public class TextPosition
                 || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC)
                 || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING)
                 || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)) {
-            buf.append(diacritic.getCharacter());
+            buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
             widths2[i] = 0;
             buf.append(str.charAt(i));
             widths2[i+1] = widths[i];
@@ -552,7 +554,7 @@ public class TextPosition
         else {
             buf.append(str.charAt(i));
             widths2[i] = widths[i];
-            buf.append(diacritic.getCharacter());
+            buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
             widths2[i+1] = 0;
         }
 

@@ -57,7 +57,7 @@ public class ICU4JImpl {
     }
 
     /**
-     * Normalize presentation forms of characters to the separate parts.
+     * Normalize presentation forms of characters to the separate parts. 
      * @see TextNormalize.normalizePres(String)
      * 
      * @param a_str String to normalize
@@ -74,45 +74,49 @@ public class ICU4JImpl {
             char c = a_str.charAt(i);
             if (((c >= 0xFB00) && (c <= 0xFDFF)) ||
                     ((c >= 0xFE70) && (c <= 0xFEFF)))	{
-                /* The following ligatures have a space in them
-                 * when they are decomposed. PDF files adjust for
-                 * this using TJ spacing, but currently a space
-                 * gets created in the word by the normalization.
-                 * The current fix is to hard code the decomposition
-                 * without the space.
-                 */
-                if(c == 0xFC5E){
-                    retStr += "\u064c\u0651";
-                }
-                else if(c == 0xFC5F){
-                    retStr += "\u064d\u0651";
-                }
-                else if(c == 0xFC60){
-                    retStr += "\u064e\u0651";
-                }
-                else if(c == 0xFC61){
-                    retStr += "\u064f\u0651";
-                }
-                else if(c == 0xFC62){
-                    retStr += "\u0650\u0651";
-                }
-                else if(c == 0xFC63){
-                    retStr += "\u0651\u0670";
-                }
                 /* Some fonts map U+FDF2 differently than the Unicode spec.
                  * They add an extra U+0627 character to compensate.  
                  * This removes the extra character for those fonts. */ 
-                else if((c == 0xFDF2) && (i > 0) && ((a_str.charAt(i-1) == 0x0627) || (a_str.charAt(i-1) == 0xFE8D))) {
+                if((c == 0xFDF2) && (i > 0) && ((a_str.charAt(i-1) == 0x0627) || (a_str.charAt(i-1) == 0xFE8D))) {
                     retStr += "\u0644\u0644\u0647";
                 }
                 else{
-                    retStr += Normalizer.normalize(c, Normalizer.NFKC); 
+                    /*
+                     * Trim because some decompositions have an extra space, such as
+                     * U+FC5E
+                     */
+                    retStr += Normalizer.normalize(c, Normalizer.NFKC).trim(); 
                 }
-            }      
+            }
             else {
                 retStr += a_str.charAt(i);
             }
         }
-        return retStr; 
+        return retStr;
+    }
+    /**
+     * Decomposes Diacritic characters to their combining forms
+     * 
+     * @param a_str String to be Normalized
+     * @return A Normalized String
+     */      
+    public String normalizeDiac(String a_str){
+        String retStr = "";
+        for (int i = 0; i < a_str.length(); i++) {
+            char c = a_str.charAt(i);
+            if(Character.getType(c) == Character.NON_SPACING_MARK 
+                    || Character.getType(c) == Character.MODIFIER_SYMBOL
+                    || Character.getType(c) == Character.MODIFIER_LETTER){
+                /*
+                 * Trim because some decompositions have an extra space, such as
+                 * U+00B4
+                 */
+                retStr += Normalizer.normalize(c, Normalizer.NFKC).trim();
+            }
+            else{
+                retStr += a_str.charAt(i);
+            }
+        }
+        return retStr;
     }
 }

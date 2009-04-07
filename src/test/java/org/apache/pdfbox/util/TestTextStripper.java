@@ -89,6 +89,7 @@ public class TestTextStripper extends TestCase
     private boolean bFail = false;
     private PDFTextStripper stripper = null;
     private PrintWriter log = null;
+    private final String encoding = "UTF-16LE";
 
     /**
      * Test class constructor.
@@ -100,7 +101,7 @@ public class TestTextStripper extends TestCase
     public TestTextStripper( String name ) throws IOException
     {
         super( name );
-        stripper = new PDFTextStripper();
+        stripper = new PDFTextStripper(encoding);
         stripper.setLineSeparator("\n");
     }
 
@@ -248,7 +249,7 @@ public class TestTextStripper extends TestCase
             os = new FileOutputStream(outFile);
             os.write( 0xFF );
             os.write( 0xFE );
-            writer = new OutputStreamWriter(os,"UTF-16LE");
+            writer = new OutputStreamWriter(os,encoding);
 
             //Allows for sorted tests 
             stripper.setSortByPosition(bSort);
@@ -270,9 +271,9 @@ public class TestTextStripper extends TestCase
             }
 
             LineNumberReader expectedReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile),"UTF-16LE"));
+                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), encoding));
             LineNumberReader actualReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), "UTF-16LE"));
+                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), encoding));
 
             while (true)
             {
