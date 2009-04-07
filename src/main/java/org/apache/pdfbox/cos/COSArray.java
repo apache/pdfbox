@@ -478,4 +478,16 @@ public class COSArray extends COSBase
             add( new COSFloat( value[i] ) );
         }
     }
+    
+    /*
+	Return contents of COSArray as a Java List
+    */
+    public List toList()
+    {
+	    ArrayList retList = new ArrayList(size());
+	    for (int i = 0; i < size(); i++)
+		retList.add(get(i));
+	    
+	    return retList;
+    }
 }

@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.exceptions.LoggingObject;
 
 /**
  * This class represents a color space in a pdf document.
@@ -34,7 +35,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.11 $
  */
-public final class PDColorSpaceFactory
+public final class PDColorSpaceFactory extends LoggingObject 
 {
     /**
      * Private constructor for utility classes.
@@ -67,10 +68,6 @@ public final class PDColorSpaceFactory
             if( type.getName().equals( PDCalGray.NAME ) )
             {
                 retval = new PDCalGray( array );
-            }
-            else if( type.getName().equals( PDDeviceRGB.NAME ) )
-            {
-                retval = PDDeviceRGB.INSTANCE;
             }
             else if( type.getName().equals( PDCalRGB.NAME ) )
             {
