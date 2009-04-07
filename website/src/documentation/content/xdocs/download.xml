@@ -26,7 +26,9 @@
         There are several ways you can obtain the PDFBox binaries or sources:
       </p>
       <ul>
-        <li><a href="#distribution">Download a distribution</a></li>
+        <li><a href="#pdfbox">Download Apache PDFBox</a></li>
+        <li><a href="#fontbox">Download Apache FontBox</a></li>
+        <li><a href="#jempbox">Download Apache JempBox</a></li>
         <!--
         <li><a href="#snapshot">Download a snapshot</a></li>
         -->
@@ -38,11 +40,80 @@
         related to the encryption features included in Apache PDFBox.
       </p>
     </section>
-    <section id="distribution">
-      <title>Download a distribution</title>
+    <section id="pdfbox">
+      <title>Download Apache PDFBox</title>
       <p>
-        Apache PDFBox is undergoing incubation at the Apache Software Foundation and has since
-        not published a new release. We're trying to fix that as soon as possible.
+        No releases of Apache PDFBox are yet available. You can build the
+        latest sources from <a href="#subversion">Subversion</a> or download
+        one of the <a href="#old-releases">old releases</a> available on
+        SourceForge.
+      </p>
+    </section>
+    <section id="fontbox">
+      <title>Download Apache FontBox</title>
+      <p>
+        No releases of Apache FontBox are yet available. You can build the
+        latest sources from <a href="#subversion">Subversion</a> or download
+        one of the <a href="#old-releases">old releases</a> available on
+        SourceForge.
+      </p>
+    </section>
+    <section id="jempbox">
+      <title>Download Apache JempBox</title>
+      <p>
+        Apache JempBox is an open source Java library for working with
+        XMP metadata.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Download</th>
+            <th>Size</th>
+            <th>Verify</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
+                >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
+            <td>130KB</td>
+            <td>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
+                >jempbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
+            <td>50KB</td>
+            <td>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
+              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The 0.8.0-incubating release is the first JempBox release made at
+        the Apache Software Foundation. The most notable change since the
+        previous release (0.2.0) is the renaming of all Java packages from
+        org.jempbox to org.apache.jempbox. If you've used JempBox before,
+        you need to update all your client code to use the renamed JempBox
+        packages.
+      </p>
+      <p>
+        The version number of JempBox was upgraded from 0.2.0 to 0.8.0 to
+        better match the version numbering of Apache PDFBox. The -incubating
+        label included in the version number reflects the incubation status
+        of the project.
+      </p>
+      <p>
+        See the <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/RELEASE-NOTES-0.8.0-incubating.txt"
+        >release notes</a> for more details.
       </p>
     </section>
     <!-- TODO Enable me when available
