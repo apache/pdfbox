@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
@@ -81,7 +82,8 @@ public class PDSeparation extends PDColorSpace
      */
     public int getNumberOfComponents() throws IOException
     {
-        return 1;
+        //return 1;
+	return array.size();
     }
 
     /**
@@ -101,18 +103,18 @@ public class PDSeparation extends PDColorSpace
 
             PDColorSpace alt = getAlternateColorSpace();
 
-            //logger().info(alt.toString());
+            logger().info(alt.toString());
 
             ColorSpace CS = alt.createColorSpace();///dwilson 12/15/07
-            //logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
+            logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
 
             return CS;
         }catch (IOException IOe){
-            logger().severe(FullStackTrace(IOe));
+            logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
 
             throw IOe;
         }catch (Exception e){
-            logger().severe(FullStackTrace(e));
+            logger().severe(e.toString() + "\n at\n" +FullStackTrace(e));
             throw new IOException("Failed to Create ColorSpace");
         }
     }
@@ -128,7 +130,6 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        //throw new IOException( "Not implemented" );
         return getAlternateColorSpace().createColorModel(bpc);
     }
 
@@ -205,5 +206,32 @@ public class PDSeparation extends PDColorSpace
     public void setTintTransform( PDFunction tint )
     {
         array.set( 3, tint );
+    }
+    
+    
+    /*
+	Don't just tell me it's a Separation -- tell me its contents!
+    */
+	public String toString()
+    {
+	    
+        String RetVal = NAME + "{ " + array.toString() + " }";
+	    
+	return RetVal;
+    }
+    
+    /*
+	Some of the key values are stored within the COSDictionary, item 3 in the array.
+	I don't necessarily want to expose the entire dictionary publicly (except in toString()),
+	but need access privately in order to expose the color values publicly.
+    */
+    private COSDictionary getDictionary() throws IOException
+    {
+	    return (COSDictionary) array.getObject( 3);
+    }
+    
+    public COSArray getColorValues() throws IOException
+    {
+	    return (COSArray) getDictionary().getDictionaryObject("C1");
     }
 }

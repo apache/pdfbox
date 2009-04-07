@@ -1313,5 +1313,21 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
+    
+    /*
+	Don't just tell me it's a dictionary -- tell me its contents!
+    */
+	public String toString()
+    {
+        String RetVal = "COSDictionary{";
+	    for (int i = 0; i<size(); i++){
+		    COSName key = (COSName)keyList().get(i);
+		    RetVal = RetVal + "(" + key + ":" + getDictionaryObject(key).toString() + ") ";
+	    }
+	    RetVal = RetVal + "}";
+	    
+	    return RetVal;
+    }
+
 
 }
