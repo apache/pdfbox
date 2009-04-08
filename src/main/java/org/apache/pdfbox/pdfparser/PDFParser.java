@@ -549,8 +549,24 @@ public class PDFParser extends BaseParser
         //read "trailer"
         String nextLine = readLine();
         if( !nextLine.equals( "trailer" ) ) {
-            return false;
+            // in some cases the EOL is missing and the trailer immediately continues with "<<" or with a blank character
+            // even if this does not comply with PDF reference we want to support as many PDFs as possible
+            // Acrobat reader can also deal with this.
+            if (nextLine.startsWith("trailer")) {
+                byte[] b = nextLine.getBytes();
+                int len = "trailer".length();
+                pdfSource.unread(b, len, b.length-len);
+            }
+            else {
+                return false;
+            }
         }
+
+        // in some cases the EOL is missing and the trailer continues with " <<"
+        // even if this does not comply with PDF reference we want to support as many PDFs as possible
+        // Acrobat reader can also deal with this.
+        skipSpaces();
+
         COSDictionary parsedTrailer = parseCOSDictionary();
         COSDictionary docTrailer = document.getTrailer();
         if( docTrailer == null )
