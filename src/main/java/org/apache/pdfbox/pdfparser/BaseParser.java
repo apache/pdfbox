@@ -272,8 +272,6 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                     pdfSource.unread( whitespace );
                     //The spec says this is invalid but it happens in the real
                     //world so we must support it.
-                    //throw new IOException("expected='0x0A' actual='0x" +
-                    //    Integer.toHexString(whitespace) + "' " + pdfSource);
                 }
             }
             else if (whitespace == 0x0A)
@@ -286,66 +284,44 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                 //but again we will do a lenient parsing and just assume that everything
                 //is fine
                 pdfSource.unread( whitespace );
-                //throw new IOException("expected='0x0D or 0x0A' actual='0x" +
-                //Integer.toHexString(whitespace) + "' " + pdfSource);
-
             }
 
             /*This needs to be dic.getItem because when we are parsing, the underlying object
              * might still be null.
              */
             COSBase streamLength = dic.getItem(COSName.LENGTH);
-            /*long length = -1;
-            if( streamLength instanceof COSNumber )
-            {
-                length = ((COSNumber)streamLength).intValue();
-            }
-            else if( streamLength instanceof COSObject &&
-                     ((COSObject)streamLength).getObject() instanceof COSNumber )
-            {
-                length = ((COSNumber)((COSObject)streamLength).getObject()).intValue();
-            }*/
-
-            //length = -1;
-            //streamLength = null;
 
             //Need to keep track of the
             out = stream.createFilteredStream( streamLength );
+            
             String endStream = null;
-            //the length is wrong in some pdf documents which means
-            //that PDFBox must basically ignore it in order to be able to read
-            //the most number of PDF documents.  This of course is a penalty hit,
-            //maybe I could implement a faster parser.
-            /**if( length != -1 )
-            {
-                byte[] buffer = new byte[1024];
-                int amountRead = 0;
-                int totalAmountRead = 0;
-                while( amountRead != -1 && totalAmountRead < length )
-                {
-                    int maxAmountToRead = Math.min(buffer.length, (int)(length-totalAmountRead));
-                    amountRead = pdfSource.read(buffer,0,maxAmountToRead);
-                    totalAmountRead += amountRead;
-                    if( amountRead != -1 )
-                    {
-                        out.write( buffer, 0, amountRead );
-                    }
-                }
-            }
-            else
-            {**/
-                readUntilEndStream( out );
-            /**}*/
+            readUntilEndStream( out );
             skipSpaces();
-            endStream = readString();
-
-            if (!endStream.equals("endstream"))
-            {
-                readUntilEndStream( out );
-                endStream = readString();
-                if( !endStream.equals( "endstream" ) )
-                {
-                    throw new IOException("expected='endstream' actual='" + endStream + "' " + pdfSource);
+            endStream = readString(); 
+            
+            if (!endStream.equals("endstream")){
+                /*
+                 * Some PDF files don't contain a new line after endstream so we 
+                 * need to make sure that the next object number is getting read separately
+                 * and not part of the endstream keyword. Ex. Some files would have "endstream8"
+                 * instead of "endstream"
+                 */
+                if(endStream.startsWith("endstream")){
+                    String extra = endStream.substring(9, endStream.length());
+                    endStream = endStream.substring(0, 9);
+                    byte[] array = extra.getBytes();
+                    pdfSource.unread(array);
+                }
+                else{
+                    /*
+                     * If for some reason we get something else here, Read until we find the next
+                     * "endstream"
+                     */
+                    readUntilEndStream( out );
+                    endStream = readString();
+                    if( !endStream.equals( "endstream" ) ){
+                        throw new IOException("expected='endstream' actual='" + endStream + "' " + pdfSource);
+                    }
                 }
             }
         }
@@ -378,40 +354,6 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             buffer[currentIndex%buffer.length] = (byte)byteRead;
             currentIndex++;
         }
-
-        //we want to ignore the end of the line data when reading a stream
-        //so will make an attempt to ignore it.
-        /*writeIndex = currentIndex - buffer.length;
-        if( buffer[writeIndex%buffer.length] == 13 &&
-            buffer[(writeIndex+1)%buffer.length] == 10 )
-        {
-            //then ignore the newline before the endstream
-        }
-        else if( buffer[(writeIndex+1)%buffer.length] == 10 )
-        {
-            //Then first byte is data, second byte is newline
-            out.write( buffer[writeIndex%buffer.length] );
-        }
-        else
-        {
-            out.write( buffer[writeIndex%buffer.length] );
-            out.write( buffer[(writeIndex+1)%buffer.length] );
-        }*/
-
-        /**
-         * Old way of handling newlines before endstream
-        for( int i=0; i<additionalBytes; i++ )
-        {
-            writeIndex = currentIndex - buffer.length;
-            if( writeIndex >=0 &&
-                //buffer[writeIndex%buffer.length] != 10 &&
-                buffer[writeIndex%buffer.length] != 13 )
-            {
-                out.write( buffer[writeIndex%buffer.length] );
-            }
-            currentIndex++;
-        }
-        */
         pdfSource.unread( ENDSTREAM );
 
     }
