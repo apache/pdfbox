@@ -103,10 +103,10 @@ public class PDSeparation extends PDColorSpace
 
             PDColorSpace alt = getAlternateColorSpace();
 
-            logger().info(alt.toString());
+            //logger().info(alt.toString());
 
             ColorSpace CS = alt.createColorSpace();///dwilson 12/15/07
-            logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
+            //logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
 
             return CS;
         }catch (IOException IOe){

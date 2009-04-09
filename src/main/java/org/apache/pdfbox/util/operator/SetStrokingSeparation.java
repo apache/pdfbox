@@ -30,7 +30,7 @@ import java.io.IOException;
  * @author <a href="mailto:WilliamstonConsulting@GMail.com">Daniel Wilson</a>
  * @version $Revision: 1.0 $
  */
-public class SetNonStrokingSeparation extends OperatorProcessor 
+public class SetStrokingSeparation extends OperatorProcessor 
 {
     /**
      * scn Set color space for non stroking operations.
@@ -40,7 +40,7 @@ public class SetNonStrokingSeparation extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
+        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
         PDColorSpace colorSpace = colorInstance.getColorSpace() ;//.getAlternateColorSpace();
 	    logger().info("handling color space " + colorSpace.toString());
 	    //logger().info("Arguments: " + arguments.toString());
@@ -53,17 +53,17 @@ public class SetNonStrokingSeparation extends OperatorProcessor
 		{
 			OperatorProcessor newOperator = null;
 			if (colorSpace instanceof PDDeviceGray) 
-			    newOperator = new SetNonStrokingGrayColor();
+			    newOperator = new SetStrokingGrayColor();
 			else if (colorSpace instanceof PDDeviceRGB)
-			    newOperator = new SetNonStrokingRGBColor();
+			    newOperator = new SetStrokingRGBColor();
 			else if (colorSpace instanceof PDDeviceCMYK)
-				newOperator = new SetNonStrokingCMYKColor();
+				newOperator = new SetStrokingCMYKColor();
 			else if (colorSpace instanceof PDICCBased)
-				newOperator = new SetNonStrokingICCBasedColor();
+				newOperator = new SetStrokingICCBasedColor();
 			else if (colorSpace instanceof PDCalRGB)
-				newOperator = new SetNonStrokingCalRGBColor();
+				newOperator = new SetStrokingCalRGBColor();
 			else if (colorSpace instanceof PDSeparation)
-				newOperator = new SetNonStrokingSeparation();
+				newOperator = new SetStrokingSeparation();
 
 			if (newOperator != null) 
 			{
@@ -74,7 +74,7 @@ public class SetNonStrokingSeparation extends OperatorProcessor
 				logger().warning("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
 		}
 		
-	} else throw new IOException ("Invalid attempt to process colorspace " + colorSpace.toString() + " in SetNonStrokingSeparation");
+	} else throw new IOException ("Invalid attempt to process colorspace " + colorSpace.toString() + " in SetStrokingSeparation");
         
     }
 }
