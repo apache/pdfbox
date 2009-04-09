@@ -154,8 +154,8 @@ public class PageDrawer extends PDFStreamEngine
             else
             {
             	// TODO: need to implement....
-            	logger().info("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
-            	logger().info("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
+            	logger().warning("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
+            	logger().warning("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
                 graphics.setColor( this.getGraphicsState().getNonStrokingColorSpace().createColor() );
             }
             PDFont font = text.getFont();
@@ -288,8 +288,6 @@ public class PageDrawer extends PDFStreamEngine
 
     	graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
 
-        //logger().info("Filling the path with rule: " + windingRule);
-
     	getLinePath().setWindingRule(windingRule);
 
     	graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
@@ -328,7 +326,7 @@ public class PageDrawer extends PDFStreamEngine
 
     //If you need to do anything when a color changes, do it here ... or in an override of this function
     public void ColorChanged(boolean bStroking) throws IOException{
-        logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
+        //logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
     }
 
     //This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
