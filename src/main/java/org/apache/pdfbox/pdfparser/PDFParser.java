@@ -20,13 +20,16 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.rmi.server.LogStream;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.exceptions.LoggingObject;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
 
@@ -49,6 +52,7 @@ public class PDFParser extends BaseParser
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
     private COSDocument document;
+    private boolean forceParsing = false;
 
     /**
      * Temp file directory.
@@ -81,6 +85,23 @@ public class PDFParser extends BaseParser
     {
         super(input);
         this.raf = rafi;
+    }
+    
+    /**
+     * Constructor to allow control over RandomAccessFile.
+     * Also enables parser to skip corrupt objects to try and force parsing
+     * @param input The input stream that contains the PDF document.
+     * @param rafi The RandomAccessFile to be used in internal COSDocument
+     * @param force When true, the parser will skip corrupt pdf objects and 
+     * will continue parsing at the next object in the file
+     *
+     * @throws IOException If there is an error initializing the stream.
+     */
+    public PDFParser(InputStream input, RandomAccess rafi, boolean force)
+        throws IOException{
+        super(input);
+        this.raf = rafi;
+        this.forceParsing = force;
     }
 
     /**
@@ -134,8 +155,22 @@ public class PDFParser extends BaseParser
                     if(pdfSource.isEOF()){
                         break;
                     }
-                    wasLastParsedObjectEOF = parseObject();
-                    
+                    try{
+                        wasLastParsedObjectEOF = parseObject();
+                    }
+                    catch(IOException e){
+                        if(forceParsing){
+                            /*
+                             * Warning is sent to the PDFBox.log and to the Console that
+                             * we skipped over an object
+                             */
+                            logger().log(Level.WARNING ,"Parsing Error, Skipping Object", e);
+                            skipToNextObj();
+                        }
+                        else{ 
+                            throw e;
+                        }
+                    }
                     skipSpaces();
                 }
                 //Test if we saw a trailer section. If not, look for an XRef Stream (Cross-Reference Stream) 
@@ -187,23 +222,50 @@ public class PDFParser extends BaseParser
             pdfSource.close();
         }
     }
+    /**
+     * Skip to the start of the next object.  This is used to recover
+     * from a corrupt object. This should handle all cases that parseObject
+     * supports. This assumes that the next object will
+     * start on its own line.  
+     * @throws IOException 
+     */
+    private void skipToNextObj() throws IOException {
+        String s = "";
+        while(!pdfSource.isEOF()){
+             s = readLine();
+             if(s.startsWith("trailer") ||
+                s.matches("\\d* *\\d* *obj") || 
+                s.startsWith("xref") || 
+                s.startsWith("startxref") ||
+                s.startsWith("stream")){
+                 byte[] array = s.getBytes();
+                 /* Add back the newLine char to the pdfSource since readLine
+                  * removed it.
+                  */
+                 int i = '\n';
+                 pdfSource.unread(i);
+                 pdfSource.unread(array);
+                 break;
+             }
+        }   
+    }
 
     private   void  parseHeader()  throws  IOException
     {
-    	// read first line
-    	String header = readLine();
-    	// some pdf-documents are broken and the pdf-version is in one of the following lines
-    	if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)) 
-    	{
-    	    header = readLine();
-    	    while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
-    	    {
-    	        // if a line starts with a digit, it has to be the first one with data in it
-    	        if (Character.isDigit (header.charAt(0)))
-    	            break ;
-    	        header = readLine();
-    	    }
-    	}
+        // read first line
+        String header = readLine();
+        // some pdf-documents are broken and the pdf-version is in one of the following lines
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)) 
+        {
+            header = readLine();
+            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+            {
+                // if a line starts with a digit, it has to be the first one with data in it
+                if (Character.isDigit (header.charAt(0)))
+                    break ;
+                header = readLine();
+            }
+        }
 
         // nothing found
         if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))

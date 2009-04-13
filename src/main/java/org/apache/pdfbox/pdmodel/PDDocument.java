@@ -585,6 +585,21 @@ public class PDDocument implements Pageable
     {
         return load( url.openStream() );
     }
+    /**
+     * This will load a document from a url. Used for skipping corrupt
+     * pdf objects
+     *
+     * @param url The url to load the PDF from.
+     * @param force When true, the parser will skip corrupt pdf objects and 
+     * will continue parsing at the next object in the file
+     *
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(URL url, boolean force) throws IOException{
+        return load(url.openStream(), force);
+    }
 
     /**
      * This will load a document from a url.
@@ -613,6 +628,22 @@ public class PDDocument implements Pageable
     public static PDDocument load( String filename ) throws IOException
     {
         return load( new FileInputStream( filename ) );
+    }
+    
+    /**
+     * This will load a document from a file. Allows for skipping corrupt pdf
+     * objects
+     *
+     * @param filename The name of the file to load.
+     * @param force When true, the parser will skip corrupt pdf objects and 
+     * will continue parsing at the next object in the file
+     *
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(String filename, boolean force) throws IOException{
+        return load(new FileInputStream( filename ), force);
     }
 
     /**
@@ -675,6 +706,22 @@ public class PDDocument implements Pageable
 
     /**
      * This will load a document from an input stream.
+     * Allows for skipping corrupt pdf objects
+     *
+     * @param input The stream that contains the document.
+     * @param force When true, the parser will skip corrupt pdf objects and 
+     * will continue parsing at the next object in the file
+     *
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(InputStream input, boolean force) throws IOException{
+        return load(input, null, force);
+    }
+    
+    /**
+     * This will load a document from an input stream.
      *
      * @param input The stream that contains the document.
      * @param scratchFile A location to store temp PDFBox data for this document.
@@ -686,6 +733,24 @@ public class PDDocument implements Pageable
     public static PDDocument load( InputStream input, RandomAccess scratchFile ) throws IOException
     {
         PDFParser parser = new PDFParser( new BufferedInputStream( input ), scratchFile );
+        parser.parse();
+        return parser.getPDDocument();
+    }
+    
+    /**
+     * This will load a document from an input stream. Allows for skipping corrupt pdf objects
+     * 
+     * @param input The stream that contains the document.
+     * @param scratchFile A location to store temp PDFBox data for this document.
+     * @param force When true, the parser will skip corrupt pdf objects and 
+     * will continue parsing at the next object in the file
+     *
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException{
+        PDFParser parser = new PDFParser( new BufferedInputStream( input ), scratchFile, force);
         parser.parse();
         return parser.getPDDocument();
     }
