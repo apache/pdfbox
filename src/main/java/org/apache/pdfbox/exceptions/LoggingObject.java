@@ -55,7 +55,7 @@ public abstract class LoggingObject
 
             I recommend INFO for debug builds and either SEVERE or OFF for production builds.
             */
-            logger_.setLevel(Level.OFF);
+            logger_.setLevel(Level.WARNING);
     	}
 
     	return logger_;

@@ -46,6 +46,7 @@ public class ExtractText
     private static final String END_PAGE = "-endPage";
     private static final String SORT = "-sort";
     private static final String HTML = "-html";  // jjb - added simple HTML output
+    private static final String FORCE = "-force"; //enables pdfbox to skip corrupt objects
 
     /**
      * private constructor.
@@ -66,6 +67,7 @@ public class ExtractText
     {
         boolean toConsole = false;
         boolean toHTML = false;
+        boolean force = false;
         boolean sort = false;
         String password = "";
         String encoding = null;
@@ -126,6 +128,10 @@ public class ExtractText
             {
                 toConsole = true;
             }
+            else if( args[i].equals( FORCE ) )
+            {
+                force = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -155,7 +161,7 @@ public class ExtractText
                     //basically try to load it from a url first and if the URL
                     //is not recognized then try to load it from the file system.
                     URL url = new URL( pdfFile );
-                    document = PDDocument.load( url );
+                    document = PDDocument.load(url, force);
                     String fileName = url.getFile();
                     if( outputFile == null && fileName.length() >4 )
                     {
@@ -164,7 +170,7 @@ public class ExtractText
                 }
                 catch( MalformedURLException e )
                 {
-                    document = PDDocument.load( pdfFile );
+                    document = PDDocument.load(pdfFile, force);
                     if( outputFile == null && pdfFile.length() >4 )
                     {
                         outputFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ext;
@@ -245,6 +251,7 @@ public class ExtractText
             "  -console                     Send text to console instead of file\n" +
             "  -html                        Output in HTML format instead of raw text\n" +
             "  -sort                        Sort the text before writing\n" +
+            "  -force                       Enables pdfbox to ignore corrupt objects\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
             "  <PDF file>                   The PDF document to use\n" +
