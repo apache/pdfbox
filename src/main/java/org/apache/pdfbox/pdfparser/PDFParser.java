@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.rmi.server.LogStream;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -147,7 +149,9 @@ public class PDFParser extends BaseParser
 
             parseHeader();
             
-            skipHeaderFillBytes();
+            //Some PDF files have garbage between the header and the
+            //first object
+            skipToNextObj();
 
             boolean wasLastParsedObjectEOF = false;
             try{
@@ -226,40 +230,45 @@ public class PDFParser extends BaseParser
      * Skip to the start of the next object.  This is used to recover
      * from a corrupt object. This should handle all cases that parseObject
      * supports. This assumes that the next object will
-     * start on its own line.  
+     * start on its own line.
+     * 
      * @throws IOException 
      */
     private void skipToNextObj() throws IOException {
-        String s = "";
+        byte[] b = new byte[16];
+        Pattern p = Pattern.compile("\\d+\\s+\\d+\\s+obj.*", Pattern.DOTALL);
+        /* Read a buffer of data each time to see if it starts with a
+         * known keyword. This is not the most efficient design, but we should
+         * rarely be needing this function. We could update this to use the 
+         * circular buffer, like in readUntilEndStream().
+         */
         while(!pdfSource.isEOF()){
-             s = readLine();
-             if(s.startsWith("trailer") ||
-                s.matches("\\d* *\\d* *obj") || 
-                s.startsWith("xref") || 
-                s.startsWith("startxref") ||
-                s.startsWith("stream")){
-                 byte[] array = s.getBytes();
-                 /* Add back the newLine char to the pdfSource since readLine
-                  * removed it.
-                  */
-                 int i = '\n';
-                 pdfSource.unread(i);
-                 pdfSource.unread(array);
+             int l = pdfSource.read(b);
+             if(l < 1){
                  break;
+             }
+             String s = new String(b);
+             if(s.startsWith("trailer") ||
+                     s.startsWith("xref") || 
+                     s.startsWith("startxref") ||
+                     s.startsWith("stream") ||
+                     p.matcher(s).matches()){
+                 pdfSource.unread(b);
+                 break;
+             }
+             else{
+                 pdfSource.unread(b, 1, l-1);
              }
         }   
     }
 
-    private   void  parseHeader()  throws  IOException
-    {
+    private void parseHeader() throws IOException{
         // read first line
         String header = readLine();
         // some pdf-documents are broken and the pdf-version is in one of the following lines
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)) 
-        {
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
             header = readLine();
-            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
-            {
+            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
                 // if a line starts with a digit, it has to be the first one with data in it
                 if (Character.isDigit (header.charAt(0)))
                     break ;
@@ -268,28 +277,44 @@ public class PDFParser extends BaseParser
         }
 
         // nothing found
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
-        {
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
             throw new IOException( "Error: Header doesn't contain versioninfo" );
         }
-
-        document.setHeaderString( header );
-
+        
         //sometimes there are some garbage bytes in the header before the header
         //actually starts, so lets try to find the header first.
         int headerStart = header.indexOf( PDF_HEADER );
+        if (headerStart == -1)
+            headerStart = header.indexOf(FDF_HEADER);
 
         //greater than zero because if it is zero then
         //there is no point of trimming
-        if ( headerStart > 0 )
-        {
+        if ( headerStart > 0 ){
             //trim off any leading characters
             header = header.substring( headerStart, header.length() );
         }
 
-        try
-        {
-            if (header.indexOf( PDF_HEADER ) != -1) {
+        /*
+         * This is used if there is garbage after the header on the same line
+         */
+        if (header.startsWith(PDF_HEADER)) {
+            if(!header.matches(PDF_HEADER + "\\d.\\d")) {
+                String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length());
+                header = header.substring(0, PDF_HEADER.length()+3);
+                pdfSource.unread(headerGarbage.getBytes());
+            }
+        }
+        else {
+            if(!header.matches(FDF_HEADER + "\\d.\\d")) {
+                String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length());
+                header = header.substring(0, FDF_HEADER.length()+3);
+                pdfSource.unread(headerGarbage.getBytes());
+            }
+        }
+        document.setHeaderString(header);
+        
+        try{
+            if (header.startsWith( PDF_HEADER )) {
                 float pdfVersion = Float. parseFloat (
                         header.substring( PDF_HEADER .length(), Math. min ( header.length(), PDF_HEADER .length()+3) ) );
                 document.setVersion( pdfVersion );
@@ -300,30 +325,10 @@ public class PDFParser extends BaseParser
                 document.setVersion( pdfVersion );
             }
         }
-        catch ( NumberFormatException e )
-        {
+        catch ( NumberFormatException e ){
             throw new IOException( "Error getting pdf version:" + e );
-        }
+        } 
     } 
-    /**
-     * This will skip a header's binary fill bytes.  This is in accordance to
-     * PDF Specification 1.5 pg 68 section 3.4.1 "Syntax.File Structure.File Header"
-     *
-     * @throws IOException If there is an error reading from the stream.
-    */
-    protected void skipHeaderFillBytes() throws IOException
-    {
-        skipSpaces();
-        int c = pdfSource.peek();
-
-        if( !Character.isDigit( (char)c ))
-        {
-            // Fill bytes conform with PDF reference (but without comment sign)
-            // => skip until EOL
-            readLine();
-        }
-        // else: no fill bytes
-    }
 
     /**
      * This will get the document that was parsed.  parse() must be called before this is called.
