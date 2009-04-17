@@ -961,6 +961,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else
             {
+                pdfSource.unread(buffer.toString().getBytes());
                 throw new IOException( "Error: Expected to read '" + theString +
                     "' instead started reading '" +buffer.toString() + "'" );
             }
@@ -1182,6 +1183,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         }
         catch( NumberFormatException e )
         {
+            pdfSource.unread(intBuffer.toString().getBytes());
             throw new IOException( "Error: Expected an integer type, actual='" + intBuffer + "'" );
         }
         return retval;
