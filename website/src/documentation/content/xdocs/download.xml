@@ -65,37 +65,33 @@
         XMP metadata.
       </p>
       <table>
-        <thead>
-          <tr>
-            <th>Download</th>
-            <th>Size</th>
-            <th>Verify</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
-                >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
-            <td>130KB</td>
-            <td>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
-                >jempbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
-            <td>50KB</td>
-            <td>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
-              <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
-            </td>
-          </tr>
-        </tbody>
+        <tr>
+          <th>Download</th>
+          <th>Size</th>
+          <th>Verify</th>
+        </tr>
+        <tr>
+          <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
+              >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
+          <td>130KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
+              >jempbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
+          <td>50KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
+          </td>
+        </tr>
       </table>
       <p>
         The 0.8.0-incubating release is the first JempBox release made at
