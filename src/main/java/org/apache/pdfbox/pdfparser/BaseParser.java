@@ -59,6 +59,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
     public static final byte[] ENDSTREAM =
         new byte[] {101,110,100,115,116,114,101,97,109};//"endstream".getBytes( "ISO-8859-1" );
 
+    public static final byte[] ENDOBJ =
+        new byte[] {101,110,100,111,98,106};//"endobj".getBytes( "ISO-8859-1" );
     /**
      * This is a byte array that will be used for comparisons.
      */
@@ -147,7 +149,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                 throw new IOException( "expected='R' actual='" + r + "' " + pdfSource );
             }
             COSObjectKey key = new COSObjectKey(((COSInteger) number).intValue(),
-                                                ((COSInteger) generationNumber).intValue());
+                    ((COSInteger) generationNumber).intValue());
             retval = document.getObjectFromPool(key);
         }
         else
@@ -293,20 +295,29 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
 
             //Need to keep track of the
             out = stream.createFilteredStream( streamLength );
-            
+
             String endStream = null;
-            readUntilEndStream( out );
+            readUntilEndStream(out);
             skipSpaces();
             endStream = readString(); 
-            
+
             if (!endStream.equals("endstream")){
+                /*
+                 * Sometimes stream objects don't have an endstream tag so readUntilEndStream(out)
+                 * also can stop on endobj tags. If that's the case we need to make sure to unread
+                 * the endobj so parseObject() can handle that case normally. 
+                 */
+                if (endStream.startsWith("endobj")){
+                    byte[] endobjarray = endStream.getBytes();
+                    pdfSource.unread(endobjarray);
+                }
                 /*
                  * Some PDF files don't contain a new line after endstream so we 
                  * need to make sure that the next object number is getting read separately
                  * and not part of the endstream keyword. Ex. Some files would have "endstream8"
                  * instead of "endstream"
                  */
-                if(endStream.startsWith("endstream")){
+                else if(endStream.startsWith("endstream")){
                     String extra = endStream.substring(9, endStream.length());
                     endStream = endStream.substring(0, 9);
                     byte[] array = extra.getBytes();
@@ -334,47 +345,66 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         }
         return stream;
     }
-
+    /**
+     * This method will read through the current stream object until
+     * we find the keyword "endstream" meaning we're at the end of this
+     * object. Some pdf files, however, forget to write some endstream tags
+     * and just close off objects with an "endobj" tag so we have to handle
+     * this case as well.
+     * @param out The stream we write out to. 
+     * @throws IOException
+     */
     private void readUntilEndStream( OutputStream out ) throws IOException
     {
-        int currentIndex = 0;
         int byteRead = 0;
-        //this is the additional bytes buffered but not written
-        int additionalBytes=0;
-        byte[] buffer = new byte[ENDSTREAM.length+additionalBytes];
-        int writeIndex = 0;
-        while(!cmpCircularBuffer( buffer, currentIndex, ENDSTREAM ) && byteRead != -1 )
-        {
-            writeIndex = currentIndex - buffer.length;
-            if( writeIndex >= 0 )
-            {
-                out.write( buffer[writeIndex%buffer.length] );
-            }
-            byteRead = pdfSource.read();
-            buffer[currentIndex%buffer.length] = (byte)byteRead;
-            currentIndex++;
-        }
-        pdfSource.unread( ENDSTREAM );
+        byte[] buffer = new byte[ENDSTREAM.length];
+        int nextIdx = pdfSource.read(buffer) % buffer.length; 
 
+        while(byteRead != -1 ) {
+            if (cmpCircularBuffer( buffer, (nextIdx-ENDSTREAM.length + buffer.length)%buffer.length, ENDSTREAM )) {
+                pdfSource.unread( ENDSTREAM );
+                return;
+            }
+            /*
+             * occasionally steam objects do not write the endstream tag and just terminate
+             * the object with an endobj tag so we want to stop there as well. 
+             */
+            int endObjStart = (nextIdx-ENDOBJ.length+ buffer.length)%buffer.length;
+            if (cmpCircularBuffer( buffer, endObjStart, ENDOBJ )) {
+                // data is written to out only when it is going to be overwritten.
+                // write out the rest of the data in the buffer since ENDOBJ is smaller then the buffer
+                for (int i = nextIdx; i < buffer.length && i < endObjStart; i++ ) {
+                    out.write(buffer[i]);
+                }
+                pdfSource.unread( ENDOBJ );
+                return;
+            }
+
+            out.write( buffer[nextIdx] );
+
+            byteRead = pdfSource.read();
+            buffer[nextIdx] = (byte)byteRead;
+
+            if (++nextIdx == buffer.length) {
+                nextIdx = 0;
+            }
+        }   
     }
 
     /**
      * This basically checks to see if the next compareTo.length bytes of the
      * buffer match the compareTo byte array.
+     * @param buffer Circular buffer to look for string in
+     * @param currentIndex Index in buffer to start comparison from
+     * @param compareTo String to find in circular buffer at index
      */
     private boolean cmpCircularBuffer( byte[] buffer, int currentIndex, byte[] compareTo )
     {
         int cmpLen = compareTo.length;
         int buflen = buffer.length;
         boolean match = true;
-        int off = currentIndex-cmpLen;
-        if( off < 0 )
-        {
-            match = false;
-        }
-        for( int i=0; match && i<cmpLen; ++i )
-        {
-            match = buffer[(off+i)%buflen] == compareTo[i];
+        for( int i=0; match && i<cmpLen; ++i ) {
+            match = buffer[(currentIndex+i)%buflen] == compareTo[i];
         }
         return match;
     }
@@ -405,7 +435,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         else
         {
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
-                                   nextChar + "' " + pdfSource );
+                    nextChar + "' " + pdfSource );
         }
 
         //This is the number of braces read
@@ -446,8 +476,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                 if( amountRead == 3 )
                 {
                     if( nextThreeBytes[0] == 0x0d &&
-                        nextThreeBytes[1] == 0x0a &&
-                        nextThreeBytes[2] == 0x2f )
+                            nextThreeBytes[1] == 0x0a &&
+                            nextThreeBytes[2] == 0x2f )
                     {
                         braces = 0;
                     }
@@ -465,93 +495,93 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else if( ch == '\\' )
             {
-                 //patched by ram
+                //patched by ram
                 char next = (char)pdfSource.read();
                 switch(next)
                 {
-                    case 'n':
-                        retval.append( '\n' );
-                        break;
-                    case 'r':
-                        retval.append( '\r' );
-                        break;
-                    case 't':
-                        retval.append( '\t' );
-                        break;
-                    case 'b':
-                        retval.append( '\b' );
-                        break;
-                    case 'f':
-                        retval.append( '\f' );
-                        break;
-                    case '(':
-                    case ')':
-                    case '\\':
-                        retval.append( next );
-                        break;
-                    case 10:
-                    case 13:
-                        //this is a break in the line so ignore it and the newline and continue
-                        c = pdfSource.read();
-                        while( isEOL(c) && c != -1)
-                        {
-                            c = pdfSource.read();
-                        }
-                        nextc = c;
-                        break;
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
+                case 'n':
+                    retval.append( '\n' );
+                    break;
+                case 'r':
+                    retval.append( '\r' );
+                    break;
+                case 't':
+                    retval.append( '\t' );
+                    break;
+                case 'b':
+                    retval.append( '\b' );
+                    break;
+                case 'f':
+                    retval.append( '\f' );
+                    break;
+                case '(':
+                case ')':
+                case '\\':
+                    retval.append( next );
+                    break;
+                case 10:
+                case 13:
+                    //this is a break in the line so ignore it and the newline and continue
+                    c = pdfSource.read();
+                    while( isEOL(c) && c != -1)
                     {
-                        StringBuffer octal = new StringBuffer();
-                        octal.append( next );
                         c = pdfSource.read();
-                        char digit = (char)c;
+                    }
+                    nextc = c;
+                    break;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                {
+                    StringBuffer octal = new StringBuffer();
+                    octal.append( next );
+                    c = pdfSource.read();
+                    char digit = (char)c;
+                    if( digit >= '0' && digit <= '7' )
+                    {
+                        octal.append( digit );
+                        c = pdfSource.read();
+                        digit = (char)c;
                         if( digit >= '0' && digit <= '7' )
                         {
                             octal.append( digit );
-                            c = pdfSource.read();
-                            digit = (char)c;
-                            if( digit >= '0' && digit <= '7' )
-                            {
-                                octal.append( digit );
-                            }
-                            else
-                            {
-                                nextc = c;
-                            }
                         }
                         else
                         {
                             nextc = c;
                         }
-
-                        int character = 0;
-                        try
-                        {
-                            character = Integer.parseInt( octal.toString(), 8 );
-                        }
-                        catch( NumberFormatException e )
-                        {
-                            throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
-                        }
-                        retval.append( character );
-                        break;
                     }
-                    default:
+                    else
                     {
-                        retval.append( '\\' );
-                        retval.append( next );
-                        //another ficken problem with PDF's, sometimes the \ doesn't really
-                        //mean escape like the PDF spec says it does, sometimes is should be literal
-                        //which is what we will assume here.
-                        //throw new IOException( "Unexpected break sequence '" + next + "' " + pdfSource );
+                        nextc = c;
                     }
+
+                    int character = 0;
+                    try
+                    {
+                        character = Integer.parseInt( octal.toString(), 8 );
+                    }
+                    catch( NumberFormatException e )
+                    {
+                        throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
+                    }
+                    retval.append( character );
+                    break;
+                }
+                default:
+                {
+                    retval.append( '\\' );
+                    retval.append( next );
+                    //another ficken problem with PDF's, sometimes the \ doesn't really
+                    //mean escape like the PDF spec says it does, sometimes is should be literal
+                    //which is what we will assume here.
+                    //throw new IOException( "Unexpected break sequence '" + next + "' " + pdfSource );
+                }
                 }
             }
             else
@@ -611,20 +641,20 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             pbo = parseDirObject();
             if( pbo instanceof COSObject )
             {
-                 // We have to check if the expected values are there or not PDFBOX-385 
-                 if (po.get(po.size()-1) instanceof COSInteger) {
-                	 COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                     if (po.get(po.size()-1) instanceof COSInteger) {
-                    	 COSInteger number = (COSInteger)po.remove( po.size() -1 );
-                    	 COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
-                    	 pbo = document.getObjectFromPool(key);
-                     }
-                     else
-                    	 // the object reference is somehow wrong
-                    	 pbo = null;
-                 }
-                 else
-                	 pbo = null;
+                // We have to check if the expected values are there or not PDFBOX-385 
+                if (po.get(po.size()-1) instanceof COSInteger) {
+                    COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
+                    if (po.get(po.size()-1) instanceof COSInteger) {
+                        COSInteger number = (COSInteger)po.remove( po.size() -1 );
+                        COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
+                        pbo = document.getObjectFromPool(key);
+                    }
+                    else
+                        // the object reference is somehow wrong
+                        pbo = null;
+                }
+                else
+                    pbo = null;
             }
             if( pbo != null )
             {
@@ -632,7 +662,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else
             {
-                 logger().log(Level.WARNING, "Corrupt object reference" );
+                logger().log(Level.WARNING, "Corrupt object reference" );
                 //it could be a bad object in the array which is just skipped
             }
             skipSpaces();
@@ -653,7 +683,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         return (ch == ' ' || ch == 13 || ch == 10 || ch == 9 || ch == '>' || ch == '<'
             || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' ||
             ch == -1 //EOF
-            );
+        );
     }
 
     /**
@@ -789,122 +819,122 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         char c = (char)nextByte;
         switch(c)
         {
-            case '<':
+        case '<':
+        {
+            int leftBracket = pdfSource.read();//pull off first left bracket
+            c = (char)pdfSource.peek(); //check for second left bracket
+            pdfSource.unread( leftBracket );
+            if(c == '<')
             {
-                int leftBracket = pdfSource.read();//pull off first left bracket
-                c = (char)pdfSource.peek(); //check for second left bracket
-                pdfSource.unread( leftBracket );
-                if(c == '<')
-                {
 
-                    retval = parseCOSDictionary();
-                    skipSpaces();
-                }
-                else
-                {
-                    retval = parseCOSString();
-                }
-                break;
+                retval = parseCOSDictionary();
+                skipSpaces();
             }
-            case '[': // array
+            else
             {
-                retval = parseCOSArray();
-                break;
-            }
-            case '(':
                 retval = parseCOSString();
-                break;
-            case '/':   // name
-                retval = parseCOSName();
-                break;
-            case 'n':   // null
-            {
-                String nullString = readString();
-                if( !nullString.equals( "null") )
-                {
-                    throw new IOException("Expected='null' actual='" + nullString + "'");
-                }
-                retval = COSNull.NULL;
-                break;
             }
-            case 't':
+            break;
+        }
+        case '[': // array
+        {
+            retval = parseCOSArray();
+            break;
+        }
+        case '(':
+            retval = parseCOSString();
+            break;
+        case '/':   // name
+            retval = parseCOSName();
+            break;
+        case 'n':   // null
+        {
+            String nullString = readString();
+            if( !nullString.equals( "null") )
             {
-                byte[] trueBytes = new byte[4];
-                int amountRead = pdfSource.read( trueBytes, 0, 4 );
-                String trueString = new String( trueBytes, 0, amountRead );
-                if( trueString.equals( "true" ) )
-                {
-                    retval = COSBoolean.TRUE;
-                }
-                else
-                {
-                    throw new IOException( "expected true actual='" + trueString + "' " + pdfSource );
-                }
-                break;
+                throw new IOException("Expected='null' actual='" + nullString + "'");
             }
-            case 'f':
+            retval = COSNull.NULL;
+            break;
+        }
+        case 't':
+        {
+            byte[] trueBytes = new byte[4];
+            int amountRead = pdfSource.read( trueBytes, 0, 4 );
+            String trueString = new String( trueBytes, 0, amountRead );
+            if( trueString.equals( "true" ) )
             {
-                byte[] falseBytes = new byte[5];
-                int amountRead = pdfSource.read( falseBytes, 0, 5 );
-                String falseString = new String( falseBytes, 0, amountRead );
-                if( falseString.equals( "false" ) )
-                {
-                    retval = COSBoolean.FALSE;
-                }
-                else
-                {
-                    throw new IOException( "expected false actual='" + falseString + "' " + pdfSource );
-                }
-                break;
+                retval = COSBoolean.TRUE;
             }
-            case 'R':
-                pdfSource.read();
-                retval = new COSObject(null);
-                break;
-            case (char)-1:
-                return null;
-            default:
+            else
             {
-                if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+                throw new IOException( "expected true actual='" + trueString + "' " + pdfSource );
+            }
+            break;
+        }
+        case 'f':
+        {
+            byte[] falseBytes = new byte[5];
+            int amountRead = pdfSource.read( falseBytes, 0, 5 );
+            String falseString = new String( falseBytes, 0, amountRead );
+            if( falseString.equals( "false" ) )
+            {
+                retval = COSBoolean.FALSE;
+            }
+            else
+            {
+                throw new IOException( "expected false actual='" + falseString + "' " + pdfSource );
+            }
+            break;
+        }
+        case 'R':
+            pdfSource.read();
+            retval = new COSObject(null);
+            break;
+        case (char)-1:
+            return null;
+        default:
+        {
+            if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+            {
+                StringBuffer buf = new StringBuffer();
+                int ic = pdfSource.read();
+                c = (char)ic;
+                while( Character.isDigit( c )||
+                        c == '-' ||
+                        c == '+' ||
+                        c == '.' ||
+                        c == 'E' ||
+                        c == 'e' )
                 {
-                    StringBuffer buf = new StringBuffer();
-                    int ic = pdfSource.read();
+                    buf.append( c );
+                    ic = pdfSource.read();
                     c = (char)ic;
-                    while( Character.isDigit( c )||
-                           c == '-' ||
-                           c == '+' ||
-                           c == '.' ||
-                           c == 'E' ||
-                           c == 'e' )
-                    {
-                        buf.append( c );
-                        ic = pdfSource.read();
-                        c = (char)ic;
-                    }
-                    if( ic != -1 )
-                    {
-                        pdfSource.unread( ic );
-                    }
-                    retval = COSNumber.get( buf.toString() );
                 }
-                else
+                if( ic != -1 )
                 {
-                    //This is not suppose to happen, but we will allow for it
-                    //so we are more compatible with POS writers that don't
-                    //follow the spec
-                    String badString = readString();
-                    //throw new IOException( "Unknown dir object c='" + c +
-                    //"' peek='" + (char)pdfSource.peek() + "' " + pdfSource );
-                    if( badString == null || badString.length() == 0 )
-                    {
-                        int peek = pdfSource.peek();
-                        // we can end up in an infinite loop otherwise
-                        throw new IOException( "Unknown dir object c='" + c +
-                           "' cInt=" + (int)c + " peek='" + (char)peek + "' peekInt=" + peek + " " + pdfSource );
-                    }
-
+                    pdfSource.unread( ic );
                 }
+                retval = COSNumber.get( buf.toString() );
             }
+            else
+            {
+                //This is not suppose to happen, but we will allow for it
+                //so we are more compatible with POS writers that don't
+                //follow the spec
+                String badString = readString();
+                //throw new IOException( "Unknown dir object c='" + c +
+                //"' peek='" + (char)pdfSource.peek() + "' " + pdfSource );
+                if( badString == null || badString.length() == 0 )
+                {
+                    int peek = pdfSource.peek();
+                    // we can end up in an infinite loop otherwise
+                    throw new IOException( "Unknown dir object c='" + c +
+                            "' cInt=" + (int)c + " peek='" + (char)peek + "' peekInt=" + peek + " " + pdfSource );
+                }
+
+            }
+        }
         }
         return retval;
     }
@@ -963,7 +993,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             {
                 pdfSource.unread(buffer.toString().getBytes());
                 throw new IOException( "Error: Expected to read '" + theString +
-                    "' instead started reading '" +buffer.toString() + "'" );
+                        "' instead started reading '" +buffer.toString() + "'" );
             }
             c = pdfSource.read();
         }
@@ -997,10 +1027,10 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         //about 16 so lets save some space.
         StringBuffer buffer = new StringBuffer(length);
         while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
-            c != '[' &&
-            c != '<' &&
-            c != '(' &&
-            c != '/' )
+                c != '[' &&
+                c != '<' &&
+                c != '(' &&
+                c != '/' )
         {
             buffer.append( (char)c );
             c = pdfSource.read();
@@ -1164,11 +1194,11 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         int lastByte = 0;
         StringBuffer intBuffer = new StringBuffer();
         while( (lastByte = pdfSource.read() ) != 32 &&
-        lastByte != 10 &&
-        lastByte != 13 &&
-        lastByte != 60 && //see sourceforge bug 1714707
-        lastByte != 0 && //See sourceforge bug 853328
-        lastByte != -1 )
+                lastByte != 10 &&
+                lastByte != 13 &&
+                lastByte != 60 && //see sourceforge bug 1714707
+                lastByte != 0 && //See sourceforge bug 853328
+                lastByte != -1 )
         {
             intBuffer.append( (char)lastByte );
         }
