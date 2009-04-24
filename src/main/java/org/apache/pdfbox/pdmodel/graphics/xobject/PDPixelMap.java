@@ -35,6 +35,8 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.predictor.PredictorAlgorithm;
 
+
+
 /**
  * This class contains a PixelMap Image.
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -116,31 +118,28 @@ public class PDPixelMap extends PDXObjectImage
         }
 
 	try{
-		//byte[] index =
-		//ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		int width = getWidth();
 		int height = getHeight();
 		int bpc = getBitsPerComponent();
-		//COSInteger length =
-		//        (COSInteger) stream.getStream().getDictionary().getDictionaryObject(COSName.LENGTH);
-		//byte[] array = new byte[stream.getFilteredStream().];
+		int predictor = getPredictor();
+		List filters = getPDStream().getFilters();
+		
 		byte[] array = getPDStream().getByteArray();
 
 	//      Get the ColorModel right
 		PDColorSpace colorspace = getColorSpace();
 		if (colorspace == null){
-			//throw new IOException("getColorSpace() returned NULL");
-			logger().severe("getColorSpace() returned NULL");
+			logger().severe("getColorSpace() returned NULL.  Predictor = " + getPredictor());
 			return null;
 		}
 		ColorModel cm = colorspace.createColorModel( bpc );
+		logger().info("ColorModel: " + cm.toString());
 		WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
 		//DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
 		DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
 		byte[] bufferData = buffer.getData();
-		//System.arraycopy( array, 0, bufferData, 0, array.length );
-		int predictor = getPredictor();
-		List filters = getPDStream().getFilters();
+	
+		logger().info("bufferData contains " + bufferData.length + " bytes.");
 
 		/**
 		 * PDF Spec 1.6 3.3.3 LZW and Flate predictor function
@@ -169,8 +168,9 @@ public class PDPixelMap extends PDXObjectImage
 		    System.arraycopy( array, 0,bufferData, 0, bufferData.length );
 		}
 		image = new BufferedImage(cm, raster, false, null);
+		
 		return image;
-	} catch (IOException IOe){
+	} catch (Exception IOe){
 		logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
 		//A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
 		//Returning the NULL falls through to Phlip Koch's TODO section.
