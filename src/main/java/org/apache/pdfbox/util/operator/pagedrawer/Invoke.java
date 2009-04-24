@@ -64,14 +64,18 @@ public class Invoke extends OperatorProcessor
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
+		image.setGraphicsState(drawer.getGraphicsState());
                 BufferedImage awtImage = image.getRGBImage();
                 if (awtImage == null) {
+			logger().warning("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = pageSize.getHeight();
 
+		logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+		
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 int pageRotation = page.findRotation();
 
@@ -100,6 +104,7 @@ public class Invoke extends OperatorProcessor
             catch( Exception e )
             {
                 e.printStackTrace();
+		logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
             }
         }
         else if(xobject instanceof PDXObjectForm)

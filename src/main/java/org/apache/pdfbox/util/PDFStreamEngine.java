@@ -50,6 +50,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class PDFStreamEngine extends LoggingObject
 {
+	
     private static final byte[] SPACE_BYTES = { (byte)32 };
 
     private PDGraphicsState graphicsState = null;
@@ -86,11 +87,12 @@ public class PDFStreamEngine extends LoggingObject
     /**
      * Constructor.
      */
-    public PDFStreamEngine()
+    protected PDFStreamEngine()
     {
         //default constructor
         validCharCnt = 0;
         totalCharCnt = 0;
+	    
     }
 
     /**
@@ -102,7 +104,7 @@ public class PDFStreamEngine extends LoggingObject
      *
      * @throws IOException If there is an error setting the engine properties.
      */
-    public PDFStreamEngine( Properties properties ) throws IOException
+    protected PDFStreamEngine( Properties properties ) throws IOException
     {
         if( properties == null ) {
             throw new NullPointerException( "properties cannot be null" );
@@ -126,6 +128,7 @@ public class PDFStreamEngine extends LoggingObject
         totalCharCnt = 0;
     }
 
+    
     /**
      * Register a custom operator processor with the engine.
      *
@@ -490,8 +493,11 @@ public class PDFStreamEngine extends LoggingObject
             OperatorProcessor processor = (OperatorProcessor)operators.get( operation );
             if( processor != null )
             {
+		processor.setContext(this);
                 processor.process( operator, arguments );
-            }
+            }else{
+		    logger().warning("NULL processor for operation: " + operation);
+	    }
         }
         catch (Exception e)
         {

@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 
 /**
  * The prototype for all PDImages.
@@ -48,6 +49,8 @@ public abstract class PDXObjectImage extends PDXObject
      * This contains the suffix used when writing to file.
      */
     private String suffix;
+	
+	protected PDGraphicsState graphicsState;
 
     /**
      * Standard constuctor.
@@ -215,6 +218,7 @@ file.
         if( cs != null )
         {
             retval = PDColorSpaceFactory.createColorSpace( cs );
+		if (retval == null) logger().info("About to return NULL from createColorSpace branch");
         }
         else
         {
@@ -225,7 +229,15 @@ file.
                 COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-            }
+		    if (retval == null) logger().info("About to return NULL from CCITT branch");
+	    }else if (getImageMask()){
+		//Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
+		    retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
+		    logger().info("Stencil Mask branch returning " + retval.toString());
+		    //throw new IOException("Trace the Stencil Mask!!!!");
+		    
+	    }else
+		logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
         }
         return retval;
     }
@@ -253,5 +265,24 @@ file.
     public String getSuffix()
     {
         return suffix;
+    }
+    
+    /**
+     * Get the ImageMask flag. Used in Stencil Masking.  Section 4.8.5 of the spec.
+     *
+     * @return The ImageMask flag.  This is optional and defaults to False, so if it does not exist, we return False
+     */
+    public boolean getImageMask()
+    {
+        return getCOSStream().getBoolean( "ImageMask", false );
+    }
+    
+    /**
+    * Allow the Invoke operator to set the graphics state so that, in the case of an Image Mask, we can get to the current nonstroking colorspace.
+    *
+    */
+    public void setGraphicsState(PDGraphicsState newGS)
+    {
+	    graphicsState = newGS;
     }
 }
