@@ -87,7 +87,7 @@ public class PDFStreamEngine extends LoggingObject
     /**
      * Constructor.
      */
-    protected PDFStreamEngine()
+    public PDFStreamEngine()
     {
         //default constructor
         validCharCnt = 0;
@@ -104,7 +104,7 @@ public class PDFStreamEngine extends LoggingObject
      *
      * @throws IOException If there is an error setting the engine properties.
      */
-    protected PDFStreamEngine( Properties properties ) throws IOException
+    public PDFStreamEngine( Properties properties ) throws IOException
     {
         if( properties == null ) {
             throw new NullPointerException( "properties cannot be null" );
