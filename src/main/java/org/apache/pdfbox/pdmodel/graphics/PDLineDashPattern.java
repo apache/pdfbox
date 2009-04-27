@@ -143,4 +143,29 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     {
         lineDashPattern.set( 0, COSArrayList.converterToCOSArray( dashPattern ) );
     }
+    
+    /**
+     * Checks if the dashPattern is empty or all values equals 0
+     * 
+     * @return true if the dashPattern is empty or all values equals 0  
+     */
+    public boolean isDashPatternEmpty() 
+    {
+        float[] dashPattern = getCOSDashPattern().toFloatArray();
+        boolean dashPatternEmpty = true;
+        if (dashPattern != null) 
+        {
+            int arraySize = dashPattern.length;
+            for(int i=0;i<arraySize;i++) 
+            {
+                if (dashPattern[i] > 0) 
+                {
+                    dashPatternEmpty = false;
+                    break;
+                }
+            }
+        }
+        return dashPatternEmpty;
+    }
+
 }

@@ -18,8 +18,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.util.PDFOperator;
@@ -47,12 +45,31 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
     public void process(PDFOperator operator, List arguments) throws IOException
     {
         super.process( operator, arguments );
-        PDLineDashPattern dashPattern = context.getGraphicsState().getLineDashPattern();
+        PDLineDashPattern lineDashPattern = context.getGraphicsState().getLineDashPattern();
         Graphics2D graphics = ((PageDrawer)context).getGraphics();
         BasicStroke stroke = (BasicStroke)graphics.getStroke();
-        if (stroke == null)
-        	graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, dashPattern.getCOSDashPattern().toFloatArray(), dashPattern.getPhaseStart()) );
-        else
-        	graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), dashPattern.getCOSDashPattern().toFloatArray(), dashPattern.getPhaseStart()) );
+        if (stroke == null) 
+        {
+            if (lineDashPattern.isDashPatternEmpty()) 
+            {
+                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f) );
+            }
+            else
+            {
+                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
+            }
+        }
+        else 
+        {
+            if (lineDashPattern.isDashPatternEmpty()) 
+            {
+                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit()) );
+            }
+            else
+            {
+                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
+            }
+        }
     }
+    
 }
