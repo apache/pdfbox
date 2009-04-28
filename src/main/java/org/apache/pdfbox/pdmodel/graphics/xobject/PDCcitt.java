@@ -511,8 +511,9 @@ public class PDCcitt extends PDXObjectImage
                     for( int i=0; i<parmsArray.size() && decodeParms == null; i++ )
                     {
                         COSDictionary dic = (COSDictionary)parmsArray.getObject( i );
-                        if( dic.getDictionaryObject( "Columns" ) != null ||
-                            dic.getDictionaryObject( "Rows" ) != null)
+                        if (dic != null && 
+				( dic.getDictionaryObject( "Columns" ) != null ||
+                            dic.getDictionaryObject( "Rows" ) != null))
                         {
                             decodeParms = dic;
                         }
