@@ -381,4 +381,31 @@ public class PageDrawer extends PDFStreamEngine
         scaleY = at.getScaleY();
         return ScaledPoint(x, y, scaleX, scaleY);
     }
+    
+    
+    /**
+     *
+     * Fill the path
+     *
+     * @param windingRule The winding rule this path will use.
+     */
+    public void SetClippingPath(int windingRule) throws IOException{
+
+    	graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
+
+    	getLinePath().setWindingRule(windingRule);
+
+    	graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        List subPaths = getLineSubPaths();
+        for( int i=0; i<subPaths.size(); i++ )
+        {
+            GeneralPath subPath = (GeneralPath)subPaths.get( i );
+            if (subPath.getCurrentPoint() != null){ 
+                subPath.closePath();
+            }
+        }
+
+            graphics.setClip( getLinePath() );
+            getLinePath().reset();
+    }
 }
