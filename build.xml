@@ -110,8 +110,8 @@
 
     <target name="compile" depends="pdfbox.init" description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
-        <javac srcdir="${src.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
-        <javac srcdir="${test.dir}" destdir="${dest.dir}" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
+        <javac srcdir="${src.dir}" destdir="${dest.dir}" target="1.4" source="1.4" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
+        <javac srcdir="${test.dir}" destdir="${dest.dir}" target="1.4" source="1.4" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
     </target>
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
