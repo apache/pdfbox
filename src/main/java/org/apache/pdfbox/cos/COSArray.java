@@ -192,7 +192,7 @@ public class COSArray extends COSBase
         {
             obj = ((COSObject)obj).getObject();
         }
-        if( obj instanceof COSNull )
+        else if( obj instanceof COSNull )
         {
             obj = null;
         }
@@ -235,12 +235,12 @@ public class COSArray extends COSBase
     public int getInt( int index, int defaultValue )
     {
         int retval = defaultValue;
-        if( defaultValue < size() )
+        if ( index < size() ) 
         {
-            COSNumber number = (COSNumber)get( index );
-            if( number != null )
+            Object obj = objects.get( index );
+            if( obj instanceof COSNumber )
             {
-                retval = number.intValue();
+                retval = ((COSNumber)obj).intValue();
             }
         }
         return retval;
@@ -289,10 +289,10 @@ public class COSArray extends COSBase
         String retval = defaultValue;
         if( index < size() )
         {
-            COSName name = (COSName)get( index );
-            if( name != null )
+            Object obj = objects.get( index );
+            if( obj instanceof COSName )
             {
-                retval = name.getName();
+                retval = ((COSName)obj).getName();
             }
         }
         return retval;
@@ -330,10 +330,10 @@ public class COSArray extends COSBase
         String retval = defaultValue;
         if( index < size() )
         {
-            COSString string = (COSString)get( index );
-            if( string != null )
+            Object obj = objects.get( index );
+            if( obj instanceof COSString )
             {
-                retval = string.getString();
+                retval = ((COSString)obj).getString();
             }
         }
         return retval;
