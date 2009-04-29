@@ -41,6 +41,8 @@ public class SetNonStrokingColor extends OperatorProcessor
     	PDColorSpace colorSpace = context.getGraphicsState().getNonStrokingColorSpace().getColorSpace();
     	if (colorSpace != null) 
     	{
+		//logger().info("Setting NonStroking colorspace to " + colorSpace);
+		
     		OperatorProcessor newOperator = null;
 	    	if (colorSpace instanceof PDDeviceGray) 
 	    	    newOperator = new SetNonStrokingGrayColor();
@@ -61,9 +63,9 @@ public class SetNonStrokingColor extends OperatorProcessor
 	    		newOperator.process(operator, arguments);
 	    	}
 	    	else
-	    		logger().info("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
-		}
-		else
-			logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
+	    		logger().warning("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
+	}
+	else
+		logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
     }
 }
