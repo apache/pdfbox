@@ -56,7 +56,7 @@ public class PDICCBased extends PDColorSpace
      */
     public static final String NAME = "ICCBased";
 
-    private COSArray array;
+    //private COSArray array;
     private PDStream stream;
 
     /**
@@ -150,7 +150,7 @@ public class PDICCBased extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        int[] nbBits = { bpc, bpc, bpc };
+        int[] nbBits = { bpc, bpc, bpc, bpc }; //added 4th bpc to handle CMYK
         ComponentColorModel componentColorModel =
                 new ComponentColorModel( createColorSpace(),
                                          nbBits,
@@ -325,5 +325,21 @@ public class PDICCBased extends PDColorSpace
     public void setMetadata( COSStream metadata )
     {
         stream.getStream().setItem( COSName.getPDFName( "Metadata" ), metadata );
+    }
+    
+        /*
+	Need more info on the ICCBased ones ... Array contains very little.
+	*/
+	public String toString()
+    {
+	    
+        String RetVal = super.toString() + "\n\t Number of Components: " ;
+	try{
+		RetVal = RetVal + getNumberOfComponents();
+	}catch (IOException IOe){
+		RetVal = RetVal + IOe.toString();
+	}
+	    
+	return RetVal;
     }
 }

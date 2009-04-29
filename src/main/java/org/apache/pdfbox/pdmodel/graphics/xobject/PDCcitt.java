@@ -102,13 +102,20 @@ public class PDCcitt extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {
+	    BufferedImage retval = null;
+	    
         InputStream tiff = new TiffWrapper(
                 getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
                 getCOSStream());
         try {
-            return ImageIO.read(tiff);
+            retval = ImageIO.read(tiff);
+	}catch (Exception e){
+		logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
         } finally {
-            tiff.close();
+		if (tiff != null)
+			tiff.close();
+		
+		return retval;
         }
     }
 

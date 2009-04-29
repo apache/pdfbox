@@ -40,7 +40,6 @@ public class PDSeparation extends PDColorSpace
      */
     public static final String NAME = "Separation";
 
-    private COSArray array;
 
     /**
      * Constructor.
@@ -130,6 +129,7 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
+	    logger().info("About to create ColorModel for " + getAlternateColorSpace().toString());
         return getAlternateColorSpace().createColorModel(bpc);
     }
 
@@ -209,16 +209,6 @@ public class PDSeparation extends PDColorSpace
     }
     
     
-    /*
-	Don't just tell me it's a Separation -- tell me its contents!
-    */
-	public String toString()
-    {
-	    
-        String RetVal = NAME + "{ " + array.toString() + " }";
-	    
-	return RetVal;
-    }
     
     /*
 	Some of the key values are stored within the COSDictionary, item 3 in the array.
