@@ -98,6 +98,8 @@ public class PDFTextStripperByArea extends PDFTextStripper
         Iterator regionIter = regions.iterator();
         while( regionIter.hasNext() )
         {
+            setStartPage(getCurrentPageNo());
+            setEndPage(getCurrentPageNo());
             //reset the stored text for the region so this class
             //can be reused.
             String regionName = (String)regionIter.next();
