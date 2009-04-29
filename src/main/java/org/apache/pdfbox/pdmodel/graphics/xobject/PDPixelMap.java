@@ -126,12 +126,15 @@ public class PDPixelMap extends PDXObjectImage
 		
 		byte[] array = getPDStream().getByteArray();
 
+		//logger().info("array contains " + array.length + " bytes.\nUsing " + bpc + " bits per component.");
+		
 	//      Get the ColorModel right
 		PDColorSpace colorspace = getColorSpace();
 		if (colorspace == null){
 			logger().severe("getColorSpace() returned NULL.  Predictor = " + getPredictor());
 			return null;
 		}
+		
 		ColorModel cm = colorspace.createColorModel( bpc );
 		logger().info("ColorModel: " + cm.toString());
 		WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
@@ -139,7 +142,7 @@ public class PDPixelMap extends PDXObjectImage
 		DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
 		byte[] bufferData = buffer.getData();
 	
-		logger().info("bufferData contains " + bufferData.length + " bytes.");
+		//logger().info("bufferData contains " + bufferData.length + " bytes.");
 
 		/**
 		 * PDF Spec 1.6 3.3.3 LZW and Flate predictor function
@@ -165,7 +168,7 @@ public class PDPixelMap extends PDXObjectImage
 		}
 		else
 		{
-		    System.arraycopy( array, 0,bufferData, 0, bufferData.length );
+		    System.arraycopy( array, 0,bufferData, 0, (array.length<bufferData.length?array.length: bufferData.length) );
 		}
 		image = new BufferedImage(cm, raster, false, null);
 		

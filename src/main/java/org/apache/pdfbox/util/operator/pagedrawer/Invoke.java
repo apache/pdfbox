@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 public class Invoke extends OperatorProcessor
 {
     /**
-     * process : re : append rectangle to path.
+     * process : Do : Paint the specified XObject (section 4.7)
      * @param operator The operator that is being executed.
      * @param arguments List
      * @throws IOException If there is an error invoking the sub object.

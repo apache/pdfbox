@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSArray;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -36,6 +37,9 @@ import java.awt.image.ColorModel;
  */
 public abstract class PDColorSpace extends LoggingObject implements COSObjectable
 {
+	
+    protected COSArray array;
+	
     /**
      * This will return the name of the color space.
      *
@@ -81,4 +85,15 @@ public abstract class PDColorSpace extends LoggingObject implements COSObjectabl
      * @throws IOException If there is an error creating the color model.
      */
     public abstract ColorModel createColorModel( int bpc ) throws IOException;
+
+    /*
+	Don't just tell me its color type -- tell me its contents!
+    */
+	public String toString()
+    {
+	    
+        String RetVal = getName() + "{ " + (array==null? "" : array.toString() ) + " }";
+	    
+	return RetVal;
+    }
 }
