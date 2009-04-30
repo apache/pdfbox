@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.pdfbox.io.ByteArrayPushBackInputStream;
@@ -72,15 +70,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
     //protected PushBackByteArrayStream pdfSource;
     protected PushBackInputStream pdfSource;
 
-    /**
-     * moved xref here, is a persistence construct
-     * maybe not needed anyway when not read from behind with delayed
-     * access to objects.
-     */
-    private List xrefs = new ArrayList();
-
-    private COSDocument document;
-
+    protected COSDocument document;
+    
     /**
      * Constructor.
      *
@@ -1066,33 +1057,22 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
     }
 
     /**
-     * This will read bytes until the end of line marker occurs.
+     * This will read bytes until the first end of line marker occurs.
+     * Note: if you later unread the results of this function, you'll
+     * need to add a newline character to the end of the string.
      *
      * @return The characters between the current position and the end of the line.
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected String readLine() throws IOException
-    {
-        int c = pdfSource.read();
-        while(isWhitespace(c) && c != -1)
-        {
-            c = pdfSource.read();
-        }
+    protected String readLine() throws IOException {
         StringBuffer buffer = new StringBuffer( 11 );
-
-        while( !isEOL(c) && c != -1 )
-        {
+        
+        int c;
+        while ((c = pdfSource.read()) != -1) {
+            if (isEOL(c))
+                break;
             buffer.append( (char)c );
-            c = pdfSource.read();
-        }
-        while( isEOL(c) && c != -1 )
-        {
-            c = pdfSource.read();
-        }
-        if (c != -1)
-        {
-            pdfSource.unread(c);
         }
         return buffer.toString();
     }
@@ -1217,25 +1197,5 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             throw new IOException( "Error: Expected an integer type, actual='" + intBuffer + "'" );
         }
         return retval;
-    }
-
-    /**
-     * This will add an xref.
-     *
-     * @param xref The xref to add.
-     */
-    public void addXref( PDFXref xref )
-    {
-        xrefs.add(xref);
-    }
-
-    /**
-     * This will get all of the xrefs.
-     *
-     * @return A list of all xrefs.
-     */
-    public List getXrefs()
-    {
-        return xrefs;
     }
 }

@@ -45,16 +45,16 @@ public class COSDocument extends COSBase
     private float version;
 
     /**
-     * added objects (actually preserving original sequence).
-     */
-    private List objects = new ArrayList();
-
-    /**
-     * a pool of objects read/referenced so far
-     * used to resolve indirect object references.
+     * Maps ObjectKeys to a COSObject. Note that references to these objects
+     * are also stored in COSDictionary objects that map a name to a specific object. 
      */
     private Map objectPool = new HashMap();
-
+    
+    /**
+     * Maps object and generation ids to object byte offsets
+     */
+    private Map xrefTable = new HashMap();
+    
     /**
      * Document trailer dictionary.
      */
@@ -139,7 +139,7 @@ public class COSDocument extends COSBase
     public COSObject getObjectByType( COSName type ) throws IOException
     {
         COSObject retval = null;
-        Iterator iter = objects.iterator();
+        Iterator iter = objectPool.values().iterator();
         while( iter.hasNext() && retval == null)
         {
             COSObject object = (COSObject)iter.next();
@@ -185,7 +185,7 @@ public class COSDocument extends COSBase
     public List getObjectsByType( COSName type ) throws IOException
     {
         List retval = new ArrayList();
-        Iterator iter = objects.iterator();
+        Iterator iter = objectPool.values().iterator();
         while( iter.hasNext() )
         {
             COSObject object = (COSObject)iter.next();
@@ -213,7 +213,7 @@ public class COSDocument extends COSBase
      */
     public void print()
     {
-        Iterator iter = objects.iterator();
+        Iterator iter = objectPool.values().iterator();
         while( iter.hasNext() )
         {
             COSObject object = (COSObject)iter.next();
@@ -299,29 +299,6 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * This will create an object for this document.
-     *
-     * Create an indirect object out of the direct type and include in the document
-     * for later lookup via document a map from direct object to indirect object
-     * is maintained. this provides better support for manual PDF construction.
-     *
-     * @param base the base object to wrap in an indirect object.
-     *
-     * @return The pdf object that wraps the base, or creates a new one.
-     */
-    /**
-    public COSObject createObject( COSBase base )
-    {
-        COSObject obj = (COSObject)objectMap.get(base);
-        if (obj == null)
-        {
-            obj = new COSObject( base );
-            obj.addTo(this);
-        }
-        return obj;
-    }**/
-
-    /**
      * This will get the document catalog.
      *
      * Maybe this should move to an object at PDFEdit level
@@ -347,7 +324,7 @@ public class COSDocument extends COSBase
      */
     public List getObjects()
     {
-        return new ArrayList(objects);
+        return new ArrayList(objectPool.values());
     }
 
     /**
@@ -456,28 +433,6 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * This will add an object to this document.
-     * the method checks if obj is already present as there may be cyclic dependencies
-     *
-     * @param obj The object to add to the document.
-     * @return The object that was actually added to this document, if an object reference already
-     * existed then that will be returned.
-     *
-     * @throws IOException If there is an error adding the object.
-     */
-    public COSObject addObject(COSObject obj) throws IOException
-    {
-        COSObjectKey key = null;
-        if( obj.getObjectNumber() != null )
-        {
-            key = new COSObjectKey( obj );
-        }
-        COSObject fromPool = getObjectFromPool( key );
-        fromPool.setObject( obj.getObject() );
-        return fromPool;
-    }
-
-    /**
      * This will get an object from the pool.
      *
      * @param key The object key.
@@ -503,9 +458,25 @@ public class COSDocument extends COSBase
                 obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
                 objectPool.put(key, obj);
             }
-            objects.add( obj );
-        }
-
+        }  
         return obj;
+    }
+    /**
+     * Used to populate the XRef HashMap. Will add an Xreftable entry
+     * that maps ObjectKeys to byte offsets in the file. 
+     * @param objKey The objkey, with id and gen numbers
+     * @param currOffset The byte offset in this file
+     */
+    public void setXRef(COSObjectKey objKey, int offset) {
+        xrefTable.put(objKey, new Integer(offset));
+    }
+    
+    /**
+     * Returns the xrefTable which is a mapping of ObjectKeys
+     * to byte offsets in the file. 
+     * @return
+     */
+    public Map getXrefTable(){
+        return xrefTable;
     }
 }
