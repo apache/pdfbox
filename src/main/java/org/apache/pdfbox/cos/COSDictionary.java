@@ -1250,6 +1250,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This will add all of the dictionarys keys/values to this dictionary.
+     * Only called when adding keys to a trailer that already exists. 
      *
      * @param dic The dic to get the keys from.
      */
@@ -1260,7 +1261,14 @@ public class COSDictionary extends COSBase
         {
             COSName key = (COSName)dicKeys.next();
             COSBase value = dic.getItem( key );
-            setItem( key, value );
+            /*
+             * If we're at a second trailer, we have a linearized 
+             * pdf file, meaning that the first Size entry represents
+             * all of the objects so we don't need to grab the second. 
+             */
+            if(!key.getName().equals("Size") || !keys.contains(COSName.getPDFName("Size"))){
+                setItem( key, value );
+            }
         }
     }
 
