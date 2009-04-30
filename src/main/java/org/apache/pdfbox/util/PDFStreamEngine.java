@@ -495,9 +495,9 @@ public class PDFStreamEngine extends LoggingObject
             {
         processor.setContext(this);
                 processor.process( operator, arguments );
-            }else{
+            }/*else{
             logger().warning("NULL processor for operation: " + operation);
-        }
+        }*/
         }
         catch (Exception e)
         {
