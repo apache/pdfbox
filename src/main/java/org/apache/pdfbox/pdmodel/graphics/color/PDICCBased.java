@@ -328,18 +328,18 @@ public class PDICCBased extends PDColorSpace
     }
     
         /*
-	Need more info on the ICCBased ones ... Array contains very little.
-	*/
-	public String toString()
+    Need more info on the ICCBased ones ... Array contains very little.
+    */
+    public String toString()
     {
-	    
+        
         String RetVal = super.toString() + "\n\t Number of Components: " ;
-	try{
-		RetVal = RetVal + getNumberOfComponents();
-	}catch (IOException IOe){
-		RetVal = RetVal + IOe.toString();
-	}
-	    
-	return RetVal;
+    try{
+        RetVal = RetVal + getNumberOfComponents();
+    }catch (IOException IOe){
+        RetVal = RetVal + IOe.toString();
+    }
+        
+    return RetVal;
     }
 }

@@ -144,18 +144,18 @@ public abstract class PDXObject extends LoggingObject implements COSObjectable
                     //text extraction then we don't want to throw an exception, so for now
                     //just return a PDPixelMap, which will break later on if it is
                     //actually used, but for text extraction it is not used.
-			
+            
                     return new PDPixelMap( image );
 
                 }
                 /*else if( filters != null && filters.contains(COSName.FLATE_DECODE.getName()))
                 {
-			retval = new PDPixelMap(image);
-		}*/
+            retval = new PDPixelMap(image);
+        }*/
                 else
                 {
                     retval = new PDPixelMap(image);
-			//throw new IOException ("Default branch: filters = " + filters.toString());
+            //throw new IOException ("Default branch: filters = " + filters.toString());
                 }
             }
             else if( subtype.equals( PDXObjectForm.SUB_TYPE ) )

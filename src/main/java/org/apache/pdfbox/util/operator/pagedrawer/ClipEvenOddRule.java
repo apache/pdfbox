@@ -46,9 +46,9 @@ public class ClipEvenOddRule extends OperatorProcessor
     public void process(PDFOperator operator, List arguments) throws IOException
     {
 
-    	try {
-	    	PageDrawer drawer = (PageDrawer)context;
-	    	drawer.SetClippingPath(GeneralPath.WIND_EVEN_ODD);
+        try {
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.SetClippingPath(GeneralPath.WIND_EVEN_ODD);
             } catch (Exception e) {
                 logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
             }

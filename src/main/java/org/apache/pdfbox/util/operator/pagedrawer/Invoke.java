@@ -64,18 +64,18 @@ public class Invoke extends OperatorProcessor
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
-		image.setGraphicsState(drawer.getGraphicsState());
+        image.setGraphicsState(drawer.getGraphicsState());
                 BufferedImage awtImage = image.getRGBImage();
                 if (awtImage == null) {
-			logger().warning("getRGBImage returned NULL");
+            logger().warning("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = pageSize.getHeight();
 
-		logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
-		
+        logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+        
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 int pageRotation = page.findRotation();
 
@@ -84,27 +84,27 @@ public class Invoke extends OperatorProcessor
                 Matrix rotationMatrix = new Matrix();
                 rotationMatrix.setFromAffineTransform( ctmAT );
                 if (pageRotation == 0 || pageRotation == 180) {
-	                rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition()-ctm.getYScale());
+                    rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition()-ctm.getYScale());
                 }
                 else if (pageRotation == 90 || pageRotation == 270) 
                 {
-	                rotationMatrix.setValue(2,0,(float)ctm.getXPosition()-ctm.getYScale());
-	                rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition());
+                    rotationMatrix.setValue(2,0,(float)ctm.getXPosition()-ctm.getYScale());
+                    rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition());
                 }
                 rotationMatrix.setValue(0, 1, (-1)*rotationMatrix.getValue(0, 1));
                 rotationMatrix.setValue(1, 0, (-1)*rotationMatrix.getValue(1, 0));
 
                 AffineTransform at = new AffineTransform(
-                		rotationMatrix.getValue(0,0),rotationMatrix.getValue(0,1),
-                		rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
-                		rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
+                        rotationMatrix.getValue(0,0),rotationMatrix.getValue(0,1),
+                        rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
+                        rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                     );
                 graphics.drawImage( awtImage, at, null );
             }
             catch( Exception e )
             {
                 e.printStackTrace();
-		logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+        logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
             }
         }
         else if(xobject instanceof PDXObjectForm)

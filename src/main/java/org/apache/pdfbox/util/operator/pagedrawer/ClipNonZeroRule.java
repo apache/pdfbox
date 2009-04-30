@@ -46,11 +46,11 @@ public class ClipNonZeroRule extends OperatorProcessor
     public void process(PDFOperator operator, List arguments) throws IOException
     {
 
-	try {
-	    	PageDrawer drawer = (PageDrawer)context;
-	    	drawer.SetClippingPath(GeneralPath.WIND_NON_ZERO);
-	} catch (Exception e) {
-		logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
+    try {
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.SetClippingPath(GeneralPath.WIND_NON_ZERO);
+    } catch (Exception e) {
+        logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
             }
     }
 }

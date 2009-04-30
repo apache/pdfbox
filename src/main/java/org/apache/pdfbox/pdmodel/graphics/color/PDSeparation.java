@@ -82,7 +82,7 @@ public class PDSeparation extends PDColorSpace
     public int getNumberOfComponents() throws IOException
     {
         //return 1;
-	return array.size();
+    return array.size();
     }
 
     /**
@@ -129,7 +129,7 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-	    logger().info("About to create ColorModel for " + getAlternateColorSpace().toString());
+        logger().info("About to create ColorModel for " + getAlternateColorSpace().toString());
         return getAlternateColorSpace().createColorModel(bpc);
     }
 
@@ -211,17 +211,17 @@ public class PDSeparation extends PDColorSpace
     
     
     /*
-	Some of the key values are stored within the COSDictionary, item 3 in the array.
-	I don't necessarily want to expose the entire dictionary publicly (except in toString()),
-	but need access privately in order to expose the color values publicly.
+    Some of the key values are stored within the COSDictionary, item 3 in the array.
+    I don't necessarily want to expose the entire dictionary publicly (except in toString()),
+    but need access privately in order to expose the color values publicly.
     */
     private COSDictionary getDictionary() throws IOException
     {
-	    return (COSDictionary) array.getObject( 3);
+        return (COSDictionary) array.getObject( 3);
     }
     
     public COSArray getColorValues() throws IOException
     {
-	    return (COSArray) getDictionary().getDictionaryObject("C1");
+        return (COSArray) getDictionary().getDictionaryObject("C1");
     }
 }

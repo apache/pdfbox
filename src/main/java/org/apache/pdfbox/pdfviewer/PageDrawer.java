@@ -86,8 +86,8 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         // Only if there is some content, we have to process it. Otherwise we are done here and we will produce an empty page
         if ( page.getContents() != null) {
-        	PDResources resources = page.findResources();
-        	processStream( page, resources, page.getContents().getStream() );
+            PDResources resources = page.findResources();
+            processStream( page, resources, page.getContents().getStream() );
         }
         List annotations = page.getAnnotations();
         for( int i=0; i<annotations.size(); i++ )
@@ -153,9 +153,9 @@ public class PageDrawer extends PDFStreamEngine
             }
             else
             {
-            	// TODO: need to implement....
-            	logger().warning("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
-            	logger().warning("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
+                // TODO: need to implement....
+                logger().warning("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
+                logger().warning("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
                 graphics.setColor( this.getGraphicsState().getNonStrokingColorSpace().createColor() );
             }
             PDFont font = text.getFont();
@@ -164,7 +164,7 @@ public class PageDrawer extends PDFStreamEngine
             float x = textPos.getXPosition();
             // the 0,0-reference has to be moved from the lower left (PDF) to the upper left (AWT-graphics)
             float y = pageSize.height - textPos.getYPosition();
-    		// Set translation to 0,0. We only need the scaling and shearing
+            // Set translation to 0,0. We only need the scaling and shearing
             textPos.setValue(2, 0, 0);
             textPos.setValue(2, 1, 0);
             // because of the moved 0,0-reference, we have to shear in the opposite direction
@@ -219,7 +219,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public double fixY( double x, double y )
     {
-    	return pageSize.getHeight() - y;
+        return pageSize.getHeight() - y;
     }
 
     /**
@@ -230,7 +230,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public double fixY( double y )
     {
-		return pageSize.getHeight() - y;
+        return pageSize.getHeight() - y;
     }
 
     /**
@@ -286,11 +286,11 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void fillPath(int windingRule) throws IOException{
 
-    	graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
+        graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
 
-    	getLinePath().setWindingRule(windingRule);
+        getLinePath().setWindingRule(windingRule);
 
-    	graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         List subPaths = getLineSubPaths();
         for( int i=0; i<subPaths.size(); i++ )
         {
@@ -307,11 +307,11 @@ public class PageDrawer extends PDFStreamEngine
 
 
     public void setStroke(BasicStroke newStroke){
-    	getGraphics().setStroke( newStroke );
+        getGraphics().setStroke( newStroke );
     }
 
     public void StrokePath() throws IOException{
-    	graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); //per Ben's 11/15 change in StrokePath.java
+        graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); //per Ben's 11/15 change in StrokePath.java
         List subPaths = getLineSubPaths();
         for( int i=0; i<subPaths.size(); i++ )
         {
@@ -355,13 +355,13 @@ public class PageDrawer extends PDFStreamEngine
         double finalY = 0.0;
 
         if(scaleX > 0)
-    	{
-	    	finalX = x * scaleX;
-    	}
+        {
+            finalX = x * scaleX;
+        }
         if(scaleY > 0)
         {
-        	finalY = y * scaleY;
-    	}
+            finalY = y * scaleY;
+        }
 
         return new java.awt.geom.Point2D.Double(finalX, finalY);
     }
@@ -377,7 +377,7 @@ public class PageDrawer extends PDFStreamEngine
         //Get the transformation matrix
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         AffineTransform at = ctm.createAffineTransform();
-       	scaleX = at.getScaleX();
+        scaleX = at.getScaleX();
         scaleY = at.getScaleY();
         return ScaledPoint(x, y, scaleX, scaleY);
     }
@@ -391,11 +391,11 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void SetClippingPath(int windingRule) throws IOException{
 
-    	graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
+        graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
 
-    	getLinePath().setWindingRule(windingRule);
+        getLinePath().setWindingRule(windingRule);
 
-    	graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         List subPaths = getLineSubPaths();
         for( int i=0; i<subPaths.size(); i++ )
         {

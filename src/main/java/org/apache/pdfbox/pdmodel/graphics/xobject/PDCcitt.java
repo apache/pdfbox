@@ -102,20 +102,20 @@ public class PDCcitt extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {
-	    BufferedImage retval = null;
-	    
+        BufferedImage retval = null;
+        
         InputStream tiff = new TiffWrapper(
                 getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
                 getCOSStream());
         try {
             retval = ImageIO.read(tiff);
-	}catch (Exception e){
-		logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+    }catch (Exception e){
+        logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
         } finally {
-		if (tiff != null)
-			tiff.close();
-		
-		return retval;
+        if (tiff != null)
+            tiff.close();
+        
+        return retval;
         }
     }
 
@@ -519,7 +519,7 @@ public class PDCcitt extends PDXObjectImage
                     {
                         COSDictionary dic = (COSDictionary)parmsArray.getObject( i );
                         if (dic != null && 
-				( dic.getDictionaryObject( "Columns" ) != null ||
+                ( dic.getDictionaryObject( "Columns" ) != null ||
                             dic.getDictionaryObject( "Rows" ) != null))
                         {
                             decodeParms = dic;

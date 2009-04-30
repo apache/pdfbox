@@ -93,7 +93,7 @@ public class PDDeviceCMYK extends PDColorSpace
     public ColorSpace createColorSpace() throws IOException
     {
         if( cSpace == null )
-        	cSpace = new ColorSpaceCMYK();
+            cSpace = new ColorSpaceCMYK();
         return cSpace;
     }
 
@@ -108,28 +108,28 @@ public class PDDeviceCMYK extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-	    
-	if (bpc >=8) {
-		//from Sector9 ... believed but not proven to be right.
-		int[] nbBits = { bpc, bpc, bpc, bpc };
-		ComponentColorModel componentColorModel = 
-			new ComponentColorModel( createColorSpace(), 
-						 nbBits, 
-						 false,                     
-						 false,              
-						 Transparency.OPAQUE,
-						 DataBuffer.TYPE_BYTE );
-	       return componentColorModel;
-	}else{
-		//Daniel Wilson's implementation with some guidance from Jeremias
-		if (bpc ==1){
-			byte[] map = new byte[] {(byte)0x00, (byte)0xff};
-			ColorModel cm = new IndexColorModel(1, 2, map, map, map, 1);
-			
-			return cm;
-		}else{
-			throw new IOException("Unsure how to create a Color Model for " + bpc + " bits per component");
-		}
-	}
+        
+    if (bpc >=8) {
+        //from Sector9 ... believed but not proven to be right.
+        int[] nbBits = { bpc, bpc, bpc, bpc };
+        ComponentColorModel componentColorModel = 
+            new ComponentColorModel( createColorSpace(), 
+                         nbBits, 
+                         false,                     
+                         false,              
+                         Transparency.OPAQUE,
+                         DataBuffer.TYPE_BYTE );
+           return componentColorModel;
+    }else{
+        //Daniel Wilson's implementation with some guidance from Jeremias
+        if (bpc ==1){
+            byte[] map = new byte[] {(byte)0x00, (byte)0xff};
+            ColorModel cm = new IndexColorModel(1, 2, map, map, map, 1);
+            
+            return cm;
+        }else{
+            throw new IOException("Unsure how to create a Color Model for " + bpc + " bits per component");
+        }
+    }
     }
 }
