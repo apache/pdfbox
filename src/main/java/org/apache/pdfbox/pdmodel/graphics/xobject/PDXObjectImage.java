@@ -49,8 +49,8 @@ public abstract class PDXObjectImage extends PDXObject
      * This contains the suffix used when writing to file.
      */
     private String suffix;
-	
-	protected PDGraphicsState graphicsState;
+    
+    protected PDGraphicsState graphicsState;
 
     /**
      * Standard constuctor.
@@ -218,7 +218,7 @@ file.
         if( cs != null )
         {
             retval = PDColorSpaceFactory.createColorSpace( cs );
-		if (retval == null) logger().info("About to return NULL from createColorSpace branch");
+        if (retval == null) logger().info("About to return NULL from createColorSpace branch");
         }
         else
         {
@@ -229,15 +229,15 @@ file.
                 COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-		    if (retval == null) logger().info("About to return NULL from CCITT branch");
-	    }else if (getImageMask()){
-		//Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
-		    retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
-		    logger().info("Stencil Mask branch returning " + retval.toString());
-		    //throw new IOException("Trace the Stencil Mask!!!!");
-		    
-	    }else
-		logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
+            if (retval == null) logger().info("About to return NULL from CCITT branch");
+        }else if (getImageMask()){
+        //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
+            retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
+            logger().info("Stencil Mask branch returning " + retval.toString());
+            //throw new IOException("Trace the Stencil Mask!!!!");
+            
+        }else
+        logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
         }
         return retval;
     }
@@ -283,6 +283,6 @@ file.
     */
     public void setGraphicsState(PDGraphicsState newGS)
     {
-	    graphicsState = newGS;
+        graphicsState = newGS;
     }
 }

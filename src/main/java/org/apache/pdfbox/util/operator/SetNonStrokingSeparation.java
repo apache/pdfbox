@@ -42,42 +42,42 @@ public class SetNonStrokingSeparation extends OperatorProcessor
     {
         PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
         PDColorSpace colorSpace = colorInstance.getColorSpace() ;//.getAlternateColorSpace();
-	List argList = arguments;
-	    
-	    //logger().info("handling color space " + colorSpace.toString());
-	if (colorSpace instanceof PDSeparation){
-		PDSeparation sep = (PDSeparation) colorSpace;
-		colorSpace = sep.getAlternateColorSpace();
-		argList = sep.getColorValues().toList();
-		//logger().info("now handling alternate color space " + colorSpace.toString());
-	}
-	
-	if (colorSpace != null) 
-	{
-		OperatorProcessor newOperator = null;
-		if (colorSpace instanceof PDDeviceGray) 
-		    newOperator = new SetNonStrokingGrayColor();
-		else if (colorSpace instanceof PDDeviceRGB)
-		    newOperator = new SetNonStrokingRGBColor();
-		else if (colorSpace instanceof PDDeviceCMYK)
-			newOperator = new SetNonStrokingCMYKColor();
-		else if (colorSpace instanceof PDICCBased)
-			newOperator = new SetNonStrokingICCBasedColor();
-		else if (colorSpace instanceof PDCalRGB)
-			newOperator = new SetNonStrokingCalRGBColor();
-		else if (colorSpace instanceof PDSeparation)
-			newOperator = new SetNonStrokingSeparation();
+    List argList = arguments;
+        
+        //logger().info("handling color space " + colorSpace.toString());
+    if (colorSpace instanceof PDSeparation){
+        PDSeparation sep = (PDSeparation) colorSpace;
+        colorSpace = sep.getAlternateColorSpace();
+        argList = sep.getColorValues().toList();
+        //logger().info("now handling alternate color space " + colorSpace.toString());
+    }
+    
+    if (colorSpace != null) 
+    {
+        OperatorProcessor newOperator = null;
+        if (colorSpace instanceof PDDeviceGray) 
+            newOperator = new SetNonStrokingGrayColor();
+        else if (colorSpace instanceof PDDeviceRGB)
+            newOperator = new SetNonStrokingRGBColor();
+        else if (colorSpace instanceof PDDeviceCMYK)
+            newOperator = new SetNonStrokingCMYKColor();
+        else if (colorSpace instanceof PDICCBased)
+            newOperator = new SetNonStrokingICCBasedColor();
+        else if (colorSpace instanceof PDCalRGB)
+            newOperator = new SetNonStrokingCalRGBColor();
+        else if (colorSpace instanceof PDSeparation)
+            newOperator = new SetNonStrokingSeparation();
 
-		if (newOperator != null) 
-		{
-			newOperator.setContext(getContext());
-			newOperator.process(operator, argList);
-		}
-		else
-			logger().warning("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
-	}
-		
-	//} else throw new IOException ("Invalid attempt to process colorspace " + colorSpace.toString() + " in SetNonStrokingSeparation");
+        if (newOperator != null) 
+        {
+            newOperator.setContext(getContext());
+            newOperator.process(operator, argList);
+        }
+        else
+            logger().warning("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
+    }
+        
+    //} else throw new IOException ("Invalid attempt to process colorspace " + colorSpace.toString() + " in SetNonStrokingSeparation");
         
     }
 }

@@ -480,14 +480,14 @@ public class COSArray extends COSBase
     }
     
     /*
-	Return contents of COSArray as a Java List
+    Return contents of COSArray as a Java List
     */
     public List toList()
     {
-	    ArrayList retList = new ArrayList(size());
-	    for (int i = 0; i < size(); i++)
-		retList.add(get(i));
-	    
-	    return retList;
+        ArrayList retList = new ArrayList(size());
+        for (int i = 0; i < size(); i++)
+        retList.add(get(i));
+        
+        return retList;
     }
 }

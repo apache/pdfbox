@@ -50,7 +50,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class PDFStreamEngine extends LoggingObject
 {
-	
+    
     private static final byte[] SPACE_BYTES = { (byte)32 };
 
     private PDGraphicsState graphicsState = null;
@@ -92,7 +92,7 @@ public class PDFStreamEngine extends LoggingObject
         //default constructor
         validCharCnt = 0;
         totalCharCnt = 0;
-	    
+        
     }
 
     /**
@@ -259,12 +259,12 @@ public class PDFStreamEngine extends LoggingObject
      */
     public void processEncodedText( byte[] string ) throws IOException
     {
-    	/* Note on variable names.  There are three different units being used
-    	 * in this code.  Character sizes are given in glyph units, text locations
-    	 * are initially given in text units, and we want to save the data in 
-    	 * display units. The variable names should end with Text or Disp to 
-    	 * represent if the values are in text or disp units (no glyph units are saved).
-    	 */
+        /* Note on variable names.  There are three different units being used
+         * in this code.  Character sizes are given in glyph units, text locations
+         * are initially given in text units, and we want to save the data in 
+         * display units. The variable names should end with Text or Disp to 
+         * represent if the values are in text or disp units (no glyph units are saved).
+         */
         final float fontSizeText = graphicsState.getTextState().getFontSize();
         final float horizontalScalingText = graphicsState.getTextState().getHorizontalScalingPercent()/100f;
         //float verticalScalingText = horizontalScaling;//not sure if this is right but what else to do???
@@ -284,7 +284,7 @@ public class PDFStreamEngine extends LoggingObject
         final float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
         
 
-      	// lets see what the space displacement should be
+        // lets see what the space displacement should be
         float spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
         if( spaceWidthText == 0 )
         {
@@ -323,7 +323,7 @@ public class PDFStreamEngine extends LoggingObject
         int codeLength = 1;
         for( int i=0; i<string.length; i+=codeLength )
         {
-        	// Decode the value to a Unicode character
+            // Decode the value to a Unicode character
             codeLength = 1;
             String c = font.encode( string, i, codeLength );
             if( c == null && i+1<string.length)
@@ -398,9 +398,9 @@ public class PDFStreamEngine extends LoggingObject
             //glyphname that has no mapping like "visiblespace"
             if( c != null )
             {
-            	// assume each character is the same size
+                // assume each character is the same size
                 float widthOfEachCharacterForCode = widthText/c.length();
-            	
+                
                 for( int j=0; j<c.length(); j++)
                 {
                     if( stringResult.length()+j <individualWidthsText.length )
@@ -415,9 +415,9 @@ public class PDFStreamEngine extends LoggingObject
                 validCharCnt += c.length();
             }
             else {
-            	// PDFBOX-373: Replace a null entry with "?" so it is
-            	// not printed as "(null)"
-            	c = "?";
+                // PDFBOX-373: Replace a null entry with "?" so it is
+                // not printed as "(null)"
+                c = "?";
             }
             totalCharCnt += c.length();
             
@@ -445,17 +445,17 @@ public class PDFStreamEngine extends LoggingObject
         // process the decoded text
         processTextPosition(
                 new TextPosition(
-                		page,
-                		textMatrixStDisp,
-                		textMatrixEndDisp,
-                		totalVerticalDisplacementDisp,
-                		individualWidthsText,
-                		spaceWidthDisp,
-                		stringResult.toString(),
-                		font,
-                		fontSizeText,
-                		(int)(fontSizeText * textMatrix.getXScale()),
-                		wordSpacingDisp ));
+                        page,
+                        textMatrixStDisp,
+                        textMatrixEndDisp,
+                        totalVerticalDisplacementDisp,
+                        individualWidthsText,
+                        spaceWidthDisp,
+                        stringResult.toString(),
+                        font,
+                        fontSizeText,
+                        (int)(fontSizeText * textMatrix.getXScale()),
+                        wordSpacingDisp ));
     }
 
     /**
@@ -493,11 +493,11 @@ public class PDFStreamEngine extends LoggingObject
             OperatorProcessor processor = (OperatorProcessor)operators.get( operation );
             if( processor != null )
             {
-		processor.setContext(this);
+        processor.setContext(this);
                 processor.process( operator, arguments );
             }else{
-		    logger().warning("NULL processor for operation: " + operation);
-	    }
+            logger().warning("NULL processor for operation: " + operation);
+        }
         }
         catch (Exception e)
         {
