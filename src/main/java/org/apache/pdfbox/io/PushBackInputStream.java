@@ -27,7 +27,11 @@ import java.io.IOException;
  */
 public class PushBackInputStream extends java.io.PushbackInputStream
 {
-
+    /*
+     * The current position in the file. 
+     */
+    private int offset = 0;
+    
     /**
      * Constructor.
      *
@@ -61,7 +65,64 @@ public class PushBackInputStream extends java.io.PushbackInputStream
         }
         return result;
     }
-
+    
+    /**
+     * Returns the current byte offset in the file
+     * @return the int byte offset
+     */
+    public int getOffset(){
+        return offset;
+    }
+    
+    /**
+     * {@inheritDoc} 
+     */
+    public int read() throws IOException{
+        int retval = super.read();
+        if (retval != -1)
+            offset++;
+        return retval;
+    }
+    
+    /**
+     * {@inheritDoc} 
+     */
+    public int read(byte[] b) throws IOException{
+        return this.read(b, 0, b.length);
+    }
+    /**
+     * {@inheritDoc} 
+     */
+    public int read(byte[] b, int off, int len) throws IOException{
+        int retval = super.read(b, off, len);
+        if (retval != -1)
+            offset += retval;
+        return retval;
+    }
+    
+    /**
+     * {@inheritDoc} 
+     */
+    public void unread(int b) throws IOException{
+        offset--;
+        super.unread(b);
+    }
+    
+    /**
+     * {@inheritDoc} 
+     */
+    public void unread(byte[] b) throws IOException{
+        this.unread(b, 0, b.length);
+    }
+    
+    /**
+     * {@inheritDoc} 
+     */
+    public void unread(byte[] b, int off, int len) throws IOException{
+        offset -= len;
+        super.unread(b, off, len);
+    }
+    
     /**
      * A simple test to see if we are at the end of the stream.
      *

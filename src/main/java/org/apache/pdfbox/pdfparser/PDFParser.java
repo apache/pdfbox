@@ -20,15 +20,16 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.rmi.server.LogStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.LoggingObject;
@@ -53,9 +54,14 @@ public class PDFParser extends BaseParser
 
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
-    private COSDocument document;
-    private boolean forceParsing = false;
-
+    private boolean forceParsing = false; 
+    
+    /**
+     * A list of duplicate objects found when Parsing the PDF
+     * File. 
+     */
+    private List conflictList = new ArrayList();
+   
     /**
      * Temp file directory.
      */
@@ -193,6 +199,7 @@ public class PDFParser extends BaseParser
                 {
                     document.dereferenceObjectStreams();
                 }
+                ConflictObj.resolveConflicts(document, conflictList);     
             }
             catch( IOException e ){
                 /*
@@ -226,6 +233,7 @@ public class PDFParser extends BaseParser
             pdfSource.close();
         }
     }
+    
     /**
      * Skip to the start of the next object.  This is used to recover
      * from a corrupt object. This should handle all cases that parseObject
@@ -299,14 +307,14 @@ public class PDFParser extends BaseParser
          */
         if (header.startsWith(PDF_HEADER)) {
             if(!header.matches(PDF_HEADER + "\\d.\\d")) {
-                String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length());
+                String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, PDF_HEADER.length()+3);
                 pdfSource.unread(headerGarbage.getBytes());
             }
         }
         else {
             if(!header.matches(FDF_HEADER + "\\d.\\d")) {
-                String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length());
+                String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, FDF_HEADER.length()+3);
                 pdfSource.unread(headerGarbage.getBytes());
             }
@@ -383,6 +391,7 @@ public class PDFParser extends BaseParser
      * @throws IOException If an IO error occurs.
      */
     private boolean parseObject() throws IOException{
+        int currentObjByteOffset = pdfSource.getOffset();
         boolean isEndOfFile = false; 
         skipSpaces();
         //peek at the next character to determine the type of object we are parsing
@@ -488,10 +497,20 @@ public class PDFParser extends BaseParser
                 }
                 endObjectKey = readString();
             }
+            
             COSObjectKey key = new COSObjectKey( number, genNum );
             COSObject pdfObject = document.getObjectFromPool( key );
-            pdfObject.setObject(pb);
-
+            if(pdfObject.getObject() == null){
+                pdfObject.setObject(pb);
+            }
+            /*
+             * If the object we returned already has a baseobject, then we have a conflict
+             * which we will resolve using information after we parse the xref table.
+             */
+            else{
+                addObjectToConflicts(currentObjByteOffset, key, pb); 
+            }
+            
             if( !endObjectKey.equals( "endobj" ) )
             {
                 if( !pdfSource.isEOF() )
@@ -532,6 +551,22 @@ public class PDFParser extends BaseParser
             skipSpaces();
         }
         return isEndOfFile;
+    }
+    
+   /**
+    * Adds a new ConflictObj to the conflictList
+    * @param offset the offset of the ConflictObj
+    * @param key The COSObjectKey of this object
+    * @param pb The COSBase of this conflictObj
+    * @throws IOException
+    */
+    private void addObjectToConflicts(int offset, COSObjectKey key, COSBase pb) throws IOException{
+        COSObject obj = new COSObject(null);
+        obj.setObjectNumber( new COSInteger( key.getNumber() ) );
+        obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
+        obj.setObject(pb);
+        ConflictObj conflictObj = new ConflictObj(offset, key, obj);
+        conflictList.add(conflictObj);   
     }
 
     /**
@@ -578,7 +613,7 @@ public class PDFParser extends BaseParser
          * Each starts with a starting object id and a count.
          */
         while(true){
-            int start = readInt(); // first obj id
+            int currObjID = readInt(); // first obj id
             int count = readInt(); // the number of objects in the xref table
             skipSpaces();
             for(int i = 0; i < count; i++){
@@ -589,10 +624,25 @@ public class PDFParser extends BaseParser
                     break;
                 }
                 //Ignore table contents
-                readLine();
+                String currentLine = readLine();
+                String[] splitString = currentLine.split(" ");
+                if(splitString[2].equals("n")){
+                    try{
+                        int currOffset = Integer.parseInt(splitString[0]);
+                        int currGenID = Integer.parseInt(splitString[1]);
+                        COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
+                        document.setXRef(objKey, currOffset);
+                    }
+                    catch(NumberFormatException e){
+                        throw new IOException(e.getMessage());
+                    }
+                }
+                else if(!splitString[2].equals("f")){
+                    throw new IOException("Corrupt XRefTable Entry - ObjID:" + currObjID);
+                }
+                currObjID++;
                 skipSpaces();
             }
-            addXref(new PDFXref(start, count));
             skipSpaces();
             char c = (char)pdfSource.peek();
             if(c < '0' || c > '9'){
@@ -622,6 +672,7 @@ public class PDFParser extends BaseParser
             if (nextLine.startsWith("trailer")) {
                 byte[] b = nextLine.getBytes();
                 int len = "trailer".length();
+                pdfSource.unread('\n');
                 pdfSource.unread(b, len, b.length-len);
             }
             else {
@@ -646,5 +697,51 @@ public class PDFParser extends BaseParser
         }
         skipSpaces();
         return true;
+    }
+    
+    /*
+     * Used to resolve conflicts when a PDF Document has multiple objects with
+     * the same id number. Ideally, we could use the Xref table when parsing
+     * the document to be able to determine which of the objects with the same ID
+     * is correct, but we do not have access to the Xref Table during parsing.
+     * Instead, we queue up the conflicts and resolve them after the Xref has
+     * been parsed. The Objects listed in the Xref Table are kept and the 
+     * others are ignored. 
+     */
+    private static class ConflictObj{
+
+        private int offset;
+        private COSObjectKey key;
+        private COSObject pdfObject;
+        
+        public ConflictObj(int offset, COSObjectKey key,
+                COSObject pdfObject) {
+            this.offset = offset;
+            this.key = key;
+            this.pdfObject = pdfObject;
+        }
+        public String toString(){
+            return "Object(" + offset + ", " + key + ")";
+        }
+        
+        /**
+         * Sometimes pdf files have objects with the same ID number yet are
+         * not referenced by the Xref table and therefore should be excluded.             
+         * This method goes through the conflicts list and replaces the object stored
+         * in the objects array with this one if it is referenced by the xref
+         * table. 
+         * @throws IOException
+         */
+        private static void resolveConflicts(COSDocument document, List conflictList) throws IOException{
+            Iterator conflicts = conflictList.iterator();
+            while(conflicts.hasNext()){
+                ConflictObj o = (ConflictObj)conflicts.next();
+                Integer offset = new Integer(o.offset);
+                if(document.getXrefTable().containsValue(offset)){
+                    COSObject pdfObject = document.getObjectFromPool(o.key);
+                    pdfObject.setObject(o.pdfObject.getObject());
+                }
+            }
+        }
     }
 }
