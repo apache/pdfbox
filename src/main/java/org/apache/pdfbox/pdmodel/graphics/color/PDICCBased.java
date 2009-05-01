@@ -150,16 +150,18 @@ public class PDICCBased extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        int[] nbBits = { bpc, bpc, bpc, bpc }; //added 4th bpc to handle CMYK
-        ComponentColorModel componentColorModel =
-                new ComponentColorModel( createColorSpace(),
-                                         nbBits,
-                                         false,
-                                         false,
-                                         Transparency.OPAQUE,
-                                         DataBuffer.TYPE_BYTE );
 
-        return componentColorModel;
+            int[] nbBits = { bpc, bpc, bpc, bpc }; //added 4th bpc to handle CMYK
+            ComponentColorModel componentColorModel =
+                    new ComponentColorModel( createColorSpace(),
+                                             nbBits,
+                                             false,
+                                             false,
+                                             Transparency.OPAQUE,
+                                             DataBuffer.TYPE_BYTE );
+
+            return componentColorModel;
+        
     }
 
     /**

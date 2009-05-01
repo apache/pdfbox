@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -123,6 +124,7 @@ public class PDPixelMap extends PDXObjectImage
         int bpc = getBitsPerComponent();
         int predictor = getPredictor();
         List filters = getPDStream().getFilters();
+        ColorModel cm ;
         
         byte[] array = getPDStream().getByteArray();
 
@@ -135,10 +137,15 @@ public class PDPixelMap extends PDXObjectImage
             return null;
         }
         
-        ColorModel cm = colorspace.createColorModel( bpc );
+        if (bpc == 1){
+            byte[] map = new byte[] {(byte)0x00, (byte)0xff};
+            cm = new IndexColorModel(1, 2, map, map, map, 1);
+        }else{
+            cm = colorspace.createColorModel( bpc );
+        }
+        
         logger().info("ColorModel: " + cm.toString());
         WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
-        //DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
         DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
         byte[] bufferData = buffer.getData();
     

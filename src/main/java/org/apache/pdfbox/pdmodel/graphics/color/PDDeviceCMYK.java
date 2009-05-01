@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import java.awt.Transparency;
 import java.awt.image.ComponentColorModel;
-import java.awt.image.IndexColorModel;
 import java.awt.image.DataBuffer;
 
 import java.io.InputStream;
@@ -108,9 +107,7 @@ public class PDDeviceCMYK extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        
-    if (bpc >=8) {
-        //from Sector9 ... believed but not proven to be right.
+
         int[] nbBits = { bpc, bpc, bpc, bpc };
         ComponentColorModel componentColorModel = 
             new ComponentColorModel( createColorSpace(), 
@@ -120,16 +117,6 @@ public class PDDeviceCMYK extends PDColorSpace
                          Transparency.OPAQUE,
                          DataBuffer.TYPE_BYTE );
            return componentColorModel;
-    }else{
-        //Daniel Wilson's implementation with some guidance from Jeremias
-        if (bpc ==1){
-            byte[] map = new byte[] {(byte)0x00, (byte)0xff};
-            ColorModel cm = new IndexColorModel(1, 2, map, map, map, 1);
-            
-            return cm;
-        }else{
-            throw new IOException("Unsure how to create a Color Model for " + bpc + " bits per component");
-        }
-    }
+
     }
 }
