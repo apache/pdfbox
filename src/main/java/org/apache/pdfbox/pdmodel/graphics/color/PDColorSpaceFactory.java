@@ -69,6 +69,10 @@ public final class PDColorSpaceFactory extends LoggingObject
             {
                 retval = new PDCalGray( array );
             }
+            else if( type.getName().equals( PDDeviceRGB.NAME ) )
+            {
+                retval = PDDeviceRGB.INSTANCE;
+            }
             else if( type.getName().equals( PDCalRGB.NAME ) )
             {
                 retval = new PDCalRGB( array );
