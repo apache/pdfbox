@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.encoding.conversion;
 
-import org.fontbox.cmap.CMap;
+import org.apache.fontbox.cmap.CMap;
 
 /**
  *  EncodingConverter converts string or characters in one encoding, which is specified in PDF

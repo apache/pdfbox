@@ -18,8 +18,8 @@ package org.apache.pdfbox.encoding;
 
 import java.util.Iterator;
 
-import org.fontbox.afm.CharMetric;
-import org.fontbox.afm.FontMetric;
+import org.apache.fontbox.afm.CharMetric;
+import org.apache.fontbox.afm.FontMetric;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;

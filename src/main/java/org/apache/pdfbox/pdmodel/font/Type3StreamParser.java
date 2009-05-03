@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import java.util.List;
 
-import org.fontbox.util.BoundingBox;
+import org.apache.fontbox.util.BoundingBox;
 
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;

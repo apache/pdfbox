@@ -16,19 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import org.fontbox.ttf.CMAPEncodingEntry;
-import org.fontbox.ttf.CMAPTable;
-import org.fontbox.ttf.GlyphData;
-import org.fontbox.ttf.GlyphTable;
-import org.fontbox.ttf.HeaderTable;
-import org.fontbox.ttf.HorizontalHeaderTable;
-import org.fontbox.ttf.HorizontalMetricsTable;
-import org.fontbox.ttf.NamingTable;
-import org.fontbox.ttf.NameRecord;
-import org.fontbox.ttf.OS2WindowsMetricsTable;
-import org.fontbox.ttf.PostScriptTable;
-import org.fontbox.ttf.TTFParser;
-import org.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.CMAPEncodingEntry;
+import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.GlyphData;
+import org.apache.fontbox.ttf.GlyphTable;
+import org.apache.fontbox.ttf.HeaderTable;
+import org.apache.fontbox.ttf.HorizontalHeaderTable;
+import org.apache.fontbox.ttf.HorizontalMetricsTable;
+import org.apache.fontbox.ttf.NamingTable;
+import org.apache.fontbox.ttf.NameRecord;
+import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
+import org.apache.fontbox.ttf.PostScriptTable;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;

@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import java.util.HashMap;
 
-import org.fontbox.afm.FontMetric;
+import org.apache.fontbox.afm.FontMetric;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;

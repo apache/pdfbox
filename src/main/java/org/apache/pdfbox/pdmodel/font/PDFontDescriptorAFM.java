@@ -18,11 +18,11 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 
-import org.fontbox.afm.FontMetric;
+import org.apache.fontbox.afm.FontMetric;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
-import org.fontbox.util.BoundingBox;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
  * This class represents the font descriptor when the font information
