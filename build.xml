@@ -44,7 +44,7 @@
 
     <property name="ant.jar" value="${jar.dir}/ant.jar" />
 
-    <property name="fontbox.name" value="FontBox-0.2.0-dev" />
+    <property name="fontbox.name" value="fontbox-0.8.0-incubating" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
     <property name="jempbox.name" value="jempbox-0.8.0-incubating" />
@@ -118,6 +118,8 @@
 
     <target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
+            <jvmarg value="-Xmx1024M"/>
+            <jvmarg value="-Xms512M"/>
             <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
             <classpath>
                 <pathelement path="${junit.jar}" />

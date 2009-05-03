@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.fontbox.afm.AFMParser;
-import org.fontbox.afm.CharMetric;
-import org.fontbox.afm.FontMetric;
+import org.apache.fontbox.afm.AFMParser;
+import org.apache.fontbox.afm.CharMetric;
+import org.apache.fontbox.afm.FontMetric;
 
-import org.fontbox.pfb.PfbParser;
+import org.apache.fontbox.pfb.PfbParser;
 
 import org.apache.pdfbox.encoding.*;
 import org.apache.pdfbox.pdmodel.PDDocument;

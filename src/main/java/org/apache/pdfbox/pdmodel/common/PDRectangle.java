@@ -21,7 +21,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
 
-import org.fontbox.util.BoundingBox;
+import org.apache.fontbox.util.BoundingBox;
 
 import java.awt.Dimension;
 
