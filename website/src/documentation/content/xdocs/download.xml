@@ -52,10 +52,53 @@
     <section id="fontbox">
       <title>Download Apache FontBox</title>
       <p>
-        No releases of Apache FontBox are yet available. You can build the
-        latest sources from <a href="#subversion">Subversion</a> or download
-        one of the <a href="#old-releases">old releases</a> available on
-        SourceForge.
+        Apache FontBox is an open source Java library for working with
+        PDF fonts.
+      </p>
+      <table>
+        <tr>
+          <th>Download</th>
+          <th>Size</th>
+          <th>Verify</th>
+        </tr>
+        <tr>
+          <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar"
+              >fontbox-0.8.0-incubating-src.jar</a> (source archive)</td>
+          <td>328KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar"
+              >fontbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
+          <td>72KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.sha">SHA1</a>
+          </td>
+        </tr>
+      </table>
+      <p>
+        This 0.8.0-incubating release is the first FontBox release made at the
+        Apache Software Foundation. The most notable change since the previous
+        release (0.2.0) is the renaming of all Java packages from org.fontbox to
+        org.apache.fontbox. If you've used FontBox before, you need to update all
+        your client code to use the renamed FontBox packages.
+      </p>
+      <p>
+        The version number of FontBox was upgraded from 0.2.0 to 0.8.0 to better
+        match the version numbering of Apache PDFBox. The -incubating label included
+        in the version number reflects the incubation status of the project. See
+        the disclaimer below for more about incubation.
+      </p>
+      <p>
+        See the <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
       </p>
     </section>
     <section id="jempbox">
@@ -191,10 +234,10 @@
         The following provides more details on the included cryptographic
         software:
       </p>
-      <blockquote>
+      <note>
         Apache PDFBox uses the Java Cryptography Architecture (JCA) and the
         Bouncy Castle libraries for handling encryption in PDF documents.
-      </blockquote>
+      </note>
     </section>
   </body>
 </document>
