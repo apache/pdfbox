@@ -47,7 +47,7 @@
     <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>fontbox</artifactId>
-        <version>0.2.0-incubator-SNAPSHOT</version>
+        <version>0.8.0-incubator</version>
     </dependency>
 
     <dependency>
