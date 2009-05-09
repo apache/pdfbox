@@ -35,7 +35,7 @@ import org.apache.pdfbox.cos.COSDictionary;
  * @author Marcel Kammer
  * @version $Revision: 1.12 $
  */
-public class FlateFilter implements Filter
+public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject implements Filter 
 {
     private static final int    BUFFER_SIZE    = 2048;
 
@@ -96,10 +96,16 @@ public class FlateFilter implements Filter
                 // Decode data using given predictor
                 if (predictor==-1 || predictor == 1 || predictor == 10)
                 {
-                    // decoding not needed
-                    while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
-                    {
-                        result.write(buffer, 0, amountRead);
+                    try {
+                        // decoding not needed
+                        while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+                        {
+                            result.write(buffer, 0, amountRead);
+                        }
+                    }
+                    catch (OutOfMemoryError exception) {
+                        // if the stream is corrupt an OutOfMemoryError may occur
+                        logger().severe("Stop reading corrupt stream");
                     }
                 }
                 else
