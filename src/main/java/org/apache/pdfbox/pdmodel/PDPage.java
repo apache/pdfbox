@@ -671,10 +671,12 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         try{
             int rotation = findRotation();
             if (rotation == 90 || rotation == 270) {
-                AffineTransformOp transform = new AffineTransformOp(
-                        AffineTransform.getRotateInstance(Math.toRadians(rotation)),
-                        AffineTransformOp.TYPE_BILINEAR);
-                retval = transform.filter(retval, null);
+                 int w = retval.getWidth();    
+                 int h = retval.getHeight();    
+                 BufferedImage rotated_img = new BufferedImage(w, h, retval.getType());    
+                 Graphics2D g = rotated_img.createGraphics();    
+                 g.rotate(Math.toRadians(rotation), w/2, h/2);    
+                 g.drawImage(retval, null, 0, 0);    
             }
         } catch (ImagingOpException e){
             logger().log(Level.WARNING, "Unable to rotate page image", e);
