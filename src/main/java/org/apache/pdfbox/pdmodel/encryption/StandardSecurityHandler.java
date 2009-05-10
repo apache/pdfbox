@@ -771,7 +771,30 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             return matches;
         }
-
+    public final boolean isUserPassword(
+            String password,
+            byte[] u,
+            byte[] o,
+            int permissions,
+            byte[] id,
+            int encRevision,
+            int length)
+            throws CryptographyException, IOException{
+		    return isUserPassword(password.getBytes(),
+			u,o,permissions, id, encRevision, length);
+	    }
+    public final boolean isOwnerPassword(
+            String password,
+            byte[] u,
+            byte[] o,
+            int permissions,
+            byte[] id,
+            int encRevision,
+            int length)
+            throws CryptographyException, IOException{
+		    return isOwnerPassword(password.getBytes(),
+			u,o,permissions, id, encRevision, length);
+	    }
     private static final boolean arraysEqual( byte[] first, byte[] second, int count )
     {
         boolean equal = first.length >= count && second.length >= count;
