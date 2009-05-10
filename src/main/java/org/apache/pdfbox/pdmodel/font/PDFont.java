@@ -377,11 +377,7 @@ public abstract class PDFont extends LoggingObject implements COSObjectable
                     {
                         COSName encodingName = (COSName)encoding;
                         cmap = (CMap)cmapObjects.get( encodingName );
-                        if( cmap != null )
-                        {
-                            cmap = (CMap)cmapObjects.get( encodingName );
-                        }
-                        else
+                        if( cmap == null )
                         {
                             String cmapName = encodingName.getName();
                             String resourceRoot = "Resources/cmap/";
