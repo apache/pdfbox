@@ -184,19 +184,11 @@ public class PDFParser extends BaseParser
                     skipSpaces();
                 }
                 //Test if we saw a trailer section. If not, look for an XRef Stream (Cross-Reference Stream) 
-                //For PDF 1.5 and above 
+                //to populate the trailer and xref information. For PDF 1.5 and above 
                 if( document.getTrailer() == null ){
-                    COSDictionary trailer = new COSDictionary();
-                    Iterator xrefIter = document.getObjectsByType( "XRef" ).iterator();
-                    while( xrefIter.hasNext() )
-                    {
-                        COSStream next = (COSStream)((COSObject)xrefIter.next()).getObject();
-                        trailer.addAll( next );
-                    }
-                    document.setTrailer( trailer );
+                    document.parseXrefStreams();
                 }
-                if( !document.isEncrypted() )
-                {
+                if( !document.isEncrypted() ){
                     document.dereferenceObjectStreams();
                 }
                 ConflictObj.resolveConflicts(document, conflictList);     

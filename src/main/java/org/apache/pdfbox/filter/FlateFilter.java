@@ -78,9 +78,11 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
         if (dict!=null)
         {
             predictor = dict.getInt("Predictor");
-            colors = dict.getInt("Colors");
-            bitsPerPixel = options.getInt("BitsPerComponent");
-            columns = dict.getInt("Columns");
+            if(predictor > 1){
+                colors = dict.getInt("Colors");
+                bitsPerPixel = options.getInt("BitsPerComponent");
+                columns = dict.getInt("Columns");
+            }
         }
 
         try
@@ -110,17 +112,23 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
                 }
                 else
                 {
-                    if( colors==-1 )
+                    /*
+                     * Reverting back to default values
+                     */
+                    if( colors == -1 )
                     {
-                        throw new IOException("Error: Could not read 'colors' attribute to decompress flate stream.");
+                        colors = 1;
+//                        throw new IOException("Error: Could not read 'colors' attribute to decompress flate stream.");
                     }
-                    if( bitsPerPixel==-1 )
+                    if( bitsPerPixel == -1 )
                     {
-                        throw new IOException("Error: Could not read 'bitsPerPixel' attribute to decompress flate stream.");
+                        bitsPerPixel = 8;
+//                        throw new IOException("Error: Could not read 'bitsPerPixel' attribute to decompress flate stream.");
                     }
-                    if( columns==-1 )
+                    if( columns == -1 )
                     {
-                        throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
+                        columns = 1;
+//                        throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
                     }
 
                     baos = new ByteArrayOutputStream();
@@ -195,7 +203,7 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
             boolean done = false;
             int linepredictor = predictor;
 
-            while (!done)
+            while (!done && data.available() > 0)
             {
                 if (predictor == 15)
                 {
@@ -215,7 +223,7 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
 
                 // read line
                 int i = 0;
-                int offset = bpp;
+                int offset = 0;
                 while (offset < rowlength && ((i = data.read(actline, offset, rowlength - offset)) != -1))
                 {
                     offset += i;
@@ -284,7 +292,7 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
                         break;
                 }
 
-                lastline = actline;
+                lastline = (byte[])actline.clone();
                 baos.write(actline, bpp, actline.length - bpp);
             }
         }
