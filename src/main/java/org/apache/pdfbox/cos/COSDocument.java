@@ -31,6 +31,7 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdfparser.PDFXrefStreamParser;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -461,6 +462,7 @@ public class COSDocument extends COSBase
         }  
         return obj;
     }
+    
     /**
      * Used to populate the XRef HashMap. Will add an Xreftable entry
      * that maps ObjectKeys to byte offsets in the file. 
@@ -478,5 +480,26 @@ public class COSDocument extends COSBase
      */
     public Map getXrefTable(){
         return xrefTable;
+    }
+
+    /**
+     * This method will search the list of objects for types of XRef and 
+     * uses the parsed data to populate the trailer information as well as
+     * the xref Map. 
+     * 
+     * @throws IOException if there is an error parsing the stream
+     */
+    public void parseXrefStreams() throws IOException {
+        COSDictionary trailer = new COSDictionary();
+        Iterator xrefIter = getObjectsByType( "XRef" ).iterator();
+        while( xrefIter.hasNext() )
+        {
+            COSObject xrefStream = (COSObject)xrefIter.next();
+            COSStream stream = (COSStream)xrefStream.getObject();
+            trailer.addAll(stream);
+            PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, this);
+            parser.parse();         
+        }
+        setTrailer( trailer );  
     }
 }
