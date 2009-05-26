@@ -618,7 +618,13 @@ public class PDFParser extends BaseParser
                 //Ignore table contents
                 String currentLine = readLine();
                 String[] splitString = currentLine.split(" ");
-                if(splitString[2].equals("n")){
+                if (splitString.length < 3) {
+                    logger().warning("invalid xref line: " + currentLine);
+                    break;
+                }
+                /* This supports the corrupt table as reported in 
+                 * PDFBOX-474 (XXXX XXX XX n) */
+                if(splitString[splitString.length-1].equals("n")){
                     try{
                         int currOffset = Integer.parseInt(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
