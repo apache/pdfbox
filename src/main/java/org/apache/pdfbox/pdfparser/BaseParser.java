@@ -350,6 +350,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         int byteRead = 0;
         byte[] buffer = new byte[ENDSTREAM.length];
         int nextIdx = pdfSource.read(buffer) % buffer.length; 
+        if (nextIdx == -1)
+            return;
 
         while(byteRead != -1 ) {
             if (cmpCircularBuffer( buffer, (nextIdx-ENDSTREAM.length + buffer.length)%buffer.length, ENDSTREAM )) {
