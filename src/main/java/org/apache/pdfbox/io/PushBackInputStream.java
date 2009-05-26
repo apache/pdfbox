@@ -119,6 +119,9 @@ public class PushBackInputStream extends java.io.PushbackInputStream
      * {@inheritDoc} 
      */
     public void unread(byte[] b, int off, int len) throws IOException{
+        if (len == 0)
+            return;
+        
         offset -= len;
         super.unread(b, off, len);
     }

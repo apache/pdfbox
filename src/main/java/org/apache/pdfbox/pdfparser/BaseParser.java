@@ -473,7 +473,9 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                         braces = 0;
                     }
                 }
-                pdfSource.unread( nextThreeBytes, 0, amountRead );
+                if (amountRead > 0) {
+                    pdfSource.unread( nextThreeBytes, 0, amountRead );
+                }
                 if( braces != 0 )
                 {
                     retval.append( ch );
