@@ -235,21 +235,22 @@ public class PDFStreamParser extends BaseParser
             case '+':
             case '.':
             {
-                if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
+                /* We will be filling buf with the rest of the number.  Only
+                 * allow 1 "." and "-" and "+" at start of number. */
+                StringBuffer buf = new StringBuffer();
+                buf.append( c );
+                pdfSource.read();
+
+                boolean dotNotRead = (c != '.');
+                while( Character.isDigit(( c = (char)pdfSource.peek()) ) || (dotNotRead && (c == '.')) )
                 {
-                    StringBuffer buf = new StringBuffer();
-                    while( Character.isDigit(( c = (char)pdfSource.peek()) )|| c== '-' || c== '+' || c =='.' )
-                    {
-                        buf.append( c );
-                        pdfSource.read();
-                    }
-                    retval = COSNumber.get( buf.toString() );
+                    buf.append( c );
+                    pdfSource.read();
+
+                    if (dotNotRead && (c == '.'))
+                        dotNotRead = false;
                 }
-                else
-                {
-                    throw new IOException( "Unknown dir object c='" + c +
-                        "' peek='" + (char)pdfSource.peek() + "' " + pdfSource );
-                }
+                retval = COSNumber.get( buf.toString() );
                 break;
             }
             case 'B':
