@@ -270,7 +270,7 @@ public class PDFParser extends BaseParser
             header = readLine();
             while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
                 // if a line starts with a digit, it has to be the first one with data in it
-                if (Character.isDigit (header.charAt(0)))
+                if ((header.length() > 0) && (Character.isDigit (header.charAt(0))))
                     break ;
                 header = readLine();
             }
