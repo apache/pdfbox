@@ -19,7 +19,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.util.List;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.util.Matrix;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -44,10 +43,9 @@ public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
     {
         super.process( operator, arguments );
         float lineWidth = (float)context.getGraphicsState().getLineWidth();
-        Matrix ctm = context.getGraphicsState().getCurrentTransformationMatrix();
-        if ( ctm != null && ctm.getXScale() > 0 ) 
+        if (lineWidth == 0) 
         {
-            lineWidth = lineWidth * ctm.getXScale();
+        	lineWidth = 1;
         }
         Graphics2D graphics = ((PageDrawer)context).getGraphics();
         BasicStroke stroke = (BasicStroke)graphics.getStroke();
