@@ -18,8 +18,12 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.*;
+
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
 import java.io.IOException;
 
 /**
@@ -43,6 +47,21 @@ public class StrokePath extends OperatorProcessor
         ///dwilson 3/19/07 refactor
 	try{
 		PageDrawer drawer = (PageDrawer)context;
+
+        float lineWidth = (float)context.getGraphicsState().getLineWidth();
+        Matrix ctm = context.getGraphicsState().getCurrentTransformationMatrix();
+        if ( ctm != null && ctm.getXScale() > 0) 
+        {
+            lineWidth = lineWidth * ctm.getXScale();
+        }
+        Graphics2D graphics = ((PageDrawer)context).getGraphics();
+        BasicStroke stroke = (BasicStroke)graphics.getStroke();
+        if (stroke == null)
+            graphics.setStroke( new BasicStroke( lineWidth ) );
+        else
+            graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
+
+		
 		drawer.StrokePath();
 	}catch (Exception e){
 
