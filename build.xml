@@ -63,12 +63,6 @@
     <property name="bcmail.name" value="bcmail-jdk14-132" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
-    <property name="jai_codec.name" value="jai_codec" />
-    <property name="jai_codec.jar" value="${jar.dir}/${jai_codec.name}.jar" />
-
-    <property name="jai_core.name" value="jai_core" />
-    <property name="jai_core.jar" value="${jar.dir}/${jai_core.name}.jar" />
-
     <property name="junit.jar" value="${jar.dir}/junit.jar" />
     <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
 
@@ -148,8 +142,6 @@
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
-                <pathelement path="${jai_codec.jar}" />
-                <pathelement path="${jai_core.jar}" />
                 <pathelement path="${icu4j.jar}" />
                 <pathelement path="${dest.dir}"/>
                 <pathelement path="${resources.dir}" />
@@ -174,8 +166,6 @@
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
-                <pathelement path="${jai_codec.jar}" />
-                <pathelement path="${jai_core.jar}" />
                 <pathelement path="${icu4j.jar}" />
                 <pathelement path="${dest.dir}"/>
                 <pathelement path="${resources.dir}" />
@@ -196,8 +186,6 @@
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
-                <pathelement path="${jai_codec.jar}" />
-                <pathelement path="${jai_core.jar}" />
                 <pathelement path="${dest.dir}"/>
                 <pathelement path="${resources.dir}" />
             </classpath>
@@ -339,8 +327,6 @@
                 <include name="${bcmail.jar}" />
                 <include name="${fontbox.jar}" />
                 <include name="${jempbox.jar}" />
-                <include name="${jai_codec.jar}" />
-                <include name="${jai_core.jar}" />
                 <include name="${checkstyle.jar}" />
                 <include name="${icu4j.jar}" />
                 <include name="${bin.dir}/**/*" />
@@ -378,82 +364,63 @@
 
     <target name="build.NET" depends="checkForIKVM,package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
         <property name="release.name" value="${project.name}-${project.version}" />
-        <echo>Building JAI Codec</echo>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-out:bin\${jai_codec.name}.dll" />
-            <arg value="${jai_codec.jar}" />
-        </exec>
-        <echo>Building JAI Core</echo>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
-            <arg value="-reference:bin/${jai_codec.name}.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-out:bin\${jai_core.name}.dll" />
-            <arg value="${jai_core.jar}" />
-        </exec>
         <echo>Building BC Prov</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${bcprov.name}.dll" />
+            <arg value="-out:${bin.dir}\${bcprov.name}.dll" />
             <arg value="${bcprov.jar}" />
         </exec>
         <echo>Building BC Mail</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${bcmail.name}.dll" />
+            <arg value="-out:${bin.dir}\${bcmail.name}.dll" />
             <arg value="${bcmail.jar}" />
         </exec>
         <echo>Building FontBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${fontbox.name}.dll" />
+            <arg value="-out:${bin.dir}\${fontbox.name}.dll" />
             <arg value="${fontbox.jar}" />
         </exec>
         <echo>Building JempBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${jempbox.name}.dll" />
+            <arg value="-out:${bin.dir}\${jempbox.name}.dll" />
             <arg value="${jempbox.jar}" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${lucene.name}.dll" />
+            <arg value="-out:${bin.dir}\${lucene.name}.dll" />
             <arg value="${lucene.jar}" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin/${lucene.name}.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${lucene-demos.name}.dll" />
+            <arg value="-out:${bin.dir}\${lucene-demos.name}.dll" />
             <arg value="${lucene-demos.jar}" />
         </exec>
         <echo>Building PDFBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin/${jempbox.name}.dll" />
@@ -461,95 +428,93 @@
             <arg value="-reference:bin/${lucene-demos.name}.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/${bcmail.name}.dll" />
-            <arg value="-reference:bin/${jai_core.name}.dll" />
-            <arg value="-reference:bin/${jai_codec.name}.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
-            <arg value="-out:bin\${release.name}.dll" />
+            <arg value="-out:${bin.dir}\${release.name}.dll" />
             <arg value="lib\${release.name}.jar" />
         </exec>
         <echo>Building Decrypt</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\Decrypt.exe" />
-            <arg value="classes\org\apache\pdfbox\Decrypt.class" />
+            <arg value="-out:${bin.dir}\Decrypt.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\Decrypt.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\Encrypt.exe" />
-            <arg value="classes\org\apache\pdfbox\Encrypt.class" />
+            <arg value="-out:${bin.dir}\Encrypt.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\Encrypt.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ExportFDF.exe" />
-            <arg value="classes\org\apache\pdfbox\ExportFDF.class" />
+            <arg value="-out:${bin.dir}\ExportFDF.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ExportFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ExportXFDF.exe" />
-            <arg value="classes\org\apache\pdfbox\ExportXFDF.class" />
+            <arg value="-out:${bin.dir}\ExportXFDF.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ExportXFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ExtractImages.exe" />
-            <arg value="classes\org\apache\pdfbox\ExtractImages.class" />
+            <arg value="-out:${bin.dir}\ExtractImages.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractImages.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ExtractText.exe" />
-            <arg value="classes\org\apache\pdfbox\ExtractText.class" />
+            <arg value="-out:${bin.dir}\ExtractText.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractText.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ImportFDF.exe" />
-            <arg value="classes\org\apache\pdfbox\ImportFDF.class" />
+            <arg value="-out:${bin.dir}\ImportFDF.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\ImportXFDF.exe" />
-            <arg value="classes\org\apache\pdfbox\ImportXFDF.class" />
+            <arg value="-out:${bin.dir}\ImportXFDF.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\Overlay.exe" />
-            <arg value="classes\org\apache\pdfbox\Overlay.class" />
+            <arg value="-out:${bin.dir}\Overlay.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\Overlay.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\PDFSplit.exe" />
-            <arg value="classes\org\apache\pdfbox\PDFSplit.class" />
+            <arg value="-out:${bin.dir}\PDFSplit.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
-            <arg value="-out:bin\PDFReader.exe" />
-            <arg value="classes\org\apache\pdfbox\PDFReader.class" />
+            <arg value="-out:${bin.dir}\PDFReader.exe" />
+            <arg value="${target.dir}\classes\org\apache\pdfbox\PDFReader.class" />
         </exec>
         <!--The Swing/AWT support in classpath is not quite good enough to make this
             work, so for now we will just leave blank.-->
         <!--<exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.GNU.Classpath.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:bin\PDFDebugger.exe" />
