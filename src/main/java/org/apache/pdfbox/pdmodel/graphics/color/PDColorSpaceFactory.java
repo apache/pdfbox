@@ -73,6 +73,10 @@ public final class PDColorSpaceFactory extends LoggingObject
             {
                 retval = PDDeviceRGB.INSTANCE;
             }
+            else if( type.getName().equals( PDDeviceCMYK.NAME ) )
+            {
+                retval = PDDeviceCMYK.INSTANCE;
+            }
             else if( type.getName().equals( PDCalRGB.NAME ) )
             {
                 retval = new PDCalRGB( array );
