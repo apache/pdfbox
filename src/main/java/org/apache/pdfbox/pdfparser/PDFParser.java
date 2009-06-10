@@ -31,8 +31,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.LoggingObject;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
 
@@ -569,11 +567,13 @@ public class PDFParser extends BaseParser
      * @throws IOException If an IO error occurs.
      */
     private boolean parseStartXref() throws IOException{
-        if(pdfSource.peek() != 's'){
+        if(pdfSource.peek() != 's')
+        {
             return false; 
         }
-        String nextLine = readLine();
-        if( !nextLine.equals( "startxref" ) ) {
+        String startXRef = readString();
+        if( !startXRef.trim().equals( "startxref" ) )
+        {
             return false;
         }
         skipSpaces();
@@ -593,49 +593,59 @@ public class PDFParser extends BaseParser
      * @throws IOException If an IO error occurs.
      */
     private boolean parseXrefTable() throws IOException{
-        if(pdfSource.peek() != 'x'){
+        if(pdfSource.peek() != 'x')
+        {
             return false;
         }
-        String nextLine = readLine();
-        if( !nextLine.equals( "xref" ) ) {
+        String xref = readString();
+        if( !xref.trim().equals( "xref" ) ) 
+        {
             return false;
         }
         /*
          * Xref tables can have multiple sections. 
          * Each starts with a starting object id and a count.
          */
-        while(true){
+        while(true)
+        {
             int currObjID = readInt(); // first obj id
             int count = readInt(); // the number of objects in the xref table
             skipSpaces();
             for(int i = 0; i < count; i++){
-                if(pdfSource.isEOF() || isEndOfName((char)pdfSource.peek())){
+                if(pdfSource.isEOF() || isEndOfName((char)pdfSource.peek()))
+                {
                     break;
                 }
-                if(pdfSource.peek() == 't'){
+                if(pdfSource.peek() == 't')
+                {
                     break;
                 }
                 //Ignore table contents
                 String currentLine = readLine();
                 String[] splitString = currentLine.split(" ");
-                if (splitString.length < 3) {
+                if (splitString.length < 3)
+                {
                     logger().warning("invalid xref line: " + currentLine);
                     break;
                 }
                 /* This supports the corrupt table as reported in 
                  * PDFBOX-474 (XXXX XXX XX n) */
-                if(splitString[splitString.length-1].equals("n")){
-                    try{
+                if(splitString[splitString.length-1].equals("n"))
+                {
+                    try
+                    {
                         int currOffset = Integer.parseInt(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         document.setXRef(objKey, currOffset);
                     }
-                    catch(NumberFormatException e){
+                    catch(NumberFormatException e)
+                    {
                         throw new IOException(e.getMessage());
                     }
                 }
-                else if(!splitString[2].equals("f")){
+                else if(!splitString[2].equals("f"))
+                {
                     throw new IOException("Corrupt XRefTable Entry - ObjID:" + currObjID);
                 }
                 currObjID++;
@@ -658,22 +668,26 @@ public class PDFParser extends BaseParser
      */
     private boolean parseTrailer() throws IOException
     {
-        if(pdfSource.peek() != 't'){
+        if(pdfSource.peek() != 't')
+        {
             return false;
         }
         //read "trailer"
         String nextLine = readLine();
-        if( !nextLine.equals( "trailer" ) ) {
+        if( !nextLine.trim().equals( "trailer" ) ) 
+        {
             // in some cases the EOL is missing and the trailer immediately continues with "<<" or with a blank character
             // even if this does not comply with PDF reference we want to support as many PDFs as possible
             // Acrobat reader can also deal with this.
-            if (nextLine.startsWith("trailer")) {
+            if (nextLine.startsWith("trailer")) 
+            {
                 byte[] b = nextLine.getBytes();
                 int len = "trailer".length();
                 pdfSource.unread('\n');
                 pdfSource.unread(b, len, b.length-len);
             }
-            else {
+            else 
+            {
                 return false;
             }
         }
