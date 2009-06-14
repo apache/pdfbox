@@ -170,7 +170,7 @@ public class IndexFiles
         {
             Date start = new Date();
 
-            writer = new IndexWriter(index, new StandardAnalyzer(), create);
+            writer = new IndexWriter(index, new StandardAnalyzer(), create, IndexWriter.MaxFieldLength.LIMITED);
 
             if (!create)
             {                 // delete stale docs
