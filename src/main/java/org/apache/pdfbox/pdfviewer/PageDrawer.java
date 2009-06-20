@@ -84,8 +84,10 @@ public class PageDrawer extends PDFStreamEngine
         pageSize = pageDimension;
 
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON );
         // Only if there is some content, we have to process it. Otherwise we are done here and we will produce an empty page
-        if ( page.getContents() != null) {
+        if ( page.getContents() != null) 
+        {
             PDResources resources = page.findResources();
             processStream( page, resources, page.getContents().getStream() );
         }
@@ -250,9 +252,12 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void setLinePath(GeneralPath newLinePath)
     {
-        if (linePath == null || linePath.getCurrentPoint() == null){
+        if (linePath == null || linePath.getCurrentPoint() == null)
+        {
             linePath = newLinePath;
-        }else{
+        }
+        else
+        {
             linePath.append (newLinePath, false);
         }
     }
@@ -295,22 +300,24 @@ public class PageDrawer extends PDFStreamEngine
         for( int i=0; i<subPaths.size(); i++ )
         {
             GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            if (subPath.getCurrentPoint() != null){ //Sector9's suggestion in bug 1672556
+            if (subPath.getCurrentPoint() != null)
+            { //Sector9's suggestion in bug 1672556
                 subPath.closePath();
             }
             graphics.fill( subPath );
         }
-
             graphics.fill( getLinePath() );
             getLinePath().reset();
     }
 
 
-    public void setStroke(BasicStroke newStroke){
+    public void setStroke(BasicStroke newStroke)
+    {
         getGraphics().setStroke( newStroke );
     }
 
-    public void StrokePath() throws IOException{
+    public void StrokePath() throws IOException
+    {
         graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); //per Ben's 11/15 change in StrokePath.java
         List subPaths = getLineSubPaths();
         for( int i=0; i<subPaths.size(); i++ )
@@ -325,7 +332,8 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     //If you need to do anything when a color changes, do it here ... or in an override of this function
-    public void ColorChanged(boolean bStroking) throws IOException{
+    public void ColorChanged(boolean bStroking) throws IOException
+    {
         //logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
     }
 
@@ -336,7 +344,8 @@ public class PageDrawer extends PDFStreamEngine
      * @param x y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
      */
-    public java.awt.geom.Point2D.Double TransformedPoint (double x, double y){
+    public java.awt.geom.Point2D.Double TransformedPoint (double x, double y)
+    {
         double[] position = {x,y}; 
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(position, 0, position, 0, 1);
         position[1] = fixY(position[1]);
@@ -349,7 +358,8 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * @deprecated
      */
-    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y, double scaleX, double scaleY){
+    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y, double scaleX, double scaleY)
+    {
 
         double finalX = 0.0;
         double finalY = 0.0;
@@ -369,7 +379,8 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * @deprecated
      */
-    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y){
+    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y)
+    {
 
         double scaleX = 0.0;
         double scaleY = 0.0;
@@ -389,10 +400,10 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @param windingRule The winding rule this path will use.
      */
-    public void SetClippingPath(int windingRule) throws IOException{
+    public void SetClippingPath(int windingRule) throws IOException
+    {
 
         graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
-
         getLinePath().setWindingRule(windingRule);
 
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
@@ -400,12 +411,12 @@ public class PageDrawer extends PDFStreamEngine
         for( int i=0; i<subPaths.size(); i++ )
         {
             GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            if (subPath.getCurrentPoint() != null){ 
+            if (subPath.getCurrentPoint() != null)
+            { 
                 subPath.closePath();
             }
         }
-
-            graphics.setClip( getLinePath() );
-            getLinePath().reset();
+        graphics.setClip( getLinePath() );
+        getLinePath().reset();
     }
 }
