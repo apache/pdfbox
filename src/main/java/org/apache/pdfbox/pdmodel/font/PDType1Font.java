@@ -181,53 +181,63 @@ public class PDType1Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, 
+            AffineTransform at, float x, float y ) throws IOException
     {
         if( awtFont == null )
         {
             String baseFont = getBaseFont();
-        	PDFontDescriptor fd = getFontDescriptor();
-			if (fd != null && fd instanceof PDFontDescriptorDictionary){
-				PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
-				PDStream ffStream = fdDictionary.getFontFile();
-				if( ffStream == null && fdDictionary.getFontFile3() != null)
-					// TODO FontFile3-streams containing CIDFontType0C or OpenType fonts aren't yet supported 
-					logger().info("Embedded font-type is not supported " + fd.getFontName() );
-				if( ffStream != null )
-				{
-				    try {
-	                	// create a font with the embedded data
-						awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
-					} catch (FontFormatException e) {
-						logger().info("Can't read the embedded font " + fd.getFontName() );
-					}
-				}
-				else {
-	            	// check if the font is part of our environment
-					awtFont = FontManager.getAwtFont(fd.getFontName());
-					if (awtFont == null) 
-						logger().info("Can't find the specified font " + fd.getFontName() );
-				}
-			}
-			else
-			{
-            	// check if the font is part of our environment
-				awtFont = FontManager.getAwtFont(baseFont);
-				if (awtFont == null) 
-					logger().info("Can't find the specified basefont " + baseFont );
-			}
-			if (awtFont == null) 
-			{
-				// we can't find anything, so we have to use the standard font
-				awtFont = FontManager.getStandardFont();
-				logger().info("Using font "+awtFont.getName()+ " instead");
-			}
+            PDFontDescriptor fd = getFontDescriptor();
+            if (fd != null && fd instanceof PDFontDescriptorDictionary)
+            {
+                PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
+                PDStream ffStream = fdDictionary.getFontFile();
+                if( ffStream == null && fdDictionary.getFontFile3() != null)
+                {
+                    // TODO FontFile3-streams containing CIDFontType0C or OpenType fonts aren't yet supported
+                    logger().info("Embedded font-type is not supported " + fd.getFontName() );
+                }
+                if( ffStream != null )
+                {
+                    try 
+                    {
+                        // create a font with the embedded data
+                        awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
+                    } 
+                    catch (FontFormatException e) 
+                    {
+                        logger().info("Can't read the embedded font " + fd.getFontName() );
+                    }
+                }
+                else 
+                {
+                    // check if the font is part of our environment
+                    awtFont = FontManager.getAwtFont(fd.getFontName());
+                    if (awtFont == null)
+                    {
+                        logger().info("Can't find the specified font " + fd.getFontName() );
+                    }
+                }
+            }
+            else
+            {
+                // check if the font is part of our environment
+                awtFont = FontManager.getAwtFont(baseFont);
+                if (awtFont == null) 
+                {
+                    logger().info("Can't find the specified basefont " + baseFont );
+                }
+            }
+            if (awtFont == null)
+            {
+                // we can't find anything, so we have to use the standard font
+                awtFont = FontManager.getStandardFont();
+                logger().info("Using font "+awtFont.getName()+ " instead");
+            }
         }
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
-
-        g2d.drawString( string, x, y );
+        writeFont(g2d, at, awtFont, fontSize, x, y, string);
     }
-    
+
 }

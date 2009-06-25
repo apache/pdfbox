@@ -16,9 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-
+import java.awt.geom.Point2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import java.util.HashMap;
@@ -67,7 +70,8 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, 
+            AffineTransform at, float x, float y ) throws IOException
     {
         System.err.println( "Not yet implemented:" + getClass().getName() );
     }
@@ -302,4 +306,51 @@ public abstract class PDSimpleFont extends PDFont
     {
         return getFontDescriptor().getFontBoundingBox();
     }
+
+    /**
+     * This will draw a string on a canvas using the font.
+     *
+     * @param g2d The graphics to draw onto.
+     * @param at The transformation matrix with all infos for scaling and shearing of the font.
+     * @param awtFont The font to draw.
+     * @param fontSize The size of the font to draw.
+     * @param x The x coordinate to draw at.
+     * @param y The y coordinate to draw at.
+     * @param string The string to draw.
+     *
+     */
+    protected void writeFont(final Graphics2D g2d, final AffineTransform at, final Font awtFont,
+                             final float fontSize, final float x, final float y, final String string) 
+    {
+        // check if we have a rotation
+        if (!at.isIdentity()) 
+        {
+            try 
+            {
+                AffineTransform atInv = at.createInverse();
+                // do only apply the size of the transform, rotation will be realized by rotating the graphics,
+                // otherwise the hp printers will not render the font
+                g2d.setFont(awtFont.deriveFont(fontSize));
+                // apply the inverse transformation to the graphics, which should be the same as applying the
+                // transformation itself to the text
+                g2d.transform(at);
+                // translate the coordinates
+                Point2D.Float newXy = new  Point2D.Float(x,y);
+                atInv.transform(new Point2D.Float( x, y), newXy);
+                g2d.drawString( string, (float)newXy.getX(), (float)newXy.getY() );
+                // restore the original transformation
+                g2d.transform(atInv);
+            }
+            catch (NoninvertibleTransformException e) 
+            {
+                System.err.println( "Error in "+getClass().getName()+".writeFont:"+e);
+            }
+        }
+        else 
+        {
+            g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
+            g2d.drawString( string, x, y );
+        }
+    }
+
 }
