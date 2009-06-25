@@ -290,7 +290,8 @@ public class PDTrueTypeFont extends PDSimpleFont
             }
             for( int i=0; i<widthValues.length; i++ )
             {
-                if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 && widths.get( glyphToCCode[i]-firstChar) == zero )
+                if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 
+                        && widths.get( glyphToCCode[i]-firstChar) == zero )
                 {
                     widths.set( glyphToCCode[i]-firstChar,
                         new Integer( (int)(widthValues[i]* 1000f)/header.getUnitsPerEm() ) );
@@ -315,7 +316,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, 
+            AffineTransform at, float x, float y ) throws IOException
     {
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
         if( awtFont == null )
@@ -325,48 +327,49 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 try
                 {
-                	// create a font with the embedded data
-                	awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
+                    // create a font with the embedded data
+                    awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
                 }
                 catch( FontFormatException f )
                 {
-					logger().info("Can't read the embedded font " + fd.getFontName() );
+                    logger().info("Can't read the embedded font " + fd.getFontName() );
                 }
             }
             else
             {
-            	// check if the font is part of our environment
-				awtFont = FontManager.getAwtFont(fd.getFontName());
-				if (awtFont == null) 
-				{ 
-					logger().info("Can't find the specified font " + fd.getFontName() );
+                // check if the font is part of our environment
+                awtFont = FontManager.getAwtFont(fd.getFontName());
+                if (awtFont == null)
+                {
+                    logger().info("Can't find the specified font " + fd.getFontName() );
                     // check if there is a font mapping for an external font file
                     TrueTypeFont ttf = getExternalFontFile2( fd );
-                    if( ttf != null ) 
+                    if( ttf != null )
                     {
                         try
-                    	{
-                        	awtFont = Font.createFont( Font.TRUETYPE_FONT, ttf.getOriginalData() );
+                        {
+                            awtFont = Font.createFont( Font.TRUETYPE_FONT, ttf.getOriginalData() );
                         }
-	                    catch( FontFormatException f )
-	                    {
-	    					logger().info("Can't read the external fontfile " + fd.getFontName() );
-	                    }
+                        catch( FontFormatException f )
+                        {
+                            logger().info("Can't read the external fontfile " + fd.getFontName() );
+                        }
                     }
-				}
+                }
             }
-			if (awtFont == null) 
-			{
-				// we can't find anything, so we have to use the standard font
-				awtFont = FontManager.getStandardFont();
-				logger().info("Using font "+awtFont.getName()+ " instead");
+            if (awtFont == null)
+            {
+                // we can't find anything, so we have to use the standard font
+                awtFont = FontManager.getStandardFont();
+                logger().info("Using font "+awtFont.getName()+ " instead");
             }
         }
+
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
-        g2d.drawString( string, x, y );
+        writeFont(g2d, at, awtFont, fontSize, x, y, string);
     }
+
 
     /**
      * Permit to load an external TTF Font program file
@@ -377,7 +380,7 @@ public class PDTrueTypeFont extends PDSimpleFont
      * @param fd The font descriptor currently used
      *
      * @return A PDStream with the Font File program, null if fd is null
-     *
+     *grep -r
      * @throws IOException If the font is not found
      */
     private TrueTypeFont getExternalFontFile2(PDFontDescriptorDictionary fd)
