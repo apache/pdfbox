@@ -21,8 +21,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.EOFException;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -42,7 +44,8 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
     /**
      * {@inheritDoc}
      */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+    throws IOException
     {
         COSBase baseObj = options.getDictionaryObject(new String[] {"DecodeParms","DP"});
         COSDictionary dict = null;
@@ -64,7 +67,8 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
         }
         else
         {
-            throw new IOException( "Error: Expected COSArray or COSDictionary and not " + baseObj.getClass().getName() );
+            throw new IOException( "Error: Expected COSArray or COSDictionary and not " 
+                    + baseObj.getClass().getName() );
         }
 
 
@@ -78,7 +82,8 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
         if (dict!=null)
         {
             predictor = dict.getInt("Predictor");
-            if(predictor > 1){
+            if(predictor > 1)
+            {
                 colors = dict.getInt("Colors");
                 bitsPerPixel = options.getInt("BitsPerComponent");
                 columns = dict.getInt("Columns");
@@ -92,20 +97,33 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
             int amountRead;
             int mayRead = compressedData.available();
 
-            if (mayRead > 0) {
+            if (mayRead > 0) 
+            {
                 byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
 
                 // Decode data using given predictor
                 if (predictor==-1 || predictor == 1 || predictor == 10)
                 {
-                    try {
+                    try 
+                    {
                         // decoding not needed
                         while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
                         {
                             result.write(buffer, 0, amountRead);
                         }
                     }
-                    catch (OutOfMemoryError exception) {
+                    catch (OutOfMemoryError exception) 
+                    {
+                        // if the stream is corrupt an OutOfMemoryError may occur
+                        logger().severe("Stop reading corrupt stream");
+                    }
+                    catch (ZipException exception) 
+                    {
+                        // if the stream is corrupt an OutOfMemoryError may occur
+                        logger().severe("Stop reading corrupt stream");
+                    }
+                    catch (EOFException exception) 
+                    {
                         // if the stream is corrupt an OutOfMemoryError may occur
                         logger().severe("Stop reading corrupt stream");
                     }
@@ -118,17 +136,14 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
                     if( colors == -1 )
                     {
                         colors = 1;
-//                        throw new IOException("Error: Could not read 'colors' attribute to decompress flate stream.");
                     }
                     if( bitsPerPixel == -1 )
                     {
                         bitsPerPixel = 8;
-//                        throw new IOException("Error: Could not read 'bitsPerPixel' attribute to decompress flate stream.");
                     }
                     if( columns == -1 )
                     {
                         columns = 1;
-//                        throw new IOException("Error: Could not read 'columns' attribute to decompress flate stream.");
                     }
 
                     baos = new ByteArrayOutputStream();
@@ -303,12 +318,14 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
     /**
      * {@inheritDoc}
      */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+    throws IOException
     {
         DeflaterOutputStream out = new DeflaterOutputStream(result);
         int amountRead = 0;
         int mayRead = rawData.available();
-        if (mayRead > 0) {
+        if (mayRead > 0) 
+        {
             byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
             while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
             {
