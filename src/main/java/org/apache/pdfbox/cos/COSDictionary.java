@@ -583,10 +583,17 @@ public class COSDictionary extends COSBase
     public String getNameAsString( COSName key )
     {
         String retval = null;
-        COSName name = (COSName)getDictionaryObject( key );
+        COSBase name = getDictionaryObject( key );
         if( name != null )
         {
-            retval = name.getName();
+            if ( name instanceof COSName) 
+            {
+                retval = ((COSName)name).getName();
+            }
+            else if ( name instanceof COSString) 
+            {
+                retval = ((COSString)name).getString();
+            }
         }
         return retval;
     }
@@ -648,10 +655,10 @@ public class COSDictionary extends COSBase
     public String getString( COSName key )
     {
         String retval = null;
-        COSString name = (COSString)getDictionaryObject( key );
-        if( name != null )
+        COSBase value = getDictionaryObject( key );
+        if( value != null && value instanceof COSString)
         {
-            retval = name.getString();
+            retval = ((COSString)value).getString();
         }
         return retval;
     }
@@ -913,10 +920,10 @@ public class COSDictionary extends COSBase
     public boolean getBoolean( COSName key, boolean defaultValue )
     {
         boolean retval = defaultValue;
-        COSBoolean bool = (COSBoolean)getDictionaryObject( key );
-        if( bool != null )
+        COSBase bool = getDictionaryObject( key );
+        if( bool != null && bool instanceof COSBoolean)
         {
-            retval = bool.getValue();
+            retval = ((COSBoolean)bool).getValue();
         }
         return retval;
     }
@@ -1018,10 +1025,10 @@ public class COSDictionary extends COSBase
     public int getInt( String[] keyList, int defaultValue )
     {
         int retval = defaultValue;
-        COSNumber obj = (COSNumber)getDictionaryObject( keyList );
-        if( obj != null )
+        COSBase obj = getDictionaryObject( keyList );
+        if( obj != null && obj instanceof COSNumber)
         {
-            retval = obj.intValue();
+            retval = ((COSNumber)obj).intValue();
         }
         return retval;
     }
@@ -1091,10 +1098,10 @@ public class COSDictionary extends COSBase
     public long getLong( String[] keyList, long defaultValue )
     {
         long retval = defaultValue;
-        COSNumber obj = (COSNumber)getDictionaryObject( keyList );
-        if( obj != null )
+        COSBase obj = getDictionaryObject( keyList );
+        if( obj != null && obj instanceof COSNumber)
         {
-            retval = obj.longValue();
+            retval = ((COSNumber)obj).longValue();
         }
         return retval;
     }
@@ -1177,10 +1184,10 @@ public class COSDictionary extends COSBase
     public float getFloat( COSName key, float defaultValue )
     {
         float retval = defaultValue;
-        COSNumber obj = (COSNumber)getDictionaryObject( key );
-        if( obj != null )
+        COSBase obj = getDictionaryObject( key );
+        if( obj != null && obj instanceof COSNumber)
         {
-            retval = obj.floatValue();
+            retval = ((COSNumber)obj).floatValue();
         }
         return retval;
     }
@@ -1266,7 +1273,8 @@ public class COSDictionary extends COSBase
              * pdf file, meaning that the first Size entry represents
              * all of the objects so we don't need to grab the second. 
              */
-            if(!key.getName().equals("Size") || !keys.contains(COSName.getPDFName("Size"))){
+            if(!key.getName().equals("Size") || !keys.contains(COSName.getPDFName("Size")))
+            {
                 setItem( key, value );
             }
         }
@@ -1322,19 +1330,19 @@ public class COSDictionary extends COSBase
         return retval;
     }
     
-    /*
-	Don't just tell me it's a dictionary -- tell me its contents!
-    */
-	public String toString()
+    /**
+     * {@inheritDoc}
+     */
+    public String toString()
     {
-        String RetVal = "COSDictionary{";
-	    for (int i = 0; i<size(); i++){
-		    COSName key = (COSName)keyList().get(i);
-		    RetVal = RetVal + "(" + key + ":" + getDictionaryObject(key).toString() + ") ";
-	    }
-	    RetVal = RetVal + "}";
-	    
-	    return RetVal;
+        String retVal = "COSDictionary{";
+        for (int i = 0; i<size(); i++)
+        {
+            COSName key = (COSName)keyList().get(i);
+            retVal = retVal + "(" + key + ":" + getDictionaryObject(key).toString() + ") ";
+        }
+        retVal = retVal + "}";
+        return retVal;
     }
 
 
