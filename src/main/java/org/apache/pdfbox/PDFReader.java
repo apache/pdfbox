@@ -201,7 +201,6 @@ public class PDFReader extends javax.swing.JFrame
     
     private void nextPage()
     {
-        System.out.println("nextPage");
         if (currentPage < numberOfPages-1) 
         {
             currentPage++;
@@ -211,7 +210,6 @@ public class PDFReader extends javax.swing.JFrame
     
     private void previousPage()
     {
-        System.out.println("previousPage");
         if (currentPage > 0 ) 
         {
             currentPage--;
@@ -240,7 +238,7 @@ public class PDFReader extends javax.swing.JFrame
                 e.printStackTrace();
             }
         }
-    }//GEN-LAST:event_openMenuItemActionPerformed
+    }
 
     private void exitApplication()
     {
