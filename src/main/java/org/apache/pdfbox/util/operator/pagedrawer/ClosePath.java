@@ -18,7 +18,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 import java.io.IOException;
-
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
@@ -35,6 +34,8 @@ public class ClosePath extends OperatorProcessor
      * process : h : Close path.
      * @param operator The operator that is being executed.
      * @param arguments List
+     * 
+     * @throws IOException if something went wrong during logging
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {

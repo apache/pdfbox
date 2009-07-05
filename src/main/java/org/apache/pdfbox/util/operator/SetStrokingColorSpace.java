@@ -80,9 +80,10 @@ public class SetStrokingColorSpace extends OperatorProcessor
         }
         colorInstance.setColorSpaceValue( values );
 
-        if (context instanceof PageDrawer){
+        if (context instanceof PageDrawer)
+        {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.ColorChanged (true);
+            drawer.colorChanged(true);
         }
     }
 }

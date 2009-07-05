@@ -17,11 +17,7 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
-
-import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
-
-import java.awt.geom.GeneralPath;
 import java.io.IOException;
 
 /**

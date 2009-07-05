@@ -56,18 +56,22 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
             }
             else
             {
-                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
+                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, 
+                        lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
             }
         }
         else 
         {
             if (lineDashPattern.isDashPatternEmpty()) 
             {
-                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit()) );
+                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), 
+                        stroke.getLineJoin(), stroke.getMiterLimit()) );
             }
             else
             {
-                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
+                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), 
+                        stroke.getMiterLimit(), lineDashPattern.getCOSDashPattern().toFloatArray(), 
+                        lineDashPattern.getPhaseStart()) );
             }
         }
     }

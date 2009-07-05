@@ -47,8 +47,7 @@ public class LineTo extends OperatorProcessor
         COSNumber x = (COSNumber)arguments.get( 0 );
         COSNumber y = (COSNumber)arguments.get( 1 );
 
-        //drawer.getLinePath().lineTo( x.floatValue(), (float)drawer.fixY( x.doubleValue(), y.doubleValue()) );
-        Point2D Ppos = drawer.TransformedPoint(x.doubleValue(), y.doubleValue());
-        drawer.getLinePath().lineTo((float)Ppos.getX(), (float)Ppos.getY());
+        Point2D pos = drawer.transformedPoint(x.doubleValue(), y.doubleValue());
+        drawer.getLinePath().lineTo((float)pos.getX(), (float)pos.getY());
     }
 }

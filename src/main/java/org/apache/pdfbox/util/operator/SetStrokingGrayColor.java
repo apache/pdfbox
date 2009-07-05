@@ -58,9 +58,10 @@ public class SetStrokingGrayColor extends OperatorProcessor
             throw new IOException( "Error: Expected at least one argument when setting non stroking gray color");
         }
         colorInstance.setColorSpaceValue( values );
-        if (context instanceof PageDrawer){
+        if (context instanceof PageDrawer)
+        {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.ColorChanged (true);
+            drawer.colorChanged(true);
         }
     }
 }

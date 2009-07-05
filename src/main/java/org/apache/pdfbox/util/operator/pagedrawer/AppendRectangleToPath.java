@@ -19,7 +19,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
-import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -41,7 +40,7 @@ public class AppendRectangleToPath extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List arguments)
     {
         PageDrawer drawer = (PageDrawer)context;
 
@@ -56,8 +55,8 @@ public class AppendRectangleToPath extends OperatorProcessor
         double x2 = w.floatValue()+x1;
         double y2 = h.floatValue()+y1;
 
-        Point2D startCoords = drawer.TransformedPoint(x1,y1);
-        Point2D endCoords = drawer.TransformedPoint(x2,y2);
+        Point2D startCoords = drawer.transformedPoint(x1,y1);
+        Point2D endCoords = drawer.transformedPoint(x2,y2);
 
         double width = endCoords.getX()-startCoords.getX();
         double height =  endCoords.getY()-startCoords.getY();
@@ -67,12 +66,13 @@ public class AppendRectangleToPath extends OperatorProcessor
         // if the endCoords are above the startCoords we have to switch them
         if (width < 0) 
         {
-        	xStart += width;
-        	width = -width;
+            xStart += width;
+            width = -width;
         }
-        if (height < 0) {
-        	yStart += height;
-        	height = -height;
+        if (height < 0) 
+        {
+            yStart += height;
+            height = -height;
         }
         Rectangle2D rect = new Rectangle2D.Double(xStart, yStart, width, height);
         drawer.getLinePath().append( rect, false );

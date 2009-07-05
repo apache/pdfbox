@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.List;
@@ -46,12 +44,15 @@ public class FillNonZeroRule extends OperatorProcessor
     public void process(PDFOperator operator, List arguments) throws IOException
     {
 
-	try {
-	    	///dwilson refactoring
-	    	PageDrawer drawer = (PageDrawer)context;
-	    	drawer.fillPath(GeneralPath.WIND_NON_ZERO);
-	} catch (Exception e) {
-		logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
-            }
+        try 
+        {
+            ///dwilson refactoring
+            PageDrawer drawer = (PageDrawer)context;
+            drawer.fillPath(GeneralPath.WIND_NON_ZERO);
+        } 
+        catch (Exception e) 
+        {
+            logger().warning(e.getMessage() + "\n at\n" + FullStackTrace(e));
+        }
     }
 }

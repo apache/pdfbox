@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.util.operator.*;
+import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -45,26 +45,32 @@ public class StrokePath extends OperatorProcessor
     public void process(PDFOperator operator, List arguments) throws IOException
     {
         ///dwilson 3/19/07 refactor
-	try{
-		PageDrawer drawer = (PageDrawer)context;
-
-        float lineWidth = (float)context.getGraphicsState().getLineWidth();
-        Matrix ctm = context.getGraphicsState().getCurrentTransformationMatrix();
-        if ( ctm != null && ctm.getXScale() > 0) 
+        try
         {
-            lineWidth = lineWidth * ctm.getXScale();
+            PageDrawer drawer = (PageDrawer)context;
+    
+            float lineWidth = (float)context.getGraphicsState().getLineWidth();
+            Matrix ctm = context.getGraphicsState().getCurrentTransformationMatrix();
+            if ( ctm != null && ctm.getXScale() > 0) 
+            {
+                lineWidth = lineWidth * ctm.getXScale();
+            }
+            Graphics2D graphics = ((PageDrawer)context).getGraphics();
+            BasicStroke stroke = (BasicStroke)graphics.getStroke();
+            if (stroke == null)
+            {
+                graphics.setStroke( new BasicStroke( lineWidth ) );
+            }
+            else
+            {
+                graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), 
+                        stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
+            }
+            drawer.strokePath();
         }
-        Graphics2D graphics = ((PageDrawer)context).getGraphics();
-        BasicStroke stroke = (BasicStroke)graphics.getStroke();
-        if (stroke == null)
-            graphics.setStroke( new BasicStroke( lineWidth ) );
-        else
-            graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
-
-		
-		drawer.StrokePath();
-	}catch (Exception e){
-
-	}
+        catch (Exception exception)
+        {
+            logger().warning( exception.toString() + "/n at/n" + FullStackTrace(exception));
+        }
     }
 }

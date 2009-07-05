@@ -49,18 +49,12 @@ public class CurveTo extends OperatorProcessor
         COSNumber y2 = (COSNumber)arguments.get( 3 );
         COSNumber x3 = (COSNumber)arguments.get( 4 );
         COSNumber y3 = (COSNumber)arguments.get( 5 );
-       /* float x1f = x1.floatValue();
-        float y1f = (float)drawer.fixY( x1f, y1.floatValue() );
-        float x2f = x2.floatValue();
-        float y2f = (float)drawer.fixY( x2f, y2.floatValue() );
-        float x3f = x3.floatValue();
-        float y3f = (float)drawer.fixY( x3f, y3.floatValue() );
-        drawer.getLinePath().curveTo(x1f,y1f,x2f,y2f,x3f,y3f);
-        */
-        Point2D P1 = drawer.TransformedPoint(x1.doubleValue(), y1.doubleValue());
-        Point2D P2 = drawer.TransformedPoint(x2.doubleValue(), y2.doubleValue());
-        Point2D P3 = drawer.TransformedPoint(x3.doubleValue(), y3.doubleValue());
 
-        drawer.getLinePath().curveTo((float)P1.getX(), (float)P1.getY(), (float)P2.getX(), (float)P2.getY(), (float)P3.getX(), (float)P3.getY());
+        Point2D point1 = drawer.transformedPoint(x1.doubleValue(), y1.doubleValue());
+        Point2D point2 = drawer.transformedPoint(x2.doubleValue(), y2.doubleValue());
+        Point2D point3 = drawer.transformedPoint(x3.doubleValue(), y3.doubleValue());
+
+        drawer.getLinePath().curveTo((float)point1.getX(), (float)point1.getY(), 
+                (float)point2.getX(), (float)point2.getY(), (float)point3.getX(), (float)point3.getY());
     }
 }

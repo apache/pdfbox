@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 public class Invoke extends OperatorProcessor
 {
     /**
-     * process : Do : Paint the specified XObject (section 4.7)
+     * process : Do : Paint the specified XObject (section 4.7).
      * @param operator The operator that is being executed.
      * @param arguments List
      * @throws IOException If there is an error invoking the sub object.
@@ -64,17 +64,18 @@ public class Invoke extends OperatorProcessor
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
-        image.setGraphicsState(drawer.getGraphicsState());
+                image.setGraphicsState(drawer.getGraphicsState());
                 BufferedImage awtImage = image.getRGBImage();
-                if (awtImage == null) {
-            logger().warning("getRGBImage returned NULL");
+                if (awtImage == null) 
+                {
+                    logger().warning("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = pageSize.getHeight();
 
-        logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+                logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
         
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 int pageRotation = page.findRotation();
@@ -83,7 +84,8 @@ public class Invoke extends OperatorProcessor
                 ctmAT.scale(1f/imageWidth, 1f/imageHeight);
                 Matrix rotationMatrix = new Matrix();
                 rotationMatrix.setFromAffineTransform( ctmAT );
-                if (pageRotation == 0 || pageRotation == 180) {
+                if (pageRotation == 0 || pageRotation == 180) 
+                {
                     rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition()-ctm.getYScale());
                 }
                 else if (pageRotation == 90 || pageRotation == 270) 
@@ -99,12 +101,13 @@ public class Invoke extends OperatorProcessor
                         rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
                         rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                     );
+                graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
                 graphics.drawImage( awtImage, at, null );
             }
             catch( Exception e )
             {
                 e.printStackTrace();
-        logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+                logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
             }
         }
         else if(xobject instanceof PDXObjectForm)

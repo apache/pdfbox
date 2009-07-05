@@ -18,8 +18,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -37,7 +35,7 @@ public class SetLineJoinStyle extends org.apache.pdfbox.util.operator.SetLineJoi
 {
 
     /**
-     * Set the line cap style
+     * Set the line cap style.
      * @param operator The operator that is being executed.
      * @param arguments List
      *
@@ -50,8 +48,13 @@ public class SetLineJoinStyle extends org.apache.pdfbox.util.operator.SetLineJoi
         Graphics2D graphics = ((PageDrawer)context).getGraphics();
         BasicStroke stroke = (BasicStroke)graphics.getStroke();
         if (stroke == null)
-        	graphics.setStroke( new BasicStroke(1,BasicStroke.CAP_SQUARE,lineJoinStyle) );
+        {
+            graphics.setStroke( new BasicStroke(1,BasicStroke.CAP_SQUARE,lineJoinStyle) );
+        }
         else
-        	graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), lineJoinStyle, stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
+        {
+            graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), lineJoinStyle,
+                    stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
+        }
     }
 }
