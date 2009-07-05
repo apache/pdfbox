@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics;
 
+import java.awt.Shape;
+import java.awt.geom.GeneralPath;
+
 import org.apache.pdfbox.util.Matrix;
 
 import org.apache.pdfbox.pdmodel.text.PDTextState;
@@ -60,6 +63,8 @@ public class PDGraphicsState implements Cloneable
     //halftone
     private double flatness = 1.0;
     private double smoothness = 0;
+
+    private GeneralPath currentClippingPath;
 
     /**
      * Get the value of the CTM.
@@ -380,6 +385,10 @@ public class PDGraphicsState implements Cloneable
             {
                 clone.setLineDashPattern( (PDLineDashPattern)lineDashPattern.clone() );
             }
+            if (currentClippingPath != null) 
+            {
+                clone.setCurrentClippingPath((GeneralPath)currentClippingPath.clone());
+            }
         }
         catch( CloneNotSupportedException e )
         {
@@ -427,4 +436,42 @@ public class PDGraphicsState implements Cloneable
     {
         nonStrokingColorSpace = value;
     }
+
+   
+    /**
+     * This will set the current clipping path.
+     *
+     * @param pCurrentClippingPath The current clipping path.
+     * 
+     */
+    public void setCurrentClippingPath(Shape pCurrentClippingPath) 
+    {
+        if (pCurrentClippingPath != null)
+        {
+            if (pCurrentClippingPath instanceof GeneralPath)
+            {
+                currentClippingPath = (GeneralPath)pCurrentClippingPath;
+            }
+            else
+            {
+                currentClippingPath = new GeneralPath();
+                currentClippingPath.append(pCurrentClippingPath,false);
+            }
+        }
+        else
+        {
+            currentClippingPath = null;
+        }
+    }
+
+    /**
+     * This will get the current clipping path.
+     *
+     * @return The current clipping path.
+     */
+    public Shape getCurrentClippingPath() 
+    {
+        return currentClippingPath;
+    }
+
 }

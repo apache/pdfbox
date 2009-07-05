@@ -70,31 +70,7 @@ public class BeginInlineImage extends OperatorProcessor
             ctm.getValue(2,0),
             ctm.getValue(2,1)
         );
-        //at.setToRotation((double)page.getRotation());
-
-
-        // The transformation should be done
-        // 1 - Translation
-        // 2 - Rotation
-        // 3 - Scale or Skew
-        //AffineTransform at = new AffineTransform();
-
-        // Translation
-        //at = new AffineTransform();
-        //at.setToTranslation((double)ctm.getValue(0,0),
-        //                    (double)ctm.getValue(0,1));
-
-        // Rotation
-        //AffineTransform toAdd = new AffineTransform();
-        //toAdd.setToRotation(1.5705);
-        //toAdd.setToRotation(ctm.getValue(2,0)*(Math.PI/180));
-        //at.concatenate(toAdd);
-
-        // Scale / Skew?
-        //toAdd.setToScale(width, height);
-        //at.concatenate(toAdd);
-        //at.setToScale( width, height );
+        graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
         graphics.drawImage( awtImage, at, null );
-        //graphics.drawImage( awtImage,0,0, width,height,null);
     }
 }

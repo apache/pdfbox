@@ -77,11 +77,10 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
         }
         colorInstance.setColorSpaceValue( values );
 
-        //logger().info("Set NonStrokingColorSpace to have instance of type " + colorInstance.toString() + " with component count " + numComponents);
-
-        if (context instanceof PageDrawer){
+        if (context instanceof PageDrawer)
+        {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.ColorChanged (false);
+            drawer.colorChanged(false);
         }
     }
 }

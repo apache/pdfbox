@@ -19,9 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 
@@ -51,9 +49,10 @@ public class SetNonStrokingCalRGBColor extends OperatorProcessor
         }
         colorInstance.setColorSpaceValue( values );
 
-        if (context instanceof PageDrawer){
+        if (context instanceof PageDrawer)
+        {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.ColorChanged (false);
+            drawer.colorChanged(false);
         }
     }
 }

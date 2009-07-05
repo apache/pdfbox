@@ -20,12 +20,12 @@ import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Area;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -52,10 +53,9 @@ public class PageDrawer extends PDFStreamEngine
 {
 
     private Graphics2D graphics;
-    protected Dimension pageSize;
-    protected PDPage page;
+    private Dimension pageSize;
+    private PDPage page;
 
-    private List lineSubPaths = new ArrayList();
     private GeneralPath linePath = new GeneralPath();
 
     /**
@@ -82,10 +82,10 @@ public class PageDrawer extends PDFStreamEngine
         graphics = (Graphics2D)g;
         page = p;
         pageSize = pageDimension;
-
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         graphics.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON );
-        // Only if there is some content, we have to process it. Otherwise we are done here and we will produce an empty page
+        // Only if there is some content, we have to process it. 
+        // Otherwise we are done here and we will produce an empty page
         if ( page.getContents() != null) 
         {
             PDResources resources = page.findResources();
@@ -110,26 +110,11 @@ public class PageDrawer extends PDFStreamEngine
                 if( appearance != null )
                 {
                     g.translate( (int)rect.getLowerLeftX(), (int)-rect.getLowerLeftY()  );
-                    //g.translate( 20, -20 );
                     processSubStream( page, appearance.getResources(), appearance.getStream() );
                     g.translate( (int)-rect.getLowerLeftX(), (int)+rect.getLowerLeftY()  );
                 }
             }
         }
-        // Transformations should be done in order
-        // 1 - Translate
-        // 2 - Rotate
-        // 3 - Scale
-        // Refer to PDFReference p176 (or 188 in xpdf)
-        /*AffineTransform transform = graphics.getTransform();
-        transform.setToTranslation( 0, page.findMediaBox().getHeight()/2 );
-        transform.setToRotation((double)p.getRotation());
-        transform.setTransform( 1, 0, 0, 1, 0, 0 );
-        transform.setToScale( 1, 1 );
-
-        AffineTransform rotation = graphics.getTransform();
-        rotation.rotate( (page.findRotation() * Math.PI) / 180d );
-        graphics.setTransform( rotation );*/
 
     }
 
@@ -149,14 +134,16 @@ public class PageDrawer extends PDFStreamEngine
             {
                 graphics.setColor( this.getGraphicsState().getNonStrokingColorSpace().createColor() );
             }
-            else if( this.getGraphicsState().getTextState().getRenderingMode() == PDTextState.RENDERING_MODE_STROKE_TEXT )
+            else if( this.getGraphicsState().getTextState().getRenderingMode() 
+                        == PDTextState.RENDERING_MODE_STROKE_TEXT )
             {
                 graphics.setColor( this.getGraphicsState().getStrokingColorSpace().createColor() );
             }
             else
             {
-                // TODO: need to implement....
-                logger().warning("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()+" in PageDrawer.processTextPosition()");
+                // TODO : need to implement....
+                logger().warning("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()
+                            +" in PageDrawer.processTextPosition()");
                 logger().warning("Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
                 graphics.setColor( this.getGraphicsState().getNonStrokingColorSpace().createColor() );
             }
@@ -212,20 +199,7 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Fix the y coordinate based on page rotation.
-     *
-     * @deprecated
-     * @param x The x coordinate.
-     * @param y The y coordinate.
-     * @return The updated y coordinate.
-     */
-    public double fixY( double x, double y )
-    {
-        return pageSize.getHeight() - y;
-    }
-
-    /**
-     * Fix the y coordinate
+     * Fix the y coordinate.
      *
      * @param y The y coordinate.
      * @return The updated y coordinate.
@@ -258,81 +232,57 @@ public class PageDrawer extends PDFStreamEngine
         }
         else
         {
-            linePath.append (newLinePath, false);
+            linePath.append(newLinePath, false);
         }
     }
 
-    /**
-     * Get the current list of line paths to be drawn.
-     *
-     * @return The current list of line paths to be drawn.
-     */
-    public List getLineSubPaths()
-    {
-        return lineSubPaths;
-    }
 
     /**
-     * Set the list of line paths to draw.
-     *
-     * @param newLineSubPaths Set the list of line paths to draw.
-     */
-    public void setLineSubPaths(List newLineSubPaths)
-    {
-        lineSubPaths = newLineSubPaths;
-    }
-
-
-    /**
-     *
-     * Fill the path
+     * Fill the path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
+     * @throws IOException If there is an IO error while filling the path.
      */
-    public void fillPath(int windingRule) throws IOException{
-
+    public void fillPath(int windingRule) throws IOException
+    {
         graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
-
         getLinePath().setWindingRule(windingRule);
-
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-        List subPaths = getLineSubPaths();
-        for( int i=0; i<subPaths.size(); i++ )
-        {
-            GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            if (subPath.getCurrentPoint() != null)
-            { //Sector9's suggestion in bug 1672556
-                subPath.closePath();
-            }
-            graphics.fill( subPath );
-        }
-            graphics.fill( getLinePath() );
-            getLinePath().reset();
+        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        graphics.fill( getLinePath() );
+        getLinePath().reset();
     }
 
 
+    /**
+     * This will set the current stroke.
+     *
+     * @param newStroke The current stroke.
+     * 
+     */
     public void setStroke(BasicStroke newStroke)
     {
         getGraphics().setStroke( newStroke );
     }
 
-    public void StrokePath() throws IOException
+    /**
+     * Stroke the path.
+     *
+     * @throws IOException If there is an IO error while stroking the path.
+     */
+    public void strokePath() throws IOException
     {
-        graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); //per Ben's 11/15 change in StrokePath.java
-        List subPaths = getLineSubPaths();
-        for( int i=0; i<subPaths.size(); i++ )
-        {
-            GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            graphics.draw( subPath );
-        }
-        subPaths.clear();
+        graphics.setColor( getGraphicsState().getStrokingColorSpace().createColor() ); 
+        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
         graphics.draw( path );
         path.reset();
     }
 
     //If you need to do anything when a color changes, do it here ... or in an override of this function
-    public void ColorChanged(boolean bStroking) throws IOException
+    public void colorChanged(boolean bStroking) throws IOException
     {
         //logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
     }
@@ -341,10 +291,10 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * use the current transformatrion matrix to transform a single point.
      * @param x x-coordinate of the point to be transform
-     * @param x y-coordinate of the point to be transform
+     * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
      */
-    public java.awt.geom.Point2D.Double TransformedPoint (double x, double y)
+    public java.awt.geom.Point2D.Double transformedPoint(double x, double y)
     {
         double[] position = {x,y}; 
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(position, 0, position, 0, 1);
@@ -352,71 +302,30 @@ public class PageDrawer extends PDFStreamEngine
         return new Point2D.Double(position[0],position[1]);
     }
 
-    //Use ScaledPoint rather than TransformedPoint in situations where most of the translation
-    //need not be repeated.
-    //Consider, for example, the second coordinate of a rectangle.
     /**
-     * @deprecated
-     */
-    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y, double scaleX, double scaleY)
-    {
-
-        double finalX = 0.0;
-        double finalY = 0.0;
-
-        if(scaleX > 0)
-        {
-            finalX = x * scaleX;
-        }
-        if(scaleY > 0)
-        {
-            finalY = y * scaleY;
-        }
-
-        return new java.awt.geom.Point2D.Double(finalX, finalY);
-    }
-
-    /**
-     * @deprecated
-     */
-    public java.awt.geom.Point2D.Double ScaledPoint (double x, double y)
-    {
-
-        double scaleX = 0.0;
-        double scaleY = 0.0;
-
-        //Get the transformation matrix
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        AffineTransform at = ctm.createAffineTransform();
-        scaleX = at.getScaleX();
-        scaleY = at.getScaleY();
-        return ScaledPoint(x, y, scaleX, scaleY);
-    }
-    
-    
-    /**
-     *
-     * Fill the path
+     * Set the clipping Path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
      */
-    public void SetClippingPath(int windingRule) throws IOException
+    public void setClippingPath(int windingRule)
     {
-
-        graphics.setColor( getGraphicsState().getNonStrokingColorSpace().createColor() );
-        getLinePath().setWindingRule(windingRule);
-
-        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-        List subPaths = getLineSubPaths();
-        for( int i=0; i<subPaths.size(); i++ )
+        PDGraphicsState graphicsState = getGraphicsState();
+        GeneralPath clippingPath = (GeneralPath)getLinePath().clone();
+        clippingPath.setWindingRule(windingRule);
+        // If there is already set a clipping path, we have to intersect the new with the existing one
+        if (graphicsState.getCurrentClippingPath() != null) 
         {
-            GeneralPath subPath = (GeneralPath)subPaths.get( i );
-            if (subPath.getCurrentPoint() != null)
-            { 
-                subPath.closePath();
-            }
+            Area currentArea = new Area(getGraphicsState().getCurrentClippingPath());
+            Area newArea = new Area(clippingPath);
+            currentArea.intersect(newArea);
+            graphicsState.setCurrentClippingPath(currentArea);
         }
-        graphics.setClip( getLinePath() );
+        else 
+        {
+            graphicsState.setCurrentClippingPath(clippingPath);
+        }
         getLinePath().reset();
     }
+
 }
