@@ -16,27 +16,18 @@
  */
 package org.apache.pdfbox.util;
 
-import java.io.*; //for BufferedReader
-/*import java.io.File;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
-*/
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFImageWriter;
 
 /**
  * Test suite for PDFTextStripper.
@@ -105,58 +96,58 @@ public class TestPDFToImage extends TestCase
     public void doTestFile(File file, boolean bLogResult)
         throws Exception
     {
-	String sCmd;
         PDDocument document = null;
 
         log.println("\nPreparing to convert " + file.getName());
         log.flush();
 
-	try
-      {
-        document =  PDDocument.load(file);
-        writer.WriteImage(document,"png","",1,Integer.MAX_VALUE, "test/output/" + file.getName() + "-");
-      }
-      catch(Exception e)
-      {
-          this.bFail=true;
-         System.err.println("Error converting file " + file.getName());
-         e.printStackTrace();
+        try
+        {
+            document =  PDDocument.load(file);
+            writer.writeImage(document, "png", "", 1, Integer.MAX_VALUE, "test/output/" + file.getName() + "-");
+        }
+        catch(Exception e)
+        { 
+            this.bFail=true;
+            System.err.println("Error converting file " + file.getName());
+            e.printStackTrace();
+            log.println("Error converting file " + file.getName() + "\n" + e);
 
-          log.println("Error converting file " + file.getName() + "\n" + e);
+        }
+        finally
+        {
+            document.close();
+        }
 
-      }
-      finally{
-          document.close();
-      }
+        //Now check the resulting files ... did we get identical PNG(s)?
+        try
+        {
+            mcurFile = file;
 
-      //Now check the resulting files ... did we get identical PNG(s)?
-      try
-      {
-          mcurFile = file;
-
-      File[] outFiles = testDir().listFiles(new FilenameFilter()
-            {
+            File[] outFiles = testDir().listFiles(new FilenameFilter()
+              {
                 public boolean accept(File dir, String name)
                 {
                     return (name.endsWith(".png") && name.startsWith(mcurFile.getName(),0));
                 }
-            });
-            for (int n = 0; n < outFiles.length; n++)
+              });
+                for (int n = 0; n < outFiles.length; n++)
                 {
                     File outFile = new File("test/output/" + outFiles[n].getName());
                     if (!outFile.exists() ||
-                        !filesAreIdentical(outFiles[n], outFile)){
-                            this.bFail=true;
-                            log.println("Input and output not identical for file: " + outFile.getName());
-                        }
+                        !filesAreIdentical(outFiles[n], outFile))
+                    {
+                        this.bFail=true;
+                        log.println("Input and output not identical for file: " + outFile.getName());
+                    }
                 }
         }
-    catch(Exception e)
-      {
-          this.bFail=true;
-         System.err.println("Error comparing file output for " + file.getName());
-         e.printStackTrace();
-      }
+        catch(Exception e)
+        {
+            this.bFail=true;
+            System.err.println("Error comparing file output for " + file.getName());
+            e.printStackTrace();
+        }
 
     }
 
@@ -229,55 +220,64 @@ public class TestPDFToImage extends TestCase
         junit.textui.TestRunner.main( arg );
     }
 
-    public static boolean filesAreIdentical(File left, File right) throws IOException
+    private static boolean filesAreIdentical(File left, File right) throws IOException
     {
-	    //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
+        //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
 
-	    /* -- I reworked ASSERT's into IF statement -- dwilson
+        /* -- I reworked ASSERT's into IF statement -- dwilson
         assert left != null;
         assert right != null;
         assert left.exists();
         assert right.exists();
         */
-	if(left != null && right != null && left.exists() && right.exists()){
-		if (left.length() != right.length())
-		    return false;
+        if(left != null && right != null && left.exists() && right.exists())
+        {
+            if (left.length() != right.length())
+            {
+                return false;
+            }
 
-		FileInputStream lin = new FileInputStream(left);
-		FileInputStream rin = new FileInputStream(right);
-		try
-		{
-		    byte[] lbuffer = new byte[4096];
-		    byte[] rbuffer = new byte[lbuffer.length];
-		    for (int lcount = 0; (lcount = lin.read(lbuffer)) > 0;)
-		    {
-			int bytesRead = 0;
-			for (int rcount = 0; (rcount = rin.read(rbuffer, bytesRead, lcount - bytesRead)) > 0;)
-			{
-			    bytesRead += rcount;
-			}
-			for (int byteIndex = 0; byteIndex < lcount; byteIndex++)
-			{
-			    if (lbuffer[byteIndex] != rbuffer[byteIndex])
-				return false;
-			}
-		    }
-		}
-		finally
-		{
-		    lin.close();
-		    rin.close();
-		}
-		return true;
-	}else{
-		return false;
-	}
+            FileInputStream lin = new FileInputStream(left);
+            FileInputStream rin = new FileInputStream(right);
+            try
+            {
+                byte[] lbuffer = new byte[4096];
+                byte[] rbuffer = new byte[lbuffer.length];
+                for (int lcount = 0; (lcount = lin.read(lbuffer)) > 0;)
+                {
+                    int bytesRead = 0;
+                    for (int rcount = 0; (rcount = rin.read(rbuffer, bytesRead, lcount - bytesRead)) > 0;)
+                    {
+                        bytesRead += rcount;
+                    }
+                    for (int byteIndex = 0; byteIndex < lcount; byteIndex++)
+                    {
+                        if (lbuffer[byteIndex] != rbuffer[byteIndex])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                lin.close();
+                rin.close();
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    private File testDir(){
+    private File testDir()  
+    {
         if (null==mdirTest)
+        {
             mdirTest = new File("test/input/rendering");
-
+        }
         return mdirTest;
     }
 }
