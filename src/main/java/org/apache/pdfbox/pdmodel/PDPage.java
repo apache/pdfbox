@@ -40,8 +40,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.awt.print.PageFormat;
@@ -64,6 +62,8 @@ import java.util.logging.Level;
  */
 public class PDPage extends LoggingObject implements COSObjectable, Printable
 {
+    private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
+    
     private COSDictionary page;
 
     /**
@@ -642,7 +642,8 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
     }
 
     /**
-     * Convert this page to an output image.
+     * Convert this page to an output image with 8 bits per pixel and the double
+     * default screen resolution.
      *
      * @return A graphical representation of this page.
      *
@@ -650,36 +651,59 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
      */
     public BufferedImage convertToImage() throws IOException
     {
-        int scaling = 2;
-        PDRectangle mBox = findMediaBox();
-        int width = (int)(mBox.getWidth());//*2);
-        int height = (int)(mBox.getHeight());//*2);
-        Dimension pageDimension = new Dimension( width, height );
-
         //note we are doing twice as many pixels because
         //the default size is not really good resolution,
         //so create an image that is twice the size
         //and let the client scale it down.
-        BufferedImage retval = new BufferedImage( width*scaling, height*scaling, BufferedImage.TYPE_BYTE_INDEXED );
+        return convertToImage(8, 2 * DEFAULT_USER_SPACE_UNIT_DPI);
+    }
+    
+    /**
+     * Convert this page to an output image.
+     *
+     * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
+     * @param resolution the resolution in dpi (dots per inch)
+     * @return A graphical representation of this page.
+     *
+     * @throws IOException If there is an error drawing to the image.
+     */
+    public BufferedImage convertToImage(int imageType, int resolution) throws IOException
+    {
+        PDRectangle mBox = findMediaBox();
+        float widthPt = mBox.getWidth();
+        float heightPt = mBox.getHeight();
+        float scaling = resolution / (float)DEFAULT_USER_SPACE_UNIT_DPI;
+        int widthPx = Math.round(widthPt * scaling);
+        int heightPx = Math.round(heightPt * scaling);
+        //TODO The following reduces accuracy. It should really be a Dimension2D.Float.
+        Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
+            
+        BufferedImage retval = new BufferedImage( widthPx, heightPx, imageType );
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
-        graphics.setColor( Color.WHITE );
-        graphics.fillRect(0,0,width*scaling, height*scaling);
+        graphics.setBackground( Color.WHITE );
+        graphics.clearRect( 0, 0, retval.getWidth(), retval.getHeight() );
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
 
-        try{
+        //TODO This could be done directly by manipulating the transformation matrix before painting.
+        //That could result in a better image quality.
+        try 
+        {
             int rotation = findRotation();
-            if (rotation == 90 || rotation == 270) {
+            if (rotation == 90 || rotation == 270) 
+            {
                  int w = retval.getWidth();    
                  int h = retval.getHeight();    
-                 BufferedImage rotated_img = new BufferedImage(w, h, retval.getType());    
-                 Graphics2D g = rotated_img.createGraphics();    
+                 BufferedImage rotatedImg = new BufferedImage(w, h, retval.getType());    
+                 Graphics2D g = rotatedImg.createGraphics();    
                  g.rotate(Math.toRadians(rotation), w/2, h/2);    
                  g.drawImage(retval, null, 0, 0);    
             }
-        } catch (ImagingOpException e){
-            logger().log(Level.WARNING, "Unable to rotate page image", e);
+        } 
+        catch (ImagingOpException e)
+        {
+                logger().log(Level.WARNING, "Unable to rotate page image", e);
         }
 
         return retval;

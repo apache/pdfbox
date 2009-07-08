@@ -281,7 +281,11 @@ public class PageDrawer extends PDFStreamEngine
         path.reset();
     }
 
-    //If you need to do anything when a color changes, do it here ... or in an override of this function
+    /**
+     * Called when the color changed.
+     * @param bStroking true for the stroking color, false for the non-stroking color
+     * @throws IOException if an I/O error occurs
+     */
     public void colorChanged(boolean bStroking) throws IOException
     {
         //logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
@@ -289,7 +293,7 @@ public class PageDrawer extends PDFStreamEngine
 
     //This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
     /**
-     * use the current transformatrion matrix to transform a single point.
+     * use the current transformation matrix to transform a single point.
      * @param x x-coordinate of the point to be transform
      * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
@@ -297,7 +301,8 @@ public class PageDrawer extends PDFStreamEngine
     public java.awt.geom.Point2D.Double transformedPoint(double x, double y)
     {
         double[] position = {x,y}; 
-        getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(position, 0, position, 0, 1);
+        getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(
+                position, 0, position, 0, 1);
         position[1] = fixY(position[1]);
         return new Point2D.Double(position[0],position[1]);
     }
