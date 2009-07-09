@@ -35,6 +35,7 @@
     <property name="licenses.dir" value="licenses" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
+    <property name="download.dir" value="download" />
     <property name="checkstyle.config" value="pdfbox-checkstyle.xml" />
 
     <property name="project.name" value="pdfbox"/>
@@ -79,6 +80,9 @@
 
     <property name="testoutput.dir" value="test/output"/>
     <property name="testoutput-ext.dir" value="test/output-ext"/>
+
+    <property name="adobefiles.url" value="${maven.repo}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
+    <property name="adobefiles.jar" value="${download.dir}/pcfi-2009.06.14.jar"/>
 
     <property name="file" value=""/>
 
@@ -128,6 +132,23 @@
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
+	<target name="get.adobefiles" description="Download afm and cmap files from adobe">
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${adobefiles.url}"/>
+            <param name="destfile" value="${adobefiles.jar}"/>
+        </antcall>
+		<unjar src="${adobefiles.jar}" dest="${download.dir}"/>
+		<move todir="${resources.dir}/Resources/afm">
+			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/afm" includes="**/*"/>
+		</move>
+		<move todir="${resources.dir}/Resources/cmap">
+			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/chinese_t" includes="**/*"/>
+			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/japanese" includes="**/*"/>
+			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/korean" includes="**/*"/>
+		</move>
+		<delete dir="${download.dir}"/>
+	</target>
+	
     <target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
@@ -299,7 +320,7 @@
         <antcall target="dist" />
     </target>
 
-    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create zip distribution file">
+    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle,get.adobefiles" description="Create zip distribution file">
 
         <jar jarfile="${target.dir}/${release.name}-maven.jar">
             <fileset dir="./lib/">
