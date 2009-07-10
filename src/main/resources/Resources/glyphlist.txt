@@ -1,3 +1,34 @@
+# ###################################################################################
+# Copyright (c) 1997,1998,2002,2007 Adobe Systems Incorporated
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this documentation file to use, copy, publish, distribute,
+# sublicense, and/or sell copies of the documentation, and to permit
+# others to do the same, provided that:
+# - No modification, editing or other alteration of this document is
+# allowed; and
+# - The above copyright notice and this permission notice shall be
+# included in all copies of the documentation.
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this documentation file, to create their own derivative works
+# from the content of this document to use, copy, publish, distribute,
+# sublicense, and/or sell the derivative works, and to permit others to do
+# the same, provided that the derived work is not represented as being a
+# copy or version of this document.
+# 
+# Adobe shall not be liable to any party for any loss of revenue or profit
+# or for indirect, incidental, special, consequential, or other similar
+# damages, whether based on tort (including without limitation negligence
+# or strict liability), contract or other legal or equitable grounds even
+# if Adobe has been advised or had reason to know of the possibility of
+# such damages.Ê The Adobe materials are provided on an "AS IS" basis.Ê
+# Adobe specifically disclaims all express, statutory, or implied
+# warranties relating to the Adobe materials, including but not limited to
+# those concerning merchantability or fitness for a particular purpose or
+# non-infringement of any third party rights regarding the Adobe
+# materials.
+# ###################################################################################
 # Name:          Adobe Glyph List
 # Table version: 2.0
 # Date:          September 20, 2002
@@ -1092,11 +1123,9 @@ anbopomofo;3122
 angbopomofo;3124
 angkhankhuthai;0E5A
 angle;2220
-angbracketleft;3008
 anglebracketleft;3008
 anglebracketleftvertical;FE3F
 anglebracketright;3009
-angbracketright;3009
 anglebracketrightvertical;FE40
 angleleft;2329
 angleright;232A
@@ -1390,7 +1419,6 @@ cieuckorean;3148
 cieucparenkorean;3208
 cieucuparenkorean;321C
 circle;25CB
-circlecopyrt;00A9
 circlemultiply;2297
 circleot;2299
 circleplus;2295
@@ -1460,7 +1488,6 @@ controlGS;001D
 controlHT;0009
 controlLF;000A
 controlNAK;0015
-controlNULL;0000
 controlRS;001E
 controlSI;000F
 controlSO;000E
@@ -4293,5 +4320,3 @@ zstroke;01B6
 zuhiragana;305A
 zukatakana;30BA
 #--end
-
-
