@@ -75,10 +75,17 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
      */
     public Object clone()
     {
-        COSArray dash = getCOSDashPattern();
-        COSArray copy = new COSArray();
-        copy.addAll(dash);
-        PDLineDashPattern pattern = new PDLineDashPattern(copy,getPhaseStart() );
+        PDLineDashPattern pattern = null;
+        try
+        {
+            pattern = (PDLineDashPattern)super.clone();
+            pattern.setDashPattern(getDashPattern());
+            pattern.setPhaseStart(getPhaseStart());
+        }
+        catch(CloneNotSupportedException exception)
+        {
+            exception.printStackTrace();
+        }
         return pattern;
     }
 
@@ -145,7 +152,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     }
     
     /**
-     * Checks if the dashPattern is empty or all values equals 0
+     * Checks if the dashPattern is empty or all values equals 0.
      * 
      * @return true if the dashPattern is empty or all values equals 0  
      */
