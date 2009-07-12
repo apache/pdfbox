@@ -26,6 +26,7 @@
     <property name="target.dir" value="target" />
     <property name="dest.dir" value="${target.dir}/classes" />
     <property name="test.dir" value="src/test/java" />
+    <property name="testfiles.dir" value="test" />
     <property name="bin.dir" value="bin" />
     <property name="website.dir" value="website" />
     <property name="website.build.dir" value="${website.dir}/build/site" />
@@ -78,8 +79,17 @@
     <property name="antlr.url" value="${maven.repo}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
     <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
-    <property name="testoutput.dir" value="test/output"/>
-    <property name="testoutput-ext.dir" value="test/output-ext"/>
+    <property name="testoutput.dir" value="${testfiles.dir}/output"/>
+    <property name="testoutput-ext.dir" value="${testfiles.dir}/output-ext"/>
+    <property name="jiraattachment.url" value="http://issues.apache.org/jira/secure/attachment"/>
+    <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
+    <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
+    <property name="testfiles2.url" value="${jiraattachment.url}/12413231/input-ext2.jar"/>
+    <property name="testfiles2.jar" value="${download.dir}/input-ext2.jar"/>
+    <property name="testfiles3.url" value="${jiraattachment.url}/12413232/input-ext3.jar"/>
+    <property name="testfiles3.jar" value="${download.dir}/input-ext3.jar"/>
+    <property name="testfiles.rendering.url" value="${jiraattachment.url}/12413229/input-ext_rendering.jar"/>
+    <property name="testfiles.rendering.jar" value="${download.dir}/input-ext_rendering.jar"/>
 
     <property name="adobefiles.url" value="${maven.repo}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2009.06.14.jar"/>
@@ -121,7 +131,9 @@
         <mkdir dir="${docs.dir}" />
         <mkdir dir="${bin.dir}" />
         <mkdir dir="${testoutput.dir}" />
+        <mkdir dir="${testoutput.dir}/rendering" />
         <mkdir dir="${testoutput-ext.dir}" />
+        <mkdir dir="${testoutput-ext.dir}/rendering" />
     </target>
 
     <target name="compile" depends="pdfbox.init" description="Compile Java source files">
@@ -132,7 +144,15 @@
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
-	<target name="get.adobefiles" description="Download afm and cmap files from adobe">
+	<target name="find.adobefiles">
+        <available property="adobefiles.found"
+                   file="${resources.dir}/Resources/cmap"
+                   type="dir"/>
+    </target>
+
+	<target name="get.adobefiles" 
+		unless="adobefiles.found" depends="find.adobefiles" 
+		description="Download afm and cmap files from adobe">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${adobefiles.url}"/>
             <param name="destfile" value="${adobefiles.jar}"/>
@@ -146,10 +166,42 @@
 			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/japanese" includes="**/*"/>
 			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/korean" includes="**/*"/>
 		</move>
-		<delete dir="${download.dir}"/>
+		<delete dir="${download.dir}/com"/>
+		<delete dir="${download.dir}/META-INF"/>
 	</target>
 	
-    <target name="testextract" depends="clean,compile" description="Test text extraction">
+	<target name="find.testfiles">
+        <available property="testfiles.found"
+                   file="${testfiles.dir}/input-ext"
+                   type="dir"/>
+    </target>
+
+	<target name="get.testfiles" 
+		unless="testfiles.found" depends="find.testfiles" 
+		description="Download additional testfiles without suitable license to add them to svn">
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${testfiles1.url}"/>
+            <param name="destfile" value="${testfiles1.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${testfiles2.url}"/>
+            <param name="destfile" value="${testfiles2.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${testfiles3.url}"/>
+            <param name="destfile" value="${testfiles3.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${testfiles.rendering.url}"/>
+            <param name="destfile" value="${testfiles.rendering.jar}"/>
+        </antcall>
+		<unjar src="${testfiles1.jar}" dest="${testfiles.dir}/input-ext"/>
+		<unjar src="${testfiles2.jar}" dest="${testfiles.dir}/input-ext"/>
+		<unjar src="${testfiles3.jar}" dest="${testfiles.dir}/input-ext"/>
+		<unjar src="${testfiles.rendering.jar}" dest="${testfiles.dir}/input-ext"/>
+	</target>
+
+	<target name="testextract" depends="clean,compile,get.adobefiles,get.testfiles" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -172,7 +224,7 @@
         </junit>
     </target>
 
-    <target name="testimage" depends="clean,compile" description="Test image rendering">
+    <target name="testimage" depends="clean,compile,get.adobefiles,get.testfiles" description="Test image rendering">
         <junit printsummary="off" fork="on" dir="."  >
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -196,7 +248,7 @@
         </junit>
     </target>
 
-    <target name="test-junit" depends="clean,compile" description="run junit tests">
+    <target name="test-junit" depends="clean,compile,get.adobefiles,get.testfiles" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
             <classpath>
                 <pathelement path="${junit.jar}" />

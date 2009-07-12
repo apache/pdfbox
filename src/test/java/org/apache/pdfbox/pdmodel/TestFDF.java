@@ -28,7 +28,6 @@ import junit.framework.TestSuite;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -45,8 +44,12 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextbox;
  */
 public class TestFDF extends TestCase
 {
-    //private static Logger log = Logger.getLogger(TestFDF.class);
-
+    
+    private static final String PDF_FDEB = "test/input-ext/fdeb.pdf";
+    private static final String PDF_LOTSOFFIELDS = "test/input-ext/pdf_with_lots_of_fields.pdf";
+    private static final String PDF_FREEDOM = "test/input-ext/FreedomExpressions.pdf";
+    private static final String FDF_FREEDOM = "test/input-ext/FreedomExpressions.fdf";
+    
     /**
      * Constructor.
      *
@@ -88,7 +91,7 @@ public class TestFDF extends TestCase
         PDDocument fdeb = null;
         try
         {
-            fdeb = PDDocument.load( "test/input/fdeb.pdf" );
+            fdeb = PDDocument.load( PDF_FDEB );
             PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
             PDTextbox field = (PDTextbox)form.getField( "f67_1" );
             field.setValue( "2" );
@@ -126,7 +129,7 @@ public class TestFDF extends TestCase
         PDDocument fdeb = null;
         try
         {
-            fdeb = PDDocument.load( "test/input/pdf_with_lots_of_fields.pdf" );
+            fdeb = PDDocument.load( PDF_LOTSOFFIELDS );
             PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
             PDTextbox feld2 = (PDTextbox)form.getField( "Feld.2" );
             feld2.setValue( "Benjamin" );
@@ -194,8 +197,8 @@ public class TestFDF extends TestCase
         FDFDocument fdf = null;
         try
         {
-            freedom = PDDocument.load( "test/input/FreedomExpressions.pdf" );
-            fdf = FDFDocument.load( "test/input/FreedomExpressions.fdf" );
+            freedom = PDDocument.load( PDF_FREEDOM );
+            fdf = FDFDocument.load( FDF_FREEDOM );
             PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
             form.importFDF( fdf );
             PDTextbox feld2 = (PDTextbox)form.getField( "eeFirstName" );
