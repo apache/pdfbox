@@ -31,11 +31,6 @@ import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSDictionary;
 
-import org.apache.pdfbox.filter.DCTFilter;
-import org.apache.pdfbox.filter.CCITTFaxDecodeFilter;
-import org.apache.pdfbox.filter.Filter;
-import org.apache.pdfbox.filter.FilterManager;
-import org.apache.pdfbox.filter.RunLengthDecodeFilter;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -47,7 +42,8 @@ public class TestFilters extends TestCase
 {
     private static final int BUFFER_SIZE = 2048;
     private static final COSDictionary EMPTY_DICTIONARY = new COSDictionary();
-
+    private static final String CLASSES_DIR = "target/classes";
+    
     /**
      * Constructor.
      *
@@ -87,7 +83,7 @@ public class TestFilters extends TestCase
                   filter instanceof CCITTFaxDecodeFilter ||
                   filter instanceof RunLengthDecodeFilter))
             {
-                checkFilter( new File( "classes" ), filter );
+                checkFilter( new File( CLASSES_DIR ), filter );
                 long stop = System.currentTimeMillis();
                 System.out.println( "Time for filter " + filter.getClass().getName() + "=" + (stop-start) );
             }

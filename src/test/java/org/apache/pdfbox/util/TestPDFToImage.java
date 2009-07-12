@@ -59,7 +59,6 @@ public class TestPDFToImage extends TestCase
     private boolean bFail = false;
     private PDFImageWriter writer = null;
     private PrintWriter log = null;
-    private File mdirTest = null;
     private File mcurFile = null;
 
     /**
@@ -91,20 +90,21 @@ public class TestPDFToImage extends TestCase
      *
      * @param file The file to validate
      * @param bLogResult Whether to log the extracted text
+     * @param inDir Name of the input directory
+     * @param outDir Name of the output directory
      * @throws Exception when there is an exception
      */
-    public void doTestFile(File file, boolean bLogResult)
+    public void doTestFile(File file, boolean bLogResult, String inDir, String outDir)
         throws Exception
     {
         PDDocument document = null;
 
         log.println("\nPreparing to convert " + file.getName());
         log.flush();
-
         try
         {
             document =  PDDocument.load(file);
-            writer.writeImage(document, "png", "", 1, Integer.MAX_VALUE, "test/output/" + file.getName() + "-");
+            writer.writeImage(document, "png", "", 1, Integer.MAX_VALUE, outDir + file.getName() + "-");
         }
         catch(Exception e)
         { 
@@ -124,7 +124,7 @@ public class TestPDFToImage extends TestCase
         {
             mcurFile = file;
 
-            File[] outFiles = testDir().listFiles(new FilenameFilter()
+            File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
               {
                 public boolean accept(File dir, String name)
                 {
@@ -133,12 +133,12 @@ public class TestPDFToImage extends TestCase
               });
                 for (int n = 0; n < outFiles.length; n++)
                 {
-                    File outFile = new File("test/output/" + outFiles[n].getName());
-                    if (!outFile.exists() ||
-                        !filesAreIdentical(outFiles[n], outFile))
+                    File inFile = new File(inDir + outFiles[n].getName());
+                    if (!inFile.exists() ||
+                        !filesAreIdentical(outFiles[n], inFile))
                     {
                         this.bFail=true;
-                        log.println("Input and output not identical for file: " + outFile.getName());
+                        log.println("Input and output not identical for file: " + inFile.getName());
                     }
                 }
         }
@@ -160,6 +160,10 @@ public class TestPDFToImage extends TestCase
         throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
+        String inDir = new String("test/input/rendering/");
+        String outDir = new String("test/output/rendering/");
+        String inDirExt = new String("test/input-ext/rendering/");
+        String outDirExt = new String("test/output-ext/rendering/");
 
         try
         {
@@ -167,7 +171,7 @@ public class TestPDFToImage extends TestCase
 
             if ((filename == null) || (filename.length() == 0))
             {
-                File[] testFiles = testDir().listFiles(new FilenameFilter()
+                File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
                 {
                     public boolean accept(File dir, String name)
                     {
@@ -177,12 +181,24 @@ public class TestPDFToImage extends TestCase
 
                 for (int n = 0; n < testFiles.length; n++)
                 {
-                    doTestFile(testFiles[n], false);
+                    doTestFile(testFiles[n], false, inDir, outDir);
+                }
+                testFiles = new File(inDirExt).listFiles(new FilenameFilter()
+                {
+                    public boolean accept(File dir, String name)
+                    {
+                        return (name.endsWith(".pdf") || name.endsWith(".ai"));
+                    }
+                });
+
+                for (int n = 0; n < testFiles.length; n++)
+                {
+                    doTestFile(testFiles[n], false, inDirExt, outDirExt);
                 }
             }
             else
             {
-                doTestFile(new File(testDir(), filename), true);
+                doTestFile(new File(inDir, filename), true, inDir, outDir);
             }
 
             if (this.bFail)
@@ -220,7 +236,7 @@ public class TestPDFToImage extends TestCase
         junit.textui.TestRunner.main( arg );
     }
 
-    private static boolean filesAreIdentical(File left, File right) throws IOException
+    private boolean filesAreIdentical(File left, File right) throws IOException
     {
         //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
 
@@ -272,12 +288,4 @@ public class TestPDFToImage extends TestCase
         }
     }
 
-    private File testDir()  
-    {
-        if (null==mdirTest)
-        {
-            mdirTest = new File("test/input/rendering");
-        }
-        return mdirTest;
-    }
 }
