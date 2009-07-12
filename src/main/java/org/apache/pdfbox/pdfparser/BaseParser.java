@@ -41,7 +41,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.persistence.util.COSObjectKey;
-import org.apache.pdfbox.exceptions.LoggingObject;
 /**
  * This class is used to contain parsing logic that will be used by both the
  * PDFParser and the COSStreamParser.
@@ -57,6 +56,9 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
     public static final byte[] ENDSTREAM =
         new byte[] {101,110,100,115,116,114,101,97,109};//"endstream".getBytes( "ISO-8859-1" );
 
+    /**
+     * This is a byte array that will be used for comparisons.
+     */
     public static final byte[] ENDOBJ =
         new byte[] {101,110,100,111,98,106};//"endobj".getBytes( "ISO-8859-1" );
     /**
@@ -67,9 +69,11 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
     /**
      * This is the stream that will be read from.
      */
-    //protected PushBackByteArrayStream pdfSource;
     protected PushBackInputStream pdfSource;
 
+    /**
+     * This is the document that will be parsed.
+     */
     protected COSDocument document;
     
     /**
@@ -292,13 +296,15 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             skipSpaces();
             endStream = readString(); 
 
-            if (!endStream.equals("endstream")){
+            if (!endStream.equals("endstream"))
+            {
                 /*
                  * Sometimes stream objects don't have an endstream tag so readUntilEndStream(out)
                  * also can stop on endobj tags. If that's the case we need to make sure to unread
                  * the endobj so parseObject() can handle that case normally. 
                  */
-                if (endStream.startsWith("endobj")){
+                if (endStream.startsWith("endobj"))
+                {
                     byte[] endobjarray = endStream.getBytes();
                     pdfSource.unread(endobjarray);
                 }
@@ -308,20 +314,23 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                  * and not part of the endstream keyword. Ex. Some files would have "endstream8"
                  * instead of "endstream"
                  */
-                else if(endStream.startsWith("endstream")){
+                else if(endStream.startsWith("endstream"))
+                {
                     String extra = endStream.substring(9, endStream.length());
                     endStream = endStream.substring(0, 9);
                     byte[] array = extra.getBytes();
                     pdfSource.unread(array);
                 }
-                else{
+                else
+                {
                     /*
                      * If for some reason we get something else here, Read until we find the next
                      * "endstream"
                      */
                     readUntilEndStream( out );
                     endStream = readString();
-                    if( !endStream.equals( "endstream" ) ){
+                    if( !endStream.equals( "endstream" ) )
+                    {
                         throw new IOException("expected='endstream' actual='" + endStream + "' " + pdfSource);
                     }
                 }
@@ -351,10 +360,13 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         byte[] buffer = new byte[ENDSTREAM.length];
         int nextIdx = pdfSource.read(buffer) % buffer.length; 
         if (nextIdx == -1)
+        { 
             return;
-
-        while(byteRead != -1 ) {
-            if (cmpCircularBuffer( buffer, (nextIdx-ENDSTREAM.length + buffer.length)%buffer.length, ENDSTREAM )) {
+        }
+        while(byteRead != -1 ) 
+        {
+            if (cmpCircularBuffer( buffer, (nextIdx-ENDSTREAM.length + buffer.length)%buffer.length, ENDSTREAM )) 
+            {
                 pdfSource.unread( ENDSTREAM );
                 return;
             }
@@ -363,10 +375,12 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
              * the object with an endobj tag so we want to stop there as well. 
              */
             int endObjStart = (nextIdx-ENDOBJ.length+ buffer.length)%buffer.length;
-            if (cmpCircularBuffer( buffer, endObjStart, ENDOBJ )) {
+            if (cmpCircularBuffer( buffer, endObjStart, ENDOBJ )) 
+            {
                 // data is written to out only when it is going to be overwritten.
                 // write out the rest of the data in the buffer since ENDOBJ is smaller then the buffer
-                for (int i = nextIdx; i < buffer.length && i < endObjStart; i++ ) {
+                for (int i = nextIdx; i < buffer.length && i < endObjStart; i++ ) 
+                {
                     out.write(buffer[i]);
                 }
                 pdfSource.unread( ENDOBJ );
@@ -378,7 +392,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             byteRead = pdfSource.read();
             buffer[nextIdx] = (byte)byteRead;
 
-            if (++nextIdx == buffer.length) {
+            if (++nextIdx == buffer.length) 
+            {
                 nextIdx = 0;
             }
         }   
@@ -396,7 +411,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         int cmpLen = compareTo.length;
         int buflen = buffer.length;
         boolean match = true;
-        for( int i=0; match && i<cmpLen; ++i ) {
+        for( int i=0; match && i<cmpLen; ++i ) 
+        {
             match = buffer[(currentIndex+i)%buflen] == compareTo[i];
         }
         return match;
@@ -475,7 +491,8 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                         braces = 0;
                     }
                 }
-                if (amountRead > 0) {
+                if (amountRead > 0) 
+                {
                     pdfSource.unread( nextThreeBytes, 0, amountRead );
                 }
                 if( braces != 0 )
@@ -637,19 +654,25 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             if( pbo instanceof COSObject )
             {
                 // We have to check if the expected values are there or not PDFBOX-385 
-                if (po.get(po.size()-1) instanceof COSInteger) {
+                if (po.get(po.size()-1) instanceof COSInteger) 
+                {
                     COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                    if (po.get(po.size()-1) instanceof COSInteger) {
+                    if (po.get(po.size()-1) instanceof COSInteger) 
+                    {
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
                         COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
                         pbo = document.getObjectFromPool(key);
                     }
-                    else
+                    else 
+                    {
                         // the object reference is somehow wrong
                         pbo = null;
+                    }
                 }
-                else
+                else 
+                {
                     pbo = null;
+                }
             }
             if( pbo != null )
             {
@@ -765,9 +788,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         char c = (char)pdfSource.peek();
         if( c == 't' )
         {
-            byte[] trueArray = new byte[ 4 ];
-            int amountRead = pdfSource.read( trueArray, 0, 4 );
-            String trueString = new String( trueArray, 0, amountRead );
+            String trueString = new String( pdfSource.readFully( 4 ) );
             if( !trueString.equals( "true" ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "'" );
@@ -779,9 +800,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         }
         else if( c == 'f' )
         {
-            byte[] falseArray = new byte[ 5 ];
-            int amountRead = pdfSource.read( falseArray, 0, 5 );
-            String falseString = new String( falseArray, 0, amountRead );
+            String falseString = new String( pdfSource.readFully( 5 ) );
             if( !falseString.equals( "false" ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "'" );
@@ -854,9 +873,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         }
         case 't':
         {
-            byte[] trueBytes = new byte[4];
-            int amountRead = pdfSource.read( trueBytes, 0, 4 );
-            String trueString = new String( trueBytes, 0, amountRead );
+            String trueString = new String( pdfSource.readFully(4) );
             if( trueString.equals( "true" ) )
             {
                 retval = COSBoolean.TRUE;
@@ -869,9 +886,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
         }
         case 'f':
         {
-            byte[] falseBytes = new byte[5];
-            int amountRead = pdfSource.read( falseBytes, 0, 5 );
-            String falseString = new String( falseBytes, 0, amountRead );
+            String falseString = new String( pdfSource.readFully(5) );
             if( falseString.equals( "false" ) )
             {
                 retval = COSBoolean.FALSE;
@@ -1069,13 +1084,17 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected String readLine() throws IOException {
+    protected String readLine() throws IOException 
+    {
         StringBuffer buffer = new StringBuffer( 11 );
         
         int c;
-        while ((c = pdfSource.read()) != -1) {
-            if (isEOL(c))
+        while ((c = pdfSource.read()) != -1) 
+        {
+            if (isEOL(c)) 
+            {
                 break;
+            }
             buffer.append( (char)c );
         }
         return buffer.toString();
