@@ -18,6 +18,7 @@ package org.apache.pdfbox.io;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.EOFException;
 
 /**
  * A simple subclass that adds a few convience methods.
@@ -67,43 +68,52 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     }
     
     /**
-     * Returns the current byte offset in the file
+     * Returns the current byte offset in the file.
      * @return the int byte offset
      */
-    public int getOffset(){
+    public int getOffset()
+    {
         return offset;
     }
     
     /**
      * {@inheritDoc} 
      */
-    public int read() throws IOException{
+    public int read() throws IOException
+    {
         int retval = super.read();
         if (retval != -1)
+        {
             offset++;
+        }
         return retval;
     }
     
     /**
      * {@inheritDoc} 
      */
-    public int read(byte[] b) throws IOException{
+    public int read(byte[] b) throws IOException
+    {
         return this.read(b, 0, b.length);
     }
     /**
      * {@inheritDoc} 
      */
-    public int read(byte[] b, int off, int len) throws IOException{
+    public int read(byte[] b, int off, int len) throws IOException
+    {
         int retval = super.read(b, off, len);
         if (retval != -1)
+        {
             offset += retval;
+        }
         return retval;
     }
     
     /**
      * {@inheritDoc} 
      */
-    public void unread(int b) throws IOException{
+    public void unread(int b) throws IOException
+    {
         offset--;
         super.unread(b);
     }
@@ -111,19 +121,21 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
-    public void unread(byte[] b) throws IOException{
+    public void unread(byte[] b) throws IOException
+    {
         this.unread(b, 0, b.length);
     }
     
     /**
      * {@inheritDoc} 
      */
-    public void unread(byte[] b, int off, int len) throws IOException{
-        if (len == 0)
-            return;
-        
-        offset -= len;
-        super.unread(b, off, len);
+    public void unread(byte[] b, int off, int len) throws IOException
+    {
+        if (len > 0)
+        {
+            offset -= len;
+            super.unread(b, off, len);
+        }
     }
     
     /**
@@ -163,4 +175,27 @@ public class PushBackInputStream extends java.io.PushbackInputStream
         }
         this.unread( tmpBuffer, 0, totalAmountRead );
     }
+    
+    /**
+     * Reads a given number of bytes from the underlying stream.
+     * @param length the number of bytes to be read
+     * @return a byte array containing the bytes just read
+     * @throws IOException if an I/O error occurs while reading data
+     */
+    public byte[] readFully(int length) throws IOException
+    {
+        byte[] data = new byte[length];
+        int pos = 0;
+        while (pos < length)
+        {
+            int amountRead = read( data, pos, length - pos );
+            if (amountRead < 0) 
+            {
+                throw new EOFException("Premature end of file");
+            }
+            pos += amountRead;
+        }
+        return data;
+    }
+
 }
