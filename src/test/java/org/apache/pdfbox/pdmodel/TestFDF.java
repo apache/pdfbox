@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -88,35 +89,39 @@ public class TestFDF extends TestCase
      */
     public void testFDFfdeb() throws Exception
     {
-        PDDocument fdeb = null;
-        try
+        
+        File filePDF = new File(PDF_FDEB); 
+        if ( filePDF.exists() )
         {
-            fdeb = PDDocument.load( PDF_FDEB );
-            PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-            PDTextbox field = (PDTextbox)form.getField( "f67_1" );
-            field.setValue( "2" );
-
-            String expected =
-                "/Tx BMC " +
-                "BT " +
-                "/Helv 9 Tf " +
-                " 0 g " +
-                " 2 1.985585 Td " +
-                "2.07698 0 Td " +
-                "(2) Tj " +
-                "ET " +
-                "EMC";
-
-            testContentStreams( fdeb, field, expected );
-        }
-        finally
-        {
-            if( fdeb != null )
+            PDDocument fdeb = null;
+            try
             {
-                fdeb.close();
+                fdeb = PDDocument.load( filePDF );
+                PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
+                PDTextbox field = (PDTextbox)form.getField( "f67_1" );
+                field.setValue( "2" );
+    
+                String expected =
+                    "/Tx BMC " +
+                    "BT " +
+                    "/Helv 9 Tf " +
+                    " 0 g " +
+                    " 2 1.985585 Td " +
+                    "2.07698 0 Td " +
+                    "(2) Tj " +
+                    "ET " +
+                    "EMC";
+    
+                testContentStreams( fdeb, field, expected );
+            }
+            finally
+            {
+                if( fdeb != null )
+                {
+                    fdeb.close();
+                }
             }
         }
-
     }
 
     /**
@@ -126,62 +131,66 @@ public class TestFDF extends TestCase
      */
     public void testFDFPDFWithLotsOfFields() throws Exception
     {
-        PDDocument fdeb = null;
-        try
+        File filePDF = new File(PDF_LOTSOFFIELDS); 
+        if ( filePDF.exists() )
         {
-            fdeb = PDDocument.load( PDF_LOTSOFFIELDS );
-            PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-            PDTextbox feld2 = (PDTextbox)form.getField( "Feld.2" );
-            feld2.setValue( "Benjamin" );
-
-            String expected =
-            "1 1 0.8000000119 rg " +
-            " 0 0 127.5 19.8299999237 re " +
-            " f " +
-            " 0 0 0 RG " +
-            " 1 w " +
-            " 0.5 0.5 126.5 18.8299999237 re " +
-            " S " +
-            " 0.5 g " +
-            " 1 1 m " +
-            " 1 18.8299999237 l " +
-            " 126.5 18.8299999237 l " +
-            " 125.5 17.8299999237 l " +
-            " 2 17.8299999237 l " +
-            " 2 2 l " +
-            " 1 1 l " +
-            " f " +
-            " 0.75 g " +
-            " 1 1 m " +
-            " 126.5 1 l " +
-            " 126.5 18.8299999237 l " +
-            " 125.5 17.8299999237 l " +
-            " 125.5 2 l " +
-            " 2 2 l " +
-            " 1 1 l " +
-            " f " +
-            " /Tx BMC  " +
-            "BT " +
-            "/Helv 14 Tf " +
-            " 0 0 0 rg " +
-            " 4 4.721 Td " +
-            "(Benjamin) Tj " +
-            "ET " +
-            "EMC";
-
-            testContentStreams( fdeb, feld2, expected );
-
-            PDRadioCollection feld3 = (PDRadioCollection)form.getField( "Feld.3" );
-            feld3.setValue("RB1");
-            assertEquals( "RB1", feld3.getValue() );
-            //assertEquals( ((PDCheckbox)feld3.getKids().get( 0 )).getValue(), "RB1" );
-
-        }
-        finally
-        {
-            if( fdeb != null )
+            PDDocument fdeb = null;
+            try
             {
-                fdeb.close();
+                fdeb = PDDocument.load( filePDF );
+                PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
+                PDTextbox feld2 = (PDTextbox)form.getField( "Feld.2" );
+                feld2.setValue( "Benjamin" );
+    
+                String expected =
+                "1 1 0.8000000119 rg " +
+                " 0 0 127.5 19.8299999237 re " +
+                " f " +
+                " 0 0 0 RG " +
+                " 1 w " +
+                " 0.5 0.5 126.5 18.8299999237 re " +
+                " S " +
+                " 0.5 g " +
+                " 1 1 m " +
+                " 1 18.8299999237 l " +
+                " 126.5 18.8299999237 l " +
+                " 125.5 17.8299999237 l " +
+                " 2 17.8299999237 l " +
+                " 2 2 l " +
+                " 1 1 l " +
+                " f " +
+                " 0.75 g " +
+                " 1 1 m " +
+                " 126.5 1 l " +
+                " 126.5 18.8299999237 l " +
+                " 125.5 17.8299999237 l " +
+                " 125.5 2 l " +
+                " 2 2 l " +
+                " 1 1 l " +
+                " f " +
+                " /Tx BMC  " +
+                "BT " +
+                "/Helv 14 Tf " +
+                " 0 0 0 rg " +
+                " 4 4.721 Td " +
+                "(Benjamin) Tj " +
+                "ET " +
+                "EMC";
+    
+                testContentStreams( fdeb, feld2, expected );
+    
+                PDRadioCollection feld3 = (PDRadioCollection)form.getField( "Feld.3" );
+                feld3.setValue("RB1");
+                assertEquals( "RB1", feld3.getValue() );
+                //assertEquals( ((PDCheckbox)feld3.getKids().get( 0 )).getValue(), "RB1" );
+    
+            }
+            finally
+            {
+                if( fdeb != null )
+                {
+                    fdeb.close();
+                }
             }
         }
     }
@@ -193,36 +202,41 @@ public class TestFDF extends TestCase
      */
     public void testFDFFreedomExpressions() throws Exception
     {
-        PDDocument freedom = null;
-        FDFDocument fdf = null;
-        try
+        File filePDF = new File(PDF_FREEDOM); 
+        File fileFDF = new File(FDF_FREEDOM); 
+        if (filePDF.exists() && fileFDF.exists())
         {
-            freedom = PDDocument.load( PDF_FREEDOM );
-            fdf = FDFDocument.load( FDF_FREEDOM );
-            PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
-            form.importFDF( fdf );
-            PDTextbox feld2 = (PDTextbox)form.getField( "eeFirstName" );
-            List kids = feld2.getKids();
-            PDField firstKid = (PDField)kids.get( 0 );
-            PDField secondKid = (PDField)kids.get( 1 );
-            testContentStreamContains( freedom, firstKid, "Steve" );
-            testContentStreamContains( freedom, secondKid, "Steve" );
-
-            //the appearance stream is suppose to be null because there
-            //is an F action in the AA dictionary that populates that field.
-            PDField totalAmt = form.getField( "eeSuppTotalAmt" );
-            assertTrue( totalAmt.getDictionary().getDictionaryObject( "AP" ) == null );
-
-        }
-        finally
-        {
-            if( freedom != null )
+            PDDocument freedom = null;
+            FDFDocument fdf = null;
+            try
             {
-                freedom.close();
+                freedom = PDDocument.load( filePDF );
+                fdf = FDFDocument.load( fileFDF );
+                PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
+                form.importFDF( fdf );
+                PDTextbox feld2 = (PDTextbox)form.getField( "eeFirstName" );
+                List kids = feld2.getKids();
+                PDField firstKid = (PDField)kids.get( 0 );
+                PDField secondKid = (PDField)kids.get( 1 );
+                testContentStreamContains( freedom, firstKid, "Steve" );
+                testContentStreamContains( freedom, secondKid, "Steve" );
+    
+                //the appearance stream is suppose to be null because there
+                //is an F action in the AA dictionary that populates that field.
+                PDField totalAmt = form.getField( "eeSuppTotalAmt" );
+                assertTrue( totalAmt.getDictionary().getDictionaryObject( "AP" ) == null );
+    
             }
-            if( fdf != null )
+            finally
             {
-                fdf.close();
+                if( freedom != null )
+                {
+                    freedom.close();
+                }
+                if( fdf != null )
+                {
+                    fdf.close();
+                }
             }
         }
     }
