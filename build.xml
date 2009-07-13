@@ -208,7 +208,7 @@
 		<unjar src="${testfiles.encryption.jar}" dest="${testfiles.dir}/input-ext"/>
 	</target>
 
-	<target name="testextract" depends="clean,compile,get.adobefiles,get.testfiles" description="Test text extraction">
+	<target name="testextract" depends="clean,compile,get.adobefiles" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -231,7 +231,7 @@
         </junit>
     </target>
 
-    <target name="testimage" depends="clean,compile,get.adobefiles,get.testfiles" description="Test image rendering">
+    <target name="testimage" depends="clean,compile,get.adobefiles" description="Test image rendering">
         <junit printsummary="off" fork="on" dir="."  >
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -255,7 +255,7 @@
         </junit>
     </target>
 
-    <target name="test-junit" depends="clean,compile,get.adobefiles,get.testfiles" description="run junit tests">
+    <target name="test-junit" depends="clean,compile,get.adobefiles" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
             <classpath>
                 <pathelement path="${junit.jar}" />
