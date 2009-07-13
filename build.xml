@@ -90,6 +90,8 @@
     <property name="testfiles3.jar" value="${download.dir}/input-ext3.jar"/>
     <property name="testfiles.rendering.url" value="${jiraattachment.url}/12413229/input-ext_rendering.jar"/>
     <property name="testfiles.rendering.jar" value="${download.dir}/input-ext_rendering.jar"/>
+    <property name="testfiles.encryption.url" value="${jiraattachment.url}/12413268/input-ext_encryption.jar"/>
+    <property name="testfiles.encryption.jar" value="${download.dir}/input-ext_encryption.jar"/>
 
     <property name="adobefiles.url" value="${maven.repo}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2009.06.14.jar"/>
@@ -195,10 +197,15 @@
             <param name="sourcefile" value="${testfiles.rendering.url}"/>
             <param name="destfile" value="${testfiles.rendering.jar}"/>
         </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${testfiles.encryption.url}"/>
+            <param name="destfile" value="${testfiles.encryption.jar}"/>
+        </antcall>
 		<unjar src="${testfiles1.jar}" dest="${testfiles.dir}/input-ext"/>
 		<unjar src="${testfiles2.jar}" dest="${testfiles.dir}/input-ext"/>
 		<unjar src="${testfiles3.jar}" dest="${testfiles.dir}/input-ext"/>
 		<unjar src="${testfiles.rendering.jar}" dest="${testfiles.dir}/input-ext"/>
+		<unjar src="${testfiles.encryption.jar}" dest="${testfiles.dir}/input-ext"/>
 	</target>
 
 	<target name="testextract" depends="clean,compile,get.adobefiles,get.testfiles" description="Test text extraction">
