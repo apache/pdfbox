@@ -118,7 +118,7 @@
     </path>
 
     <target name="clean" description="Remove all generated files">
-        <delete dir="${dest.dir}"/>
+        <delete dir="${target.dir}"/>
         <delete dir="${docs.dir}"/>
         <delete dir="${lib.dir}"/>
         <delete dir="${bin.dir}"/>
@@ -138,41 +138,48 @@
         <mkdir dir="${testoutput-ext.dir}/rendering" />
     </target>
 
-    <target name="compile" depends="pdfbox.init" description="Compile Java source files">
+    <target name="compile" depends="pdfbox.init,get.adobefiles"
+            description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
-        <javac srcdir="${src.dir}" destdir="${dest.dir}" target="1.4" source="1.4" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
-        <javac srcdir="${test.dir}" destdir="${dest.dir}" target="1.4" source="1.4" debug="on" classpathref="build.classpath" deprecation="on" encoding="ISO-8859-1"/>
+        <javac srcdir="${src.dir}" destdir="${dest.dir}"
+               target="1.4" source="1.4" debug="on" deprecation="on"
+               classpathref="build.classpath" encoding="ISO-8859-1"/>
+        <javac srcdir="${test.dir}" destdir="${dest.dir}"
+               target="1.4" source="1.4" debug="on" deprecation="on"
+               classpathref="build.classpath" encoding="ISO-8859-1"/>
     </target>
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
-	<target name="find.adobefiles">
-        <available property="adobefiles.found"
-                   file="${resources.dir}/Resources/cmap"
-                   type="dir"/>
+    <target name="find.adobefiles">
+        <available property="adobefiles.found" file="${dest.dir}/Resources"/>
     </target>
 
-	<target name="get.adobefiles" 
-		unless="adobefiles.found" depends="find.adobefiles" 
-		description="Download afm and cmap files from adobe">
+    <target name="get.adobefiles"
+            unless="adobefiles.found" depends="find.adobefiles"
+            description="Download and unpack afm and cmap files from Adobe">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${adobefiles.url}"/>
             <param name="destfile" value="${adobefiles.jar}"/>
         </antcall>
-		<unjar src="${adobefiles.jar}" dest="${download.dir}"/>
-		<move todir="${resources.dir}/Resources/afm">
-			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/afm" includes="**/*"/>
-		</move>
-		<move todir="${resources.dir}/Resources/cmap">
-			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/chinese_t" includes="**/*"/>
-			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/japanese" includes="**/*"/>
-			<fileset dir="${download.dir}/com/adobe/pdf/pcfi/korean" includes="**/*"/>
-		</move>
-		<delete dir="${download.dir}/com"/>
-		<delete dir="${download.dir}/META-INF"/>
-	</target>
-	
-	<target name="find.testfiles">
+        <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/cmap">
+            <patternset>
+                <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
+                <include name="com/adobe/pdf/pcfi/japanese/*"/>
+                <include name="com/adobe/pdf/pcfi/korean/*"/>
+                <exclude name="**/*.pdf"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unjar>
+        <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/afm">
+            <patternset>
+                <include name="com/adobe/pdf/pcfi/afm/*"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unjar>
+    </target>
+
+    <target name="find.testfiles">
         <available property="testfiles.found"
                    file="${testfiles.dir}/input-ext"
                    type="dir"/>
@@ -208,7 +215,7 @@
 		<unjar src="${testfiles.encryption.jar}" dest="${testfiles.dir}/input-ext"/>
 	</target>
 
-	<target name="testextract" depends="clean,compile,get.adobefiles" description="Test text extraction">
+	<target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -231,7 +238,7 @@
         </junit>
     </target>
 
-    <target name="testimage" depends="clean,compile,get.adobefiles" description="Test image rendering">
+    <target name="testimage" depends="clean,compile" description="Test image rendering">
         <junit printsummary="off" fork="on" dir="."  >
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -255,7 +262,7 @@
         </junit>
     </target>
 
-    <target name="test-junit" depends="clean,compile,get.adobefiles" description="run junit tests">
+    <target name="test-junit" depends="clean,compile" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
             <classpath>
                 <pathelement path="${junit.jar}" />
@@ -348,9 +355,7 @@
         </propertyfile>
 
         <jar jarfile="./lib/${release.name}.jar">
-            <fileset dir="${dest.dir}">
-                <include name="**/*.class"/>
-            </fileset>
+            <fileset dir="${dest.dir}"/>
             <fileset dir="${resources.dir}"/>
             <metainf dir="." includes="*.txt"/>
             <manifest>
@@ -379,7 +384,7 @@
         <antcall target="dist" />
     </target>
 
-    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle,get.adobefiles" description="Create zip distribution file">
+    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create zip distribution file">
 
         <jar jarfile="${target.dir}/${release.name}-maven.jar">
             <fileset dir="./lib/">
