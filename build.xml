@@ -95,6 +95,12 @@
 
     <property name="adobefiles.url" value="${maven.repo}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2009.06.14.jar"/>
+    <property name="adobefiles.additional.url" value="${jiraattachment.url}/12413828/additional_cmaps.jar"/>
+    <property name="adobefiles.additional.jar" value="${download.dir}/additional_cmaps.jar"/>
+    <property name="adobefiles.removed.url" value="${jiraattachment.url}/12413648/removed_cmaps.jar"/>
+    <property name="adobefiles.removed.jar" value="${download.dir}/removed_cmaps.jar"/>
+    <property name="adobefiles.glyph.url" value="${jiraattachment.url}/12413646/glyphlist.txt"/>
+    <property name="adobefiles.glyph.txt" value="${dest.dir}/Resources/glyphlist.txt"/>
 
     <property name="file" value=""/>
 
@@ -162,6 +168,18 @@
             <param name="sourcefile" value="${adobefiles.url}"/>
             <param name="destfile" value="${adobefiles.jar}"/>
         </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${adobefiles.additional.url}"/>
+            <param name="destfile" value="${adobefiles.additional.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${adobefiles.removed.url}"/>
+            <param name="destfile" value="${adobefiles.removed.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${adobefiles.glyph.url}"/>
+            <param name="destfile" value="${adobefiles.glyph.txt}"/>
+        </antcall>
         <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/cmap">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
@@ -169,6 +187,23 @@
                 <include name="com/adobe/pdf/pcfi/korean/*"/>
                 <exclude name="**/*.pdf"/>
             </patternset>
+            <mapper type="flatten"/>
+        </unjar>
+        <unjar src="${adobefiles.additional.jar}" dest="${dest.dir}/Resources/cmap">
+            <patternset>
+                <include name="ac15/CMap/*"/>
+                <include name="ag15/CMap/*"/>
+                <include name="ai0/CMap/*"/>
+                <include name="aj16/CMap/*"/>
+                <include name="aj20/CMap/*"/>
+                <include name="ak12/CMap/*"/>
+                <include name="rksj-cmaps/*"/>
+                <include name="tounicode/*"/>
+                <exclude name="**/*.txt"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </unjar>
+        <unjar src="${adobefiles.removed.jar}" dest="${dest.dir}/Resources/cmap">
             <mapper type="flatten"/>
         </unjar>
         <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/afm">
