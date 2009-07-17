@@ -190,10 +190,12 @@ public class TestPDFToImage extends TestCase
                         return (name.endsWith(".pdf") || name.endsWith(".ai"));
                     }
                 });
-
-                for (int n = 0; n < testFiles.length; n++)
+                if (testFiles != null)
                 {
-                    doTestFile(testFiles[n], false, inDirExt, outDirExt);
+                    for (int n = 0; n < testFiles.length; n++)
+                    {
+                        doTestFile(testFiles[n], false, inDirExt, outDirExt);
+                    }
                 }
             }
             else
