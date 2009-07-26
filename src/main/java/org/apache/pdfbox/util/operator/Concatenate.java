@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
 
 /**
  *
@@ -30,7 +29,7 @@ import org.apache.pdfbox.pdfviewer.PageDrawer;
 * the long sequence of conditions in processOperator is remplaced by
 * this strategy pattern</p>
  * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
+ * <p>Sociï¿½tï¿½ : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.5 $
  */
@@ -42,6 +41,7 @@ public class Concatenate extends OperatorProcessor
      * process : cm : Concatenate matrix to current transformation matrix.
      * @param operator The operator that is being executed.
      * @param arguments List
+     * @throws IOException If there is an error processing the operator.
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
