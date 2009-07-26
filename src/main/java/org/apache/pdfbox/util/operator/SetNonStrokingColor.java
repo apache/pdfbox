@@ -18,8 +18,14 @@ package org.apache.pdfbox.util.operator;
 
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.graphics.color.*;
-import org.apache.pdfbox.util.*;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
+import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.util.PDFOperator;
 import java.io.IOException;
 
 /**
@@ -41,31 +47,46 @@ public class SetNonStrokingColor extends OperatorProcessor
         PDColorSpace colorSpace = context.getGraphicsState().getNonStrokingColorSpace().getColorSpace();
         if (colorSpace != null) 
         {
-        //logger().info("Setting NonStroking colorspace to " + colorSpace);
-        
             OperatorProcessor newOperator = null;
             if (colorSpace instanceof PDDeviceGray) 
+            {
                 newOperator = new SetNonStrokingGrayColor();
+            }
             else if (colorSpace instanceof PDDeviceRGB)
+            {
                 newOperator = new SetNonStrokingRGBColor();
+            }
             else if (colorSpace instanceof PDDeviceCMYK)
+            {
                 newOperator = new SetNonStrokingCMYKColor();
+            }
             else if (colorSpace instanceof PDICCBased)
+            {
                 newOperator = new SetNonStrokingICCBasedColor();
-        else if (colorSpace instanceof PDCalRGB)
+            }
+            else if (colorSpace instanceof PDCalRGB)
+            {
                 newOperator = new SetNonStrokingCalRGBColor();
-        else if (colorSpace instanceof PDSeparation)
-            newOperator = new SetNonStrokingSeparation();
+            }   
+            else if (colorSpace instanceof PDSeparation)
+            {
+                newOperator = new SetNonStrokingSeparation();
+            }
 
             if (newOperator != null) 
             {
                 newOperator.setContext(getContext());
                 newOperator.process(operator, arguments);
             }
-            else
-                logger().warning("Not supported colorspace "+colorSpace.getName() + " within operator "+operator.getOperation());
-    }
-    else
-        logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
+            else 
+            {
+                logger().warning("Not supported colorspace "+colorSpace.getName() 
+                        + " within operator "+operator.getOperation());
+            }
+        }
+        else
+        {
+            logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
+        }
     }
 }

@@ -18,7 +18,6 @@ package org.apache.pdfbox.util.operator;
 
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -34,7 +33,7 @@ public class SetLineJoinStyle extends org.apache.pdfbox.util.operator.OperatorPr
 {
 
     /**
-     * Set the line cap style
+     * Set the line cap style.
      * @param operator The operator that is being executed.
      * @param arguments List
      *
