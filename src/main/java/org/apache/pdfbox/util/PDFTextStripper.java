@@ -63,7 +63,6 @@ public class PDFTextStripper extends PDFStreamEngine
     private int startBookmarkPageNumber = -1;
     private PDOutlineItem endBookmark = null;
     private int endBookmarkPageNumber = -1;
-    protected PDDocument document;
     private boolean suppressDuplicateOverlappingText = true;
     private boolean shouldSeparateByBeads = true;
     private boolean sortByPosition = false;
@@ -93,11 +92,21 @@ public class PDFTextStripper extends PDFStreamEngine
 
     private Map characterListMapping = new HashMap();
 
+    /**
+     * The platforms lineseparator.
+     */
     protected String lineSeparator = System.getProperty("line.separator");
     private String pageSeparator = System.getProperty("line.separator");
     private String wordSeparator = " ";
-    protected String encoding;    // encoding that text will be written in (or null)
+    /**
+     * encoding that text will be written in (or null).
+     */
+    protected String outputEncoding; 
 
+    /**
+     * The document to read.
+     */
+    protected PDDocument document;
     /**
      * The stream to write the output to.
      */
@@ -118,8 +127,8 @@ public class PDFTextStripper extends PDFStreamEngine
     public PDFTextStripper() throws IOException
     {
         super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
-        this.encoding = null;
-        normalize = new TextNormalize(this.encoding);
+        this.outputEncoding = null;
+        normalize = new TextNormalize(this.outputEncoding);
     }
 
 
@@ -136,8 +145,8 @@ public class PDFTextStripper extends PDFStreamEngine
     public PDFTextStripper( Properties props ) throws IOException
     {
         super( props );
-        this.encoding = null;
-        normalize = new TextNormalize(this.encoding);
+        this.outputEncoding = null;
+        normalize = new TextNormalize(this.outputEncoding);
     }
     /**
      * Instantiate a new PDFTextStripper object. This object will load properties from
@@ -151,8 +160,8 @@ public class PDFTextStripper extends PDFStreamEngine
     public PDFTextStripper( String encoding ) throws IOException
     {
         super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ));
-        this.encoding = encoding;
-        normalize = new TextNormalize(this.encoding);
+        this.outputEncoding = encoding;
+        normalize = new TextNormalize(this.outputEncoding);
     }
 
     /**
@@ -382,7 +391,7 @@ public class PDFTextStripper extends PDFStreamEngine
      * Default implementation is to do nothing.  Subclasses
      * may provide additional information.
      *
-     * @param true if primary direction of text is left to right
+     * @param isltr true if primary direction of text is left to right.
      * @throws IOException If there is any error writing to the stream.
      */
     protected void startArticle(boolean isltr) throws IOException
@@ -479,17 +488,20 @@ public class PDFTextStripper extends PDFStreamEngine
                 TextPosition position = (TextPosition)textIter.next();
                 String stringValue = position.getCharacter();
 
-                for (int a = 0; a < stringValue.length(); a++) {
+                for (int a = 0; a < stringValue.length(); a++) 
+                {
                     byte dir = Character.getDirectionality(stringValue.charAt(a));
                     if ((dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT ) || 
                             (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING) ||
-                            (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE )) {
+                            (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE )) 
+                    {
                         ltrCnt++;
                     }
                     else if ((dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ) ||
                             (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) ||
                             (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING) ||
-                            (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE )) {
+                            (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE )) 
+                    {
                         rtlCnt++;
                     }
                 }
@@ -497,7 +509,8 @@ public class PDFTextStripper extends PDFStreamEngine
 
             // choose the dominant direction
             boolean isRtlDominant = false; 
-            if (rtlCnt > ltrCnt) {
+            if (rtlCnt > ltrCnt) 
+            {
                 isRtlDominant = true;
             }
 
@@ -506,7 +519,9 @@ public class PDFTextStripper extends PDFStreamEngine
             // we will later use this to skip reordering
             boolean hasRtl = false;
             if (rtlCnt > 0)
+            {
                 hasRtl = true;
+            }
 
             /* Now cycle through to print the text.  
              * We queue up a line at a time before we print so that we can convert
@@ -533,7 +548,8 @@ public class PDFTextStripper extends PDFStreamEngine
                 //Resets the average character width when we see a change in font 
                 // or a change in the font size
                 if(lastPosition != null && ((position.getFont() != lastPosition.getFont()) 
-                        || (position.getFontSize() != lastPosition.getFontSize()))){
+                        || (position.getFontSize() != lastPosition.getFontSize())))
+                {
                     previousAveCharWidth = -1;
                 }
 
@@ -544,13 +560,15 @@ public class PDFTextStripper extends PDFStreamEngine
 
                 /* If we are sorting, then we need to use the text direction
                  * adjusted coordinates, because they were used in the sorting. */
-                if (sortByPosition) {
+                if (sortByPosition) 
+                {
                     positionX = position.getXDirAdj();
                     positionY = position.getYDirAdj();
                     positionWidth = position.getWidthDirAdj();
                     positionHeight = position.getHeightDir();
                 }
-                else {
+                else 
+                {
                     positionX = position.getX();
                     positionY = position.getY();
                     positionWidth = position.getWidth();
@@ -564,14 +582,18 @@ public class PDFTextStripper extends PDFStreamEngine
                  * space character with some margin. */
                 float wordSpacing = position.getWidthOfSpace();
                 float deltaSpace = 0;
-                if ((wordSpacing == 0) || (wordSpacing == Float.NaN)) {
+                if ((wordSpacing == 0) || (wordSpacing == Float.NaN)) 
+                {
                     deltaSpace = Float.MAX_VALUE;
                 }
-                else {
-                    if( lastWordSpacing < 0 ){
+                else 
+                {
+                    if( lastWordSpacing < 0 )
+                    {
                         deltaSpace = (wordSpacing * spacingTolerance);
                     }
-                    else{
+                    else
+                    {
                         deltaSpace = (((wordSpacing+lastWordSpacing)/2f)* spacingTolerance);
                     }
                 }
@@ -582,10 +604,12 @@ public class PDFTextStripper extends PDFStreamEngine
                  * best results after numerous experiments. Based on experiments we also found that
                  * .3 worked well. */                       
                 float averageCharWidth = -1;
-                if(previousAveCharWidth < 0){
+                if(previousAveCharWidth < 0)
+                {
                     averageCharWidth = (positionWidth/wordCharCount);
                 }
-                else{
+                else
+                {
                     averageCharWidth = (previousAveCharWidth + (positionWidth/wordCharCount))/2f;
                 }
                 float deltaCharWidth = (averageCharWidth * averageCharTolerance);
@@ -593,16 +617,20 @@ public class PDFTextStripper extends PDFStreamEngine
                 //Compares the values obtained by the average method and the wordSpacing method and picks
                 //the smaller number. 
                 float expectedStartOfNextWordX = -1;
-                if(endOfLastTextX != -1){
-                    if(deltaCharWidth > deltaSpace){
+                if(endOfLastTextX != -1)
+                {
+                    if(deltaCharWidth > deltaSpace)
+                    {
                         expectedStartOfNextWordX = endOfLastTextX + deltaSpace;
                     }
-                    else{
+                    else
+                    {
                         expectedStartOfNextWordX = endOfLastTextX + deltaCharWidth;
                     }
                 }   
 
-                if( lastPosition != null ){  
+                if( lastPosition != null )
+                {  
                     // RDD - Here we determine whether this text object is on the current
                     // line.  We use the lastBaselineFontSize to handle the superscript
                     // case, and the size of the current font to handle the subscript case.
@@ -612,10 +640,13 @@ public class PDFTextStripper extends PDFStreamEngine
                     /* XXX BC: In theory, this check should really check if the next char is in full range
                      * seen in this line. This is what I tried to do with minYTopForLine, but this caused a lot
                      * of regression test failures.  So, I'm leaving it be for now. */
-                    if(!overlap(positionY, positionHeight, maxYForLine, maxHeightForLine)){
+                    if(!overlap(positionY, positionHeight, maxYForLine, maxHeightForLine))
+                    {
                         // If we have RTL text on the page, change the direction
                         if (hasRtl)
+                        {
                             lineStr = normalize.makeLineLogicalOrder(lineStr, isRtlDominant);
+                        }
 
                         /* normalize string to remove presentation forms.
                          * Note that this must come after the line direction 
@@ -640,12 +671,14 @@ public class PDFTextStripper extends PDFStreamEngine
                     if (expectedStartOfNextWordX != -1 && expectedStartOfNextWordX < positionX &&
                             //only bother adding a space if the last character was not a space
                             lastPosition.getCharacter() != null &&
-                            !lastPosition.getCharacter().endsWith( " " ) ) {
+                            !lastPosition.getCharacter().endsWith( " " ) ) 
+                    {
                         lineStr += getWordSeparator();
                     }
                 }
 
-                if (positionY >= maxYForLine) {
+                if (positionY >= maxYForLine) 
+                {
                     maxYForLine = positionY;
                 }
 
@@ -654,7 +687,8 @@ public class PDFTextStripper extends PDFStreamEngine
                 endOfLastTextX = positionX + positionWidth;
 
                 // add it to the list
-                if (characterValue != null) {
+                if (characterValue != null) 
+                {
                     lineStr += characterValue;
                 }
                 maxHeightForLine = Math.max( maxHeightForLine, positionHeight );
@@ -665,9 +699,12 @@ public class PDFTextStripper extends PDFStreamEngine
             }
 
             // print the final line
-            if (lineStr.length() > 0) {
+            if (lineStr.length() > 0) 
+            {
                 if (hasRtl)
+                {
                     lineStr = normalize.makeLineLogicalOrder(lineStr, isRtlDominant);
+                }
 
                 // normalize string to remove presentation forms
                 lineStr = normalize.normalizePres(lineStr);
@@ -687,8 +724,9 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * Write the page separator value to the output stream
+     * Write the page separator value to the output stream.
      * @throws IOException
+     *             If there is a problem writing out the pageseparator to the document.
      */
     protected void writePageSeperator() throws IOException
     {
@@ -700,8 +738,9 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * Write the line separator value to the output stream
+     * Write the line separator value to the output stream.
      * @throws IOException
+     *             If there is a problem writing out the lineseparator to the document.
      */
     protected void writeLineSeparator( ) throws IOException
     {
@@ -710,8 +749,9 @@ public class PDFTextStripper extends PDFStreamEngine
 
 
     /**
-     * Write the word separator value to the output stream
+     * Write the word separator value to the output stream.
      * @throws IOException
+     *             If there is a problem writing out the wordseparator to the document.
      */
     protected void writeWordSeparator() throws IOException
     {
@@ -893,26 +933,31 @@ public class PDFTextStripper extends PDFStreamEngine
              * we need to do the overlay. This code recombines the diacritic with
              * its associated character if the two are consecutive.
              */ 
-            if(textList.isEmpty()){
+            if(textList.isEmpty())
+            {
                 textList.add(text);
             }
-            else{
+            else
+            {
                 /* test if we overlap the previous entry.  
                  * Note that we are making an assumption that we need to only look back
                  * one TextPosition to find what we are overlapping.  
                  * This may not always be true. */
                 TextPosition previousTextPosition = (TextPosition)textList.get(textList.size()-1);
-                if(text.isDiacritic() && previousTextPosition.contains(text)){
+                if(text.isDiacritic() && previousTextPosition.contains(text))
+                {
                     previousTextPosition.mergeDiacritic(text, normalize);
                 }
                 /* If the previous TextPosition was the diacritic, merge it into this
                  * one and remove it from the list. */
-                else if(previousTextPosition.isDiacritic() && text.contains(previousTextPosition)){
+                else if(previousTextPosition.isDiacritic() && text.contains(previousTextPosition))
+                {
                     text.mergeDiacritic(previousTextPosition, normalize);
                     textList.remove(textList.size()-1);
                     textList.add(text);
                 }
-                else{
+                else
+                {
                     textList.add(text);
                 }
             }
@@ -1182,7 +1227,8 @@ public class PDFTextStripper extends PDFStreamEngine
      * 
      * @return The current tolerance / scaling factor
      */
-    public float getSpacingTolerance() {
+    public float getSpacingTolerance() 
+    {
         return spacingTolerance;
     }
 
@@ -1192,10 +1238,11 @@ public class PDFTextStripper extends PDFStreamEngine
      * default value for this has been determined from trial and error.
      * Setting this value larger will reduce the number of spaces added. 
      * 
-     * @param spacingTolerance tolerance / scaling factor to use
+     * @param spacingToleranceValue tolerance / scaling factor to use
      */
-    public void setSpacingTolerance(float spacingTolerance) {
-        this.spacingTolerance = spacingTolerance;
+    public void setSpacingTolerance(float spacingToleranceValue)
+    {
+        this.spacingTolerance = spacingToleranceValue;
     }
 
     /**
@@ -1205,7 +1252,8 @@ public class PDFTextStripper extends PDFStreamEngine
      * 
      * @return The current tolerance / scaling factor
      */
-    public float getAverageCharTolerance() {
+    public float getAverageCharTolerance() 
+    {
         return averageCharTolerance;
     }
 
@@ -1215,9 +1263,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * default value for this has been determined from trial and error.
      * Setting this value larger will reduce the number of spaces added. 
      * 
-     * @param spacingTolerance tolerance / scaling factor to use
+     * @param averageCharToleranceValue average tolerance / scaling factor to use
      */
-    public void setAverageCharTolerance(float averageCharTolerance) {
-        this.averageCharTolerance = averageCharTolerance;
+    public void setAverageCharTolerance(float averageCharToleranceValue) 
+    {
+        this.averageCharTolerance = averageCharToleranceValue;
     }
 }

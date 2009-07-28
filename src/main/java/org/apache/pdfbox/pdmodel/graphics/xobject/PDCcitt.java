@@ -107,16 +107,22 @@ public class PDCcitt extends PDXObjectImage
         InputStream tiff = new TiffWrapper(
                 getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
                 getCOSStream());
-        try {
+        try 
+        {
             retval = ImageIO.read(tiff);
-    }catch (Exception e){
-        logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
-        } finally {
-        if (tiff != null)
-            tiff.close();
-        
-        return retval;
         }
+        catch (Exception e)
+        {
+            logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+        } 
+        finally 
+        {
+            if (tiff != null)
+            {
+                tiff.close();
+            }
+        }
+        return retval;
     }
 
     /**

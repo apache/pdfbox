@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
 import org.apache.pdfbox.exceptions.LoggingObject;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -65,8 +64,8 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
     {
         Color retval = null;
         float[] components = colorSpaceValue.toFloatArray();
-        try{
-
+        try
+        {
             if( colorSpace.getName().equals(PDDeviceRGB.NAME) && components.length == 3 )
             {
                 //for some reason, when using RGB and the RGB colorspace
@@ -77,33 +76,36 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
             }
             else
             {
-
                 ColorSpace cs = colorSpace.createColorSpace();
-
-                if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1){
-
+                if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1)
+                {
                     //Use that component as a single-integer RGB value
                     retval = new Color((int)components[0]);
                 }
-                else{
+                else
+                {
                     retval = new Color( cs, components, 1f );
                 }
             }
             return retval;
-        }catch (java.lang.IllegalArgumentException IAe){
-		String Values = "Color Values: ";
-		for(int i=0; i< components.length; i++){
-			Values = Values + components[i] + "\t";
-		}
-
-	    logger().severe(IAe.toString() + "\n" + Values + "\n at\n" + FullStackTrace(IAe));
-
-	    throw IAe;
-        }catch (IOException IOe){
-            logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
-
-            throw IOe;
-        }catch (Exception e){
+        }
+        catch (java.lang.IllegalArgumentException exception)
+        {
+            String values = "Color Values: ";
+            for(int i=0; i< components.length; i++)
+            {
+                values = values + components[i] + "\t";
+            }
+            logger().severe(exception.toString() + "\n" + values + "\n at\n" + FullStackTrace(exception));
+            throw exception;
+        }
+        catch (IOException ioexception)
+        {
+            logger().severe(ioexception.toString() + "\n at\n" + FullStackTrace(ioexception));
+            throw ioexception;
+        }
+        catch (Exception e)
+        {
             logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
             throw new IOException("Failed to Create Color");
          }

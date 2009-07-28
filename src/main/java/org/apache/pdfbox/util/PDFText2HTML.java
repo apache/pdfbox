@@ -31,19 +31,20 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author jjb - http://www.johnjbarton.com
  * @version $Revision: 1.3 $
  */
-public class PDFText2HTML extends PDFTextStripper {
+public class PDFText2HTML extends PDFTextStripper 
+{
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
     private boolean onFirstPage = true;
 
     /**
      * Constructor.
-     * 
-     * @throws IOException
-     *             If there is an error during initialization.
+     * @param encoding The encoding to be used
+     * @throws IOException If there is an error during initialization.
      */
-    public PDFText2HTML(String encoding) throws IOException {
-        this.encoding = encoding;
+    public PDFText2HTML(String encoding) throws IOException 
+    {
+        this.outputEncoding = encoding;
         this.lineSeparator = "<br>" + System.getProperty("line.separator");
     }
 
@@ -54,13 +55,17 @@ public class PDFText2HTML extends PDFTextStripper {
      * @throws IOException
      *             If there is a problem writing out the header to the document.
      */
-    protected void writeHeader() throws IOException {
+    protected void writeHeader() throws IOException 
+    {
         StringBuffer buf = new StringBuffer(INITIAL_PDF_TO_HTML_BYTES);
-        buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"" + "\n" + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
+        buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"" + "\n" 
+                + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
         buf.append("<html><head>");
         buf.append("<title>" + getTitle() + "</title>\n");
-        if(encoding != null){
-            buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + this.encoding + "\">\n");
+        if(outputEncoding != null)
+        {
+            buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" 
+                    + this.outputEncoding + "\">\n");
         }
         buf.append("</head>\n");
         buf.append("<body>\n");
@@ -70,8 +75,10 @@ public class PDFText2HTML extends PDFTextStripper {
     /**
      * {@inheritDoc}
      */
-    protected void writePage() throws IOException {
-        if (onFirstPage) {
+    protected void writePage() throws IOException 
+    {
+        if (onFirstPage) 
+        {
             writeHeader();
             onFirstPage = false;
         }
@@ -81,7 +88,8 @@ public class PDFText2HTML extends PDFTextStripper {
     /**
      * {@inheritDoc}
      */
-    public void endDocument(PDDocument pdf) throws IOException {
+    public void endDocument(PDDocument pdf) throws IOException 
+    {
         super.writeString("</body></html>");
     }
 
@@ -91,32 +99,39 @@ public class PDFText2HTML extends PDFTextStripper {
      * 
      * @return returns the title.
      */
-    protected String getTitle() {
+    protected String getTitle() 
+    {
         String titleGuess = document.getDocumentInformation().getTitle();
-        if(titleGuess != null && titleGuess.length() > 0){
+        if(titleGuess != null && titleGuess.length() > 0)
+        {
             return titleGuess;
         }
-        else {
+        else 
+        {
             Iterator textIter = getCharactersByArticle().iterator();
             float lastFontSize = -1.0f;
 
             StringBuffer titleText = new StringBuffer();
-            while (textIter.hasNext()) {
-
+            while (textIter.hasNext()) 
+            {
                 Iterator textByArticle = ((List) textIter.next()).iterator();
-                while (textByArticle.hasNext()) {
+                while (textByArticle.hasNext()) 
+                {
                     TextPosition position = (TextPosition) textByArticle.next();
 
                     float currentFontSize = position.getFontSize();
                     //If we're past 64 chars we will assume that we're past the title
                     //64 is arbitrary 
-                    if (currentFontSize != lastFontSize || titleText.length() > 64) {
-                        if (titleText.length() > 0) {
+                    if (currentFontSize != lastFontSize || titleText.length() > 64) 
+                    {
+                        if (titleText.length() > 0) 
+                        {
                             return titleText.toString();
                         }
                         lastFontSize = currentFontSize;
                     }
-                    if (currentFontSize > 13.0f) { // most body text is 12pt
+                    if (currentFontSize > 13.0f) 
+                    { // most body text is 12pt
                         titleText.append(position.getCharacter());
                     }
                 }
@@ -130,15 +145,18 @@ public class PDFText2HTML extends PDFTextStripper {
      * Write out the article separator (div tag) with proper text direction
      * information.
      * 
-     * @param true if direction of text is left to right
+     * @param isltr true if direction of text is left to right
      * @throws IOException
      *             If there is an error writing to the stream.
      */
-    protected void startArticle(boolean isltr) throws IOException {
-        if (isltr) {
+    protected void startArticle(boolean isltr) throws IOException 
+    {
+        if (isltr) 
+        {
             super.writeString("<div>");
         } 
-        else {
+        else 
+        {
             super.writeString("<div dir=\"RTL\">");
         }
     }
@@ -149,23 +167,33 @@ public class PDFText2HTML extends PDFTextStripper {
      * @throws IOException
      *             If there is an error writing to the stream.
      */
-    protected void endArticle() throws IOException {
+    protected void endArticle() throws IOException 
+    {
         super.writeString("</div>");
     }
 
     /**
-     * Write a string to the output stream and escape some HTML characters
+     * Write a string to the output stream and escape some HTML characters.
+     *
+     * @param chars String to be written to the stream
+     * @throws IOException
+     *             If there is an error writing to the stream.
      */
-    protected void writeString(String chars) throws IOException {
-        for (int i = 0; i < chars.length(); i++) {
+    protected void writeString(String chars) throws IOException 
+    {
+        for (int i = 0; i < chars.length(); i++) 
+        {
             char c = chars.charAt(i);
             // write non-ASCII as named entities
-            if ((c < 32) || (c > 126)) {
+            if ((c < 32) || (c > 126)) 
+            {
                 int charAsInt = c;
                 super.writeString("&#" + charAsInt + ";");
             } 
-            else {
-                switch (c) {
+            else 
+            {
+                switch (c) 
+                {
                 case 34:
                     super.writeString("&quot;");
                     break;

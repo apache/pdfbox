@@ -50,7 +50,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     private String suffix;
     
-    protected PDGraphicsState graphicsState;
+    private PDGraphicsState graphicsState;
 
     /**
      * Standard constuctor.
@@ -218,7 +218,10 @@ file.
         if( cs != null )
         {
             retval = PDColorSpaceFactory.createColorSpace( cs );
-        if (retval == null) logger().info("About to return NULL from createColorSpace branch");
+            if (retval == null) 
+                {
+                    logger().info("About to return NULL from createColorSpace branch");
+                }
         }
         else
         {
@@ -229,15 +232,23 @@ file.
                 COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-            if (retval == null) logger().info("About to return NULL from CCITT branch");
-        }else if (getImageMask()){
-        //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
-            retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
-            logger().info("Stencil Mask branch returning " + retval.toString());
-            //throw new IOException("Trace the Stencil Mask!!!!");
+                if (retval == null) 
+                    {
+                        logger().info("About to return NULL from CCITT branch");
+                    }
+            }
+            else if (getImageMask())
+            {
+                //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
+                retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
+                logger().info("Stencil Mask branch returning " + retval.toString());
+                //throw new IOException("Trace the Stencil Mask!!!!");
             
-        }else
-        logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
+            }
+            else
+            {
+                logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
+            }
         }
         return retval;
     }
@@ -278,9 +289,10 @@ file.
     }
     
     /**
-    * Allow the Invoke operator to set the graphics state so that, in the case of an Image Mask, we can get to the current nonstroking colorspace.
-    *
-    */
+     * Allow the Invoke operator to set the graphics state so that, 
+     * in the case of an Image Mask, we can get to the current nonstroking colorspace.
+     * @param newGS The new graphicstate
+     */
     public void setGraphicsState(PDGraphicsState newGS)
     {
         graphicsState = newGS;

@@ -22,11 +22,18 @@ import com.ibm.icu.text.Normalizer;
 /**
  * This class is an implementation the the ICU4J class. TextNormalize 
  * will call this only if the ICU4J library exists in the classpath.
+ * @author <a href="mailto:carrier@digital-evidence.org">Brian Carrier</a>
+ * @version $Revision: 1.0 $
  */
-public class ICU4JImpl {
+public class ICU4JImpl 
+{
     Bidi bidi;
 
-    public ICU4JImpl() {
+    /**
+     * Constructor.
+     */
+    public ICU4JImpl() 
+    {
         bidi = new Bidi();
 
         /* We do not use bidi.setInverse() because that uses
@@ -44,9 +51,13 @@ public class ICU4JImpl {
      * Takes a line of text in presentation order and converts it to logical order.
      * @see TextNormalize.makeLineLogicalOrder(String, boolean)     
      *  
+     * @param str String to convert
+     * @param isRtlDominant RTL (right-to-left) will be the dominant text direction
+     * @return The converted string
      */
-    public String makeLineLogicalOrder(String a_str, boolean a_isRtlDominant) {    	
-        bidi.setPara(a_str, a_isRtlDominant?Bidi.RTL:Bidi.LTR, null);
+    public String makeLineLogicalOrder(String str, boolean isRtlDominant) 
+    {    
+        bidi.setPara(str, isRtlDominant?Bidi.RTL:Bidi.LTR, null);
 
         /* Set the mirror flag so that parentheses and other mirror symbols
          * are properly reversed, when needed.  With this removed, lines
@@ -60,27 +71,32 @@ public class ICU4JImpl {
      * Normalize presentation forms of characters to the separate parts. 
      * @see TextNormalize.normalizePres(String)
      * 
-     * @param a_str String to normalize
+     * @param str String to normalize
      * @return Normalized form
      */
-    public String normalizePres(String a_str) {
+    public String normalizePres(String str)
+    {
         String retStr = "";
-        for (int i = 0; i < a_str.length(); i++) {
+        for (int i = 0; i < str.length(); i++) 
+        {
             /* We only normalize if the codepoint is in a given range. Otherwise, 
              * NFKC converts too many things that would cause confusion. For example,
              * it converts the micro symbol in extended latin to the value in the greek
              * script. We normalize the Unicode Alphabetic and Arabic A&B Presentation forms.
              */
-            char c = a_str.charAt(i);
+            char c = str.charAt(i);
             if (((c >= 0xFB00) && (c <= 0xFDFF)) ||
-                    ((c >= 0xFE70) && (c <= 0xFEFF)))	{
+                    ((c >= 0xFE70) && (c <= 0xFEFF)))
+            {
                 /* Some fonts map U+FDF2 differently than the Unicode spec.
                  * They add an extra U+0627 character to compensate.  
                  * This removes the extra character for those fonts. */ 
-                if((c == 0xFDF2) && (i > 0) && ((a_str.charAt(i-1) == 0x0627) || (a_str.charAt(i-1) == 0xFE8D))) {
+                if((c == 0xFDF2) && (i > 0) && ((str.charAt(i-1) == 0x0627) || (str.charAt(i-1) == 0xFE8D))) 
+                {
                     retStr += "\u0644\u0644\u0647";
                 }
-                else{
+                else
+                {
                     /*
                      * Trim because some decompositions have an extra space, such as
                      * U+FC5E
@@ -88,33 +104,39 @@ public class ICU4JImpl {
                     retStr += Normalizer.normalize(c, Normalizer.NFKC).trim(); 
                 }
             }
-            else {
-                retStr += a_str.charAt(i);
+            else 
+            {
+                retStr += str.charAt(i);
             }
         }
         return retStr;
     }
+    
     /**
-     * Decomposes Diacritic characters to their combining forms
+     * Decomposes Diacritic characters to their combining forms.
      * 
-     * @param a_str String to be Normalized
+     * @param str String to be Normalized
      * @return A Normalized String
      */      
-    public String normalizeDiac(String a_str){
+    public String normalizeDiac(String str)
+    {
         String retStr = "";
-        for (int i = 0; i < a_str.length(); i++) {
-            char c = a_str.charAt(i);
+        for (int i = 0; i < str.length(); i++) 
+        {
+            char c = str.charAt(i);
             if(Character.getType(c) == Character.NON_SPACING_MARK 
                     || Character.getType(c) == Character.MODIFIER_SYMBOL
-                    || Character.getType(c) == Character.MODIFIER_LETTER){
+                    || Character.getType(c) == Character.MODIFIER_LETTER)
+            {
                 /*
                  * Trim because some decompositions have an extra space, such as
                  * U+00B4
                  */
                 retStr += Normalizer.normalize(c, Normalizer.NFKC).trim();
             }
-            else{
-                retStr += a_str.charAt(i);
+            else
+            {
+                retStr += str.charAt(i);
             }
         }
         return retStr;

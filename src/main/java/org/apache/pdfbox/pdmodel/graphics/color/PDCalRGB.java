@@ -99,9 +99,11 @@ public class PDCalRGB extends PDColorSpace
      */
     public ColorSpace createColorSpace() throws IOException
     {
-    	if (cSpace == null)
-    		cSpace = new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
-    	return cSpace;
+        if (cSpace == null)
+        {
+            cSpace = new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
+        }
+        return cSpace;
     }
 
     /**

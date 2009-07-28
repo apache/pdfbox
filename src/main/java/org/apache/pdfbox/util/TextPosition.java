@@ -44,9 +44,12 @@ public class TextPosition
     private String str; 
     private PDFont font;
     private float fontSize;
-    private int fontSizeInPt;
+    private int fontSizePt;
     private float wordSpacing;  // word spacing value, in display units
 
+    /**
+     *  Constructor.
+     */
     protected TextPosition()
     {
 
@@ -64,7 +67,7 @@ public class TextPosition
      * @param string The character to be displayed.
      * @param currentFont The current for for this text position.
      * @param fontSizeValue The new font size.
-     * @param fontSizeValue The font size in pt units.
+     * @param fontSizeInPt The font size in pt units.
      * @param ws The word spacing parameter (in display units)
      */
     public TextPosition(
@@ -89,7 +92,9 @@ public class TextPosition
         this.rot = page.findRotation();
         // make sure it is 0 to 270 and no negative numbers
         if(this.rot < 0)
+        {
             rot += 360;
+        }
 
         this.maxTextHeight = maxFontH;
         this.pageHeight = page.findMediaBox().getHeight();
@@ -100,7 +105,7 @@ public class TextPosition
         this.str = string;
         this.font = currentFont;
         this.fontSize = fontSizeValue;
-        this.fontSizeInPt = fontSizeInPt;
+        this.fontSizePt = fontSizeInPt;
         this.wordSpacing = ws;
     }
 
@@ -115,11 +120,12 @@ public class TextPosition
     }
 
     /**
-     * Return the Matrix textPos stored in this object
+     * Return the Matrix textPos stored in this object.
      *  
      * @return The Matrix containing all infos of the starting textposition
      */
-    public Matrix getTextPos() {
+    public Matrix getTextPos() 
+    {
         return textPos;
     }
 
@@ -128,7 +134,8 @@ public class TextPosition
      * based on its text matrix.
      * @return The direction of the text (0, 90, 180, or 270)
      */
-    public float getDir() {
+    public float getDir() 
+    {
         float a = textPos.getValue(0,0);
         float b = textPos.getValue(0,1);
         float c = textPos.getValue(1,0);
@@ -137,20 +144,27 @@ public class TextPosition
         // 12 0   left to right
         // 0 12 
         if ((a > 0) && (Math.abs(b) < d) && (Math.abs(c) < a) && (d > 0))
+        {
             return 0;
+        }
         // -12 0   right to left (upside down)
         // 0 -12
         else if ((a < 0) && (Math.abs(b) < Math.abs(d)) && (Math.abs(c) < Math.abs(a)) && (d < 0))
+        {
             return 180;
+        }
         // 0  12    up
         // -12 0 
         else if ((Math.abs(a) < Math.abs(c)) && (b > 0) && (c < 0) && (Math.abs(d) < b))
+        {
             return 90;
+        }
         // 0  -12   down
         // 12 0 
         else if ((Math.abs(a) < c) && (b < 0) && (c > 0) && (Math.abs(d) < Math.abs(b)))
+        {
             return 270;
-
+        }
         return 0;
     }
 
@@ -159,21 +173,28 @@ public class TextPosition
      * the given rotation amount.  The rotation adjusts where the 0,0
      * location is relative to the text. 
      *  
-     * @param a_rot Rotation to apply (0, 90, 180, or 270).  0 will perform no adjustments. 
+     * @param rotation Rotation to apply (0, 90, 180, or 270).  0 will perform no adjustments. 
      * @return X coordinate
      */
-    private float getX_rot(float a_rot)
+    private float getXRot(float rotation)
     {
-        if (a_rot == 0)
+        if (rotation == 0)
+        {
             return textPos.getValue(2,0);
-        else if (a_rot == 90)
+        }
+        else if (rotation == 90)
+        {
             return textPos.getValue(2,1);
-        else if (a_rot == 180)
+        }
+        else if (rotation == 180)
+        {
             return pageWidth - textPos.getValue(2,0);
-        else if (a_rot == 270)
+        }
+        else if (rotation == 270)
+        {
             return pageHeight - textPos.getValue(2,1);
-        else 
-            return 0;
+        }
+        return 0;
     }
 
     /**
@@ -185,7 +206,7 @@ public class TextPosition
      */
     public float getX()
     {
-        return getX_rot(rot);
+        return getXRot(rot);
     }
 
     /**
@@ -195,29 +216,37 @@ public class TextPosition
      *
      * @return The x coordinate of the text.
      */
-    public float getXDirAdj() {
-        return getX_rot(getDir());  
+    public float getXDirAdj() 
+    {
+        return getXRot(getDir());  
     }
 
     /** 
      * This will get the y position of the character with 0,0 in lower left. 
      * This will be adjusted by the given rotation. 
-     * @param a_rot Rotation to apply to text to adjust the 0,0 location (0,90,180,270)
+     * @param rotation Rotation to apply to text to adjust the 0,0 location (0,90,180,270)
      * 
      * @return The y coordinate of the text
      */
-    private float getY_ll_rot(float a_rot)
+    private float getYLowerLeftRot(float rotation)
     {
-        if (a_rot == 0)
+        if (rotation == 0)
+        {
             return textPos.getValue(2,1);
-        else if (a_rot == 90)
+        }
+        else if (rotation == 90)
+        {
             return pageWidth - textPos.getValue(2,0);
-        else if (a_rot == 180)
+        }
+        else if (rotation == 180)
+        {
             return pageHeight - textPos.getValue(2,1);
-        else if (a_rot == 270)
+        }
+        else if (rotation == 270)
+        {
             return textPos.getValue(2,0);
-        else 
-            return 0;
+        }
+        return 0;
     }
 
     /**
@@ -229,9 +258,13 @@ public class TextPosition
     public float getY()
     {
         if ((rot == 0) || (rot == 180))
-            return pageHeight - getY_ll_rot(rot);
-        else
-            return pageWidth - getY_ll_rot(rot);
+        {
+            return pageHeight - getYLowerLeftRot(rot);
+        }
+        else 
+        {
+            return pageWidth - getYLowerLeftRot(rot);
+        }
     }
 
     /**
@@ -245,9 +278,13 @@ public class TextPosition
         float dir = getDir();
         // some PDFBox code assumes that the 0,0 point is in upper left, not lower left
         if ((dir == 0) || (dir == 180))
-            return pageHeight - getY_ll_rot(dir);
+        {
+            return pageHeight - getYLowerLeftRot(dir);
+        }
         else
-            return pageWidth - getY_ll_rot(dir);
+        {
+            return pageWidth - getYLowerLeftRot(dir);
+        }
     }
 
 
@@ -255,15 +292,17 @@ public class TextPosition
     /**
      * Get the length or width of the text, based on a given rotation. 
      * 
-     * @param a_rot Rotation that was used to determine coordinates (0,90,180,270)
+     * @param rotation Rotation that was used to determine coordinates (0,90,180,270)
      * @return Width of text in display units
      */
-    private float getWidth_rot(float a_rot)
+    private float getWidthRot(float rotation)
     {
-        if ((a_rot == 90) || (a_rot == 270)) {
+        if ((rotation == 90) || (rotation == 270)) 
+        {
             return Math.abs(endY - textPos.getYPosition());
         }
-        else {
+        else 
+        {
             return Math.abs(endX - textPos.getXPosition());
         }
     }
@@ -273,8 +312,9 @@ public class TextPosition
      *
      * @return The width of the text in display units.
      */
-    public float getWidth() {
-        return getWidth_rot(rot);
+    public float getWidth() 
+    {
+        return getWidthRot(rot);
     }
 
     /**
@@ -282,8 +322,9 @@ public class TextPosition
      *
      * @return The width of the text in display units.
      */
-    public float getWidthDirAdj() {
-        return getWidth_rot(getDir());
+    public float getWidthDirAdj() 
+    {
+        return getWidthRot(getDir());
     }
 
     /**
@@ -291,7 +332,8 @@ public class TextPosition
      *
      * @return The maximum height of all characters in this string.
      */
-    public float getHeight() {
+    public float getHeight() 
+    {
         return maxTextHeight;
     }
 
@@ -300,7 +342,8 @@ public class TextPosition
      *
      * @return The maximum height of all characters in this string.
      */
-    public float getHeightDir() {
+    public float getHeightDir() 
+    {
         // this is not really a rotation-dependent calculation, but this is defined for symmetry.
         return maxTextHeight;
     }
@@ -317,14 +360,14 @@ public class TextPosition
     }
 
     /**
-     * This will get the font size in pt
+     * This will get the font size in pt.
      * To get this size we have to multiply the pdf-fontsize and the scaling from the textmatrix
      *
      * @return The font size in pt.
      */
     public float getFontSizeInPt()
     {
-        return fontSizeInPt;
+        return fontSizePt;
     }
 
     /**
@@ -414,7 +457,8 @@ public class TextPosition
         /*
          * No X overlap at all so return as soon as possible. 
          */
-        if(tp2Xend <= thisXstart || tp2Xstart >= thisXend){
+        if(tp2Xend <= thisXstart || tp2Xstart >= thisXend)
+        {
             return false;
         }   
         /*
@@ -423,19 +467,22 @@ public class TextPosition
          * top of TextPosition
          */
         if((tp2.getYDirAdj() + tp2.getHeightDir() < getYDirAdj()) ||
-                (tp2.getYDirAdj() > getYDirAdj() + getHeightDir())){
+                (tp2.getYDirAdj() > getYDirAdj() + getHeightDir()))
+        {
             return false; 
         }          
         /* We're going to calculate the percentage of overlap. If its less
          * than a 15% x-coordinate overlap then we'll return false because its negligible.
          * .15 was determined by trial and error in the regression test files.
          */
-        else if((tp2Xstart > thisXstart) && (tp2Xend > thisXend)){
+        else if((tp2Xstart > thisXstart) && (tp2Xend > thisXend))
+        {
             double overlap = thisXend - tp2Xstart;
             double overlapPercent = overlap/getWidthDirAdj();
             return (overlapPercent > .15);
         }
-        else if((tp2Xstart < thisXstart) && (tp2Xend < thisXend)){
+        else if((tp2Xstart < thisXstart) && (tp2Xend < thisXend))
+        {
             double overlap = tp2Xend - thisXstart;
             double overlapPercent = overlap/getWidthDirAdj();
             return (overlapPercent > .15);
@@ -453,10 +500,12 @@ public class TextPosition
      * @param diacritic TextPosition to merge into the current TextPosition.
      * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    public void mergeDiacritic (TextPosition diacritic, TextNormalize normalize)
+    public void mergeDiacritic(TextPosition diacritic, TextNormalize normalize)
     {
-        if (diacritic.getCharacter().length() > 1)
+        if (diacritic.getCharacter().length() > 1) 
+        {
             return;
+        }
 
         float diacXStart = diacritic.getXDirAdj();
         float diacXEnd = diacXStart + diacritic.widths[0];
@@ -466,8 +515,8 @@ public class TextPosition
         int strLen = str.length();
         boolean wasAdded = false;
 
-        for (int i = 0; i < strLen && wasAdded == false; i++) {
-
+        for (int i = 0; i < strLen && !wasAdded; i++) 
+        {
             float currCharXEnd = currCharXStart + widths[i];
 
             /*
@@ -475,21 +524,26 @@ public class TextPosition
              * the current character and the previous character. If no previous character,
              * just append the diacritic after the current one. 
              */
-            if(diacXStart < currCharXStart && diacXEnd <= currCharXEnd){               
-                if(i == 0){
+            if(diacXStart < currCharXStart && diacXEnd <= currCharXEnd)
+            {               
+                if(i == 0)
+                {
                     insertDiacritic(i, diacritic, normalize);
                 }
-                else{    
+                else
+                {    
                     float distanceOverlapping1 = diacXEnd - currCharXStart;
                     float percentage1 = distanceOverlapping1/widths[i];
 
                     float distanceOverlapping2 = currCharXStart - diacXStart;
                     float percentage2 = distanceOverlapping2/widths[i-1];
 
-                    if(percentage1 >= percentage2){
+                    if(percentage1 >= percentage2)
+                    {
                         insertDiacritic(i, diacritic, normalize);
                     }
-                    else{
+                    else
+                    {
                         insertDiacritic(i-1, diacritic, normalize);
                     }
                 }
@@ -497,20 +551,23 @@ public class TextPosition
             }
             //diacritic completely covers this character and therefore we assume that
             //this is the character the diacritic belongs to
-            else if(diacXStart < currCharXStart && diacXEnd > currCharXEnd){
+            else if(diacXStart < currCharXStart && diacXEnd > currCharXEnd)
+            {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
             //Otherwise, The diacritic modifies this character because its completely
             //contained by the character width
-            else if(diacXStart >= currCharXStart && diacXEnd <= currCharXEnd) {
+            else if(diacXStart >= currCharXStart && diacXEnd <= currCharXEnd) 
+            {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;   
             }
             /*
              * Last character in the TextPosition so we add diacritic to the end
              */
-            else if(diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == (strLen - 1)){
+            else if(diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == (strLen - 1))
+            {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }        
@@ -528,7 +585,8 @@ public class TextPosition
      * @param diacritic The diacritic TextPosition
      * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    private void insertDiacritic(int i, TextPosition diacritic, TextNormalize normalize){
+    private void insertDiacritic(int i, TextPosition diacritic, TextNormalize normalize)
+    {
         /* we add the diacritic to the right or left of the character
          * depending on the direction of the character.  Note that this
          * is only required because the text is currently stored in 
@@ -545,13 +603,15 @@ public class TextPosition
         if ((dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT)
                 || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC)
                 || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING)
-                || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)) {
+                || (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)) 
+        {
             buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
             widths2[i] = 0;
             buf.append(str.charAt(i));
             widths2[i+1] = widths[i];
         } 
-        else {
+        else 
+        {
             buf.append(str.charAt(i));
             widths2[i] = widths[i];
             buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
@@ -570,7 +630,8 @@ public class TextPosition
      * 
      * @return True if the current character is a diacritic char. 
      */
-    public boolean isDiacritic() {
+    public boolean isDiacritic() 
+    {
         String cText = this.getCharacter();
         return (cText.length() == 1 &&  (Character.getType(cText.charAt(0)) == Character.NON_SPACING_MARK
                 || Character.getType(cText.charAt(0)) == Character.MODIFIER_SYMBOL

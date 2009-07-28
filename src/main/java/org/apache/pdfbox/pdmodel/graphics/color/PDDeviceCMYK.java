@@ -20,14 +20,9 @@ import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
-
 import java.awt.Transparency;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
-
-import java.io.InputStream;
-
-import org.apache.pdfbox.util.ResourceLoader;
 
 
 /**
@@ -92,7 +87,9 @@ public class PDDeviceCMYK extends PDColorSpace
     public ColorSpace createColorSpace() throws IOException
     {
         if( cSpace == null )
+        {
             cSpace = new ColorSpaceCMYK();
+        }
         return cSpace;
     }
 

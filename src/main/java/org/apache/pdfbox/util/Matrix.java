@@ -146,18 +146,19 @@ public class Matrix implements Cloneable
     {
         Matrix result = new Matrix();
 
-        if (b != null && b.single != null) {
-        float[] bMatrix = b.single;
-        float[] resultMatrix = result.single;
-        resultMatrix[0] = single[0] * bMatrix[0] + single[1] * bMatrix[3] + single[2] * bMatrix[6];
-        resultMatrix[1] = single[0] * bMatrix[1] + single[1] * bMatrix[4] + single[2] * bMatrix[7];
-        resultMatrix[2] = single[0] * bMatrix[2] + single[1] * bMatrix[5] + single[2] * bMatrix[8];
-        resultMatrix[3] = single[3] * bMatrix[0] + single[4] * bMatrix[3] + single[5] * bMatrix[6];
-        resultMatrix[4] = single[3] * bMatrix[1] + single[4] * bMatrix[4] + single[5] * bMatrix[7];
-        resultMatrix[5] = single[3] * bMatrix[2] + single[4] * bMatrix[5] + single[5] * bMatrix[8];
-        resultMatrix[6] = single[6] * bMatrix[0] + single[7] * bMatrix[3] + single[8] * bMatrix[6];
-        resultMatrix[7] = single[6] * bMatrix[1] + single[7] * bMatrix[4] + single[8] * bMatrix[7];
-        resultMatrix[8] = single[6] * bMatrix[2] + single[7] * bMatrix[5] + single[8] * bMatrix[8];
+        if (b != null && b.single != null) 
+        {
+            float[] bMatrix = b.single;
+            float[] resultMatrix = result.single;
+            resultMatrix[0] = single[0] * bMatrix[0] + single[1] * bMatrix[3] + single[2] * bMatrix[6];
+            resultMatrix[1] = single[0] * bMatrix[1] + single[1] * bMatrix[4] + single[2] * bMatrix[7];
+            resultMatrix[2] = single[0] * bMatrix[2] + single[1] * bMatrix[5] + single[2] * bMatrix[8];
+            resultMatrix[3] = single[3] * bMatrix[0] + single[4] * bMatrix[3] + single[5] * bMatrix[6];
+            resultMatrix[4] = single[3] * bMatrix[1] + single[4] * bMatrix[4] + single[5] * bMatrix[7];
+            resultMatrix[5] = single[3] * bMatrix[2] + single[4] * bMatrix[5] + single[5] * bMatrix[8];
+            resultMatrix[6] = single[6] * bMatrix[0] + single[7] * bMatrix[3] + single[8] * bMatrix[6];
+            resultMatrix[7] = single[6] * bMatrix[1] + single[7] * bMatrix[4] + single[8] * bMatrix[7];
+            resultMatrix[8] = single[6] * bMatrix[2] + single[7] * bMatrix[5] + single[8] * bMatrix[8];
         }
         return result;
     }

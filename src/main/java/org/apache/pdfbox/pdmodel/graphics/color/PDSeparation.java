@@ -94,9 +94,8 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorSpace createColorSpace() throws IOException
     {
-        //throw new IOException( "Not implemented" );
-        try{
-
+        try
+        {
             ///dump some information to help figure these things out
             //logger().info( array.toString());
 
@@ -104,16 +103,19 @@ public class PDSeparation extends PDColorSpace
 
             //logger().info(alt.toString());
 
-            ColorSpace CS = alt.createColorSpace();///dwilson 12/15/07
-            //logger().info(CS.toString() + " reporting type " + CS.getType() + " and having component count of " + CS.getNumComponents());
+            ColorSpace colorspace = alt.createColorSpace();///dwilson 12/15/07
 
-            return CS;
-        }catch (IOException IOe){
-            logger().severe(IOe.toString() + "\n at\n" + FullStackTrace(IOe));
+            return colorspace;
+        }
+        catch (IOException ioexception)
+        {
+            logger().severe(ioexception.toString() + "\n at\n" + FullStackTrace(ioexception));
 
-            throw IOe;
-        }catch (Exception e){
-            logger().severe(e.toString() + "\n at\n" +FullStackTrace(e));
+            throw ioexception;
+        }
+        catch (Exception exception)
+        {
+            logger().severe(exception.toString() + "\n at\n" +FullStackTrace(exception));
             throw new IOException("Failed to Create ColorSpace");
         }
     }
@@ -220,6 +222,11 @@ public class PDSeparation extends PDColorSpace
         return (COSDictionary) array.getObject( 3);
     }
     
+    /**
+     * Returns all colorvalues for this colorspace. 
+     * @return COSArry with all colorvalues
+     * @throws IOException If there is an error getting the object from the dictionary
+     */
     public COSArray getColorValues() throws IOException
     {
         return (COSArray) getDictionary().getDictionaryObject("C1");
