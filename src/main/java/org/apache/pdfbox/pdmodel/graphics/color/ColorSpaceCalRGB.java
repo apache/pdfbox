@@ -33,98 +33,110 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
  */
 public class ColorSpaceCalRGB extends ColorSpace
 {
-	private PDGamma gamma = null;
-	private PDTristimulus whitepoint = null;
-	private PDTristimulus blackpoint = null;
-	private PDMatrix matrix = null;
-	
-	/**
-	 * IDfor serialization
-	 */
-	private static final long serialVersionUID = -6362864473145799405L;
+    private PDGamma gamma = null;
+    private PDTristimulus whitepoint = null;
+    private PDTristimulus blackpoint = null;
+    private PDMatrix matrix = null;
+    
+    /**
+     * ID for serialization.
+     */
+    private static final long serialVersionUID = -6362864473145799405L;
 
-	/**
-	 * Constructor
-	 */
-	public ColorSpaceCalRGB()
+    /**
+     *  Constructor.
+     */
+    public ColorSpaceCalRGB()
     {
-		super(ColorSpace.TYPE_3CLR,3);
+        super(ColorSpace.TYPE_3CLR,3);
     }
 
-	/**
-	 * Constructor
-	 */
-	public ColorSpaceCalRGB(PDGamma gamma, PDTristimulus whitepoint, PDTristimulus blackpoint, PDMatrix matrix)
+    /**
+     * Constructor.
+     * @param gammaValue Gamma
+     * @param whitept Whitepoint
+     * @param blackpt Blackpoint
+     * @param linearMatrix Matrix value
+     */
+    public ColorSpaceCalRGB(PDGamma gammaValue, PDTristimulus whitept, PDTristimulus blackpt, PDMatrix linearMatrix)
     {
-		this();
-		this.gamma = gamma;
-		this.whitepoint = whitepoint;
-		this.blackpoint = blackpoint;
-		this.matrix = matrix;
+        this();
+        this.gamma = gammaValue;
+        this.whitepoint = whitept;
+        this.blackpoint = blackpt;
+        this.matrix = linearMatrix;
     }
 
-	/**
-	 * 	Converts colorvalues from RGB-colorspace to CIEXYZ-colorspace
-	 *  @param rgbvalue RGB colorvalues to be converted.
-	 *  @return Returns converted colorvalues.
-	 */
-	private float[] fromRGBtoCIEXYZ(float[] rgbvalue) {
-		ColorSpace colorspaceRGB = ColorSpace.getInstance(CS_sRGB);
-		return colorspaceRGB.toCIEXYZ(rgbvalue);
-	}
-	
-	/**
-	 * 	Converts colorvalues from CIEXYZ-colorspace to RGB-colorspace
-	 *  @param rgbvalue CIEXYZ colorvalues to be converted.
-	 *  @return Returns converted colorvalues.
-	 */
-	private float[] fromCIEXYZtoRGB(float[] xyzvalue) {
-		ColorSpace colorspaceXYZ = ColorSpace.getInstance(CS_CIEXYZ);
-		return colorspaceXYZ.toRGB(xyzvalue);
-	}
+    /**
+     *  Converts colorvalues from RGB-colorspace to CIEXYZ-colorspace.
+     *  @param rgbvalue RGB colorvalues to be converted.
+     *  @return Returns converted colorvalues.
+     */
+    private float[] fromRGBtoCIEXYZ(float[] rgbvalue) 
+    {
+        ColorSpace colorspaceRGB = ColorSpace.getInstance(CS_sRGB);
+        return colorspaceRGB.toCIEXYZ(rgbvalue);
+    }
+    
+    /**
+     *  Converts colorvalues from CIEXYZ-colorspace to RGB-colorspace.
+     *  @param rgbvalue CIEXYZ colorvalues to be converted.
+     *  @return Returns converted colorvalues.
+     */
+    private float[] fromCIEXYZtoRGB(float[] xyzvalue) 
+    {
+        ColorSpace colorspaceXYZ = ColorSpace.getInstance(CS_CIEXYZ);
+        return colorspaceXYZ.toRGB(xyzvalue);
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] fromCIEXYZ(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 3) 
-			// We have to convert from XYV to RGB
-			return fromCIEXYZtoRGB(colorvalue);
-		else
-			return null;
-	}
+    public float[] fromCIEXYZ(float[] colorvalue)
+    {
+        if (colorvalue != null && colorvalue.length == 3)
+        {
+            // We have to convert from XYV to RGB
+            return fromCIEXYZtoRGB(colorvalue);
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] fromRGB(float[] rgbvalue) {
-		if (rgbvalue != null && rgbvalue.length == 3) {
-			return rgbvalue;
-		}
-		else
-			return null;
-	}
+    public float[] fromRGB(float[] rgbvalue) 
+    {
+        if (rgbvalue != null && rgbvalue.length == 3) 
+        {
+            return rgbvalue;
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] toCIEXYZ(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 4) 
-			// We have to convert from RGB to XYV
-			return fromRGBtoCIEXYZ(toRGB(colorvalue));
-		else
-			return null;
-	}
+    public float[] toCIEXYZ(float[] colorvalue) 
+    {
+        if (colorvalue != null && colorvalue.length == 4)
+        {
+            // We have to convert from RGB to XYV
+            return fromRGBtoCIEXYZ(toRGB(colorvalue));
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] toRGB(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 3) {
-			return colorvalue;
-		}
-		else
-			return null;
-	}
+    public float[] toRGB(float[] colorvalue) 
+    {
+        if (colorvalue != null && colorvalue.length == 3) 
+        {
+            return colorvalue;
+        }
+        return null;
+    }
 
 }

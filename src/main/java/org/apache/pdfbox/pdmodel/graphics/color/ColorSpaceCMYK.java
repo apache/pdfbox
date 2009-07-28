@@ -26,112 +26,128 @@ import java.awt.color.ColorSpace;
  */
 public class ColorSpaceCMYK extends ColorSpace
 {
-	/**
-	 * IDfor serialization
-	 */
-	private static final long serialVersionUID = -6362864473145799405L;
-
-	/**
-	 * Constructor
-	 */
-	public ColorSpaceCMYK()
+    /**
+     * IDfor serialization.
+     */
+    private static final long serialVersionUID = -6362864473145799405L;
+    
+    /**
+     * Constructor.
+     */
+    public ColorSpaceCMYK()
     {
-		super(ColorSpace.TYPE_CMYK,4);
+        super(ColorSpace.TYPE_CMYK,4);
     }
 
-	/**
-	 * 	Converts colorvalues from RGB-colorspace to CIEXYZ-colorspace
-	 *  @param rgbvalue RGB colorvalues to be converted.
-	 *  @return Returns converted colorvalues.
-	 */
-	private float[] fromRGBtoCIEXYZ(float[] rgbvalue) {
-		ColorSpace colorspaceRGB = ColorSpace.getInstance(CS_sRGB);
-		return colorspaceRGB.toCIEXYZ(rgbvalue);
-	}
-	
-	/**
-	 * 	Converts colorvalues from CIEXYZ-colorspace to RGB-colorspace
-	 *  @param rgbvalue CIEXYZ colorvalues to be converted.
-	 *  @return Returns converted colorvalues.
-	 */
-	private float[] fromCIEXYZtoRGB(float[] xyzvalue) {
-		ColorSpace colorspaceXYZ = ColorSpace.getInstance(CS_CIEXYZ);
-		return colorspaceXYZ.toRGB(xyzvalue);
-	}
+    /**
+     *  Converts colorvalues from RGB-colorspace to CIEXYZ-colorspace.
+     *  @param rgbvalue RGB colorvalues to be converted.
+     *  @return Returns converted colorvalues.
+     */
+    private float[] fromRGBtoCIEXYZ(float[] rgbvalue) 
+    {
+        ColorSpace colorspaceRGB = ColorSpace.getInstance(CS_sRGB);
+        return colorspaceRGB.toCIEXYZ(rgbvalue);
+    }
+    
+    /**
+     *  Converts colorvalues from CIEXYZ-colorspace to RGB-colorspace.
+     *  @param rgbvalue CIEXYZ colorvalues to be converted.
+     *  @return Returns converted colorvalues.
+     */
+    private float[] fromCIEXYZtoRGB(float[] xyzvalue) 
+    {
+        ColorSpace colorspaceXYZ = ColorSpace.getInstance(CS_CIEXYZ);
+        return colorspaceXYZ.toRGB(xyzvalue);
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] fromCIEXYZ(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 3) 
-			// We have to convert from XYV to RGB to CMYK
-			return fromRGB(fromCIEXYZtoRGB(colorvalue));
-		else
-			return null;
-	}
+    public float[] fromCIEXYZ(float[] colorvalue) 
+    {
+        if (colorvalue != null && colorvalue.length == 3)
+        {
+            // We have to convert from XYV to RGB to CMYK
+            return fromRGB(fromCIEXYZtoRGB(colorvalue));
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] fromRGB(float[] rgbvalue) {
-		if (rgbvalue != null && rgbvalue.length == 3) {
-			// First of all we have to convert from RGB to CMY
-			float c = 1 - rgbvalue[0];
-			float m = 1 - rgbvalue[1];
-			float y = 1 - rgbvalue[2];
-			// Now we have to convert from CMY to CMYK
-			float var_K = 1;
-			float[] cmyk = new float[4];
-			if ( c < var_K )   
-				var_K = c;
-			if ( m < var_K )
-				var_K = m;
-			if ( y < var_K )   
-				var_K = y;
-			if ( var_K == 1 ) {
-				cmyk[0] = cmyk[1] = cmyk[2] = 0;
-			}
-			else {
-				cmyk[0] = ( c - var_K ) / ( 1 - var_K );
-				cmyk[1] = ( m - var_K ) / ( 1 - var_K );
-				cmyk[2] = ( y - var_K ) / ( 1 - var_K );
-			}
-			cmyk[3] = var_K;
-			return cmyk;
-		}
-		else
-			return null;
-	}
+    public float[] fromRGB(float[] rgbvalue) 
+    {
+        if (rgbvalue != null && rgbvalue.length == 3) 
+        {
+            // First of all we have to convert from RGB to CMY
+            float c = 1 - rgbvalue[0];
+            float m = 1 - rgbvalue[1];
+            float y = 1 - rgbvalue[2];
+            // Now we have to convert from CMY to CMYK
+            float varK = 1;
+            float[] cmyk = new float[4];
+            if ( c < varK )
+            {
+                varK = c;
+            }
+            if ( m < varK )
+            {
+                varK = m;
+            }
+            if ( y < varK ) 
+            {
+                varK = y;
+            }
+            if ( varK == 1 ) 
+            {
+                cmyk[0] = cmyk[1] = cmyk[2] = 0;
+            }
+            else 
+            {
+                cmyk[0] = ( c - varK ) / ( 1 - varK );
+                cmyk[1] = ( m - varK ) / ( 1 - varK );
+                cmyk[2] = ( y - varK ) / ( 1 - varK );
+            }
+            cmyk[3] = varK;
+            return cmyk;
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] toCIEXYZ(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 4) 
-			// We have to convert from CMYK to RGB to XYV
-			return fromRGBtoCIEXYZ(toRGB(colorvalue));
-		else
-			return null;
-	}
+    public float[] toCIEXYZ(float[] colorvalue) 
+    {
+        if (colorvalue != null && colorvalue.length == 4)
+        {
+            // We have to convert from CMYK to RGB to XYV
+            return fromRGBtoCIEXYZ(toRGB(colorvalue));
+        }
+        return null;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public float[] toRGB(float[] colorvalue) {
-		if (colorvalue != null && colorvalue.length == 4) {
-			// First of all we have to convert from CMYK to CMY
-			float c = ( colorvalue[0] * ( 1 - colorvalue[3] ) + colorvalue[3] );
-			float m = ( colorvalue[1] * ( 1 - colorvalue[3] ) + colorvalue[3] );
-			float y = ( colorvalue[2] * ( 1 - colorvalue[3] ) + colorvalue[3] );
-			// Now we have to convert from CMY to RGB
-			float[] rgbvalues = new float[3];
-			rgbvalues[0] = 1 - c;
-			rgbvalues[1] = 1 - m;
-			rgbvalues[2] = 1 - y;
-			return rgbvalues;
-		}
-		else
-			return null;
-	}
+    public float[] toRGB(float[] colorvalue) 
+    {
+        if (colorvalue != null && colorvalue.length == 4) 
+        {
+            // First of all we have to convert from CMYK to CMY
+            float c = ( colorvalue[0] * ( 1 - colorvalue[3] ) + colorvalue[3] );
+            float m = ( colorvalue[1] * ( 1 - colorvalue[3] ) + colorvalue[3] );
+            float y = ( colorvalue[2] * ( 1 - colorvalue[3] ) + colorvalue[3] );
+            // Now we have to convert from CMY to RGB
+            float[] rgbvalues = new float[3];
+            rgbvalues[0] = 1 - c;
+            rgbvalues[1] = 1 - m;
+            rgbvalues[2] = 1 - y;
+            return rgbvalues;
+        }
+        return null;
+    }
 
 }

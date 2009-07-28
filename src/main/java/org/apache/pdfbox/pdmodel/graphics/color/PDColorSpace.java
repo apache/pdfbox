@@ -37,7 +37,9 @@ import java.awt.image.ColorModel;
  */
 public abstract class PDColorSpace extends LoggingObject implements COSObjectable
 {
-    
+    /**
+     * array for the given parameters. 
+     */
     protected COSArray array;
     
     /**
@@ -89,11 +91,11 @@ public abstract class PDColorSpace extends LoggingObject implements COSObjectabl
     /*
     Don't just tell me its color type -- tell me its contents!
     */
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
-        
-        String RetVal = getName() + "{ " + (array==null? "" : array.toString() ) + " }";
-        
-    return RetVal;
+        return  getName() + "{ " + (array==null? "" : array.toString() ) + " }";
     }
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -51,6 +52,8 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 public class PDFStreamEngine extends LoggingObject
 {
     
+    private Vector unsupportedOperators = new Vector();
+    
     private static final byte[] SPACE_BYTES = { (byte)32 };
 
     private PDGraphicsState graphicsState = null;
@@ -58,7 +61,6 @@ public class PDFStreamEngine extends LoggingObject
     private Matrix textMatrix = null;
     private Matrix textLineMatrix = null;
     private Stack graphicsStack = new Stack();
-    //private PDResources resources = null;
 
     private Map operators = new HashMap();
 
@@ -70,7 +72,7 @@ public class PDFStreamEngine extends LoggingObject
     
     private int validCharCnt;
     private int totalCharCnt;
-
+    
     /**
      * This is a simple internal class used by the Stream engine to handle the
      * resources stack.
@@ -82,6 +84,9 @@ public class PDFStreamEngine extends LoggingObject
         private Map xobjects;
         private Map graphicsStates;
         private PDResources resources;
+        
+        private StreamResources()
+        {};
     }
 
     /**
@@ -106,7 +111,8 @@ public class PDFStreamEngine extends LoggingObject
      */
     public PDFStreamEngine( Properties properties ) throws IOException
     {
-        if( properties == null ) {
+        if( properties == null ) 
+        {
             throw new NullPointerException( "properties cannot be null" );
         }
         try
@@ -304,7 +310,7 @@ public class PDFStreamEngine extends LoggingObject
         initialMatrix.setValue(1,1,1);
         initialMatrix.setValue(1,2,0);
         initialMatrix.setValue(2,0,0);
-        initialMatrix.setValue(2,1,riseText);	
+        initialMatrix.setValue(2,1,riseText);
         initialMatrix.setValue(2,2,1);
     
         final Matrix ctm = graphicsState.getCurrentTransformationMatrix();
@@ -335,7 +341,8 @@ public class PDFStreamEngine extends LoggingObject
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
-            float characterHorizontalDisplacementText = (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor); 
+            float characterHorizontalDisplacementText = 
+                (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor); 
             maxVerticalDisplacementText = 
                 Math.max( 
                     maxVerticalDisplacementText, 
@@ -375,11 +382,10 @@ public class PDFStreamEngine extends LoggingObject
             //The adjustment will always be zero.  The adjustment as shown in the
             //TJ operator will be handled separately.
             float adjustment=0;
-            /* TODO: tx should be set for horizontal text and ty for vertical text, which
-             * seems to be specified in the font (not the direction in the matrix). 
-             */
-            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText + spacingText)
-                       *horizontalScalingText;
+            // TODO : tx should be set for horizontal text and ty for vertical text
+            // which seems to be specified in the font (not the direction in the matrix).
+            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText 
+                    + spacingText) * horizontalScalingText;
             float ty = 0;              
             
             Matrix td = new Matrix();
@@ -414,7 +420,8 @@ public class PDFStreamEngine extends LoggingObject
                 }
                 validCharCnt += c.length();
             }
-            else {
+            else 
+            {
                 // PDFBOX-373: Replace a null entry with "?" so it is
                 // not printed as "(null)"
                 c = "?";
@@ -430,7 +437,8 @@ public class PDFStreamEngine extends LoggingObject
         if( individualWidthsText.length != resultingString.length() )
         {
             float[] tmp = new float[resultingString.length()];
-            System.arraycopy( individualWidthsText, 0, tmp, 0, Math.min( individualWidthsText.length, resultingString.length() ));
+            System.arraycopy( individualWidthsText, 0, tmp, 0, 
+                    Math.min( individualWidthsText.length, resultingString.length() ));
             individualWidthsText = tmp;
             if( resultingString.equals( "- " ))
             {
@@ -468,13 +476,14 @@ public class PDFStreamEngine extends LoggingObject
      */
     public void processOperator( String operation, List arguments ) throws IOException
     {
-        try{
+        try
+        {
             PDFOperator oper = PDFOperator.getOperator( operation );
             processOperator( oper, arguments );
         }
         catch (IOException e)
         {
-            logger().warning (e.toString() + "\n at\n" + FullStackTrace(e));
+            logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
         }
     }
 
@@ -488,20 +497,27 @@ public class PDFStreamEngine extends LoggingObject
      */
     protected void processOperator( PDFOperator operator, List arguments ) throws IOException
     {
-        try{
+        try
+        {
             String operation = operator.getOperation();
             OperatorProcessor processor = (OperatorProcessor)operators.get( operation );
             if( processor != null )
             {
-        processor.setContext(this);
+                processor.setContext(this);
                 processor.process( operator, arguments );
-            }/*else{
-            logger().warning("NULL processor for operation: " + operation);
-        }*/
+            }
+            else
+            {
+                if (!unsupportedOperators.contains(operation)) 
+                {
+                    logger().info("unsupported/disabled operation: " + operation);
+                    unsupportedOperators.add(operation);
+                }
+            }
         }
         catch (Exception e)
         {
-            logger().warning (e.toString() + "\n at\n" + FullStackTrace(e));
+            logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
         }
     }
 
@@ -649,4 +665,5 @@ public class PDFStreamEngine extends LoggingObject
     {
         return totalCharCnt;
     }
+    
 }

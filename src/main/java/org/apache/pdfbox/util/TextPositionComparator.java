@@ -40,10 +40,14 @@ public class TextPositionComparator implements Comparator
 
         /* Only compare text that is in the same direction. */
         if (pos1.getDir() < pos2.getDir())
-        	return -1;
+        {
+            return -1;
+        }
         else if (pos1.getDir() > pos2.getDir())
-        	return 1;
-        	
+        {
+            return 1;
+        }
+        
         // Get the text direction adjusted coordinates
         float x1 = pos1.getXDirAdj();
         float x2 = pos2.getXDirAdj();

@@ -45,7 +45,7 @@ public class PDFHighlighter extends PDFTextStripper
     private String[] searchedWords;
     private ByteArrayOutputStream textOS = null;
     private Writer textWriter = null;
-    private static final String encoding = "UTF-16";
+    private static final String ENCODING = "UTF-16";
 
     /**
      * Default constructor.
@@ -54,7 +54,7 @@ public class PDFHighlighter extends PDFTextStripper
      */
     public PDFHighlighter() throws IOException
     {
-        super(encoding);
+        super(ENCODING);
         super.setLineSeparator( "" );
         super.setPageSeparator( "" );
         super.setWordSeparator( "" );
@@ -96,7 +96,7 @@ public class PDFHighlighter extends PDFTextStripper
                                 //" mode=active " + */
                                 " version=2>\n<Highlight>\n");
         textOS = new ByteArrayOutputStream();
-        textWriter = new OutputStreamWriter( textOS, encoding);
+        textWriter = new OutputStreamWriter( textOS, ENCODING);
         writeText(pdDocument, textWriter);
         highlighterOutput.write("</Highlight>\n</Body>\n</XML>");
         highlighterOutput.flush();
@@ -109,14 +109,14 @@ public class PDFHighlighter extends PDFTextStripper
     {
         textWriter.flush();
 
-        String page = new String( textOS.toByteArray(), encoding );
+        String page = new String( textOS.toByteArray(), ENCODING );
         textOS.reset();
         //page = page.replaceAll( "\n", "" );
         //page = page.replaceAll( "\r", "" );
         //page = CCRStringUtil.stripChar(page, '\n');
         //page = CCRStringUtil.stripChar(page, '\r');
 
-        // Traitement des listes à puces (caractères spéciaux)
+        // Traitement des listes ï¿½ puces (caractï¿½res spï¿½ciaux)
         if (page.indexOf("a") != -1)
         {
             page = page.replaceAll("a[0-9]{1,3}", ".");

@@ -24,6 +24,9 @@ package org.apache.pdfbox.persistence.util;
  */
 public final class COSHEXTable
 {
+    private COSHEXTable()
+    {
+    }
     /**
      * ASCII byte values for the hex strings.
      */

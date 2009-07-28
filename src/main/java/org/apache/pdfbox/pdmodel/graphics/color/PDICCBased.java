@@ -329,19 +329,21 @@ public class PDICCBased extends PDColorSpace
         stream.getStream().setItem( COSName.getPDFName( "Metadata" ), metadata );
     }
     
-        /*
-    Need more info on the ICCBased ones ... Array contains very little.
-    */
+    // Need more info on the ICCBased ones ... Array contains very little.
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
-        
-        String RetVal = super.toString() + "\n\t Number of Components: " ;
-    try{
-        RetVal = RetVal + getNumberOfComponents();
-    }catch (IOException IOe){
-        RetVal = RetVal + IOe.toString();
-    }
-        
-    return RetVal;
+        String retVal = super.toString() + "\n\t Number of Components: ";
+        try
+        {
+            retVal = retVal + getNumberOfComponents();
+        }
+        catch (IOException exception)
+        {
+            retVal = retVal + exception.toString();
+        }
+        return retVal;
     }
 }
