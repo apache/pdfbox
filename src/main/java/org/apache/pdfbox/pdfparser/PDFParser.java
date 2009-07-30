@@ -104,7 +104,8 @@ public class PDFParser extends BaseParser
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFParser(InputStream input, RandomAccess rafi, boolean force)
-        throws IOException{
+        throws IOException
+    {
         super(input);
         this.raf = rafi;
         this.forceParsing = force;
@@ -158,16 +159,22 @@ public class PDFParser extends BaseParser
             skipToNextObj();
 
             boolean wasLastParsedObjectEOF = false;
-            try{
-                while(true){
-                    if(pdfSource.isEOF()){
+            try
+            {
+                while(true)
+                {
+                    if(pdfSource.isEOF())
+                    {
                         break;
                     }
-                    try{
+                    try
+                    {
                         wasLastParsedObjectEOF = parseObject();
                     }
-                    catch(IOException e){
-                        if(forceParsing){
+                    catch(IOException e)
+                    {
+                        if(forceParsing)
+                        {
                             /*
                              * Warning is sent to the PDFBox.log and to the Console that
                              * we skipped over an object
@@ -175,7 +182,8 @@ public class PDFParser extends BaseParser
                             logger().log(Level.WARNING ,"Parsing Error, Skipping Object", e);
                             skipToNextObj();
                         }
-                        else{ 
+                        else
+                        { 
                             throw e;
                         }
                     }
@@ -183,20 +191,24 @@ public class PDFParser extends BaseParser
                 }
                 //Test if we saw a trailer section. If not, look for an XRef Stream (Cross-Reference Stream) 
                 //to populate the trailer and xref information. For PDF 1.5 and above 
-                if( document.getTrailer() == null ){
+                if( document.getTrailer() == null )
+                {
                     document.parseXrefStreams();
                 }
-                if( !document.isEncrypted() ){
+                if( !document.isEncrypted() )
+                {
                     document.dereferenceObjectStreams();
                 }
                 ConflictObj.resolveConflicts(document, conflictList);     
             }
-            catch( IOException e ){
+            catch( IOException e )
+            {
                 /*
                  * PDF files may have random data after the EOF marker. Ignore errors if
                  * last object processed is EOF. 
                  */
-                if( !wasLastParsedObjectEOF ){
+                if( !wasLastParsedObjectEOF )
+                {
                     throw e;
                 } 
             }
@@ -232,7 +244,8 @@ public class PDFParser extends BaseParser
      * 
      * @throws IOException 
      */
-    private void skipToNextObj() throws IOException {
+    private void skipToNextObj() throws IOException 
+    {
         byte[] b = new byte[16];
         Pattern p = Pattern.compile("\\d+\\s+\\d+\\s+obj.*", Pattern.DOTALL);
         /* Read a buffer of data each time to see if it starts with a
@@ -240,9 +253,11 @@ public class PDFParser extends BaseParser
          * rarely be needing this function. We could update this to use the 
          * circular buffer, like in readUntilEndStream().
          */
-        while(!pdfSource.isEOF()){
+        while(!pdfSource.isEOF())
+        {
              int l = pdfSource.read(b);
-             if(l < 1){
+             if(l < 1)
+             {
                  break;
              }
              String s = new String(b);
@@ -250,32 +265,40 @@ public class PDFParser extends BaseParser
                      s.startsWith("xref") || 
                      s.startsWith("startxref") ||
                      s.startsWith("stream") ||
-                     p.matcher(s).matches()){
+                     p.matcher(s).matches())
+             {
                  pdfSource.unread(b);
                  break;
              }
-             else{
+             else
+             {
                  pdfSource.unread(b, 1, l-1);
              }
         }   
     }
 
-    private void parseHeader() throws IOException{
+    private void parseHeader() throws IOException
+    {
         // read first line
         String header = readLine();
         // some pdf-documents are broken and the pdf-version is in one of the following lines
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+        {
             header = readLine();
-            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
+            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+            {
                 // if a line starts with a digit, it has to be the first one with data in it
-                if ((header.length() > 0) && (Character.isDigit (header.charAt(0))))
-                    break ;
+                if ((header.length() > 0) && (Character.isDigit(header.charAt(0))))
+                {
+                    break;
+                }
                 header = readLine();
             }
         }
 
         // nothing found
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1)){
+        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+        {
             throw new IOException( "Error: Header doesn't contain versioninfo" );
         }
         
@@ -283,11 +306,14 @@ public class PDFParser extends BaseParser
         //actually starts, so lets try to find the header first.
         int headerStart = header.indexOf( PDF_HEADER );
         if (headerStart == -1)
+        {
             headerStart = header.indexOf(FDF_HEADER);
+        }
 
         //greater than zero because if it is zero then
         //there is no point of trimming
-        if ( headerStart > 0 ){
+        if ( headerStart > 0 )
+        {
             //trim off any leading characters
             header = header.substring( headerStart, header.length() );
         }
@@ -295,15 +321,19 @@ public class PDFParser extends BaseParser
         /*
          * This is used if there is garbage after the header on the same line
          */
-        if (header.startsWith(PDF_HEADER)) {
-            if(!header.matches(PDF_HEADER + "\\d.\\d")) {
+        if (header.startsWith(PDF_HEADER)) 
+        {
+            if(!header.matches(PDF_HEADER + "\\d.\\d")) 
+            {
                 String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, PDF_HEADER.length()+3);
                 pdfSource.unread(headerGarbage.getBytes());
             }
         }
-        else {
-            if(!header.matches(FDF_HEADER + "\\d.\\d")) {
+        else 
+        {
+            if(!header.matches(FDF_HEADER + "\\d.\\d")) 
+            {
                 String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, FDF_HEADER.length()+3);
                 pdfSource.unread(headerGarbage.getBytes());
@@ -311,19 +341,23 @@ public class PDFParser extends BaseParser
         }
         document.setHeaderString(header);
         
-        try{
-            if (header.startsWith( PDF_HEADER )) {
-                float pdfVersion = Float. parseFloat (
-                        header.substring( PDF_HEADER .length(), Math. min ( header.length(), PDF_HEADER .length()+3) ) );
+        try
+        {
+            if (header.startsWith( PDF_HEADER )) 
+            {
+                float pdfVersion = Float. parseFloat(
+                        header.substring( PDF_HEADER.length(), Math.min( header.length(), PDF_HEADER .length()+3) ) );
                 document.setVersion( pdfVersion );
             }
-            else {
-                float pdfVersion = Float. parseFloat (
-                        header.substring( FDF_HEADER .length(), Math. min ( header.length(), FDF_HEADER .length()+3) ) );
+            else 
+            {
+                float pdfVersion = Float. parseFloat(
+                        header.substring( FDF_HEADER.length(), Math.min( header.length(), FDF_HEADER.length()+3) ) );
                 document.setVersion( pdfVersion );
             }
         }
-        catch ( NumberFormatException e ){
+        catch ( NumberFormatException e )
+        {
             throw new IOException( "Error getting pdf version:" + e );
         } 
     } 
@@ -380,7 +414,8 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseObject() throws IOException{
+    private boolean parseObject() throws IOException
+    {
         int currentObjByteOffset = pdfSource.getOffset();
         boolean isEndOfFile = false; 
         skipSpaces();
@@ -388,28 +423,34 @@ public class PDFParser extends BaseParser
         char peekedChar = (char)pdfSource.peek();
         
         //ignore endobj and endstream sections.
-        while( peekedChar == 'e' ){
+        while( peekedChar == 'e' )
+        {
             //there are times when there are multiple endobj, so lets
             //just read them and move on.
             readString();
             skipSpaces();
             peekedChar = (char)pdfSource.peek();
         }
-        if( pdfSource.isEOF()){
+        if( pdfSource.isEOF())
+        {
             //"Skipping because of EOF" );
             //end of file we will return a false and call it a day.
         }
         //xref table. Note: The contents of the Xref table are currently ignored
-        else if( peekedChar == 'x') {
+        else if( peekedChar == 'x') 
+        {
             parseXrefTable();
         }
         // Note: startxref can occur in either a trailer section or by itself 
-        else if (peekedChar == 't' || peekedChar == 's') {
-            if(peekedChar == 't'){
+        else if (peekedChar == 't' || peekedChar == 's') 
+        {
+            if(peekedChar == 't')
+            {
                 parseTrailer();
                 peekedChar = (char)pdfSource.peek(); 
             }
-            if (peekedChar == 's'){  
+            if (peekedChar == 's')
+            {  
                 parseStartXref();
                 //verify that EOF exists 
                 String eof = readExpectedString( "%%EOF" );
@@ -490,22 +531,35 @@ public class PDFParser extends BaseParser
             
             COSObjectKey key = new COSObjectKey( number, genNum );
             COSObject pdfObject = document.getObjectFromPool( key );
-            if(pdfObject.getObject() == null){
+            if(pdfObject.getObject() == null)
+            {
                 pdfObject.setObject(pb);
             }
             /*
              * If the object we returned already has a baseobject, then we have a conflict
              * which we will resolve using information after we parse the xref table.
              */
-            else{
+            else
+            {
                 addObjectToConflicts(currentObjByteOffset, key, pb); 
             }
             
             if( !endObjectKey.equals( "endobj" ) )
             {
-                if( !pdfSource.isEOF() )
-                {
-                    try{
+                               if (endObjectKey.startsWith( "endobj" ) ) 
+                               {
+                                       /*
+                                         * Some PDF files don't contain a new line after endobj so we 
+                                         * need to make sure that the next object number is getting read separately
+                                         * and not part of the endobj keyword. Ex. Some files would have "endobj28"
+                                         * instead of "endobj"
+                                         */
+                                        pdfSource.unread( endObjectKey.substring( 6 ).getBytes() );
+                                    } 
+                                    else if( !pdfSource.isEOF() )                
+                                    {
+                    try
+                    {
                         //It is possible that the endobj  is missing, there
                         //are several PDFs out there that do that so skip it and move on.
                         Float.parseFloat( endObjectKey );
@@ -544,13 +598,14 @@ public class PDFParser extends BaseParser
     }
     
    /**
-    * Adds a new ConflictObj to the conflictList
+    * Adds a new ConflictObj to the conflictList.
     * @param offset the offset of the ConflictObj
     * @param key The COSObjectKey of this object
     * @param pb The COSBase of this conflictObj
     * @throws IOException
     */
-    private void addObjectToConflicts(int offset, COSObjectKey key, COSBase pb) throws IOException{
+    private void addObjectToConflicts(int offset, COSObjectKey key, COSBase pb) throws IOException
+    {
         COSObject obj = new COSObject(null);
         obj.setObjectNumber( new COSInteger( key.getNumber() ) );
         obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
@@ -566,7 +621,8 @@ public class PDFParser extends BaseParser
      * @return false on parsing error 
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseStartXref() throws IOException{
+    private boolean parseStartXref() throws IOException
+    {
         if(pdfSource.peek() != 's')
         {
             return false; 
@@ -592,7 +648,8 @@ public class PDFParser extends BaseParser
      * @return false on parsing error 
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseXrefTable() throws IOException{
+    private boolean parseXrefTable() throws IOException
+    {
         if(pdfSource.peek() != 'x')
         {
             return false;
@@ -611,7 +668,8 @@ public class PDFParser extends BaseParser
             int currObjID = readInt(); // first obj id
             int count = readInt(); // the number of objects in the xref table
             skipSpaces();
-            for(int i = 0; i < count; i++){
+            for(int i = 0; i < count; i++)
+            {
                 if(pdfSource.isEOF() || isEndOfName((char)pdfSource.peek()))
                 {
                     break;
@@ -653,7 +711,8 @@ public class PDFParser extends BaseParser
             }
             skipSpaces();
             char c = (char)pdfSource.peek();
-            if(c < '0' || c > '9'){
+            if(c < '0' || c > '9')
+            {
                 break;
             }
         }
@@ -661,7 +720,7 @@ public class PDFParser extends BaseParser
     }
 
     /**
-     * This will parse the trailer from the stream and add it to the state
+     * This will parse the trailer from the stream and add it to the state.
      *            
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
@@ -676,7 +735,8 @@ public class PDFParser extends BaseParser
         String nextLine = readLine();
         if( !nextLine.trim().equals( "trailer" ) ) 
         {
-            // in some cases the EOL is missing and the trailer immediately continues with "<<" or with a blank character
+            // in some cases the EOL is missing and the trailer immediately 
+            // continues with "<<" or with a blank character
             // even if this does not comply with PDF reference we want to support as many PDFs as possible
             // Acrobat reader can also deal with this.
             if (nextLine.startsWith("trailer")) 
@@ -711,7 +771,7 @@ public class PDFParser extends BaseParser
         return true;
     }
     
-    /*
+    /**
      * Used to resolve conflicts when a PDF Document has multiple objects with
      * the same id number. Ideally, we could use the Xref table when parsing
      * the document to be able to determine which of the objects with the same ID
@@ -720,20 +780,22 @@ public class PDFParser extends BaseParser
      * been parsed. The Objects listed in the Xref Table are kept and the 
      * others are ignored. 
      */
-    private static class ConflictObj{
+    private static class ConflictObj
+    {
 
         private int offset;
-        private COSObjectKey key;
-        private COSObject pdfObject;
+        private COSObjectKey objectKey;
+        private COSObject object;
         
-        public ConflictObj(int offset, COSObjectKey key,
-                COSObject pdfObject) {
-            this.offset = offset;
-            this.key = key;
-            this.pdfObject = pdfObject;
+        public ConflictObj(int offsetValue, COSObjectKey key, COSObject pdfObject) 
+        {
+            this.offset = offsetValue;
+            this.objectKey = key;
+            this.object = pdfObject;
         }
-        public String toString(){
-            return "Object(" + offset + ", " + key + ")";
+        public String toString()
+        {
+            return "Object(" + offset + ", " + objectKey + ")";
         }
         
         /**
@@ -744,14 +806,17 @@ public class PDFParser extends BaseParser
          * table. 
          * @throws IOException
          */
-        private static void resolveConflicts(COSDocument document, List conflictList) throws IOException{
+        private static void resolveConflicts(COSDocument document, List conflictList) throws IOException
+        {
             Iterator conflicts = conflictList.iterator();
-            while(conflicts.hasNext()){
+            while(conflicts.hasNext())
+            {
                 ConflictObj o = (ConflictObj)conflicts.next();
                 Integer offset = new Integer(o.offset);
-                if(document.getXrefTable().containsValue(offset)){
-                    COSObject pdfObject = document.getObjectFromPool(o.key);
-                    pdfObject.setObject(o.pdfObject.getObject());
+                if(document.getXrefTable().containsValue(offset))
+                {
+                    COSObject pdfObject = document.getObjectFromPool(o.objectKey);
+                    pdfObject.setObject(o.object.getObject());
                 }
             }
         }
