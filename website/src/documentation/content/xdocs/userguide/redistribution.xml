@@ -34,8 +34,18 @@
             <th>Required for PDFBox redistribution</th>
         </tr>
         <tr>
-          <td><a href="https://svn.apache.org/repos/asf/incubator/pdfbox/trunk/licenses/adobe/AFM_License.html" title="Adobe AFM">Adobe AFM</a></td>
+            <td><a href="http://www.adobe.com/devnet/font/#pcfi" title="Adobe AFM">Adobe AFM</a></td>
             <td>Resource files for extracting font encoding.  Bundled inside the PDFBox jar file</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td><a href="http://www.adobe.com/devnet/font/#pcfi" title="Adobe AFM">Adobe CMap</a></td>
+            <td>Resource files for CJK font mapping.  Bundled inside the PDFBox jar file</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+          <td><a href="http://www.adobe.com/devnet/opentype/archives/glyph.html" title="Adobe Glyplist">Adobe Glyphlist</a></td>
+            <td>Mapping for the computation of a Unicode character string from a sequence of glyphs.  Bundled inside the PDFBox jar file</td>
             <td>Yes</td>
         </tr>
         <tr>
@@ -50,13 +60,18 @@
             <td>Yes</td>
         </tr>
         <tr>
-            <td><a href="https://olex.openlogic.com/licenses/45" title="BSD">FontBox</a></td>
+            <td><a href="http://www.apache.org/licenses/LICENSE-2.0" title="Apache 2.0">FontBox (incubating)</a></td>
             <td>Font Library</td>
             <td>Yes</td>
         </tr>
         <tr>
-            <td><a href="http://www.opensource.org/licenses/zlib-license.php"
-            title="zlib/libpng">IKVM</a></td>
+            <td><a href="http://www.apache.org/licenses/LICENSE-2.0" title="Apache 2.0">JempBox (incubating)</a></td>
+            <td>Library for working with XMP metadata.</td>
+            <td>Yes</td>
+        </tr>
+        <tr>
+            <td><a href="http://weblog.ikvm.net/story.aspx/license"
+            title="IKVM">IKVM</a></td>
             <td>Library for .NET version of PDFBox</td>
             <td>Only if using .NET version(the DLLs in /bin) of PDFBox</td>
         </tr>
@@ -67,24 +82,18 @@
             <td>No</td>
         </tr>
         <tr>
-            <td><a href="https://olex.openlogic.com/licenses/45" title="BSD">JempBox</a></td>
-            <td>Library for working with XMP metadata.</td>
-            <td>Yes</td>
-        </tr>
-        <tr>
             <td><a href="http://www.apache.org/licenses/LICENSE-2.0"
             title="Apache 2.0">Apache Lucene</a></td>
             <td>Text search engine library.  PDFBox provides simple integration with Lucene.</td>
             <td>Optional, only if using Lucene</td>
         </tr>
         <tr>
-            <td><a href="https://svn.apache.org/repos/asf/incubator/pdfbox/trunk/licenses/sun-jaicmm" title="Sun JAI">JAI-CMM</a></td>
-            <td>ICC Color profile resources, bundled in PDFBox jar file</td>
-            <td>Yes</td>
+            <td><a href="http://source.icu-project.org/repos/icu/icu/trunk/license.html"
+            title="ICU">ICU4J</a></td>
+            <td>Normalizing right to left text.</td>
+            <td>Optional, only if extracting right to left text</td>
         </tr>
      </table>
-
-
     </section>
   </body>
 </document>
