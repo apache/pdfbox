@@ -238,37 +238,6 @@ Contributions made to the original PDFBox project at www.pdfbox.org:
    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.
 
-The FontBox and JempBox libraries:
-
-   Copyright (c) 2003-2005, www.fontbox.org
-   All rights reserved.
-
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
-
-   2. Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-   3. Neither the name of fontbox; nor the names of its contributors may be
-      used to endorse or promote products derived from this software without
-      specific prior written permission.
-
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-   ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-   CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-   SUCH DAMAGE.
-
 Bouncy Castle encryption libraries
 
    Copyright (c) 2000-2006 The Legion Of The Bouncy Castle
@@ -302,6 +271,39 @@ Font Metrics for PDF Core 14 Fonts
    to this file or any of the AFM files are prominently noted in the modified
    file(s); and that this paragraph is not modified. Adobe Systems has no
    responsibility or obligation to support the use of the AFM files. 
+
+Adobe AFM and CMap files and Glyphlist (http://www.adobe.com/devnet/font/#pcfi 
+and http://www.adobe.com/devnet/opentype/archives/glyph.html)
+
+   Copyright (c) 1997,1998,2002,2007 Adobe Systems Incorporated
+ 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this documentation file to use, copy, publish, distribute,
+   sublicense, and/or sell copies of the documentation, and to permit
+   others to do the same, provided that:
+   - No modification, editing or other alteration of this document is
+   allowed; and
+   - The above copyright notice and this permission notice shall be
+   included in all copies of the documentation.
+ 
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this documentation file, to create their own derivative works
+   from the content of this document to use, copy, publish, distribute,
+   sublicense, and/or sell the derivative works, and to permit others to do
+   the same, provided that the derived work is not represented as being a
+   copy or version of this document.
+ 
+   Adobe shall not be liable to any party for any loss of revenue or profit
+   or for indirect, incidental, special, consequential, or other similar
+   damages, whether based on tort (including without limitation negligence
+   or strict liability), contract or other legal or equitable grounds even
+   if Adobe has been advised or had reason to know of the possibility of
+   such damages. The Adobe materials are provided on an "AS IS" basis.
+   Adobe specifically disclaims all express, statutory, or implied
+   warranties relating to the Adobe materials, including but not limited to
+   those concerning merchantability or fitness for a particular purpose or
+   non-infringement of any third party rights regarding the Adobe
+    materials.
 
 The JUnit test framework (http://junit.org/)
 
@@ -528,3 +530,35 @@ The JUnit test framework (http://junit.org/)
    this Agreement will bring a legal action under this Agreement more than
    one year after the cause of action arose. Each party waives its rights to
    a jury trial in any resulting litigation.
+
+The International Components for Unicode library (http://site.icu-project.org/)
+
+ICU License - ICU 1.8.1 and later
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright (c) 1995-2009 International Business Machines Corporation and others
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, and/or sell copies of the Software, and to permit persons to whom 
+the Software is furnished to do so, provided that the above copyright notice(s) and 
+this permission notice appear in all copies of the Software and that both the above 
+copyright notice(s) and this permission notice appear in supporting documentation.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR
+CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not be used in
+advertising or otherwise to promote the sale, use or other dealings in this Software
+without prior written authorization of the copyright holder.
+
+ 
