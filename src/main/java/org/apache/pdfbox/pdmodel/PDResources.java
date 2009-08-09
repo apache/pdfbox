@@ -26,17 +26,11 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
@@ -120,7 +114,7 @@ public class PDResources implements COSObjectable
             if( font instanceof COSDictionary )
             {
                 COSDictionary fontDictionary = (COSDictionary)font;
-	            actuals.put( fontName.getName(), PDFontFactory.createFont( fontDictionary, fontCache ));
+                actuals.put( fontName.getName(), PDFontFactory.createFont( fontDictionary, fontCache ));
             }
         }
         return retval;

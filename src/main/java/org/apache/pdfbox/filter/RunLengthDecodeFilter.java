@@ -59,7 +59,8 @@ public class RunLengthDecodeFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         int dupAmount = -1;
         byte[] buffer = new byte[128];
@@ -90,7 +91,8 @@ public class RunLengthDecodeFilter implements Filter
      /**
      * {@inheritDoc}
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         System.err.println( "Warning: RunLengthDecodeFilter.encode is not implemented yet, skipping this stream." );
     }

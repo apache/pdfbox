@@ -45,7 +45,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param a An existing FDF Annotation.
      */

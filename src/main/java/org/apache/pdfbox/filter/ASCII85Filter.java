@@ -36,7 +36,8 @@ public class ASCII85Filter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         ASCII85InputStream is = null;
         try
@@ -62,7 +63,8 @@ public class ASCII85Filter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         ASCII85OutputStream os = new ASCII85OutputStream(result);
         byte[] buffer = new byte[1024];

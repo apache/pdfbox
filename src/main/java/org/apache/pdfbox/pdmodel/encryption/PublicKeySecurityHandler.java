@@ -243,7 +243,8 @@ public class PublicKeySecurityHandler extends SecurityHandler
             Security.addProvider(new BouncyCastleProvider());
 
             PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
-            if (dictionary == null) {
+            if (dictionary == null) 
+            {
                 dictionary = new PDEncryptionDictionary();
             }
 

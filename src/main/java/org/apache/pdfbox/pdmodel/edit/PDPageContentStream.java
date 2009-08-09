@@ -377,8 +377,8 @@ public class PDPageContentStream
      */
     public void setStrokingColorSpace( PDColorSpace colorSpace ) throws IOException
     {
-    	currentStrokingColorSpace = colorSpace;
-    	writeColorSpace( colorSpace );
+        currentStrokingColorSpace = colorSpace;
+        writeColorSpace( colorSpace );
         appendRawCommands( SET_STROKING_COLORSPACE );
     }
 
@@ -391,8 +391,8 @@ public class PDPageContentStream
      */
     public void setNonStrokingColorSpace( PDColorSpace colorSpace ) throws IOException
     {
-    	currentNonStrokingColorSpace = colorSpace;
-    	writeColorSpace( colorSpace );
+        currentNonStrokingColorSpace = colorSpace;
+        writeColorSpace( colorSpace );
         appendRawCommands( SET_NON_STROKING_COLORSPACE );
     }
 

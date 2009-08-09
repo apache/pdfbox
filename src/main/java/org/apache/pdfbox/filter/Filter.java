@@ -40,7 +40,8 @@ public interface Filter
      *
      * @throws IOException If there is an error decompressing the stream.
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException;
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException;
 
     /**
      * This will encode some data.
@@ -52,5 +53,6 @@ public interface Filter
      *
      * @throws IOException If there is an error compressing the stream.
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException;
+    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException;
 }

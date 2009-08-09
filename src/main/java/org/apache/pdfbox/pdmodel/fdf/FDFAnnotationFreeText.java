@@ -45,7 +45,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param a An existing FDF Annotation.
      */

@@ -771,6 +771,23 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             return matches;
         }
+    
+    /**
+     * Check if a plaintext password is the user password.
+     *
+     * @param password The plaintext password.
+     * @param u The u entry of the encryption dictionary.
+     * @param o The o entry of the encryption dictionary.
+     * @param permissions The permissions set in the the PDF.
+     * @param id The document id used for encryption.
+     * @param encRevision The revision of the encryption algorithm.
+     * @param length The length of the encryption key.
+     *
+     * @return true If the plaintext password is the user password.
+     *
+     * @throws CryptographyException If there is an error during encryption.
+     * @throws IOException If there is an error accessing data.
+     */
     public final boolean isUserPassword(
             String password,
             byte[] u,
@@ -779,10 +796,28 @@ public class StandardSecurityHandler extends SecurityHandler
             byte[] id,
             int encRevision,
             int length)
-            throws CryptographyException, IOException{
-		    return isUserPassword(password.getBytes(),
-			u,o,permissions, id, encRevision, length);
-	    }
+            throws CryptographyException, IOException
+            {
+                return isUserPassword(password.getBytes(),
+                        u,o,permissions, id, encRevision, length);
+            }
+
+    /**
+     * Check for owner password.
+     *
+     * @param password The owner password.
+     * @param u The u entry of the encryption dictionary.
+     * @param o The o entry of the encryption dictionary.
+     * @param permissions The set of permissions on the document.
+     * @param id The document id.
+     * @param encRevision The encryption algorithm revision.
+     * @param length The encryption key length.
+     *
+     * @return True If the ownerPassword param is the owner password.
+     *
+     * @throws CryptographyException If there is an error during encryption.
+     * @throws IOException If there is an error accessing data.
+     */
     public final boolean isOwnerPassword(
             String password,
             byte[] u,
@@ -791,10 +826,12 @@ public class StandardSecurityHandler extends SecurityHandler
             byte[] id,
             int encRevision,
             int length)
-            throws CryptographyException, IOException{
-		    return isOwnerPassword(password.getBytes(),
-			u,o,permissions, id, encRevision, length);
-	    }
+            throws CryptographyException, IOException
+            {
+                return isOwnerPassword(password.getBytes(),
+                        u,o,permissions, id, encRevision, length);
+            }
+
     private static final boolean arraysEqual( byte[] first, byte[] second, int count )
     {
         boolean equal = first.length >= count && second.length >= count;
