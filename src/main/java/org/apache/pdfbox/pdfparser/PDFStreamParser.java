@@ -248,7 +248,9 @@ public class PDFStreamParser extends BaseParser
                     pdfSource.read();
 
                     if (dotNotRead && (c == '.'))
+                    {
                         dotNotRead = false;
+                    }
                 }
                 retval = COSNumber.get( buf.toString() );
                 break;

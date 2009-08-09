@@ -29,13 +29,13 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
  * This will parse a PDF 1.5 (or better) Xref stream and 
- * extract the xref information from the stream
+ * extract the xref information from the stream.
  * 
- * @author
- * @version
+ *  @author <a href="mailto:justinl@basistech.com">Justin LeFebvre</a>
+ *  @version $Revision: 1.0 $
  */
-public class PDFXrefStreamParser extends BaseParser {
-
+public class PDFXrefStreamParser extends BaseParser 
+{
     private COSStream stream;
 
     /**
@@ -46,25 +46,28 @@ public class PDFXrefStreamParser extends BaseParser {
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFXrefStreamParser(COSStream strm, COSDocument doc) throws IOException{
+    public PDFXrefStreamParser(COSStream strm, COSDocument doc) throws IOException
+    {
         super(strm.getUnfilteredStream());
         setDocument(doc);
         stream = strm;
     }
 
     /**
-     * Parses through the unfiltered stream and populates the xrefTable
-     * HashMap
+     * Parses through the unfiltered stream and populates the xrefTable HashMap.
      * @throws IOException If there is an error while parsing the stream.
      */
-    public void parse() throws IOException{
-        try{
+    public void parse() throws IOException
+    {
+        try
+        {
             COSArray xrefFormat = (COSArray)stream.getDictionaryObject("W");
             COSArray indexArray = (COSArray)stream.getDictionaryObject("Index");
             /*
              * If Index doesn't exist, we will use the default values. 
              */
-            if(indexArray == null){
+            if(indexArray == null)
+            {
                 indexArray = new COSArray();
                 indexArray.add(new COSInteger(0));
                 indexArray.add(stream.getDictionaryObject("Size"));
@@ -76,10 +79,12 @@ public class PDFXrefStreamParser extends BaseParser {
              * Populates objNums with all object numbers available
              */
             Iterator indexIter = indexArray.iterator();
-            while(indexIter.hasNext()){
+            while(indexIter.hasNext())
+            {
                 int objID = ((COSInteger)indexIter.next()).intValue();
                 int size = ((COSInteger)indexIter.next()).intValue();
-                for(int i = 0; i < size; i++){
+                for(int i = 0; i < size; i++)
+                {
                     objNums.add(new Integer(objID + i));
                 }
             }
@@ -92,7 +97,8 @@ public class PDFXrefStreamParser extends BaseParser {
             int w2 = xrefFormat.getInt(2);
             int lineSize = w0 + w1 + w2;
             
-            while(pdfSource.available() > 0){
+            while(pdfSource.available() > 0)
+            {
                 byte[] currLine = new byte[lineSize];
                 pdfSource.read(currLine);
 
@@ -101,7 +107,8 @@ public class PDFXrefStreamParser extends BaseParser {
                  * Grabs the number of bytes specified for the first column in 
                  * the W array and stores it.
                  */
-                for(int i = 0; i < w0; i++){
+                for(int i = 0; i < w0; i++)
+                {
                     type += (currLine[i] & 0x00ff) << ((w0 - i - 1)* 8);
                 }
                 //Need to remember the current objID
@@ -109,34 +116,40 @@ public class PDFXrefStreamParser extends BaseParser {
                 /*
                  * 3 different types of entries. 
                  */
-                switch(type){
-                case 0:
-                    /*
-                     * Skipping free objects
-                     */
-                    break;
-                case 1:                   
-                    int offset = 0;
-                    for(int i = 0; i < w1; i++){
-                        offset += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
-                    }
-                    int genNum = 0;
-                    for(int i = 0; i < w2; i++){
-                        genNum += (currLine[i + w0 + w1] & 0x00ff) << ((w2 - i - 1) * 8);
-                    }
-                    COSObjectKey objKey = new COSObjectKey(objID.intValue(), genNum);
-                    document.setXRef(objKey, offset);
-                    break;
-                case 2:
-                    /*
-                     * These objects are handled by the dereferenceObjects() method
-                     * since they're only pointing to object numbers
-                     */
-                    break;
+                switch(type)
+                {
+                    case 0:
+                        /*
+                         * Skipping free objects
+                         */
+                        break;
+                    case 1:                   
+                        int offset = 0;
+                        for(int i = 0; i < w1; i++)
+                        {
+                            offset += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        }
+                        int genNum = 0;
+                        for(int i = 0; i < w2; i++)
+                        {
+                            genNum += (currLine[i + w0 + w1] & 0x00ff) << ((w2 - i - 1) * 8);
+                        }
+                        COSObjectKey objKey = new COSObjectKey(objID.intValue(), genNum);
+                        document.setXRef(objKey, offset);
+                        break;
+                    case 2:
+                        /*
+                         * These objects are handled by the dereferenceObjects() method
+                         * since they're only pointing to object numbers
+                         */
+                        break;
+                    default:
+                        break;
                 }
             }
         }
-        finally{
+        finally
+        {
             pdfSource.close();
         }
     }

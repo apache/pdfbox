@@ -61,7 +61,8 @@ public class CCITTFaxDecodeFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex) throws IOException
+    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex) 
+        throws IOException
     {
         // log.warn( "Warning: CCITTFaxDecode.decode is not implemented yet,
         // skipping this stream." );
@@ -92,7 +93,8 @@ public class CCITTFaxDecodeFilter implements Filter
         }
         else
         {
-            throw new IOException( "Error: Expected COSArray or COSDictionary and not " + baseObj.getClass().getName() );
+            throw new IOException( "Error: Expected COSArray or COSDictionary and not " 
+                    + baseObj.getClass().getName() );
         }
 
         int width = options.getInt("Width");
@@ -721,7 +723,8 @@ public class CCITTFaxDecodeFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         System.err.println("Warning: CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
     }

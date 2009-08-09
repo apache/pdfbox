@@ -49,7 +49,8 @@ public class LZWFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         //log.debug("decode( )");
         NBitInputStream in = null;
@@ -121,7 +122,8 @@ public class LZWFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) throws IOException
+    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+        throws IOException
     {
         //log.debug("encode( )");
         PushbackInputStream input = new PushbackInputStream( rawData, 4096 );

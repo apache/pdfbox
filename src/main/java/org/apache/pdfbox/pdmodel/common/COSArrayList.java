@@ -644,7 +644,10 @@ public class COSArrayList implements List
         return actual.subList( fromIndex, toIndex );
     }
     
-        public String toString()
+    /**
+     * {@inheritDoc}
+     */
+    public String toString()
     {
         return "COSArrayList{" + array.toString() + "}";
     }

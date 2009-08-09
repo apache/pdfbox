@@ -67,7 +67,8 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode
         }
         else
         {
-            throw new IOException( "Error creating Javascript object, expected either COSString or COSStream and not " + base );
+            throw new IOException( "Error creating Javascript object, expected either COSString or COSStream and not " 
+                    + base );
         }
         return stream;
     }

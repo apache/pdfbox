@@ -31,11 +31,16 @@ import org.apache.fontbox.afm.FontMetric;
 
 import org.apache.fontbox.pfb.PfbParser;
 
-import org.apache.pdfbox.encoding.*;
+import org.apache.pdfbox.encoding.AFMEncoding;
+import org.apache.pdfbox.encoding.DictionaryEncoding;
+import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.cos.*;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 /**
  * This is implementation of the Type1 Font
  * with a afm and a pfb file.
@@ -172,30 +177,44 @@ public class PDType1AfmPfbFont extends PDType1Font
                     // StandardEncoding = 0373 = 251
                     // WinANSIEncoding = 0337 = 223
                     if (m.getName().equals("germandbls") && n != 223)
+                    {
                         widths.set(0337,new Float(width));
+                    }
                 }
             }
-            else {
-            	// my AFMPFB-Fonts has no character-codes for german umlauts
-            	// so that I've to add them here by hand
-            	if (m.getName().equals("adieresis"))
+            else 
+            {
+                // my AFMPFB-Fonts has no character-codes for german umlauts
+                // so that I've to add them here by hand
+                if (m.getName().equals("adieresis"))
+                {
                     widths.set(0344,(Float)widths.get(encoding.getCode(COSName.getPDFName( "a" ))));
-            	else if (m.getName().equals("odieresis"))
+                }
+                else if (m.getName().equals("odieresis"))
+                {
                     widths.set(0366,(Float)widths.get(encoding.getCode(COSName.getPDFName( "o" ))));
-            	else if (m.getName().equals("udieresis"))
+                }
+                else if (m.getName().equals("udieresis"))
+                {
                     widths.set(0374,(Float)widths.get(encoding.getCode(COSName.getPDFName( "u" ))));
-            	else if (m.getName().equals("Adieresis"))
+                }
+                else if (m.getName().equals("Adieresis"))
+                {
                     widths.set(0304,(Float)widths.get(encoding.getCode(COSName.getPDFName( "A" ))));
-            	else if (m.getName().equals("Odieresis"))
+                }
+                else if (m.getName().equals("Odieresis"))
+                {
                     widths.set(0326,(Float)widths.get(encoding.getCode(COSName.getPDFName( "O" ))));
-            	else if (m.getName().equals("Udieresis"))
+                }
+                else if (m.getName().equals("Udieresis"))
+                {
                     widths.set(0334,(Float)widths.get(encoding.getCode(COSName.getPDFName( "U" ))));
+                }
             }
-
         }
-	      setFirstChar(0);
-	      setLastChar(255);
-	      setWidths(widths);
+        setFirstChar(0);
+        setLastChar(255);
+        setWidths(widths);
     }
 
     /*
@@ -204,27 +223,29 @@ public class PDType1AfmPfbFont extends PDType1Font
      *  I've copied the code from the pdfbox-forum posted by V0JT4 and made some additions concerning german umlauts
      *  see also https://sourceforge.net/forum/message.php?msg_id=4705274
      */
-    private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException {
-    	COSArray array = new COSArray();
-    	array.add(COSNumber.ZERO);
-    	for (int i = 0; i < 256; i++) {
-    		array.add(encoding.getName(i));
-    	}
-    	// my AFMPFB-Fonts has no character-codes for german umlauts
-    	// so that I've to add them here by hand
-    	array.set( 0337+1, COSName.getPDFName("germandbls"));
-    	array.set( 0344+1, COSName.getPDFName("adieresis"));
-    	array.set( 0366+1, COSName.getPDFName("odieresis"));
-    	array.set( 0374+1, COSName.getPDFName("udieresis"));
-    	array.set( 0304+1, COSName.getPDFName("Adieresis"));
-    	array.set( 0326+1, COSName.getPDFName("Odieresis"));
-    	array.set( 0334+1, COSName.getPDFName("Udieresis"));
+    private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException 
+    {
+        COSArray array = new COSArray();
+        array.add(COSNumber.ZERO);
+        for (int i = 0; i < 256; i++) 
+        {
+            array.add(encoding.getName(i));
+        }
+        // my AFMPFB-Fonts has no character-codes for german umlauts
+        // so that I've to add them here by hand
+        array.set( 0337+1, COSName.getPDFName("germandbls"));
+        array.set( 0344+1, COSName.getPDFName("adieresis"));
+        array.set( 0366+1, COSName.getPDFName("odieresis"));
+        array.set( 0374+1, COSName.getPDFName("udieresis"));
+        array.set( 0304+1, COSName.getPDFName("Adieresis"));
+        array.set( 0326+1, COSName.getPDFName("Odieresis"));
+        array.set( 0334+1, COSName.getPDFName("Udieresis"));
 
-    	COSDictionary dictionary = new COSDictionary();
-    	dictionary.setItem(COSName.NAME, COSName.ENCODING);
-    	dictionary.setItem(COSName.DIFFERENCES, array);
-    	dictionary.setItem(COSName.BASE_ENCODING, COSName.STANDARD_ENCODING);
-    	return new DictionaryEncoding(dictionary);
+        COSDictionary dictionary = new COSDictionary();
+        dictionary.setItem(COSName.NAME, COSName.ENCODING);
+        dictionary.setItem(COSName.DIFFERENCES, array);
+        dictionary.setItem(COSName.BASE_ENCODING, COSName.STANDARD_ENCODING);
+        return new DictionaryEncoding(dictionary);
     }
 
 

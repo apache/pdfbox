@@ -90,17 +90,10 @@ public class PDType3Font extends PDSimpleFont
     }
 
     /**
-     * This will draw a string on a canvas using the font.
-     *
-     * @param string The string to draw.
-     * @param g The graphics to draw onto.
-     * @param fontSize The size of the font to draw.
-     * @param x The x coordinate to draw at.
-     * @param y The y coordinate to draw at.
-     *
-     * @throws IOException If there is an error drawing the image on the screen.
+     * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) throws IOException
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
+        throws IOException
     {
         //if( string.equals( "V" )|| string.equals( "o" ) )
         {

@@ -50,21 +50,29 @@ public class PDFontFactory
      */
     public static PDFont createFont(COSDictionary dic, Map fontCache) throws IOException
     {
-    	PDFont retval = null;
-        if (fontCache != null) {
-            String fontKey = dic.getNameAsString(COSName.BASE_FONT) + dic.getNameAsString(COSName.NAME)+dic.getNameAsString(COSName.SUBTYPE);
-        	if (dic.getItem(COSName.ENCODING) != null)
-        		fontKey += dic.getItem(COSName.ENCODING).toString();
+        PDFont retval = null;
+        if (fontCache != null) 
+        {
+            String fontKey = dic.getNameAsString(COSName.BASE_FONT) + dic.getNameAsString(COSName.NAME)
+                                + dic.getNameAsString(COSName.SUBTYPE);
+            if (dic.getItem(COSName.ENCODING) != null)
+            {
+                fontKey += dic.getItem(COSName.ENCODING).toString();
+            }
             if (fontCache.containsKey(fontKey))
-            	retval = (PDFont)fontCache.get(fontKey);
+            {
+                retval = (PDFont)fontCache.get(fontKey);
+            }
             else 
             {
-            	retval = PDFontFactory.createFont( dic );
-            	fontCache.put(fontKey, retval);
+                retval = PDFontFactory.createFont( dic );
+                fontCache.put(fontKey, retval);
             }
         }
         else
-        	retval = PDFontFactory.createFont( dic );
+        {
+            retval = PDFontFactory.createFont( dic );
+        }
         return retval;
     }
 

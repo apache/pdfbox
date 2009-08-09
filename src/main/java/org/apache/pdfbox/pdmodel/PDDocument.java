@@ -597,7 +597,8 @@ public class PDDocument implements Pageable
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument load(URL url, boolean force) throws IOException{
+    public static PDDocument load(URL url, boolean force) throws IOException
+    {
         return load(url.openStream(), force);
     }
 
@@ -642,7 +643,8 @@ public class PDDocument implements Pageable
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument load(String filename, boolean force) throws IOException{
+    public static PDDocument load(String filename, boolean force) throws IOException
+    {
         return load(new FileInputStream( filename ), force);
     }
 
@@ -716,7 +718,8 @@ public class PDDocument implements Pageable
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument load(InputStream input, boolean force) throws IOException{
+    public static PDDocument load(InputStream input, boolean force) throws IOException
+    {
         return load(input, null, force);
     }
     
@@ -749,7 +752,8 @@ public class PDDocument implements Pageable
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException{
+    public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException
+    {
         PDFParser parser = new PDFParser( new BufferedInputStream( input ), scratchFile, force);
         parser.parse();
         return parser.getPDDocument();
@@ -837,26 +841,28 @@ public class PDDocument implements Pageable
         int rotation = page.findRotation();
         if(rotation == 90)
         {
-        	format.setOrientation( PageFormat.LANDSCAPE );
-	    }
-	    else if(rotation == 270)
-	    {
-	    	format.setOrientation( PageFormat.REVERSE_LANDSCAPE );
-	    }
-	    else
-	    {
-	    	format.setOrientation( PageFormat.PORTRAIT );
-	    }
+            format.setOrientation( PageFormat.LANDSCAPE );
+        }
+        else if(rotation == 270)
+        {
+            format.setOrientation( PageFormat.REVERSE_LANDSCAPE );
+        }
+        else
+        {
+            format.setOrientation( PageFormat.PORTRAIT );
+        }
 
-      // If there is rotation > 0, we have to exchange the pagedimension for the printer
-      if (rotation == 90 || rotation == 270) {
-        	paper.setImageableArea( 0,0,height,width);
-        	paper.setSize( height, width );
-	    }
-        else {
-        	paper.setImageableArea( 0,0,width,height);
-        	paper.setSize( width, height );
-	    }
+        // If there is rotation > 0, we have to exchange the pagedimension for the printer
+        if (rotation == 90 || rotation == 270) 
+        {
+            paper.setImageableArea( 0,0,height,width);
+            paper.setSize( height, width );
+        }
+        else 
+        {
+            paper.setImageableArea( 0,0,width,height);
+            paper.setSize( width, height );
+        }
         format.setPaper( paper );
         return format;
     }
@@ -930,7 +936,7 @@ public class PDDocument implements Pageable
      * This will send the PDF to the default printer without prompting the user
      * for any printer settings.
      *
-     * @param job A printer job definition.
+     * @param printJob A printer job definition.
      * @see PDDocument#print()
      *
      * @throws PrinterException If there is an error while printing.

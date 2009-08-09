@@ -45,7 +45,7 @@ public class FDFAnnotationHighlight extends FDFAnnotation
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param a An existing FDF Annotation.
      */
