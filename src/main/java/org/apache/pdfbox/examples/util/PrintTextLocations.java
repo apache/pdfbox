@@ -105,7 +105,7 @@ public class PrintTextLocations extends PDFTextStripper
 
     /**
      * A method provided as an event interface to allow a subclass to perform
-     * some specific functionality when text needs to be processed
+     * some specific functionality when text needs to be processed.
      *
      * @param text The text to be processed
      */

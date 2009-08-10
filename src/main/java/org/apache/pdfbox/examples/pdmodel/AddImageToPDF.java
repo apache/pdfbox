@@ -54,7 +54,8 @@ public class AddImageToPDF
      * @throws IOException If there is an error writing the data.
      * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void createPDFFromImage( String inputFile, String image, String outputFile ) throws IOException, COSVisitorException
+    public void createPDFFromImage( String inputFile, String image, String outputFile ) 
+        throws IOException, COSVisitorException
     {
         // the document
         PDDocument doc = null;

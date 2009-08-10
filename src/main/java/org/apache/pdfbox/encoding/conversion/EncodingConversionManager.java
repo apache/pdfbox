@@ -24,39 +24,49 @@ import java.util.HashMap;
  *  and respective EncodingConverter instance. Those PDF encoding name like
  *  GBK-EUC-H should be converted to java charset name before constructing a
  *  java string instance
+ *  
+ *  @author  Pin Xue (http://www.pinxue.net), Holly Lee (holly.lee (at) gmail.com)
+ *  @version $Revision: 1.0 $
  */
 public class EncodingConversionManager
 {
        /**
-        *  Mapping from PDF encoding name to EncodingConverter instance
+        *  Mapping from PDF encoding name to EncodingConverter instance.
         */
-       private static HashMap _encodingMap = new HashMap();
+       private static HashMap encodingMap = new HashMap();
 
-	   /**
-	    *  Initialize the encodingMap before anything calls us
-	    */
+       private EncodingConversionManager()
+       {
+       }
+
+       /**
+        *  Initialize the encodingMap before anything calls us.
+        */
        static {
 
-	       // Add CJK encodings to map
-	       Iterator it = CJKEncodings.getEncodingIterator();
+           // Add CJK encodings to map
+           Iterator it = CJKEncodings.getEncodingIterator();
 
-		   while ( it.hasNext() ) {
-		         String encodingName = (String)(it.next());
-		   	     _encodingMap.put(encodingName, new CJKConverter(encodingName));
-		   }
+           while ( it.hasNext() ) 
+           {
+               String encodingName = (String)(it.next());
+               encodingMap.put(encodingName, new CJKConverter(encodingName));
+           }
+           // If there is any other encoding conversions, please add it here.
 
-		   // If there is any other encoding conversions, please add it here.
+       }
 
-   	   }
-
-	   /**
-	    *  Get converter from given encoding name. If no converted defined,
-	    *  a null is returned
-	    */
-	   public static final EncodingConverter getConverter(String encoding)
-	   {
-	          return (EncodingConverter)(_encodingMap.get(encoding));
-	   }
+       /**
+        *  Get converter from given encoding name. If no converted defined,
+        *  a null is returned.
+        *  
+        *  @param encoding search for a converter for the given encoding name
+        *  @return the converter for the given encoding name
+        */
+       public static final EncodingConverter getConverter(String encoding)
+       {
+           return (EncodingConverter)(encodingMap.get(encoding));
+       }
 
 
 }

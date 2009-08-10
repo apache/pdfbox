@@ -98,6 +98,7 @@ public class GoToSecondBookmarkOnOpen
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.GoToSecondBookmarkOnOpen <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.GoToSecondBookmarkOnOpen" +
+            "<input-pdf> <output-pdf>" );
     }
 }

@@ -44,6 +44,10 @@ public class ExtractImages
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
 
+    private ExtractImages()
+    {
+    }
+
     /**
      * This is the entry point for the application.
      *
