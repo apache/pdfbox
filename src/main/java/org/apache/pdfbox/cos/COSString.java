@@ -219,10 +219,10 @@ public class COSString extends COSBase
      */
     public String getString()
     {
-    	if (this.str != null)
-    	{
-    		return this.str;
-    	}
+        if (this.str != null)
+        {
+            return this.str;
+        }
         String retval;
         String encoding = "ISO-8859-1";
         byte[] data = getBytes();
@@ -403,13 +403,12 @@ public class COSString extends COSBase
      */
     public boolean equals(Object obj)
     {
-    	if (obj instanceof COSString)
-    	{
-    		obj = ((COSString) obj).getString();
+        if (obj instanceof COSString)
+        {
+            obj = ((COSString) obj).getString();
             return this.getString().equals(obj);
-    	}
-    	else 
-    		return false;
+        }
+        return false;
     }
 
     /**

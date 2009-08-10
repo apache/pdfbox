@@ -191,7 +191,9 @@ public class ExtractText
                 }
 
                 if ((encoding == null) && (toHTML))
+                {
                     encoding = "UTF-8";
+                }
 
                 if( toConsole )
                 {

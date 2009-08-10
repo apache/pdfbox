@@ -46,6 +46,9 @@ public class PDFSplit
     private static final String PASSWORD = "-password";
     private static final String SPLIT = "-split";
 
+    private PDFSplit()
+    {
+    }
     /**
      * Infamous main method.
      *

@@ -109,6 +109,7 @@ public class AddMetadataFromDocInfo
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.AddMetadataFromDocInfo <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.AddMetadataFromDocInfo " +
+            "<input-pdf> <output-pdf>" );
     }
 }

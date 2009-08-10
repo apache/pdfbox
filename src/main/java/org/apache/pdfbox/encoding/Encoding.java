@@ -59,9 +59,11 @@ public abstract class Encoding implements COSObjectable
 
         // Load an external glyph list file that user can give as JVM property
         String location = System.getProperty("glyphlist_ext");
-        if(location != null){
+        if(location != null)
+        {
             File external = new File(location);
-            if(external.exists()){
+            if(external.exists())
+            {
                 loadGlyphList(location);
             }
         }
@@ -84,10 +86,11 @@ public abstract class Encoding implements COSObjectable
     
     /**
      * Loads a glyph list from a given location and populates the NAME_TO_CHARACTER hashmap
-     * for character lookups
+     * for character lookups.
      * @param location - The string location of the glyphlist file 
      */
-    private static void loadGlyphList(String location){
+    private static void loadGlyphList(String location)
+    {
         BufferedReader glyphStream = null;
         try
         {
@@ -248,7 +251,8 @@ public abstract class Encoding implements COSObjectable
         String nameStr = baseName.getName();
 
         // test if we have a suffix and if so remove it
-        if ( nameStr.indexOf('.') > 0 ) {
+        if ( nameStr.indexOf('.') > 0 ) 
+        {
             nameStr = nameStr.substring( 0, nameStr.indexOf('.') );
             baseName = COSName.getPDFName( nameStr );
         }
@@ -263,20 +267,25 @@ public abstract class Encoding implements COSObjectable
             {
                 StringBuffer uniStr = new StringBuffer();
 
-                for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 ) {
-
-                    try {
-
+                for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 ) 
+                {
+                    try 
+                    {
                         int characterCode = Integer.parseInt( nameStr.substring( chPos, chPos + 4), 16 );
 
                         if ( ( characterCode > 0xD7FF ) && ( characterCode < 0xE000 ) )
+                        {
                             Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
                                     "Unicode character name with not allowed code area: " +
                                     nameStr );
+                        }
                         else
+                        {
                             uniStr.append( (char) characterCode );
-
-                    } catch (NumberFormatException nfe) {
+                        }
+                    } 
+                    catch (NumberFormatException nfe) 
+                    {
                         Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
                                 "Not a number in Unicode character name: " +
                                 nameStr );
@@ -284,7 +293,8 @@ public abstract class Encoding implements COSObjectable
                 }
                 character = uniStr.toString();
             }
-            else {
+            else 
+            {
                 character = nameStr;
             }
         }

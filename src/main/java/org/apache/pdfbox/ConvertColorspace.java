@@ -414,7 +414,8 @@ public class ConvertColorspace
             " The supported equiv colorspaces are RGB and CMYK.\n" +
             " RGB color values are integers between 0 and 255" +
             " CMYK color values are integer between 0 and 100.\n" +
-            " Example: java org.apache.pdfbox.ConvertColorspace -equiv RGB:(255,0,0)=CMYK(0,99,100,0) input.pdf output.pdf\n" +
+            " Example: java org.apache.pdfbox.ConvertColorspace -equiv RGB:(255,0,0)=CMYK(0,99,100,0)" +
+            " input.pdf output.pdf\n" +
             "  <PDF Input file>             The PDF document to use\n" +
             "  <PDF Output file>            The PDF file to write the result to. Must be different of input file\n"
             );

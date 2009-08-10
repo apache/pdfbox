@@ -27,6 +27,10 @@ import org.apache.pdfbox.util.PDFMergerUtility;
  */
 public class PDFMerger
 {
+    
+    private PDFMerger()
+    {
+    }
     /**
      * Infamous main method.
      *

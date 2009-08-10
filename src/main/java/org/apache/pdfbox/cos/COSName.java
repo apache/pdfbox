@@ -46,7 +46,7 @@ public final class COSName extends COSBase implements Comparable
      * All common COSName values are stored in a simple HashMap. They are already defined as
      * static constants and don't need to be synchronized for multithreaded environments.
      */
-    private static Map commonNameMap = new HashMap() ;
+    private static Map commonNameMap = new HashMap();
 
 
     /**
@@ -522,17 +522,17 @@ public final class COSName extends COSBase implements Comparable
         COSName name = null;
         if( aName != null )
         {
-        	// Is it a common COSName ??
+            // Is it a common COSName ??
             name = (COSName)commonNameMap.get( aName );
             if( name == null )
             {
-            	// It seems to be a document specific COSName
-            	name = (COSName)nameMap.get( aName );
-            	if( name == null )
-            	{
-            		//name is added to the synchronized map in the constructor
-            		name = new COSName( aName, false );
-            	}	
+                // It seems to be a document specific COSName
+                name = (COSName)nameMap.get( aName );
+                if( name == null )
+                {
+                    //name is added to the synchronized map in the constructor
+                    name = new COSName( aName, false );
+                }
             }
         }
         return name;
@@ -543,15 +543,20 @@ public final class COSName extends COSBase implements Comparable
      * that are created.
      *
      * @param aName The name of the COSName object.
-     * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without synchronizing.
+     * @param staticValue Indicates if the COSName object is static so that it can 
+     *        be stored in the HashMap without synchronizing.
      */
     private COSName( String aName, boolean staticValue )
     {
         name = aName;
         if ( staticValue )
-        	commonNameMap.put( aName, this);
+        {
+            commonNameMap.put( aName, this);
+        }
         else
-        	nameMap.put( aName, this );
+        {
+            nameMap.put( aName, this );
+        }
         hashCode = name.hashCode();
     }
 
@@ -563,7 +568,7 @@ public final class COSName extends COSBase implements Comparable
      */
     private COSName( String aName )
     {
-    	this( aName, true );
+        this( aName, true );
     }
 
     /**

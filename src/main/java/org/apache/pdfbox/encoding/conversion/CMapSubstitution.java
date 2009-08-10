@@ -19,51 +19,65 @@ package org.apache.pdfbox.encoding.conversion;
 import java.util.HashMap;
 
 /**
- * This class provides a mapping from char code to unicode mapping files used for CJK-encoding
+ * This class provides a mapping from char code to unicode mapping files used for CJK-encoding.
  * @author Andreas Lehmkühler
+ * @version $Revision: 1.0 $
  *
  */
 
-public class CMapSubstitution {
+public class CMapSubstitution 
+{
 
-	private static HashMap cmapSubstitutions = new HashMap();
+    private static HashMap cmapSubstitutions = new HashMap();
 
-	static {
-		
-		// I don't know if these mappings are complete. Perhaps there 
-		// has to be added still one or more
-		
-		// chinese simplified
-		cmapSubstitutions.put( "Adobe-GB1-4", "Adobe-GB1-UCS2" );
-		cmapSubstitutions.put( "GBK-EUC-H", "GBK-EUC-UCS2" );
-		cmapSubstitutions.put( "GBK-EUC-V", "GBK-EUC-UCS2" );
-		cmapSubstitutions.put( "GBpc-EUC-H", "GBpc-EUC-UCS2C" );
-		cmapSubstitutions.put( "GBpc-EUC-V", "GBpc-EUC-UCS2C" );
+    private CMapSubstitution()
+    {
+    }
 
-		// chinese traditional
-		cmapSubstitutions.put( "Adobe-CNS1-4", "Adobe-CNS1-UCS2" );
-		cmapSubstitutions.put( "B5pc-H", "B5pc-UCS2" );
-		cmapSubstitutions.put( "B5pc-V", "B5pc-UCS2" );
-		cmapSubstitutions.put( "ETen-B5-H", "ETen-B5-UCS2" );
-		cmapSubstitutions.put( "ETen-B5-V", "ETen-B5-UCS2" );
-		cmapSubstitutions.put( "ETenms-B5-H", "ETen-B5-UCS2" );
-		cmapSubstitutions.put( "ETenms-B5-V", "ETen-B5-UCS2" );
+    static 
+    {
+        // I don't know if these mappings are complete. Perhaps there 
+        // has to be added still one or more
 
-		// japanese
-		cmapSubstitutions.put( "90ms-RKSJ-H", "90ms-RKSJ-UCS2" );
-		cmapSubstitutions.put( "90ms-RKSJ-V", "90ms-RKSJ-UCS2" );
-		cmapSubstitutions.put( "90msp-RKSJ-H", "90ms-RKSJ-UCS2" );
-		cmapSubstitutions.put( "90msp-RKSJ-V", "90ms-RKSJ-UCS2" );
-		cmapSubstitutions.put( "90pv-RKSJ-H", "90pv-RKSJ-UCS2");
-		cmapSubstitutions.put( "UniJIS-UCS2-HW-H", "UniJIS-UCS2-H" );
-		cmapSubstitutions.put( "Adobe-Japan1-4", "Adobe-Japan1-UCS2");
-		cmapSubstitutions.put( "Identity-H", "Adobe-Japan1-UCS2");
+        // chinese simplified
+        cmapSubstitutions.put( "Adobe-GB1-4", "Adobe-GB1-UCS2" );
+        cmapSubstitutions.put( "GBK-EUC-H", "GBK-EUC-UCS2" );
+        cmapSubstitutions.put( "GBK-EUC-V", "GBK-EUC-UCS2" );
+        cmapSubstitutions.put( "GBpc-EUC-H", "GBpc-EUC-UCS2C" );
+        cmapSubstitutions.put( "GBpc-EUC-V", "GBpc-EUC-UCS2C" );
 
-	}
-	
-	public static String substituteCMap(String cmapName) {
-		if (cmapSubstitutions.containsKey(cmapName))
-			return (String)cmapSubstitutions.get(cmapName);
-		return cmapName;
-	}
+        // chinese traditional
+        cmapSubstitutions.put( "Adobe-CNS1-4", "Adobe-CNS1-UCS2" );
+        cmapSubstitutions.put( "B5pc-H", "B5pc-UCS2" );
+        cmapSubstitutions.put( "B5pc-V", "B5pc-UCS2" );
+        cmapSubstitutions.put( "ETen-B5-H", "ETen-B5-UCS2" );
+        cmapSubstitutions.put( "ETen-B5-V", "ETen-B5-UCS2" );
+        cmapSubstitutions.put( "ETenms-B5-H", "ETen-B5-UCS2" );
+        cmapSubstitutions.put( "ETenms-B5-V", "ETen-B5-UCS2" );
+
+        // japanese
+        cmapSubstitutions.put( "90ms-RKSJ-H", "90ms-RKSJ-UCS2" );
+        cmapSubstitutions.put( "90ms-RKSJ-V", "90ms-RKSJ-UCS2" );
+        cmapSubstitutions.put( "90msp-RKSJ-H", "90ms-RKSJ-UCS2" );
+        cmapSubstitutions.put( "90msp-RKSJ-V", "90ms-RKSJ-UCS2" );
+        cmapSubstitutions.put( "90pv-RKSJ-H", "90pv-RKSJ-UCS2");
+        cmapSubstitutions.put( "UniJIS-UCS2-HW-H", "UniJIS-UCS2-H" );
+        cmapSubstitutions.put( "Adobe-Japan1-4", "Adobe-Japan1-UCS2");
+        cmapSubstitutions.put( "Identity-H", "Adobe-Japan1-UCS2");
+
+    }
+
+    /**
+     * 
+     * @param cmapName The name of a cmap for which we have to find a possible substitution
+     * @return the substitution for the given cmap name
+     */
+    public static String substituteCMap(String cmapName) 
+    {
+        if (cmapSubstitutions.containsKey(cmapName))
+        {
+            return (String)cmapSubstitutions.get(cmapName);
+        }
+        return cmapName;
+    }
 }

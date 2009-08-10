@@ -28,17 +28,15 @@ import java.util.logging.*;
 public abstract class LoggingObject
 {
     private static Logger logger_;//dwilson 3/15/07
-
-    protected Logger logger() throws IOException //dwilson 3/15/07
-    {//I would like to just bury any error here ... but unfortunately an error would result in a Null Reference Exception
-	//Therefore, I might as well throw the original error.
-
-    	//http://www.rgagnon.com/javadetails/java-0501.html
-    	if (logger_ == null){
-	    	FileHandler fh = new FileHandler("PDFBox.log", true);
-	    	fh.setFormatter(new SimpleFormatter());
-	        logger_ = Logger.getLogger("TestLog");
-	        logger_.addHandler(fh);
+    
+    static 
+    {
+        try 
+        {
+            FileHandler fh = new FileHandler("PDFBox.log", true);
+            fh.setFormatter(new SimpleFormatter());
+            logger_ = Logger.getLogger("TestLog");
+            logger_.addHandler(fh);
 
             /*Set the log level here.
             The lower your logging level, the more stuff will be logged.
@@ -56,27 +54,36 @@ public abstract class LoggingObject
             I recommend INFO for debug builds and either SEVERE or OFF for production builds.
             */
             logger_.setLevel(Level.WARNING);
-    	}
+//            logger_.setLevel(Level.INFO);
+        }
+        catch (IOException exception)
+        {
+            System.err.println("Error while opening the logfile:");
+            exception.printStackTrace();
+        }
+    }
 
-    	return logger_;
-
+    protected Logger logger() throws IOException //dwilson 3/15/07
+    {
+        return logger_;
     }
 
     protected static String FullStackTrace(Throwable e){
-    	String sRet;
 		int i;
 		StackTraceElement [] L;
 
-		sRet = new String();
+		StringBuffer sRet = new StringBuffer();
 		L = e.getStackTrace();
-		for (i=0; i<L.length; i++){
-			sRet = sRet + (L[i].toString())+ "\n";
+		for (i=0; i<L.length; i++)
+		{
+			sRet.append((L[i].toString())).append("\n");
 		}
-		if (e.getCause() != null){
-			sRet = sRet + "Caused By \n\t" + e.getCause().getMessage();
-			sRet = sRet + FullStackTrace(e.getCause());
+		if (e.getCause() != null)
+		{
+			sRet.append("Caused By \n\t").append(e.getCause().getMessage());
+			sRet.append(FullStackTrace(e.getCause()));
 		}
 
-		return sRet;
+		return sRet.toString();
     }
 }

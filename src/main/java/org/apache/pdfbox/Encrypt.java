@@ -36,6 +36,9 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
  */
 public class Encrypt
 {
+    private Encrypt()
+    {
+    }
 
     /**
      * This is the entry point for the application.

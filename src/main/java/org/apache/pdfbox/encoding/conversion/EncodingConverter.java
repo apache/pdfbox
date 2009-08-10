@@ -22,16 +22,28 @@ import org.apache.fontbox.cmap.CMap;
  *  EncodingConverter converts string or characters in one encoding, which is specified in PDF
  *  file, to another string with respective java charset. The mapping from
  *  PDF encoding name to java charset name is maintained by EncodingConversionManager
+
+ *  @author  Pin Xue (http://www.pinxue.net), Holly Lee (holly.lee (at) gmail.com)
+ *  @version $Revision: 1.0 $
  */
 public interface EncodingConverter
 {
        /**
-        *  Convert a string
+        *  Convert a string.
+        *  
+        *  @param s the string to be converted
+        *  @return the converted string
         */
        public String convertString(String s);
 
-	   /**
-	    *  Convert bytes to a string
-	    */
-	   public String convertBytes(byte [] c, int offset, int length, CMap cmap);
+       /**
+        *  Convert bytes to a string.
+        *
+        *  @param c the byte array to be converted
+        *  @param offset the starting offset of the array
+        *  @param length the number of bytes
+        *  @param cmap the cmap to be used for conversion   
+        *  @return the converted string
+        */
+       public String convertBytes(byte [] c, int offset, int length, CMap cmap);
 }

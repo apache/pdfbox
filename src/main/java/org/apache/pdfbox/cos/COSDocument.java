@@ -52,7 +52,7 @@ public class COSDocument extends COSBase
     private Map objectPool = new HashMap();
     
     /**
-     * Maps object and generation ids to object byte offsets
+     * Maps object and generation ids to object byte offsets.
      */
     private Map xrefTable = new HashMap();
     
@@ -124,6 +124,7 @@ public class COSDocument extends COSBase
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
     public COSObject getObjectByType( String type ) throws IOException
     {
@@ -136,6 +137,7 @@ public class COSDocument extends COSBase
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
     public COSObject getObjectByType( COSName type ) throws IOException
     {
@@ -148,17 +150,19 @@ public class COSDocument extends COSBase
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
             {
-		try{
-			COSDictionary dic = (COSDictionary)realObject;
-			COSName objectType = (COSName)dic.getItem( COSName.TYPE );
-			if( objectType != null && objectType.equals( type ) )
-			{
-			    retval = object;
-			}
-		}catch (ClassCastException e){
-			logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
-		}
-
+                try
+                {
+                    COSDictionary dic = (COSDictionary)realObject;
+                    COSName objectType = (COSName)dic.getItem( COSName.TYPE );
+                    if( objectType != null && objectType.equals( type ) )
+                    {
+                        retval = object;
+                    }
+                }
+                catch (ClassCastException e)
+                {
+                    logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+                }
             }
         }
         return retval;
@@ -170,6 +174,7 @@ public class COSDocument extends COSBase
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
     public List getObjectsByType( String type ) throws IOException
     {
@@ -182,6 +187,7 @@ public class COSDocument extends COSBase
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
     public List getObjectsByType( COSName type ) throws IOException
     {
@@ -194,16 +200,19 @@ public class COSDocument extends COSBase
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
             {
-		try{
-			COSDictionary dic = (COSDictionary)realObject;
-			COSName objectType = (COSName)dic.getItem( COSName.TYPE );
-			if( objectType != null && objectType.equals( type ) )
-			{
-			    retval.add( object );
-			}
-		}catch (ClassCastException e){
-			logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
-		}
+                try
+                {
+                    COSDictionary dic = (COSDictionary)realObject;
+                    COSName objectType = (COSName)dic.getItem( COSName.TYPE );
+                    if( objectType != null && objectType.equals( type ) )
+                    {
+                        retval.add( object );
+                    }
+                }
+                catch (ClassCastException e)
+                {
+                    logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+                }
             }
         }
         return retval;
@@ -467,18 +476,20 @@ public class COSDocument extends COSBase
      * Used to populate the XRef HashMap. Will add an Xreftable entry
      * that maps ObjectKeys to byte offsets in the file. 
      * @param objKey The objkey, with id and gen numbers
-     * @param currOffset The byte offset in this file
+     * @param offset The byte offset in this file
      */
-    public void setXRef(COSObjectKey objKey, int offset) {
+    public void setXRef(COSObjectKey objKey, int offset) 
+    {
         xrefTable.put(objKey, new Integer(offset));
     }
     
     /**
      * Returns the xrefTable which is a mapping of ObjectKeys
      * to byte offsets in the file. 
-     * @return
+     * @return mapping of ObjectsKeys to byte offsets
      */
-    public Map getXrefTable(){
+    public Map getXrefTable()
+    {
         return xrefTable;
     }
 
@@ -489,17 +500,18 @@ public class COSDocument extends COSBase
      * 
      * @throws IOException if there is an error parsing the stream
      */
-    public void parseXrefStreams() throws IOException {
-        COSDictionary trailer = new COSDictionary();
+    public void parseXrefStreams() throws IOException 
+    {
+        COSDictionary trailerDict = new COSDictionary();
         Iterator xrefIter = getObjectsByType( "XRef" ).iterator();
         while( xrefIter.hasNext() )
         {
             COSObject xrefStream = (COSObject)xrefIter.next();
             COSStream stream = (COSStream)xrefStream.getObject();
-            trailer.addAll(stream);
+            trailerDict.addAll(stream);
             PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, this);
             parser.parse();         
         }
-        setTrailer( trailer );  
+        setTrailer( trailerDict );  
     }
 }

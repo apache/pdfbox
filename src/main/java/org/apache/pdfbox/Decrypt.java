@@ -41,7 +41,9 @@ public class Decrypt
     private static final String PASSWORD = "-password";
     private static final String KEYSTORE = "-keyStore";
 
-
+    private Decrypt()
+    {
+    }
     /**
      * This is the entry point for the application.
      *

@@ -42,6 +42,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 public class ShowSignature
 {
 
+    private ShowSignature()
+    {
+    }
     /**
      * This is the entry point for the application.
      *
