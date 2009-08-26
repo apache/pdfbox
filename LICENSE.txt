@@ -262,7 +262,7 @@ Bouncy Castle encryption libraries
    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE.
 
-Font Metrics for PDF Core 14 Fonts
+Adobe Font Metrics (AFM) for PDF Core 14 Fonts
 
    This file and the 14 PostScript(R) AFM files it accompanies may be used,
    copied, and distributed for any purpose and without charge, with or without
@@ -272,7 +272,26 @@ Font Metrics for PDF Core 14 Fonts
    file(s); and that this paragraph is not modified. Adobe Systems has no
    responsibility or obligation to support the use of the AFM files. 
 
-Adobe AFM and CMap files (http://www.adobe.com/devnet/font/#pcfi) and
+CMaps for PDF Fonts (http://www.adobe.com/devnet/font/#pcfi and
+ftp://ftp.oreilly.com/pub/examples/nutshell/cjkv/adobe/)
+
+    Copyright 1990-2001 Adobe Systems Incorporated.
+    All Rights Reserved.
+
+    Patents Pending
+
+    NOTICE: All information contained herein is the property
+    of Adobe Systems Incorporated.
+
+    Permission is granted for redistribution of this file
+    provided this copyright notice is maintained intact and
+    that the contents of this file are not altered in any
+    way from its original form.
+
+    PostScript and Display PostScript are trademarks of
+    Adobe Systems Incorporated which may be registered in
+    certain jurisdictions.
+
 Glyphlist (http://www.adobe.com/devnet/opentype/archives/glyph.html)
 
    Copyright (c) 1997,1998,2002,2007 Adobe Systems Incorporated
