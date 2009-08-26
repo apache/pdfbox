@@ -80,6 +80,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Unmodifiable files
+==================
+
+Apache PDFBox contains Adobe CMap and Glyph files that may be redistributed
+only in *unmodified* form. See the LICENSE file for the exact licensing
+conditions.
+
 Export control
 ==============
 
