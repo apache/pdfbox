@@ -8,9 +8,12 @@ You need Apache Ant <http://ant.apache.org/> to build PDFBox. Once you
 have installed Ant, you can build the sources by running "ant" in
 this directory.
 
-The Ant build will create a Checkstyle report if you have Checkstyle
-<http://checkstyle.sourceforge.net/> installed. Set the checkstyle.home.dir
-property in a build-local.properties file to enable the report.
+You can customize the build by adding a "build.properties" file that overrides
+the default build properties. For example, the Ant build will create a
+Checkstyle report if you have Checkstyle <http://checkstyle.sourceforge.net/>
+installed. Set the checkstyle.home.dir property to enable the report:
+
+    checkstyle.home.dir=/path/to/checkstyle
 
 The Ant build will build the PDFBox web site if you have Apache Forrest
 <http://forrest.apache.org/> installed. Set the FORREST_HOME environment
