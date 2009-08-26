@@ -23,8 +23,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.pdfbox.util.DateConverter;
-
 /**
  * Test the date conversion utility.
  *
