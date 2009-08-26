@@ -58,7 +58,12 @@ public class TestPublicKeyEncryption extends TestCase
      */
     private PDDocument document;
 
-    protected void setUp() throws Exception {
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected void setUp() throws Exception 
+    {
         permission1 = new AccessPermission();
         permission1.setCanAssembleDocument(false);
         permission1.setCanExtractContent(false);
@@ -87,14 +92,21 @@ public class TestPublicKeyEncryption extends TestCase
 
         InputStream input =
             TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
-        try {
+        try 
+        {
             document = PDDocument.load(input);
-        } finally {
+        } 
+        finally 
+        {
             input.close();
         }
     }
 
-    protected void tearDown() throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    protected void tearDown() throws Exception 
+    {
         document.close();
     }
 
@@ -111,13 +123,18 @@ public class TestPublicKeyEncryption extends TestCase
         document.protect(policy);
 
         PDDocument encrypted = reload(document);
-        try {
+        try 
+        {
             Assert.assertTrue(encrypted.isEncrypted());
             encrypted.openProtection(decryption2);
             fail("No exception when using an incorrect decryption key");
-        } catch(CryptographyException expected) {
+        } 
+        catch(CryptographyException expected) 
+        {
             // do nothing
-        } finally {
+        } 
+        finally 
+        {
             encrypted.close();
         }
     }
@@ -136,7 +153,8 @@ public class TestPublicKeyEncryption extends TestCase
         document.protect(policy);
 
         PDDocument encrypted = reload(document);
-        try {
+        try 
+        {
             Assert.assertTrue(encrypted.isEncrypted());
             encrypted.openProtection(decryption1);
 
@@ -150,7 +168,9 @@ public class TestPublicKeyEncryption extends TestCase
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertFalse(permission.canPrint());
             Assert.assertFalse(permission.canPrintDegraded());
-        } finally {
+        } 
+        finally 
+        {
             encrypted.close();
         }
     }
@@ -170,7 +190,8 @@ public class TestPublicKeyEncryption extends TestCase
 
         // open first time
         PDDocument encrypted1 = reload(document);
-        try {
+        try 
+        {
             encrypted1.openProtection(decryption1);
 
             AccessPermission permission =
@@ -183,13 +204,16 @@ public class TestPublicKeyEncryption extends TestCase
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertFalse(permission.canPrint());
             Assert.assertFalse(permission.canPrintDegraded());
-        } finally {
+        } 
+        finally 
+        {
             encrypted1.close();
         }
 
         // open second time
         PDDocument encrypted2 = reload(document);
-        try {
+        try 
+        {
             encrypted2.openProtection(decryption2);
 
             AccessPermission permission =
@@ -202,7 +226,9 @@ public class TestPublicKeyEncryption extends TestCase
             Assert.assertFalse(permission.canModifyAnnotations());
             Assert.assertTrue(permission.canPrint());
             Assert.assertFalse(permission.canPrintDegraded());
-        } finally {
+        } 
+        finally 
+        {
             encrypted2.close();
         }
     }
@@ -211,18 +237,24 @@ public class TestPublicKeyEncryption extends TestCase
      * Reloads the given document by writing it to a temporary byte array
      * and loading a fresh document from that byte array.
      *
-     * @param document input document
+     * @param doc input document
      * @return reloaded document
      * @throws Exception if 
      */
-    private PDDocument reload(PDDocument document) {
-        try {
+    private PDDocument reload(PDDocument doc) 
+    {
+        try 
+        {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            document.save(buffer);
+            doc.save(buffer);
             return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()));
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             throw new IllegalStateException("Unexpected failure");
-        } catch (COSVisitorException e) {
+        } 
+        catch (COSVisitorException e) 
+        {
             throw new IllegalStateException("Unexpected failure");
         }
     }
@@ -236,32 +268,35 @@ public class TestPublicKeyEncryption extends TestCase
      * @return recipient specification
      * @throws Exception if the certificate could not be read
      */
-    private PublicKeyRecipient getRecipient(
-            String certificate, AccessPermission permission) throws Exception {
-        InputStream input =
-            TestPublicKeyEncryption.class.getResourceAsStream(certificate);
-        try {
-            CertificateFactory factory =
-                CertificateFactory.getInstance("X.509");
+    private PublicKeyRecipient getRecipient(String certificate, AccessPermission permission) throws Exception 
+    {
+        InputStream input = TestPublicKeyEncryption.class.getResourceAsStream(certificate);
+        try 
+        {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
             PublicKeyRecipient recipient = new PublicKeyRecipient();
             recipient.setPermission(permission);
             recipient.setX509(
                     (X509Certificate) factory.generateCertificate(input));
             return recipient;
-        } finally {
+        } 
+        finally 
+        {
             input.close();
         }
     }
 
-    private PublicKeyDecryptionMaterial getDecryptionMaterial(
-            String name, String password) throws Exception {
-        InputStream input = 
-            TestPublicKeyEncryption.class.getResourceAsStream(name);
-        try {
+    private PublicKeyDecryptionMaterial getDecryptionMaterial(String name, String password) throws Exception 
+    {
+        InputStream input = TestPublicKeyEncryption.class.getResourceAsStream(name);
+        try 
+        {
             KeyStore keystore = KeyStore.getInstance("PKCS12");
             keystore.load(input, password.toCharArray());
             return new PublicKeyDecryptionMaterial(keystore, null, password);
-        } finally {
+        } 
+        finally 
+        {
             input.close();
         }
     }

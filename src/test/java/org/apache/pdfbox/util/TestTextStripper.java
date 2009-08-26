@@ -35,7 +35,6 @@ import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * Test suite for PDFTextStripper.
@@ -125,7 +124,7 @@ public class TestTextStripper extends TestCase
      * @return <code>true</code> is the strings are both null,
      * or if their contents are the same, otherwise <code>false</code>.
      */
-    private boolean stringsEqual(PrintWriter log, String expected, String actual)
+    private boolean stringsEqual(String expected, String actual)
     {
         boolean equals = true;
         if( (expected == null) && (actual == null) )
@@ -215,10 +214,12 @@ public class TestTextStripper extends TestCase
     public void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
     throws Exception
     {
-        if(bSort){
+        if(bSort)
+        {
             log.println("Preparing to parse " + inFile.getName() + " for sorted test");
         }
-        else{
+        else
+        {
             log.println("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
@@ -227,9 +228,11 @@ public class TestTextStripper extends TestCase
         PDDocument document = null;
         try
         {
-            if (outDir.exists() == false) {
-                if (outDir.mkdirs() == false) {
-                    throw (new Exception ("Error creating " + outDir.getAbsolutePath() + " directory"));
+            if (!outDir.exists()) 
+            {
+                if (!outDir.mkdirs()) 
+                {
+                    throw (new Exception("Error creating " + outDir.getAbsolutePath() + " directory"));
                 }
             }
             
@@ -237,11 +240,13 @@ public class TestTextStripper extends TestCase
             File outFile = null;
             File expectedFile = null;
 
-            if(bSort){
+            if(bSort)
+            {
                 outFile = new File(outDir,  inFile.getName() + "-sorted.txt");
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + "-sorted.txt");
             }
-            else{
+            else
+            {
                 outFile = new File(outDir, inFile.getName() + ".txt");
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
@@ -287,7 +292,7 @@ public class TestTextStripper extends TestCase
                 {
                     actualLine = actualReader.readLine();
                 }
-                if (!stringsEqual(log, expectedLine, actualLine))
+                if (!stringsEqual(expectedLine, actualLine))
                 {
                     this.bFail = true;
                     log.println("FAILURE: Line mismatch for file " + inFile.getName() +
@@ -327,14 +332,18 @@ public class TestTextStripper extends TestCase
      * @param inDir Input directory search for PDF files in.
      * @param outDir Output directory where the temp files will be created.
      */
-    private void doTestDir(File inDir, File outDir) throws Exception {
-        File[] testFiles = inDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
+    private void doTestDir(File inDir, File outDir) throws Exception 
+    {
+        File[] testFiles = inDir.listFiles(new FilenameFilter() 
+        {
+            public boolean accept(File dir, String name) 
+            {
                 return (name.endsWith(".pdf"));
             }
         });
 
-        for (int n = 0; n < testFiles.length; n++) {
+        for (int n = 0; n < testFiles.length; n++) 
+        {
             //Test without sorting
             doTestFile(testFiles[n], outDir, false, false);
             //Test with sorting
@@ -360,12 +369,16 @@ public class TestTextStripper extends TestCase
         {
             log = new PrintWriter( new FileWriter( "textextract.log" ) );
 
-            if ((filename == null) || (filename.length() == 0)) {
+            if ((filename == null) || (filename.length() == 0)) 
+            {
                 doTestDir(inDir, outDir);
                 if (inDirExt.exists())
+                {
                     doTestDir(inDirExt, outDirExt);
+                }
             }
-            else {
+            else 
+            {
                 //Test without sorting
                 doTestFile(new File(inDir, filename), outDir, true, false);
                 //Test with sorting

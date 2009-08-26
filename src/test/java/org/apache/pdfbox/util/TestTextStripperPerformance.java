@@ -29,7 +29,6 @@ import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * Test the performance of the PDF text stripper utility.

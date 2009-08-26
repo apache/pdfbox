@@ -25,8 +25,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSName;
-
-import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 

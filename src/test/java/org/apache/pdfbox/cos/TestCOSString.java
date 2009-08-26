@@ -22,8 +22,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.pdfbox.cos.COSString;
-
 /**
  * This will test all of the filters in the PDFBox system.
  *
