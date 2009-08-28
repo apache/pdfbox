@@ -483,7 +483,7 @@ public class PDFStreamEngine extends LoggingObject
         }
         catch (IOException e)
         {
-            logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+            logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
         }
     }
 
@@ -517,7 +517,7 @@ public class PDFStreamEngine extends LoggingObject
         }
         catch (Exception e)
         {
-            logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+            logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
         }
     }
 

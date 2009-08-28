@@ -17,7 +17,10 @@
 package org.apache.pdfbox.exceptions;
 
 import java.io.IOException;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Implementation of base object to help with error-handling.
@@ -27,16 +30,16 @@ import java.util.logging.*;
  */
 public abstract class LoggingObject
 {
-    private static Logger logger_;//dwilson 3/15/07
-    
-    static 
+    private static Logger logger; //dwilson 3/15/07
+
+    static
     {
-        try 
+        try
         {
             FileHandler fh = new FileHandler("PDFBox.log", true);
             fh.setFormatter(new SimpleFormatter());
-            logger_ = Logger.getLogger("TestLog");
-            logger_.addHandler(fh);
+            logger = Logger.getLogger("TestLog");
+            logger.addHandler(fh);
 
             /*Set the log level here.
             The lower your logging level, the more stuff will be logged.
@@ -53,7 +56,7 @@ public abstract class LoggingObject
 
             I recommend INFO for debug builds and either SEVERE or OFF for production builds.
             */
-            logger_.setLevel(Level.WARNING);
+            logger.setLevel(Level.WARNING);
 //            logger_.setLevel(Level.INFO);
         }
         catch (IOException exception)
@@ -63,27 +66,37 @@ public abstract class LoggingObject
         }
     }
 
-    protected Logger logger() throws IOException //dwilson 3/15/07
+    /**
+     * Returns the main logger instance.
+     * @return the logger instance
+     */
+    protected Logger logger() //dwilson 3/15/07
     {
-        return logger_;
+        return logger;
     }
 
-    protected static String FullStackTrace(Throwable e){
-		int i;
-		StackTraceElement [] L;
+    /**
+     * Constructs a String with the full stack trace of the given exception.
+     * @param e the exception
+     * @return the full stack trace as a string
+     */
+    protected static String fullStackTrace(Throwable e)
+    {
+        int i;
+        StackTraceElement[] element;
 
-		StringBuffer sRet = new StringBuffer();
-		L = e.getStackTrace();
-		for (i=0; i<L.length; i++)
-		{
-			sRet.append((L[i].toString())).append("\n");
-		}
-		if (e.getCause() != null)
-		{
-			sRet.append("Caused By \n\t").append(e.getCause().getMessage());
-			sRet.append(FullStackTrace(e.getCause()));
-		}
+        StringBuffer sRet = new StringBuffer();
+        element = e.getStackTrace();
+        for (i = 0; i < element.length; i++)
+        {
+            sRet.append((element[i].toString())).append("\n");
+        }
+        if (e.getCause() != null)
+        {
+            sRet.append("Caused By \n\t").append(e.getCause().getMessage());
+            sRet.append(fullStackTrace(e.getCause()));
+        }
 
-		return sRet.toString();
+        return sRet.toString();
     }
 }

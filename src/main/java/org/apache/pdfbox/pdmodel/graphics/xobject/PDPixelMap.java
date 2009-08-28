@@ -185,7 +185,7 @@ public class PDPixelMap extends PDXObjectImage
         } 
         catch (Exception exception)
         {
-            logger().severe(exception.toString() + "\n at\n" + FullStackTrace(exception));
+            logger().severe(exception.toString() + "\n at\n" + fullStackTrace(exception));
             //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
             //Returning the NULL falls through to Phlip Koch's TODO section.
             return null;
