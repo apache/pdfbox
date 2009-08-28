@@ -107,7 +107,7 @@ public class Invoke extends OperatorProcessor
             catch( Exception e )
             {
                 e.printStackTrace();
-                logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+                logger().severe(e.toString() + "\n at\n" + fullStackTrace(e));
             }
         }
         else if(xobject instanceof PDXObjectForm)

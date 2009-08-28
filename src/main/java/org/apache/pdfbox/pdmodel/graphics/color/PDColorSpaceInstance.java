@@ -96,17 +96,17 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
             {
                 values = values + components[i] + "\t";
             }
-            logger().severe(exception.toString() + "\n" + values + "\n at\n" + FullStackTrace(exception));
+            logger().severe(exception.toString() + "\n" + values + "\n at\n" + fullStackTrace(exception));
             throw exception;
         }
         catch (IOException ioexception)
         {
-            logger().severe(ioexception.toString() + "\n at\n" + FullStackTrace(ioexception));
+            logger().severe(ioexception.toString() + "\n at\n" + fullStackTrace(ioexception));
             throw ioexception;
         }
         catch (Exception e)
         {
-            logger().severe(e.toString() + "\n at\n" + FullStackTrace(e));
+            logger().severe(e.toString() + "\n at\n" + fullStackTrace(e));
             throw new IOException("Failed to Create Color");
          }
     }

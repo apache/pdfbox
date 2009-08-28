@@ -162,7 +162,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+                    logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
                 }
             }
         }
@@ -212,7 +212,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    logger().warning(e.toString() + "\n at\n" + FullStackTrace(e));
+                    logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
                 }
             }
         }

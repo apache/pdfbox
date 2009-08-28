@@ -53,7 +53,7 @@ public class MoveTo extends OperatorProcessor
         }
         catch (Exception exception)
         {
-            logger().warning( exception.toString() + "/n at/n" + FullStackTrace(exception));
+            logger().warning( exception.toString() + "/n at/n" + fullStackTrace(exception));
         }
     }
 }
