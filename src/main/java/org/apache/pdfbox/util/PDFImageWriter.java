@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -36,11 +37,11 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This class will take a PDF document and strip out all of the text and ignore the
@@ -94,10 +95,19 @@ public class PDFImageWriter extends PDFStreamEngine
             int startPage, int endPage, String outputPrefix)
     throws IOException
     {
+        int resolution;
+        try
+        {
+            resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+        }
+        catch( HeadlessException e )
+        {
+            resolution = 96;
+        }
         return writeImage(document, imageType, password, startPage, endPage, outputPrefix,
-                8, Toolkit.getDefaultToolkit().getScreenResolution());
+                8, resolution);
     }
-    
+
     /**
      * Converts a given page range of a PDF document to bitmap images.
      * @param document the PDF document
@@ -128,7 +138,7 @@ public class PDFImageWriter extends PDFStreamEngine
                 String fileName = outputPrefix + (i + 1) + "." + imageFormat;
                 System.out.println( "Writing: " + fileName );
                 output = ImageIO.createImageOutputStream( new File( fileName ) );
-                
+
                 boolean foundWriter = false;
                 Iterator writerIter = ImageIO.getImageWritersByFormatName( imageFormat );
                 while( writerIter.hasNext() && !foundWriter )
@@ -175,7 +185,7 @@ public class PDFImageWriter extends PDFStreamEngine
         }
         return bSuccess;
     }
-    
+
     private IIOMetadata createMetadata(RenderedImage image, ImageWriter imageWriter,
             ImageWriteParam writerParams, int resolution)
     {
@@ -191,9 +201,9 @@ public class PDFImageWriter extends PDFStreamEngine
         IIOMetadata meta = imageWriter.getDefaultImageMetadata( type, writerParams );
         return (addResolution(meta, resolution) ? meta : null);
     }
-    
+
     private static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
-    
+
     private boolean addResolution(IIOMetadata meta, int resolution)
     {
         if (meta.isStandardMetadataFormatSupported())
@@ -230,7 +240,7 @@ public class PDFImageWriter extends PDFStreamEngine
         }
         return false;
     }
-        
+
     private static IIOMetadataNode getChildNode(Node n, String name)
     {
         NodeList nodes = n.getChildNodes();
