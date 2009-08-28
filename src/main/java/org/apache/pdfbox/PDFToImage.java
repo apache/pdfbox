@@ -16,9 +16,12 @@
  */
 package org.apache.pdfbox;
 
+import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+
 import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
@@ -64,7 +67,15 @@ public class PDFToImage
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
         String color = "rgb";
-        int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+        int resolution;
+        try
+        {
+            resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+        }
+        catch( HeadlessException e )
+        {
+            resolution = 96;
+        }
         for( int i = 0; i < args.length; i++ )
         {
             if( args[i].equals( PASSWORD ) )
@@ -187,7 +198,7 @@ public class PDFToImage
                     System.err.println( "Error: the number of bits per pixel must be 1, 8 or 24." );
                     System.exit( 2 );
                 }
-                    
+
                 //Make the call
                 PDFImageWriter imageWriter = new PDFImageWriter();
                 boolean success = imageWriter.writeImage(document, imageFormat, password,
