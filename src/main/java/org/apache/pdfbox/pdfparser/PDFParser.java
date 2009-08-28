@@ -260,7 +260,7 @@ public class PDFParser extends BaseParser
              {
                  break;
              }
-             String s = new String(b);
+             String s = new String(b, "US-ASCII");  
              if(s.startsWith("trailer") ||
                      s.startsWith("xref") || 
                      s.startsWith("startxref") ||
