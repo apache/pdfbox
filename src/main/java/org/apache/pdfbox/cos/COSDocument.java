@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -47,15 +46,15 @@ public class COSDocument extends COSBase
 
     /**
      * Maps ObjectKeys to a COSObject. Note that references to these objects
-     * are also stored in COSDictionary objects that map a name to a specific object. 
+     * are also stored in COSDictionary objects that map a name to a specific object.
      */
     private Map objectPool = new HashMap();
-    
+
     /**
      * Maps object and generation ids to object byte offsets.
      */
     private Map xrefTable = new HashMap();
-    
+
     /**
      * Document trailer dictionary.
      */
@@ -69,6 +68,8 @@ public class COSDocument extends COSBase
     private File tmpFile = null;
 
     private String headerString = "%PDF-1.4";
+
+    private boolean warnMissingClose = true;
 
     /**
      * Constructor.  Uses the java.io.tmpdir value to create a file
@@ -390,17 +391,33 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * The sole purpose of this is to inform a client of PDFBox that they
-     * did not close the document.
+     * Warn the user in the finalizer if he didn't close the PDF document. The method also
+     * closes the document just in case, to avoid abandoned temporary files. It's still a good
+     * idea for the user to close the PDF document at the earliest possible to conserve resources.
+     * @throws IOException if an error occurs while closing the temporary files
      */
-    protected void finalize()
+    protected void finalize() throws IOException
     {
-        if( tmpFile != null || scratchFile != null )
+        if( this.warnMissingClose && ( tmpFile != null || scratchFile != null ) )
         {
             Throwable t = new Throwable( "Warning: You did not close the PDF Document" );
             t.printStackTrace();
         }
+        close();
     }
+
+    /**
+     * Controls whether this instance shall issue a warning if the PDF document wasn't closed
+     * properly through a call to the {@link #close()} method. If the PDF document is held in
+     * a cache governed by soft references it is impossible to reliably close the document
+     * before the warning is raised. By default, the warning is enabled.
+     * @param warn true enables the warning, false disables it.
+     */
+    public void setWarnMissingClose(boolean warn)
+    {
+        this.warnMissingClose = warn;
+    }
+
     /**
      * @return Returns the headerString.
      */
@@ -468,24 +485,24 @@ public class COSDocument extends COSBase
                 obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
                 objectPool.put(key, obj);
             }
-        }  
+        }
         return obj;
     }
-    
+
     /**
      * Used to populate the XRef HashMap. Will add an Xreftable entry
-     * that maps ObjectKeys to byte offsets in the file. 
+     * that maps ObjectKeys to byte offsets in the file.
      * @param objKey The objkey, with id and gen numbers
      * @param offset The byte offset in this file
      */
-    public void setXRef(COSObjectKey objKey, int offset) 
+    public void setXRef(COSObjectKey objKey, int offset)
     {
         xrefTable.put(objKey, new Integer(offset));
     }
-    
+
     /**
      * Returns the xrefTable which is a mapping of ObjectKeys
-     * to byte offsets in the file. 
+     * to byte offsets in the file.
      * @return mapping of ObjectsKeys to byte offsets
      */
     public Map getXrefTable()
@@ -494,13 +511,13 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * This method will search the list of objects for types of XRef and 
+     * This method will search the list of objects for types of XRef and
      * uses the parsed data to populate the trailer information as well as
-     * the xref Map. 
-     * 
+     * the xref Map.
+     *
      * @throws IOException if there is an error parsing the stream
      */
-    public void parseXrefStreams() throws IOException 
+    public void parseXrefStreams() throws IOException
     {
         COSDictionary trailerDict = new COSDictionary();
         Iterator xrefIter = getObjectsByType( "XRef" ).iterator();
@@ -510,8 +527,9 @@ public class COSDocument extends COSBase
             COSStream stream = (COSStream)xrefStream.getObject();
             trailerDict.addAll(stream);
             PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, this);
-            parser.parse();         
+            parser.parse();
         }
-        setTrailer( trailerDict );  
+        setTrailer( trailerDict );
     }
+
 }
