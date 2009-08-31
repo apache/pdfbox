@@ -33,7 +33,6 @@
     <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
     <property name="lib.dir" value="lib" />
     <property name="war.dir" value="pdfbox.war" />
-    <property name="licenses.dir" value="licenses" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
     <property name="download.dir" value="download" />
@@ -45,38 +44,51 @@
 
     <property name="jar.dir" value="external" />
 
+    <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
+    <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
+
+    <property name="ant.name" value="ant-1.7.1" />
+    <property name="ant.url" value="${maven.repo1}/org/apache/ant/ant/1.7.1/${ant.name}.jar" />
     <property name="ant.jar" value="${jar.dir}/ant.jar" />
 
     <property name="fontbox.name" value="fontbox-0.8.0-incubating" />
+    <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/0.8.0-incubator/${fontbox.name}.jar" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
     <property name="jempbox.name" value="jempbox-0.8.0-incubating" />
+    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/0.8.0-incubator/${jempbox.name}.jar" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
     <property name="lucene.name" value="lucene-core-2.4.1" />
+    <property name="lucene.url" value="${maven.repo1}/org/apache/lucene/lucene-core/2.4.1/${lucene.name}.jar" />
     <property name="lucene.jar" value="${jar.dir}/${lucene.name}.jar" />
 
     <property name="lucene-demos.name" value="lucene-demos-2.4.1" />
+    <property name="lucene-demos.url" value="${maven.repo1}/org/apache/lucene/lucene-demos/2.4.1/${lucene-demos.name}.jar" />
     <property name="lucene-demos.jar" value="${jar.dir}/${lucene-demos.name}.jar" />
 
-    <property name="bcprov.name" value="bcprov-jdk14-132" />
+    <property name="bcprov.name" value="bcprov-jdk14-136" />
+    <property name="bcprov.url" value="${maven.repo2}/bouncycastle/bcprov-jdk14/136/${bcprov.name}.jar" />
     <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
 
-    <property name="bcmail.name" value="bcmail-jdk14-132" />
+    <property name="bcmail.name" value="bcmail-jdk14-136" />
+    <property name="bcmail.url" value="${maven.repo2}/bouncycastle/bcmail-jdk14/136/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
-    <property name="junit.jar" value="${jar.dir}/junit.jar" />
-    <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
+    <property name="junit.name" value="junit-4.4" />
+    <property name="junit.url" value="${maven.repo2}/junit/junit/4.4/${junit.name}.jar" />
+    <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
-    <property name="maven.repo" value="http://repo2.maven.org/maven2" />
+	<property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
 
-	<property name="checkstyle.url" value="${maven.repo}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
+
+	<property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
     <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
-    <property name="beanutils.url" value="${maven.repo}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
+    <property name="beanutils.url" value="${maven.repo2}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
     <property name="beanutils.jar" value="${tool.dir}/commons-beanutils.jar" />
-    <property name="logging.url" value="${maven.repo}/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar" />
+    <property name="logging.url" value="${maven.repo2}/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar" />
     <property name="logging.jar" value="${tool.dir}/commons-logging.jar" />
-    <property name="antlr.url" value="${maven.repo}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
+    <property name="antlr.url" value="${maven.repo2}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
     <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
     <property name="testoutput.dir" value="${testfiles.dir}/output"/>
@@ -93,7 +105,7 @@
     <property name="testfiles.encryption.url" value="${jiraattachment.url}/12413268/input-ext_encryption.jar"/>
     <property name="testfiles.encryption.jar" value="${download.dir}/input-ext_encryption.jar"/>
 
-    <property name="adobefiles.url" value="${maven.repo}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
+    <property name="adobefiles.url" value="${maven.repo2}/com/adobe/pdf/pcfi/2009.06.14/pcfi-2009.06.14.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2009.06.14.jar"/>
     <property name="adobefiles.additional.url" value="${jiraattachment.url}/12413828/additional_cmaps.jar"/>
     <property name="adobefiles.additional.jar" value="${download.dir}/additional_cmaps.jar"/>
@@ -102,8 +114,8 @@
     <property name="adobefiles.glyph.url" value="${jiraattachment.url}/12413646/glyphlist.txt"/>
     <property name="adobefiles.glyph.txt" value="${dest.dir}/Resources/glyphlist.txt"/>
 
-    <property name="file" value=""/>
-
+	<property name="file" value=""/>
+	
     <!--.NET properties -->
     <property name="ikvm.dir" value="."/>
     <property name="ikvmc" value="${ikvm.dir}/bin/ikvmc.exe"/>
@@ -383,7 +395,51 @@
         </checkstyle>
     </target>
 
-    <target name="package" depends="compile" description="Package pdfbox into a jar file">
+    <target name="find.lucene-core">
+        <available property="lucene-core.found" file="${jar.dir}/${lucene.jar}"/>
+    </target>
+
+    <target name="get.lucene-core"
+            unless="lucene-core.found" depends="find.lucene-core">
+    </target>
+
+	<target name="get.externallibs"
+            unless="lucene-core.found" depends="find.lucene-core">
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${lucene.url}"/>
+            <param name="destfile" value="${lucene.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${lucene-demos.url}"/>
+            <param name="destfile" value="${lucene-demos.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${fontbox.url}"/>
+            <param name="destfile" value="${fontbox.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${jempbox.url}"/>
+            <param name="destfile" value="${jempbox.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${ant.url}"/>
+            <param name="destfile" value="${ant.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${bcmail.url}"/>
+            <param name="destfile" value="${bcmail.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${bcprov.url}"/>
+            <param name="destfile" value="${bcprov.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${junit.url}"/>
+            <param name="destfile" value="${junit.jar}"/>
+        </antcall>
+	</target>
+
+  	<target name="package" depends="get.externallibs,compile" description="Package pdfbox into a jar file">
         <property name="release.name" value="${project.name}-${project.version}" />
         <propertyfile file="${resources.dir}/Resources/pdfbox.version">
             <entry  key="pdfbox.version" value="${release.name}"/>
@@ -401,7 +457,7 @@
                 <attribute name="Implementation-URL" value="http://incubator.apache.org/pdfbox/"/>
             </manifest>
         </jar>
-        <zip zipfile="./lib/pdfbox.war">
+        <zip zipfile="./lib/${project.name}-${project.version}.war">
             <fileset dir="${war.dir}" />
             <zipfileset dir="./lib" prefix="WEB-INF/lib">
                 <include name="${release.name}.jar" />
@@ -433,7 +489,6 @@
         <zip zipfile="${target.dir}/${release.name}.zip">
             <zipfileset dir="." prefix="${release.name}">
                 <include name="${lib.dir}/*.jar"/>
-                <include name="${licenses.dir}/**/*"/>
                 <include name="${src.dir}/**/*.java"/>
                 <include name="${src.dir}/**/*.html"/>
                 <include name="${test.dir}/**/*.java"/>
@@ -451,7 +506,6 @@
                 <include name="${icu4j.jar}" />
                 <include name="${bin.dir}/**/*" />
                 <include name="*.txt" />
-                <include name="pom.xml" />
                 <include name="build.xml" />
                 <include name="build.properties.example" />
                 <include name="${checkstyle.config}" />
