@@ -1105,8 +1105,13 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
      */
     protected String readLine() throws IOException 
     {
+        if (pdfSource.isEOF())
+        {
+            throw new IOException( "Error: End-of-File, expected line");
+        }
+
         StringBuffer buffer = new StringBuffer( 11 );
-        
+       
         int c;
         while ((c = pdfSource.read()) != -1) 
         {
