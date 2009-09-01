@@ -1,0 +1,182 @@
+Release Notes -- Apache PDFBox -- Version 0.8.0-incubating
+
+Introduction
+------------
+
+Apache PDFBox is an open source Java library for working with PDF documents.
+
+This 0.8.0-incubating release is the first PDFBox release made at the
+Apache Software Foundation. The most notable change since the previous
+release (0.7.3) is the renaming of all Java packages from org.pdfbox to
+org.apache.pdfbox. If you've used PDFBox before, you need to update all
+your client code to use the renamed PDFBox packages.
+
+The -incubating label included in the version number reflects the incubation 
+status of the project. See the disclaimer below for more about incubation.
+
+See the Apache PDFBox website at http://incubator.apache.org/pdfbox/ for
+more information.
+
+Release Contents
+----------------
+
+This release consists of a source archive (pdfbox-0.8.0-incubating-src.jar).
+You can build the release with Apache Ant like this:
+
+    jar xf pdfbox-0.8.0-incubating-src.jar
+    cd pdfbox-0.8.0
+    ant
+
+The source archive is accompanied by SHA1 and MD5 checksums and a PGP
+signature that you can use to verify the authenticity of your download.
+The public key used for the PGP signature can be found at
+https://svn.apache.org/repos/asf/incubator/pdfbox/KEYS.
+
+Changelog
+---------
+
+Sub-task
+
+    * [PDFBOX-391] - Remove or replace troublesome test files
+    * [PDFBOX-392] - Remove or replace the ICC profiles
+
+Bug
+
+    * [PDFBOX-51] - PDFToImage fails to render correctly
+    * [PDFBOX-93] - Error in FlateFilter?
+    * [PDFBOX-94] - Unexpected end of ZLIB input stream
+    * [PDFBOX-107] - viewer crashed
+    * [PDFBOX-110] - bad font data with TrueTypeFont
+    * [PDFBOX-141] - PDF to image conversion can lead to mostly black area
+    * [PDFBOX-148] - Error getting pdf version (NumberFormatException)
+    * [PDFBOX-152] - Merge Landscape and Portrait PDFs does not keep orientation
+    * [PDFBOX-162] - font spacing
+    * [PDFBOX-173] - Some suggested COSString improvements
+    * [PDFBOX-178] - splitting some words randomnly
+    * [PDFBOX-183] - java.lang.NullPointerException in highlighter.generateXMLHig
+    * [PDFBOX-187] - Error in parsing CMap file
+    * [PDFBOX-211] - Regression: ArrayIndexOutOfBoundsException in PDFBox 0.7.3
+    * [PDFBOX-221] - NPE on convertToImage
+    * [PDFBOX-223] - CurrentColor in PageDrawer Doesn't Restore Properly
+    * [PDFBOX-224] - Printing Rectangles on rotated pages
+    * [PDFBOX-227] - ArrayIndexOutOfBoundsException:4
+    * [PDFBOX-234] - spaces lost
+    * [PDFBOX-249] - Imbricated XObjects with the same name
+    * [PDFBOX-250] - Table borders not printing correctly
+    * [PDFBOX-286] - PDF document renders incorrectly
+    * [PDFBOX-290] - java.lang.NoSuchMethodError in fontbox
+    * [PDFBOX-292] - Text Extraction strips 1 char when extracting a twin pair
+    * [PDFBOX-296] - Extreme memory usage while extracting text from one pdf
+    * [PDFBOX-313] - OutOfMemoryError for larger PDF text extraction
+    * [PDFBOX-318] - Error getting pdf version
+    * [PDFBOX-321] - PDF printing or conversion : lines are too thick - SOLVED ?
+    * [PDFBOX-324] - One rectangle missing when converting PDF to image
+    * [PDFBOX-330] - Watermarks aren't correctly showed
+    * [PDFBOX-335] - Version incompatibility with Lucene?
+    * [PDFBOX-343] - java.lang.ClassCastException: org.pdfbox.cos.COSArray cannot
+    * [PDFBOX-348] - java.lang.NoClassDefFoundError: org/fontbox/afm/AFMParser
+    * [PDFBOX-349] - Spaces between words ignored in scanned pdf files
+    * [PDFBOX-361] - NullPointerException in PDPageNode.getAllKids
+    * [PDFBOX-364] - Latest trunk uses Java 5 autoboxing
+    * [PDFBOX-373] - (null) printed when characters cannot be decoded during text extraction
+    * [PDFBOX-374] - text areas not properly being sorted because of page rotation
+    * [PDFBOX-377] - Incorrect direction of extracted Arabic Text
+    * [PDFBOX-379] - PDType1Font uses the Java 5 constant Font.TYPE1
+    * [PDFBOX-385] - ClassCastException when call parseCOSArray in BaseParser.java
+    * [PDFBOX-390] - org.pdfbox.filter.ASCIIHexFilter does not skip Whitespace
+    * [PDFBOX-393] - Maven files in jempbox do not work in Eclipse.
+    * [PDFBOX-395] - NPE on public key encryption of an unencrypted document
+    * [PDFBOX-396] - Incorrect permissions after decryption
+    * [PDFBOX-401] - setStrokingColorSpace and setNonStrokingColorSpace in PDPageContentStream doesn't work correct
+    * [PDFBOX-404] - ClassCastException in COSDictionaryMap
+    * [PDFBOX-407] - PDLineDashPattern missing call to super.clone()
+    * [PDFBOX-409] - Small hashcode issue, The code invokes hashCode on an array.
+    * [PDFBOX-415] - Errors when decomposing Arabic Ligatures
+    * [PDFBOX-418] - PDFStreamParser reads incorrect number (patch provided)
+    * [PDFBOX-421] - Unit tests are failing
+    * [PDFBOX-425] - Silent print ignores passed PrintJob
+    * [PDFBOX-426] - Class StrokePath has the wrong superclass
+    * [PDFBOX-428] - Error Printing: dash lengths all zero
+    * [PDFBOX-436] - PDFontFactory.createFont returns null if the given parameter fontCache is null
+    * [PDFBOX-438] - FlateFilter: endless loop because of missing length check (for encrypted pdfs)
+    * [PDFBOX-442] - race condition in PdfFont
+    * [PDFBOX-446] - A empty page produces a NPE
+    * [PDFBOX-450] - PDFTextStripper CAN NOT extract correct font information for some early produced PDF documents
+    * [PDFBOX-452] - [patch] maven build errors in current trunk
+    * [PDFBOX-453] - FlateFilter decode() throwing OutOfMemoryError
+    * [PDFBOX-454] - IOException upon opening a PDF
+    * [PDFBOX-455] - java.lang.ClassCastException: org.pdfbox.cos.COSString cannot be cast to org.pdfbox.cos.COSName
+    * [PDFBOX-456] - PDFTextStripperByArea never finds any text (pageNo check in PDFTextStripper always returns false)
+    * [PDFBOX-457] - PDF to Image doesn't show correctly the document
+    * [PDFBOX-458] - Wrong implementation of COSArray.getInt()
+    * [PDFBOX-459] - Trailer Dictionary object labeled "Size" is overwritten when there are 2 xref table objects
+    * [PDFBOX-466] - error parsing files generated by crystal reports
+    * [PDFBOX-468] - index out of bounds exception
+    * [PDFBOX-470] - corrupt zip stream causes document to not parse
+    * [PDFBOX-471] - invalid dictionary crashes parser
+    * [PDFBOX-473] - attempt to push back when content read
+    * [PDFBOX-474] - invalid xref entry causes parser to fail
+    * [PDFBOX-477] - extra spaces added to rotated text
+    * [PDFBOX-478] - PDFToImage don't render text in iText generated PDF
+    * [PDFBOX-482] - DeviceCMYK support in PDColorSpaceFactory
+    * [PDFBOX-483] - rendering issues during clipping (W/W*-operator)
+    * [PDFBOX-485] - Fonts not printed on HP laserjet (1320 & 8150) when having landscape orientation
+    * [PDFBOX-487] - Font size not rendered with the needed precision
+    * [PDFBOX-497] - COSVisitorException: The handle is invalid
+    * [PDFBOX-498] - some pdf-files have no newline after endobj, pdfbox fails on that
+    * [PDFBOX-509] - Japanese Characters are garbled.
+
+Improvement
+
+    * [PDFBOX-319] - Implementation of PDDeviceCMYK.createColorModel()
+    * [PDFBOX-358] - Vertical text extraction splitting text
+    * [PDFBOX-363] - Fixed Page rotation
+    * [PDFBOX-365] - Updating Lucene version (was: Error in LucenPDFDocument class)
+    * [PDFBOX-368] - Use the Maven standard directory layout
+    * [PDFBOX-376] - Remove the js.jar file
+    * [PDFBOX-380] - Limited support for SC and SCN operator
+    * [PDFBOX-381] - Remove direct JAI dependency
+    * [PDFBOX-387] - new Maven pom.xml files for pdfbox, fontbox, and jempbox
+    * [PDFBOX-389] - Support for b*, B*, d, i, j and J operator
+    * [PDFBOX-405] - Not a bug, but definately incorrect code in PDPageContentStream
+    * [PDFBOX-437] - Prepare JempBox and FontBox for release
+    * [PDFBOX-460] - [PATCH] Improvements for bitmap production (resolution and color depth)
+    * [PDFBOX-461] - Disable javadoc creation timestamp
+    * [PDFBOX-464] - Prepare PDFBox for release
+    * [PDFBOX-472] - use commons logging
+    * [PDFBOX-502] - How To: compile for .NET for image support..
+    * [PDFBOX-507] - [PATCH] Option to disable close warning in finalizer of COSDocument.
+
+New Feature
+
+    * [PDFBOX-98] - Print PDF
+    * [PDFBOX-264] - colorspace as an array entry
+    * [PDFBOX-272] - Identify text rotation angle in TextPosition
+    * [PDFBOX-338] - pdf page extraction
+    * [PDFBOX-493] - Ability to get page number for bookmarks
+
+Task
+
+    * [PDFBOX-366] - License review
+    * [PDFBOX-367] - Export control notifications
+    * [PDFBOX-375] - Rename org.pdfbox packages to org.apache.pdfbox
+
+Test
+
+    * [PDFBOX-386] - Regression tests fail after PDFBOX-373 fix
+
+
+Disclaimer
+----------
+
+Apache PDFBox is an effort undergoing incubation at The Apache Software
+Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is
+required of all newly accepted projects until a further review indicates
+that the infrastructure, communications, and decision making process have
+stabilized in a manner consistent with other successful ASF projects. While
+incubation status is not necessarily a reflection of the completeness or
+stability of the code, it does indicate that the project has yet to be fully
+endorsed by the ASF.
+
+See http://incubator.apache.org/projects/pdfbox.html for the current
+incubation status of the Apache PDFBox project.
