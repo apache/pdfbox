@@ -75,8 +75,8 @@
     <property name="bcmail.url" value="${maven.repo2}/bouncycastle/bcmail-jdk14/136/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
-    <property name="junit.name" value="junit-4.4" />
-    <property name="junit.url" value="${maven.repo2}/junit/junit/4.4/${junit.name}.jar" />
+    <property name="junit.name" value="junit-3.8.2" />
+    <property name="junit.url" value="${maven.repo2}/junit/junit/3.8.2/${junit.name}.jar" />
     <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
 	<property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
