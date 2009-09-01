@@ -31,12 +31,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -44,6 +48,7 @@ import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -99,6 +104,13 @@ public class PDDocument implements Pageable
 
 
     /**
+     * This assocates object ids with a page number.  It's used to determine
+     * the page number for bookmarks (or page numbers for anything else for
+     * which you have an object id for that matter). 
+     */
+    private Map pageMap = null;
+
+    /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
      * at least one page for the document to be valid.
      *
@@ -125,6 +137,96 @@ public class PDDocument implements Pageable
         COSArray kidsArray = new COSArray();
         pages.setItem( COSName.KIDS, kidsArray );
         pages.setItem( COSName.COUNT, new COSInteger( 0 ) );
+    }
+
+    private void generatePageMap() 
+    {
+        pageMap = new HashMap();
+        // these page nodes could be references to pages, 
+        // or references to arrays which have references to pages
+        // or references to arrays which have references to arrays which have references to pages
+        // or ... (I think you get the idea...)
+        COSArray pageNodes = ((COSArrayList)(getDocumentCatalog().getPages().getKids())).toList();
+        
+        for(int arrayCounter=0; arrayCounter < pageNodes.size(); ++arrayCounter) 
+        {
+            parseCatalogObject((COSObject)pageNodes.get(arrayCounter));
+        }
+    }
+             
+    /**
+     * This will either add the page passed in, or, if it's a pointer to an array
+     * of pages, it'll recursivly call itself and process everything in the list.
+     */
+    private void parseCatalogObject(COSObject thePageOrArrayObject) 
+    {
+        COSBase arrayCountBase = thePageOrArrayObject.getItem(COSName.COUNT);
+        int arrayCount = -1;
+        if(arrayCountBase instanceof COSInteger)
+        {
+            arrayCount = ((COSInteger)arrayCountBase).intValue();
+        }
+ 
+        COSBase kidsBase = thePageOrArrayObject.getItem(COSName.KIDS);
+        int kidsCount = -1;
+        if(kidsBase instanceof COSArray)
+        {
+            kidsCount = ((COSArray)kidsBase).size();
+        }
+     
+        if(arrayCount == -1 || kidsCount == -1) 
+        {
+            // these cases occur when we have a page, not an array of pages
+            String objStr = String.valueOf(thePageOrArrayObject.getObjectNumber().intValue());
+            String genStr = String.valueOf(thePageOrArrayObject.getGenerationNumber().intValue());
+            getPageMap().put(objStr+","+genStr, new Integer(getPageMap().size()+1));
+        } 
+        else 
+        {
+            // we either have an array of page pointers, or an array of arrays
+            if(arrayCount == kidsCount) 
+            {
+                // process the kids... they're all references to pages
+                COSArray kidsArray = ((COSArray)kidsBase);
+                for(int i=0; i<kidsArray.size(); ++i) 
+                {
+                    COSObject thisObject = (COSObject)kidsArray.get(i);
+                    String objStr = String.valueOf(thisObject.getObjectNumber().intValue());
+                    String genStr = String.valueOf(thisObject.getGenerationNumber().intValue());
+                    getPageMap().put(objStr+","+genStr, new Integer(getPageMap().size()+1));
+                }
+            } 
+            else 
+            {
+                // this object is an array of references to other arrays
+                COSArray list = null;
+                if(kidsBase instanceof COSArray)
+                {
+                    list = ((COSArray)kidsBase);
+                }
+                if(list != null) 
+                {
+                    for(int arrayCounter=0; arrayCounter < list.size(); ++arrayCounter) 
+                    {
+                        parseCatalogObject((COSObject)list.get(arrayCounter));
+                    }
+                }
+            }
+        }
+    }
+ 
+    /**
+     * This will return the Map containing the mapping from object-ids to pagenumbers.
+     * 
+     * @return the pageMap
+     */
+    public final Map getPageMap() 
+    {
+        if (pageMap != null)
+        {
+            generatePageMap();
+        }
+        return pageMap;
     }
 
     /**

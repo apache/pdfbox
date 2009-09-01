@@ -651,4 +651,15 @@ public class COSArrayList implements List
     {
         return "COSArrayList{" + array.toString() + "}";
     }
+    
+    /**
+     * This will return then underlying COSArray.
+     * 
+     * @return the COSArray
+     */
+    public COSArray toList() 
+    {
+        return array;
+    }
+
 }
