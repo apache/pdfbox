@@ -183,7 +183,23 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             if( c == '>')
             {
                 done = true;
-            }
+            } 
+            else 
+                if(c != '/') 
+                {
+                    //an invalid dictionary, we are expecting
+                    //the key, read until we can recover
+                    logger().warning("Invalid dictionary, found:" + (char)c + " but expected:\''");
+                    int read = pdfSource.read();
+                    while(read != -1 && read != '/' && read != '>')
+                    {
+                        read = pdfSource.read();
+                    }
+                    if(read != -1) 
+                    {
+                        pdfSource.unread(read);
+                    }
+                }
             else
             {
                 COSName key = parseCOSName();
@@ -206,9 +222,12 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
 
                 if( value == null )
                 {
-                    throw new IOException("Bad Dictionary Declaration " + pdfSource );
+                    logger().warning("Bad Dictionary Declaration " + pdfSource );
                 }
-                obj.setItem( key, value );
+                else
+                {
+                    obj.setItem( key, value );
+                }
             }
         }
         char ch = (char)pdfSource.read();
