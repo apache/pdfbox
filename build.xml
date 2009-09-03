@@ -396,16 +396,7 @@
         </checkstyle>
     </target>
 
-    <target name="find.lucene-core">
-        <available property="lucene-core.found" file="${lucene.jar}"/>
-    </target>
-
-    <target name="get.lucene-core"
-            unless="lucene-core.found" depends="find.lucene-core">
-    </target>
-
-	<target name="get.externallibs"
-            unless="lucene-core.found" depends="find.lucene-core">
+	<target name="get.externallibs">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${lucene.url}"/>
             <param name="destfile" value="${lucene.jar}"/>
