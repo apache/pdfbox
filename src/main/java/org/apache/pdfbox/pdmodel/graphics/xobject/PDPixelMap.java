@@ -133,7 +133,7 @@ public class PDPixelMap extends PDXObjectImage
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
-                logger().severe("getColorSpace() returned NULL.  Predictor = " + getPredictor());
+                logger().error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
                 return null;
             }
             
@@ -185,7 +185,7 @@ public class PDPixelMap extends PDXObjectImage
         } 
         catch (Exception exception)
         {
-            logger().severe(exception.toString() + "\n at\n" + fullStackTrace(exception));
+            logger().error(exception, exception);
             //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
             //Returning the NULL falls through to Phlip Koch's TODO section.
             return null;

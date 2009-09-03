@@ -79,15 +79,17 @@
     <property name="junit.url" value="${maven.repo2}/junit/junit/3.8.2/${junit.name}.jar" />
     <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
-	<property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
+    <property name="logging.name" value="commons-logging-1.1.1" />
+    <property name="logging.url" value="${maven.repo1}/commons-logging/commons-logging/1.1.1/${logging.name}.jar" />
+    <property name="logging.jar" value="${jar.dir}/${logging.name}.jar" />
+
+    <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
 
 
 	<property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
     <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
     <property name="beanutils.url" value="${maven.repo2}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
     <property name="beanutils.jar" value="${tool.dir}/commons-beanutils.jar" />
-    <property name="logging.url" value="${maven.repo2}/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar" />
-    <property name="logging.jar" value="${tool.dir}/commons-logging.jar" />
     <property name="antlr.url" value="${maven.repo2}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
     <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
@@ -270,6 +272,7 @@
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
+                <pathelement path="${logging.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
@@ -294,6 +297,7 @@
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
+                <pathelement path="${logging.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
@@ -314,6 +318,7 @@
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
+                <pathelement path="${logging.jar}" />
                 <pathelement path="${lucene.jar}" />
                 <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
@@ -374,10 +379,6 @@
             <param name="destfile" value="${beanutils.jar}"/>
         </antcall>
         <antcall target="downloadfile">
-            <param name="sourcefile" value="${logging.url}"/>
-            <param name="destfile" value="${logging.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
             <param name="sourcefile" value="${antlr.url}"/>
             <param name="destfile" value="${antlr.jar}"/>
         </antcall>
@@ -396,7 +397,7 @@
     </target>
 
     <target name="find.lucene-core">
-        <available property="lucene-core.found" file="${jar.dir}/${lucene.jar}"/>
+        <available property="lucene-core.found" file="${lucene.jar}"/>
     </target>
 
     <target name="get.lucene-core"
@@ -436,6 +437,10 @@
         <antcall target="downloadfile">
             <param name="sourcefile" value="${junit.url}"/>
             <param name="destfile" value="${junit.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${logging.url}"/>
+            <param name="destfile" value="${logging.jar}"/>
         </antcall>
 	</target>
 

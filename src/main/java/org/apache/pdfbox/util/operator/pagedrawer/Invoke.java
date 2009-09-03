@@ -68,7 +68,7 @@ public class Invoke extends OperatorProcessor
                 BufferedImage awtImage = image.getRGBImage();
                 if (awtImage == null) 
                 {
-                    logger().warning("getRGBImage returned NULL");
+                    logger().warn("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
@@ -107,7 +107,7 @@ public class Invoke extends OperatorProcessor
             catch( Exception e )
             {
                 e.printStackTrace();
-                logger().severe(e.toString() + "\n at\n" + fullStackTrace(e));
+                logger().error(e, e);
             }
         }
         else if(xobject instanceof PDXObjectForm)

@@ -113,7 +113,7 @@ public class PDCcitt extends PDXObjectImage
         }
         catch (Exception e)
         {
-            logger().severe(e.toString() + "\n at\n" + fullStackTrace(e));
+            logger().error(e, e);
         } 
         finally 
         {

@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * This represents a single page in a PDF document.
@@ -703,7 +702,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         } 
         catch (ImagingOpException e)
         {
-                logger().log(Level.WARNING, "Unable to rotate page image", e);
+                logger().warn("Unable to rotate page image", e);
         }
 
         return retval;

@@ -16,11 +16,8 @@
  */
 package org.apache.pdfbox.exceptions;
 
-import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Implementation of base object to help with error-handling.
@@ -30,73 +27,19 @@ import java.util.logging.SimpleFormatter;
  */
 public abstract class LoggingObject
 {
-    private static Logger logger; //dwilson 3/15/07
-
-    static
-    {
-        try
-        {
-            FileHandler fh = new FileHandler("PDFBox.log", true);
-            fh.setFormatter(new SimpleFormatter());
-            logger = Logger.getLogger("TestLog");
-            logger.addHandler(fh);
-
-            /*Set the log level here.
-            The lower your logging level, the more stuff will be logged.
-            Options are:
-                * OFF -- log nothing
-                * SEVERE (highest value)
-                * WARNING
-                * INFO
-                * CONFIG
-                * FINE
-                * FINER
-                * FINEST (lowest value)
-            http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/Level.html
-
-            I recommend INFO for debug builds and either SEVERE or OFF for production builds.
-            */
-            logger.setLevel(Level.WARNING);
-//            logger_.setLevel(Level.INFO);
-        }
-        catch (IOException exception)
-        {
-            System.err.println("Error while opening the logfile:");
-            exception.printStackTrace();
-        }
-    }
+    private static Log logger; //dwilson 3/15/07
 
     /**
      * Returns the main logger instance.
      * @return the logger instance
      */
-    protected Logger logger() //dwilson 3/15/07
+    protected Log logger() //dwilson 3/15/07
     {
+        if (logger == null)
+        {
+            logger = LogFactory.getLog(getClass());
+        }
         return logger;
     }
 
-    /**
-     * Constructs a String with the full stack trace of the given exception.
-     * @param e the exception
-     * @return the full stack trace as a string
-     */
-    protected static String fullStackTrace(Throwable e)
-    {
-        int i;
-        StackTraceElement[] element;
-
-        StringBuffer sRet = new StringBuffer();
-        element = e.getStackTrace();
-        for (i = 0; i < element.length; i++)
-        {
-            sRet.append((element[i].toString())).append("\n");
-        }
-        if (e.getCause() != null)
-        {
-            sRet.append("Caused By \n\t").append(e.getCause().getMessage());
-            sRet.append(fullStackTrace(e.getCause()));
-        }
-
-        return sRet.toString();
-    }
 }

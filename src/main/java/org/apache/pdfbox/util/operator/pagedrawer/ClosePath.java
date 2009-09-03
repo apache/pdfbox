@@ -46,7 +46,7 @@ public class ClosePath extends OperatorProcessor
         }
         catch( Throwable t )
         {
-            logger().warning(t.getMessage() + "\n at\n" + fullStackTrace(t));
+            logger().warn(t, t);
         }
     }
 }

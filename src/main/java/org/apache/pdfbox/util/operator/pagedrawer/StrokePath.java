@@ -70,7 +70,7 @@ public class StrokePath extends OperatorProcessor
         }
         catch (Exception exception)
         {
-            logger().warning( exception.toString() + "/n at/n" + fullStackTrace(exception));
+            logger().warn(exception, exception);
         }
     }
 }

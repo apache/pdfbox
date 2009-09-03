@@ -115,17 +115,17 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
                     catch (OutOfMemoryError exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().severe("Stop reading corrupt stream");
+                        logger().error("Stop reading corrupt stream");
                     }
                     catch (ZipException exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().severe("Stop reading corrupt stream");
+                        logger().error("Stop reading corrupt stream");
                     }
                     catch (EOFException exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().severe("Stop reading corrupt stream");
+                        logger().error("Stop reading corrupt stream");
                     }
                 }
                 else

@@ -91,7 +91,7 @@ public class SetNonStrokingSeparation extends OperatorProcessor
             }
             else
             {
-                logger().warning("Not supported colorspace "+colorSpace.getName() 
+                logger().warn("Not supported colorspace "+colorSpace.getName() 
                         + " within operator "+operator.getOperation());
             }
         }
