@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -179,7 +178,7 @@ public class PDFParser extends BaseParser
                              * Warning is sent to the PDFBox.log and to the Console that
                              * we skipped over an object
                              */
-                            logger().log(Level.WARNING ,"Parsing Error, Skipping Object", e);
+                            logger().warn("Parsing Error, Skipping Object", e);
                             skipToNextObj();
                         }
                         else
@@ -683,7 +682,7 @@ public class PDFParser extends BaseParser
                 String[] splitString = currentLine.split(" ");
                 if (splitString.length < 3)
                 {
-                    logger().warning("invalid xref line: " + currentLine);
+                    logger().warn("invalid xref line: " + currentLine);
                     break;
                 }
                 /* This supports the corrupt table as reported in 

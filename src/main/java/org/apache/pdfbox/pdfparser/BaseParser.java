@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import java.util.logging.Level;
-
 import org.apache.pdfbox.io.ByteArrayPushBackInputStream;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
@@ -189,7 +187,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                 {
                     //an invalid dictionary, we are expecting
                     //the key, read until we can recover
-                    logger().warning("Invalid dictionary, found:" + (char)c + " but expected:\''");
+                    logger().warn("Invalid dictionary, found:" + (char)c + " but expected:\''");
                     int read = pdfSource.read();
                     while(read != -1 && read != '/' && read != '>')
                     {
@@ -222,7 +220,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
 
                 if( value == null )
                 {
-                    logger().warning("Bad Dictionary Declaration " + pdfSource );
+                    logger().warn("Bad Dictionary Declaration " + pdfSource );
                 }
                 else
                 {
@@ -699,7 +697,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else
             {
-                logger().log(Level.WARNING, "Corrupt object reference" );
+                logger().warn("Corrupt object reference" );
                 //it could be a bad object in the array which is just skipped
             }
             skipSpaces();

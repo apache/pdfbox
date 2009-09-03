@@ -109,13 +109,13 @@ public class PDSeparation extends PDColorSpace
         }
         catch (IOException ioexception)
         {
-            logger().severe(ioexception.toString() + "\n at\n" + fullStackTrace(ioexception));
+            logger().error(ioexception, ioexception);
 
             throw ioexception;
         }
         catch (Exception exception)
         {
-            logger().severe(exception.toString() + "\n at\n" +fullStackTrace(exception));
+            logger().error(exception, exception);
             throw new IOException("Failed to Create ColorSpace");
         }
     }

@@ -51,7 +51,7 @@ public class ClipEvenOddRule extends OperatorProcessor
         } 
         catch (Exception e) 
         {
-                logger().warning(e.getMessage() + "\n at\n" + fullStackTrace(e));
+                logger().warn(e, e);
         }
     }
 }

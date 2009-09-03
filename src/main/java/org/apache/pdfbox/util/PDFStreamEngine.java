@@ -227,7 +227,10 @@ public class PDFStreamEngine extends LoggingObject
                     {
                         arguments.add( next );
                     }
-                    logger().fine("token: " + next.toString());
+                    if(logger().isDebugEnabled())
+                    {
+                        logger().debug("token: " + next.toString());
+                    }
                 }
             }
         }
@@ -483,7 +486,7 @@ public class PDFStreamEngine extends LoggingObject
         }
         catch (IOException e)
         {
-            logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
+            logger().warn(e, e);
         }
     }
 
@@ -517,7 +520,7 @@ public class PDFStreamEngine extends LoggingObject
         }
         catch (Exception e)
         {
-            logger().warning(e.toString() + "\n at\n" + fullStackTrace(e));
+            logger().warn(e, e);
         }
     }
 

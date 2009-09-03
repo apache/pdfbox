@@ -85,7 +85,7 @@ public class SetStrokingColor extends OperatorProcessor
         }
         else 
         {
-            logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
+            logger().warn("Colorspace not found in "+getClass().getName()+".process!!");
         }
     }
 }

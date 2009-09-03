@@ -80,13 +80,13 @@ public class SetNonStrokingColor extends OperatorProcessor
             }
             else 
             {
-                logger().warning("Not supported colorspace "+colorSpace.getName() 
+                logger().warn("Not supported colorspace "+colorSpace.getName() 
                         + " within operator "+operator.getOperation());
             }
         }
         else
         {
-            logger().warning("Colorspace not found in "+getClass().getName()+".process!!");
+            logger().warn("Colorspace not found in "+getClass().getName()+".process!!");
         }
     }
 }

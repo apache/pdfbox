@@ -52,7 +52,7 @@ public class FillNonZeroRule extends OperatorProcessor
         } 
         catch (Exception e) 
         {
-            logger().warning(e.getMessage() + "\n at\n" + fullStackTrace(e));
+            logger().warn(e, e);
         }
     }
 }
