@@ -222,7 +222,7 @@ public class PDDocument implements Pageable
      */
     public final Map getPageMap() 
     {
-        if (pageMap != null)
+        if (pageMap == null)
         {
             generatePageMap();
         }
