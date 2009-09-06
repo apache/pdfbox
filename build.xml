@@ -82,8 +82,9 @@
     <property name="logging.url" value="${maven.repo1}/commons-logging/commons-logging/1.1.1/${logging.name}.jar" />
     <property name="logging.jar" value="${jar.dir}/${logging.name}.jar" />
 
-    <property name="icu4j.jar" value="${jar.dir}/icu4j-4_0.jar" />
-
+    <property name="icu4j.name" value="icu4j-3.8" />
+    <property name="icu4j.url" value="${maven.repo1}/com/ibm/icu/icu4j/3.8/${icu4j.name}.jar" />
+    <property name="icu4j.jar" value="${jar.dir}/${icu4j.name}.jar" />
 
 	<property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
     <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
@@ -431,6 +432,10 @@
         <antcall target="downloadfile">
             <param name="sourcefile" value="${logging.url}"/>
             <param name="destfile" value="${logging.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${icu4j.url}"/>
+            <param name="destfile" value="${icu4j.jar}"/>
         </antcall>
 	</target>
 
