@@ -31,7 +31,6 @@
     <property name="website.dir" value="website" />
     <property name="website.build.dir" value="${website.dir}/build/site" />
     <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
-    <property name="lib.dir" value="lib" />
     <property name="war.dir" value="pdfbox.war" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
@@ -140,18 +139,18 @@
     <target name="clean" description="Remove all generated files">
         <delete dir="${target.dir}"/>
         <delete dir="${docs.dir}"/>
-        <delete dir="${lib.dir}"/>
         <delete dir="${bin.dir}"/>
+        <delete dir="${war.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
         <delete dir="${testoutput-ext.dir}"/>
     </target>
 
     <target name="pdfbox.init">
-        <mkdir dir="${lib.dir}"/>
         <mkdir dir="${dest.dir}"/>
         <mkdir dir="${docs.dir}" />
         <mkdir dir="${bin.dir}" />
+        <mkdir dir="${war.dir}" />
         <mkdir dir="${testoutput.dir}" />
         <mkdir dir="${testoutput.dir}/rendering" />
         <mkdir dir="${testoutput-ext.dir}" />
@@ -484,7 +483,6 @@
 
         <zip zipfile="${target.dir}/${release.name}.zip">
             <zipfileset dir="." prefix="${release.name}">
-                <include name="${lib.dir}/*.jar"/>
                 <include name="${src.dir}/**/*.java"/>
                 <include name="${src.dir}/**/*.html"/>
                 <include name="${test.dir}/**/*.java"/>
