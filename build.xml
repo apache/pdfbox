@@ -32,6 +32,7 @@
     <property name="website.build.dir" value="${website.dir}/build/site" />
     <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
     <property name="war.dir" value="pdfbox.war" />
+    <property name="lib.dir" value="lib" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
     <property name="download.dir" value="download" />
@@ -39,7 +40,7 @@
 
     <property name="project.name" value="pdfbox"/>
     <property name="project.version" value="0.8.0-incubating" />
-    <property name="jar.file" value="./lib/${project.name}-${project.version}.jar" />
+    <property name="jar.file" value="${lib.dir}/${project.name}-${project.version}.jar" />
 
     <property name="jar.dir" value="external" />
 
@@ -142,6 +143,7 @@
         <delete dir="${docs.dir}"/>
         <delete dir="${bin.dir}"/>
         <delete dir="${war.dir}"/>
+        <delete dir="${lib.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
         <delete dir="${testoutput-ext.dir}"/>
@@ -152,6 +154,7 @@
         <mkdir dir="${docs.dir}" />
         <mkdir dir="${bin.dir}" />
         <mkdir dir="${war.dir}" />
+        <mkdir dir="${lib.dir}" />
         <mkdir dir="${testoutput.dir}" />
         <mkdir dir="${testoutput.dir}/rendering" />
         <mkdir dir="${testoutput-ext.dir}" />
@@ -445,7 +448,7 @@
             <entry  key="pdfbox.version" value="${release.name}"/>
         </propertyfile>
 
-        <jar jarfile="./lib/${release.name}.jar">
+        <jar jarfile="./${lib.dir}/${release.name}.jar">
             <fileset dir="${dest.dir}"/>
             <fileset dir="${resources.dir}"/>
             <metainf dir="." includes="*.txt"/>
@@ -457,9 +460,9 @@
                 <attribute name="Implementation-URL" value="http://incubator.apache.org/pdfbox/"/>
             </manifest>
         </jar>
-        <zip zipfile="./lib/${project.name}-${project.version}.war">
+        <zip zipfile="./${lib.dir}/${project.name}-${project.version}.war">
             <fileset dir="${war.dir}" />
-            <zipfileset dir="./lib" prefix="WEB-INF/lib">
+            <zipfileset dir="./${lib.dir}" prefix="WEB-INF/lib">
                 <include name="${release.name}.jar" />
             </zipfileset>
         </zip>
@@ -478,7 +481,7 @@
     <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create zip distribution file">
 
         <jar jarfile="${target.dir}/${release.name}-maven.jar">
-            <fileset dir="./lib/">
+            <fileset dir="./${lib.dir}/">
                 <include name="${release.name}.jar"/>
             </fileset>
             <fileset dir=".">
@@ -488,6 +491,7 @@
 
         <zip zipfile="${target.dir}/${release.name}.zip">
             <zipfileset dir="." prefix="${release.name}">
+            	<include name="${lib.dir}/*.jar"/>
                 <include name="${src.dir}/**/*.java"/>
                 <include name="${src.dir}/**/*.html"/>
                 <include name="${test.dir}/**/*.java"/>
