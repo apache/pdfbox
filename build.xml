@@ -32,17 +32,14 @@
     <property name="website.build.dir" value="${website.dir}/build/site" />
     <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
     <property name="war.dir" value="pdfbox.war" />
-    <property name="lib.dir" value="lib" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
     <property name="download.dir" value="download" />
     <property name="checkstyle.config" value="pdfbox-checkstyle.xml" />
+    <property name="jar.dir" value="external" />
 
     <property name="project.name" value="pdfbox"/>
     <property name="project.version" value="0.8.0-incubating" />
-    <property name="jar.file" value="${lib.dir}/${project.name}-${project.version}.jar" />
-
-    <property name="jar.dir" value="external" />
 
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
@@ -142,8 +139,6 @@
         <delete dir="${target.dir}"/>
         <delete dir="${docs.dir}"/>
         <delete dir="${bin.dir}"/>
-        <delete dir="${war.dir}"/>
-        <delete dir="${lib.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
         <delete dir="${testoutput-ext.dir}"/>
@@ -153,8 +148,6 @@
         <mkdir dir="${dest.dir}"/>
         <mkdir dir="${docs.dir}" />
         <mkdir dir="${bin.dir}" />
-        <mkdir dir="${war.dir}" />
-        <mkdir dir="${lib.dir}" />
         <mkdir dir="${testoutput.dir}" />
         <mkdir dir="${testoutput.dir}/rendering" />
         <mkdir dir="${testoutput-ext.dir}" />
@@ -448,7 +441,7 @@
             <entry  key="pdfbox.version" value="${release.name}"/>
         </propertyfile>
 
-        <jar jarfile="./${lib.dir}/${release.name}.jar">
+        <jar jarfile="./${target.dir}/${release.name}.jar">
             <fileset dir="${dest.dir}"/>
             <fileset dir="${resources.dir}"/>
             <metainf dir="." includes="*.txt"/>
@@ -460,9 +453,9 @@
                 <attribute name="Implementation-URL" value="http://incubator.apache.org/pdfbox/"/>
             </manifest>
         </jar>
-        <zip zipfile="./${lib.dir}/${project.name}-${project.version}.war">
+        <zip zipfile="./${target.dir}/${project.name}-${project.version}.war">
             <fileset dir="${war.dir}" />
-            <zipfileset dir="./${lib.dir}" prefix="WEB-INF/lib">
+            <zipfileset dir="./${target.dir}" prefix="WEB-INF/lib">
                 <include name="${release.name}.jar" />
             </zipfileset>
         </zip>
@@ -478,20 +471,34 @@
         <antcall target="dist" />
     </target>
 
-    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create zip distribution file">
+    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create jar distribution file">
 
-        <jar jarfile="${target.dir}/${release.name}-maven.jar">
-            <fileset dir="./${lib.dir}/">
+        <zip zipfile="${target.dir}/${release.name}-standalone.jar">
+            <zipfileset dir="./${target.dir}/" prefix="${release.name}">
                 <include name="${release.name}.jar"/>
-            </fileset>
-            <fileset dir=".">
-                <include name="pom.xml"/>
-            </fileset>
-        </jar>
-
-        <zip zipfile="${target.dir}/${release.name}.zip">
+            </zipfileset>
             <zipfileset dir="." prefix="${release.name}">
-            	<include name="${lib.dir}/*.jar"/>
+                <include name="${ant.jar}" />
+                <include name="${lucene.jar}" />
+                <include name="${lucene-demos.jar}" />
+                <include name="${junit.jar}" />
+                <include name="${bcprov.jar}" />
+                <include name="${bcmail.jar}" />
+                <include name="${fontbox.jar}" />
+                <include name="${jempbox.jar}" />
+                <include name="${icu4j.jar}" />
+                <include name="${bin.dir}/**/*" />
+                <include name="LICENSE.txt" />
+                <include name="NOTICE.txt" />
+            </zipfileset>
+            <zipfileset dir="${website.build.dir}" prefix="${release.name}/docs">
+                <include name="**/*" />
+                <exclude name="**/*.zip" />
+            </zipfileset>
+        </zip>
+
+        <zip zipfile="${target.dir}/${release.name}-src.jar">
+            <zipfileset dir="." prefix="${release.name}">
                 <include name="${src.dir}/**/*.java"/>
                 <include name="${src.dir}/**/*.html"/>
                 <include name="${test.dir}/**/*.java"/>
@@ -505,17 +512,22 @@
                 <include name="${bcmail.jar}" />
                 <include name="${fontbox.jar}" />
                 <include name="${jempbox.jar}" />
-                <include name="${checkstyle.jar}" />
                 <include name="${icu4j.jar}" />
+                <include name="${antlr.jar}" />
+                <include name="${checkstyle.jar}" />
+                <include name="${beanutils.jar}" />
                 <include name="${bin.dir}/**/*" />
                 <include name="*.txt" />
                 <include name="build.xml" />
                 <include name="build.properties.example" />
                 <include name="${checkstyle.config}" />
             </zipfileset>
-            <zipfileset dir="${website.build.dir}" prefix="${release.name}/docs">
+            <zipfileset dir="${dest.dir}/Resources/" prefix="${release.name}/${dest.dir}/Resources/">
                 <include name="**/*" />
-                <exclude name="**/*.zip" />
+            </zipfileset>
+            <zipfileset dir="${testfiles.dir}" prefix="${release.name}/${testfiles.dir}">
+                <include name="input/**/*" />
+                <include name="pdfreader/**/*" />
             </zipfileset>
             <zipfileset dir="." prefix="${release.name}">
                 <include name="website/**/*" />
