@@ -504,26 +504,10 @@
                 <include name="${test.dir}/**/*.java"/>
                 <include name="${test.dir}/**/*.html"/>
                 <include name="${resources.dir}/**/*" />
-                <include name="${ant.jar}" />
-                <include name="${lucene.jar}" />
-                <include name="${lucene-demos.jar}" />
-                <include name="${junit.jar}" />
-                <include name="${bcprov.jar}" />
-                <include name="${bcmail.jar}" />
-                <include name="${fontbox.jar}" />
-                <include name="${jempbox.jar}" />
-                <include name="${icu4j.jar}" />
-                <include name="${antlr.jar}" />
-                <include name="${checkstyle.jar}" />
-                <include name="${beanutils.jar}" />
-                <include name="${bin.dir}/**/*" />
                 <include name="*.txt" />
                 <include name="build.xml" />
                 <include name="build.properties.example" />
                 <include name="${checkstyle.config}" />
-            </zipfileset>
-            <zipfileset dir="${dest.dir}/Resources/" prefix="${release.name}/${dest.dir}/Resources/">
-                <include name="**/*" />
             </zipfileset>
             <zipfileset dir="${testfiles.dir}" prefix="${release.name}/${testfiles.dir}">
                 <include name="input/**/*" />
@@ -535,9 +519,6 @@
             </zipfileset>
             <zipfileset dir="${war.dir}" prefix="${release.name}/${war.dir}">
                 <include name="**/*" />
-            </zipfileset>
-            <zipfileset dir="${ikvm.dir}/bin" prefix="${release.name}/bin" >
-                <include name="*.dll" />
             </zipfileset>
         </zip>
     </target>
