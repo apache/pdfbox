@@ -81,8 +81,7 @@ public class PDSeparation extends PDColorSpace
      */
     public int getNumberOfComponents() throws IOException
     {
-        //return 1;
-    return array.size();
+        return getAlternateColorSpace().getNumberOfComponents();
     }
 
     /**
