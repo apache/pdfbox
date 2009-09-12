@@ -54,7 +54,7 @@ public class BeginInlineImage extends OperatorProcessor
         PDInlinedImage image = new PDInlinedImage();
         image.setImageParameters( params );
         image.setImageData( operator.getImageData() );
-        BufferedImage awtImage = image.createImage();
+        BufferedImage awtImage = image.createImage( context.getColorSpaces() );
 
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
 

@@ -49,16 +49,7 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
     {
 //      (PDF 1.1) Set color space for stroking operations
         COSName name = (COSName)arguments.get( 0 );
-        PDColorSpace cs = null;
-        Map colorSpaces = context.getColorSpaces();
-        if( colorSpaces != null )
-        {
-             cs = (PDColorSpace)colorSpaces.get( name.getName() );
-        }
-        if( cs == null )
-        {
-            cs = PDColorSpaceFactory.createColorSpace( name );
-        }
+        PDColorSpace cs = PDColorSpaceFactory.createColorSpace( name, context.getColorSpaces() );
         PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
         colorInstance.setColorSpace( cs );
         int numComponents = cs.getNumberOfComponents();

@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This contains all of the image parameters for in inlined image.
@@ -120,11 +121,25 @@ public class ImageParameters
      */
     public PDColorSpace getColorSpace() throws IOException
     {
+        return getColorSpace( null );
+    }
+    
+    /**
+     * This will get the color space or null if none exists.
+     *
+     * @param colorSpaces The ColorSpace dictionary from the current resources, if any.
+     *
+     * @return The color space for this image.
+     *
+     * @throws IOException If there is an error getting the colorspace.
+     */
+    public PDColorSpace getColorSpace( Map colorSpaces ) throws IOException
+    {
         COSBase cs = getCOSObject( "CS", "ColorSpace" );
         PDColorSpace retval = null;
         if( cs != null )
         {
-            retval = PDColorSpaceFactory.createColorSpace( cs );
+            retval = PDColorSpaceFactory.createColorSpace( cs, colorSpaces );
         }
         return retval;
     }
