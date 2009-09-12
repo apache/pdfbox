@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
@@ -94,6 +95,21 @@ public class PDInlinedImage
      */
     public BufferedImage createImage() throws IOException
     {
+        return createImage( null );
+    }
+
+    /**
+     * This will take the inlined image information and create a java.awt.Image from
+     * it.
+     * 
+     * @param colorSpaces The ColorSpace dictionary from the current resources, if any.
+     *
+     * @return The image that this object represents.
+     *
+     * @throws IOException If there is an error creating the image.
+     */
+    public BufferedImage createImage( Map colorSpaces ) throws IOException
+    {
         /*
          * This was the previous implementation, not sure which is better right now.
          *         byte[] transparentColors = new byte[]{(byte)0xFF,(byte)0xFF};
@@ -118,12 +134,12 @@ public class PDInlinedImage
 
 
         //verify again pci32.pdf before changing below
-        PDColorSpace pcs = params.getColorSpace();
+        PDColorSpace pcs = params.getColorSpace( colorSpaces );
         ColorModel colorModel = null;
         if(pcs != null)
         {
             colorModel =
-                params.getColorSpace().createColorModel(
+                pcs.createColorModel(
                         params.getBitsPerComponent() );
         }
         else
