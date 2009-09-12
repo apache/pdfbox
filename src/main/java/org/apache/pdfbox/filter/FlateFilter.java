@@ -238,7 +238,7 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
 
                 // read line
                 int i = 0;
-                int offset = 0;
+                int offset = bpp;
                 while (offset < rowlength && ((i = data.read(actline, offset, rowlength - offset)) != -1))
                 {
                     offset += i;
