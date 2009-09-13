@@ -334,6 +334,14 @@ public class PDTrueTypeFont extends PDSimpleFont
                 {
                     logger().info("Can't read the embedded font " + fd.getFontName() );
                 }
+                if (awtFont == null)
+                {
+                    awtFont = FontManager.getAwtFont(fd.getFontName());
+                    if (awtFont != null)
+                    {
+                        logger().info("Using font "+awtFont.getName()+ " instead");
+                    }
+                }
             }
             else
             {
