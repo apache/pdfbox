@@ -160,6 +160,7 @@ public class PageDrawer extends PDFStreamEngine
             textPos.setValue(0, 1, (-1)*textPos.getValue(0, 1));
             textPos.setValue(1, 0, (-1)*textPos.getValue(1, 0));
             AffineTransform at = textPos.createAffineTransform();
+            graphics.setClip(getGraphicsState().getCurrentClippingPath());
             font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
         }
         catch( IOException io )
