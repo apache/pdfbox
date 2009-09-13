@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
 import org.apache.pdfbox.util.ImageParameters;
 import org.apache.pdfbox.util.Matrix;
@@ -48,6 +50,8 @@ public class BeginInlineImage extends OperatorProcessor
     public void process(PDFOperator operator, List arguments)  throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
+        PDPage page = drawer.getPage();
+        Dimension pageSize = drawer.getPageSize();
         Graphics2D graphics = drawer.getGraphics();
         //begin inline image object
         ImageParameters params = operator.getImageParameters();
@@ -56,20 +60,39 @@ public class BeginInlineImage extends OperatorProcessor
         image.setImageData( operator.getImageData() );
         BufferedImage awtImage = image.createImage( context.getColorSpaces() );
 
+        if (awtImage == null) 
+        {
+            logger().warn("BeginInlineImage.process(): createImage returned NULL");
+            return;
+        }
+        int imageWidth = awtImage.getWidth();
+        int imageHeight = awtImage.getHeight();
+        double pageHeight = pageSize.getHeight();
+        
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
+        int pageRotation = page.findRotation();
 
-        int width = awtImage.getWidth();
-        int height = awtImage.getHeight();
-
-
+        AffineTransform ctmAT = ctm.createAffineTransform();
+        ctmAT.scale(1f/imageWidth, 1f/imageHeight);
+        Matrix rotationMatrix = new Matrix();
+        rotationMatrix.setFromAffineTransform( ctmAT );
+        if (pageRotation == 0 || pageRotation == 180) 
+        {
+            rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition()-ctm.getYScale());
+        }
+        else if (pageRotation == 90 || pageRotation == 270) 
+        {
+            rotationMatrix.setValue(2,0,(float)ctm.getXPosition()-ctm.getYScale());
+            rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition());
+        }
+        rotationMatrix.setValue(0, 1, (-1)*rotationMatrix.getValue(0, 1));
+        rotationMatrix.setValue(1, 0, (-1)*rotationMatrix.getValue(1, 0));
         AffineTransform at = new AffineTransform(
-            ctm.getValue(0,0)/width,
-            ctm.getValue(0,1),
-            ctm.getValue(1,0),
-            ctm.getValue(1,1)/height,
-            ctm.getValue(2,0),
-            ctm.getValue(2,1)
-        );
+                rotationMatrix.getValue(0,0),rotationMatrix.getValue(0,1),
+                rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
+                rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
+                );
+
         graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
         graphics.drawImage( awtImage, at, null );
     }
