@@ -101,6 +101,7 @@ public class FontManager
         {
             java.awt.Font font = allFonts[i];
             String family = normalizeFontname(font.getFamily());
+            String psname = normalizeFontname(font.getPSName());
             if (isBoldItalic(font)) 
             {
                 envFonts.put(family+"bolditalic", font);
@@ -116,6 +117,10 @@ public class FontManager
             else 
             { 
                 envFonts.put(family, font);
+            }
+            if (!family.equals(psname)) 
+            {
+                envFonts.put(normalizeFontname(font.getPSName()),font);
             }
         }
     }
