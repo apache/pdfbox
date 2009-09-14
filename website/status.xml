@@ -35,7 +35,125 @@
       src/documentation/resources/images/<foo>.jpg images, these will
       automatically be used for entries of type <foo>. -->
   <changes>
-    <release version="0.7.4-dev" date="Planned release:unknown">
+    <release version="0.8.0" date="first apache release">
+		<!--  bugfixes -->
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-51'>PDFBOX-51</a>] PDFToImage fails to render correctly</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-93'>PDFBOX-93</a>] Error in FlateFilter?</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-94'>PDFBOX-94</a>] Unexpected end of ZLIB input stream</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-107'>PDFBOX-107</a>] viewer crashed</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-110'>PDFBOX-110</a>] bad font data with TrueTypeFont</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-141'>PDFBOX-141</a>] PDF to image conversion can lead to mostly black area</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-148'>PDFBOX-148</a>] Error getting pdf version (NumberFormatException)</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-152'>PDFBOX-152</a>] Merge Landscape and Portrait PDFs does not keep orientation</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-162'>PDFBOX-162</a>] font spacing</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-173'>PDFBOX-173</a>] Some suggested COSString improvements</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-178'>PDFBOX-178</a>] splitting some words randomnly</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-183'>PDFBOX-183</a>] java.lang.NullPointerException in highlighter.generateXMLHig</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-187'>PDFBOX-187</a>] Error in parsing CMap file</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-211'>PDFBOX-211</a>] Regression: ArrayIndexOutOfBoundsException in PDFBox 0.7.3</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-221'>PDFBOX-221</a>] NPE on convertToImage</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-223'>PDFBOX-223</a>] CurrentColor in PageDrawer Doesn't Restore Properly</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-224'>PDFBOX-224</a>] Printing Rectangles on rotated pages</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-227'>PDFBOX-227</a>] ArrayIndexOutOfBoundsException:4</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-234'>PDFBOX-234</a>] spaces lost</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-249'>PDFBOX-249</a>] Imbricated XObjects with the same name</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-250'>PDFBOX-250</a>] Table borders not printing correctly</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-286'>PDFBOX-286</a>] PDF document renders incorrectly</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-290'>PDFBOX-290</a>] java.lang.NoSuchMethodError in fontbox</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-292'>PDFBOX-292</a>] Text Extraction strips 1 char when extracting a twin pair</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-296'>PDFBOX-296</a>] Extreme memory usage while extracting text from one pdf</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-313'>PDFBOX-313</a>] OutOfMemoryError for larger PDF text extraction</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-318'>PDFBOX-318</a>] Error getting pdf version</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-321'>PDFBOX-321</a>] PDF printing or conversion : lines are too thick - SOLVED ?</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-324'>PDFBOX-324</a>] One rectangle missing when converting PDF to image</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-330'>PDFBOX-330</a>] Watermarks aren't correctly showed</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-335'>PDFBOX-335</a>] Version incompatibility with Lucene?</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-343'>PDFBOX-343</a>] java.lang.ClassCastException: org.pdfbox.cos.COSArray cannot</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-348'>PDFBOX-348</a>] java.lang.NoClassDefFoundError: org/fontbox/afm/AFMParser</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-349'>PDFBOX-349</a>] Spaces between words ignored in scanned pdf files</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-361'>PDFBOX-361</a>] NullPointerException in PDPageNode.getAllKids</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-364'>PDFBOX-364</a>] Latest trunk uses Java 5 autoboxing</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-373'>PDFBOX-373</a>] (null) printed when characters cannot be decoded during text extraction</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-374'>PDFBOX-374</a>] text areas not properly being sorted because of page rotation</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-377'>PDFBOX-377</a>] Incorrect direction of extracted Arabic Text</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-379'>PDFBOX-379</a>] PDType1Font uses the Java 5 constant Font.TYPE1</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-385'>PDFBOX-385</a>] ClassCastException when call parseCOSArray in BaseParser.java </action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-390'>PDFBOX-390</a>] org.pdfbox.filter.ASCIIHexFilter does not skip Whitespace</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-393'>PDFBOX-393</a>] Maven files in jempbox do not work in Eclipse.</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-395'>PDFBOX-395</a>] NPE on public key encryption of an unencrypted document</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-396'>PDFBOX-396</a>] Incorrect permissions after decryption</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-401'>PDFBOX-401</a>] setStrokingColorSpace and setNonStrokingColorSpace in PDPageContentStream doesn't work correct</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-404'>PDFBOX-404</a>] ClassCastException in COSDictionaryMap </action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-407'>PDFBOX-407</a>] PDLineDashPattern missing call to super.clone()</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-409'>PDFBOX-409</a>] Small hashcode issue, The code invokes hashCode on an array.</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-415'>PDFBOX-415</a>] Errors when decomposing Arabic Ligatures</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-418'>PDFBOX-418</a>] PDFStreamParser reads incorrect number (patch provided)</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-421'>PDFBOX-421</a>] Unit tests are failing</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-425'>PDFBOX-425</a>] Silent print ignores passed PrintJob</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-426'>PDFBOX-426</a>] Class StrokePath has the wrong superclass</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-428'>PDFBOX-428</a>] Error Printing: dash lengths all zero</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-436'>PDFBOX-436</a>] PDFontFactory.createFont returns null if the given parameter fontCache is null</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-438'>PDFBOX-438</a>] FlateFilter: endless loop because of missing length check (for encrypted pdfs)</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-442'>PDFBOX-442</a>] race condition in PdfFont</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-446'>PDFBOX-446</a>] A empty page produces a NPE  </action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-450'>PDFBOX-450</a>] PDFTextStripper CAN NOT extract correct font information for some early produced PDF documents</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-452'>PDFBOX-452</a>] [patch] maven build errors in current trunk</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-453'>PDFBOX-453</a>] FlateFilter decode() throwing OutOfMemoryError</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-454'>PDFBOX-454</a>] IOException upon opening a PDF</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-455'>PDFBOX-455</a>] java.lang.ClassCastException: org.pdfbox.cos.COSString cannot be cast to org.pdfbox.cos.COSName</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-456'>PDFBOX-456</a>] PDFTextStripperByArea never finds any text (pageNo check in PDFTextStripper always returns false)</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-458'>PDFBOX-458</a>] Wrong implementation of COSArray.getInt()</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-459'>PDFBOX-459</a>] Trailer Dictionary object labeled &quot;Size&quot; is overwritten when there are 2 xref table objects</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-466'>PDFBOX-466</a>] error parsing files generated by crystal reports</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-468'>PDFBOX-468</a>] index out of bounds exception</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-470'>PDFBOX-470</a>] corrupt zip stream causes document to not parse</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-471'>PDFBOX-471</a>] invalid dictionary crashes parser</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-473'>PDFBOX-473</a>] attempt to push back when content read</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-474'>PDFBOX-474</a>] invalid xref entry causes parser to fail</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-477'>PDFBOX-477</a>] extra spaces added to rotated text</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-478'>PDFBOX-478</a>] PDFToImage  don't render text in iText generated PDF </action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-482'>PDFBOX-482</a>] DeviceCMYK support in PDColorSpaceFactory</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-483'>PDFBOX-483</a>] rendering issues during clipping (W/W*-operator)</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-485'>PDFBOX-485</a>] Fonts not printed on HP laserjet (1320 &amp; 8150) when having landscape orientation</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-487'>PDFBOX-487</a>] Font size not rendered with the needed precision</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-496'>PDFBOX-496</a>] PDDocument.load hangs when loading zero-length file</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-498'>PDFBOX-498</a>] some pdf-files have no newline after endobj, pdfbox fails on that</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-503'>PDFBOX-503</a>] PDF loader causes infinite loop on non-PDF inputs</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-511'>PDFBOX-511</a>] JVM crash in PDColorSpaceInstance.createColor()</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-512'>PDFBOX-512</a>] org.apache.pdfbox.pdmodel.PDDocument.getPageMap() always returns null</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-518'>PDFBOX-518</a>] ArrayIndexOutOfBoundsException in PDInlinedImage.java</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-523'>PDFBOX-523</a>] IndexOutOfBoundsException in SetNonStrokingICCBasedColor</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-528'>PDFBOX-528</a>] Inlined images with a ColorSpace in the resource dictionary don't work</action>
+		<action context="code" dev="BJL" type="fix">[<a href='https://issues.apache.org/jira/browse/PDFBOX-529'>PDFBOX-529</a>] Inline images can be drawn in the wrong place</action>
+		<!--  improvements -->
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-302'>PDFBOX-302</a>] Improve font handling (was: layout print problem)</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-319'>PDFBOX-319</a>] Implementation of PDDeviceCMYK.createColorModel()</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-358'>PDFBOX-358</a>] Vertical text extraction splitting text</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-363'>PDFBOX-363</a>] Fixed Page rotation</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-365'>PDFBOX-365</a>] Updating Lucene version (was: Error in LucenPDFDocument class)</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-368'>PDFBOX-368</a>] Use the Maven standard directory layout </action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-376'>PDFBOX-376</a>] Remove the js.jar file</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-380'>PDFBOX-380</a>] Limited support for SC and SCN operator</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-381'>PDFBOX-381</a>] Remove direct JAI dependency</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-387'>PDFBOX-387</a>] new Maven pom.xml files for pdfbox, fontbox, and jempbox</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-389'>PDFBOX-389</a>] Support for b*, B*, d, i, j and J operator</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-405'>PDFBOX-405</a>] Not a bug, but definately incorrect code in PDPageContentStream</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-437'>PDFBOX-437</a>] Prepare JempBox and FontBox for release</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-460'>PDFBOX-460</a>] [PATCH] Improvements for bitmap production (resolution and color depth)</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-461'>PDFBOX-461</a>] Disable javadoc creation timestamp</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-472'>PDFBOX-472</a>] use commons logging</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-507'>PDFBOX-507</a>] [PATCH] Option to disable close warning in finalizer of COSDocument.</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-517'>PDFBOX-517</a>] PD Fonts do not attempt to load from the environment if an embed font cannot be loaded</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-524'>PDFBOX-524</a>] Drop LoggingObject</action>
+		<action context="code" dev="BJL" type="update">[<a href='https://issues.apache.org/jira/browse/PDFBOX-530'>PDFBOX-530</a>] Forward test logs to a log file</action>
+		<!--  new features -->
+		<action context="code" dev="BJL" type="add">[<a href='https://issues.apache.org/jira/browse/PDFBOX-98'>PDFBOX-98</a>] Print PDF</action>
+		<action context="code" dev="BJL" type="add">[<a href='https://issues.apache.org/jira/browse/PDFBOX-264'>PDFBOX-264</a>] colorspace as an array entry</action>
+		<action context="code" dev="BJL" type="add">[<a href='https://issues.apache.org/jira/browse/PDFBOX-272'>PDFBOX-272</a>] Identify text rotation angle in TextPosition</action>
+		<action context="code" dev="BJL" type="add">[<a href='https://issues.apache.org/jira/browse/PDFBOX-338'>PDFBOX-338</a>] pdf page extraction</action>
+		<action context="code" dev="BJL" type="add">[<a href='https://issues.apache.org/jira/browse/PDFBOX-493'>PDFBOX-493</a>] Ability to get page number for bookmarks</action>
+    </release>
+    <release version="0.7.4-dev" date="never released">
         <action context="code" dev="BJL" type="fix">[ 1648374 ] Unexpected end of ZLIB input stream</action>
         <action context="code" dev="BJL" type="update">[ 1806912 ] Access to stream arrays</action>
         <action context="code" dev="BJL" type="fix">[ 1793593 ] PDFStreamEngine doesn't handle rotation of -90.</action>
