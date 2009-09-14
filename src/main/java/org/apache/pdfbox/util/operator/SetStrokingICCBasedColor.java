@@ -16,15 +16,14 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.util.PDFOperator;
 
 /**
  * 
@@ -41,15 +40,15 @@ public class SetStrokingICCBasedColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
-        PDColorSpace cs = colorInstance.getColorSpace();
+        PDColorState color = context.getGraphicsState().getStrokingColor();
+        PDColorSpace cs = color.getColorSpace();
         int numberOfComponents = cs.getNumberOfComponents();
         float[] values = new float[numberOfComponents];
         for( int i=0; i<numberOfComponents; i++ )
         {
             values[i] = ((COSNumber)arguments.get( i )).floatValue();
         }
-        colorInstance.setColorSpaceValue( values );
+        color.setColorSpaceValue( values );
         
         if (context instanceof PageDrawer)
         {

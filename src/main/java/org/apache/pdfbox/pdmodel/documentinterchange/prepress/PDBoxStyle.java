@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
@@ -90,7 +90,7 @@ public class PDBoxStyle implements COSObjectable
      *
      *@return The guideline color.
      */
-    public PDColorSpaceInstance getGuidelineColor()
+    public PDColorState getGuidelineColor()
     {
         COSArray colorValues = (COSArray)dictionary.getDictionaryObject( "C" );
         if( colorValues == null )
@@ -101,7 +101,7 @@ public class PDBoxStyle implements COSObjectable
             colorValues.add( COSInteger.ZERO );
             dictionary.setItem( "C", colorValues );
         }
-        PDColorSpaceInstance instance = new PDColorSpaceInstance( colorValues );
+        PDColorState instance = new PDColorState( colorValues );
         instance.setColorSpace( PDDeviceRGB.INSTANCE );
         return instance;
     }
@@ -112,7 +112,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param color The new colorspace value.
      */
-    public void setGuideLineColor( PDColorSpaceInstance color )
+    public void setGuideLineColor( PDColorState color )
     {
         COSArray values = null;
         if( color != null )

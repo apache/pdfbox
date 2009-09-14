@@ -16,16 +16,14 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
 
 /**
  * <p>Structal modification of the PDFEngine class :
@@ -45,15 +43,14 @@ public class SetStrokingCMYKColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpace cs = PDDeviceCMYK.INSTANCE;
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
-        colorInstance.setColorSpace( cs );
+        PDColorState color = context.getGraphicsState().getStrokingColor();
+        color.setColorSpace( PDDeviceCMYK.INSTANCE );
         float[] values = new float[4];
         for( int i=0; i<arguments.size(); i++ )
         {
             values[i] = ((COSNumber)arguments.get( i )).floatValue();
         }
-        colorInstance.setColorSpaceValue( values );
+        color.setColorSpaceValue( values );
 
         if (context instanceof PageDrawer)
         {

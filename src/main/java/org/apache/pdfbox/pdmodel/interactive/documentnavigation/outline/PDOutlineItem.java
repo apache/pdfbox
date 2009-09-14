@@ -29,11 +29,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -327,9 +327,9 @@ public class PDOutlineItem extends PDOutlineNode
      *
      * @return The structure element of this node.
      */
-    public PDColorSpaceInstance getTextColor()
+    public PDColorState getTextColor()
     {
-        PDColorSpaceInstance retval = null;
+        PDColorState retval = null;
         COSArray csValues = (COSArray)node.getDictionaryObject( "C" );
         if( csValues == null )
         {
@@ -337,7 +337,7 @@ public class PDOutlineItem extends PDOutlineNode
             csValues.growToSize( 3, new COSFloat( 0 ) );
             node.setItem( "C", csValues );
         }
-        retval = new PDColorSpaceInstance(csValues);
+        retval = new PDColorState(csValues);
         retval.setColorSpace( PDDeviceRGB.INSTANCE );
         return retval;
     }
@@ -347,7 +347,7 @@ public class PDOutlineItem extends PDOutlineNode
      *
      * @param textColor The text color for this node.
      */
-    public void setTextColor( PDColorSpaceInstance textColor )
+    public void setTextColor( PDColorState textColor )
     {
         node.setItem( "C", textColor.getCOSColorSpaceValue() );
     }

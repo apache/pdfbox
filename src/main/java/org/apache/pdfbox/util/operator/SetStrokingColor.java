@@ -44,7 +44,7 @@ public class SetStrokingColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpace colorSpace = context.getGraphicsState().getStrokingColorSpace().getColorSpace();
+        PDColorSpace colorSpace = context.getGraphicsState().getStrokingColor().getColorSpace();
         if (colorSpace != null) 
         {
             OperatorProcessor newOperator = null;

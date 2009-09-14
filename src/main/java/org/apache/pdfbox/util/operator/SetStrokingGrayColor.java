@@ -16,16 +16,15 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
 
 /**
  * <p>Structal modification of the PDFEngine class :
@@ -45,9 +44,8 @@ public class SetStrokingGrayColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpace cs = new PDDeviceGray();
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
-        colorInstance.setColorSpace( cs );
+        PDColorState color = context.getGraphicsState().getStrokingColor();
+        color.setColorSpace( new PDDeviceGray() );
         float[] values = new float[1];
         if( arguments.size() >= 1 )
         {
@@ -57,7 +55,7 @@ public class SetStrokingGrayColor extends OperatorProcessor
         {
             throw new IOException( "Error: Expected at least one argument when setting non stroking gray color");
         }
-        colorInstance.setColorSpaceValue( values );
+        color.setColorSpaceValue( values );
         if (context instanceof PageDrawer)
         {
             PageDrawer drawer = (PageDrawer)context;

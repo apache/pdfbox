@@ -240,7 +240,7 @@ file.
             else if (getImageMask())
             {
                 //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
-                retval = graphicsState.getNonStrokingColorSpace().getColorSpace();
+                retval = graphicsState.getNonStrokingColor().getColorSpace();
                 logger().info("Stencil Mask branch returning " + retval.toString());
                 //throw new IOException("Trace the Stencil Mask!!!!");
             
