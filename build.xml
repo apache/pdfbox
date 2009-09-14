@@ -265,6 +265,7 @@
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
             <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
+            <sysproperty key="java.util.logging.config.file" value="logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
@@ -290,6 +291,7 @@
             <jvmarg value="-Xms512M"/>
 
             <sysproperty key="org.apache.pdfbox.util.TextStripper.file" value="${file}"/>
+            <sysproperty key="java.util.logging.config.file" value="logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
@@ -311,6 +313,7 @@
 
     <target name="test-junit" depends="clean,compile" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
+            <sysproperty key="java.util.logging.config.file" value="logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${ant.jar}" />
