@@ -19,11 +19,9 @@ package org.apache.pdfbox.pdmodel.graphics;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 
-import org.apache.pdfbox.util.Matrix;
-
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.text.PDTextState;
-
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This class will hold the current state of the graphics parameters when executing a
@@ -39,8 +37,8 @@ public class PDGraphicsState implements Cloneable
     //Here are some attributes of the Graphics state, but have not been created yet.
     //
     //clippingPath
-    private PDColorSpaceInstance strokingColorSpace = new PDColorSpaceInstance();
-    private PDColorSpaceInstance nonStrokingColorSpace = new PDColorSpaceInstance();
+    private PDColorState strokingColor = new PDColorState();
+    private PDColorState nonStrokingColor = new PDColorState();
     private PDTextState textState = new PDTextState();
     private double lineWidth = 0;
     private int lineCap = 0;
@@ -379,8 +377,8 @@ public class PDGraphicsState implements Cloneable
             clone = (PDGraphicsState)super.clone();
             clone.setTextState( (PDTextState)textState.clone() );
             clone.setCurrentTransformationMatrix( currentTransformationMatrix.copy() );
-            clone.setStrokingColorSpace( (PDColorSpaceInstance)strokingColorSpace.clone() );
-            clone.setNonStrokingColorSpace( (PDColorSpaceInstance)nonStrokingColorSpace.clone() );
+            clone.strokingColor = (PDColorState)strokingColor.clone();
+            clone.nonStrokingColor = ((PDColorState)nonStrokingColor.clone());
             if( lineDashPattern != null )
             {
                 clone.setLineDashPattern( (PDLineDashPattern)lineDashPattern.clone() );
@@ -398,46 +396,25 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * This will get the current stroking colorspace.
+     * Returns the stroking color state.
      *
-     * @return The current stroking colorspace.
+     * @return stroking color state
      */
-    public PDColorSpaceInstance getStrokingColorSpace()
+    public PDColorState getStrokingColor()
     {
-        return strokingColorSpace;
+        return strokingColor;
     }
 
     /**
-     * This will set the current stroking colorspace.
+     * Returns the non-stroking color state.
      *
-     * @param value The new stroking colorspace instance.
+     * @return non-stroking color state
      */
-    public void setStrokingColorSpace(PDColorSpaceInstance value)
+    public PDColorState getNonStrokingColor()
     {
-        strokingColorSpace = value;
+        return nonStrokingColor;
     }
 
-    /**
-     * This will get the nonstroking color space instance.
-     *
-     * @return The colorspace instance.
-     */
-    public PDColorSpaceInstance getNonStrokingColorSpace()
-    {
-        return nonStrokingColorSpace;
-    }
-
-    /**
-     * This will set the non-stroking colorspace instance.
-     *
-     * @param value The non-stroking colorspace instance.
-     */
-    public void setNonStrokingColorSpace(PDColorSpaceInstance value)
-    {
-        nonStrokingColorSpace = value;
-    }
-
-   
     /**
      * This will set the current clipping path.
      *

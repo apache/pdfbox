@@ -16,18 +16,16 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
 
 /**
  * <p>Structal modification of the PDFEngine class :
@@ -53,8 +51,8 @@ public class SetStrokingColorSpace extends OperatorProcessor
         //(PDF 1.1) Set color space for stroking operations
         COSName name = (COSName)arguments.get( 0 );
         PDColorSpace cs = PDColorSpaceFactory.createColorSpace( name, context.getColorSpaces() );
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
-        colorInstance.setColorSpace( cs );
+        PDColorState color = context.getGraphicsState().getStrokingColor();
+        color.setColorSpace( cs );
         int numComponents = cs.getNumberOfComponents();
         float[] values = EMPTY_FLOAT_ARRAY;
         if( numComponents >= 0 )
@@ -69,7 +67,7 @@ public class SetStrokingColorSpace extends OperatorProcessor
                 values[3] = 1f;
             }
         }
-        colorInstance.setColorSpaceValue( values );
+        color.setColorSpaceValue( values );
 
         if (context instanceof PageDrawer)
         {

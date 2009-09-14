@@ -16,14 +16,13 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.util.PDFOperator;
 
 /**
  * <p>Set the non stroking color space.</p>
@@ -41,7 +40,7 @@ public class SetNonStrokingCalRGBColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
+        PDColorState colorInstance = context.getGraphicsState().getNonStrokingColor();
         float[] values = new float[3];
         for( int i=0; i<arguments.size(); i++ )
         {

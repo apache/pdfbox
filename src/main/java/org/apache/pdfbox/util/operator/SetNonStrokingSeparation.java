@@ -16,19 +16,18 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.PDFOperator;
-
-import java.io.IOException;
 
 /**
  * 
@@ -45,7 +44,7 @@ public class SetNonStrokingSeparation extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
+        PDColorState colorInstance = context.getGraphicsState().getNonStrokingColor();
         PDColorSpace colorSpace = colorInstance.getColorSpace();
         List argList = arguments;
         

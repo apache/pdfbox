@@ -16,18 +16,17 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.util.PDFOperator;
 
 /**
- * <p>Structal modification of the PDFEngine class :
- * the long sequence of conditions in processOperator is remplaced by
+ * <p>Structural modification of the PDFEngine class :
+ * the long sequence of conditions in processOperator is replaced by
  * this strategy pattern.</p>
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -43,13 +42,13 @@ public class SetStrokingCalRGBColor extends OperatorProcessor
      */
     public void process(PDFOperator operator, List arguments) throws IOException
     {
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getStrokingColorSpace();
+        PDColorState color = context.getGraphicsState().getStrokingColor();
         float[] values = new float[3];
         for( int i=0; i<arguments.size(); i++ )
         {
             values[i] = ((COSNumber)arguments.get( i )).floatValue();
         }
-        colorInstance.setColorSpaceValue( values );
+        color.setColorSpaceValue( values );
         if (context instanceof PageDrawer)
         {
             PageDrawer drawer = (PageDrawer)context;

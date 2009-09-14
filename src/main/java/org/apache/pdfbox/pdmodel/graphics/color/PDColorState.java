@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSArray;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.7 $
  */
-public class PDColorSpaceInstance extends LoggingObject implements Cloneable
+public class PDColorState extends LoggingObject implements Cloneable
 {
 
     /**
@@ -70,7 +70,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
      * Default constructor.
      *
      */
-    public PDColorSpaceInstance()
+    public PDColorState()
     {
         setColorSpaceValue( new float[] {0});
     }
@@ -80,7 +80,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
      */
     public Object clone()
     {
-        PDColorSpaceInstance retval = new PDColorSpaceInstance();
+        PDColorState retval = new PDColorState();
         retval.colorSpace = this.colorSpace;
         retval.colorSpaceValue.clear();
         retval.colorSpaceValue.addAll( this.colorSpaceValue );
@@ -154,7 +154,7 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
      *
      * @param csValues The color space values.
      */
-    public PDColorSpaceInstance( COSArray csValues )
+    public PDColorState( COSArray csValues )
     {
         colorSpaceValue = csValues;
     }

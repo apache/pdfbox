@@ -16,18 +16,16 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceInstance;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
-
-import java.io.IOException;
 
 /**
  * <p>Set the non stroking color space.</p>
@@ -50,7 +48,7 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
 //      (PDF 1.1) Set color space for stroking operations
         COSName name = (COSName)arguments.get( 0 );
         PDColorSpace cs = PDColorSpaceFactory.createColorSpace( name, context.getColorSpaces() );
-        PDColorSpaceInstance colorInstance = context.getGraphicsState().getNonStrokingColorSpace();
+        PDColorState colorInstance = context.getGraphicsState().getNonStrokingColor();
         colorInstance.setColorSpace( cs );
         int numComponents = cs.getNumberOfComponents();
         float[] values = EMPTY_FLOAT_ARRAY;
