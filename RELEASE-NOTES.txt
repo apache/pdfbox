@@ -119,7 +119,12 @@ Bug
     * [PDFBOX-496] - PDDocument.load hangs when loading zero-length file
     * [PDFBOX-498] - some pdf-files have no newline after endobj, pdfbox fails on that
     * [PDFBOX-503] - PDF loader causes infinite loop on non-PDF inputs
+    * [PDFBOX-511] - JVM crash in PDColorSpaceInstance.createColor()
     * [PDFBOX-512] - org.apache.pdfbox.pdmodel.PDDocument.getPageMap() always returns null
+    * [PDFBOX-518] - ArrayIndexOutOfBoundsException in PDInlinedImage.java
+    * [PDFBOX-523] - IndexOutOfBoundsException in SetNonStrokingICCBasedColor
+    * [PDFBOX-528] - Inlined images with a ColorSpace in the resource dictionary don't work
+    * [PDFBOX-529] - Inline images can be drawn in the wrong place
 
 Improvement
 
@@ -140,6 +145,9 @@ Improvement
     * [PDFBOX-461] - Disable javadoc creation timestamp
     * [PDFBOX-472] - use commons logging
     * [PDFBOX-507] - [PATCH] Option to disable close warning in finalizer of COSDocument.
+    * [PDFBOX-517] - PD Fonts do not attempt to load from the environment if an embed font cannot be loaded
+    * [PDFBOX-524] - Drop LoggingObject
+    * [PDFBOX-530] - Forward test logs to a log file
 
 New Feature
 
@@ -148,6 +156,7 @@ New Feature
     * [PDFBOX-272] - Identify text rotation angle in TextPosition
     * [PDFBOX-338] - pdf page extraction
     * [PDFBOX-493] - Ability to get page number for bookmarks
+
 
 Disclaimer
 ----------
