@@ -119,7 +119,7 @@ public class PDICCBased extends PDColorSpace
      *
      * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace() throws IOException
     {
         InputStream profile = null;
         ColorSpace cSpace = null;
@@ -153,7 +153,7 @@ public class PDICCBased extends PDColorSpace
 
             int[] nbBits = { bpc, bpc, bpc, bpc }; //added 4th bpc to handle CMYK
             ComponentColorModel componentColorModel =
-                    new ComponentColorModel( createColorSpace(),
+                    new ComponentColorModel( getJavaColorSpace(),
                                              nbBits,
                                              false,
                                              false,

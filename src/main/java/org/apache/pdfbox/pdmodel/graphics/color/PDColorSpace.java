@@ -41,7 +41,14 @@ public abstract class PDColorSpace extends LoggingObject implements COSObjectabl
      * array for the given parameters. 
      */
     protected COSArray array;
-    
+
+    /**
+     * Cached Java AWT color space.
+     *
+     * @see #getJavaColorSpace()
+     */
+    private ColorSpace colorSpace = null;
+
     /**
      * This will return the name of the color space.
      *
@@ -69,13 +76,26 @@ public abstract class PDColorSpace extends LoggingObject implements COSObjectabl
     }
 
     /**
+     * Returns the Java AWT color space for this instance.
+     *
+     * @return Java AWT color space
+     * @throws IOException if the color space can not be created
+     */
+    public ColorSpace getJavaColorSpace() throws IOException {
+        if (colorSpace == null) {
+            colorSpace = createColorSpace();
+        }
+        return colorSpace;
+    }
+
+    /**
      * Create a Java colorspace for this colorspace.
      *
      * @return A color space that can be used for Java AWT operations.
      *
      * @throws IOException If there is an error creating the color space.
      */
-    public abstract ColorSpace createColorSpace() throws IOException;
+    protected abstract ColorSpace createColorSpace() throws IOException;
 
     /**
      * Create a Java color model for this colorspace.
