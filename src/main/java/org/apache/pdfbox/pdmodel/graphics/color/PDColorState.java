@@ -67,6 +67,14 @@ public class PDColorState extends LoggingObject implements Cloneable
     private COSArray colorSpaceValue = new COSArray();
 
     /**
+     * Cached Java AWT color based on the current color space and value.
+     * The value is cleared whenever the color space or value is set.
+     *
+     * @see #getJavaColor()
+     */
+    private Color color = null;
+
+    /**
      * Default constructor.
      *
      */
@@ -88,11 +96,24 @@ public class PDColorState extends LoggingObject implements Cloneable
     }
 
     /**
+     * Returns the Java AWT color based on the current color space and value.
+     *
+     * @return current Java AWT color
+     * @throws IOException if the current color can not be created
+     */
+    public Color getJavaColor() throws IOException {
+        if (color == null) {
+            color = createColor();
+        }
+        return color;
+    }
+
+    /**
      * Create the current color from the colorspace and values.
      * @return The current awt color.
      * @throws IOException If there is an error creating the color.
      */
-    public Color createColor() throws IOException
+    private Color createColor() throws IOException
     {
         float[] components = colorSpaceValue.toFloatArray();
         try
@@ -178,6 +199,8 @@ public class PDColorState extends LoggingObject implements Cloneable
     public void setColorSpace(PDColorSpace value)
     {
         colorSpace = value;
+        // Clear color cache
+        color = null;
     }
 
     /**
@@ -208,5 +231,7 @@ public class PDColorState extends LoggingObject implements Cloneable
     public void setColorSpaceValue(float[] value)
     {
         colorSpaceValue.setFloatArray( value );
+        // Clear color cache
+        color = null;
     }
 }
