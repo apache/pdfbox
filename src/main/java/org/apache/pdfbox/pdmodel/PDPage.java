@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -33,8 +35,6 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-
-import org.apache.pdfbox.exceptions.LoggingObject;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -59,8 +59,14 @@ import java.util.List;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.29 $
  */
-public class PDPage extends LoggingObject implements COSObjectable, Printable
+public class PDPage implements COSObjectable, Printable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDPage.class);
+
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
     
     private COSDictionary page;
@@ -702,7 +708,7 @@ public class PDPage extends LoggingObject implements COSObjectable, Printable
         } 
         catch (ImagingOpException e)
         {
-                logger().warn("Unable to rotate page image", e);
+                log.warn("Unable to rotate page image", e);
         }
 
         return retval;

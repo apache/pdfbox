@@ -20,6 +20,8 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
@@ -34,6 +36,10 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 public class MoveTo extends OperatorProcessor
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(MoveTo.class);
 
     /**
      * process : m : Begin new subpath.
@@ -53,7 +59,7 @@ public class MoveTo extends OperatorProcessor
         }
         catch (Exception exception)
         {
-            logger().warn( exception, exception);
+            log.warn( exception, exception);
         }
     }
 }

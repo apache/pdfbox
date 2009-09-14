@@ -39,7 +39,6 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.exceptions.LoggingObject;
 
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -63,7 +62,7 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.46 $
  */
-public abstract class PDFont extends LoggingObject implements COSObjectable
+public abstract class PDFont implements COSObjectable
 {
 
     /**

@@ -28,8 +28,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
-import org.apache.pdfbox.exceptions.LoggingObject;
-
 /**
  * The base class for all XObjects in the PDF document.
  *
@@ -38,7 +36,7 @@ import org.apache.pdfbox.exceptions.LoggingObject;
  * @author Marcel Kammer
  * @version $Revision: 1.14 $
  */
-public abstract class PDXObject extends LoggingObject implements COSObjectable
+public abstract class PDXObject implements COSObjectable
 {
     private PDStream xobject;
 

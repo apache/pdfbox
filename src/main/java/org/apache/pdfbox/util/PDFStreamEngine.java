@@ -27,10 +27,11 @@ import java.util.Properties;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
-import org.apache.pdfbox.exceptions.LoggingObject;
 
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -49,9 +50,14 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.38 $
  */
-public class PDFStreamEngine extends LoggingObject
+public class PDFStreamEngine
 {
-    
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDFStreamEngine.class);
+
     private Vector unsupportedOperators = new Vector();
     
     private static final byte[] SPACE_BYTES = { (byte)32 };
@@ -227,9 +233,9 @@ public class PDFStreamEngine extends LoggingObject
                     {
                         arguments.add( next );
                     }
-                    if(logger().isDebugEnabled())
+                    if(log.isDebugEnabled())
                     {
-                        logger().debug("token: " + next.toString());
+                        log.debug("token: " + next);
                     }
                 }
             }
@@ -486,7 +492,7 @@ public class PDFStreamEngine extends LoggingObject
         }
         catch (IOException e)
         {
-            logger().warn(e, e);
+            log.warn(e, e);
         }
     }
 
@@ -513,14 +519,14 @@ public class PDFStreamEngine extends LoggingObject
             {
                 if (!unsupportedOperators.contains(operation)) 
                 {
-                    logger().info("unsupported/disabled operation: " + operation);
+                    log.info("unsupported/disabled operation: " + operation);
                     unsupportedOperators.add(operation);
                 }
             }
         }
         catch (Exception e)
         {
-            logger().warn(e, e);
+            log.warn(e, e);
         }
     }
 

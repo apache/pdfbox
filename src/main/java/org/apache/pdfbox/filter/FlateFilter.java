@@ -26,6 +26,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -37,8 +39,14 @@ import org.apache.pdfbox.cos.COSDictionary;
  * @author Marcel Kammer
  * @version $Revision: 1.12 $
  */
-public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject implements Filter 
+public class FlateFilter implements Filter 
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(FlateFilter.class);
+
     private static final int    BUFFER_SIZE    = 2048;
 
     /**
@@ -115,17 +123,17 @@ public class FlateFilter extends org.apache.pdfbox.exceptions.LoggingObject impl
                     catch (OutOfMemoryError exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().error("Stop reading corrupt stream");
+                        log.error("Stop reading corrupt stream");
                     }
                     catch (ZipException exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().error("Stop reading corrupt stream");
+                        log.error("Stop reading corrupt stream");
                     }
                     catch (EOFException exception) 
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        logger().error("Stop reading corrupt stream");
+                        log.error("Stop reading corrupt stream");
                     }
                 }
                 else

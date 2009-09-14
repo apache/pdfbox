@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -45,6 +47,12 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
  */
 public class PDCcitt extends PDXObjectImage
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDCcitt.class);
+
     private static final List FAX_FILTERS = new ArrayList();
 
     static
@@ -113,7 +121,7 @@ public class PDCcitt extends PDXObjectImage
         }
         catch (Exception e)
         {
-            logger().error(e, e);
+            log.error(e, e);
         } 
         finally 
         {

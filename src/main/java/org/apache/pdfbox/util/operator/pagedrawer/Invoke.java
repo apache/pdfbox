@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -44,6 +46,12 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class Invoke extends OperatorProcessor
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(Invoke.class);
+
     /**
      * process : Do : Paint the specified XObject (section 4.7).
      * @param operator The operator that is being executed.
@@ -68,14 +76,14 @@ public class Invoke extends OperatorProcessor
                 BufferedImage awtImage = image.getRGBImage();
                 if (awtImage == null) 
                 {
-                    logger().warn("getRGBImage returned NULL");
+                    log.warn("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = pageSize.getHeight();
 
-                logger().info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+                log.info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
         
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 int pageRotation = page.findRotation();
@@ -107,7 +115,7 @@ public class Invoke extends OperatorProcessor
             catch( Exception e )
             {
                 e.printStackTrace();
-                logger().error(e, e);
+                log.error(e, e);
             }
         }
         else if(xobject instanceof PDXObjectForm)

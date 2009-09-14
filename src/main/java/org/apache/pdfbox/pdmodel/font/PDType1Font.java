@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -38,6 +40,12 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public class PDType1Font extends PDSimpleFont
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDType1Font.class);
+
     /**
      * Standard Base 14 Font.
      */
@@ -195,7 +203,7 @@ public class PDType1Font extends PDSimpleFont
                 if( ffStream == null && fdDictionary.getFontFile3() != null)
                 {
                     // TODO FontFile3-streams containing CIDFontType0C or OpenType fonts aren't yet supported
-                    logger().info("Embedded font-type is not supported " + fd.getFontName() );
+                    log.info("Embedded font-type is not supported " + fd.getFontName() );
                 }
                 if( ffStream != null )
                 {
@@ -206,7 +214,7 @@ public class PDType1Font extends PDSimpleFont
                     } 
                     catch (FontFormatException e) 
                     {
-                        logger().info("Can't read the embedded font " + fd.getFontName() );
+                        log.info("Can't read the embedded font " + fd.getFontName() );
                     }
                 }
                 else 
@@ -215,7 +223,7 @@ public class PDType1Font extends PDSimpleFont
                     awtFont = FontManager.getAwtFont(fd.getFontName());
                     if (awtFont == null)
                     {
-                        logger().info("Can't find the specified font " + fd.getFontName() );
+                        log.info("Can't find the specified font " + fd.getFontName() );
                     }
                 }
             }
@@ -225,14 +233,14 @@ public class PDType1Font extends PDSimpleFont
                 awtFont = FontManager.getAwtFont(baseFont);
                 if (awtFont == null) 
                 {
-                    logger().info("Can't find the specified basefont " + baseFont );
+                    log.info("Can't find the specified basefont " + baseFont );
                 }
             }
             if (awtFont == null)
             {
                 // we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
-                logger().info("Using font "+awtFont.getName()+ " instead");
+                log.info("Using font "+awtFont.getName()+ " instead");
             }
         }
         Graphics2D g2d = (Graphics2D)g;

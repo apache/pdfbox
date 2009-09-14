@@ -20,8 +20,9 @@ import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
-import org.apache.pdfbox.exceptions.LoggingObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 
 /**
@@ -30,8 +31,13 @@ import org.apache.pdfbox.cos.COSArray;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.7 $
  */
-public class PDColorState extends LoggingObject implements Cloneable
+public class PDColorState implements Cloneable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDColorState.class);
 
     /**
      * The default color that can be set to replace all colors in
@@ -137,7 +143,7 @@ public class PDColorState extends LoggingObject implements Cloneable
                 }
                 else if (cs instanceof ICC_ColorSpace && override != null)
                 {
-                    logger().warn(
+                    log.warn(
                             "Using an ICC override color to avoid a potential"
                             + " JVM crash (see PDFBOX-511)");
                     return override;
@@ -155,17 +161,17 @@ public class PDColorState extends LoggingObject implements Cloneable
             {
                 values = values + components[i] + "\t";
             }
-            logger().error(exception + "\n" + values, exception);
+            log.error(exception + "\n" + values, exception);
             throw exception;
         }
         catch (IOException ioexception)
         {
-            logger().error(ioexception, ioexception);
+            log.error(ioexception, ioexception);
             throw ioexception;
         }
         catch (Exception e)
         {
-            logger().error(e, e);
+            log.error(e, e);
             throw new IOException("Failed to Create Color");
          }
     }

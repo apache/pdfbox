@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.GlyphData;
@@ -64,6 +66,12 @@ import java.io.InputStream;
  */
 public class PDTrueTypeFont extends PDSimpleFont
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDTrueTypeFont.class);
+
     /**
      * This is the key to a property in the Resources/PDFBox_External_Fonts.properties file
      * to load a Font when a mapping does not exist for the current font.
@@ -332,14 +340,14 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
                 catch( FontFormatException f )
                 {
-                    logger().info("Can't read the embedded font " + fd.getFontName() );
+                    log.info("Can't read the embedded font " + fd.getFontName() );
                 }
                 if (awtFont == null)
                 {
                     awtFont = FontManager.getAwtFont(fd.getFontName());
                     if (awtFont != null)
                     {
-                        logger().info("Using font "+awtFont.getName()+ " instead");
+                        log.info("Using font "+awtFont.getName()+ " instead");
                     }
                 }
             }
@@ -349,7 +357,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 awtFont = FontManager.getAwtFont(fd.getFontName());
                 if (awtFont == null)
                 {
-                    logger().info("Can't find the specified font " + fd.getFontName() );
+                    log.info("Can't find the specified font " + fd.getFontName() );
                     // check if there is a font mapping for an external font file
                     TrueTypeFont ttf = getExternalFontFile2( fd );
                     if( ttf != null )
@@ -360,7 +368,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                         }
                         catch( FontFormatException f )
                         {
-                            logger().info("Can't read the external fontfile " + fd.getFontName() );
+                            log.info("Can't read the external fontfile " + fd.getFontName() );
                         }
                     }
                 }
@@ -369,7 +377,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 // we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
-                logger().info("Using font "+awtFont.getName()+ " instead");
+                log.info("Using font "+awtFont.getName()+ " instead");
             }
         }
 

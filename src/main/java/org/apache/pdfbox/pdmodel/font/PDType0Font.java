@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -34,6 +36,11 @@ import java.io.IOException;
  */
 public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDType0Font.class);
 
     private PDFont descendentFont;
     /**
@@ -63,7 +70,7 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     {
         //throw new RuntimeException( "Not yet implemented" );
         super.drawString(string, g, fontSize, at, x, y);
-        logger().info("Called Type1Font.drawString since Type0 is not yet implemented");
+        log.info("Called Type1Font.drawString since Type0 is not yet implemented");
     }
 
     /**
