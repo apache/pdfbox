@@ -491,6 +491,8 @@
                 <include name="${jempbox.jar}" />
                 <include name="${icu4j.jar}" />
                 <include name="${bin.dir}/**/*" />
+                <include name="README.txt" />
+                <include name="RELEASE-NOTES.txt" />
                 <include name="LICENSE.txt" />
                 <include name="NOTICE.txt" />
             </zipfileset>
@@ -508,6 +510,7 @@
                 <include name="${test.dir}/**/*.html"/>
                 <include name="${resources.dir}/**/*" />
                 <include name="*.txt" />
+                <include name="pom.xml" />
                 <include name="build.xml" />
                 <include name="build.properties.example" />
                 <include name="${checkstyle.config}" />
