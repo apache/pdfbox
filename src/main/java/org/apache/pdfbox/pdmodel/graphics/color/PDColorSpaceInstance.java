@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Color;
 import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import org.apache.pdfbox.exceptions.LoggingObject;
 
@@ -31,6 +32,37 @@ import org.apache.pdfbox.cos.COSArray;
  */
 public class PDColorSpaceInstance extends LoggingObject implements Cloneable
 {
+
+    /**
+     * The default color that can be set to replace all colors in
+     * {@link ICC_ColorSpace ICC color spaces}.
+     *
+     * @see #setIccOverrideColor(Color)
+     */
+    private static volatile Color iccOverrideColor =
+        Color.getColor("org.apache.pdfbox.ICC_override_color");
+
+    /**
+     * Sets the default color to replace all colors in
+     * {@link ICC_ColorSpace ICC color spaces}. This will work around
+     * a potential JVM crash caused by broken native ICC color manipulation
+     * code in the Sun class libraries.
+     * <p>
+     * The default override can be specified by setting the color code in
+     * <code>org.apache.pdfbox.ICC_override_color</code> system property
+     * (see {@link Color#getColor(String)}. If this system property is not
+     * specified, then the override is not enabled unless this method is
+     * explicitly called.
+     *
+     * @param color ICC override color,
+     *              or <code>null</code> to disable the override
+     * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-511">PDFBOX-511</a>
+     * @since Apache PDFBox 0.8.1
+     */
+    public static void setIccOverrideColor(Color color) {
+        iccOverrideColor = color;
+    }
+
     private PDColorSpace colorSpace = new PDDeviceGray();
     private COSArray colorSpaceValue = new COSArray();
 
@@ -62,7 +94,6 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
      */
     public Color createColor() throws IOException
     {
-        Color retval = null;
         float[] components = colorSpaceValue.toFloatArray();
         try
         {
@@ -72,22 +103,29 @@ public class PDColorSpaceInstance extends LoggingObject implements Cloneable
                 //the new Color doesn't maintain exactly the same values
                 //I think some color conversion needs to take place first
                 //for now we will just make rgb a special case.
-                retval = new Color( components[0], components[1], components[2] );
+                return new Color( components[0], components[1], components[2] );
             }
             else
             {
+                Color override = iccOverrideColor;
                 ColorSpace cs = colorSpace.createColorSpace();
                 if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1)
                 {
                     //Use that component as a single-integer RGB value
-                    retval = new Color((int)components[0]);
+                    return new Color((int)components[0]);
+                }
+                else if (cs instanceof ICC_ColorSpace && override != null)
+                {
+                    logger().warn(
+                            "Using an ICC override color to avoid a potential"
+                            + " JVM crash (see PDFBOX-511)");
+                    return override;
                 }
                 else
                 {
-                    retval = new Color( cs, components, 1f );
+                    return new Color( cs, components, 1f );
                 }
             }
-            return retval;
         }
         catch (java.lang.IllegalArgumentException exception)
         {
