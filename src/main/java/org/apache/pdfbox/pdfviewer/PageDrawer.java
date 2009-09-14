@@ -132,12 +132,12 @@ public class PageDrawer extends PDFStreamEngine
         {
             if( this.getGraphicsState().getTextState().getRenderingMode() == PDTextState.RENDERING_MODE_FILL_TEXT )
             {
-                graphics.setColor( this.getGraphicsState().getNonStrokingColor().createColor() );
+                graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
             }
             else if( this.getGraphicsState().getTextState().getRenderingMode() 
                         == PDTextState.RENDERING_MODE_STROKE_TEXT )
             {
-                graphics.setColor( this.getGraphicsState().getStrokingColor().createColor() );
+                graphics.setColor( this.getGraphicsState().getStrokingColor().getJavaColor() );
             }
             else
             {
@@ -145,7 +145,7 @@ public class PageDrawer extends PDFStreamEngine
                 logger().warn("Unsupported RenderingMode "+this.getGraphicsState().getTextState().getRenderingMode()
                             +" in PageDrawer.processTextPosition()"
                             + "Using RenderingMode "+PDTextState.RENDERING_MODE_FILL_TEXT+" instead");
-                graphics.setColor( this.getGraphicsState().getNonStrokingColor().createColor() );
+                graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
             }
             PDFont font = text.getFont();
 
@@ -247,7 +247,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void fillPath(int windingRule) throws IOException
     {
-        graphics.setColor( getGraphicsState().getNonStrokingColor().createColor() );
+        graphics.setColor( getGraphicsState().getNonStrokingColor().getJavaColor() );
         getLinePath().setWindingRule(windingRule);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
@@ -274,7 +274,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void strokePath() throws IOException
     {
-        graphics.setColor( getGraphicsState().getStrokingColor().createColor() ); 
+        graphics.setColor( getGraphicsState().getStrokingColor().getJavaColor() ); 
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
