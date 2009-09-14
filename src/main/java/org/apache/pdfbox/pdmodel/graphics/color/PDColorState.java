@@ -129,7 +129,7 @@ public class PDColorState extends LoggingObject implements Cloneable
             else
             {
                 Color override = iccOverrideColor;
-                ColorSpace cs = colorSpace.createColorSpace();
+                ColorSpace cs = colorSpace.getJavaColorSpace();
                 if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1)
                 {
                     //Use that component as a single-integer RGB value

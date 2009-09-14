@@ -48,11 +48,8 @@ public class PDDeviceCMYK extends PDColorSpace
      */
     public static final String ABBREVIATED_NAME = "CMYK";
 
-    private ColorSpace cSpace = null;
-
     private PDDeviceCMYK()
     {
-
     }
 
     /**
@@ -81,16 +78,10 @@ public class PDDeviceCMYK extends PDColorSpace
      * Create a Java colorspace for this colorspace.
      *
      * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace()
     {
-        if( cSpace == null )
-        {
-            cSpace = new ColorSpaceCMYK();
-        }
-        return cSpace;
+        return new ColorSpaceCMYK();
     }
 
     /**
@@ -107,7 +98,7 @@ public class PDDeviceCMYK extends PDColorSpace
 
         int[] nbBits = { bpc, bpc, bpc, bpc };
         ComponentColorModel componentColorModel = 
-            new ComponentColorModel( createColorSpace(), 
+            new ComponentColorModel( getJavaColorSpace(), 
                          nbBits, 
                          false,                     
                          false,              

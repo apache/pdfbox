@@ -91,7 +91,7 @@ public class PDSeparation extends PDColorSpace
      *
      * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace() throws IOException
     {
         try
         {
@@ -102,9 +102,7 @@ public class PDSeparation extends PDColorSpace
 
             //logger().info(alt.toString());
 
-            ColorSpace colorspace = alt.createColorSpace();///dwilson 12/15/07
-
-            return colorspace;
+            return alt.getJavaColorSpace();
         }
         catch (IOException ioexception)
         {

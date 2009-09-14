@@ -69,10 +69,8 @@ public class PDDeviceGray extends PDColorSpace
      * Create a Java colorspace for this colorspace.
      *
      * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace()
     {
         return ColorSpace.getInstance( ColorSpace.CS_GRAY );
     }

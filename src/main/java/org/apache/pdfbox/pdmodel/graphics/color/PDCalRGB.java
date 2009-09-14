@@ -44,7 +44,6 @@ public class PDCalRGB extends PDColorSpace
 
     private COSArray array;
     private COSDictionary dictionary;
-    private ColorSpace cSpace = null;
 
     /**
      * Constructor.
@@ -94,16 +93,10 @@ public class PDCalRGB extends PDColorSpace
      * Create a Java colorspace for this colorspace.
      *
      * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace()
     {
-        if (cSpace == null)
-        {
-            cSpace = new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
-        }
-        return cSpace;
+        return new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
     }
 
     /**

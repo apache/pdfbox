@@ -94,7 +94,7 @@ public class PDLab extends PDColorSpace
      *
      * @throws IOException If there is an error creating the color space.
      */
-    public ColorSpace createColorSpace() throws IOException
+    protected ColorSpace createColorSpace() throws IOException
     {
         throw new IOException( "Not implemented" );
     }
