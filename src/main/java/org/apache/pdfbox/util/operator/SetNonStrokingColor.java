@@ -18,6 +18,8 @@ package org.apache.pdfbox.util.operator;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -36,6 +38,12 @@ import java.io.IOException;
  */
 public class SetNonStrokingColor extends OperatorProcessor 
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(SetNonStrokingColor.class);
+
     /**
      * sc,scn Set color space for non stroking operations.
      * @param operator The operator that is being executed.
@@ -80,13 +88,13 @@ public class SetNonStrokingColor extends OperatorProcessor
             }
             else 
             {
-                logger().warn("Not supported colorspace "+colorSpace.getName() 
+                log.warn("Not supported colorspace "+colorSpace.getName() 
                         + " within operator "+operator.getOperation());
             }
         }
         else
         {
-            logger().warn("Colorspace not found in "+getClass().getName()+".process!!");
+            log.warn("Colorspace not found in "+getClass().getName()+".process!!");
         }
     }
 }

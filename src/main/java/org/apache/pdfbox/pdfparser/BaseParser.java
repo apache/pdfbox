@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.ByteArrayPushBackInputStream;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
@@ -39,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.persistence.util.COSObjectKey;
+
 /**
  * This class is used to contain parsing logic that will be used by both the
  * PDFParser and the COSStreamParser.
@@ -46,8 +49,14 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.61 $
  */
-public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObject
+public abstract class BaseParser
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(BaseParser.class);
+
     /**
      * This is a byte array that will be used for comparisons.
      */
@@ -187,7 +196,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
                 {
                     //an invalid dictionary, we are expecting
                     //the key, read until we can recover
-                    logger().warn("Invalid dictionary, found:" + (char)c + " but expected:\''");
+                    log.warn("Invalid dictionary, found:" + (char)c + " but expected:\''");
                     int read = pdfSource.read();
                     while(read != -1 && read != '/' && read != '>')
                     {
@@ -220,7 +229,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
 
                 if( value == null )
                 {
-                    logger().warn("Bad Dictionary Declaration " + pdfSource );
+                    log.warn("Bad Dictionary Declaration " + pdfSource );
                 }
                 else
                 {
@@ -697,7 +706,7 @@ public abstract class BaseParser extends org.apache.pdfbox.exceptions.LoggingObj
             }
             else
             {
-                logger().warn("Corrupt object reference" );
+                log.warn("Corrupt object reference" );
                 //it could be a bad object in the array which is just skipped
             }
             skipSpaces();

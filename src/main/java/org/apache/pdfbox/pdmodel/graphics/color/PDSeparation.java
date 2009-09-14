@@ -21,6 +21,8 @@ import java.awt.image.ColorModel;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -35,6 +37,11 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
  */
 public class PDSeparation extends PDColorSpace
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDSeparation.class);
+
     /**
      * The name of this color space.
      */
@@ -106,13 +113,13 @@ public class PDSeparation extends PDColorSpace
         }
         catch (IOException ioexception)
         {
-            logger().error(ioexception, ioexception);
+            log.error(ioexception, ioexception);
 
             throw ioexception;
         }
         catch (Exception exception)
         {
-            logger().error(exception, exception);
+            log.error(exception, exception);
             throw new IOException("Failed to Create ColorSpace");
         }
     }
@@ -128,7 +135,7 @@ public class PDSeparation extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        logger().info("About to create ColorModel for " + getAlternateColorSpace().toString());
+        log.info("About to create ColorModel for " + getAlternateColorSpace().toString());
         return getAlternateColorSpace().createColorModel(bpc);
     }
 

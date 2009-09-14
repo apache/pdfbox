@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.File;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -40,6 +42,12 @@ import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
  */
 public abstract class PDXObjectImage extends PDXObject
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDXObjectImage.class);
+
     /**
      * The XObject subtype.
      */
@@ -220,7 +228,7 @@ file.
             retval = PDColorSpaceFactory.createColorSpace( cs );
             if (retval == null) 
                 {
-                    logger().info("About to return NULL from createColorSpace branch");
+                    log.info("About to return NULL from createColorSpace branch");
                 }
         }
         else
@@ -234,20 +242,21 @@ file.
                 retval = new PDDeviceGray();
                 if (retval == null) 
                     {
-                        logger().info("About to return NULL from CCITT branch");
+                        log.info("About to return NULL from CCITT branch");
                     }
             }
             else if (getImageMask())
             {
                 //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
                 retval = graphicsState.getNonStrokingColor().getColorSpace();
-                logger().info("Stencil Mask branch returning " + retval.toString());
+                log.info("Stencil Mask branch returning " + retval.toString());
                 //throw new IOException("Trace the Stencil Mask!!!!");
             
             }
             else
             {
-                logger().info("About to return NULL from unhandled branch. filter = " + filter.toString());
+                log.info("About to return NULL from unhandled branch."
+                        + " filter = " + filter);
             }
         }
         return retval;

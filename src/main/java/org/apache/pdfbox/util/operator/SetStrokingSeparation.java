@@ -19,6 +19,8 @@ package org.apache.pdfbox.util.operator;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -36,6 +38,13 @@ import org.apache.pdfbox.util.PDFOperator;
  */
 public class SetStrokingSeparation extends OperatorProcessor 
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log =
+        LogFactory.getLog(SetStrokingSeparation.class);
+
     /**
      * scn Set color space for non stroking operations.
      * @param operator The operator that is being executed.
@@ -46,12 +55,12 @@ public class SetStrokingSeparation extends OperatorProcessor
     {
         PDColorState color = context.getGraphicsState().getStrokingColor();
         PDColorSpace colorSpace = color.getColorSpace();
-        logger().info("handling color space " + colorSpace.toString());
+        log.info("handling color space " + colorSpace.toString());
         if (colorSpace instanceof PDSeparation)
         {
             PDSeparation sep = (PDSeparation) colorSpace;
             colorSpace = sep.getAlternateColorSpace();
-            logger().info("now handling alternate color space " + colorSpace.toString());
+            log.info("now handling alternate color space " + colorSpace.toString());
             if (colorSpace != null) 
             {
                 OperatorProcessor newOperator = null;
@@ -87,7 +96,7 @@ public class SetStrokingSeparation extends OperatorProcessor
                 }
                 else
                 {
-                    logger().warn("Not supported colorspace "+colorSpace.getName() 
+                    log.warn("Not supported colorspace "+colorSpace.getName() 
                             + " within operator "+operator.getOperation());
                 }
             }

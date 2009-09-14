@@ -18,22 +18,20 @@ package org.apache.pdfbox.util.operator;
 
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
-import org.apache.pdfbox.exceptions.LoggingObject;
 import java.util.List;
 import java.io.IOException;
 
 /**
- *
- * <p>Titre : OperatorProcessor</p>
+ * <p>Title : OperatorProcessor</p>
  * <p>Description : This class is the strategy abstract class
- * in the strategy GOF pattern. After instancated, you must ever call
-* the setContext method to initiamise OPeratorProcessor</p>
+ * in the strategy GOF pattern. After instantiated, you must ever call
+ * the setContext method to initialize OperatorProcessor</p>
  * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
+ * <p>SociÃ©tÃ© : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.3 $
  */
-public abstract class OperatorProcessor extends LoggingObject
+public abstract class OperatorProcessor
 {
 
     /**

@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -47,6 +49,12 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public class PDFParser extends BaseParser
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDFParser.class);
+
     private static final int SPACE_BYTE = 32;
 
     private static final String PDF_HEADER = "%PDF-";
@@ -178,7 +186,7 @@ public class PDFParser extends BaseParser
                              * Warning is sent to the PDFBox.log and to the Console that
                              * we skipped over an object
                              */
-                            logger().warn("Parsing Error, Skipping Object", e);
+                            log.warn("Parsing Error, Skipping Object", e);
                             skipToNextObj();
                         }
                         else
@@ -682,7 +690,7 @@ public class PDFParser extends BaseParser
                 String[] splitString = currentLine.split(" ");
                 if (splitString.length < 3)
                 {
-                    logger().warn("invalid xref line: " + currentLine);
+                    log.warn("invalid xref line: " + currentLine);
                     break;
                 }
                 /* This supports the corrupt table as reported in 

@@ -27,6 +27,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -46,6 +48,11 @@ import org.apache.pdfbox.pdmodel.graphics.predictor.PredictorAlgorithm;
  */
 public class PDPixelMap extends PDXObjectImage
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDPixelMap.class);
+
     private BufferedImage image = null;
 
     /**
@@ -133,7 +140,7 @@ public class PDPixelMap extends PDXObjectImage
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
-                logger().error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
+                log.error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
                 return null;
             }
             
@@ -147,7 +154,7 @@ public class PDPixelMap extends PDXObjectImage
                 cm = colorspace.createColorModel( bpc );
             }
             
-            logger().info("ColorModel: " + cm.toString());
+            log.info("ColorModel: " + cm.toString());
             WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
             DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
@@ -185,7 +192,7 @@ public class PDPixelMap extends PDXObjectImage
         } 
         catch (Exception exception)
         {
-            logger().error(exception, exception);
+            log.error(exception, exception);
             //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
             //Returning the NULL falls through to Phlip Koch's TODO section.
             return null;

@@ -17,6 +17,9 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
@@ -34,6 +37,11 @@ import java.io.IOException;
  */
 public class StrokePath extends OperatorProcessor
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(StrokePath.class);
 
     /**
      * S stroke the path.
@@ -70,7 +78,7 @@ public class StrokePath extends OperatorProcessor
         }
         catch (Exception exception)
         {
-            logger().warn(exception, exception);
+            log.warn(exception, exception);
         }
     }
 }

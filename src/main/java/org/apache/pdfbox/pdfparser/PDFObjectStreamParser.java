@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
@@ -35,6 +37,12 @@ import org.apache.pdfbox.cos.COSStream;
  */
 public class PDFObjectStreamParser extends BaseParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log =
+        LogFactory.getLog(PDFObjectStreamParser.class);
+
     private List streamObjects = null;
     private List objectNumbers = null;
     private COSStream stream;
@@ -85,9 +93,9 @@ public class PDFObjectStreamParser extends BaseParser
                     new COSInteger( ((Integer)objectNumbers.get( objectCounter)).intValue() );
                 object.setObjectNumber( objNum );
                 streamObjects.add( object );
-                if(logger().isDebugEnabled())
+                if(log.isDebugEnabled())
                 {
-                    logger().debug( "parsed=" + object );
+                    log.debug( "parsed=" + object );
                 }
                 objectCounter++;
             }

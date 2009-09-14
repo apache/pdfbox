@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -42,6 +44,12 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public class COSDocument extends COSBase
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(COSDocument.class);
+
     private float version;
 
     /**
@@ -162,7 +170,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    logger().warn(e, e);
+                    log.warn(e, e);
                 }
             }
         }
@@ -212,7 +220,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    logger().warn(e, e);
+                    log.warn(e, e);
                 }
             }
         }

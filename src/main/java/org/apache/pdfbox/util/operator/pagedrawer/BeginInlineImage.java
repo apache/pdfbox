@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
@@ -40,6 +42,10 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 public class BeginInlineImage extends OperatorProcessor
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(BeginInlineImage.class);
 
     /**
      * process : BI : begin inline image.
@@ -62,7 +68,7 @@ public class BeginInlineImage extends OperatorProcessor
 
         if (awtImage == null) 
         {
-            logger().warn("BeginInlineImage.process(): createImage returned NULL");
+            log.warn("BeginInlineImage.process(): createImage returned NULL");
             return;
         }
         int imageWidth = awtImage.getWidth();

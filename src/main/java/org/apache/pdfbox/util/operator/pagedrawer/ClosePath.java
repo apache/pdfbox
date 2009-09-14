@@ -18,6 +18,9 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
@@ -30,6 +33,12 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class ClosePath extends OperatorProcessor
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(ClosePath.class);
+
     /**
      * process : h : Close path.
      * @param operator The operator that is being executed.
@@ -46,7 +55,7 @@ public class ClosePath extends OperatorProcessor
         }
         catch( Throwable t )
         {
-            logger().warn(t, t);
+            log.warn(t, t);
         }
     }
 }
