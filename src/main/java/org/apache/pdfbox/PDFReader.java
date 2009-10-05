@@ -269,7 +269,7 @@ public class PDFReader extends javax.swing.JFrame
         {
             viewer.openPDFFile( args[0] );
         }
-        viewer.show();
+        viewer.setVisible(true);
     }
 
     private void openPDFFile(String file) throws Exception
