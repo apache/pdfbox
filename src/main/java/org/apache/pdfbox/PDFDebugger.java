@@ -354,7 +354,7 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             viewer.readPDFFile( args[0] );
         }
-        viewer.show();
+        viewer.setVisible(true);
     }
 
     private void readPDFFile(String file) throws Exception
