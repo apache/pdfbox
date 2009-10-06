@@ -23,7 +23,70 @@
   <body>
     <section>
       <title>Description</title>
-      <p>Coming Soon!!</p>
+      <p>This application will extract all text from the given PDF document.</p>
+      <p>usage: java org.apache.pdfbox.ExtractText [OPTIONS] &lt;PDF file&gt; [Text file]</p>
+      <table>
+          <tr>
+      		<th>Command Line Parameter</th>
+      		<th>Type</th>
+      		<th>Default Value</th>
+      		<th>Description</th>
+      	  </tr>
+      	  <tr>
+      	  	<td>-password &lt;password&gt;</td>
+      	  	<td>string</td>
+      	  	<td>None</td>
+      	  	<td>The password to the PDF document.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-encoding &lt;output encoding&gt;</td>
+      	  	<td>string</td>
+      	  	<td>default encoding</td>
+      	  	<td>The encoding type of the text file, e.g. ISO-8859-1, UTF-8, UTF-16BE.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-console</td>
+      	  	<td>boolean</td>
+      	  	<td>false</td>
+      	  	<td>Send text to console instead of file.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-html</td>
+      	  	<td>boolean</td>
+      	  	<td>false</td>
+      	  	<td>Output in HTML format instead of raw text.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-sort</td>
+      	  	<td>boolean</td>
+      	  	<td>false</td>
+      	  	<td>Sort the text before writing</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-ignoreBeads</td>
+      	  	<td>boolean</td>
+      	  	<td>false</td>
+      	  	<td>Disables the separation by beads.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-force</td>
+      	  	<td>boolean</td>
+      	  	<td>false</td>
+      	  	<td>Enables pdfbox to ignore corrupt objects.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-startPage &lt;start page&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>1</td>
+      	  	<td>The first page to extract, one based.</td>
+      	  </tr>
+      	  <tr>
+      	  	<td>-endPage &lt;end page&gt;</td>
+      	  	<td>integer</td>
+      	  	<td>Integer.MAX_INT</td>
+      	  	<td>The last page to extract, one based.</td>
+      	  </tr>
+      </table>
     </section>
   </body>
 </document>
