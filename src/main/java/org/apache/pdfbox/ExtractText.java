@@ -45,6 +45,7 @@ public class ExtractText
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";
     private static final String SORT = "-sort";
+    private static final String IGNORE_BEADS = "-ignoreBeads";
     private static final String HTML = "-html";  // jjb - added simple HTML output
     private static final String FORCE = "-force"; //enables pdfbox to skip corrupt objects
 
@@ -69,6 +70,7 @@ public class ExtractText
         boolean toHTML = false;
         boolean force = false;
         boolean sort = false;
+        boolean separateBeads = true;
         String password = "";
         String encoding = null;
         String pdfFile = null;
@@ -114,6 +116,10 @@ public class ExtractText
             else if( args[i].equals( SORT ) )
             {
                 sort = true;
+            }
+            else if( args[i].equals( IGNORE_BEADS ) )
+            {
+                separateBeads = false;
             }
             else if( args[i].equals( END_PAGE ) )
             {
@@ -224,6 +230,7 @@ public class ExtractText
                     stripper = new PDFTextStripper(encoding);
                 }
                 stripper.setSortByPosition( sort );
+                stripper.setShouldSeparateByBeads( separateBeads );
                 stripper.setStartPage( startPage );
                 stripper.setEndPage( endPage );
                 stripper.writeText( document, output );
@@ -253,6 +260,7 @@ public class ExtractText
             "  -console                     Send text to console instead of file\n" +
             "  -html                        Output in HTML format instead of raw text\n" +
             "  -sort                        Sort the text before writing\n" +
+            "  -ignoreBeads                 Disables the separation by beads\n" +
             "  -force                       Enables pdfbox to ignore corrupt objects\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
