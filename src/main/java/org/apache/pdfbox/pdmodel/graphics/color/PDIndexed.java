@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSString;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 
 import java.io.InputStream;
@@ -123,9 +124,37 @@ public class PDIndexed extends PDColorSpace
     {
         int size = getHighValue();
         byte[] index = getLookupData();
-        //for (int i=0;i<index.length;i++) System.out.print(index[i]+" ");
-
-        ColorModel cm = new IndexColorModel(bpc, size+1, index,0,false);
+        PDColorSpace baseColorSpace = getBaseColorSpace();
+        ColorModel cm = null;
+        if( baseColorSpace instanceof PDDeviceRGB )
+        {
+            cm = new IndexColorModel(bpc, size+1, index,0,false);
+        }
+        else
+        {
+            ColorModel baseColorModel = baseColorSpace.createColorModel(bpc);
+            if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
+            {
+                throw new IOException( "Not implemented" );
+            }
+            byte[] r = new byte[size+1];
+            byte[] g = new byte[size+1];
+            byte[] b = new byte[size+1];
+            byte[] a = baseColorModel.hasAlpha() ? new byte[size+1] : null;
+            byte[] inData = new byte[baseColorModel.getNumComponents()];
+            for( int i = 0; i <= size; i++ )
+            {
+                System.arraycopy(index, i * inData.length, inData, 0, inData.length);
+                r[i] = (byte)baseColorModel.getRed(inData);
+                g[i] = (byte)baseColorModel.getGreen(inData);
+                b[i] = (byte)baseColorModel.getBlue(inData);
+                if(a != null)
+                {
+                    a[i] = (byte)baseColorModel.getAlpha(inData);
+                }
+            }
+            cm = a == null ? new IndexColorModel(bpc, size+1, r, g, b) : new IndexColorModel(bpc, size+1, r, g, b, a);
+        }
         return cm;
     }
 
@@ -138,18 +167,8 @@ public class PDIndexed extends PDColorSpace
      */
     public PDColorSpace getBaseColorSpace() throws IOException
     {
-        PDColorSpace retval = null;
         COSBase base = array.getObject( 1 );
-        if( base instanceof COSName )
-        {
-            retval = PDColorSpaceFactory.createColorSpace( base );
-        }
-        else
-        {
-            throw new IOException( "Error:unknown base colorspace" );
-        }
-
-        return retval;
+        return PDColorSpaceFactory.createColorSpace( base );
     }
 
     /**
@@ -186,19 +205,19 @@ public class PDIndexed extends PDColorSpace
     /**
      * This will perform a lookup into the color lookup table.
      *
-     * @param componentNumber The component number, probably 1,2,3,3.
      * @param lookupIndex The zero-based index into the table, should not exceed the high value.
+     * @param componentNumber The component number, probably 1,2,3,3.
      *
      * @return The value that was from the lookup table.
      *
      * @throws IOException If there is an error looking up the color.
      */
-    public int lookupColor( int componentNumber, int lookupIndex ) throws IOException
+    public int lookupColor( int lookupIndex, int componentNumber ) throws IOException
     {
         PDColorSpace baseColor = getBaseColorSpace();
         byte[] data = getLookupData();
         int numberOfComponents = baseColor.getNumberOfComponents();
-        return (data[componentNumber*numberOfComponents + lookupIndex]+256)%256;
+        return (data[lookupIndex*numberOfComponents + componentNumber]+256)%256;
     }
 
     private byte[] getLookupData() throws IOException
@@ -238,18 +257,18 @@ public class PDIndexed extends PDColorSpace
     /**
      * This will set a color in the color lookup table.
      *
-     * @param componentNumber The component number, probably 1,2,3,3.
      * @param lookupIndex The zero-based index into the table, should not exceed the high value.
+     * @param componentNumber The component number, probably 1,2,3,3.
      * @param color The color that will go into the table.
      *
      * @throws IOException If there is an error looking up the color.
      */
-    public void setLookupColor( int componentNumber, int lookupIndex, int color ) throws IOException
+    public void setLookupColor( int lookupIndex, int componentNumber, int color ) throws IOException
     {
         PDColorSpace baseColor = getBaseColorSpace();
         int numberOfComponents = baseColor.getNumberOfComponents();
         byte[] data = getLookupData();
-        data[componentNumber*numberOfComponents + lookupIndex] = (byte)color;
+        data[lookupIndex*numberOfComponents + componentNumber] = (byte)color;
         COSString string = new COSString( data );
         array.set( 3, string );
     }
