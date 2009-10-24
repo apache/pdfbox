@@ -45,9 +45,6 @@
             <property name="scope" value="protected"/>
         </module>
         <module name="JavadocType">
-            <property name="authorFormat" value="\S"/>
-        </module>
-        <module name="JavadocType">
             <property name="versionFormat" value="\$Revision.*\$"/>
         </module>
 
