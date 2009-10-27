@@ -206,6 +206,10 @@ public abstract class BaseParser
                     {
                         pdfSource.unread(read);
                     }
+                    else
+                    {
+                        return obj;
+                    }
                 }
             else
             {
