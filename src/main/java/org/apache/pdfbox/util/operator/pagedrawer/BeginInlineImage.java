@@ -106,9 +106,9 @@ public class BeginInlineImage extends OperatorProcessor
         // the same dimension than the page to be printed
         if (clip == null)
         {
-        	clip = new Rectangle(pageSize);
+            clip = new Rectangle(pageSize);
         }
-    	graphics.setClip(clip);
+        graphics.setClip(clip);
         graphics.drawImage( awtImage, at, null );
     }
 }
