@@ -224,9 +224,9 @@ public class PDFMergerUtility
             }
             else
             {
-                //warning, potential for collision here!!
-                destNames.getCOSDictionary().mergeInto( (COSDictionary)cloneForNewDocument( destination, srcNames ) );
-            }
+                cloneMerge(destination, srcNames, destNames);
+            }   
+                
         }
 
         PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
@@ -313,6 +313,14 @@ public class PDFMergerUtility
     }
     Map clonedVersion = new HashMap();
 
+
+  /**
+   * 
+   * @param destination
+   * @param base
+   * @return
+   * @throws IOException
+   */
     private COSBase cloneForNewDocument( PDDocument destination, Object base ) throws IOException
     {
         if( base == null )
@@ -389,6 +397,99 @@ public class PDFMergerUtility
         return retval;
     }
 
+
+    /**
+     * Deep clone and Merge from Base to Target.<br/>
+     * base and target must be instances of the same class.
+     * @param destination
+     * @param base
+     * @param target
+     * @throws IOException
+     */
+    private void cloneMerge( PDDocument destination, COSObjectable base, COSObjectable target) throws IOException
+    {
+        if( base == null )
+        {
+            return;
+        }
+        COSBase retval = (COSBase)clonedVersion.get( base );
+        if( retval != null )
+        {
+          return;
+          //we are done, it has already been converted. // ### Is that correct for cloneMerge???
+        }
+        else if( base instanceof List )
+        {
+            COSArray array = new COSArray();
+            List list = (List)base;
+            for( int i=0; i<list.size(); i++ )
+            {
+                array.add( cloneForNewDocument( destination, list.get( i ) ) );
+            }
+            ((List)target).add(array);
+        }
+        else if( base instanceof COSObjectable && !(base instanceof COSBase) )
+        {
+            cloneMerge(destination, ((COSObjectable)base).getCOSObject(), ((COSObjectable)target).getCOSObject() );
+            clonedVersion.put( base, retval );
+        }
+        else if( base instanceof COSObject )
+        {
+            cloneMerge(destination, ((COSObject) base).getObject(),((COSObject) target).getObject() );
+            clonedVersion.put( base, retval );
+        }
+        else if( base instanceof COSArray )
+        {
+            COSArray array = (COSArray)base;
+            for( int i=0; i<array.size(); i++ )
+            {
+              ((COSArray)target).add( cloneForNewDocument( destination, array.get( i ) ) );
+            }
+            clonedVersion.put( base, retval );
+        }
+        else if( base instanceof COSStream )
+        {
+          // does that make sense???
+            COSStream originalStream = (COSStream)base;
+            List keys = originalStream.keyList();
+            PDStream stream = new PDStream( destination, originalStream.getFilteredStream(), true );
+            clonedVersion.put( base, stream.getStream() );
+            for( int i=0; i<keys.size(); i++ )
+            {
+                COSName key = (COSName)keys.get( i );
+                stream.getStream().setItem( key, cloneForNewDocument(destination,originalStream.getItem(key)));
+            }
+            retval = stream.getStream(); 
+            target = retval;
+        }
+        else if( base instanceof COSDictionary )
+        {
+            COSDictionary dic = (COSDictionary)base;
+            List keys = dic.keyList();
+            clonedVersion.put( base, retval );
+            for( int i=0; i<keys.size(); i++ )
+            {
+                COSName key = (COSName)keys.get( i );
+                if (((COSDictionary)target).getItem(key)!=null)
+                {
+                   cloneMerge(destination, dic.getItem(key),((COSDictionary)target).getItem(key));
+                } 
+                else 
+                {
+                  ((COSDictionary)target).setItem( key, cloneForNewDocument(destination,dic.getItem(key)));
+                }
+            }
+        }
+        else
+        {
+            retval = (COSBase)base;
+        }
+        clonedVersion.put( base, retval );
+        
+    }
+
+    
+    
     private int nextFieldNum = 1;
 
     /**
@@ -430,5 +531,6 @@ public class PDFMergerUtility
             }
         }
     }
+    
 
 }
