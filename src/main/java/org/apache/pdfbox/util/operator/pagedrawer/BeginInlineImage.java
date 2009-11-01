@@ -18,6 +18,8 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -98,8 +100,15 @@ public class BeginInlineImage extends OperatorProcessor
                 rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
                 rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                 );
-
-        graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
+        Shape clip = context.getGraphicsState().getCurrentClippingPath();
+        // If the pdf is printed, sometimes a NPE occurs, see PDFBOX-552 for details
+        // As a workaround we have to replace a possible null-value with a rectangle having 
+        // the same dimension than the page to be printed
+        if (clip == null)
+        {
+        	clip = new Rectangle(pageSize);
+        }
+    	graphics.setClip(clip);
         graphics.drawImage( awtImage, at, null );
     }
 }
