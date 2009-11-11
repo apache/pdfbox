@@ -75,6 +75,15 @@ public abstract class Encoding implements COSObjectable
         NAME_TO_CHARACTER.put( COSName.getPDFName( "ff" ), "ff" );
         NAME_TO_CHARACTER.put( COSName.getPDFName( "pi" ), "pi" );
 
+        // add some (alternative) glyph mappings. These are missing in the original copy of the adobe glyphlist.txt 
+        // also mapped as anglebracketleft
+        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketleft"), Character.toString('\u3008'));
+        // also mapped as anglebracketright
+        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketright"), Character.toString('\u3009'));
+        // also mapped as copyright
+        NAME_TO_CHARACTER.put(COSName.getPDFName("circlecopyrt"), Character.toString('\u00A9'));
+        NAME_TO_CHARACTER.put(COSName.getPDFName("controlNULL"), Character.toString('\u0000'));
+        
         Iterator keys = NAME_TO_CHARACTER.keySet().iterator();
         while( keys.hasNext() )
         {
