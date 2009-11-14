@@ -50,11 +50,11 @@
       <section id="users-subscribe">
         <title>Subscription Information</title>
         <ul>
-          <li>To subscribe (digest only): Send email to <a href="mailto:pdfbox-users-digest-subscribe@incubator.apache.org">pdfbox-users-digest-subscribe@incubator.apache.org</a>.</li>
-          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:pdfbox-users-subscribe@incubator.apache.org">pdfbox-users-subscribe@incubator.apache.org</a>.</li>
-          <li>To receive information about the mailing list: Send email to <a href="mailto:pdfbox-users-help@incubator.apache.org">pdfbox-users-help@incubator.apache.org</a>.</li>
-          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:pdfbox-users-unsubscribe@incubator.apache.org">pdfbox-users-unsubscribe@incubator.apache.org</a>.</li>
-          <li>To <strong>post</strong>: Send email to <a href="mailto:pdfbox-users@incubator.apache.org">pdfbox-users@incubator.apache.org</a>.</li>
+          <li>To subscribe (digest only): Send email to <a href="mailto:users-digest-subscribe@pdfbox.apache.org">users-digest-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:users-subscribe@pdfbox.apache.org">users-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To receive information about the mailing list: Send email to <a href="mailto:users-help@pdfbox.apache.org">users-help@pdfbox.apache.org</a>.</li>
+          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:users-unsubscribe@pdfbox.apache.org">users-unsubscribe@pdfbox.apache.org</a>.</li>
+          <li>To <strong>post</strong>: Send email to <a href="mailto:users@pdfbox.apache.org">users@pdfbox.apache.org</a>.</li>
         </ul>
       </section>
       <section id="users-archives">
@@ -75,11 +75,11 @@
       <section id="dev-subscribe">
         <title>Subscription Information</title>
         <ul>
-          <li>To subscribe (digest only): Send email to <a href="mailto:pdfbox-dev-digest-subscribe@incubator.apache.org">pdfbox-dev-digest-subscribe@incubator.apache.org</a>.</li>
-          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:pdfbox-dev-subscribe@incubator.apache.org">pdfbox-dev-subscribe@incubator.apache.org</a>.</li>
-          <li>To receive information about the mailing list: Send email to <a href="mailto:pdfbox-dev-help@incubator.apache.org">pdfbox-dev-help@incubator.apache.org</a>.</li>
-          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:pdfbox-dev-unsubscribe@incubator.apache.org">pdfbox-dev-unsubscribe@incubator.apache.org</a>.</li>
-          <li>To <strong>post</strong>: Send email to <a href="mailto:pdfbox-dev@incubator.apache.org">pdfbox-dev@incubator.apache.org</a>.</li>
+          <li>To subscribe (digest only): Send email to <a href="mailto:dev-digest-subscribe@pdfbox.apache.org">dev-digest-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:dev-subscribe@pdfbox.apache.org">dev-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To receive information about the mailing list: Send email to <a href="mailto:dev-help@pdfbox.apache.org">dev-help@pdfbox.apache.org</a>.</li>
+          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:dev-unsubscribe@pdfbox.apache.org">dev-unsubscribe@pdfbox.apache.org</a>.</li>
+          <li>To <strong>post</strong>: Send email to <a href="mailto:dev@pdfbox.apache.org">dev@pdfbox.apache.org</a>.</li>
         </ul>
       </section>
       <section id="dev-archives">
@@ -99,10 +99,10 @@
       <section id="commits-subscribe">
         <title>Subscription Information</title>
         <ul>
-          <li>To subscribe (digest only): Send email to <a href="mailto:pdfbox-commits-digest-subscribe@incubator.apache.org">pdfbox-commits-digest-subscribe@incubator.apache.org</a>.</li>
-          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:pdfbox-commits-subscribe@incubator.apache.org">pdfbox-commits-subscribe@incubator.apache.org</a>.</li>
-          <li>To receive information about the mailing list: Send email to <a href="mailto:pdfbox-commits-help@incubator.apache.org">pdfbox-commits-help@incubator.apache.org</a>.</li>
-          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:pdfbox-commits-unsubscribe@incubator.apache.org">pdfbox-commits-unsubscribe@incubator.apache.org</a>.</li>
+          <li>To subscribe (digest only): Send email to <a href="mailto:commits-digest-subscribe@pdfbox.apache.org">commits-digest-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To <strong>subscribe</strong> fully: Send email to <a href="mailto:commits-subscribe@pdfbox.apache.org">commits-subscribe@pdfbox.apache.org</a>.</li>
+          <li>To receive information about the mailing list: Send email to <a href="mailto:commits-help@pdfbox.apache.org">commits-help@pdfbox.apache.org</a>.</li>
+          <li>To <strong>unsubscribe</strong>: Send email to <a href="mailto:commits-unsubscribe@pdfbox.apache.org">commits-unsubscribe@pdfbox.apache.org</a>.</li>
         </ul>
       </section>
       <section id="commits-archives">
