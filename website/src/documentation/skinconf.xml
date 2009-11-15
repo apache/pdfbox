@@ -66,18 +66,18 @@ which will be used to configure the chosen Forrest skin.
   <!-- mandatory project logo
        default skin: renders it at the top -->
   <project-name>Apache PDFBox</project-name>
-  <project-description>Apache PDFBox (incubating): Java PDF Library</project-description>
-  <project-url>http://incubator.apache.org/pdfbox/</project-url>
+  <project-description>Apache PDFBox: Java PDF Library</project-description>
+  <project-url>http://pdfbox.apache.org/</project-url>
   <project-logo>images/Logo.gif</project-logo>
   <!-- Alternative static image:
   <project-logo>images/project-logo.gif</project-logo> -->
 
   <!-- optional group logo
        default skin: renders it at the top-left corner -->
-  <group-name>Apache Incubator</group-name>
-  <group-description>The Apache Software Foundation (Incubator)</group-description>
-  <group-url>http://incubator.apache.org</group-url>
-  <group-logo>http://incubator.apache.org/images/apache-incubator-logo.png</group-logo>
+  <group-name>ASF</group-name>
+  <group-description>The Apache Software Foundation</group-description>
+  <group-url>http://www.apache.org</group-url>
+  <group-logo>http://www.apache.org/images/asf_logo_wide.gif</group-logo>
   
   <!-- optional host logo (e.g. sourceforge logo)
        default skin: renders it at the bottom-left corner -->
@@ -88,7 +88,7 @@ which will be used to configure the chosen Forrest skin.
   <favicon-url></favicon-url>
 
   <!-- The following are used to construct a copyright statement -->
-  <year>2008</year> <!-- 2002-2008 ???? -->
+  <year>2009</year> <!-- 2002-2008 ???? -->
   <vendor>The Apache Software Foundation</vendor>
   <!-- The optional copyright-link URL will be used as a link in the
     copyright statement
@@ -108,8 +108,8 @@ which will be used to configure the chosen Forrest skin.
   -->
   <trail location="alt">
     <link1 name="The Apache Software Foundation" href="http://www.apache.org/"/>
-    <link2 name="Incubator" href="http://incubator.apache.org/"/>
-    <link3 name="Apache PDFBox" href="http://incubator.apache.org/pdfbox/"/>
+    <link2 name="Apache PDFBox" href="http://pdfbox.apache.org/"/>
+    <link3 name="" href=""/>
   </trail>
 
   <!-- Configure the TOC, i.e. the Table of Contents.
@@ -130,8 +130,8 @@ which will be used to configure the chosen Forrest skin.
     feedback link in the footer with the page pathname appended:
     <a href="@href">{@to}</a>
     -->
-  <feedback to="pdfbox-dev@incubator.apache.org"
-    href="mailto:pdfbox-dev@incubator.apache.org?subject=Feedback&#160;" >
+  <feedback to="dev@pdfbox.apache.org"
+    href="mailto:dev@pdfbox.apache.org?subject=Feedback&#160;" >
     Send feedback about the website to:
   </feedback>
 
