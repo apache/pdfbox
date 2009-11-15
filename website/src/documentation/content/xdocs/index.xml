@@ -30,15 +30,6 @@
         command line utilities. Apache PDFBox is published under the
         <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License v2.0</a>. 
       </p>
-      <note label="Disclaimer">
-        Apache PDFBox is an effort undergoing incubation at The Apache Software Foundation (ASF),
-        sponsored by the Apache Incubator PMC. Incubation is required of all newly accepted
-        projects until a further review indicates that the infrastructure, communications, and
-        decision making process have stabilized in a manner consistent with other successful
-        ASF projects. While incubation status is not necessarily a reflection of the completeness
-        or stability of the code, it does indicate that the project has yet to be fully
-        endorsed by the ASF.
-      </note>
       <p>
         The project is a volunteer effort and we're always looking for interested people
         to help us improve PDFBox. There are a multitude of ways that you can help us depending
