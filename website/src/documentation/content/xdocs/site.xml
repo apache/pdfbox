@@ -41,7 +41,6 @@ See http://forrest.apache.org/docs/linking.html for more info
     <mailing-list label="Mailing List" href="mailing-list.html" description="Discuss PDFBox" />
     <issues label="Issue Tracker" href="https://issues.apache.org/jira/browse/PDFBOX" description="Submit an issue" />
     <releaasenotes label="Release Notes" href="changes.html" description="Release Notes" />
-    <incubator-status label="Incubator Status Page" href="http://incubator.apache.org/projects/pdfbox.html" description="Where we track PDFBox's incubator status"/>
     <!--
     <sourceforge label="SourceForge" href="http://www.sf.net/projects/pdfbox" description="SourceForge Site" />
     -->
