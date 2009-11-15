@@ -53,35 +53,35 @@
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar"
               >pdfbox-0.8.0-incubating-src.jar</a> (source archive)</td>
           <td>4.7MB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.sha">SHA1</a>
           </td>
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar"
               >pdfbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
           <td>4.4MB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.sha">SHA1</a>
           </td>
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar"
               >pdfbox-0.8.0-incubating-standalone.jar</a> (pre-built standalone binary)</td>
           <td>14.8MB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.sha">SHA1</a>
           </td>
         </tr>
       </table>
@@ -97,7 +97,7 @@
         status of the project. See the disclaimer below for more about incubation.
       </p>
       <p>
-        See the <a href="http://www.apache.org/dist/incubator/pdfbox/pdfbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
+        See the <a href="http://www.apache.org/dist/pdfbox/pdfbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
       </p>
     </section>
     <section id="fontbox">
@@ -114,24 +114,24 @@
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar"
               >fontbox-0.8.0-incubating-src.jar</a> (source archive)</td>
           <td>328KB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.sha">SHA1</a>
           </td>
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar"
               >fontbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
           <td>72KB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.sha">SHA1</a>
           </td>
         </tr>
       </table>
@@ -149,7 +149,7 @@
         the disclaimer below for more about incubation.
       </p>
       <p>
-        See the <a href="http://www.apache.org/dist/incubator/pdfbox/fontbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
+        See the <a href="http://www.apache.org/dist/pdfbox/fontbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
       </p>
     </section>
     <section id="jempbox">
@@ -166,24 +166,24 @@
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
               >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
           <td>130KB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
           </td>
         </tr>
         <tr>
           <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
               >jempbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
           <td>50KB</td>
           <td>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
           </td>
         </tr>
       </table>
@@ -202,7 +202,7 @@
         of the project.
       </p>
       <p>
-        See the <a href="http://www.apache.org/dist/incubator/pdfbox/jempbox/RELEASE-NOTES-0.8.0-incubating.txt"
+        See the <a href="http://www.apache.org/dist/pdfbox/jempbox/RELEASE-NOTES-0.8.0-incubating.txt"
         >release notes</a> for more details.
       </p>
     </section>
