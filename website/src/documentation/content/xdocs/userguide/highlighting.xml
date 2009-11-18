@@ -34,7 +34,7 @@
           Acrobat supports passing is various parameters that tell it what to do once the PDF is open.
           See <a href="http://partners.adobe.com/public/developer/en/acrobat/PDFOpenParameters.pdf" target="_blank">PDF Open Parameters</a> for
           documentation on all the open parameters.  One of the parameters is the 'search' parameter, this will automatically run the search
-          functionality inside of Acrobat once the PDF is open.  For example: <a href='http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#search="check"' target='_blank'>http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#search="check"</a><br/>
+          functionality inside of Acrobat once the PDF is open.  For example: <a href='http://pdfbox.apache.org/userguide/text_extraction.pdf#search="check"' target='_blank'>http://pdfbox.apache.org/userguide/text_extraction.pdf#search="check"</a><br/>
           <br/>
           <note>The words must be enclosed in quotes and separated by spaces; for example:#search="pdfbox rocks"</note>
           This is a great solution because of its simplicity!  It doesn't require PDFBox at all, but it is a potential solution that
@@ -59,11 +59,11 @@
           web application example of using this class, take a look at the pdfbox.war directory in your PDFBox installation.
           <br/>
           You pass the xml to acrobat through a URL (or command line) parameter like this:
-          <a href="http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#xml=http://incubator.apache.org/pdfbox/highlight.xml" target="_blank">http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#xml=http://incubator.apache.org/pdfbox/highlight.xml</a>
+          <a href="http://pdfbox.apache.org/userguide/text_extraction.pdf#xml=http://pdfbox.apache.org/highlight.xml" target="_blank">http://pdfbox.apache.org/userguide/text_extraction.pdf#xml=http://pdfbox.apache.org/highlight.xml</a>
           <br/>
           <note>The value of the xml parameter must be a full URL to the XML document.  <br/>
-          http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#xml=highlight.xml will not work<br/>
-          http://incubator.apache.org/pdfbox/userguide/text_extraction.pdf#xml=http://incubator.apache.org/pdfbox/highlight.xml is correct!</note>
+          http://pdfbox.apache.org/userguide/text_extraction.pdf#xml=highlight.xml will not work<br/>
+          http://pdfbox.apache.org/userguide/text_extraction.pdf#xml=http://pdfbox.apache.org/highlight.xml is correct!</note>
           <br/>The one drawback to this solution is that you must parse the PDF and then generate an XML document, which is a time consuming operation.
           </p>
         </section>

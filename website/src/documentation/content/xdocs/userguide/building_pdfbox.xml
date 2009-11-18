@@ -29,7 +29,7 @@
 
       <p>
       	You can obtain the latest source of PDFBox from SVN, see the
-      	<a href="http://incubator.apache.org/pdfbox/download.html">Apache Incubator</a>
+      	<a href="http://pdfbox.apache.org/download.html">Apache PDFBox</a>
       	site for information
       	about how to connect to SVN.  The below instructions should also work for a released/nightly distribution.
       </p>
