@@ -209,10 +209,6 @@
     <!-- TODO Enable me when available
     <section id="snapshot">
       <title>Download a snapshot</title>
-      <p>
-        Apache PDFBox is undergoing incubation at the Apache Software Foundation and has since
-        not published a new release. We're trying to fix that as soon as possible.
-      </p>
     </section> -->
     <section id="subversion">
       <title>Subversion Repository</title>
@@ -220,15 +216,15 @@
         To fetch the latest source code from the trunk in the Subversion repository,
         just run the following command:
       </p>
-      <source>svn checkout http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/</source>
+      <source>svn checkout http://svn.apache.org/repos/asf/pdfbox/trunk/</source>
       <table>
         <tr>
           <td>Main Repository (US)</td>
-          <td><a href="http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/">http://svn.apache.org/repos/asf/incubator/pdfbox/trunk/</a></td>
+          <td><a href="http://svn.apache.org/repos/asf/pdfbox/trunk/">http://svn.apache.org/repos/asf/pdfbox/trunk/</a></td>
         </tr>
         <tr>
           <td>Mirror (EU)</td>
-          <td><a href="http://svn.eu.apache.org/repos/asf/incubator/pdfbox/trunk/">http://svn.eu.apache.org/repos/asf/incubator/pdfbox/trunk/</a></td>
+          <td><a href="http://svn.eu.apache.org/repos/asf/pdfbox/trunk/">http://svn.eu.apache.org/repos/asf/pdfbox/trunk/</a></td>
         </tr>
       </table>
      
@@ -238,11 +234,11 @@
       <table>
         <tr>
           <td>Main Repository (US)</td>
-          <td><a href="http://svn.apache.org/viewvc/incubator/pdfbox/">http://svn.apache.org/viewvc/incubator/pdfbox/</a></td>
+          <td><a href="http://svn.apache.org/viewvc/pdfbox/">http://svn.apache.org/viewvc/pdfbox/</a></td>
         </tr>
         <tr>
           <td>Mirror (EU)</td>
-          <td><a href="http://svn.eu.apache.org/viewvc/incubator/pdfbox/">http://svn.eu.apache.org/viewvc/incubator/pdfbox/</a></td>
+          <td><a href="http://svn.eu.apache.org/viewvc/pdfbox/">http://svn.eu.apache.org/viewvc/pdfbox/</a></td>
         </tr>
       </table>
     </section>
