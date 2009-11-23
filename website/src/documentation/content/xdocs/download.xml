@@ -216,31 +216,12 @@
         To fetch the latest source code from the trunk in the Subversion repository,
         just run the following command:
       </p>
-      <source>svn checkout http://svn.apache.org/repos/asf/pdfbox/trunk/</source>
-      <table>
-        <tr>
-          <td>Main Repository (US)</td>
-          <td><a href="http://svn.apache.org/repos/asf/pdfbox/trunk/">http://svn.apache.org/repos/asf/pdfbox/trunk/</a></td>
-        </tr>
-        <tr>
-          <td>Mirror (EU)</td>
-          <td><a href="http://svn.eu.apache.org/repos/asf/pdfbox/trunk/">http://svn.eu.apache.org/repos/asf/pdfbox/trunk/</a></td>
-        </tr>
-      </table>
+      <source>svn checkout <a href="http://svn.apache.org/repos/asf/pdfbox/trunk/">http://svn.apache.org/repos/asf/pdfbox/trunk/</a></source>
      
       <p>
-        You can also browse the Subversion repository using ViewVC:
+        You can also browse the Subversion repository using ViewVC at
+        <a href="http://svn.apache.org/viewvc/pdfbox/">http://svn.apache.org/viewvc/pdfbox/</a>.
       </p>
-      <table>
-        <tr>
-          <td>Main Repository (US)</td>
-          <td><a href="http://svn.apache.org/viewvc/pdfbox/">http://svn.apache.org/viewvc/pdfbox/</a></td>
-        </tr>
-        <tr>
-          <td>Mirror (EU)</td>
-          <td><a href="http://svn.eu.apache.org/viewvc/pdfbox/">http://svn.eu.apache.org/viewvc/pdfbox/</a></td>
-        </tr>
-      </table>
     </section>
     <section id="old-releases">
       <title>Download old releases</title>
