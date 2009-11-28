@@ -376,7 +376,7 @@ public class PDFStreamEngine
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
             float spacingText = characterSpacingText;
-            if( (string[i] == 0x20) && c != null && c.equals( " " ) )
+            if( (string[i] == 0x20) && codeLength == 1 )
             {
                 spacingText += wordSpacingText;
             }
