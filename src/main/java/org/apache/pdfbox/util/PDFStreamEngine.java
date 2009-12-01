@@ -311,7 +311,7 @@ public class PDFStreamEngine
         
         
         /* Convert textMatrix to display units */
-        Matrix initialMatrix = new Matrix();
+        final Matrix initialMatrix = new Matrix();
         initialMatrix.setValue(0,0,1);
         initialMatrix.setValue(0,1,0);
         initialMatrix.setValue(0,2,0);
@@ -321,10 +321,13 @@ public class PDFStreamEngine
         initialMatrix.setValue(2,0,0);
         initialMatrix.setValue(2,1,riseText);
         initialMatrix.setValue(2,2,1);
-    
+
         final Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-        final Matrix textMatrixStDisp = initialMatrix.multiply( textMatrix ).multiply( ctm );
-        
+        final Matrix dispMatrix = initialMatrix.multiply( ctm );
+
+        Matrix textMatrixStDisp = textMatrix.multiply( dispMatrix );
+        Matrix textMatrixEndDisp = null;
+
         final float xScaleDisp = textMatrixStDisp.getXScale();
         final float yScaleDisp = textMatrixStDisp.getYScale(); 
         
@@ -332,9 +335,10 @@ public class PDFStreamEngine
         final float wordSpacingDisp = wordSpacingText * xScaleDisp * fontSizeText; 
         
         float maxVerticalDisplacementText = 0;
-        float[] individualWidthsText = new float[2048];
-        StringBuffer stringResult = new StringBuffer(string.length);
-        
+
+        float[] individualWidthsBuffer = new float[string.length];
+        StringBuffer characterBuffer = new StringBuffer(string.length);
+
         int codeLength = 1;
         for( int i=0; i<string.length; i+=codeLength )
         {
@@ -381,33 +385,49 @@ public class PDFStreamEngine
                 spacingText += wordSpacingText;
             }
 
-            // get the X location before we update the text matrix
-            float xPosBeforeText = initialMatrix.multiply( textMatrix ).multiply( ctm ).getXPosition();
-
             /* The text matrix gets updated after each glyph is placed.  The updated
              * version will have the X and Y coordinates for the next glyph.
              */
-            
+            Matrix glyphMatrixStDisp = textMatrix.multiply( dispMatrix );
+
             //The adjustment will always be zero.  The adjustment as shown in the
             //TJ operator will be handled separately.
             float adjustment=0;
             // TODO : tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
-            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText 
-                    + spacingText) * horizontalScalingText;
-            float ty = 0;              
-            
+            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText)
+                    * horizontalScalingText;
+            float ty = 0;
+
             Matrix td = new Matrix();
             td.setValue( 2, 0, tx );
-            td.setValue( 2, 1, ty );            
-            
+            td.setValue( 2, 1, ty );
+
             textMatrix = td.multiply( textMatrix );
+
+            Matrix glyphMatrixEndDisp = textMatrix.multiply( dispMatrix );
+
+            float sx = spacingText * horizontalScalingText;
+            float sy = 0;
+
+            Matrix sd = new Matrix();
+            sd.setValue( 2, 0, sx );
+            sd.setValue( 2, 1, sy );
+
+            textMatrix = sd.multiply( textMatrix );
 
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
-            
-            float widthText = initialMatrix.multiply( textMatrix ).multiply( ctm ).getXPosition() - xPosBeforeText;
-            
+
+            float widthText = glyphMatrixStDisp.getXPosition() - glyphMatrixEndDisp.getXPosition();
+
+            while( characterBuffer.length() + ( c != null ? c.length() : 1 ) > individualWidthsBuffer.length )
+            {
+                float[] tmp = new float[individualWidthsBuffer.length * 2];
+                System.arraycopy( individualWidthsBuffer, 0, tmp, 0, individualWidthsBuffer.length );
+                individualWidthsBuffer = tmp;
+            }
+
             //there are several cases where one character code will
             //output multiple characters.  For example "fi" or a
             //glyphname that has no mapping like "visiblespace"
@@ -415,18 +435,12 @@ public class PDFStreamEngine
             {
                 // assume each character is the same size
                 float widthOfEachCharacterForCode = widthText/c.length();
-                
+
                 for( int j=0; j<c.length(); j++)
                 {
-                    if( stringResult.length()+j <individualWidthsText.length )
-                    {
-                        if( c.equals("-"))
-                        {
-                            //System.out.println( "stringResult.length()+j=" + (widthOfEachCharacterForCode));
-                        }
-                        individualWidthsText[stringResult.length()+j] = widthOfEachCharacterForCode;
-                    }
+                    individualWidthsBuffer[characterBuffer.length() + j] = widthOfEachCharacterForCode;
                 }
+
                 validCharCnt += c.length();
             }
             else 
@@ -434,45 +448,44 @@ public class PDFStreamEngine
                 // PDFBOX-373: Replace a null entry with "?" so it is
                 // not printed as "(null)"
                 c = "?";
+
+                individualWidthsBuffer[characterBuffer.length()] = widthText;
             }
+            characterBuffer.append(c);
+
             totalCharCnt += c.length();
-            
-            stringResult.append( c );
-        }
-        
-        
-        String resultingString = stringResult.toString();
-        
-        if( individualWidthsText.length != resultingString.length() )
-        {
-            float[] tmp = new float[resultingString.length()];
-            System.arraycopy( individualWidthsText, 0, tmp, 0, 
-                    Math.min( individualWidthsText.length, resultingString.length() ));
-            individualWidthsText = tmp;
-            if( resultingString.equals( "- " ))
+
+            if( spacingText == 0 && (i + codeLength) < (string.length - 1) )
             {
-                //System.out.println( "EQUALS " + individualWidths[0] );
+                continue;
             }
+
+            textMatrixEndDisp = glyphMatrixEndDisp;
+
+            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * yScaleDisp;
+
+            float[] individualWidths = new float[characterBuffer.length()];
+            System.arraycopy( individualWidthsBuffer, 0, individualWidths, 0, individualWidths.length );
+
+            // process the decoded text
+            processTextPosition(
+                    new TextPosition(
+                            page,
+                            textMatrixStDisp,
+                            textMatrixEndDisp,
+                            totalVerticalDisplacementDisp,
+                            individualWidths,
+                            spaceWidthDisp,
+                            characterBuffer.toString(),
+                            font,
+                            fontSizeText,
+                            (int)(fontSizeText * textMatrix.getXScale()),
+                            wordSpacingDisp ));
+
+            textMatrixStDisp = textMatrix.multiply( dispMatrix );
+
+            characterBuffer.setLength(0);
         }
-        
-        float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * yScaleDisp;
-        // convert textMatrix at the end of the string to display units
-        Matrix textMatrixEndDisp = initialMatrix.multiply( textMatrix ).multiply( ctm );
-        
-        // process the decoded text
-        processTextPosition(
-                new TextPosition(
-                        page,
-                        textMatrixStDisp,
-                        textMatrixEndDisp,
-                        totalVerticalDisplacementDisp,
-                        individualWidthsText,
-                        spaceWidthDisp,
-                        stringResult.toString(),
-                        font,
-                        fontSizeText,
-                        (int)(fontSizeText * textMatrix.getXScale()),
-                        wordSpacingDisp ));
     }
 
     /**
