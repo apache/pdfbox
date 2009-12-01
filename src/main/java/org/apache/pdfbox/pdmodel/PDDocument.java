@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.awt.Dimension;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
@@ -49,7 +50,6 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
@@ -931,40 +931,24 @@ public class PDDocument implements Pageable
     public PageFormat getPageFormat(int pageIndex)
     {
         PDPage page = (PDPage)getDocumentCatalog().getAllPages().get( pageIndex );
-        PDRectangle mediaBox = page.findMediaBox();
-        PageFormat format = new PageFormat();
+        Dimension mediaBox = page.findMediaBox().createDimension();
+        Dimension cropBox = page.findCropBox().createDimension();
+        double diffWidth = 0;
+        double diffHeight = 0;
+        double mediaWidth = mediaBox.getWidth();
+        double mediaHeight = mediaBox.getHeight();
+        double cropWidth = cropBox.getWidth();
+        double cropHeight = cropBox.getHeight();
+        // we have to center the ImageableArea if the cropBox is smaller than the mediaBox
+        if (!mediaBox.equals(cropBox))
+        {
+            diffWidth = (mediaWidth - cropWidth)/2;
+            diffHeight = (mediaHeight - cropHeight)/2;
+        }
         Paper paper = new Paper();
-        //hmm the imageable area might need to be the CropBox instead
-        //of the media box???
-        double width=mediaBox.getWidth();
-        double height=mediaBox.getHeight();
-
-
-        int rotation = page.findRotation();
-        if(rotation == 90)
-        {
-            format.setOrientation( PageFormat.LANDSCAPE );
-        }
-        else if(rotation == 270)
-        {
-            format.setOrientation( PageFormat.REVERSE_LANDSCAPE );
-        }
-        else
-        {
-            format.setOrientation( PageFormat.PORTRAIT );
-        }
-
-        // If there is rotation > 0, we have to exchange the pagedimension for the printer
-        if (rotation == 90 || rotation == 270) 
-        {
-            paper.setImageableArea( 0,0,height,width);
-            paper.setSize( height, width );
-        }
-        else 
-        {
-            paper.setImageableArea( 0,0,width,height);
-            paper.setSize( width, height );
-        }
+        paper.setImageableArea( diffWidth, diffHeight, cropWidth, cropHeight);
+        paper.setSize( mediaWidth, mediaHeight );
+        PageFormat format = new PageFormat();
         format.setPaper( paper );
         return format;
     }

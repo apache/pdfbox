@@ -791,8 +791,8 @@ public class PDPage implements COSObjectable, Printable
         try
         {
             PageDrawer drawer = new PageDrawer();
-            PDRectangle pageSize = findMediaBox();
-            drawer.drawPage( graphics, this, pageSize.createDimension() );
+            PDRectangle cropBox = findCropBox();
+            drawer.drawPage( graphics, this, cropBox.createDimension() );
         }
         catch( IOException io )
         {
