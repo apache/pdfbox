@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -47,11 +48,9 @@ public class Invoke extends OperatorProcessor
      *
      * @throws IOException If there is an error processing this operator.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSName name = (COSName) arguments.get( 0 );
-
-        //PDResources res = context.getResources();
 
         Map xobjects = context.getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(name.getName());

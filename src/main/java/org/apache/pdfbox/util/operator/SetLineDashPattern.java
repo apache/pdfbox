@@ -19,6 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.util.PDFOperator;
@@ -31,7 +32,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.1 $
  */
-public class SetLineDashPattern extends org.apache.pdfbox.util.operator.OperatorProcessor
+public class SetLineDashPattern extends OperatorProcessor
 {
 
     /**
@@ -41,7 +42,7 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.Operator
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSArray dashArray = (COSArray)arguments.get( 0 );
         int dashPhase = ((COSNumber)arguments.get( 1 )).intValue();
