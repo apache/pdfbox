@@ -17,18 +17,14 @@
 package org.apache.pdfbox.util.operator;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
  *
- * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class :
- * the long sequence of conditions in processOperator is remplaced by
- * this strategy pattern</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.4 $
  */
@@ -40,16 +36,14 @@ public class MoveText extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         COSNumber x = (COSNumber)arguments.get( 0 );
         COSNumber y = (COSNumber)arguments.get( 1 );
         Matrix td = new Matrix();
-        td.setValue( 2, 0, x.floatValue() );//.* textMatrix.getValue(0,0) );
-        td.setValue( 2, 1, y.floatValue() );//* textMatrix.getValue(1,1) );
-        //log.debug( "textLineMatrix before " + textLineMatrix );
-        context.setTextLineMatrix( td.multiply( context.getTextLineMatrix() ) ); //textLineMatrix.multiply( td );
-        //log.debug( "textLineMatrix after " + textLineMatrix );
+        td.setValue( 2, 0, x.floatValue() );
+        td.setValue( 2, 1, y.floatValue() );
+        context.setTextLineMatrix( td.multiply( context.getTextLineMatrix() ) );
         context.setTextMatrix( context.getTextLineMatrix().copy() );
     }
 }
