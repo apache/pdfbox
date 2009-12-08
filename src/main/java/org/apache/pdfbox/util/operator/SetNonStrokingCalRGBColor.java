@@ -19,6 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -38,7 +39,7 @@ public class SetNonStrokingCalRGBColor extends OperatorProcessor
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         PDColorState colorInstance = context.getGraphicsState().getNonStrokingColor();
         float[] values = new float[3];
