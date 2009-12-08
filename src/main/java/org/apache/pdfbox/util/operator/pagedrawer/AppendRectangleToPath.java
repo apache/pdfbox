@@ -20,6 +20,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
@@ -40,7 +41,7 @@ public class AppendRectangleToPath extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         PageDrawer drawer = (PageDrawer)context;
 

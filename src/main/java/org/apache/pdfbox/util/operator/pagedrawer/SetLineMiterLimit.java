@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import java.awt.BasicStroke;
@@ -40,7 +41,7 @@ public class SetLineMiterLimit extends org.apache.pdfbox.util.operator.SetLineMi
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         super.process(operator, arguments);
         float miterLimit = (float)context.getGraphicsState().getMiterLimit();

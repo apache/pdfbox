@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
@@ -37,7 +38,7 @@ public class EndPath extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         PageDrawer drawer = (PageDrawer)context;
         drawer.getLinePath().reset();

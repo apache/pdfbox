@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
@@ -55,7 +56,7 @@ public class BeginInlineImage extends OperatorProcessor
      * @param arguments List
      * @throws IOException If there is an error displaying the inline image.
      */
-    public void process(PDFOperator operator, List arguments)  throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments)  throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();
