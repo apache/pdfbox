@@ -17,16 +17,13 @@
 package org.apache.pdfbox.util.operator;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
 
 /**
- * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of conditions
- *    in processOperator is remplaced by this strategy pattern</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.6 $
  */
@@ -39,7 +36,7 @@ public class SetMoveAndShow extends OperatorProcessor
      * @param arguments List.
      * @throws IOException If there is an error processing the operator.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         //Set word and character spacing, move to next line, and show text
         //
