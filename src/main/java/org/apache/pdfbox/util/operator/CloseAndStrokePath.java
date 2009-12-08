@@ -17,6 +17,8 @@
 package org.apache.pdfbox.util.operator;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
@@ -27,7 +29,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class CloseAndStrokePath extends org.apache.pdfbox.util.operator.SetLineWidth
+public class CloseAndStrokePath extends OperatorProcessor
 {
 
     /**
@@ -37,7 +39,7 @@ public class CloseAndStrokePath extends org.apache.pdfbox.util.operator.SetLineW
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         context.processOperator( "h", arguments );
         context.processOperator( "S", arguments );
