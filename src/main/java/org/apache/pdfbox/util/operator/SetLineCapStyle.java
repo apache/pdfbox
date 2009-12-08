@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -29,7 +30,7 @@ import java.io.IOException;
  * @author <a href="mailto:andreas@lehmi.de>Andreas Lehmkühler</a>
  * @version $Revision: 1.0 $
  */
-public class SetLineCapStyle extends org.apache.pdfbox.util.operator.OperatorProcessor
+public class SetLineCapStyle extends OperatorProcessor
 {
 
     /**
@@ -39,7 +40,7 @@ public class SetLineCapStyle extends org.apache.pdfbox.util.operator.OperatorPro
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineCap( lineCapStyle );
