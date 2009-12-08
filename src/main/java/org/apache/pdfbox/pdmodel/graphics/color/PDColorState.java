@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -154,16 +155,16 @@ public class PDColorState implements Cloneable
                 }
             }
         }
-        catch (IOException e)
-        {
-            log.warn("Unable to create a color in " + colorSpace, e);
-            return Color.BLACK;
-        }
+        // Catch IOExceptions from PDColorSpace.getJavaColorSpace(), but
+        // possibly also IllegalArgumentExceptions or other RuntimeExceptions
+        // from the potentially complex color management code.
         catch (Exception e)
         {
-            log.error(e, e);
-            throw new IOException("Failed to Create Color");
-         }
+            log.warn("Unable to create the color instance "
+                    + Arrays.toString(components) + " in color space "
+                    + colorSpace + "; using black instead", e);
+            return Color.BLACK;
+        }
     }
 
     /**
