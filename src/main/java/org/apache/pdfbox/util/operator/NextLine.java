@@ -20,16 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
  *
- * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of
- *    conditions in processOperator is remplaced by this strategy pattern</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.5 $
  */
@@ -42,10 +38,10 @@ public class NextLine extends OperatorProcessor
      *
      * @throws IOException If there is an error during processing.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         //move to start of next text line
-        ArrayList args = new ArrayList();
+        ArrayList<COSBase> args = new ArrayList<COSBase>();
         args.add(new COSFloat(0.0f));
         // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way

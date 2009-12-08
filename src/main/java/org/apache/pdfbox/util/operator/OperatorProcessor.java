@@ -16,18 +16,13 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import java.util.List;
 import java.io.IOException;
 
 /**
- * <p>Title : OperatorProcessor</p>
- * <p>Description : This class is the strategy abstract class
- * in the strategy GOF pattern. After instantiated, you must ever call
- * the setContext method to initialize OperatorProcessor</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.3 $
  */
@@ -74,5 +69,5 @@ public abstract class OperatorProcessor
      *
      * @throws IOException If there is an error processing the operator.
      */
-    public abstract void process(PDFOperator operator, List arguments) throws IOException;
+    public abstract void process(PDFOperator operator, List<COSBase> arguments) throws IOException;
 }
