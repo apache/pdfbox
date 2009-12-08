@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class COSArray extends COSBase
 {
-    private List objects = new ArrayList();
+    private List<COSBase> objects = new ArrayList<COSBase>();
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public class COSArray extends COSBase
      *
      * @param objectsList The list of objects to remove from the collection.
      */
-    public void removeAll( Collection objectsList )
+    public void removeAll( Collection<COSBase> objectsList )
     {
         objects.removeAll( objectsList );
     }
@@ -99,7 +99,7 @@ public class COSArray extends COSBase
      *
      * @param objectsList The list of objects to retain from the collection.
      */
-    public void retainAll( Collection objectsList )
+    public void retainAll( Collection<COSBase> objectsList )
     {
         objects.retainAll( objectsList );
     }
@@ -109,7 +109,7 @@ public class COSArray extends COSBase
      *
      * @param objectsList The object to add to the array.
      */
-    public void addAll( Collection objectsList )
+    public void addAll( Collection<COSBase> objectsList )
     {
         objects.addAll( objectsList );
     }
@@ -134,7 +134,7 @@ public class COSArray extends COSBase
      * @param i The index to add at.
      * @param objectList The object to add at that index.
      */
-    public void addAll( int i, Collection objectList )
+    public void addAll( int i, Collection<COSBase> objectList )
     {
         objects.addAll( i, objectList );
     }
@@ -386,7 +386,7 @@ public class COSArray extends COSBase
      *
      * @return an iterator over the array elements
      */
-    public Iterator iterator()
+    public Iterator<COSBase> iterator()
     {
         return objects.iterator();
     }
@@ -484,9 +484,9 @@ public class COSArray extends COSBase
      *  
      *  @return the COSArray as List 
      */
-    public List toList()
+    public List<COSBase> toList()
     {
-        ArrayList retList = new ArrayList(size());
+        ArrayList<COSBase> retList = new ArrayList<COSBase>(size());
         for (int i = 0; i < size(); i++)
         {
             retList.add(get(i));
