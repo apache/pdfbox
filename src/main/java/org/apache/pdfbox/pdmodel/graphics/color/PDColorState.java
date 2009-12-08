@@ -154,20 +154,10 @@ public class PDColorState implements Cloneable
                 }
             }
         }
-        catch (java.lang.IllegalArgumentException exception)
+        catch (IOException e)
         {
-            String values = "Color Values: ";
-            for(int i=0; i< components.length; i++)
-            {
-                values = values + components[i] + "\t";
-            }
-            log.error(exception + "\n" + values, exception);
-            throw exception;
-        }
-        catch (IOException ioexception)
-        {
-            log.error(ioexception, ioexception);
-            throw ioexception;
+            log.warn("Unable to create a color in " + colorSpace, e);
+            return Color.BLACK;
         }
         catch (Exception e)
         {
