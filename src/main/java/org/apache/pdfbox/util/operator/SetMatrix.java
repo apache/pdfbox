@@ -17,16 +17,13 @@
 package org.apache.pdfbox.util.operator;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
- * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of conditions
- *    in processOperator is remplaced by this strategy pattern</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.4 $
  */
@@ -39,7 +36,7 @@ public class SetMatrix extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         //Set text matrix and text line matrix
         COSNumber a = (COSNumber)arguments.get( 0 );

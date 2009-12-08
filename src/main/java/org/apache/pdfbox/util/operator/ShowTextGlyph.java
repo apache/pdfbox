@@ -27,11 +27,6 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSString;
 
 /**
- * <p>Titre : PDFEngine Modification.</p>
- * <p>Description : Structal modification of the PDFEngine class : the long sequence of
- *    conditions in processOperator is remplaced by this strategy pattern</p>
- * <p>Copyright : Copyright (c) 2004</p>
- * <p>Société : DBGS</p>
  * @author Huault : huault@free.fr
  * @version $Revision: 1.6 $
  */
@@ -44,7 +39,7 @@ public class ShowTextGlyph extends OperatorProcessor
      * @param arguments List
      * @throws IOException If there is an error processing this operator.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSArray array = (COSArray)arguments.get( 0 );
         float adjustment=0;
