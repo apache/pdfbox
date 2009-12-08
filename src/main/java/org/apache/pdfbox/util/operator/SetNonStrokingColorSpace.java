@@ -19,6 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -43,7 +44,7 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
 //      (PDF 1.1) Set color space for stroking operations
         COSName name = (COSName)arguments.get( 0 );

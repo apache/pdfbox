@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -51,11 +52,11 @@ public class SetNonStrokingSeparation extends OperatorProcessor
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         PDColorState colorInstance = context.getGraphicsState().getNonStrokingColor();
         PDColorSpace colorSpace = colorInstance.getColorSpace();
-        List argList = arguments;
+        List<COSBase> argList = arguments;
         
         if (colorSpace instanceof PDSeparation)
         {
