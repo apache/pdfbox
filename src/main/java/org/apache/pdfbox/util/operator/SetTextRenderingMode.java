@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -40,7 +41,7 @@ public class SetTextRenderingMode extends OperatorProcessor
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSNumber mode = (COSNumber)arguments.get( 0 );
         context.getGraphicsState().getTextState().setRenderingMode( mode.intValue() );
