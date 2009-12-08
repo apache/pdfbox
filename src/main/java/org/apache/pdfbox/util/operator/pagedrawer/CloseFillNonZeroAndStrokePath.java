@@ -17,7 +17,10 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.OperatorProcessor;
 import java.io.IOException;
 
 /**
@@ -26,7 +29,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.1 $
  */
-public class CloseFillNonZeroAndStrokePath extends org.apache.pdfbox.util.operator.OperatorProcessor
+public class CloseFillNonZeroAndStrokePath extends OperatorProcessor
 {
 
     /**
@@ -36,7 +39,7 @@ public class CloseFillNonZeroAndStrokePath extends org.apache.pdfbox.util.operat
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         context.processOperator( "h", arguments );
 

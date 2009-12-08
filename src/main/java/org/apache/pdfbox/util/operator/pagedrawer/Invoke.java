@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -60,7 +61,7 @@ public class Invoke extends OperatorProcessor
      * @param arguments List
      * @throws IOException If there is an error invoking the sub object.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();

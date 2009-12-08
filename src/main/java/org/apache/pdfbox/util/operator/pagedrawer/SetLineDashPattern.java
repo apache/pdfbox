@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.util.PDFOperator;
@@ -42,7 +43,7 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         super.process( operator, arguments );
         PDLineDashPattern lineDashPattern = context.getGraphicsState().getLineDashPattern();

@@ -18,6 +18,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ public class CloseFillEvenOddAndStrokePath extends org.apache.pdfbox.util.operat
      *
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         context.processOperator( "h", arguments );
 

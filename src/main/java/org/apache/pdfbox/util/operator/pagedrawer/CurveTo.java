@@ -19,6 +19,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.util.List;
 import java.awt.geom.Point2D;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
@@ -39,7 +40,7 @@ public class CurveTo extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         PageDrawer drawer = (PageDrawer)context;
 
