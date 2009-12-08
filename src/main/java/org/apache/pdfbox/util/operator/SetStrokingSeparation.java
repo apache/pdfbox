@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -51,61 +52,53 @@ public class SetStrokingSeparation extends OperatorProcessor
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         PDColorState color = context.getGraphicsState().getStrokingColor();
         PDColorSpace colorSpace = color.getColorSpace();
-        log.info("handling color space " + colorSpace.toString());
-        if (colorSpace instanceof PDSeparation)
+
+        if (colorSpace != null) 
         {
-            PDSeparation sep = (PDSeparation) colorSpace;
-            colorSpace = sep.getAlternateColorSpace();
-            log.info("now handling alternate color space " + colorSpace.toString());
-            if (colorSpace != null) 
+            List<COSBase> argList = arguments;
+            OperatorProcessor newOperator = null;
+            if (colorSpace instanceof PDDeviceGray)
             {
-                OperatorProcessor newOperator = null;
-                if (colorSpace instanceof PDDeviceGray)
-                {
-                    newOperator = new SetStrokingGrayColor();
-                }
-                else if (colorSpace instanceof PDDeviceRGB)
-                {
-                    newOperator = new SetStrokingRGBColor();
-                }
-                else if (colorSpace instanceof PDDeviceCMYK)
-                {
-                    newOperator = new SetStrokingCMYKColor();
-                }
-                else if (colorSpace instanceof PDICCBased)
-                {
-                    newOperator = new SetStrokingICCBasedColor();
-                }
-                else if (colorSpace instanceof PDCalRGB)
-                {
-                    newOperator = new SetStrokingCalRGBColor();
-                }
-                else if (colorSpace instanceof PDSeparation)
-                {
-                    newOperator = new SetStrokingSeparation();
-                }
-    
-                if (newOperator != null) 
-                {
-                    newOperator.setContext(getContext());
-                    newOperator.process(operator, sep.getColorValues().toList());
-                }
-                else
-                {
-                    log.warn("Not supported colorspace "+colorSpace.getName() 
-                            + " within operator "+operator.getOperation());
-                }
+                newOperator = new SetStrokingGrayColor();
             }
-        } 
-        else 
-        {
-            throw new IOException("Invalid attempt to process colorspace " 
-                    + colorSpace.toString() + " in SetStrokingSeparation");
+            else if (colorSpace instanceof PDDeviceRGB)
+            {
+                newOperator = new SetStrokingRGBColor();
+            }
+            else if (colorSpace instanceof PDDeviceCMYK)
+            {
+                newOperator = new SetStrokingCMYKColor();
+            }
+            else if (colorSpace instanceof PDICCBased)
+            {
+                newOperator = new SetStrokingICCBasedColor();
+            }
+            else if (colorSpace instanceof PDCalRGB)
+            {
+                newOperator = new SetStrokingCalRGBColor();
+            }
+            else if (colorSpace instanceof PDSeparation)
+            {
+                newOperator = new SetStrokingSeparation();
+                PDSeparation sep = (PDSeparation) colorSpace;
+                colorSpace = sep.getAlternateColorSpace();
+                argList = sep.getColorValues().toList();
+            }
+
+            if (newOperator != null) 
+            {
+                newOperator.setContext(getContext());
+                newOperator.process(operator, argList);
+            }
+            else
+            {
+                log.warn("Not supported colorspace "+colorSpace.getName() 
+                        + " within operator "+operator.getOperation());
+            }
         }
-        
     }
 }
