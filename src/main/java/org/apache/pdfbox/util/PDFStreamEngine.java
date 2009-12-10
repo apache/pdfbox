@@ -19,13 +19,16 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,7 +61,10 @@ public class PDFStreamEngine
      */
     private static final Log log = LogFactory.getLog(PDFStreamEngine.class);
 
-    private Vector unsupportedOperators = new Vector();
+    /**
+     * The PDF operators that are ignored by this engine.
+     */
+    private final Set<String> unsupportedOperators = new HashSet<String>();
     
     private static final byte[] SPACE_BYTES = { (byte)32 };
 
@@ -109,7 +115,8 @@ public class PDFStreamEngine
     /**
      * Constructor with engine properties.  The property keys are all
      * PDF operators, the values are class names used to execute those
-     * operators.
+     * operators. An empty value means that the operator will be silently
+     * ignored.
      *
      * @param properties The engine properties.
      *
@@ -121,20 +128,31 @@ public class PDFStreamEngine
         {
             throw new NullPointerException( "properties cannot be null" );
         }
-        try
+        Enumeration<?> names = properties.propertyNames();
+        for ( Object name : Collections.list( names ) )
         {
-            Iterator keys = properties.keySet().iterator();
-            while( keys.hasNext() )
+            String operator = name.toString();
+            String processorClassName = properties.getProperty( operator );
+            if( "".equals( processorClassName ) )
             {
-                String operator = (String)keys.next();
-                String operatorClass = properties.getProperty( operator );
-                OperatorProcessor op = (OperatorProcessor)Class.forName( operatorClass ).newInstance();
-                registerOperatorProcessor(operator, op);
+                unsupportedOperators.add( operator );
             }
-        }
-        catch( Exception e )
-        {
-            throw new WrappedIOException( e );
+            else
+            {
+                try
+                {
+                    Class<?> klass = Class.forName( processorClassName );
+                    OperatorProcessor processor =
+                        (OperatorProcessor) klass.newInstance();
+                    registerOperatorProcessor( operator, processor );
+                }
+                catch( Exception e )
+                {
+                    throw new WrappedIOException(
+                            "OperatorProcessor class " + processorClassName
+                            + " could not be instantiated", e );
+                }
+            }
         }
         validCharCnt = 0;
         totalCharCnt = 0;
