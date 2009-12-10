@@ -166,6 +166,49 @@
         </tr>
         <tr>
           <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/source/jempbox-1.0.0-src.jar"
+              >jempbox-1.0.0-src.jar</a> (source archive)</td>
+          <td>72KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-1.0.0-src.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-1.0.0-src.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-1.0.0-src.jar.sha">SHA1</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/binaries/jempbox-1.0.0.jar"
+              >jempbox-1.0.0.jar</a> (pre-built binary)</td>
+          <td>50KB</td>
+          <td>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-1.0.0.jar.asc">PGP</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-1.0.0.jar.md5">MD5</a>
+            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-1.0.0.jar.sha">SHA1</a>
+          </td>
+        </tr>
+      </table>
+      <p>
+        This 1.0.0 release is the first JempBox release made after the graduation
+        from incubating at the Apache Software Foundation. The most notable changes
+        since the previous release (0.8.0-incubating) are the upgrade to Java 5 and
+        the switch from ant to maven as build tool. 
+      </p>
+      <p>
+        The version number of JempBox was upgraded from 0.8.0 to 1.0.0 to
+        reflect the new status as Apache top level project.
+      </p>
+      <p>
+        See the <a href="http://www.apache.org/dist/pdfbox/jempbox/RELEASE-NOTES-1.0.0.txt">
+        release notes</a> for more details.
+      </p>
+      <table>
+        <tr>
+          <th>Download</th>
+          <th>Size</th>
+          <th>Verify</th>
+        </tr>
+        <tr>
+          <td>
             <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
               >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
           <td>130KB</td>
