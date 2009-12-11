@@ -26,21 +26,33 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>4</version>
+    <version>6</version>
   </parent>
 
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox</artifactId>
-  <version>0.8.0-incubating</version>
+  <version>1.0-SNAPSHOT</version>
 
-  <name>Apache PDFBox - Java PDF Library</name>
-  <!-- Keep on a single line, see http://jira.codehaus.org/browse/MJAR-39 -->
-  <description>Apache PDFBox is an open source Java PDF library for working with PDF documents.</description>
+  <name>Apache PDFBox</name>
+  <description>
+    Apache PDFBox is an open source Java library for working with PDF documents.
+  </description>
+  <inceptionYear>2002</inceptionYear>
+  <url>http://pdfbox.apache.org/</url>
 
-  <url>http://incubator.apache.org/pdfbox/</url>
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/PDFBOX</url>
+  </issueManagement>
 
   <scm>
-    <url>http://svn.apache.org/viewvc/incubator/pdfbox/trunk/</url>
+    <connection>
+      scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk
+    </connection>
+    <developerConnection>
+      scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk
+    </developerConnection>
+    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
   </scm>
 
   <dependencies>
