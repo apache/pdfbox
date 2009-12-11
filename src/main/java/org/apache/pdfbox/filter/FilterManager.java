@@ -32,7 +32,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class FilterManager
 {
-    private Map filters = new HashMap();
+    private Map<COSName, Filter> filters = new HashMap<COSName, Filter>();
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ public class FilterManager
      *
      * @return All available filters in the system.
      */
-    public Collection getFilters()
+    public Collection<Filter> getFilters()
     {
         return filters.values();
     }
