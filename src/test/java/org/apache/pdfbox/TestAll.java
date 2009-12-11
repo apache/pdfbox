@@ -64,7 +64,7 @@ public class TestAll extends TestCase
     {
         TestSuite suite = new TestSuite();
         suite.addTest( TestDateUtil.suite() );
-        suite.addTest( TestFilters.suite() );
+        suite.addTestSuite( TestFilters.class );
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );
         suite.addTest( TestCOSString.suite() );
