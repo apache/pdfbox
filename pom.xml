@@ -56,11 +56,15 @@
     <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
   </scm>
 
+  <properties>
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>fontbox</artifactId>
-      <version>0.8.0-incubator</version>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
@@ -156,6 +160,18 @@
             <version>1.7.1</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>org/apache/pdfbox/TestAll.java</include>
+            <include>org/apache/pdfbox/util/TestTextStripper.java</include>
+            <!--
+            <include>org/apache/pdfbox/util/TestPDFToImage.java</include>
+            -->
+          </includes>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
