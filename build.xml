@@ -168,7 +168,7 @@
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="find.adobefiles">
-        <available property="adobefiles.found" file="${dest.dir}/Resources"/>
+        <available property="adobefiles.found" file="${dest.dir}/Resources/cmap"/>
     </target>
 
     <target name="get.adobefiles"
