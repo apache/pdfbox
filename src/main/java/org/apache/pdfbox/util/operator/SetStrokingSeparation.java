@@ -59,8 +59,16 @@ public class SetStrokingSeparation extends OperatorProcessor
 
         if (colorSpace != null) 
         {
-            List<COSBase> argList = arguments;
             OperatorProcessor newOperator = null;
+            List<COSBase> argList = arguments;
+
+            if (colorSpace instanceof PDSeparation) 
+            {
+                PDSeparation sep = (PDSeparation) colorSpace;
+                colorSpace = sep.getAlternateColorSpace();
+                argList = sep.getColorValues().toList();
+            }
+
             if (colorSpace instanceof PDDeviceGray)
             {
                 newOperator = new SetStrokingGrayColor();
@@ -84,9 +92,6 @@ public class SetStrokingSeparation extends OperatorProcessor
             else if (colorSpace instanceof PDSeparation)
             {
                 newOperator = new SetStrokingSeparation();
-                PDSeparation sep = (PDSeparation) colorSpace;
-                colorSpace = sep.getAlternateColorSpace();
-                argList = sep.getColorValues().toList();
             }
 
             if (newOperator != null) 
