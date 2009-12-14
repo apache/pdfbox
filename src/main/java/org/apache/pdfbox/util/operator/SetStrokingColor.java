@@ -79,7 +79,7 @@ public class SetStrokingColor extends OperatorProcessor
             }   
             else if (colorSpace instanceof PDSeparation)
             {
-                newOperator = new SetNonStrokingSeparation();
+                newOperator = new SetStrokingSeparation();
             }
             if (newOperator != null) 
             {
