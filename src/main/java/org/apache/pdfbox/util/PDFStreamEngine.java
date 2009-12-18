@@ -437,7 +437,7 @@ public class PDFStreamEngine
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
 
-            float widthText = glyphMatrixStDisp.getXPosition() - glyphMatrixEndDisp.getXPosition();
+            float widthText = glyphMatrixEndDisp.getXPosition() - glyphMatrixStDisp.getXPosition();
 
             while( characterBuffer.length() + ( c != null ? c.length() : 1 ) > individualWidthsBuffer.length )
             {
