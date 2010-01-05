@@ -112,7 +112,7 @@
     <property name="adobefiles.removed.url" value="${jiraattachment.url}/12413648/removed_cmaps.jar"/>
     <property name="adobefiles.removed.jar" value="${download.dir}/removed_cmaps.jar"/>
     <property name="adobefiles.glyph.url" value="${jiraattachment.url}/12413646/glyphlist.txt"/>
-    <property name="adobefiles.glyph.txt" value="${download.dir}/Resources/glyphlist.txt"/>
+    <property name="adobefiles.glyph.txt" value="${download.dir}/glyphlist.txt"/>
 
 	<property name="file" value=""/>
 	
@@ -190,8 +190,8 @@
             <param name="sourcefile" value="${adobefiles.glyph.url}"/>
             <param name="destfile" value="${adobefiles.glyph.txt}"/>
         </antcall>
-    	<copy todir="${dest.dir}/Resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
-    	<unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/cmap">
+        <copy todir="${dest.dir}/Resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
+        <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/cmap">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
                 <include name="com/adobe/pdf/pcfi/japanese/*"/>
