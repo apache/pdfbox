@@ -69,7 +69,7 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jempbox</artifactId>
-      <version>0.8.0-incubator</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -95,15 +95,15 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcmail-jdk14</artifactId>
-      <version>136</version>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>1.44</version>
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcprov-jdk14</artifactId>
-      <version>136</version>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <version>1.44</version>
       <optional>true</optional>
     </dependency>
     <dependency>
