@@ -39,7 +39,7 @@
     <property name="jar.dir" value="external" />
 
     <property name="project.name" value="pdfbox"/>
-    <property name="project.version" value="0.8.0-incubating" />
+    <property name="project.version" value="1.0-SNAPSHOT" />
 
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
@@ -52,8 +52,8 @@
     <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/0.8.0-incubator/${fontbox.name}.jar" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
-    <property name="jempbox.name" value="jempbox-0.8.0-incubating" />
-    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/0.8.0-incubator/${jempbox.name}.jar" />
+    <property name="jempbox.name" value="jempbox-1.0.0" />
+    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/1.0.0/${jempbox.name}.jar" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
     <property name="lucene.name" value="lucene-core-2.4.1" />
@@ -64,12 +64,12 @@
     <property name="lucene-demos.url" value="${maven.repo1}/org/apache/lucene/lucene-demos/2.4.1/${lucene-demos.name}.jar" />
     <property name="lucene-demos.jar" value="${jar.dir}/${lucene-demos.name}.jar" />
 
-    <property name="bcprov.name" value="bcprov-jdk14-136" />
-    <property name="bcprov.url" value="${maven.repo2}/bouncycastle/bcprov-jdk14/136/${bcprov.name}.jar" />
+    <property name="bcprov.name" value="bcprov-jdk15-1.44" />
+    <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15/1.44/${bcprov.name}.jar" />
     <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
 
-    <property name="bcmail.name" value="bcmail-jdk14-136" />
-    <property name="bcmail.url" value="${maven.repo2}/bouncycastle/bcmail-jdk14/136/${bcmail.name}.jar" />
+    <property name="bcmail.name" value="bcmail-jdk15-1.44" />
+    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15/1.44/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
     <property name="junit.name" value="junit-3.8.2" />
