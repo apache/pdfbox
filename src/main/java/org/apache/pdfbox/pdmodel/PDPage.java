@@ -154,15 +154,18 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDPageNode getParent()
     {
-        PDPageNode parent = null;
-        COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( "Parent", "P" );
-        if( parentDic != null )
-        {
-            parent = new PDPageNode( parentDic );
+        if( parent == null){
+            COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( "Parent", "P" );
+            if( parentDic != null )
+            {
+                parent = new PDPageNode( parentDic );
+            }
         }
         return parent;
     }
 
+    private PDPageNode parent = null;
+    
     /**
      * This will set the parent of this page.
      *
@@ -170,6 +173,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public void setParent( PDPageNode parent )
     {
+        this.parent = parent;
         page.setItem( COSName.PARENT, parent.getDictionary() );
     }
 
@@ -252,15 +256,18 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDRectangle getMediaBox()
     {
-        PDRectangle retval = null;
-        COSArray array = (COSArray)page.getDictionaryObject( COSName.MEDIA_BOX );
-        if( array != null )
-        {
-            retval = new PDRectangle( array );
+        if( mediaBox == null){
+            COSArray array = (COSArray)page.getDictionaryObject( COSName.MEDIA_BOX );
+            if( array != null )
+            {
+            	mediaBox = new PDRectangle( array );
+            }
         }
-        return retval;
+        return mediaBox;
     }
 
+    private PDRectangle mediaBox = null;
+    
     /**
      * This will find the MediaBox for this page by looking up the hierarchy until
      * it finds them.
@@ -270,14 +277,13 @@ public class PDPage implements COSObjectable, Printable
     public PDRectangle findMediaBox()
     {
         PDRectangle retval = getMediaBox();
-        PDPageNode parent = getParent();
-        if( retval == null && parent != null )
+        if( retval == null && getParent() != null )
         {
-            retval = parent.findMediaBox();
+            retval = getParent().findMediaBox();
         }
         return retval;
     }
-
+    
     /**
      * This will set the mediaBox for this page.
      *
@@ -285,7 +291,8 @@ public class PDPage implements COSObjectable, Printable
      */
     public void setMediaBox( PDRectangle mediaBox )
     {
-        if( mediaBox == null )
+        this.mediaBox = mediaBox;
+    	if( mediaBox == null )
         {
             page.removeItem( COSName.MEDIA_BOX );
         }
