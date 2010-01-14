@@ -789,7 +789,7 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     private boolean within( float first, float second, float variance )
     {
-        return second > first - variance && second < first + variance;
+        return second < first + variance && second > first - variance;
     }
 
 
