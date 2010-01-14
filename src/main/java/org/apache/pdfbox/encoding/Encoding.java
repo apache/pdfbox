@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -43,14 +42,20 @@ public abstract class Encoding implements COSObjectable
     /**
      * This is a mapping from a character code to a character name.
      */
-    protected Map codeToName = new HashMap();
+    protected final Map<Integer, COSName> codeToName =
+        new HashMap<Integer, COSName>();
+
     /**
      * This is a mapping from a character name to a character code.
      */
-    protected Map nameToCode = new HashMap();
+    protected final Map<COSName, Integer> nameToCode =
+        new HashMap<COSName, Integer>();
 
-    private static final Map NAME_TO_CHARACTER = new HashMap();
-    private static final Map CHARACTER_TO_NAME = new HashMap();
+    private static final Map<COSName, String> NAME_TO_CHARACTER =
+        new HashMap<COSName, String>();
+
+    private static final Map<String, COSName> CHARACTER_TO_NAME =
+        new HashMap<String, COSName>();
 
     static
     {
@@ -75,24 +80,22 @@ public abstract class Encoding implements COSObjectable
         NAME_TO_CHARACTER.put( COSName.getPDFName( "ff" ), "ff" );
         NAME_TO_CHARACTER.put( COSName.getPDFName( "pi" ), "pi" );
 
-        // add some (alternative) glyph mappings. These are missing in the original copy of the adobe glyphlist.txt 
+        // add some (alternative) glyph mappings. These are missing in
+        // the original copy of the adobe glyphlist.txt 
         // also mapped as anglebracketleft
-        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketleft"), Character.toString('\u3008'));
+        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketleft"), "\u3008");
         // also mapped as anglebracketright
-        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketright"), Character.toString('\u3009'));
+        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketright"), "\u3009");
         // also mapped as copyright
-        NAME_TO_CHARACTER.put(COSName.getPDFName("circlecopyrt"), Character.toString('\u00A9'));
-        NAME_TO_CHARACTER.put(COSName.getPDFName("controlNULL"), Character.toString('\u0000'));
-        
-        Iterator keys = NAME_TO_CHARACTER.keySet().iterator();
-        while( keys.hasNext() )
+        NAME_TO_CHARACTER.put(COSName.getPDFName("circlecopyrt"), "\u00A9");
+        NAME_TO_CHARACTER.put(COSName.getPDFName("controlNULL"), "\u0000");
+
+        for( Map.Entry<COSName, String> entry : NAME_TO_CHARACTER.entrySet() )
         {
-            Object key = keys.next();
-            Object value = NAME_TO_CHARACTER.get( key );
-            CHARACTER_TO_NAME.put( value, key );
+            CHARACTER_TO_NAME.put( entry.getValue(), entry.getKey() );
         }
     }
-    
+
     /**
      * Loads a glyph list from a given location and populates the NAME_TO_CHARACTER hashmap
      * for character lookups.
@@ -156,8 +159,6 @@ public abstract class Encoding implements COSObjectable
             }
         }
     }
-    
-
 
     /**
      * This will add a character encoding.
@@ -167,9 +168,8 @@ public abstract class Encoding implements COSObjectable
      */
     protected void addCharacterEncoding( int code, COSName name )
     {
-        Integer intCode = new Integer( code );
-        codeToName.put( intCode, name );
-        nameToCode.put( name, intCode );
+        codeToName.put( code, name );
+        nameToCode.put( name, code );
     }
 
     /**
@@ -183,12 +183,12 @@ public abstract class Encoding implements COSObjectable
      */
     public int getCode( COSName name ) throws IOException
     {
-        Integer code = (Integer)nameToCode.get( name );
+        Integer code = nameToCode.get( name );
         if( code == null )
         {
             throw new IOException( "No character code for character name '" + name.getName() + "'" );
         }
-        return code.intValue();
+        return code;
     }
 
     /**
@@ -202,7 +202,7 @@ public abstract class Encoding implements COSObjectable
      */
     public COSName getName( int code ) throws IOException
     {
-        COSName name = (COSName)codeToName.get( new Integer( code ) );
+        COSName name = codeToName.get( code );
         if( name == null )
         {
             //lets be forgiving for now
@@ -224,7 +224,7 @@ public abstract class Encoding implements COSObjectable
      */
     public COSName getNameFromCharacter( char c ) throws IOException
     {
-        COSName name = (COSName)CHARACTER_TO_NAME.get( "" + c );
+        COSName name = CHARACTER_TO_NAME.get( Character.toString(c) );
         if( name == null )
         {
             throw new IOException( "No name for character '" + c + "'" );
@@ -258,18 +258,18 @@ public abstract class Encoding implements COSObjectable
     {
         COSName baseName = name;
  
-        String character = (String)NAME_TO_CHARACTER.get( baseName );
+        String character = NAME_TO_CHARACTER.get( baseName );
         if( character == null )
         {
             String nameStr = baseName.getName();
-           // test for Unicode name
+            // test for Unicode name
             // (uniXXXX - XXXX must be a multiple of four;
             // each representing a hexadecimal Unicode code point)
             if ( nameStr.startsWith( "uni" ) )
             {
                 StringBuilder uniStr = new StringBuilder();
 
-                for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 ) 
+                for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 )
                 {
                     try 
                     {
