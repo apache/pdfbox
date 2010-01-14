@@ -77,7 +77,7 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * This will get the font width for a character.
+     * This will get the font height for a character.
      *
      * @param c The character code to get the width for.
      * @param offset The offset into the array.
@@ -241,24 +241,26 @@ public abstract class PDSimpleFont extends PDFont
      */
     public PDFontDescriptor getFontDescriptor() throws IOException
     {
-        PDFontDescriptor retval = null;
-        COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
-        if( fd == null )
-        {
-            FontMetric afm = getAFM();
-            if( afm != null )
+        if(fontDescriptor ==null){
+            COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
+            if( fd == null )
             {
-                retval = new PDFontDescriptorAFM( afm );
+                FontMetric afm = getAFM();
+                if( afm != null )
+                {
+                	fontDescriptor = new PDFontDescriptorAFM( afm );
+                }
+            }
+            else
+            {
+            	fontDescriptor = new PDFontDescriptorDictionary( fd );
             }
         }
-        else
-        {
-            retval = new PDFontDescriptorDictionary( fd );
-        }
-
-        return retval;
+        return fontDescriptor;
     }
 
+    private PDFontDescriptor fontDescriptor = null;
+    
     /**
      * This will set the font descriptor.
      *
@@ -272,6 +274,7 @@ public abstract class PDSimpleFont extends PDFont
             dic = fontDescriptor.getCOSDictionary();
         }
         font.setItem( COSName.FONT_DESC, dic );
+        this.fontDescriptor = fontDescriptor;
     }
 
     /**

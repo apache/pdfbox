@@ -334,13 +334,18 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getCapHeight()
     {
-        /* We observed a negative value being returned with
-         * the Scheherazade font. PDFBOX-429 was logged for this. 
-         * We are not sure if returning the absolute value
-         * is the correct fix, but it seems to work.  */
-        return java.lang.Math.abs(dic.getFloat( "CapHeight", 0 ));
+        if(capHeight==Float.NEGATIVE_INFINITY){
+        	/* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this. 
+             * We are not sure if returning the absolute value
+             * is the correct fix, but it seems to work.  */
+            capHeight = java.lang.Math.abs(dic.getFloat( "CapHeight", 0 ));
+        }
+        return capHeight;
     }
 
+    private float capHeight = Float.NEGATIVE_INFINITY;
+    
     /**
      * This will set the cap height for the font.
      *
@@ -349,6 +354,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public void setCapHeight( float capHeight )
     {
         dic.setFloat( "CapHeight", capHeight );
+        this.capHeight = capHeight;
     }
 
     /**
@@ -358,13 +364,18 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getXHeight()
     {
-        /* We observed a negative value being returned with
-         * the Scheherazade font. PDFBOX-429 was logged for this. 
-         * We are not sure if returning the absolute value
-         * is the correct fix, but it seems to work.  */
-        return java.lang.Math.abs(dic.getFloat( "XHeight", 0 ));
+        if(xHeight==Float.NEGATIVE_INFINITY){
+        	/* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this. 
+             * We are not sure if returning the absolute value
+             * is the correct fix, but it seems to work.  */
+            xHeight = java.lang.Math.abs(dic.getFloat( "XHeight", 0 ));
+        }
+        return xHeight;
     }
 
+    private float xHeight = Float.NEGATIVE_INFINITY;
+    
     /**
      * This will set the x height for the font.
      *
@@ -373,6 +384,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public void setXHeight( float xHeight )
     {
         dic.setFloat( "XHeight", xHeight );
+        this.xHeight = xHeight;
     }
 
     /**

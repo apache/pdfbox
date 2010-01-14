@@ -293,46 +293,67 @@ public abstract class PDFont implements COSObjectable
      */
     protected FontMetric getAFM() throws IOException
     {
-        COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
-        COSName name = null;
-        if( baseFont instanceof COSName )
-        {
-            name = (COSName)baseFont;
-        }
-        else if( baseFont instanceof COSString )
-        {
-            COSString string = (COSString)baseFont;
-            name = COSName.getPDFName( string.getString() );
-        }
-        FontMetric result = null;
-        if( name != null )
-        {
-            result = (FontMetric)afmObjects.get( name );
-            if( result == null )
+        if(afm==null){
+        	COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
+            COSName name = null;
+            if( baseFont instanceof COSName )
             {
-                String resource = (String)afmResources.get( name );
-                if( resource == null )
+                name = (COSName)baseFont;
+            }
+            else if( baseFont instanceof COSString )
+            {
+                COSString string = (COSString)baseFont;
+                name = COSName.getPDFName( string.getString() );
+            }
+            if( name != null )
+            {
+            	afm = (FontMetric)afmObjects.get( name );
+                if( afm == null )
                 {
-                    //ok for now
-                    //throw new IOException( "Unknown AFM font '" + name.getName() + "'" );
-                }
-                else
-                {
-                    InputStream afmStream = ResourceLoader.loadResource( resource );
-                    if( afmStream == null )
+                    String resource = (String)afmResources.get( name );
+                    if( resource == null )
                     {
-                        throw new IOException( "Can't handle font width:" + resource );
+                        //ok for now
+                        //throw new IOException( "Unknown AFM font '" + name.getName() + "'" );
                     }
-                    AFMParser parser = new AFMParser( afmStream );
-                    parser.parse();
-                    result = parser.getResult();
-                    afmObjects.put( name, result );
+                    else
+                    {
+                        InputStream afmStream = ResourceLoader.loadResource( resource );
+                        if( afmStream == null )
+                        {
+                            throw new IOException( "Can't handle font width:" + resource );
+                        }
+                        AFMParser parser = new AFMParser( afmStream );
+                        parser.parse();
+                        afm = parser.getResult();
+                        afmObjects.put( name, afm );
+                    }
                 }
             }
         }
-        return result;
+        return afm;
     }
 
+    private FontMetric afm = null;
+    
+    private COSBase encodingObject = null;
+    /**
+     * cache the {@link COSName#ENCODING} object from
+     * the font's dictionary since it is called so often.
+     * <p>
+     * Use this method instead of
+     * <pre>
+     *   font.getDictionaryObject(COSName.ENCODING);
+     * </pre>
+     * @return
+     */
+    private COSBase getEncodingObject(){
+    	if(encodingObject==null){
+    		encodingObject = font.getDictionaryObject( COSName.ENCODING );
+    	}
+    	return encodingObject;
+    }
+    
     /**
      * This will perform the encoding of a character if needed.
      *
@@ -365,7 +386,7 @@ public abstract class PDFont implements COSObjectable
                 }
                 else
                 {
-                    COSBase encoding = font.getDictionaryObject( COSName.ENCODING );
+                    COSBase encoding = getEncodingObject(); //font.getDictionaryObject( COSName.ENCODING );
                     if( encoding instanceof COSStream )
                     {
                         COSStream encodingStream = (COSStream)encoding;
@@ -515,10 +536,10 @@ public abstract class PDFont implements COSObjectable
      */
     public Encoding getEncoding() throws IOException
     {
-        EncodingManager manager = new EncodingManager();
         if( fontEncoding == null )
         {
-            COSBase encoding = font.getDictionaryObject( COSName.ENCODING );
+            EncodingManager manager = getEncodingManager();
+            COSBase encoding = getEncodingObject(); //font.getDictionaryObject( COSName.ENCODING );
             if( encoding == null )
             {
                 FontMetric metric = getAFM();
@@ -797,5 +818,14 @@ public abstract class PDFont implements COSObjectable
     public int hashCode()
     {
         return this.getCOSObject().hashCode();
+    }
+    
+    private static EncodingManager encodingManager = null;
+    
+    protected static EncodingManager getEncodingManager(){
+        if(encodingManager == null){
+            encodingManager = new EncodingManager();
+        }
+        return encodingManager;
     }
 }
