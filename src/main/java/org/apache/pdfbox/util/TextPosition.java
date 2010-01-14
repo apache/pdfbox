@@ -37,6 +37,8 @@ public class TextPosition
 
     private float maxTextHeight; // maximum height of text, in display units
     private int rot; // 0, 90, 180, 270 degrees of page rotation
+    private float x = Float.NEGATIVE_INFINITY;
+    private float y = Float.NEGATIVE_INFINITY;
     private float pageHeight;
     private float pageWidth;
     private float[] widths;
@@ -206,7 +208,10 @@ public class TextPosition
      */
     public float getX()
     {
-        return getXRot(rot);
+        if(x==Float.NEGATIVE_INFINITY){
+        	x = getXRot(rot);
+        }
+        return x;
     }
 
     /**
@@ -257,14 +262,17 @@ public class TextPosition
      */
     public float getY()
     {
-        if ((rot == 0) || (rot == 180))
-        {
-            return pageHeight - getYLowerLeftRot(rot);
-        }
-        else 
-        {
-            return pageWidth - getYLowerLeftRot(rot);
-        }
+    	if(y==Float.NEGATIVE_INFINITY){
+            if ((rot == 0) || (rot == 180))
+            {
+                y = pageHeight - getYLowerLeftRot(rot);
+            }
+            else 
+            {
+                y = pageWidth - getYLowerLeftRot(rot);
+            }
+    	}
+    	return y;
     }
 
     /**
