@@ -57,17 +57,33 @@ public abstract class BaseParser
      */
     private static final Log log = LogFactory.getLog(BaseParser.class);
 
+    private static final int E = 'e';
+    private static final int N = 'n';
+    private static final int D = 'd';
+
+    private static final int S = 's';
+    private static final int T = 't';
+    private static final int R = 'r';
+    //private static final int E = 'e';
+    private static final int A = 'a';
+    private static final int M = 'm';
+
+    private static final int O = 'o';
+    private static final int B = 'b';
+    private static final int J = 'j';
+
     /**
      * This is a byte array that will be used for comparisons.
      */
     public static final byte[] ENDSTREAM =
-        new byte[] {101,110,100,115,116,114,101,97,109};//"endstream".getBytes( "ISO-8859-1" );
+        new byte[] { E, N, D, S, T, R, E, A, M };
 
     /**
      * This is a byte array that will be used for comparisons.
      */
     public static final byte[] ENDOBJ =
-        new byte[] {101,110,100,111,98,106};//"endobj".getBytes( "ISO-8859-1" );
+        new byte[] { E, N, D, O, B, J };
+
     /**
      * This is a byte array that will be used for comparisons.
      */
@@ -375,6 +391,7 @@ public abstract class BaseParser
         }
         return stream;
     }
+
     /**
      * This method will read through the current stream object until
      * we find the keyword "endstream" meaning we're at the end of this
@@ -383,69 +400,72 @@ public abstract class BaseParser
      * this case as well.
      * @param out The stream we write out to. 
      * @throws IOException
-     */
-    private void readUntilEndStream( OutputStream out ) throws IOException
-    {
-        int byteRead = 0;
-        byte[] buffer = new byte[ENDSTREAM.length];
-        int nextIdx = pdfSource.read(buffer) % buffer.length; 
-        if (nextIdx == -1)
-        { 
-            return;
-        }
-        while(byteRead != -1 ) 
-        {
-            if (cmpCircularBuffer( buffer, (nextIdx-ENDSTREAM.length + buffer.length)%buffer.length, ENDSTREAM )) 
-            {
-                pdfSource.unread( ENDSTREAM );
-                return;
-            }
-            /*
-             * occasionally steam objects do not write the endstream tag and just terminate
-             * the object with an endobj tag so we want to stop there as well. 
-             */
-            int endObjStart = (nextIdx-ENDOBJ.length+ buffer.length)%buffer.length;
-            if (cmpCircularBuffer( buffer, endObjStart, ENDOBJ )) 
-            {
-                // data is written to out only when it is going to be overwritten.
-                // write out the rest of the data in the buffer since ENDOBJ is smaller then the buffer
-                for (int i = nextIdx; i < buffer.length && i < endObjStart; i++ ) 
-                {
-                    out.write(buffer[i]);
-                }
-                pdfSource.unread( ENDOBJ );
-                return;
-            }
-
-            out.write( buffer[nextIdx] );
-
+     */    
+    private void readUntilEndStream( OutputStream out ) throws IOException{
+        int byteRead;
+        do{ //use a fail fast test for end of stream markers
             byteRead = pdfSource.read();
-            buffer[nextIdx] = (byte)byteRead;
-
-            if (++nextIdx == buffer.length) 
-            {
-                nextIdx = 0;
+            if(byteRead==E){//only branch if "e"
+                byteRead = pdfSource.read();
+                if(byteRead==N){ //only continue branch if "en"
+                    byteRead = pdfSource.read();
+                    if(byteRead==D){//up to "end" now
+                        byteRead = pdfSource.read();
+                        if(byteRead==S){
+                            byteRead = pdfSource.read();
+                            if(byteRead==T){
+                                byteRead = pdfSource.read();
+                                if(byteRead==R){
+                                    byteRead = pdfSource.read();
+                                    if(byteRead==E){
+                                        byteRead = pdfSource.read();
+                                        if(byteRead==A){
+                                            byteRead = pdfSource.read();
+                                            if(byteRead==M){
+                                                //found the whole marker
+                                                pdfSource.unread( ENDSTREAM );
+                                                return;
+                                            }
+                                        }else{
+                                            out.write(ENDSTREAM, 0, 7);
+                                        }
+                                    }else{
+                                        out.write(ENDSTREAM, 0, 6);
+                                    }
+                                }else{
+                                    out.write(ENDSTREAM, 0, 5);
+                                }
+                            }else{
+                                out.write(ENDSTREAM, 0, 4);
+                            }
+                        }else if(byteRead==O){
+                            byteRead = pdfSource.read();
+                            if(byteRead==B){
+                                byteRead = pdfSource.read();
+                                if(byteRead==J){
+                                    //found whole marker
+                                    pdfSource.unread( ENDOBJ );
+                                    return;
+                                }
+                            }else{
+                                out.write(ENDOBJ, 0, 4);
+                            }
+                        }else{
+                            out.write(E);
+                            out.write(N);
+                            out.write(D);
+                        }
+                    }else{
+                        out.write(E);
+                        out.write(N);
+                    }
+                }else{
+                    out.write(E);
+                }
             }
-        }   
-    }
+            if(byteRead!=-1)out.write(byteRead);
 
-    /**
-     * This basically checks to see if the next compareTo.length bytes of the
-     * buffer match the compareTo byte array.
-     * @param buffer Circular buffer to look for string in
-     * @param currentIndex Index in buffer to start comparison from
-     * @param compareTo String to find in circular buffer at index
-     */
-    private boolean cmpCircularBuffer( byte[] buffer, int currentIndex, byte[] compareTo )
-    {
-        int cmpLen = compareTo.length;
-        int buflen = buffer.length;
-        boolean match = true;
-        for( int i=0; match && i<cmpLen; ++i ) 
-        {
-            match = buffer[(currentIndex+i)%buflen] == compareTo[i];
-        }
-        return match;
+        }while(byteRead!=-1);
     }
 
     /**
