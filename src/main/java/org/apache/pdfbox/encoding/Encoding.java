@@ -257,24 +257,17 @@ public abstract class Encoding implements COSObjectable
     public static String getCharacter( COSName name )
     {
         COSName baseName = name;
-        String nameStr = baseName.getName();
-
-        // test if we have a suffix and if so remove it
-        if ( nameStr.indexOf('.') > 0 ) 
-        {
-            nameStr = nameStr.substring( 0, nameStr.indexOf('.') );
-            baseName = COSName.getPDFName( nameStr );
-        }
-
+ 
         String character = (String)NAME_TO_CHARACTER.get( baseName );
         if( character == null )
         {
-            // test for Unicode name
+            String nameStr = baseName.getName();
+           // test for Unicode name
             // (uniXXXX - XXXX must be a multiple of four;
             // each representing a hexadecimal Unicode code point)
             if ( nameStr.startsWith( "uni" ) )
             {
-                StringBuffer uniStr = new StringBuffer();
+                StringBuilder uniStr = new StringBuilder();
 
                 for ( int chPos = 3; chPos + 4 <= nameStr.length(); chPos += 4 ) 
                 {
@@ -304,9 +297,18 @@ public abstract class Encoding implements COSObjectable
             }
             else 
             {
-                character = nameStr;
+                // test if we have a suffix and if so remove it
+                if ( nameStr.indexOf('.') > 0 ) 
+                {
+                    nameStr = nameStr.substring( 0, nameStr.indexOf('.') );
+                    baseName = COSName.getPDFName( nameStr );
+                    getCharacter(baseName);
+                }
+
+               character = nameStr;
             }
         }
         return character;
     } 
+
 }
