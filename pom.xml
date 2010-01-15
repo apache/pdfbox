@@ -179,7 +179,13 @@
         <version>2.0.1</version>
         <extensions>true</extensions>
         <configuration>
-          <Bundle-DocURL>http://pdfbox.apache.org/</Bundle-DocURL>
+          <instructions>
+            <Bundle-DocURL>http://pdfbox.apache.org/</Bundle-DocURL>
+            <Include-Resource>
+              META-INF=target/maven-shared-archive-resources/META-INF,
+              Resources=target/classes/Resources
+            </Include-Resource>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>
