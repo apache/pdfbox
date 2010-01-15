@@ -218,6 +218,8 @@ public class DateConverter
                 }
 
                 retval.set(year, month-1, day, hour, minute, second );
+                // PDFBOX-598: PDF dates are only accurate up to a second
+                retval.set(Calendar.MILLISECOND, 0);
             }
             catch( NumberFormatException e )
             {
