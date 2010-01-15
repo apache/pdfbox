@@ -80,18 +80,18 @@ public abstract class PDFont implements COSObjectable
      */
     private CMap cmap = null;
 
-    private static Map afmResources = null;
-    private static Map cmapObjects = null;
-    private static Map afmObjects = null;
+    private static Map<COSName, String> afmResources = null;
+    private static Map<COSName, CMap> cmapObjects = null;
+    private static Map<COSName, FontMetric> afmObjects = null;
 
     static
     {
         //these are read-only once they are created
-        afmResources = new HashMap();
+        afmResources = new HashMap<COSName, String>();
 
         //these are read-write
-        cmapObjects = Collections.synchronizedMap( new HashMap() );
-        afmObjects = Collections.synchronizedMap( new HashMap() );
+        cmapObjects = Collections.synchronizedMap( new HashMap<COSName, CMap>() );
+        afmObjects = Collections.synchronizedMap( new HashMap<COSName, FontMetric>() );
 
 
         afmResources.put( COSName.getPDFName( "Courier-Bold" ), "Resources/afm/Courier-Bold.afm" );
@@ -307,10 +307,10 @@ public abstract class PDFont implements COSObjectable
             }
             if( name != null )
             {
-            	afm = (FontMetric)afmObjects.get( name );
+            	afm = afmObjects.get( name );
                 if( afm == null )
                 {
-                    String resource = (String)afmResources.get( name );
+                    String resource = afmResources.get( name );
                     if( resource == null )
                     {
                         //ok for now
@@ -396,7 +396,7 @@ public abstract class PDFont implements COSObjectable
                              encoding instanceof COSName )
                     {
                         COSName encodingName = (COSName)encoding;
-                        cmap = (CMap)cmapObjects.get( encodingName );
+                        cmap = cmapObjects.get( encodingName );
                         if( cmap == null )
                         {
                             String cmapName = encodingName.getName();
