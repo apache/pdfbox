@@ -76,40 +76,46 @@ public class ICU4JImpl
      */
     public String normalizePres(String str)
     {
-        String retStr = "";
-        for (int i = 0; i < str.length(); i++) 
+        StringBuilder builder = null;
+        int p = 0;
+        int q = 0;
+        for (; q < str.length(); q++) 
         {
-            /* We only normalize if the codepoint is in a given range. Otherwise, 
-             * NFKC converts too many things that would cause confusion. For example,
-             * it converts the micro symbol in extended latin to the value in the greek
-             * script. We normalize the Unicode Alphabetic and Arabic A&B Presentation forms.
-             */
-            char c = str.charAt(i);
-            if (((c >= 0xFB00) && (c <= 0xFDFF)) ||
-                    ((c >= 0xFE70) && (c <= 0xFEFF)))
+            // We only normalize if the codepoint is in a given range.
+            // Otherwise, NFKC converts too many things that would cause
+            // confusion. For example, it converts the micro symbol in
+            // extended Latin to the value in the Greek script. We normalize
+            // the Unicode Alphabetic and Arabic A&B Presentation forms.
+            char c = str.charAt(q);
+            if ((0xFB00 <= c && c <= 0xFDFF) || (0xFE70 <= c && c <= 0xFEFF))
             {
-                /* Some fonts map U+FDF2 differently than the Unicode spec.
-                 * They add an extra U+0627 character to compensate.  
-                 * This removes the extra character for those fonts. */ 
-                if((c == 0xFDF2) && (i > 0) && ((str.charAt(i-1) == 0x0627) || (str.charAt(i-1) == 0xFE8D))) 
+                if (builder == null) {
+                    builder = new StringBuilder(str.length() * 2);
+                }
+                builder.append(str.substring(p, q));
+                // Some fonts map U+FDF2 differently than the Unicode spec.
+                // They add an extra U+0627 character to compensate.
+                // This removes the extra character for those fonts. 
+                if(c == 0xFDF2 && q > 0 && (str.charAt(q-1) == 0x0627 || str.charAt(q-1) == 0xFE8D))
                 {
-                    retStr += "\u0644\u0644\u0647";
+                    builder.append("\u0644\u0644\u0647");
                 }
                 else
                 {
-                    /*
-                     * Trim because some decompositions have an extra space, such as
-                     * U+FC5E
-                     */
-                    retStr += Normalizer.normalize(c, Normalizer.NFKC).trim(); 
+                    // Trim because some decompositions have an extra space,
+                    // such as U+FC5E
+                    builder.append(
+                            Normalizer.normalize(c, Normalizer.NFKC).trim());
                 }
-            }
-            else 
-            {
-                retStr += str.charAt(i);
+                p = q + 1;
             }
         }
-        return retStr;
+        if (builder == null) {
+            return str;
+        } else {
+            builder.append(str.substring(p, q));
+            return builder.toString();
+        }
     }
     
     /**
