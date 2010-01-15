@@ -17,6 +17,7 @@
 package org.apache.pdfbox.util;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import junit.framework.Test;
@@ -54,6 +55,21 @@ public class TestDateUtil extends TestCase
         assertEquals( DateConverter.toCalendar( "D:05/12/2005" ), new GregorianCalendar( 2005, 4, 12 ) );
         assertEquals( DateConverter.toCalendar( "5/12/2005 15:57:16" ), new GregorianCalendar( 2005, 4,12,15,57,16 ) );
     }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-598">PDFBOX-598</a>
+     */
+    public void testDateConversion() throws Exception { 
+        Calendar c = DateConverter.toCalendar("D:20050526205258+01'00'"); 
+        assertEquals(2005, c.get(Calendar.YEAR)); 
+        assertEquals(05-1, c.get(Calendar.MONTH)); 
+        assertEquals(26, c.get(Calendar.DAY_OF_MONTH)); 
+        assertEquals(20, c.get(Calendar.HOUR_OF_DAY)); 
+        assertEquals(52, c.get(Calendar.MINUTE)); 
+        assertEquals(58, c.get(Calendar.SECOND)); 
+        assertEquals(0, c.get(Calendar.MILLISECOND)); 
+    } 
 
     /**
      * Set the tests in the suite for this test class.
