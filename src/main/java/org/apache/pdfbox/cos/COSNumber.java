@@ -18,9 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * This class represents an abstract number in a PDF document.
  *
@@ -29,21 +26,32 @@ import java.util.Map;
  */
 public abstract class COSNumber extends COSBase
 {
+    
     /**
      * ZERO.
     */
     public static final COSInteger ZERO = new COSInteger( 0 );
+
     /**
      * ONE.
     */
     public static final COSInteger ONE = new COSInteger( 1 );
-    private static final Map COMMON_NUMBERS = new HashMap();
 
-    static
-    {
-        COMMON_NUMBERS.put( "0", ZERO );
-        COMMON_NUMBERS.put( "1", ONE );
-    }
+    /**
+     * Efficient lookup table for the ten decimal digits.
+     */
+    private static final COSInteger[] DIGITS = new COSInteger[] {
+        ZERO,
+        ONE,
+        new COSInteger(2),
+        new COSInteger(3),
+        new COSInteger(4),
+        new COSInteger(5),
+        new COSInteger(6),
+        new COSInteger(7),
+        new COSInteger(8),
+        new COSInteger(9),
+    };
 
     /**
      * This will get the float value of this number.
@@ -84,18 +92,17 @@ public abstract class COSNumber extends COSBase
      */
     public static COSNumber get( String number ) throws IOException
     {
-        COSNumber result = (COSNumber)COMMON_NUMBERS.get( number );
-        if( result == null )
-        {
-            if (number.indexOf('.') >= 0)
-            {
-                result = new COSFloat( number );
+        if (number.length() == 1) {
+            char digit = number.charAt(0);
+            if ('0' <= digit && digit <= '9') {
+                return DIGITS[digit - '0'];
+            } else {
+                throw new IOException("Not a number: " + number);
             }
-            else
-            {
-                result = new COSInteger( number );
-            }
+        } else if (number.indexOf('.') == -1) {
+            return new COSInteger(number);
+        } else {
+            return new COSFloat(number);
         }
-        return result;
     }
 }
