@@ -19,6 +19,7 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -355,7 +356,7 @@ public class PDFStreamEngine
         float maxVerticalDisplacementText = 0;
 
         float[] individualWidthsBuffer = new float[string.length];
-        StringBuffer characterBuffer = new StringBuffer(string.length);
+        StringBuilder characterBuffer = new StringBuilder(string.length);
 
         int codeLength = 1;
         for( int i=0; i<string.length; i+=codeLength )
@@ -451,13 +452,11 @@ public class PDFStreamEngine
             //glyphname that has no mapping like "visiblespace"
             if( c != null )
             {
-                // assume each character is the same size
-                float widthOfEachCharacterForCode = widthText/c.length();
-
-                for( int j=0; j<c.length(); j++)
-                {
-                    individualWidthsBuffer[characterBuffer.length() + j] = widthOfEachCharacterForCode;
-                }
+                Arrays.fill(
+                        individualWidthsBuffer,
+                        characterBuffer.length(),
+                        characterBuffer.length() + c.length(),
+                        widthText / c.length());
 
                 validCharCnt += c.length();
             }
