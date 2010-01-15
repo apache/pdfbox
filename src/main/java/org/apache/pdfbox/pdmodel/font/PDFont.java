@@ -368,11 +368,7 @@ public abstract class PDFont implements COSObjectable
     public String encode( byte[] c, int offset, int length ) throws IOException
     {
         String retval = null;
-        COSName fontSubtype = (COSName)font.getDictionaryObject( COSName.SUBTYPE );
-        String fontSubtypeName = fontSubtype.getName();
-        if( fontSubtypeName.equals( "Type0" ) ||
-            fontSubtypeName.equals( "Type1" ) ||
-            fontSubtypeName.equals( "TrueType" ))
+        if( isTypeFont() )
         {
             if( cmap == null )
             {
@@ -392,8 +388,7 @@ public abstract class PDFont implements COSObjectable
                         COSStream encodingStream = (COSStream)encoding;
                         parseCmap( null, encodingStream.getUnfilteredStream(), null );
                     }
-                    else if( fontSubtypeName.equals( "Type0" ) &&
-                             encoding instanceof COSName )
+                    else if( isType0Font() && encoding instanceof COSName )
                     {
                         COSName encodingName = (COSName)encoding;
                         cmap = cmapObjects.get( encodingName );
@@ -423,8 +418,7 @@ public abstract class PDFont implements COSObjectable
                     {
                         COSDictionary fontDescriptor =
                             (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
-                        if( fontSubtypeName.equals( "TrueType" ) &&
-                            fontDescriptor != null &&
+                        if( isTrueTypeFont() && fontDescriptor != null &&
                             (fontDescriptor.getDictionaryObject( COSName.FONT_FILE )!= null ||
                              fontDescriptor.getDictionaryObject( COSName.FONT_FILE2 ) != null ||
                              fontDescriptor.getDictionaryObject( COSName.FONT_FILE3 ) != null ) )
@@ -604,6 +598,12 @@ public abstract class PDFont implements COSObjectable
         return font.getNameAsString( COSName.TYPE );
     }
 
+    // Memorized values to avoid repeated dictionary lookups
+    private String subtype = null;
+    private boolean type0Font;
+    private boolean trueTypeFont;
+    private boolean typeFont;
+
     /**
      * This will get the subtype of font, Type1, Type3, ...
      *
@@ -611,7 +611,28 @@ public abstract class PDFont implements COSObjectable
      */
     public String getSubType()
     {
-        return font.getNameAsString( COSName.SUBTYPE );
+        if (subtype == null) {
+            subtype = font.getNameAsString( COSName.SUBTYPE );
+            type0Font = "Type0".equals(subtype);
+            trueTypeFont = "TrueType".equals(subtype);
+            typeFont = type0Font || "Type1".equals(subtype) || trueTypeFont;
+        }
+        return subtype;
+    }
+
+    private boolean isType0Font() {
+        getSubType();
+        return type0Font;
+    }
+
+    private boolean isTrueTypeFont() {
+        getSubType();
+        return trueTypeFont;
+    }
+
+    private boolean isTypeFont() {
+        getSubType();
+        return typeFont;
     }
 
     /**
