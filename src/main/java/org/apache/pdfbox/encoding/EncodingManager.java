@@ -31,7 +31,8 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class EncodingManager
 {
-    private static final Map ENCODINGS = new HashMap();
+    private static final Map<COSName, Encoding> ENCODINGS =
+        new HashMap<COSName, Encoding>();
 
     static
     {
@@ -48,7 +49,7 @@ public class EncodingManager
      */
     public Encoding getStandardEncoding()
     {
-        return (Encoding)ENCODINGS.get( COSName.STANDARD_ENCODING );
+        return ENCODINGS.get( COSName.STANDARD_ENCODING );
     }
 
     /**
@@ -62,7 +63,7 @@ public class EncodingManager
      */
     public Encoding getEncoding( COSName name ) throws IOException
     {
-        Encoding encoding = (Encoding)ENCODINGS.get( name );
+        Encoding encoding = ENCODINGS.get( name );
         if( encoding == null )
         {
             throw new IOException( "Unknown encoding for '" + name.getName() + "'" );
