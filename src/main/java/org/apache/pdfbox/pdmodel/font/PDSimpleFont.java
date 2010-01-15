@@ -46,7 +46,9 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public abstract class PDSimpleFont extends PDFont
 {
-    private HashMap mFontSizes = new HashMap(128);
+    private final HashMap<Integer, Float> mFontSizes =
+        new HashMap<Integer, Float>(128);
+
     private float avgFontWidth = 0.0f;
 
     /**
@@ -146,16 +148,9 @@ public abstract class PDSimpleFont extends PDFont
      */
     public float getFontWidth( byte[] c, int offset, int length ) throws IOException
     {
-        float fontWidth = 0;
         int code = getCodeFromArray( c, offset, length );
-
-        Integer codeI = new Integer(code);
-        if (mFontSizes.containsKey(codeI))
-        {
-            Float fontWidthF = (Float) mFontSizes.get(codeI);
-            fontWidth = fontWidthF.floatValue();
-        }
-        else
+        Float fontWidth = mFontSizes.get(code);
+        if (fontWidth == null)
         {
             //hmm should this be in a subclass??
             COSInteger firstChar = (COSInteger)font.getDictionaryObject( COSName.FIRST_CHAR );
@@ -179,7 +174,7 @@ public abstract class PDSimpleFont extends PDFont
             {
                 fontWidth = getFontWidthFromAFMFile( code );
             }
-            mFontSizes.put(codeI, new Float(fontWidth));
+            mFontSizes.put(code, fontWidth);
         }
         return fontWidth;
     }
