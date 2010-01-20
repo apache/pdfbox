@@ -18,29 +18,25 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
-import java.io.IOException;
-
 /**
- * This is implementation of the Type0 Font.
+ * This is implementation of the Type0 Font. Note that currently
+ * this class simply falls back to the Type1 font implementation
+ * when drawing text.
+ * See <a href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a>
+ * for the related improvement issue.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.9 $
  */
 public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDType0Font.class);
 
     private PDFont descendentFont;
     /**
@@ -68,9 +64,8 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
         throws IOException
     {
-        //throw new RuntimeException( "Not yet implemented" );
+        // TODO: PDFBOX-605: Better support for Type0 fonts 
         super.drawString(string, g, fontSize, at, x, y);
-        log.info("Called Type1Font.drawString since Type0 is not yet implemented");
     }
 
     /**
