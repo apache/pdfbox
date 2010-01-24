@@ -297,7 +297,8 @@ public class TestTextStripper extends TestCase
                     // PDFBOX-568: testextract failure on Linux and Mac OS X
                     // Don't flag a test failure that we already know about.
                     // TODO: Remove this check once PDFBOX-568 is fixed.
-                    if ("ample_fonts_solidconvertor.pdf".equals(inFile.getName())) {
+                    if (!"sample_fonts_solidconvertor.pdf".equals(inFile.getName())) 
+                    {
                         this.bFail = true;
                     }
 
