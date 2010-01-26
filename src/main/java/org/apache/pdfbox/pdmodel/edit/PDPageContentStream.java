@@ -68,8 +68,8 @@ public class PDPageContentStream
     private PDPage page;
     private OutputStream output;
     private boolean inTextMode = false;
-    private Map fontMappings = new HashMap();
-    private Map xobjectMappings = new HashMap();
+    private Map<PDFont,String> fontMappings = new HashMap<PDFont,String>();
+    private Map<PDXObject,String> xobjectMappings = new HashMap<PDXObject,String>();
     private PDResources resources;
     private Map fonts;
     private Map xobjects;
@@ -86,6 +86,7 @@ public class PDPageContentStream
     private static final String END_TEXT = "ET\n";
     private static final String SET_FONT = "Tf\n";
     private static final String MOVE_TEXT_POSITION = "Td\n";
+    private static final String SET_TEXT_MATRIX = "Tm\n";
     private static final String SHOW_TEXT = "Tj\n";
 
     private static final String SAVE_GRAPHICS_STATE = "q\n";
@@ -247,7 +248,7 @@ public class PDPageContentStream
      */
     public void setFont( PDFont font, float fontSize ) throws IOException
     {
-        String fontMapping = (String)fontMappings.get( font );
+        String fontMapping = fontMappings.get( font );
         if( fontMapping == null )
         {
             fontMapping = MapUtil.getNextUniqueKey( fonts, "F" );
@@ -299,7 +300,7 @@ public class PDPageContentStream
             xObjectPrefix = "Form";
         }
 
-        String objMapping = (String)xobjectMappings.get( xobject );
+        String objMapping = xobjectMappings.get( xobject );
         if( objMapping == null )
         {
             objMapping = MapUtil.getNextUniqueKey( xobjects, xObjectPrefix );
@@ -331,6 +332,7 @@ public class PDPageContentStream
 
     /**
      * The Td operator.
+     * A current text matrix will be replaced with a new one (1 0 0 1 x y). 
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @throws IOException If there is an error writing to the stream.
@@ -346,6 +348,79 @@ public class PDPageContentStream
         appendRawCommands( formatDecimal.format( y ) );
         appendRawCommands( SPACE );
         appendRawCommands( MOVE_TEXT_POSITION );
+    }
+
+    /**
+     * The Tm operator. Sets the text matrix to the given values.
+     * A current text matrix will be replaced with the new one. 
+     * @param a The a value of the matrix.
+     * @param b The b value of the matrix.
+     * @param c The c value of the matrix.
+     * @param d The d value of the matrix.
+     * @param e The e value of the matrix.
+     * @param f The f value of the matrix.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setTextMatrix( double a, double b, double c, double d, double e, double f ) throws IOException
+    {
+        if( !inTextMode )
+        {
+            throw new IOException( "Error: must call beginText() before setTextMatrix");
+        }
+        appendRawCommands( formatDecimal.format( a ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( b ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( c ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( d ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( e ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( f ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( SET_TEXT_MATRIX );
+    }
+
+    /**
+     * The Tm operator. Sets the text matrix to the given scaling and translation values.
+     * A current text matrix will be replaced with the new one. 
+     * @param sx The scaling factor in x-direction.
+     * @param sy The scaling factor in y-direction.
+     * @param tx The translation value in x-direction.
+     * @param ty The translation value in y-direction.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setTextScaling( double sx, double sy, double tx, double ty ) throws IOException
+    {
+        setTextMatrix(sx, 0, 0, sy, tx, ty);
+    }
+
+    /**
+     * The Tm operator. Sets the text matrix to the given translation values.
+     * A current text matrix will be replaced with the new one. 
+     * @param tx The translation value in x-direction.
+     * @param ty The translation value in y-direction.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setTextTranslation( double tx, double ty ) throws IOException
+    {
+        setTextMatrix(1, 0, 0, 1, tx, ty);
+    }
+
+    /**
+     * The Tm operator. Sets the text matrix to the given rotation and translation values.
+     * A current text matrix will be replaced with the new one. 
+     * @param angle The angle used for the counterclockwise rotation in radians.
+     * @param tx The translation value in x-direction.
+     * @param ty The translation value in y-direction.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setTextRotation( double angle, double tx, double ty ) throws IOException
+    {
+        double angleCos = Math.cos(angle);
+        double angleSin = Math.sin(angle);
+        setTextMatrix( angleCos, angleSin, -angleSin, angleCos, tx, ty);
     }
 
     /**
