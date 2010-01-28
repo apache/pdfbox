@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDURIDictionary;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDDocumentCatalogAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
@@ -484,13 +484,13 @@ public class PDDocumentCatalog implements COSObjectable
      * Document level information in the URI.
      * @return Document level URI.
      */
-    public PDActionURI getURI()
+    public PDURIDictionary getURI()
     {
-        PDActionURI retval = null;
+        PDURIDictionary retval = null;
         COSDictionary uri = (COSDictionary)root.getDictionaryObject( "URI" );
         if( uri != null )
         {
-            retval = new PDActionURI( uri );
+            retval = new PDURIDictionary( uri );
         }
         return retval;
     }
@@ -499,7 +499,7 @@ public class PDDocumentCatalog implements COSObjectable
      * Set the document level uri.
      * @param uri The new document level uri.
      */
-    public void setURI( PDActionURI uri )
+    public void setURI( PDURIDictionary uri )
     {
         root.setItem( "URI", uri );
     }
