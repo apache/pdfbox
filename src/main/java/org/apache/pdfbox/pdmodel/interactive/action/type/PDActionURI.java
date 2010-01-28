@@ -124,7 +124,7 @@ public class PDActionURI extends PDAction
      */
     public boolean shouldTrackMousePosition()
     {
-        return action.getBoolean( "MousePosition", true );
+        return this.action.getBoolean("IsMap", false);
     }
 
     /**
@@ -134,9 +134,10 @@ public class PDActionURI extends PDAction
      */
     public void setTrackMousePosition( boolean value )
     {
-        action.setBoolean( "MousePosition", value );
+        this.action.setBoolean("IsMap", value);
     }
 
+    // TODO this must go into PDURIDictionary
     /**
      * This will get the base URI to be used in resolving relative URI references.
      * URI actions within the document may specify URIs in partial form, to be interpreted
@@ -146,12 +147,14 @@ public class PDActionURI extends PDAction
      * in the HTML 4.01 Specification.
      *
      * @return The URI entry of the specific URI dictionary.
+     * @deprecated use {@link PDURIDictionary#getBase()} instead
      */
     public String getBase()
     {
         return action.getString( "Base" );
     }
 
+    // TODO this must go into PDURIDictionary
     /**
      * This will set the base URI to be used in resolving relative URI references.
      * URI actions within the document may specify URIs in partial form, to be interpreted
@@ -161,6 +164,7 @@ public class PDActionURI extends PDAction
      * in the HTML 4.01 Specification.
      *
      * @param base The the base URI to be used.
+     * @deprecated use {@link PDURIDictionary#setBase(String)} instead
      */
     public void setBase( String base )
     {
