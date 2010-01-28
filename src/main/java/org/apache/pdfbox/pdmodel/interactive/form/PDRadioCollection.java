@@ -92,14 +92,18 @@ public class PDRadioCollection extends PDChoiceButton
         List kids = getKids();
         for (int i = 0; i < kids.size(); i++)
         {
-            PDCheckbox btn = (PDCheckbox)kids.get(i);
-            if( btn.getOnValue().equals(value) )
+            PDField field = (PDField)kids.get(i);
+            if ( field instanceof PDCheckbox )
             {
-                btn.check();
-            }
-            else
-            {
-                btn.unCheck();
+                PDCheckbox btn = (PDCheckbox)field;
+                if( btn.getOnValue().equals(value) )
+                {
+                    btn.check();
+                }
+                else
+                {
+                    btn.unCheck();
+                }
             }
         }
     }
@@ -117,10 +121,14 @@ public class PDRadioCollection extends PDChoiceButton
         List kids = getKids();
         for (int i = 0; i < kids.size(); i++)
         {
-            PDCheckbox btn = (PDCheckbox)kids.get(i);
-            if( btn.isChecked() )
+            PDField kid = (PDField)kids.get(i);
+            if ( kid instanceof PDCheckbox )
             {
-                retval = btn.getOnValue();
+                PDCheckbox btn = (PDCheckbox)kid;
+                if( btn.isChecked() )
+                {
+                    retval = btn.getOnValue();
+                }
             }
         }
         if( retval == null )
@@ -138,6 +146,7 @@ public class PDRadioCollection extends PDChoiceButton
      * @return A list of PDWidget objects.
      * @throws IOException if there is an error while creating the children objects.
      */
+    @SuppressWarnings("unchecked")
     public List getKids() throws IOException
     {
         List retval = null;
