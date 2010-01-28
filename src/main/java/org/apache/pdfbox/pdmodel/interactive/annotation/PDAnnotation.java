@@ -573,7 +573,7 @@ public abstract class PDAnnotation implements COSObjectable
      *
      * @return the border style dictionary.
      */
-    public PDBorderStyleDictionary getBoderStyle()
+    public PDBorderStyleDictionary getBorderStyle()
     {
         COSDictionary bs = (COSDictionary) getDictionary().getItem(
                 COSName.getPDFName( "BS" ) );
