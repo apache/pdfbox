@@ -149,8 +149,9 @@ public class PDAppearanceDictionary implements COSObjectable
         {
             if( ap instanceof COSStream )
             {
+                COSStream aux = (COSStream) ap;
                 ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), ap );
+                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
             }
             COSDictionary map = (COSDictionary)ap;
             Map actuals = new HashMap();
@@ -199,8 +200,9 @@ public class PDAppearanceDictionary implements COSObjectable
         {
             if( ap instanceof COSStream )
             {
+                COSStream aux = (COSStream) ap;
                 ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), ap );
+                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
             }
             COSDictionary map = (COSDictionary)ap;
             Map actuals = new HashMap();
