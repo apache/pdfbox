@@ -41,12 +41,6 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE_CIRCLE = "Circle";
 
-    private PDAnnotationSquareCircle()
-    {
-        // Must be constructed with a subType or dictionary parameter
-    }
-
-
     /**
      * Creates a Circle or Square annotation of the specified sub type.
      *
@@ -192,6 +186,40 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     public String getSubtype()
     {
         return getDictionary().getNameAsString( COSName.SUBTYPE);
+    }
+
+    /**
+     * This will set the border style dictionary, specifying the width and dash
+     * pattern used in drawing the line.
+     *
+     * @param bs the border style dictionary to set.
+     * TODO not all annotations may have a BS entry
+     *
+     */
+    public void setBorderStyle( PDBorderStyleDictionary bs )
+    {
+        this.getDictionary().setItem( "BS", bs);
+    }
+
+    /**
+     * This will retrieve the border style dictionary, specifying the width and
+     * dash pattern used in drawing the line.
+     *
+     * @return the border style dictionary.
+     * TODO not all annotations may have a BS entry
+     */
+    public PDBorderStyleDictionary getBorderStyle()
+    {
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
+                COSName.getPDFName( "BS" ) );
+        if (bs != null)
+        {
+            return new PDBorderStyleDictionary( bs );
+        }
+        else
+        {
+            return null;
+        }
     }
 
 }

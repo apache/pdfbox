@@ -36,8 +36,8 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
 {
 
     /*
-     * The various values of the reply type as defined in the PDF 1.6 reference
-     * Table 8.17
+     * The various values of the reply type as defined in the PDF 1.7 reference
+     * Table 170
      */
 
     /**
@@ -217,8 +217,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
      * This will set the annotation to which this one is "In Reply To" the
      * actual relationship is specified by the RT entry.
      *
-     * @param irt
-     *            the annotation this one is "In Reply To".
+     * @param irt the annotation this one is "In Reply To".
      */
     public void setInReplyTo( PDAnnotation irt )
     {
@@ -238,8 +237,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
     /**
      * This will set the short description of the subject of the annotation.
      *
-     * @param subj
-     *            short description of the subject.
+     * @param subj short description of the subject.
      */
     public void setSubject( String subj )
     {
@@ -261,8 +259,7 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
      * This will set the Reply Type (relationship) with the annotation in the
      * IRT entry See the RT_* constants for the available values.
      *
-     * @param rt
-     *            the reply type.
+     * @param rt the reply type.
      */
     public void setReplyType( String rt )
     {
@@ -286,12 +283,36 @@ public abstract class PDAnnotationMarkup extends PDAnnotation
      * specific to the actual annotation See the IT_* constants for the
      * annotation classes.
      *
-     * @param it
-     *            the intent
+     * @param it the intent
      */
     public void setIntent( String it )
     {
         getDictionary().setName( "IT", it );
+    }
+
+    /**
+     * This will return the external data dictionary.
+     * 
+     * @return the external data dictionary
+     */
+    public PDExternalDataDictionary getExternalData()
+    {
+        COSBase exData = this.getDictionary().getDictionaryObject("ExData");
+        if (exData instanceof COSDictionary)
+        {
+            return new PDExternalDataDictionary((COSDictionary) exData);
+        }
+        return null;
+    }
+
+    /**
+     * This will set the external data dictionary.
+     * 
+     * @param externalData the external data dictionary
+     */
+    public void setExternalData(PDExternalDataDictionary externalData)
+    {
+        this.getDictionary().setItem("ExData", externalData);
     }
 
 }

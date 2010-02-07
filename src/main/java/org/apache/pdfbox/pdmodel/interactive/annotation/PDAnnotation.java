@@ -22,12 +22,10 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
-import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalActions;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.util.BitFlagHelper;
 import org.apache.pdfbox.cos.COSBase;
 
@@ -87,6 +85,8 @@ public abstract class PDAnnotation implements COSObjectable
      * @return The correctly typed annotation object.
      * @throws IOException If there is an error while creating the annotation.
      */
+    // TODO not yet implemented: FreeText, Polygon, PolyLine, Caret, Ink, Sound, 
+    // Movie, Screen, PrinterMark, TrapNet, Watermark, 3D, Redact
     public static PDAnnotation createAnnotation( COSBase base ) throws IOException
     {
         PDAnnotation annot = null;
@@ -484,58 +484,6 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * Get the action to be performed when this annotation is to be activated.
-     *
-     * @return The action to be performed when this annotation is activated.
-     *
-     * @throws IOException If there is an error creating the action.
-     */
-    public PDAction getAction() throws IOException
-    {
-        COSDictionary action = (COSDictionary)
-            getDictionary().getDictionaryObject( COSName.A );
-        return PDActionFactory.createAction( action );
-    }
-
-    /**
-     * Set the annotation action.
-     * As of PDF 1.6 this is only used for Widget Annotations
-     * @param action The annotation action.
-     */
-    public void setAction( PDAction action )
-    {
-        getDictionary().setItem( COSName.A, action );
-    }
-
-    /**
-     * Get the additional actions for this field.  This will return null
-     * if there are no additional actions for this field.
-     * As of PDF 1.6 this is only used for Widget Annotations.
-     *
-     * @return The actions of the field.
-     */
-    public PDAnnotationAdditionalActions getActions()
-    {
-        COSDictionary aa = (COSDictionary)dictionary.getDictionaryObject( "AA" );
-        PDAnnotationAdditionalActions retval = null;
-        if( aa != null )
-        {
-            retval = new PDAnnotationAdditionalActions( aa );
-        }
-        return retval;
-    }
-
-    /**
-     * Set the actions of the field.
-     *
-     * @param actions The field actions.
-     */
-    public void setActions( PDAnnotationAdditionalActions actions )
-    {
-        dictionary.setItem( "AA", actions );
-    }
-
-    /**
      * Get the "contents" of the field.
      *
      * @return the value of the contents.
@@ -553,38 +501,6 @@ public abstract class PDAnnotation implements COSObjectable
     public void setContents( String value)
     {
         dictionary.setString(COSName.CONTENTS, value);
-    }
-
-    /**
-     * This will set the border style dictionary, specifying the width and dash
-     * pattern used in drawing the line.
-     *
-     * @param bs the border style dictionary to set.
-     *
-     */
-    public void setBorderStyle( PDBorderStyleDictionary bs )
-    {
-        getDictionary().setItem( "BS", bs);
-    }
-
-    /**
-     * This will retrieve the border style dictionary, specifying the width and
-     * dash pattern used in drawing the line.
-     *
-     * @return the border style dictionary.
-     */
-    public PDBorderStyleDictionary getBorderStyle()
-    {
-        COSDictionary bs = (COSDictionary) getDictionary().getItem(
-                COSName.getPDFName( "BS" ) );
-        if (bs != null)
-        {
-            return new PDBorderStyleDictionary( bs );
-        }
-        else
-        {
-            return null;
-        }
     }
 
     /**
@@ -609,11 +525,11 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will get the name, a string intended to uniquely identify each annotatoin
+     * This will get the name, a string intended to uniquely identify each annotation
      * within a page. Not to be confused with some annotations Name entry which
      * impact the default image drawn for them.
      *
-     * @return The identifying name for the Annotion.
+     * @return The identifying name for the Annotation.
      */
     public String getAnnotationName()
     {
@@ -621,7 +537,7 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will set the name, a string intended to uniquely identify each annotatoin
+     * This will set the name, a string intended to uniquely identify each annotation
      * within a page. Not to be confused with some annotations Name entry which
      * impact the default image drawn for them.
      *
@@ -672,4 +588,30 @@ public abstract class PDAnnotation implements COSObjectable
             return null;
         }
     }
+
+    /** 
+     * This will retrieve the subtype of the annotation.
+     * 
+     * @return the subtype
+     */
+    public String getSubtype()
+    {
+        return this.getDictionary().getNameAsString(COSName.SUBTYPE);
+    }
+
+    /**
+     * This will retrieve the corresponding page of this annotation.
+     * 
+     * @return the corresponding page
+     */
+    public PDPage getPage()
+    {
+        COSDictionary p = (COSDictionary) this.getDictionary().getDictionaryObject(COSName.P);
+        if (p != null)
+        {
+            return new PDPage(p);
+        }
+        return null;
+    }
+
 }

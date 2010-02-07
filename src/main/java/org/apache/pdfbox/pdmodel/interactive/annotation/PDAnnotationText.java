@@ -29,8 +29,8 @@ public class PDAnnotationText extends PDAnnotationMarkup
 {
 
     /*
-     * The various values of the Text as defined in the PDF 1.6 reference Table
-     * 8.19
+     * The various values of the Text as defined in the PDF 1.7 reference Table
+     * 172
      */
 
     /**
@@ -88,7 +88,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * object definition.
      *
      * @param field
-     *            the PDF objet to represent as a field.
+     *            the PDF object to represent as a field.
      */
     public PDAnnotationText( COSDictionary field )
     {
@@ -96,7 +96,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     }
 
     /**
-     * This will set inital state of the annotation, open or closed.
+     * This will set initial state of the annotation, open or closed.
      *
      * @param open
      *            Boolean value, true = open false = closed
@@ -138,6 +138,47 @@ public class PDAnnotationText extends PDAnnotationMarkup
     public String getName()
     {
         return getDictionary().getNameAsString( COSName.NAME, NAME_NOTE );
+    }
+
+    /**
+     * This will retrieve the annotation state.
+     * 
+     * @return the annotation state
+     */
+    public String getState()
+    {
+        return this.getDictionary().getString("State");
+    }
+
+    /**
+     * This will set the annotation state.
+     * 
+     * @param state the annotation state 
+     */
+    public void setState(String state)
+    {
+        this.getDictionary().setString("State", state);
+    }
+
+    /**
+     * This will retrieve the annotation state model.
+     * 
+     * @return the annotation state model
+     */
+    public String getStateModel()
+    {
+        return this.getDictionary().getString("StateModel");
+    }
+
+    /**
+     * This will set the annotation state model.
+     * Allowed values are "Marked" and "Review"
+     * 
+     * @param stateModel the annotation state model
+     */
+    public void setStateModel(String stateModel)
+    {
+        this.getDictionary().setString("StateModel", stateModel);
     }
 
 }

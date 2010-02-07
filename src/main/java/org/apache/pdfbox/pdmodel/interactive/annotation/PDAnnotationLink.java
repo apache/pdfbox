@@ -22,6 +22,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 
@@ -77,6 +79,66 @@ public class PDAnnotationLink extends PDAnnotation
     public PDAnnotationLink(COSDictionary field)
     {
         super( field );
+    }
+
+    /**
+     * Get the action to be performed when this annotation is to be activated.
+     *
+     * @return The action to be performed when this annotation is activated.
+     *
+     * @throws IOException If there is an error creating the action.
+     * TODO not all annotations have an A entry
+     */
+    public PDAction getAction() throws IOException
+    {
+        COSDictionary action = (COSDictionary)
+            this.getDictionary().getDictionaryObject( COSName.A );
+        return PDActionFactory.createAction( action );
+    }
+
+    /**
+     * Set the annotation action.
+     * As of PDF 1.6 this is only used for Widget Annotations
+     * @param action The annotation action.
+     * TODO not all annotations have an A entry
+     */
+    public void setAction( PDAction action )
+    {
+        this.getDictionary().setItem( COSName.A, action );
+    }
+
+    /**
+     * This will set the border style dictionary, specifying the width and dash
+     * pattern used in drawing the line.
+     *
+     * @param bs the border style dictionary to set.
+     * TODO not all annotations may have a BS entry
+     *
+     */
+    public void setBorderStyle( PDBorderStyleDictionary bs )
+    {
+        this.getDictionary().setItem( "BS", bs);
+    }
+
+    /**
+     * This will retrieve the border style dictionary, specifying the width and
+     * dash pattern used in drawing the line.
+     *
+     * @return the border style dictionary.
+     * TODO not all annotations may have a BS entry
+     */
+    public PDBorderStyleDictionary getBorderStyle()
+    {
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
+                COSName.getPDFName( "BS" ) );
+        if (bs != null)
+        {
+            return new PDBorderStyleDictionary( bs );
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
