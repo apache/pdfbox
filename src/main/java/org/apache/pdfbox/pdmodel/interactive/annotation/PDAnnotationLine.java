@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 
@@ -124,7 +125,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      * object definition.
      *
      * @param field
-     *            the PDF objet to represent as a field.
+     *            the PDF object to represent as a field.
      */
     public PDAnnotationLine( COSDictionary field )
     {
@@ -301,6 +302,192 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public boolean getCaption()
     {
         return getDictionary().getBoolean( "Cap", false );
+    }
+
+    /**
+     * This will set the border style dictionary, specifying the width and dash
+     * pattern used in drawing the line.
+     *
+     * @param bs the border style dictionary to set.
+     *
+     */
+    public void setBorderStyle( PDBorderStyleDictionary bs )
+    {
+        this.getDictionary().setItem( "BS", bs);
+    }
+
+    /**
+     * This will retrieve the border style dictionary, specifying the width and
+     * dash pattern used in drawing the line.
+     *
+     * @return the border style dictionary.
+     */
+    public PDBorderStyleDictionary getBorderStyle()
+    {
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
+                COSName.getPDFName( "BS" ) );
+        if (bs != null)
+        {
+            return new PDBorderStyleDictionary( bs );
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * This will retrieve the length of the leader line.
+     * 
+     * @return the length of the leader line
+     */
+    public float getLeaderLineLength()
+    {
+        return this.getDictionary().getFloat("LL");
+    }
+
+    /**
+     * This will set the length of the leader line.
+     * 
+     * @param leaderLineLength length of the leader line
+     */
+    public void setLeaderLineLength(float leaderLineLength)
+    {
+        this.getDictionary().setFloat("LL", leaderLineLength);
+    }
+
+    /**
+     * This will retrieve the length of the leader line extensions.
+     * 
+     * @return the length of the leader line extensions
+     */
+    public float getLeaderLineExtensionLength()
+    {
+        return this.getDictionary().getFloat("LLE");
+    }
+
+    /**
+     * This will set the length of the leader line extensions.
+     * 
+     * @param leaderLineExtensionLength length of the leader line extensions
+     */
+    public void setLeaderLineExtensionLength(float leaderLineExtensionLength)
+    {
+        this.getDictionary().setFloat("LLE", leaderLineExtensionLength);
+    }
+
+    /**
+     * This will retrieve the length of the leader line offset.
+     * 
+     * @return the length of the leader line offset
+     */
+    public float getLeaderLineOffsetLength()
+    {
+        return this.getDictionary().getFloat("LLO");
+    }
+
+    /**
+     * This will set the length of the leader line offset.
+     * 
+     * @param leaderLineOffsetLength length of the leader line offset
+     */
+    public void setLeaderLineOffsetLength(float leaderLineOffsetLength)
+    {
+        this.getDictionary().setFloat("LLO", leaderLineOffsetLength);
+    }
+
+    /**
+     * This will retrieve the caption positioning.
+     * 
+     * @return the caption positioning
+     */
+    public String getCaptionPositioning()
+    {
+        return this.getDictionary().getString("CP");
+    }
+
+    /**
+     * This will set the caption positioning.
+     * Allowed values are: "Inline" and "Top"
+     * 
+     * @param captionPositioning caption positioning
+     */
+    public void setCaptionPositioning(String captionPositioning)
+    {
+        this.getDictionary().setString("CP", captionPositioning);
+    }
+
+    /**
+     * This will set the horizontal offset of the caption.
+     * 
+     * @param offset the horizontal offset of the caption
+     */
+    public void setCaptionHorizontalOffset( float offset )
+    {
+        COSArray array = (COSArray)this.getDictionary().getDictionaryObject( "CO" );
+        if( array == null )
+        {
+            array = new COSArray();
+            array.setFloatArray(new float[] {offset, 0.f});
+            this.getDictionary().setItem( "CO", array );
+        }
+        else
+        {
+            array.set(0, new COSFloat(offset) );
+        }
+    }
+
+    /**
+     * This will retrieve the horizontal offset of the caption.
+     * 
+     * @return the the horizontal offset of the caption
+     */
+    public float getCaptionHorizontalOffset()
+    {
+        float retval = 0.f;
+        COSArray array = (COSArray)this.getDictionary().getDictionaryObject( "CO" );
+        if( array != null )
+        {
+            retval = array.toFloatArray()[0];
+        }
+
+        return retval;
+    }
+
+    /**
+     * This will set the vertical offset of the caption.
+     * 
+     * @param offset vertical offset of the caption
+     */
+    public void setCaptionVerticalOffset( float offset )
+    {
+        COSArray array = (COSArray)this.getDictionary().getDictionaryObject( "CO" );
+        if( array == null )
+        {
+            array = new COSArray();
+            array.setFloatArray(new float[] {0.f, offset});
+            this.getDictionary().setItem( "CO", array );
+        }
+        else
+        {
+            array.set(1, new COSFloat(offset) );
+        }
+    }
+
+    /**
+     * This will retrieve the vertical offset of the caption.
+     * 
+     * @return the vertical offset of the caption
+     */
+    public float getCaptionVerticalOffset()
+    {
+        float retval = 0.f;
+        COSArray array = (COSArray)this.getDictionary().getDictionaryObject( "CO" );
+        if( array != null )
+        {
+            retval = array.toFloatArray()[1];
+        }
+        return retval;
     }
 
 }

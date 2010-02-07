@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class PDAnnotationFileAttachment extends PDAnnotation
+public class PDAnnotationFileAttachment extends PDAnnotationMarkup
 {
     /**
      * See get/setAttachmentName.
