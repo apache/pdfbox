@@ -25,9 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
+import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
 
 /**
  * This class represents a Separation color space.
@@ -102,13 +104,7 @@ public class PDSeparation extends PDColorSpace
     {
         try
         {
-            ///dump some information to help figure these things out
-            //logger().info( array.toString());
-
             PDColorSpace alt = getAlternateColorSpace();
-
-            //logger().info(alt.toString());
-
             return alt.getJavaColorSpace();
         }
         catch (IOException ioexception)
@@ -171,9 +167,6 @@ public class PDSeparation extends PDColorSpace
     {
         COSBase alternate = array.getObject( 2 );
         PDColorSpace cs = PDColorSpaceFactory.createColorSpace( alternate );
-
-        //logger().info("Returning " + cs.toString() + " for input " + alternate.toString());
-
         return cs;
     }
 
@@ -227,12 +220,33 @@ public class PDSeparation extends PDColorSpace
     }
     
     /**
-     * Returns all colorvalues for this colorspace. 
-     * @return COSArry with all colorvalues
-     * @throws IOException If there is an error getting the object from the dictionary
+     * Returns the components of the color in the alternate colorspace for a tint value of 1.0.
+     * @return COSArray with the color components
+     * @throws IOException If the tint function is not supported
      */
     public COSArray getColorValues() throws IOException
     {
-        return (COSArray) getDictionary().getDictionaryObject("C1");
+        PDFunction tintTransform = getTintTransform();
+        if(tintTransform instanceof PDFunctionType2)
+        {
+            return (COSArray) getDictionary().getDictionaryObject("C1");
+        }
+        else
+        {
+            log.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
+                    + " in "+getClass().getName()+".getColorValues()"
+                    + " using color black instead.");
+            int numberOfComponents = getAlternateColorSpace().getNumberOfComponents();
+            // To get black as color:
+            // 0.0f is used for the single value(s) if the colorspace is gray or RGB based
+            // 1.0f is used for the single value if the colorspace is CMYK based
+            float colorValue = numberOfComponents == 4 ? 1.0f : 0.0f;
+            COSArray retval = new COSArray();
+            for (int i=0;i<numberOfComponents;i++) 
+            {
+                retval.add(new COSFloat(colorValue));
+            }
+            return retval;
+        }
     }
 }
