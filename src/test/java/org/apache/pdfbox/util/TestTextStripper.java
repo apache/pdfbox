@@ -18,7 +18,6 @@ package org.apache.pdfbox.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,13 +25,14 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 
@@ -85,9 +85,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public class TestTextStripper extends TestCase
 {
+
+    /**
+     * Logger instance.
+     */
+    private static final Log log = LogFactory.getLog(TestTextStripper.class);
+
     private boolean bFail = false;
     private PDFTextStripper stripper = null;
-    private PrintWriter log = null;
     private final String encoding = "UTF-16LE";
 
     /**
@@ -144,7 +149,7 @@ public class TestTextStripper extends TestCase
                 if( expectedArray[expectedIndex] != actualArray[actualIndex] )
                 {
                     equals = false;
-                    log.println("Lines differ at index"
+                    log.warn("Lines differ at index"
                      + " expected:" + expectedIndex + "-" + (int)expectedArray[expectedIndex]
                      + " actual:" + actualIndex + "-" + (int)actualArray[actualIndex] );
                     break;
@@ -159,12 +164,12 @@ public class TestTextStripper extends TestCase
                 if( expectedIndex != expectedArray.length )
                 {
                     equals = false;
-                    log.println("Expected line is longer at:" + expectedIndex );
+                    log.warn("Expected line is longer at:" + expectedIndex );
                 }
                 if( actualIndex != actualArray.length )
                 {
                     equals = false;
-                    log.println("Actual line is longer at:" + actualIndex );
+                    log.warn("Actual line is longer at:" + actualIndex );
                 }
             }
         }
@@ -216,11 +221,11 @@ public class TestTextStripper extends TestCase
     {
         if(bSort)
         {
-            log.println("Preparing to parse " + inFile.getName() + " for sorted test");
+            log.info("Preparing to parse " + inFile.getName() + " for sorted test");
         }
         else
         {
-            log.println("Preparing to parse " + inFile.getName() + " for standard test");
+            log.info("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
         OutputStream os = null;
@@ -263,13 +268,14 @@ public class TestTextStripper extends TestCase
 
             if (bLogResult)
             {
-                log.println("Text for " + inFile.getName() + ":\r\n" + stripper.getText(document));
+                log.info("Text for " + inFile.getName() + ":");
+                log.info(stripper.getText(document));
             }
 
             if (!expectedFile.exists())
             {
                 this.bFail = true;
-                log.println(
+                log.error(
                         "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
                 " did not exist");
                 return;
@@ -302,11 +308,11 @@ public class TestTextStripper extends TestCase
                         this.bFail = true;
                     }
 
-                    log.println("FAILURE: Line mismatch for file " + inFile.getName() +
+                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
                             " at expected line: " + expectedReader.getLineNumber() +
-                            " at actual line: " + actualReader.getLineNumber() +
-                            "\r\n  expected line was: \"" + expectedLine + "\"" +
-                            "\r\n  actual line was:   \"" + actualLine + "\"");
+                            " at actual line: " + actualReader.getLineNumber());
+                    log.error("  expected line was: \"" + expectedLine + "\"");
+                    log.error("  actual line was:   \"" + actualLine + "\"");
 
                     //lets report all lines, even though this might produce some verbose logging
                     //break;
@@ -372,10 +378,6 @@ public class TestTextStripper extends TestCase
         File outDir = new File("test/output");
         File inDirExt = new File("test/input-ext");
         File outDirExt = new File("test/output-ext");
-        
-        try
-        {
-            log = new PrintWriter( new FileWriter( "textextract.log" ) );
 
             if ((filename == null) || (filename.length() == 0)) 
             {
@@ -397,14 +399,6 @@ public class TestTextStripper extends TestCase
             {
                 fail("One or more failures, see test log for details");
             }
-        }
-        finally
-        {
-            if( log != null )
-            {
-                log.close();
-            }
-        }
     }
 
     /**

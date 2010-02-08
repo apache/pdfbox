@@ -18,15 +18,15 @@ package org.apache.pdfbox.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -56,9 +56,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public class TestPDFToImage extends TestCase
 {
+
+    /**
+     * Logger instance.
+     */
+    private static final Log log = LogFactory.getLog(TestPDFToImage.class);
+
     private boolean bFail = false;
     private PDFImageWriter writer = null;
-    private PrintWriter log = null;
     private File mcurFile = null;
 
     /**
@@ -99,8 +104,7 @@ public class TestPDFToImage extends TestCase
     {
         PDDocument document = null;
 
-        log.println("\nPreparing to convert " + file.getName());
-        log.flush();
+        log.info("Preparing to convert " + file.getName());
         try
         {
             document =  PDDocument.load(file);
@@ -109,10 +113,7 @@ public class TestPDFToImage extends TestCase
         catch(Exception e)
         { 
             this.bFail=true;
-            System.err.println("Error converting file " + file.getName());
-            e.printStackTrace();
-            log.println("Error converting file " + file.getName() + "\n" + e);
-
+            log.error("Error converting file " + file.getName(), e);
         }
         finally
         {
@@ -138,15 +139,14 @@ public class TestPDFToImage extends TestCase
                         !filesAreIdentical(outFiles[n], inFile))
                     {
                         this.bFail=true;
-                        log.println("Input and output not identical for file: " + inFile.getName());
+                        log.info("Input and output not identical for file: " + inFile.getName());
                     }
                 }
         }
         catch(Exception e)
         {
             this.bFail=true;
-            System.err.println("Error comparing file output for " + file.getName());
-            e.printStackTrace();
+            log.error("Error comparing file output for " + file.getName(), e);
         }
 
     }
@@ -164,10 +164,6 @@ public class TestPDFToImage extends TestCase
         String outDir = new String("test/output/rendering/");
         String inDirExt = new String("test/input-ext/rendering/");
         String outDirExt = new String("test/output-ext/rendering/");
-
-        try
-        {
-            log = new PrintWriter( new FileWriter( "RenderImage.log" ) );
 
             if ((filename == null) || (filename.length() == 0))
             {
@@ -207,14 +203,6 @@ public class TestPDFToImage extends TestCase
             {
                 fail("One or more failures, see test log for details");
             }
-        }
-        finally
-        {
-            if( log != null )
-            {
-                log.close();
-            }
-        }
     }
 
     /**
