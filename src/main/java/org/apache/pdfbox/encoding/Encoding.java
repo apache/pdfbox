@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -158,6 +159,24 @@ public abstract class Encoding implements COSObjectable
 
             }
         }
+    }
+
+    /**
+     * Returns an unmodifiable view of the Code2Name mapping.
+     * @return the Code2Name map 
+     */
+    public Map<Integer, COSName> getCodeToNameMap()
+    {
+        return Collections.unmodifiableMap(codeToName);
+    }
+      
+    /**
+     * Returns an unmodifiable view of the Name2Code mapping.
+     * @return the Name2Code map 
+     */
+    public Map<COSName, Integer> getNameToCodeMap()
+    {
+        return Collections.unmodifiableMap(nameToCode);
     }
 
     /**
