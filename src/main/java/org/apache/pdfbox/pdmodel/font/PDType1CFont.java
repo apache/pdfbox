@@ -58,6 +58,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -519,7 +520,7 @@ public class PDType1CFont extends PDSimpleFont
         }
         catch( FontFormatException ffe )
         {
-            throw new IOException(ffe);
+            throw new WrappedIOException(ffe);
         }
         finally
         {
