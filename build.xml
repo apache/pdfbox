@@ -26,7 +26,7 @@
     <property name="target.dir" value="target" />
     <property name="dest.dir" value="${target.dir}/classes" />
     <property name="test.dir" value="src/test/java" />
-    <property name="testfiles.dir" value="test" />
+    <property name="testfiles.dir" value="src/test/resources" />
     <property name="bin.dir" value="bin" />
     <property name="website.dir" value="website" />
     <property name="website.build.dir" value="${website.dir}/build/site" />
@@ -91,8 +91,9 @@
     <property name="antlr.url" value="${maven.repo2}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
     <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
-    <property name="testoutput.dir" value="${testfiles.dir}/output"/>
-    <property name="testoutput-ext.dir" value="${testfiles.dir}/output-ext"/>
+    <property name="testoutput.dir" value="${target.dir}/test-output"/>
+    <property name="testoutput-ext.dir" value="${target.dir}/test-output-ext"/>
+    <property name="testinput-ext.dir" value="${target.dir}/test-input-ext"/>
     <property name="jiraattachment.url" value="http://issues.apache.org/jira/secure/attachment"/>
     <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
     <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
@@ -227,13 +228,13 @@
 
     <target name="find.testfiles">
         <available property="testfiles.found"
-                   file="${testfiles.dir}/input-ext"
+                   file="${testinput-ext.dir}"
                    type="dir"/>
     </target>
 
-	<target name="get.testfiles" 
-		unless="testfiles.found" depends="find.testfiles" 
-		description="Download additional testfiles without suitable license to add them to svn">
+    <target name="get.testfiles" 
+            unless="testfiles.found" depends="find.testfiles" 
+            description="Download additional testfiles without suitable license to add them to svn">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${testfiles1.url}"/>
             <param name="destfile" value="${testfiles1.jar}"/>
@@ -254,14 +255,14 @@
             <param name="sourcefile" value="${testfiles.encryption.url}"/>
             <param name="destfile" value="${testfiles.encryption.jar}"/>
         </antcall>
-		<unjar src="${testfiles1.jar}" dest="${testfiles.dir}/input-ext"/>
-		<unjar src="${testfiles2.jar}" dest="${testfiles.dir}/input-ext"/>
-		<unjar src="${testfiles3.jar}" dest="${testfiles.dir}/input-ext"/>
-		<unjar src="${testfiles.rendering.jar}" dest="${testfiles.dir}/input-ext"/>
-		<unjar src="${testfiles.encryption.jar}" dest="${testfiles.dir}/input-ext"/>
-	</target>
+        <unjar src="${testfiles1.jar}" dest="${testinput-ext.dir}"/>
+        <unjar src="${testfiles2.jar}" dest="${testinput-ext.dir}"/>
+        <unjar src="${testfiles3.jar}" dest="${testinput-ext.dir}"/>
+        <unjar src="${testfiles.rendering.jar}" dest="${testinput-ext.dir}"/>
+        <unjar src="${testfiles.encryption.jar}" dest="${testinput-ext.dir}"/>
+    </target>
 
-	<target name="testextract" depends="clean,compile" description="Test text extraction">
+    <target name="testextract" depends="clean,compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>

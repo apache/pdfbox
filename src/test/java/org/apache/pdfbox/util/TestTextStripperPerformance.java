@@ -107,7 +107,7 @@ public class TestTextStripperPerformance extends TestCase
         throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        File testDir = new File("test/input");
+        File testDir = new File("src/test/resources/input");
 
         if ((filename == null) || (filename.length() == 0))
         {

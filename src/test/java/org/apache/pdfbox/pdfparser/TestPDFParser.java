@@ -92,7 +92,7 @@ public class TestPDFParser extends TestCase
         PDDocument doc = null;
         try
         {
-           doc = PDDocument.load( "test/pdfparser/genko_oc_shiryo1.pdf");
+           doc = PDDocument.load( "src/test/resources/pdfparser/genko_oc_shiryo1.pdf");
         }
         finally
         {

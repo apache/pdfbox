@@ -45,12 +45,12 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextbox;
  */
 public class TestFDF extends TestCase
 {
-    
-    private static final String PDF_FDEB = "test/input-ext/fdeb.pdf";
-    private static final String PDF_LOTSOFFIELDS = "test/input-ext/pdf_with_lots_of_fields.pdf";
-    private static final String PDF_FREEDOM = "test/input-ext/FreedomExpressions.pdf";
-    private static final String FDF_FREEDOM = "test/input-ext/FreedomExpressions.fdf";
-    
+
+    private static final String PDF_FDEB = "target/test-input-ext/fdeb.pdf";
+    private static final String PDF_LOTSOFFIELDS = "target/test-input-ext/pdf_with_lots_of_fields.pdf";
+    private static final String PDF_FREEDOM = "target/test-input-ext/FreedomExpressions.pdf";
+    private static final String FDF_FREEDOM = "target/test-input-ext/FreedomExpressions.fdf";
+
     /**
      * Constructor.
      *

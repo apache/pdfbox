@@ -160,10 +160,10 @@ public class TestPDFToImage extends TestCase
         throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        String inDir = new String("test/input/rendering/");
-        String outDir = new String("test/output/rendering/");
-        String inDirExt = new String("test/input-ext/rendering/");
-        String outDirExt = new String("test/output-ext/rendering/");
+        String inDir = "src/test/resources/input/rendering";
+        String outDir = "target/test-output/rendering";
+        String inDirExt = "target/test-input-ext/rendering";
+        String outDirExt = "target/test-output-ext/rendering";
 
             if ((filename == null) || (filename.length() == 0))
             {

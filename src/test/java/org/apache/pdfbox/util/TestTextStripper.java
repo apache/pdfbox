@@ -43,9 +43,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * This test suite is designed to test PDFTextStripper using a set of PDF
  * files and known good output for each.  The default mode of testAll()
- * is to process each *.pdf file in "test/input".  An output file is
- * created in "test/output" with the same name as the PDF file, plus an
- * additional ".txt" suffix.  
+ * is to process each *.pdf file in "src/test/resources/input".  An output
+ * file is created in "target/test-output" with the same name as the PDF file,
+ * plus an additional ".txt" suffix.  
  *
  * The output file is then tested against a known good result file from
  * the input directory (again, with the same name as the tested PDF file,
@@ -53,12 +53,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * with and without sorting enabled.  The sorted files have a "-sorted.txt" 
  * suffix. 
  *
- * So for the file "test/input/hello.pdf", an output file will be generated
- * named "test/output/hello.pdf.txt".  Then that file will be compared to
- * the known good file "test/input/hello.pdf.txt", if it exists.
+ * So for the file "src/test/resources/input/hello.pdf", an output file will
+ * be generated named "target/test-output/hello.pdf.txt".  Then that file
+ * will be compared to the known good file
+ * "src/test/resources/input/hello.pdf.txt", if it exists.
  * 
  * To support testing with files that are not officially distributed 
- * with PDFBox, this test will also look in the "test/input-ext" directory. 
+ * with PDFBox, this test will also look in the "target/test-input-ext"
+ * directory.
  *
  * Any errors are logged, and at the end of processing all *.pdf files, if
  * there were any errors, the test fails.  The logging is at INFO, as the
@@ -374,10 +376,10 @@ public class TestTextStripper extends TestCase
     throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        File inDir = new File("test/input");
-        File outDir = new File("test/output");
-        File inDirExt = new File("test/input-ext");
-        File outDirExt = new File("test/output-ext");
+        File inDir = new File("src/test/resources/input");
+        File outDir = new File("target/test-output");
+        File inDirExt = new File("target/test-input-ext");
+        File outDirExt = new File("target/test-output-ext");
 
             if ((filename == null) || (filename.length() == 0)) 
             {
