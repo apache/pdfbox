@@ -748,7 +748,7 @@
                encoding="ISO-8859-1"
                breakiterator="yes">
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-            <link href="http://jakarta.apache.org/lucene/docs/api/" />
+            <link href="http://lucene.apache.org/java/2_4_1/api/"/>
             <!--<link href="http://jakarta.apache.org/ant/manual/api/" />-->
         </javadoc>
         <!-- PDFBOX-461: Disable javadoc creation timestamp -->
