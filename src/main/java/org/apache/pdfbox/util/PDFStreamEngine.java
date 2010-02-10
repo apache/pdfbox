@@ -316,10 +316,16 @@ public class PDFStreamEngine
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
         final float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
+        float spaceWidthText=0;
         
-
-        // lets see what the space displacement should be
-        float spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
+        try{ // to avoid crash as described in PDFBOX-614
+            // lets see what the space displacement should be
+            spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
+        }catch (Throwable exception)
+        {
+            log.warn( exception, exception);
+        }
+        
         if( spaceWidthText == 0 )
         {
             spaceWidthText = (font.getAverageFontWidth()/glyphSpaceToTextSpaceFactor);
