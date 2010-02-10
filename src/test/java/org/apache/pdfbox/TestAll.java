@@ -19,6 +19,7 @@ package org.apache.pdfbox;
 import org.apache.pdfbox.cos.TestCOSString;
 import org.apache.pdfbox.filter.TestFilters;
 import org.apache.pdfbox.pdmodel.TestFDF;
+import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
 import junit.framework.Test;
@@ -68,6 +69,7 @@ public class TestAll extends TestCase
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );
         suite.addTest( TestCOSString.suite() );
+        suite.addTestSuite( TestPDDocumentCatalog.class );
         return suite;
     }
 }
