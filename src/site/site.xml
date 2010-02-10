@@ -1,0 +1,77 @@
+<!--
+ ! Licensed to the Apache Software Foundation (ASF) under one or more
+ ! contributor license agreements.  See the NOTICE file distributed with
+ ! this work for additional information regarding copyright ownership.
+ ! The ASF licenses this file to You under the Apache License, Version 2.0
+ ! (the "License"); you may not use this file except in compliance with
+ ! the License.  You may obtain a copy of the License at
+ !
+ !      http://www.apache.org/licenses/LICENSE-2.0
+ !
+ ! Unless required by applicable law or agreed to in writing, software
+ ! distributed under the License is distributed on an "AS IS" BASIS,
+ ! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ! See the License for the specific language governing permissions and
+ ! limitations under the License.
+ !-->
+
+<project name="Apache PDFBox">
+  <bannerLeft>
+    <name>PDFBox</name>
+    <src>http://pdfbox.apache.org/images/Logo.gif</src>
+    <alt>Apache PDFBox</alt>
+    <href>http://pdfbox.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
+    <name>ASF</name>
+    <src>http://www.apache.org/images/asf_logo.gif</src>
+    <alt>The Apache Software Foundation</alt>
+    <href>http://www.apache.org/</href>
+  </bannerRight>
+  <publishDate position="none"/>
+  <version position="none"/>
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-stylus-skin</artifactId>
+    <version>1.0.1</version>
+  </skin>
+  <body>
+    <menu name="About">
+      <item name="Welcome" href="index.html"/>
+      <item name="Download" href="download.html"/>
+      <item name="License" href="http://www.apache.org/licenses/LICENSE-2.0"/>
+      <item name="Mailing Lists" href="mailing-list.html"/>
+      <item name="Issue Tracker"
+            href="https://issues.apache.org/jira/browse/PDFBOX"/>
+      <item name="References" href="references.html"/>
+      <item name="ASF Sponsorship Program"
+            href="http://www.apache.org/foundation/sponsorship.html"/>
+      <item name="ASF Thanks"
+            href="http://www.apache.org/foundation/thanks.html"/>
+    </menu>
+    <menu name="Command Line Utilities">
+      <item name="Index" href="commandlineutilities/index.html"/>
+      <item name="Decrypt" href="commandlineutilities/Decrypt.html"/>
+      <item name="Encrypt" href="commandlineutilities/Encrypt.html"/>
+      <item name="ExtractText" href="commandlineutilities/ExtractText.html"/>
+      <item name="PDFToImage" href="commandlineutilities/PDFToImage.html"/>
+      <item name="PrintPDF" href="commandlineutilities/PrintPDF.html"/>
+      <item name="ConvertColorspace"
+            href="commandlineutilities/ConvertColorspace.html"/>
+      <item name="TextToPDF" href="commandlineutilities/TextToPDF.html"/>
+    </menu>
+    <menu name="Developers Guide">
+      <item name="Index" href="userguide/index.html"/>
+      <item name="Bookmarks" href="userguide/bookmarks.html"/>
+      <item name="Building PDFBox" href="userguide/building_pdfbox.html"/>
+      <item name="FAQ" href="userguide/faq.html"/>
+      <item name="File References" href="userguide/file_references.html"/>
+      <item name="Fonts" href="userguide/fonts.html"/>
+      <item name="Highlighting" href="userguide/highlighting.html"/>
+      <item name="Metadata" href="userguide/metadata.html"/>
+      <item name="Redistribution" href="userguide/redistribution.html"/>
+      <item name=".NET Version" href="userguide/dot_net.html"/>
+      <item name="Text Extraction" href="userguide/text_extraction.html"/>
+    </menu>
+  </body>
+</project>

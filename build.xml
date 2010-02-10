@@ -28,9 +28,6 @@
     <property name="test.dir" value="src/test/java" />
     <property name="testfiles.dir" value="src/test/resources" />
     <property name="bin.dir" value="bin" />
-    <property name="website.dir" value="website" />
-    <property name="website.build.dir" value="${website.dir}/build/site" />
-    <property name="docs.dir" value="${website.dir}/build/site/javadoc" />
     <property name="war.dir" value="pdfbox.war" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
@@ -479,7 +476,7 @@
         <antcall target="dist" />
     </target>
 
-    <target name="dist" depends="clean,package,javadoc,website,build.NET,checkstyle" description="Create jar distribution file">
+    <target name="dist" depends="clean,package,javadoc,build.NET,checkstyle" description="Create jar distribution file">
 
         <zip zipfile="${target.dir}/${release.name}-standalone.jar">
             <zipfileset dir="./${target.dir}/" prefix="${release.name}">
@@ -501,10 +498,6 @@
                 <include name="LICENSE.txt" />
                 <include name="NOTICE.txt" />
             </zipfileset>
-            <zipfileset dir="${website.build.dir}" prefix="${release.name}/docs">
-                <include name="**/*" />
-                <exclude name="**/*.zip" />
-            </zipfileset>
         </zip>
 
         <zip zipfile="${target.dir}/${release.name}-src.jar">
@@ -523,10 +516,6 @@
             <zipfileset dir="${testfiles.dir}" prefix="${release.name}/${testfiles.dir}">
                 <include name="input/**/*" />
                 <include name="pdfreader/**/*" />
-            </zipfileset>
-            <zipfileset dir="." prefix="${release.name}">
-                <include name="website/**/*" />
-                <exclude name="website/build/**/*" />
             </zipfileset>
             <zipfileset dir="${war.dir}" prefix="${release.name}/${war.dir}">
                 <include name="**/*" />
@@ -738,7 +727,7 @@
         <property name="release.name" value="${project.name}-${project.version}" />
         <javadoc packagenames="org.*"
                sourcepath="${src.dir}"
-               destdir="${docs.dir}"
+               destdir="${target.dir}/javadoc"
                author="true"
                version="true"
                use="true"
@@ -758,14 +747,6 @@
                        flags="g" byline="true">
             <fileset dir="${docs.dir}" includes="**/*.html" />
         </replaceregexp>
-    </target>
-
-    <!-- FORREST_HOME must be set as an environment variable -->
-    <property name="project.home" value="${basedir}/website" />
-    <property name="forrest.jvmargs" value="-Djava.awt.headless=true" />
-    <import file="${env.FORREST_HOME}/main/forrest.build.xml" optional="true"/>
-    <target name="website" if="env.FORREST_HOME">
-       <antcall target="site"/>
     </target>
 
 </project>
