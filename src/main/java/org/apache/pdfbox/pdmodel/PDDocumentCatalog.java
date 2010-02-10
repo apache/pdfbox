@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDURIDictionary;
@@ -549,4 +550,33 @@ public class PDDocumentCatalog implements COSObjectable
     {
         root.setString( "Lang", language );
     }
+
+    /**
+     * Returns the page labels descriptor of the document.
+     * 
+     * @return the page labels descriptor of the document.
+     * 
+     * @throws IOException If there is a problem retrieving the page labels.
+     */
+    public PDPageLabels getPageLabels() throws IOException 
+    {
+        PDPageLabels labels = null;
+        COSDictionary dict = (COSDictionary) root.getDictionaryObject("PageLabels");
+        if (dict != null) 
+        {
+            labels = new PDPageLabels(document, dict);
+        }
+        return labels;
+    }
+
+    /**
+     * Set the page label descriptor for the document.
+     *
+     * @param labels the new page label descriptor to set.
+     */
+    public void setPageLabels(PDPageLabels labels) 
+    {
+        root.setItem("PageLabels", labels);
+    }
+
 }
