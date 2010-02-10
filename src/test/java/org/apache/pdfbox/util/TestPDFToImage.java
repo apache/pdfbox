@@ -161,7 +161,7 @@ public class TestPDFToImage extends TestCase
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
         String inDir = "src/test/resources/input/rendering";
-        String outDir = "target/test-output/rendering";
+        String outDir = "target/test-output/rendering/";
         String inDirExt = "target/test-input-ext/rendering";
         String outDirExt = "target/test-output-ext/rendering";
 
