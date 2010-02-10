@@ -993,27 +993,40 @@ public class COSWriter implements ICOSVisitor
     public void write(PDDocument doc) throws COSVisitorException
     {
         document = doc;
-
-        SecurityHandler securityHandler = document.getSecurityHandler();
-        if(securityHandler != null)
+        
+        // if the document says we should remove encryption, then we shouldn't encrypt
+        if(doc.isAllSecurityToBeRemoved())
         {
-            try
-            {
-                securityHandler.prepareDocumentForEncryption(document);
-                this.willEncrypt = true;
-            }
-            catch(IOException e)
-            {
-                throw new COSVisitorException( e );
-            }
-            catch(CryptographyException e)
-            {
-                throw new COSVisitorException( e );
-            }
+            this.willEncrypt = false;
+            // also need to get rid of the "Encrypt" in the trailer so readers 
+            // don't try to decrypt a document which is not encrypted
+            COSDocument cosDoc = doc.getDocument();
+            COSDictionary trailer = cosDoc.getTrailer();
+            trailer.removeItem(COSName.getPDFName("Encrypt"));
         }
         else
         {
-                this.willEncrypt = false;
+            SecurityHandler securityHandler = document.getSecurityHandler();
+            if(securityHandler != null)
+            {
+                try
+                {
+                    securityHandler.prepareDocumentForEncryption(document);
+                    this.willEncrypt = true;
+                }
+                catch(IOException e)
+                {
+                    throw new COSVisitorException( e );
+                }
+                catch(CryptographyException e)
+                {
+                    throw new COSVisitorException( e );
+                }
+            }
+            else
+            {
+                    this.willEncrypt = false;
+            }        
         }
 
         COSDocument cosDoc = document.getDocument();

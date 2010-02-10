@@ -109,6 +109,12 @@ public class PDDocument implements Pageable
      * which you have an object id for that matter). 
      */
     private Map pageMap = null;
+    
+    /**
+     * This will hold a flag which tells us if we should remove all security
+     * from this documents
+     */
+    private boolean allSecurityToBeRemoved = false;
 
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
@@ -1129,4 +1135,13 @@ public class PDDocument implements Pageable
     {
         return securityHandler;
     }
+
+    public boolean isAllSecurityToBeRemoved() {
+        return allSecurityToBeRemoved;
+    }
+
+    public void setAllSecurityToBeRemoved(boolean allSecurityToBeRemoved) {
+        this.allSecurityToBeRemoved = allSecurityToBeRemoved;
+    }
+
 }
