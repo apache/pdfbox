@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This will create the correct type of font based on information in the dictionary.
@@ -38,6 +40,11 @@ public class PDFontFactory
     {
     }
 
+    /**
+     * Logger instance.
+     */
+    private static final Log log = LogFactory.getLog(PDFontFactory.class);
+    
     /**
      * This will create the correct font based on information in the dictionary.
      *
@@ -143,7 +150,9 @@ public class PDFontFactory
         }
         else
         {
-            throw new IOException( "Unknown font subtype=" + subType );
+            log.warn("Substituting TrueType for unknown font subtype=" + dic.getDictionaryObject( COSName.SUBTYPE ).toString());
+            //throw new IOException( "Unknown font subtype=" + subType );
+            retval = new PDTrueTypeFont( dic );
         }
         return retval;
     }
