@@ -48,7 +48,7 @@
     <property name="ant.url" value="${maven.repo1}/org/apache/ant/ant/1.7.1/${ant.name}.jar" />
     <property name="ant.jar" value="${jar.dir}/ant.jar" />
 
-    <property name="fontbox.name" value="fontbox-1.0-20100208.190807-1" />
+    <property name="fontbox.name" value="fontbox-1.0-20100209.210141-3" />
     <property name="fontbox.url" value="https://repository.apache.org/content/repositories/snapshots/org/apache/pdfbox/fontbox/1.0-SNAPSHOT/${fontbox.name}.jar" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
