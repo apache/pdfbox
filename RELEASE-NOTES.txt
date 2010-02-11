@@ -6,7 +6,7 @@ Introduction
 PDFBox is an open source Java library for working with PDF documents.
 
 The most notable changes in this release are the upgrade to Java 5, numerous
-performance imporvements, support for page labels and Adobe CFF/Type2 fonts,
+performance improvements, support for page labels and Adobe CFF/Type2 fonts,
 and the switch of the default build system from Ant to Maven. For more
 details, please refer to the following issues on the PDFBox issue tracker
 at https://issues.apache.org/jira/browse/PDFBOX:
