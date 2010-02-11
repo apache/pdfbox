@@ -212,6 +212,7 @@
                 <configuration>
                   <descriptors>
                     <descriptor>src/assembly/src.xml</descriptor>
+                    <descriptor>src/assembly/bin.xml</descriptor>
                   </descriptors>
                 </configuration>
               </execution>
