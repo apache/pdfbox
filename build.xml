@@ -466,62 +466,9 @@
         </zip>
     </target>
 
-    <target name="nightly-dist">
-        <tstamp />
-        <property name="release.name" value="${project.name}-${project.version}-${DSTAMP}" />
-        <antcall target="dist" />
-    </target>
-
-    <target name="release-dist">
-        <antcall target="dist" />
-    </target>
-
-    <target name="dist" depends="clean,package,javadoc,build.NET,checkstyle" description="Create jar distribution file">
-
-        <zip zipfile="${target.dir}/${release.name}-standalone.jar">
-            <zipfileset dir="./${target.dir}/" prefix="${release.name}">
-                <include name="${release.name}.jar"/>
-            </zipfileset>
-            <zipfileset dir="." prefix="${release.name}">
-                <include name="${ant.jar}" />
-                <include name="${lucene.jar}" />
-                <include name="${lucene-demos.jar}" />
-                <include name="${junit.jar}" />
-                <include name="${bcprov.jar}" />
-                <include name="${bcmail.jar}" />
-                <include name="${fontbox.jar}" />
-                <include name="${jempbox.jar}" />
-                <include name="${icu4j.jar}" />
-                <include name="${bin.dir}/**/*" />
-                <include name="README.txt" />
-                <include name="RELEASE-NOTES.txt" />
-                <include name="LICENSE.txt" />
-                <include name="NOTICE.txt" />
-            </zipfileset>
-        </zip>
-
-        <zip zipfile="${target.dir}/${release.name}-src.jar">
-            <zipfileset dir="." prefix="${release.name}">
-                <include name="${src.dir}/**/*.java"/>
-                <include name="${src.dir}/**/*.html"/>
-                <include name="${test.dir}/**/*.java"/>
-                <include name="${test.dir}/**/*.html"/>
-                <include name="${resources.dir}/**/*" />
-                <include name="*.txt" />
-                <include name="pom.xml" />
-                <include name="build.xml" />
-                <include name="build.properties.example" />
-                <include name="${checkstyle.config}" />
-            </zipfileset>
-            <zipfileset dir="${testfiles.dir}" prefix="${release.name}/${testfiles.dir}">
-                <include name="input/**/*" />
-                <include name="pdfreader/**/*" />
-            </zipfileset>
-            <zipfileset dir="${war.dir}" prefix="${release.name}/${war.dir}">
-                <include name="**/*" />
-            </zipfileset>
-        </zip>
-    </target>
+    <!-- We use Maven to create the release packages. Keep this target for -->
+    <!-- now for backwards compatibility with old build scripts and habits -->
+    <target name="dist" depends="clean,package,javadoc,build.NET,checkstyle"/>
 
     <target name="checkForIKVM">
         <condition property="IKVMAvailable">
