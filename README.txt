@@ -3,21 +3,25 @@ Apache PDFBox <http://incubator.apache.org/pdfbox/>
 ===================================================
 
 PDFBox is an open source Java library for working with PDF documents.
+This project allows creation of new PDF documents, manipulation of
+existing documents and the ability to extract content from documents.
+PDFBox also includes several command line utilities. PDFBox is published
+under the Apache License, Version 2.0.
 
-You need Apache Ant <http://ant.apache.org/> to build PDFBox. Once you
-have installed Ant, you can build the sources by running "ant" in
-this directory.
+You need Java 5 (or higher) and Maven 2 <http://maven.apache.org/> to
+build PDFBox. The recommended build command is:
 
-You can customize the build by adding a "build.properties" file that overrides
-the default build properties. For example, the Ant build will create a
-Checkstyle report if you have Checkstyle <http://checkstyle.sourceforge.net/>
-installed. Set the checkstyle.home.dir property to enable the report:
+    mvn clean install
 
-    checkstyle.home.dir=/path/to/checkstyle
+The default build will compile the Java sources and package the binary
+classes into a jar package. See the Maven documentation for all the
+other available build options.
 
-The Ant build will build the PDFBox web site if you have Apache Forrest
-<http://forrest.apache.org/> installed. Set the FORREST_HOME environment
-variable to enable the web site build.
+There is also an Ant build that you can use to build the same binaries.
+The Ant build can also produce .NET DLLs if you have IKVM.NET
+<http://www.ikvm.net/> installed. See the build.xml file for details.
+
+PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
 
 Known Limitations and Problems
 ==============================
@@ -41,29 +45,13 @@ Known Limitations and Problems
    (such as Arabic or Hebrew), make sure you have the ICU4J jar file in your 
    classpath.  This library is needed to properly hande right to left text.
 
-
 See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
 the full list of known issues and requested features.
-
-Disclaimer
-==========
-
-Apache PDFBox is an effort undergoing incubation at The Apache Software
-Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is
-required of all newly accepted projects until a further review indicates
-that the infrastructure, communications, and decision making process have
-stabilized in a manner consistent with other successful ASF projects. While
-incubation status is not necessarily a reflection of the completeness or
-stability of the code, it does indicate that the project has yet to be fully
-endorsed by the ASF.
-
-See http://incubator.apache.org/projects/pdfbox.html for the current
-incubation status of the Apache PDFBox project.
 
 License (see also LICENSE.txt)
 ==============================
 
-Collective work: Copyright 2009 The Apache Software Foundation.
+Collective work: Copyright 2010 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
