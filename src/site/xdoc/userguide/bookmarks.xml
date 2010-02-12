@@ -22,8 +22,8 @@
   <body>
     <section name="Accessing PDF Bookmarks">
       <p>
-      See package:<a href="../javadoc/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/package-summary.html">org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline</a> <br/>
-      See example:<a href="../javadoc/org/apache/pdfbox/examples/pdmodel/PrintBookmarks.html">PrintBookmarks</a>
+      See package:<a href="../apidocs/org/apache/pdfbox/pdmodel/interactive/documentnavigation/outline/package-summary.html">org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline</a> <br/>
+      See example:<a href="../apidocs/org/apache/pdfbox/examples/pdmodel/PrintBookmarks.html">PrintBookmarks</a>
       </p>
       <p>
       	A PDF can contain an outline of a document and jump to pages within a PDF document.
@@ -32,7 +32,7 @@
 
       <p>
       To access the root of the outline you go through the
-      <a href="../javadoc/org/apache/pdfbox/pdmodel/PDDocumentCatalog.html">PDDocumentOutline</a>
+      <a href="../apidocs/org/apache/pdfbox/pdmodel/PDDocumentCatalog.html">PDDocumentOutline</a>
       </p>
       <source>
       PDDocument doc = PDDocument.load( ... );
@@ -60,7 +60,7 @@
       <title>Creating Bookmarks</title>
       <p>
       <p>
-      See example:<a href="../javadoc/org/apache/pdfbox/examples/pdmodel/CreateBookmarks.html">CreateBookmarks</a>
+      See example:<a href="../apidocs/org/apache/pdfbox/examples/pdmodel/CreateBookmarks.html">CreateBookmarks</a>
       </p>
       Creating bookmarks is just as easy.  You first need to create the PDDocumentOutline and then
       add some PDOutlineItem objects to it.

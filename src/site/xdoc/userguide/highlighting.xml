@@ -49,7 +49,7 @@
           <br/>
           Basically the document allows you to tell it the characters to highlight in the PDF by using character
           offsets on a page.  As this is just an XML document, there are many ways you could create it but PDFBox does have a utility to make it
-          easier.  Take a look at the javadoc for the <a href="../javadoc/org/apache/pdfbox/util/PDFHighlighter.html">PDFHighlighter</a> class.  This will
+          easier.  Take a look at the javadoc for the <a href="../apidocs/org/apache/pdfbox/util/PDFHighlighter.html">PDFHighlighter</a> class.  This will
           allow you specify a set of words that you want have highlighted and generate the XML document for you.  <br/>
           <br/>
           PDFBox also ships with a complete
