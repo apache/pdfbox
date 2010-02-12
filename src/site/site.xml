@@ -73,5 +73,6 @@
       <item name=".NET Version" href="userguide/dot_net.html"/>
       <item name="Text Extraction" href="userguide/text_extraction.html"/>
     </menu>
+    <menu ref="reports"/>
   </body>
 </project>
