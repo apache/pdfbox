@@ -135,7 +135,6 @@
 
     <target name="clean" description="Remove all generated files">
         <delete dir="${target.dir}"/>
-        <delete dir="${docs.dir}"/>
         <delete dir="${bin.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
@@ -144,7 +143,6 @@
 
     <target name="pdfbox.init">
         <mkdir dir="${dest.dir}"/>
-        <mkdir dir="${docs.dir}" />
         <mkdir dir="${bin.dir}" />
         <mkdir dir="${testoutput.dir}" />
         <mkdir dir="${testoutput.dir}/rendering" />
