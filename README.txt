@@ -1,5 +1,5 @@
 ===================================================
-Apache PDFBox <http://incubator.apache.org/pdfbox/>
+Apache PDFBox <http://pdfbox.apache.org/>
 ===================================================
 
 PDFBox is an open source Java library for working with PDF documents.
