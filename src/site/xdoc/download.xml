@@ -25,131 +25,97 @@
         There are several ways you can obtain the PDFBox binaries or sources:
       </p>
       <ul>
-        <li><a href="#pdfbox">Download Apache PDFBox</a></li>
-        <li><a href="#fontbox">Download Apache FontBox</a></li>
-        <li><a href="#jempbox">Download Apache JempBox</a></li>
+        <li><a href="#pdfbox">Apache PDFBox 1.0.0</a></li>
+        <li><a href="#fontbox">Apache FontBox 1.0.0</a></li>
+        <li><a href="#jempbox">Apache JempBox 1.0.0</a></li>
         <!--
         <li><a href="#snapshot">Download a snapshot</a></li>
         -->
         <li><a href="#subversion">Get the source from the Subversion repository</a></li>
         <li><a href="#old-releases">Download old releases</a></li>
+        <li><a href="#export">Export control information</a></li>
       </ul>
       <p>
         See also the <a href="#export">export control</a> information
         related to the encryption features included in Apache PDFBox.
       </p>
     </section>
-    <section id="pdfbox" name="Download Apache PDFBox">
+    <section id="pdfbox" name="Apache PDFBox 1.0.0">
       <p>
         PDFBox is an open source Java library for working with PDF documents.
       </p>
-      <table>
-        <tr>
-          <th>Download</th>
-          <th>Size</th>
-          <th>Verify</th>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar"
-              >pdfbox-0.8.0-incubating-src.jar</a> (source archive)</td>
-          <td>4.7MB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/source/pdfbox-0.8.0-incubating-src.jar.sha">SHA1</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar"
-              >pdfbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
-          <td>4.4MB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating.jar.sha">SHA1</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar"
-              >pdfbox-0.8.0-incubating-standalone.jar</a> (pre-built standalone binary)</td>
-          <td>14.8MB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/pdfbox/binaries/pdfbox-0.8.0-incubating-standalone.jar.sha">SHA1</a>
-          </td>
-        </tr>
-      </table>
+      <ul>
+        <li>
+          <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0-src.zip"
+            >pdfbox-1.0.0-src.zip</a>
+          4.7MB, source archive,
+          <a href="http://www.apache.org/dist/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0-src.zip.asc"
+            >PGP signature</a><br/>
+          SHA1 checksum: <code>d3bf10510e972b2720bcc2e6fd2e6d75cb0eebfb</code><br/>
+          MD5 checksum: <code>7b3ece73b73f03090902eda9108413f7</code><br/>
+        </li>
+        <li>
+          <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0.jar"
+            >pdfbox-1.0.0.jar</a>
+          4.5MB, pre-built binary,
+          <a href="http://www.apache.org/dist/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0.jar.asc"
+            >PGP signature</a><br/>
+          SHA1 checksum: <code>91a9b9c862c84901a5413208cb18024c39098daa</code><br/>
+          MD5 checksum: <code>c330a4b2bd63618e779716c6deab8b50</code><br/>
+        </li>
+        <li>
+          <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0-bin.zip"
+            >pdfbox-1.0.0-bin.zip</a>
+          12MB, pre-built binary with dependencies,
+          <a href="http://www.apache.org/dist/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0-bin.zip.asc"
+            >PGP signature</a><br/>
+          SHA1 checksum: <code>93d85e03a12ff9bcbfedfad0965e64b327db816b</code><br/>
+          MD5 checksum: <code>80505ce798f9c29dedff7e0b3085178d</code><br/>
+        </li>
+      </ul>
       <p>
-        This 0.8.0-incubating release is the first PDFBox release made at the
-        Apache Software Foundation. There are a lot of changes since the last 
-        version. See the release notes below for further details. If you've used
-        PDFBox before, you need to update all your client code to use the renamed 
-        PDFBox packages.
-      </p>
-      <p>
-        The -incubating label included in the version number reflects the incubation 
-        status of the project. See the disclaimer below for more about incubation.
-      </p>
-      <p>
-        See the <a href="http://www.apache.org/dist/pdfbox/pdfbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
+        The most notable changes in this release are the upgrade to Java 5,
+        numerous performance improvements, support for page labels and
+        Adobe CFF/Type2 fonts, and the switch of the default build system
+        from Ant to Maven. See the
+        <a href="http://www.apache.org/dist/pdfbox/pdfbox/1.0.0/RELEASE-NOTES.txt"
+          >release notes</a> for more details.
       </p>
     </section>
-    <section id="fontbox" name="Download Apache FontBox">
+    <section id="fontbox" name="Apache FontBox 1.0.0">
       <p>
         Apache FontBox is an open source Java library for working with
         PDF fonts.
       </p>
-      <table>
-        <tr>
-          <th>Download</th>
-          <th>Size</th>
-          <th>Verify</th>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar"
-              >fontbox-0.8.0-incubating-src.jar</a> (source archive)</td>
-          <td>328KB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/source/fontbox-0.8.0-incubating-src.jar.sha">SHA1</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar"
-              >fontbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
-          <td>72KB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/fontbox/binaries/fontbox-0.8.0-incubating.jar.sha">SHA1</a>
-          </td>
-        </tr>
-      </table>
+      <ul>
+        <li>
+          <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/1.0.0/fontbox-1.0.0-src.zip"
+            >pdfbox-1.0.0-src.zip</a>
+          344KB, source archive,
+          <a href="http://www.apache.org/dist/pdfbox/fontbox/1.0.0/fontbox-1.0.0-src.zip.asc"
+            >PGP signature</a><br/>
+          SHA1 checksum: <code>fd97306798dd9994e79ab52fba699ea79acd02b4</code><br/>
+          MD5 checksum: <code>c79983b827e4304dfb871bc7cc084ead</code><br/>
+        </li>
+        <li>
+          <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/fontbox/1.0.0/fontbox-1.0.0.jar"
+            >fontbox-1.0.0.jar</a>
+          148KB, pre-built binary,
+          <a href="http://www.apache.org/dist/pdfbox/fontbox/1.0.0/fontbox-1.0.0.jar.asc"
+            >PGP signature</a><br/>
+          SHA1 checksum: <code>641b1980bd21373e0eb65e84ed460ca43ec9626d</code><br/>
+          MD5 checksum: <code>3a9d64bcd462d2e8dbb52cb92a9b0852</code><br/>
+        </li>
+      </ul>
       <p>
-        This 0.8.0-incubating release is the first FontBox release made at the
-        Apache Software Foundation. The most notable change since the previous
-        release (0.2.0) is the renaming of all Java packages from org.fontbox to
-        org.apache.fontbox. If you've used FontBox before, you need to update all
-        your client code to use the renamed FontBox packages.
-      </p>
-      <p>
-        The version number of FontBox was upgraded from 0.2.0 to 0.8.0 to better
-        match the version numbering of Apache PDFBox. The -incubating label included
-        in the version number reflects the incubation status of the project. See
-        the disclaimer below for more about incubation.
-      </p>
-      <p>
-        See the <a href="http://www.apache.org/dist/pdfbox/fontbox/RELEASE-NOTES-0.8.0-incubating.txt">release notes</a> for more details.
+        The most notable changes in this release are the upgrade to Java 5,
+        added support for Adobe CFF/Type2 fonts and switch of the build
+        system from Ant to Maven. See the
+        <a href="http://www.apache.org/dist/pdfbox/fontbox/1.0.0/RELEASE-NOTES.txt"
+          >release notes</a> for more details.
       </p>
     </section>
-    <section id="jempbox" name="Download Apache JempBox">
+    <section id="jempbox" name="Apache JempBox 1.0.0">
       <p>
         Apache JempBox is an open source Java library for working with
         XMP metadata.
@@ -197,53 +163,6 @@
         See the <a href="http://www.apache.org/dist/pdfbox/jempbox/RELEASE-NOTES-1.0.0.txt">
         release notes</a> for more details.
       </p>
-      <table>
-        <tr>
-          <th>Download</th>
-          <th>Size</th>
-          <th>Verify</th>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar"
-              >jempbox-0.8.0-incubating-src.jar</a> (source archive)</td>
-          <td>130KB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/source/jempbox-0.8.0-incubating-src.jar.sha">SHA1</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <a href="http://www.apache.org/dyn/closer.cgi/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar"
-              >jempbox-0.8.0-incubating.jar</a> (pre-built binary)</td>
-          <td>50KB</td>
-          <td>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.asc">PGP</a>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.md5">MD5</a>
-            <a href="http://www.apache.org/dist/pdfbox/jempbox/binaries/jempbox-0.8.0-incubating.jar.sha">SHA1</a>
-          </td>
-        </tr>
-      </table>
-      <p>
-        The 0.8.0-incubating release is the first JempBox release made at
-        the Apache Software Foundation. The most notable change since the
-        previous release (0.2.0) is the renaming of all Java packages from
-        org.jempbox to org.apache.jempbox. If you've used JempBox before,
-        you need to update all your client code to use the renamed JempBox
-        packages.
-      </p>
-      <p>
-        The version number of JempBox was upgraded from 0.2.0 to 0.8.0 to
-        better match the version numbering of Apache PDFBox. The -incubating
-        label included in the version number reflects the incubation status
-        of the project.
-      </p>
-      <p>
-        See the <a href="http://www.apache.org/dist/pdfbox/jempbox/RELEASE-NOTES-0.8.0-incubating.txt"
-        >release notes</a> for more details.
-      </p>
     </section>
     <!-- TODO Enable me when available
     <section id="snapshot">
@@ -263,6 +182,14 @@
     </section>
     <section id="old-releases" name="Download old releases">
       <p>
+        Past Apache releases (starting with version 0.8.0-incubating) are
+        available in the release archive at:
+      </p>
+      <p>
+        <a href="http://archive.apache.org/dist/pdfbox/"
+          >http://archive.apache.org/dist/pdfbox/</a>
+      </p>
+      <p>
         The old releases (up to version 0.7.3) published from
         <a href="http://www.sourceforge.net">SourceForge</a> are
         still available. They can be downloaded from this location: 
@@ -271,7 +198,7 @@
         <a href="http://sourceforge.net/project/showfiles.php?group_id=78314">http://sourceforge.net/project/showfiles.php?group_id=78314</a>
       </p>
     </section>
-    <section id="export" name="Export control">
+    <section id="export" name="Export control information">
       <p>
         This distribution includes cryptographic software. The country in
         which you currently reside may have restrictions on the import,
