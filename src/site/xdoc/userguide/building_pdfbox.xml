@@ -27,54 +27,50 @@
       </p>
 
       <p>
-      	You can obtain the latest source of PDFBox from SVN, see the
-      	<a href="../download.html">Apache PDFBox</a>
-      	site for information
-      	about how to connect to SVN.  The below instructions should also work for a released/nightly distribution.
+       You can obtain the latest source of PDFBox from SVN, see the
+       <a href="../download.html">download page</a> for information about
+       how to connect to SVN. The instructions below should also work for
+       a released/nightly distribution.
       </p>
 
       <p>
-      	<ol>
-      		<li>Install <a href="http://ant.apache.org/">ANT</a>, PDFBox currently uses 1.6.2 but other
-      		    versions probably work as well.</li>
-      		<li>(Optional)Setup Apache Forrest, Forrest is used for
-      		    PDFBox documentation but is not required to compile PDFBox.
-      			<ol>
-      				<li>Install <a href="http://forrest.apache.org/">Forrest</a></li>
-      				<li>In the build.properties, set the forrest.home property
-      				<br /><br />
-      				<table>
-				  	<tr><td>
-				  	forrest.home=c:\\javalib\\apache-forrest-0.6\\src\\core
-					</td></tr>
-				  </table><br />
-      				</li>
-      			</ol>
-      		</li>
-      		<li>(Optional)Place the junit.jar file in the ANT_HOME\lib directory.  This is required
-      		    to run the junit tests but not to compile PDFBox.</li>
-      		<li>(Optional)Setup IKVM, if you want to build the .NET DLL version of PDFBox.
-
-      			<ol>
-      				<li><a href="http://www.ikvm.net/">IKVM</a> binaries</li>
-      				<li>In the build.properties, set the ikvm.dir property
-      				<br /><br />
-      				<table>
-				  	<tr><td>
-				  	ikvm.dir=C:\\javalib\\ikvm-12-07-2004\\ikvm
-					</td></tr>
-				  </table><br />
-      				</li>
-      			</ol>
-      		</li>
-      		<li>Run 'ant' from the root PDFBox directory.  This will create the .zip package
-      		    distribution.  See the build file for other ant targets.</li>
-
-      	</ol>
-      	<note>If you want to run PDFBox from an IDE them you will need to add the 'Resources' directory
-      	      to the project classpath in your IDE.
-      	 </note>
+        Starting with PDFBox 1.0.0, the default build system is based on Maven:
       </p>
+      <ol>
+        <li>Install <a href="http://maven.apache.org/">Maven 2</a></li>
+        <li>Run "<code>mvn clean install</code>" from the PDFBox root</li>
+      </ol>
+
+      <p>
+        The old Ant build is still available, and can be used especially for
+        building .NET binaries with IKVM:
+      </p>
+      <ol>
+        <li>
+          Install <a href="http://ant.apache.org/">ANT</a>. PDFBox currently
+          uses 1.6.2 but other versions probably work as well.
+        </li>
+        <li>
+          (optional)
+          Setup IKVM, if you want to build the .NET DLL version of PDFBox.
+          <ol>
+            <li><a href="http://www.ikvm.net/">IKVM</a> binaries</li>
+            <li>
+              In the build.properties, set the ikvm.dir property:<br />
+              <code>ikvm.dir=C:\\javalib\\ikvm-12-07-2004\\ikvm</code>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Run "<code>ant</code>" from the root PDFBox directory.
+          This will create the .zip package distribution. See the build file
+          for other ant targets.
+        </li>
+      </ol>
+      <note>
+        If you want to run PDFBox from an IDE them you will need to add
+        the 'Resources' directory to the project classpath in your IDE.
+      </note>
     </section>
     <section name="Running/Debugging PDFBox in Eclipse">
     	<p>
