@@ -77,7 +77,7 @@ public class COSDictionaryMap implements Map
      */
     public boolean containsKey(Object key)
     {
-        return map.keyList().contains( key );
+        return map.keySet().contains( key );
     }
 
     /**
@@ -222,10 +222,8 @@ public class COSDictionaryMap implements Map
         if( map != null )
         {
             Map actualMap = new HashMap();
-            Iterator keyIter = map.keyList().iterator();
-            while( keyIter.hasNext() )
+            for( COSName key : map.keySet() )
             {
-                COSName key = (COSName)keyIter.next();
                 COSBase cosObj = map.getDictionaryObject( key );
                 Object actualObject = null;
                 if( cosObj instanceof COSString )

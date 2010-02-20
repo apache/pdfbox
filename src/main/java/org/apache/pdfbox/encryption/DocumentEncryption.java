@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -350,18 +351,15 @@ public class DocumentEncryption
     private void decryptDictionary( COSDictionary dictionary, long objNum, long genNum )
         throws CryptographyException, IOException
     {
-        Iterator keys = dictionary.keyList().iterator();
-        while( keys.hasNext() )
+        for( Map.Entry<COSName, COSBase> entry : dictionary.entrySet() )
         {
-            COSName key = (COSName)keys.next();
-            Object value = dictionary.getItem( key );
             //if we are a signature dictionary and contain a Contents entry then
             //we don't decrypt it.
-            if( !(key.getName().equals( "Contents" ) &&
-                  value instanceof COSString &&
+            if( !(entry.getKey().getName().equals( "Contents" ) &&
+                  entry.getValue() instanceof COSString &&
                   potentialSignatures.contains( dictionary )))
             {
-                decrypt( value, objNum, genNum );
+                decrypt( entry.getValue(), objNum, genNum );
             }
         }
     }

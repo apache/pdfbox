@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.ImageParameters;
  */
 public class PDFStreamParser extends BaseParser
 {
-    private List streamObjects = new ArrayList( 100 );
+    private List<Object> streamObjects = new ArrayList<Object>( 100 );
     private RandomAccess file;
     private PDFOperator lastBIToken = null;
 
@@ -115,7 +115,7 @@ public class PDFStreamParser extends BaseParser
      *
      * @return All of the tokens in the stream.
      */
-    public List getTokens()
+    public List<Object> getTokens()
     {
         return streamObjects;
     }

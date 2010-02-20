@@ -367,26 +367,26 @@ public class PDFMergerUtility
         else if( base instanceof COSStream )
         {
             COSStream originalStream = (COSStream)base;
-            List keys = originalStream.keyList();
             PDStream stream = new PDStream( destination, originalStream.getFilteredStream(), true );
             clonedVersion.put( base, stream.getStream() );
-            for( int i=0; i<keys.size(); i++ )
+            for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
             {
-                COSName key = (COSName)keys.get( i );
-                stream.getStream().setItem( key, cloneForNewDocument(destination,originalStream.getItem(key)));
+                stream.getStream().setItem(
+                        entry.getKey(),
+                        cloneForNewDocument(destination, entry.getValue()));
             }
             retval = stream.getStream();
         }
         else if( base instanceof COSDictionary )
         {
             COSDictionary dic = (COSDictionary)base;
-            List keys = dic.keyList();
             retval = new COSDictionary();
             clonedVersion.put( base, retval );
-            for( int i=0; i<keys.size(); i++ )
+            for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
             {
-                COSName key = (COSName)keys.get( i );
-                ((COSDictionary)retval).setItem( key, cloneForNewDocument(destination,dic.getItem(key)));
+                ((COSDictionary)retval).setItem(
+                        entry.getKey(),
+                        cloneForNewDocument(destination, entry.getValue()));
             }
         }
         else
@@ -451,13 +451,13 @@ public class PDFMergerUtility
         {
           // does that make sense???
             COSStream originalStream = (COSStream)base;
-            List keys = originalStream.keyList();
             PDStream stream = new PDStream( destination, originalStream.getFilteredStream(), true );
             clonedVersion.put( base, stream.getStream() );
-            for( int i=0; i<keys.size(); i++ )
+            for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
             {
-                COSName key = (COSName)keys.get( i );
-                stream.getStream().setItem( key, cloneForNewDocument(destination,originalStream.getItem(key)));
+                stream.getStream().setItem(
+                        entry.getKey(),
+                        cloneForNewDocument(destination, entry.getValue()));
             }
             retval = stream.getStream(); 
             target = retval;
@@ -465,18 +465,18 @@ public class PDFMergerUtility
         else if( base instanceof COSDictionary )
         {
             COSDictionary dic = (COSDictionary)base;
-            List keys = dic.keyList();
             clonedVersion.put( base, retval );
-            for( int i=0; i<keys.size(); i++ )
+            for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
             {
-                COSName key = (COSName)keys.get( i );
+                COSName key = entry.getKey();
+                COSBase value = entry.getValue();
                 if (((COSDictionary)target).getItem(key)!=null)
                 {
-                   cloneMerge(destination, dic.getItem(key),((COSDictionary)target).getItem(key));
+                   cloneMerge(destination, value,((COSDictionary)target).getItem(key));
                 } 
                 else 
                 {
-                  ((COSDictionary)target).setItem( key, cloneForNewDocument(destination,dic.getItem(key)));
+                  ((COSDictionary)target).setItem( key, cloneForNewDocument(destination, value));
                 }
             }
         }

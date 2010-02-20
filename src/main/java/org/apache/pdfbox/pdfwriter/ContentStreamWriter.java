@@ -21,6 +21,7 @@ import java.io.OutputStream;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -121,19 +122,14 @@ public class ContentStreamWriter
         {
             COSDictionary obj = (COSDictionary)o;
             output.write( COSWriter.DICT_OPEN );
-            for (Iterator i = obj.keyList().iterator(); i.hasNext();)
+            for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
             {
-                COSName name = (COSName) i.next();
-                COSBase value = obj.getItem(name);
-                if (value != null)
+                if (entry.getValue() != null)
                 {
-                    writeObject( name );
+                    writeObject( entry.getKey() );
                     output.write( SPACE );
-
-                    writeObject( value );
-
+                    writeObject( entry.getValue() );
                     output.write( SPACE );
-
                 }
             }
             output.write( COSWriter.DICT_CLOSE );
@@ -147,10 +143,8 @@ public class ContentStreamWriter
                 output.write( "BI".getBytes() );
                 ImageParameters params = op.getImageParameters();
                 COSDictionary dic = params.getDictionary();
-                Iterator iter = dic.keyList().iterator();
-                while( iter.hasNext() )
+                for( COSName key : dic.keySet() )
                 {
-                    COSName key = (COSName)iter.next();
                     Object value = dic.getDictionaryObject( key );
                     key.writePDF( output );
                     output.write( SPACE );

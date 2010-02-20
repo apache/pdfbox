@@ -25,7 +25,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -93,12 +92,10 @@ public class PDAppearanceDictionary implements COSObjectable
             ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
         }
         COSDictionary map = (COSDictionary)ap;
-        Map actuals = new HashMap();
+        Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
         Map retval = new COSDictionaryMap( actuals, map );
-        Iterator asNames = map.keyList().iterator();
-        while( asNames.hasNext() )
+        for( COSName asName : map.keySet() )
         {
-            COSName asName = (COSName)asNames.next();
             COSStream as = (COSStream)map.getDictionaryObject( asName );
             actuals.put( asName.getName(), new PDAppearanceStream( as ) );
         }
@@ -154,12 +151,10 @@ public class PDAppearanceDictionary implements COSObjectable
                 ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
             }
             COSDictionary map = (COSDictionary)ap;
-            Map actuals = new HashMap();
+            Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
             retval = new COSDictionaryMap( actuals, map );
-            Iterator asNames = map.keyList().iterator();
-            while( asNames.hasNext() )
+            for( COSName asName : map.keySet() )
             {
-                COSName asName = (COSName)asNames.next();
                 COSStream as = (COSStream)map.getDictionaryObject( asName );
                 actuals.put( asName.getName(), new PDAppearanceStream( as ) );
             }
@@ -205,12 +200,11 @@ public class PDAppearanceDictionary implements COSObjectable
                 ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
             }
             COSDictionary map = (COSDictionary)ap;
-            Map actuals = new HashMap();
+            Map<String, PDAppearanceStream> actuals =
+                new HashMap<String, PDAppearanceStream>();
             retval = new COSDictionaryMap( actuals, map );
-            Iterator asNames = map.keyList().iterator();
-            while( asNames.hasNext() )
+            for( COSName asName : map.keySet() )
             {
-                COSName asName = (COSName)asNames.next();
                 COSStream as = (COSStream)map.getDictionaryObject( asName );
                 actuals.put( asName.getName(), new PDAppearanceStream( as ) );
             }

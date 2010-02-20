@@ -444,18 +444,13 @@ public class Overlay
         if( sourceDict != null )
         {
 
-            Iterator iterKeys = sourceDict.keyList().iterator();
-            while (iterKeys.hasNext())
+            for (Map.Entry<COSName, COSBase> entry : sourceDict.entrySet())
             {
-                COSName key = (COSName) iterKeys.next();
-                COSName mappedKey = (COSName) objectNameMap.get(key.getName());
-                if (mappedKey == null)
+                COSName mappedKey = (COSName) objectNameMap.get(entry.getKey().getName());
+                if (mappedKey != null)
                 {
-                    // object not needet
-                    continue;
+                    destDict.setItem(mappedKey, entry.getValue());
                 }
-
-                destDict.setItem(mappedKey, sourceDict.getItem(key));
             }
         }
     }

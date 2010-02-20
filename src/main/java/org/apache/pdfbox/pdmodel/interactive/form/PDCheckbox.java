@@ -21,8 +21,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A class for handling the PDF field as a checkbox.
@@ -54,10 +52,8 @@ public class PDCheckbox extends PDChoiceButton
 
             if( n instanceof COSDictionary )
             {
-                List li = ((COSDictionary)n).keyList();
-                for( int i=0; i<li.size(); i++ )
+                for( COSName name : ((COSDictionary)n).keySet() )
                 {
-                    COSName name = (COSName)li.get( i );
                     if( !name.equals( OFF_VALUE ))
                     {
                         value = name;
@@ -146,13 +142,11 @@ public class PDCheckbox extends PDChoiceButton
         //N can be a COSDictionary or a COSStream
         if( n instanceof COSDictionary )
         {
-            Iterator li = ((COSDictionary)n).keyList().iterator();
-            while( li.hasNext() )
+            for( COSName key :((COSDictionary)n).keySet() )
             {
-                Object key = li.next();
                 if( !key.equals( OFF_VALUE) )
                 {
-                    retval = ((COSName)key).getName();
+                    retval = key.getName();
                 }
             }
         }

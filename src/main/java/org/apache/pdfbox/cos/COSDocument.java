@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,12 +55,14 @@ public class COSDocument extends COSBase
      * Maps ObjectKeys to a COSObject. Note that references to these objects
      * are also stored in COSDictionary objects that map a name to a specific object.
      */
-    private Map objectPool = new HashMap();
+    private final Map<COSObjectKey, COSObject> objectPool =
+        new HashMap<COSObjectKey, COSObject>();
 
     /**
      * Maps object and generation ids to object byte offsets.
      */
-    private Map xrefTable = new HashMap();
+    private final Map<COSObjectKey, Integer> xrefTable =
+        new HashMap<COSObjectKey, Integer>();
 
     /**
      * Document trailer dictionary.
@@ -150,11 +151,8 @@ public class COSDocument extends COSBase
      */
     public COSObject getObjectByType( COSName type ) throws IOException
     {
-        COSObject retval = null;
-        Iterator iter = objectPool.values().iterator();
-        while( iter.hasNext() && retval == null)
+        for( COSObject object : objectPool.values() )
         {
-            COSObject object = (COSObject)iter.next();
 
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
@@ -165,7 +163,7 @@ public class COSDocument extends COSBase
                     COSName objectType = (COSName)dic.getItem( COSName.TYPE );
                     if( objectType != null && objectType.equals( type ) )
                     {
-                        retval = object;
+                        return object;
                     }
                 }
                 catch (ClassCastException e)
@@ -174,7 +172,7 @@ public class COSDocument extends COSBase
                 }
             }
         }
-        return retval;
+        return null;
     }
 
     /**
@@ -185,7 +183,7 @@ public class COSDocument extends COSBase
      * @return This will return an object with the specified type.
      * @throws IOException If there is an error getting the object
      */
-    public List getObjectsByType( String type ) throws IOException
+    public List<COSObject> getObjectsByType( String type ) throws IOException
     {
         return getObjectsByType( COSName.getPDFName( type ) );
     }
@@ -198,14 +196,11 @@ public class COSDocument extends COSBase
      * @return This will return an object with the specified type.
      * @throws IOException If there is an error getting the object
      */
-    public List getObjectsByType( COSName type ) throws IOException
+    public List<COSObject> getObjectsByType( COSName type ) throws IOException
     {
-        List retval = new ArrayList();
-        Iterator iter = objectPool.values().iterator();
-        while( iter.hasNext() )
+        List<COSObject> retval = new ArrayList<COSObject>();
+        for( COSObject object : objectPool.values() )
         {
-            COSObject object = (COSObject)iter.next();
-
             COSBase realObject = object.getObject();
             if( realObject instanceof COSDictionary )
             {
@@ -232,10 +227,8 @@ public class COSDocument extends COSBase
      */
     public void print()
     {
-        Iterator iter = objectPool.values().iterator();
-        while( iter.hasNext() )
+        for( COSObject object : objectPool.values() )
         {
-            COSObject object = (COSObject)iter.next();
             System.out.println( object);
         }
     }
@@ -341,9 +334,9 @@ public class COSDocument extends COSBase
      *
      * @return A list of all objects.
      */
-    public List getObjects()
+    public List<COSObject> getObjects()
     {
-        return new ArrayList(objectPool.values());
+        return new ArrayList<COSObject>(objectPool.values());
     }
 
     /**
@@ -449,17 +442,13 @@ public class COSDocument extends COSBase
      */
     public void dereferenceObjectStreams() throws IOException
     {
-        Iterator objStm = getObjectsByType( "ObjStm" ).iterator();
-        while( objStm.hasNext() )
+        for( COSObject objStream : getObjectsByType( "ObjStm" ) )
         {
-            COSObject objStream = (COSObject)objStm.next();
             COSStream stream = (COSStream)objStream.getObject();
             PDFObjectStreamParser parser = new PDFObjectStreamParser( stream, this );
             parser.parse();
-            Iterator compressedObjects = parser.getObjects().iterator();
-            while( compressedObjects.hasNext() )
+            for( COSObject next : parser.getObjects() )
             {
-                COSObject next = (COSObject)compressedObjects.next();
                 COSObjectKey key = new COSObjectKey( next );
                 COSObject obj = getObjectFromPool( key );
                 obj.setObject( next.getObject() );
@@ -505,7 +494,7 @@ public class COSDocument extends COSBase
      */
     public void setXRef(COSObjectKey objKey, int offset)
     {
-        xrefTable.put(objKey, new Integer(offset));
+        xrefTable.put(objKey, offset);
     }
 
     /**
@@ -513,7 +502,7 @@ public class COSDocument extends COSBase
      * to byte offsets in the file.
      * @return mapping of ObjectsKeys to byte offsets
      */
-    public Map getXrefTable()
+    public Map<COSObjectKey, Integer> getXrefTable()
     {
         return xrefTable;
     }
@@ -528,10 +517,8 @@ public class COSDocument extends COSBase
     public void parseXrefStreams() throws IOException
     {
         COSDictionary trailerDict = new COSDictionary();
-        Iterator xrefIter = getObjectsByType( "XRef" ).iterator();
-        while( xrefIter.hasNext() )
+        for( COSObject xrefStream : getObjectsByType( "XRef" ) )
         {
-            COSObject xrefStream = (COSObject)xrefIter.next();
             COSStream stream = (COSStream)xrefStream.getObject();
             trailerDict.addAll(stream);
             PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, this);

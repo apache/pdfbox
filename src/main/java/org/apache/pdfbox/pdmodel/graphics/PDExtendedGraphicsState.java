@@ -104,10 +104,8 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void copyIntoGraphicsState( PDGraphicsState gs ) throws IOException
     {
-        Iterator keys = graphicsState.keyList().iterator();
-        while( keys.hasNext() )
+        for( COSName key : graphicsState.keySet() )
         {
-            COSName key = (COSName)keys.next();
             if( key.equals( LW ) )
             {
                 gs.setLineWidth( getLineWidth().doubleValue() );

@@ -20,11 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
@@ -42,14 +41,11 @@ public class COSDictionary extends COSBase
     private static final String PATH_SEPARATOR = "/";
 
     /**
-     * These are all of the items in the dictionary.
+     * The name-value pairs of this dictionary. The pairs are kept in the
+     * order they were added to the dictionary.
      */
-    private Map items = new HashMap();
-
-    /**
-     * Used to store original sequence of keys, for testing.
-     */
-    private List keys = new ArrayList();
+    private final Map<COSName, COSBase> items =
+        new LinkedHashMap<COSName, COSBase>();
 
     /**
      * Constructor.
@@ -66,8 +62,7 @@ public class COSDictionary extends COSBase
      */
     public COSDictionary( COSDictionary dict )
     {
-        items = new HashMap( dict.items );
-        keys = new ArrayList( dict.keys );
+        items.putAll( dict.items );
     }
 
     /**
@@ -96,22 +91,19 @@ public class COSDictionary extends COSBase
      */
     public COSName getKeyForValue( Object value )
     {
-        COSName key = null;
-        Iterator iter = items.entrySet().iterator();
-        while( key == null && iter.hasNext() )
+        for( Map.Entry<COSName, COSBase> entry : items.entrySet() )
         {
-            Map.Entry next = (Map.Entry)iter.next();
-            Object nextValue = next.getValue();
+            Object nextValue = entry.getValue();
             if( nextValue.equals( value ) ||
                 (nextValue instanceof COSObject &&
                  ((COSObject)nextValue).getObject().equals( value))
                 )
             {
-                key = (COSName)next.getKey();
+                return entry.getKey();
             }
         }
 
-        return key;
+        return null;
     }
 
     /**
@@ -121,7 +113,7 @@ public class COSDictionary extends COSBase
      */
     public int size()
     {
-        return keys.size();
+        return items.size();
     }
 
     /**
@@ -130,7 +122,6 @@ public class COSDictionary extends COSBase
     public void clear()
     {
         items.clear();
-        keys.clear();
     }
 
     /**
@@ -203,7 +194,7 @@ public class COSDictionary extends COSBase
      */
     public COSBase getDictionaryObject( COSName key )
     {
-        COSBase retval = (COSBase)items.get( key );
+        COSBase retval = items.get( key );
         if( retval instanceof COSObject )
         {
             retval = ((COSObject)retval).getObject();
@@ -230,11 +221,6 @@ public class COSDictionary extends COSBase
         }
         else
         {
-            if (!items.containsKey(key))
-            {
-                // insert only if not already there
-                keys.add(key);
-            }
             items.put( key, value );
         }
     }
@@ -1200,7 +1186,6 @@ public class COSDictionary extends COSBase
      */
     public void removeItem( COSName key )
     {
-        keys.remove( key );
         items.remove( key );
     }
 
@@ -1213,23 +1198,42 @@ public class COSDictionary extends COSBase
      */
     public COSBase getItem( COSName key )
     {
-        return (COSBase)items.get( key );
+        return items.get( key );
     }
-
-
-
-
 
     /**
      * This will get the keys for all objects in the dictionary in the sequence that
      * they were added.
      *
+     * @deprecated Use the {@link #entrySet()} method instead.
      * @return a list of the keys in the sequence of insertion
-     *
      */
-    public List keyList()
+    public List<COSName> keyList()
     {
-        return keys;
+        return new ArrayList<COSName>(items.keySet());
+    }
+
+    /**
+     * Returns the names of the entries in this dictionary. The returned
+     * set is in the order the entries were added to the dictionary.
+     *
+     * @since Apache PDFBox 1.1.0
+     * @return names of the entries in this dictionary
+     */
+    public Set<COSName> keySet()
+    {
+        return items.keySet();
+    }
+
+    /**
+     * Returns the name-value entries in this dictionary. The returned
+     * set is in the order the entries were added to the dictionary.
+     *
+     * @since Apache PDFBox 1.1.0
+     * @return name-value entries in this dictionary
+     */
+    public Set<Map.Entry<COSName, COSBase>> entrySet() {
+        return items.entrySet();
     }
 
     /**
@@ -1237,7 +1241,7 @@ public class COSDictionary extends COSBase
      *
      * @return All the values for the dictionary.
      */
-    public Collection getValues()
+    public Collection<COSBase> getValues()
     {
         return items.values();
     }
@@ -1263,19 +1267,17 @@ public class COSDictionary extends COSBase
      */
     public void addAll( COSDictionary dic )
     {
-        Iterator dicKeys = dic.keyList().iterator();
-        while( dicKeys.hasNext() )
+        for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
         {
-            COSName key = (COSName)dicKeys.next();
-            COSBase value = dic.getItem( key );
             /*
              * If we're at a second trailer, we have a linearized 
              * pdf file, meaning that the first Size entry represents
              * all of the objects so we don't need to grab the second. 
              */
-            if(!key.getName().equals("Size") || !keys.contains(COSName.getPDFName("Size")))
+            if(!entry.getKey().getName().equals("Size")
+                    || !items.containsKey(COSName.getPDFName("Size")))
             {
-                setItem( key, value );
+                setItem( entry.getKey(), entry.getValue() );
             }
         }
     }
@@ -1289,14 +1291,11 @@ public class COSDictionary extends COSBase
      */
     public void mergeInto( COSDictionary dic )
     {
-        Iterator dicKeys = dic.keyList().iterator();
-        while( dicKeys.hasNext() )
+        for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
         {
-            COSName key = (COSName)dicKeys.next();
-            COSBase value = dic.getItem( key );
-            if( getItem( key ) == null )
+            if( getItem( entry.getKey() ) == null )
             {
-                setItem( key, value );
+                setItem( entry.getKey(), entry.getValue() );
             }
         }
     }
@@ -1335,14 +1334,13 @@ public class COSDictionary extends COSBase
      */
     public String toString()
     {
-        String retVal = "COSDictionary{";
-        for (int i = 0; i<size(); i++)
+        StringBuilder retVal = new StringBuilder("COSDictionary{");
+        for( COSName key : items.keySet() )
         {
-            COSName key = (COSName)keyList().get(i);
-            retVal = retVal + "(" + key + ":" + getDictionaryObject(key).toString() + ") ";
+            retVal.append("(" + key + ":" + getDictionaryObject(key).toString() + ") ");
         }
-        retVal = retVal + "}";
-        return retVal;
+        retVal.append("}");
+        return retVal.toString();
     }
 
 
