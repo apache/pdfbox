@@ -39,6 +39,7 @@ import org.apache.pdfbox.cos.COSObject;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class PDFTreeModel implements TreeModel
         else if( parent instanceof COSDictionary )
         {
             COSDictionary dict = ((COSDictionary)parent);
-            List keys = dict.keyList();
+            List<COSName> keys = new ArrayList<COSName>(dict.keySet());
             Collections.sort( keys );
             Object key = keys.get( index );
             Object value = dict.getDictionaryObject( (COSName)key );
@@ -222,7 +223,7 @@ public class PDFTreeModel implements TreeModel
             {
                 MapEntry entry = (MapEntry)child;
                 COSDictionary dict = (COSDictionary)parent;
-                List keys = dict.keyList();
+                List<COSName> keys = new ArrayList<COSName>(dict.keySet());
                 Collections.sort( keys );
                 for( int i=0; retval == -1 && i<keys.size(); i++ )
                 {

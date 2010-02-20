@@ -34,20 +34,21 @@ import org.apache.pdfbox.persistence.util.COSHEXTable;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.42 $
  */
-public final class COSName extends COSBase implements Comparable
+public final class COSName extends COSBase implements Comparable<COSName>
 {
     /**
      * Note: This is synchronized because a HashMap must be synchronized if accessed by
      * multiple threads.
      */
-    private static Map nameMap = Collections.synchronizedMap( new WeakHashMap(8192) );
-    
+    private static Map<String, COSName> nameMap =
+        Collections.synchronizedMap( new WeakHashMap<String, COSName>(8192) );
+
     /**
      * All common COSName values are stored in a simple HashMap. They are already defined as
      * static constants and don't need to be synchronized for multithreaded environments.
      */
-    private static Map commonNameMap = new HashMap();
-
+    private static Map<String, COSName> commonNameMap =
+        new HashMap<String, COSName>();
 
     /**
      * A common COSName value.
@@ -523,11 +524,11 @@ public final class COSName extends COSBase implements Comparable
         if( aName != null )
         {
             // Is it a common COSName ??
-            name = (COSName)commonNameMap.get( aName );
+            name = commonNameMap.get( aName );
             if( name == null )
             {
                 // It seems to be a document specific COSName
-                name = (COSName)nameMap.get( aName );
+                name = nameMap.get( aName );
                 if( name == null )
                 {
                     //name is added to the synchronized map in the constructor
@@ -614,9 +615,8 @@ public final class COSName extends COSBase implements Comparable
     /**
      * {@inheritDoc}
      */
-    public int compareTo(Object o)
+    public int compareTo(COSName other)
     {
-        COSName other = (COSName)o;
         return this.name.compareTo( other.name );
     }
 

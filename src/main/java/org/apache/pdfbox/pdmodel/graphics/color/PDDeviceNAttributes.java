@@ -84,10 +84,8 @@ public class PDDeviceNAttributes
             colorants = new COSDictionary();
             dictionary.setItem( COSName.getPDFName( "Colorants" ), colorants );
         }
-        Iterator iter = colorants.keyList().iterator();
-        while( iter.hasNext() )
+        for( COSName name : colorants.keySet() )
         {
-            COSName name = (COSName)iter.next();
             COSBase value = colorants.getDictionaryObject( name );
             actuals.put( name.getName(), PDColorSpaceFactory.createColorSpace( value ) );
         }

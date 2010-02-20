@@ -113,7 +113,7 @@ public class COSStream extends COSDictionary
      *
      * @throws IOException If there is an error parsing the stream.
      */
-    public List getStreamTokens() throws IOException
+    public List<Object> getStreamTokens() throws IOException
     {
         PDFStreamParser parser = new PDFStreamParser( this );
         parser.parse();

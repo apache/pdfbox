@@ -104,10 +104,8 @@ public class PDResources implements COSObjectable
 
         Map actuals = new HashMap();
         retval = new COSDictionaryMap( actuals, fonts );
-        Iterator fontNames = fonts.keyList().iterator();
-        while( fontNames.hasNext() )
+        for( COSName fontName : fonts.keySet() )
         {
-            COSName fontName = (COSName)fontNames.next();
             COSBase font = fonts.getDictionaryObject( fontName );
             //data-000174.pdf contains a font that is a COSArray, looks to be an error in the
             //PDF, we will just ignore entries that are not dictionaries.
@@ -153,10 +151,8 @@ public class PDResources implements COSObjectable
 
         Map actuals = new HashMap();
         retval = new COSDictionaryMap( actuals, xobjects );
-        Iterator imageNames = xobjects.keyList().iterator();
-        while( imageNames.hasNext() )
+        for( COSName objName : xobjects.keySet() )
         {
-            COSName objName = (COSName)imageNames.next();
             COSBase cosObject = xobjects.getDictionaryObject(objName);
             PDXObject xobject = PDXObject.createXObject( cosObject );
             if( xobject !=null )
@@ -190,10 +186,8 @@ public class PDResources implements COSObjectable
 
         Map actuals = new HashMap();
         retval = new COSDictionaryMap( actuals, images );
-        Iterator imageNames = images.keyList().iterator();
-        while( imageNames.hasNext() )
+        for( COSName imageName : images.keySet() )
         {
-            COSName imageName = (COSName)imageNames.next();
             COSStream image = (COSStream)(images.getDictionaryObject(imageName));
 
             COSName subType =(COSName)image.getDictionaryObject(COSName.SUBTYPE);
@@ -237,10 +231,8 @@ public class PDResources implements COSObjectable
         {
             Map actuals = new HashMap();
             retval = new COSDictionaryMap( actuals, colorspaces );
-            Iterator csNames = colorspaces.keyList().iterator();
-            while( csNames.hasNext() )
+            for( COSName csName : colorspaces.keySet() )
             {
-                COSName csName = (COSName)csNames.next();
                 COSBase cs = colorspaces.getDictionaryObject( csName );
                 actuals.put( csName.getName(), PDColorSpaceFactory.createColorSpace( cs ) );
             }
@@ -274,10 +266,8 @@ public class PDResources implements COSObjectable
         {
             Map actuals = new HashMap();
             retval = new COSDictionaryMap( actuals, states );
-            Iterator names = states.keyList().iterator();
-            while( names.hasNext() )
+            for( COSName name : states.keySet() )
             {
-                COSName name = (COSName)names.next();
                 COSDictionary dictionary = (COSDictionary)states.getDictionaryObject( name );
                 actuals.put( name.getName(), new PDExtendedGraphicsState( dictionary ) );
             }

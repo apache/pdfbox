@@ -700,13 +700,12 @@ public class COSWriter implements ICOSVisitor
         {
             getStandardOutput().write(DICT_OPEN);
             getStandardOutput().writeEOL();
-            for (Iterator i = obj.keyList().iterator(); i.hasNext();)
+            for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
             {
-                COSName name = (COSName) i.next();
-                COSBase value = obj.getItem(name);
+                COSBase value = entry.getValue();
                 if (value != null)
                 {
-                    name.accept(this);
+                    entry.getKey().accept(this);
                     getStandardOutput().write(SPACE);
                     if( value instanceof COSDictionary )
                     {

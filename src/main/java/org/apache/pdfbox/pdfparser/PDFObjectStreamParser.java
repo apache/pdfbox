@@ -43,8 +43,8 @@ public class PDFObjectStreamParser extends BaseParser
     private static final Log log =
         LogFactory.getLog(PDFObjectStreamParser.class);
 
-    private List streamObjects = null;
-    private List objectNumbers = null;
+    private List<COSObject> streamObjects = null;
+    private List<Integer> objectNumbers = null;
     private COSStream stream;
 
     /**
@@ -74,8 +74,8 @@ public class PDFObjectStreamParser extends BaseParser
         {
             //need to first parse the header.
             int numberOfObjects = stream.getInt( "N" );
-            objectNumbers = new ArrayList( numberOfObjects );
-            streamObjects = new ArrayList( numberOfObjects );
+            objectNumbers = new ArrayList<Integer>( numberOfObjects );
+            streamObjects = new ArrayList<COSObject>( numberOfObjects );
             for( int i=0; i<numberOfObjects; i++ )
             {
                 int objectNumber = readInt();
@@ -90,7 +90,7 @@ public class PDFObjectStreamParser extends BaseParser
                 object = new COSObject(cosObject);
                 object.setGenerationNumber( COSInteger.ZERO );
                 COSInteger objNum =
-                    new COSInteger( ((Integer)objectNumbers.get( objectCounter)).intValue() );
+                    new COSInteger( objectNumbers.get( objectCounter).intValue() );
                 object.setObjectNumber( objNum );
                 streamObjects.add( object );
                 if(log.isDebugEnabled())
@@ -111,7 +111,7 @@ public class PDFObjectStreamParser extends BaseParser
      *
      * @return All of the objects in the stream.
      */
-    public List getObjects()
+    public List<COSObject> getObjects()
     {
         return streamObjects;
     }
