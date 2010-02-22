@@ -44,6 +44,8 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public class COSDocument extends COSBase
 {
 
+    private static final COSName ENCRYPT = COSName.getPDFName("Encrypt");
+
     /**
      * Log instance.
      */
@@ -263,7 +265,7 @@ public class COSDocument extends COSBase
         boolean encrypted = false;
         if( trailer != null )
         {
-            encrypted = trailer.getDictionaryObject( "Encrypt" ) != null;
+            encrypted = trailer.getDictionaryObject( ENCRYPT ) != null;
         }
         return encrypted;
     }
@@ -276,7 +278,7 @@ public class COSDocument extends COSBase
      */
     public COSDictionary getEncryptionDictionary()
     {
-        return (COSDictionary)trailer.getDictionaryObject( COSName.getPDFName( "Encrypt" ) );
+        return (COSDictionary)trailer.getDictionaryObject( ENCRYPT );
     }
 
     /**
@@ -287,7 +289,7 @@ public class COSDocument extends COSBase
      */
     public void setEncryptionDictionary( COSDictionary encDictionary )
     {
-        trailer.setItem( COSName.getPDFName( "Encrypt" ), encDictionary );
+        trailer.setItem( ENCRYPT, encDictionary );
     }
 
     /**
