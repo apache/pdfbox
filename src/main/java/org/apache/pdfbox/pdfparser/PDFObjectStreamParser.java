@@ -90,7 +90,7 @@ public class PDFObjectStreamParser extends BaseParser
                 object = new COSObject(cosObject);
                 object.setGenerationNumber( COSInteger.ZERO );
                 COSInteger objNum =
-                    new COSInteger( objectNumbers.get( objectCounter).intValue() );
+                    COSInteger.get( objectNumbers.get( objectCounter).intValue() );
                 object.setObjectNumber( objNum );
                 streamObjects.add( object );
                 if(log.isDebugEnabled())

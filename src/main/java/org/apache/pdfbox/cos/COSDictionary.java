@@ -457,9 +457,7 @@ public class COSDictionary extends COSBase
      */
     public void setInt( COSName key, int value )
     {
-        COSInteger intVal = null;
-        intVal = new COSInteger(value);
-        setItem( key, intVal );
+        setItem( key, COSInteger.get(value) );
     }
 
     /**
@@ -484,7 +482,7 @@ public class COSDictionary extends COSBase
     public void setLong( COSName key, long value )
     {
         COSInteger intVal = null;
-        intVal = new COSInteger(value);
+        intVal = COSInteger.get(value);
         setItem( key, intVal );
     }
 

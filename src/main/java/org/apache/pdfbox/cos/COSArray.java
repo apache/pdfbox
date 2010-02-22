@@ -158,7 +158,7 @@ public class COSArray extends COSBase
      */
     public void set( int index, int intVal )
     {
-        objects.set( index, new COSInteger( intVal ) );
+        objects.set( index, COSInteger.get(intVal) );
     }
 
     /**
@@ -254,7 +254,7 @@ public class COSArray extends COSBase
      */
     public void setInt( int index, int value )
     {
-        set( index, new COSInteger( value ) );
+        set( index, COSInteger.get( value ) );
     }
 
     /**

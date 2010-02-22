@@ -239,7 +239,7 @@ public class PDNumberTreeNode implements COSObjectable
             for( int i=0; i<keys.size(); i++ )
             {
                 Integer key = (Integer)keys.get(i);
-                array.add( new COSInteger( key.intValue() ) );
+                array.add( COSInteger.get( key ) );
                 COSObjectable obj = (COSObjectable)numbers.get( key );
                 array.add( obj );
             }

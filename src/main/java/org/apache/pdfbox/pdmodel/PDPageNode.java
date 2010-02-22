@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSInteger;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -49,7 +48,7 @@ public class PDPageNode implements COSObjectable
         page = new COSDictionary();
         page.setItem( COSName.TYPE, COSName.PAGES );
         page.setItem( COSName.KIDS, new COSArray() );
-        page.setItem( COSName.COUNT, new COSInteger( 0 ) );
+        page.setItem( COSName.COUNT, COSNumber.ZERO );
     }
 
     /**
@@ -88,7 +87,7 @@ public class PDPageNode implements COSObjectable
                 totalCount += node.updateCount();
             }
         }
-        page.setItem( COSName.COUNT, new COSInteger( totalCount ) );
+        page.setLong( COSName.COUNT, totalCount );
         return totalCount;
     }
 
@@ -440,6 +439,6 @@ public class PDPageNode implements COSObjectable
      */
     public void setRotation( int rotation )
     {
-        page.setItem( COSName.ROTATE, new COSInteger( rotation ) );
+        page.setInt( COSName.ROTATE, rotation );
     }
 }

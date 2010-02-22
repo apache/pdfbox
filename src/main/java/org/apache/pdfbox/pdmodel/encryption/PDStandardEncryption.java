@@ -123,7 +123,7 @@ public class PDStandardEncryption extends PDEncryptionDictionary
      */
     public void setRevision( int revision )
     {
-        encryptionDictionary.setItem( COSName.getPDFName( "R" ), new COSInteger( revision ) );
+        encryptionDictionary.setInt( COSName.getPDFName( "R" ), revision );
     }
 
     /**
@@ -209,7 +209,7 @@ public class PDStandardEncryption extends PDEncryptionDictionary
      */
     public void setPermissions( int p )
     {
-        encryptionDictionary.setItem( COSName.getPDFName( "P" ), new COSInteger( p ) );
+        encryptionDictionary.setInt( COSName.getPDFName( "P" ), p );
     }
 
     private boolean isPermissionBitOn( int bit )

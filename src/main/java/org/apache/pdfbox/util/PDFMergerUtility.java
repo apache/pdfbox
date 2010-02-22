@@ -280,7 +280,7 @@ public class PDFMergerUtility
                 {
                     COSNumber labelIndex = (COSNumber)srcNums.getObject( i );
                     long labelIndexValue = labelIndex.intValue();
-                    destNums.add( new COSInteger( labelIndexValue + destPageCount ) );
+                    destNums.add( COSInteger.get( labelIndexValue + destPageCount ) );
                     destNums.add( cloneForNewDocument( destination, srcNums.getObject( i+1 ) ) );
                 }
             }

@@ -151,7 +151,7 @@ public class PDPageLabels implements COSObjectable
         COSArray arr = new COSArray();
         for (Entry<Integer, PDPageLabelRange> i : labels.entrySet())
         {
-            arr.add(new COSInteger(i.getKey()));
+            arr.add(COSInteger.get(i.getKey()));
             arr.add(i.getValue());
         }
         dict.setItem("Nums", arr);

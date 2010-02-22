@@ -927,7 +927,7 @@ public class COSWriter implements ICOSVisitor
                 getStandardOutput().write( buffer, 0, amountRead );
                 totalAmountWritten += amountRead;
             }
-            lengthObject.setObject( new COSInteger( totalAmountWritten ) );
+            lengthObject.setObject( COSInteger.get( totalAmountWritten ) );
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();

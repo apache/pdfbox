@@ -237,7 +237,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setPage( int page )
     {
-        annot.setItem( "Page", new COSInteger( page ) );
+        annot.setInt( "Page", page );
     }
 
     /**

@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -180,13 +181,13 @@ public class PDBoxStyle implements COSObjectable
         if( d == null )
         {
             d = new COSArray();
-            d.add( new COSInteger(3) );
+            d.add( COSNumber.THREE );
             dictionary.setItem( "D", d );
         }
         COSArray lineArray = new COSArray();
         lineArray.add( d );
         //dash phase is not specified and assumed to be zero.
-        lineArray.add( new COSInteger( 0 ) );
+        lineArray.add( COSNumber.ZERO );
         pattern = new PDLineDashPattern( lineArray );
         return pattern;
     }

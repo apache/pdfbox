@@ -185,7 +185,7 @@ public class PDICCBased extends PDColorSpace
      */
     public void setNumberOfComponents( int n )
     {
-        stream.getStream().setItem( COSName.getPDFName( "N" ), new COSInteger( n ) );
+        stream.getStream().setInt( COSName.getPDFName( "N" ), n );
     }
 
     /**
