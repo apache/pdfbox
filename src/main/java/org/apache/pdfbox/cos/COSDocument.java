@@ -478,8 +478,8 @@ public class COSDocument extends COSBase
             obj = new COSObject(null);
             if( key != null )
             {
-                obj.setObjectNumber( new COSInteger( key.getNumber() ) );
-                obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
+                obj.setObjectNumber( COSInteger.get( key.getNumber() ) );
+                obj.setGenerationNumber( COSInteger.get( key.getGeneration() ) );
                 objectPool.put(key, obj);
             }
         }

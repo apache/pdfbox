@@ -614,8 +614,8 @@ public class PDFParser extends BaseParser
     private void addObjectToConflicts(int offset, COSObjectKey key, COSBase pb) throws IOException
     {
         COSObject obj = new COSObject(null);
-        obj.setObjectNumber( new COSInteger( key.getNumber() ) );
-        obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
+        obj.setObjectNumber( COSInteger.get( key.getNumber() ) );
+        obj.setGenerationNumber( COSInteger.get( key.getGeneration() ) );
         obj.setObject(pb);
         ConflictObj conflictObj = new ConflictObj(offset, key, obj);
         conflictList.add(conflictObj);   

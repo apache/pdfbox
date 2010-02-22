@@ -129,7 +129,7 @@ public abstract class PDCIDFont extends PDFont
      */
     public void setDefaultWidth( long dw )
     {
-        font.setItem( COSName.DW, new COSInteger( dw ) );
+        font.setLong( COSName.DW, dw );
     }
 
     /**

@@ -108,7 +108,7 @@ public class ImageParameters
      */
     public void setBitsPerComponent( int bpc )
     {
-        dictionary.setItem( COSName.getPDFName( "BPC" ), new COSInteger( bpc ) );
+        dictionary.setInt( COSName.getPDFName( "BPC" ), bpc );
     }
 
 
@@ -177,7 +177,7 @@ public class ImageParameters
      */
     public void setHeight( int h )
     {
-        dictionary.setItem( COSName.getPDFName( "H" ), new COSInteger( h ) );
+        dictionary.setInt( COSName.getPDFName( "H" ), h );
     }
 
     /**
@@ -198,7 +198,7 @@ public class ImageParameters
      */
     public void setWidth( int w )
     {
-        dictionary.setItem( COSName.getPDFName( "W" ), new COSInteger( w ) );
+        dictionary.setInt( COSName.getPDFName( "W" ), w );
     }
 
     /**

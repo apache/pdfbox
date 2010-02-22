@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -351,7 +350,7 @@ public class Overlay
         }
 
         COSDictionary streamDict = new COSDictionary();
-        streamDict.setItem(COSName.LENGTH, new COSInteger(baos.size()));
+        streamDict.setInt(COSName.LENGTH, baos.size());
         COSStream output = new COSStream(streamDict, pdfDocument.getDocument().getScratchFile());
         output.setFilters(stream.getFilters());
         OutputStream os = output.createUnfilteredStream();

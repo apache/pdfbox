@@ -104,7 +104,7 @@ public class PDChoiceField extends PDVariableText
             if( indexArray != null )
             {
                 indexArray.clear();
-                indexArray.add( new COSInteger( indexSelected ) );
+                indexArray.add( COSInteger.get( indexSelected ) );
             }
         }
     }

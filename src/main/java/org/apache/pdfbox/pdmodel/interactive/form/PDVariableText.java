@@ -304,7 +304,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setQ( int q )
     {
-        getDictionary().setItem( COSName.getPDFName( "Q" ), new COSInteger( q ) );
+        getDictionary().setInt( COSName.getPDFName( "Q" ), q );
     }
 
 }

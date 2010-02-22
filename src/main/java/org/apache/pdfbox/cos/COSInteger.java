@@ -31,11 +31,48 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 public class COSInteger extends COSNumber
 {
 
+    /**
+     * The lowest integer to be kept in the {@link #STATIC} array.
+     */
+    private static int LOW = -100;
+
+    /**
+     * The highest integer to be kept in the {@link #STATIC} array.
+     */
+    private static int HIGH = 256;
+
+    /**
+     * Static instances of all COSIntegers in the range from {@link #LOW}
+     * to {@link #HIGH}.
+     */
+    private static final COSInteger[] STATIC = new COSInteger[HIGH - LOW + 1];
+
+    static {
+        for (int i = 0; i < STATIC.length; i++) {
+            STATIC[i] = new COSInteger(i + LOW);
+        }
+    }
+
+    /**
+     * Returns a COSInteger instance with the given value.
+     *
+     * @param val integer value
+     * @return COSInteger instance
+     */
+    public static COSInteger get(long val) {
+        if (LOW <= val && val <= HIGH) {
+            return STATIC[(int) val - LOW];
+        } else {
+            return new COSInteger(val);
+        }
+    }
+
     private long value;
 
     /**
      * constructor.
      *
+     * @deprecated use the static {@link #get(long)} method instead
      * @param val The integer value of this object.
      */
     public COSInteger( long val )
@@ -46,6 +83,7 @@ public class COSInteger extends COSNumber
     /**
      * constructor.
      *
+     * @deprecated use the static {@link #get(long)} method instead
      * @param val The integer value of this object.
      */
     public COSInteger( int val )
@@ -57,7 +95,7 @@ public class COSInteger extends COSNumber
      * This will create a new PDF Int object using a string.
      *
      * @param val The string value of the integer.
-     *
+     * @deprecated use the static {@link #get(long)} method instead
      * @throws IOException If the val is not an integer type.
      */
     public COSInteger( String val ) throws IOException

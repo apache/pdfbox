@@ -320,7 +320,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( ff != null )
         {
-            value = new COSInteger( ff.intValue() );
+            value = COSInteger.get( ff );
         }
         field.setItem( "Ff", value );
     }
@@ -333,7 +333,7 @@ public class FDFField implements COSObjectable
      */
     public void setFieldFlags( int ff )
     {
-        field.setItem( "Ff", new COSInteger( ff ) );
+        field.setInt( "Ff", ff );
     }
 
     /**
@@ -364,7 +364,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( ff != null )
         {
-            value = new COSInteger( ff.intValue() );
+            value = COSInteger.get( ff );
         }
         field.setItem( "SetFf", value );
     }
@@ -377,7 +377,7 @@ public class FDFField implements COSObjectable
      */
     public void setSetFieldFlags( int ff )
     {
-        field.setItem( "SetFf", new COSInteger( ff ) );
+        field.setInt( "SetFf", ff );
     }
 
     /**
@@ -408,7 +408,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( ff != null )
         {
-            value = new COSInteger( ff.intValue() );
+            value = COSInteger.get( ff );
         }
         field.setItem( "ClrFf", value );
     }
@@ -421,7 +421,7 @@ public class FDFField implements COSObjectable
      */
     public void setClearFieldFlags( int ff )
     {
-        field.setItem( "ClrFf", new COSInteger( ff ) );
+        field.setInt( "ClrFf", ff );
     }
 
     /**
@@ -452,7 +452,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( f != null )
         {
-            value = new COSInteger( f.intValue() );
+            value = COSInteger.get( f );
         }
         field.setItem( "F", value );
     }
@@ -465,7 +465,7 @@ public class FDFField implements COSObjectable
      */
     public void setWidgetFieldFlags( int f )
     {
-        field.setItem( "F", new COSInteger( f ) );
+        field.setInt( "F", f );
     }
 
     /**
@@ -496,7 +496,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( ff != null )
         {
-            value = new COSInteger( ff.intValue() );
+            value = COSInteger.get( ff );
         }
         field.setItem( "SetF", value );
     }
@@ -509,7 +509,7 @@ public class FDFField implements COSObjectable
      */
     public void setSetWidgetFieldFlags( int ff )
     {
-        field.setItem( "SetF", new COSInteger( ff ) );
+        field.setInt( "SetF", ff );
     }
 
     /**
@@ -540,7 +540,7 @@ public class FDFField implements COSObjectable
         COSInteger value = null;
         if( ff != null )
         {
-            value = new COSInteger( ff.intValue() );
+            value = COSInteger.get( ff );
         }
         field.setItem( "ClrF", value );
     }
@@ -553,7 +553,7 @@ public class FDFField implements COSObjectable
      */
     public void setClearWidgetFieldFlags( int ff )
     {
-        field.setItem( "ClrF", new COSInteger( ff ) );
+        field.setInt( "ClrF", ff );
     }
 
     /**

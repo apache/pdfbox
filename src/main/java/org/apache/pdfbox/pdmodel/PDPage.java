@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -560,7 +559,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public void setRotation( int rotation )
     {
-        page.setItem( COSName.ROTATE, new COSInteger( rotation ) );
+        page.setInt( COSName.ROTATE, rotation );
     }
 
     /**

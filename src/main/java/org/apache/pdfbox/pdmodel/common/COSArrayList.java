@@ -407,7 +407,7 @@ public class COSArrayList implements List
                     }
                     else if( next instanceof Integer || next instanceof Long )
                     {
-                        array.add( new COSInteger( ((Number)next).longValue() ) );
+                        array.add( COSInteger.get( ((Number)next).longValue() ) );
                     }
                     else if( next instanceof Float || next instanceof Double )
                     {

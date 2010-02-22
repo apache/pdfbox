@@ -278,8 +278,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setFieldFlags( int flags )
     {
-        COSInteger ff = new COSInteger( flags );
-        getDictionary().setItem( COSName.getPDFName( "Ff" ), ff );
+        getDictionary().setInt( COSName.getPDFName( "Ff" ), flags );
     }
 
     /**

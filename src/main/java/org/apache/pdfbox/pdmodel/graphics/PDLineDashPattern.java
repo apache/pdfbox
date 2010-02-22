@@ -44,7 +44,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     {
         lineDashPattern = new COSArray();
         lineDashPattern.add( new COSArray() );
-        lineDashPattern.add( new COSInteger( 0 ) );
+        lineDashPattern.add( COSNumber.ZERO );
     }
 
     /**
@@ -67,7 +67,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     {
         lineDashPattern = new COSArray();
         lineDashPattern.add( ldp );
-        lineDashPattern.add( new COSInteger( phase ) );
+        lineDashPattern.add( COSInteger.get( phase ) );
     }
 
     /**
@@ -116,7 +116,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
      */
     public void setPhaseStart( int phase )
     {
-        lineDashPattern.set( 1, new COSInteger( phase ) );
+        lineDashPattern.set( 1, phase );
     }
 
     /**
