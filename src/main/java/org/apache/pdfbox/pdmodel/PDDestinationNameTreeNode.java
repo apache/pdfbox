@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -32,6 +33,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  */
 public class PDDestinationNameTreeNode extends PDNameTreeNode
 {
+
     /**
      * Constructor.
      */
@@ -61,7 +63,7 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode
             //the destination is sometimes stored in the D dictionary
             //entry instead of being directly an array, so just dereference
             //it for now
-            destination = ((COSDictionary)base).getDictionaryObject( "D" );
+            destination = ((COSDictionary)base).getDictionaryObject( COSName.D );
         }
         return PDDestination.create( destination );
     }

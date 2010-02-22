@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -84,13 +85,13 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDDestinationNameTreeNode dests = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( "Dests" );
+        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.DESTS );
 
         //The document catalog also contains the Dests entry sometimes
         //so check there as well.
         if( dic == null )
         {
-            dic = (COSDictionary)catalog.getCOSDictionary().getDictionaryObject( "Dests" );
+            dic = (COSDictionary)catalog.getCOSDictionary().getDictionaryObject( COSName.DESTS );
         }
 
         if( dic != null )
@@ -109,13 +110,13 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public void setDests( PDDestinationNameTreeNode dests )
     {
-        nameDictionary.setItem( "Dests", dests );
+        nameDictionary.setItem( COSName.DESTS, dests );
         //The dests can either be in the document catalog or in the
         //names dictionary, PDFBox will just maintain the one in the
         //names dictionary for now unless there is a reason to do
         //something else.
         //clear the potentially out of date Dests reference.
-        catalog.getCOSDictionary().setItem( "Dests", (COSObjectable)null);
+        catalog.getCOSDictionary().setItem( COSName.DESTS, (COSObjectable)null);
     }
 
     /**
@@ -128,7 +129,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDEmbeddedFilesNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( "EmbeddedFiles" );
+        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.EMBEDDED_FILES );
 
         if( dic != null )
         {
@@ -145,7 +146,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public void setEmbeddedFiles( PDEmbeddedFilesNameTreeNode ef )
     {
-        nameDictionary.setItem( "EmbeddedFiles", ef );
+        nameDictionary.setItem( COSName.EMBEDDED_FILES, ef );
     }
 
     /**
@@ -157,7 +158,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDJavascriptNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( "JavaScript" );
+        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.JAVA_SCRIPT );
 
         if( dic != null )
         {
@@ -174,6 +175,6 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public void setJavascript( PDJavascriptNameTreeNode js )
     {
-        nameDictionary.setItem( "JavaScript", js );
+        nameDictionary.setItem( COSName.JAVA_SCRIPT, js );
     }
 }

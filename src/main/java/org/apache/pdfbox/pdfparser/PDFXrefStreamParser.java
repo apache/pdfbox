@@ -24,6 +24,7 @@ import java.util.Iterator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
@@ -62,8 +63,8 @@ public class PDFXrefStreamParser extends BaseParser
     {
         try
         {
-            COSArray xrefFormat = (COSArray)stream.getDictionaryObject("W");
-            COSArray indexArray = (COSArray)stream.getDictionaryObject("Index");
+            COSArray xrefFormat = (COSArray)stream.getDictionaryObject(COSName.W);
+            COSArray indexArray = (COSArray)stream.getDictionaryObject(COSName.INDEX);
             /*
              * If Index doesn't exist, we will use the default values. 
              */
@@ -71,7 +72,7 @@ public class PDFXrefStreamParser extends BaseParser
             {
                 indexArray = new COSArray();
                 indexArray.add(COSNumber.ZERO);
-                indexArray.add(stream.getDictionaryObject("Size"));
+                indexArray.add(stream.getDictionaryObject(COSName.SIZE));
             }
             
             ArrayList objNums = new ArrayList();
