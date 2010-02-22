@@ -36,13 +36,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * This test suite is designed to test PDFToImage using a set of PDF
  * files and known good output for each.  The default mode of testAll()
- * is to process each *.pdf file in "test/input".  An output file is
- * created in "test/output" with the same name as the PDF file, plus an
- * additional ".jpg" suffix.
+ * is to process each *.pdf file in "src/test/resources/input/rendering".  An output file is
+ * created in "target/test-output/rendering" with the same name as the PDF file, plus an
+ * additional page number and ".png" suffix.
  *
  * The output file is then tested against a known good result file from
  * the input directory (again, with the same name as the tested PDF file,
- * but with the additional ".jpg" suffix).
+ * but with the additional page number and ".png" suffix).
  *
  * Currently, testing against known output is simply a byte-for-byte comparison
  *
@@ -134,7 +134,7 @@ public class TestPDFToImage extends TestCase
               });
                 for (int n = 0; n < outFiles.length; n++)
                 {
-                    File inFile = new File(inDir + outFiles[n].getName());
+                    File inFile = new File(inDir + '/' + outFiles[n].getName());
                     if (!inFile.exists() ||
                         !filesAreIdentical(outFiles[n], inFile))
                     {
