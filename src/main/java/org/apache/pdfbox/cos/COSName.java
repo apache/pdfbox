@@ -253,6 +253,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "Encrypt" */
     public static final COSName ENCRYPT = new COSName( "Encrypt" );
 
+    /** "ExtGState" */
+    public static final COSName EXT_G_STATE = new COSName( "ExtGState" );
+
     /** "Extends" */
     public static final COSName EXTENDS = new COSName( "Extends" );
 
@@ -496,6 +499,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName PREV = new COSName( "Prev" );
+
+    /** "ProcSet" */
+    public static final COSName PROC_SET = new COSName( "ProcSet" );
+
     /**
      * A common COSName value.
      */

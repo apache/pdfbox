@@ -472,7 +472,7 @@ public class COSWriter implements ICOSVisitor
         //sort xref, needed only if object keys not regenerated
         Collections.sort(getXRefEntries());
         COSWriterXRefEntry lastEntry = (COSWriterXRefEntry)getXRefEntries().get( getXRefEntries().size()-1);
-        trailer.setInt(COSName.getPDFName("Size"), (int)lastEntry.getKey().getNumber()+1);
+        trailer.setInt(COSName.SIZE, (int)lastEntry.getKey().getNumber()+1);
         trailer.removeItem( COSName.PREV );
         /**
         COSObject catalog = doc.getCatalog();

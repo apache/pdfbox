@@ -37,7 +37,7 @@ public class PDPageLabelRange implements COSObjectable
 
     // Page label dictonary (PDF32000-1:2008 Section 12.4.2, Table 159)
     private static final COSName KEY_START = COSName.getPDFName("St");
-    private static final COSName KEY_PREFIX = COSName.getPDFName("P");
+    private static final COSName KEY_PREFIX = COSName.P;
     private static final COSName KEY_STYLE = COSName.getPDFName("S");
 
     // Style entry values (PDF32000-1:2008 Section 12.4.2, Table 159)
