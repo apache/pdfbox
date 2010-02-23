@@ -247,7 +247,7 @@ public class PDResources implements COSObjectable
      */
     public void setColorSpaces( Map colorspaces )
     {
-        resources.setItem( COSName.getPDFName( "ColorSpace" ), COSDictionaryMap.convert( colorspaces ) );
+        resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( colorspaces ) );
     }
 
     /**
@@ -260,7 +260,7 @@ public class PDResources implements COSObjectable
     public Map getGraphicsStates()
     {
         Map retval = null;
-        COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.getPDFName( "ExtGState" ) );
+        COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.EXT_G_STATE );
 
         if( states != null )
         {
@@ -290,6 +290,6 @@ public class PDResources implements COSObjectable
             PDExtendedGraphicsState state = (PDExtendedGraphicsState)states.get( name );
             dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
         }
-        resources.setItem( COSName.getPDFName( "ExtGState" ), dic );
+        resources.setItem( COSName.EXT_G_STATE, dic );
     }
 }

@@ -84,19 +84,19 @@ public class ShowSignature
 
                 COSDictionary trailer = document.getDocument().getTrailer();
                 COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
-                COSDictionary acroForm = (COSDictionary)root.getDictionaryObject( COSName.getPDFName( "AcroForm" ) );
-                COSArray fields = (COSArray)acroForm.getDictionaryObject( COSName.getPDFName( "Fields" ) );
+                COSDictionary acroForm = (COSDictionary)root.getDictionaryObject( COSName.ACRO_FORM );
+                COSArray fields = (COSArray)acroForm.getDictionaryObject( COSName.FIELDS );
                 for( int i=0; i<fields.size(); i++ )
                 {
                     COSDictionary field = (COSDictionary)fields.getObject( i );
                     String type = field.getNameAsString( "FT" );
                     if( "Sig".equals( type ) )
                     {
-                        COSDictionary cert = (COSDictionary)field.getDictionaryObject( COSName.getPDFName( "V" ) );
+                        COSDictionary cert = (COSDictionary)field.getDictionaryObject( COSName.V );
                         if( cert != null )
                         {
                             System.out.println( "Certificate found" );
-                            System.out.println( "Name=" + cert.getDictionaryObject( COSName.getPDFName( "Name" ) ) );
+                            System.out.println( "Name=" + cert.getDictionaryObject( COSName.NAME ) );
                             System.out.println( "Modified=" + cert.getDictionaryObject( COSName.getPDFName( "M" ) ) );
                             COSName subFilter = (COSName)cert.getDictionaryObject( COSName.getPDFName( "SubFilter" ) );
                             if( subFilter != null )
@@ -114,7 +114,7 @@ public class ShowSignature
                                 else if( subFilter.getName().equals( "adbe.pkcs7.sha1" ) )
                                 {
                                     COSString certString = (COSString)cert.getDictionaryObject(
-                                        COSName.getPDFName( "Contents" ) );
+                                        COSName.CONTENTS );
                                     byte[] certData = certString.getBytes();
                                     CertificateFactory factory = CertificateFactory.getInstance( "X.509" );
                                     ByteArrayInputStream certStream = new ByteArrayInputStream( certData );
