@@ -213,7 +213,7 @@ public class ImageParameters
         if( filters instanceof COSName )
         {
             COSName name = (COSName)filters;
-            retval = new COSArrayList( name.getName(), name, dictionary, "Filter" );
+            retval = new COSArrayList( name.getName(), name, dictionary, COSName.FILTER );
         }
         else if( filters instanceof COSArray )
         {

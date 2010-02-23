@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
@@ -143,7 +144,7 @@ public abstract class PDAction implements PDDestinationOrAction
         if( next instanceof COSDictionary )
         {
             PDAction pdAction = PDActionFactory.createAction( (COSDictionary) next );
-            retval = new COSArrayList(pdAction, next, action, "Next" );
+            retval = new COSArrayList(pdAction, next, action, COSName.getPDFName( "Next" ));
         }
         else if( next instanceof COSArray )
         {

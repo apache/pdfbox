@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 
 /**
  * This class represents a PDF Number tree. See the PDF Reference 1.7 section
@@ -94,7 +95,7 @@ public class PDNumberTreeNode implements COSObjectable
     {
 
         List retval = null;
-        COSArray kids = (COSArray)node.getDictionaryObject( "Kids" );
+        COSArray kids = (COSArray)node.getDictionaryObject( COSName.KIDS );
         if( kids != null )
         {
             List pdObjects = new ArrayList();
@@ -163,7 +164,7 @@ public class PDNumberTreeNode implements COSObjectable
     public Map getNumbers()  throws IOException
     {
         Map indices = null;
-        COSArray namesArray = (COSArray)node.getDictionaryObject( "Nums" );
+        COSArray namesArray = (COSArray)node.getDictionaryObject( COSName.NUMS );
         if( namesArray != null )
         {
             indices = new HashMap();
@@ -228,7 +229,7 @@ public class PDNumberTreeNode implements COSObjectable
     {
         if( numbers == null )
         {
-            node.setItem( "Nums", (COSObjectable)null );
+            node.setItem( COSName.NUMS, (COSObjectable)null );
             node.setItem( "Limits", (COSObjectable)null);
         }
         else
@@ -264,7 +265,7 @@ public class PDNumberTreeNode implements COSObjectable
     public Integer getUpperLimit()
     {
         Integer retval = null;
-        COSArray arr = (COSArray)node.getDictionaryObject( "Limits" );
+        COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr != null )
         {
             retval = Integer.valueOf(arr.getInt( 1 ));
@@ -279,7 +280,7 @@ public class PDNumberTreeNode implements COSObjectable
      */
     private void setUpperLimit( Integer upper )
     {
-        COSArray arr = (COSArray)node.getDictionaryObject( "Limits" );
+        COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr == null )
         {
             arr = new COSArray();
@@ -297,7 +298,7 @@ public class PDNumberTreeNode implements COSObjectable
     public Integer getLowerLimit()
     {
         Integer retval = null;
-        COSArray arr = (COSArray)node.getDictionaryObject( "Limits" );
+        COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr != null )
         {
             retval = Integer.valueOf(arr.getInt( 0 ));
@@ -312,7 +313,7 @@ public class PDNumberTreeNode implements COSObjectable
      */
     private void setLowerLimit( Integer lower )
     {
-        COSArray arr = (COSArray)node.getDictionaryObject( "Limits" );
+        COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr == null )
         {
             arr = new COSArray();

@@ -278,7 +278,7 @@ public class PDStream implements COSObjectable
         if( filters instanceof COSName )
         {
             COSName name = (COSName)filters;
-            retval = new COSArrayList( name.getName(), name, stream, "Filter" );
+            retval = new COSArrayList( name.getName(), name, stream, COSName.FILTER );
         }
         else if( filters instanceof COSArray )
         {
@@ -295,7 +295,7 @@ public class PDStream implements COSObjectable
     public void setFilters( List filters )
     {
         COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray( filters );
-        stream.setItem( "Filter", obj );
+        stream.setItem( COSName.FILTER, obj );
     }
 
     /**
@@ -310,16 +310,16 @@ public class PDStream implements COSObjectable
     {
         List retval = null;
 
-        COSBase dp = stream.getDictionaryObject( "DecodeParms" );
+        COSBase dp = stream.getDictionaryObject( COSName.DECODE_PARMS );
         if( dp == null )
         {
             //See PDF Ref 1.5 implementation note 7, the DP is sometimes used instead.
-            dp = stream.getDictionaryObject( "DP" );
+            dp = stream.getDictionaryObject( COSName.DP );
         }
         if( dp instanceof COSDictionary )
         {
             Map map = COSDictionaryMap.convertBasicTypesToMap( (COSDictionary)dp );
-            retval = new COSArrayList(map, dp, stream, "DecodeParams" );
+            retval = new COSArrayList(map, dp, stream, COSName.DECODE_PARAMS );
         }
         else if( dp instanceof COSArray )
         {
@@ -345,7 +345,7 @@ public class PDStream implements COSObjectable
     public void setDecodeParams( List decodeParams )
     {
         stream.setItem(
-            "DecodeParams", COSArrayList.converterToCOSArray( decodeParams ) );
+            COSName.DECODE_PARAMS, COSArrayList.converterToCOSArray( decodeParams ) );
     }
 
     /**
@@ -358,7 +358,7 @@ public class PDStream implements COSObjectable
      */
     public PDFileSpecification getFile() throws IOException
     {
-        COSBase f = stream.getDictionaryObject( "F" );
+        COSBase f = stream.getDictionaryObject( COSName.F );
         PDFileSpecification retval = PDFileSpecification.createFS( f );
         return retval;
     }
@@ -369,7 +369,7 @@ public class PDStream implements COSObjectable
      */
     public void setFile( PDFileSpecification f )
     {
-        stream.setItem( "F", f );
+        stream.setItem( COSName.F, f );
     }
 
     /**
@@ -380,11 +380,11 @@ public class PDStream implements COSObjectable
     public List getFileFilters()
     {
         List retval = null;
-        COSBase filters = stream.getDictionaryObject( "FFilter" );
+        COSBase filters = stream.getDictionaryObject( COSName.F_FILTER );
         if( filters instanceof COSName )
         {
             COSName name = (COSName)filters;
-            retval = new COSArrayList( name.getName(), name, stream, "FFilter" );
+            retval = new COSArrayList( name.getName(), name, stream, COSName.F_FILTER );
         }
         else if( filters instanceof COSArray )
         {
@@ -401,7 +401,7 @@ public class PDStream implements COSObjectable
     public void setFileFilters( List filters )
     {
         COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray( filters );
-        stream.setItem( "FFilter", obj );
+        stream.setItem( COSName.F_FILTER, obj );
     }
 
     /**
@@ -416,11 +416,11 @@ public class PDStream implements COSObjectable
     {
         List retval = null;
 
-        COSBase dp = stream.getDictionaryObject( "FDecodeParms" );
+        COSBase dp = stream.getDictionaryObject( COSName.F_DECODE_PARMS );
         if( dp instanceof COSDictionary )
         {
             Map map = COSDictionaryMap.convertBasicTypesToMap( (COSDictionary)dp );
-            retval = new COSArrayList(map, dp, stream, "FDecodeParams" );
+            retval = new COSArrayList(map, dp, stream, COSName.F_DECODE_PARMS );
         }
         else if( dp instanceof COSArray )
         {
@@ -504,7 +504,7 @@ public class PDStream implements COSObjectable
     public PDMetadata getMetadata()
     {
         PDMetadata retval = null;
-        COSStream mdStream = (COSStream)stream.getDictionaryObject( "Metadata" );
+        COSStream mdStream = (COSStream)stream.getDictionaryObject( COSName.METADATA );
         if( mdStream != null )
         {
             retval = new PDMetadata( mdStream );
@@ -519,6 +519,6 @@ public class PDStream implements COSObjectable
      */
     public void setMetadata( PDMetadata meta )
     {
-        stream.setItem( "Metadata", meta );
+        stream.setItem( COSName.METADATA, meta );
     }
 }
