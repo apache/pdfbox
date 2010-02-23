@@ -366,11 +366,41 @@ public class COSArray extends COSBase
      *
      * @param o The object to remove.
      *
-     * @return The object that was removed.
+     * @return <code>true</code> if the object was removed, <code>false</code>
+     *  otherwise
      */
     public boolean remove( COSBase o )
     {
         return objects.remove( o );
+    }
+
+    /**
+     * This will remove an element from the array.
+     * This method will also remove a reference to the object.
+     * 
+     * @param o The object to remove.
+     * @return <code>true</code> if the object was removed, <code>false</code>
+     *  otherwise
+     */
+    public boolean removeObject(COSBase o)
+    {
+        boolean removed = this.remove(o);
+        if (!removed)
+        {
+            for (int i = 0; i < this.size(); i++)
+            {
+                COSBase entry = this.get(i);
+                if (entry instanceof COSObject)
+                {
+                    COSObject objEntry = (COSObject) entry;
+                    if (objEntry.getObject().equals(o))
+                    {
+                        return this.remove(entry);
+                    }
+                }
+            }
+        }
+        return removed;
     }
 
     /**
@@ -405,6 +435,36 @@ public class COSArray extends COSBase
             if( get( i ).equals( object ) )
             {
                 retval = i;
+            }
+        }
+        return retval;
+    }
+
+    /**
+     * This will return the index of the entry or -1 if it is not found.
+     * This method will also find references to indirect objects.
+     * 
+     * @param object The object to search for.
+     * @return The index of the object or -1.
+     */
+    public int indexOfObject(COSBase object)
+    {
+        int retval = -1;
+        for (int i = 0; retval < 0 && i < this.size(); i++)
+        {
+            COSBase item = this.get(i);
+            if (item.equals(object))
+            {
+                retval = i;
+                break;
+            }
+            else if (item instanceof COSObject)
+            {
+                if (((COSObject) item).getObject().equals(object))
+                {
+                    retval = i;
+                    break;
+                }
             }
         }
         return retval;
