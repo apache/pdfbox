@@ -141,12 +141,12 @@ public class PDResources implements COSObjectable
     public Map getXObjects() throws IOException
     {
         Map retval = null;
-        COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( "XObject" );
+        COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
 
         if( xobjects == null )
         {
             xobjects = new COSDictionary();
-            resources.setItem( "XObject", xobjects );
+            resources.setItem( COSName.XOBJECT, xobjects );
         }
 
         Map actuals = new HashMap();
@@ -176,12 +176,12 @@ public class PDResources implements COSObjectable
     public Map getImages() throws IOException
     {
         Map retval = null;
-        COSDictionary images = (COSDictionary)resources.getDictionaryObject( "XObject" );
+        COSDictionary images = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
 
         if( images == null )
         {
             images = new COSDictionary();
-            resources.setItem( "XObject", images );
+            resources.setItem( COSName.XOBJECT, images );
         }
 
         Map actuals = new HashMap();

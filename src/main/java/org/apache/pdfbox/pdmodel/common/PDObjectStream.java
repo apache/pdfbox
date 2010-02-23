@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -115,7 +116,7 @@ public class PDObjectStream extends PDStream
     public PDObjectStream getExtends()
     {
         PDObjectStream retval = null;
-        COSStream stream = (COSStream)getStream().getDictionaryObject( "Extends" );
+        COSStream stream = (COSStream)getStream().getDictionaryObject( COSName.EXTENDS );
         if( stream != null )
         {
             retval = new PDObjectStream( stream );
@@ -132,6 +133,6 @@ public class PDObjectStream extends PDStream
      */
     public void setExtends( PDObjectStream stream )
     {
-        getStream().setItem( "Extends", stream );
+        getStream().setItem( COSName.EXTENDS, stream );
     }
 }

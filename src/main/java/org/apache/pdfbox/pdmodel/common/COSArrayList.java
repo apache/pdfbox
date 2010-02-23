@@ -44,7 +44,7 @@ public class COSArrayList implements List
     private List actual;
 
     private COSDictionary parentDict;
-    private String dictKey;
+    private COSName dictKey;
 
     /**
      * Default constructor.
@@ -82,7 +82,7 @@ public class COSArrayList implements List
      * @param dictionary The dictionary that holds the item, and will hold the array if an item is added.
      * @param dictionaryKey The key into the dictionary to set the item.
      */
-    public COSArrayList( Object actualObject, COSBase item, COSDictionary dictionary, String dictionaryKey )
+    public COSArrayList( Object actualObject, COSBase item, COSDictionary dictionary, COSName dictionaryKey )
     {
         array = new COSArray();
         array.add( item );
@@ -91,6 +91,14 @@ public class COSArrayList implements List
 
         parentDict = dictionary;
         dictKey = dictionaryKey;
+    }
+
+    /**
+     * @deprecated use the {@link #COSArrayList(Object, COSBase, COSDictionary, COSName)} method instead
+     */
+    public COSArrayList( Object actualObject, COSBase item, COSDictionary dictionary, String dictionaryKey )
+    {
+        this( actualObject, item, dictionary, COSName.getPDFName(dictionaryKey) );
     }
 
     /**
