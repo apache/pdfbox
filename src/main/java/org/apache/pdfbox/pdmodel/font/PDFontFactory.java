@@ -119,7 +119,14 @@ public class PDFontFactory
                     String ff3SubType = ff3Stream.getNameAsString(COSName.SUBTYPE);
                     if( ff3SubType.equals("Type1C") )
                     {
-                        retval = new PDType1CFont( dic );
+                        try 
+                        {
+                            retval = new PDType1CFont( dic );
+                        }
+                        catch( Exception e )
+                        {
+                            log.warn("Failed to create Type1C font. Falling back to Type1 font", e);
+                        }
                     }
                 }
             }

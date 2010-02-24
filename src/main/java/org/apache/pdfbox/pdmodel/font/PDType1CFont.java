@@ -96,9 +96,11 @@ public class PDType1CFont extends PDSimpleFont
      * Constructor.
      * @param fontDictionary the corresponding dictionary
      */
-    public PDType1CFont( COSDictionary fontDictionary )
+    public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
+
+        load();
     }
 
     /**
@@ -106,8 +108,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public String encode( byte[] bytes, int offset, int length ) throws IOException
     {
-        ensureLoaded();
-
         String character = getCharacter(bytes, offset, length);
         if( character == null )
         {
@@ -135,8 +135,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public float getFontWidth( byte[] bytes, int offset, int length ) throws IOException
     {
-        ensureLoaded();
-
         String name = getName(bytes, offset, length);
         if( name == null && !Arrays.equals(SPACE_BYTES, bytes) )
         {
@@ -160,8 +158,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public float getFontHeight( byte[] bytes, int offset, int length ) throws IOException
     {
-        ensureLoaded();
-
         String name = getName(bytes, offset, length);
         if( name == null )
         {
@@ -197,8 +193,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public float getStringWidth( String string ) throws IOException
     {
-        ensureLoaded();
-
         float width = 0;
 
         for( int i = 0; i < string.length(); i++ )
@@ -229,8 +223,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public PDFontDescriptor getFontDescriptor() throws IOException
     {
-        ensureLoaded();
-
         return new PDFontDescriptorAFM(this.fontMetric);
     }
 
@@ -239,8 +231,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public float getAverageFontWidth() throws IOException
     {
-        ensureLoaded();
-
         if( this.avgWidth == null )
         {
             this.avgWidth = Float.valueOf(this.fontMetric.getAverageCharacterWidth());
@@ -254,8 +244,6 @@ public class PDType1CFont extends PDSimpleFont
      */
     public PDRectangle getFontBoundingBox() throws IOException
     {
-        ensureLoaded();
-
         if( this.fontBBox == null )
         {
             this.fontBBox = new PDRectangle(this.fontMetric.getFontBBox());
@@ -270,20 +258,13 @@ public class PDType1CFont extends PDSimpleFont
     public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
         throws IOException
     {
-        ensureLoaded();
-
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         writeFont(g2d, at, this.awtFont, fontSize, x, y, string);
     }
 
-    private void ensureLoaded() throws IOException
+    private void load() throws IOException
     {
-        if( this.cffFont != null )
-        {
-            return;
-        }
-
         byte[] cffBytes = loadBytes();
 
         CFFParser cffParser = new CFFParser();
