@@ -532,6 +532,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName SEPARATION = new COSName( "Separation" );
 
+    /** "Shading" */
+    public static final COSName SHADING = new COSName( "Shading" );
+    
     /** "Size" */
     public static final COSName SIZE = new COSName( "Size" );
 
