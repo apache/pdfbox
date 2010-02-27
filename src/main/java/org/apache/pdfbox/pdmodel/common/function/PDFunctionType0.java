@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.common.function;
 
 import java.util.List;
+import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
@@ -182,5 +183,15 @@ public class PDFunctionType0 extends PDStreamFunction
         }
         encode.set( paramNum*2, new COSFloat( range.getMin() ) );
         encode.set( paramNum*2+1, new COSFloat( range.getMax() ) );
+    }
+    
+    /**
+    * {@inheritDoc}
+    */
+    public COSArray Eval(COSArray input) throws IOException
+    {
+        //This involves linear interpolation based on a set of sample points.
+        //Theoretically it's not that difficult ... see section 3.9.1 of the PDF Reference.
+        throw new IOException("Not Implemented");
     }
 }

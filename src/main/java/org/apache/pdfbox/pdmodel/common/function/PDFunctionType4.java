@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.cos.COSArray;
+import java.io.IOException;
 
 /**
  * This class represents a type 4 function in a PDF document.
@@ -46,5 +48,16 @@ public class PDFunctionType4 extends PDStreamFunction
     public PDFunctionType4( PDStream functionDictionary )
     {
         super( functionDictionary );
+    }
+    
+    
+    /**
+    * {@inheritDoc}
+    */
+    public COSArray Eval(COSArray input) throws IOException
+    {
+        //Implementation here will require evaluation of PostScript functions.
+        //See section 3.9.4 of the PDF Reference.
+        throw new IOException("Not Implemented");
     }
 }
