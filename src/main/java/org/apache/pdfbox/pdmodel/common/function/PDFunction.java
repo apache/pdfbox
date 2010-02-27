@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -151,5 +152,15 @@ public abstract class PDFunction implements COSObjectable
      * @param n The number of the input parameter to set the domain for.
      */
     public abstract void setDomainForInput(PDRange range, int n);
+
+
+    /**
+     * Evaluates the function at the given input.
+     * ReturnValue = f(input)
+     *
+     * @param input The array of input values for the function. In many cases will be an array of a single value, but not always.
+     * @return The of outputs the function returns based on those inputs. In many cases will be an array of a single value, but not always.
+     */
+    public abstract COSArray Eval(COSArray input) throws IOException;
 
 }

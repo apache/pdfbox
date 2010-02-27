@@ -74,7 +74,7 @@ public abstract class PDDictionaryFunction extends PDFunction
         return function;
     }
 
-    private COSArray getRangeArray( String fieldName, int n )
+    protected COSArray getRangeArray( String fieldName, int n )
     {
         COSArray rangeArray = (COSArray)function.getDictionaryObject( COSName.getPDFName( "Range" ) );
         if( rangeArray == null )

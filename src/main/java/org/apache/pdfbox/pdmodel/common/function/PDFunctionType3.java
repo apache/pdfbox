@@ -16,7 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.common.function;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSName;
+import java.io.IOException;
 
 /**
  * This class represents a type 3 function in a PDF document.
@@ -45,4 +49,60 @@ public class PDFunctionType3 extends PDDictionaryFunction
         super( functionDictionary );
     }
 
+    /**
+    * {@inheritDoc}
+    */
+    public COSArray Eval(COSArray input) throws IOException
+    {
+        //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
+        //See PDF Reference section 3.9.3.
+        
+        PDFunction F=null;
+        float x = ((COSFloat)input.get(0)).floatValue();
+        COSArray Domain = getDomainForInput(1).getCOSArray();
+        
+        if (getBounds().size() == 0)
+        {
+            F = PDFunction.create(getFunctions().get(0));
+        }
+        else
+        {
+            //check boundary conditions first ...
+            if (x < ((COSFloat)Domain.get(0)).floatValue())
+                F = PDFunction.create(getFunctions().get(0));
+            else if (x > ((COSFloat)Domain.get(1)).floatValue())
+                F = PDFunction.create(getFunctions().get(getFunctions().size()-1));
+            else
+            {
+                float[] fBounds = getBounds().toFloatArray();
+                for (int k = 0; k<getBounds().size(); k++){
+                    if (x <= fBounds[k])
+                    {
+                        F = PDFunction.create(getFunctions().get(k));
+                        break;
+                    }
+                }
+                if(F==null) //must be in last partition
+                {
+                    F = PDFunction.create(getFunctions().get(getFunctions().size()-1));
+                }
+            }
+        }
+        return F.Eval(input);
+    }
+    
+    protected COSArray getFunctions()
+    {
+        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Functions" )  ));
+    }
+    
+    protected COSArray getBounds()
+    {
+        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Bounds" )  ));
+    }
+    
+    protected COSArray getEncode()
+    {
+        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Encode" )  ));
+    }
 }
