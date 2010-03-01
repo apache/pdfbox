@@ -521,4 +521,29 @@ public class PDStream implements COSObjectable
     {
         stream.setItem( COSName.METADATA, meta );
     }
+
+    /**
+     * Get the decoded stream length.
+     *
+     * @since Apache PDFBox 1.1.0
+     * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-636">PDFBOX-636</a>
+     * @return the decoded stream length
+     */
+    public int getDecodedStreamLength()
+    {
+        return this.stream.getInt(COSName.DL);
+    }
+
+    /**
+     * Set the decoded stream length.
+     *
+     * @since Apache PDFBox 1.1.0
+     * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-636">PDFBOX-636</a>
+     * @param decodedStreamLength the decoded stream length
+     */
+    public void setDecodedStreamLength(int decodedStreamLength)
+    {
+        this.stream.setInt(COSName.DL, decodedStreamLength);
+    }
+
 }
