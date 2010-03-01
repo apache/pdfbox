@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.BufferedInputStream;
@@ -39,8 +38,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
+
 /**
  * This is implementation of the Type1 Font
  * with a afm and a pfb file.
@@ -226,7 +226,7 @@ public class PDType1AfmPfbFont extends PDType1Font
     private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException 
     {
         COSArray array = new COSArray();
-        array.add(COSNumber.ZERO);
+        array.add(COSInteger.ZERO);
         for (int i = 0; i < 256; i++) 
         {
             array.add(encoding.getName(i));

@@ -41,7 +41,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -143,7 +142,7 @@ public class PDDocument implements Pageable
         pages.setItem( COSName.TYPE, COSName.PAGES );
         COSArray kidsArray = new COSArray();
         pages.setItem( COSName.KIDS, kidsArray );
-        pages.setItem( COSName.COUNT, COSNumber.ZERO );
+        pages.setItem( COSName.COUNT, COSInteger.ZERO );
     }
 
     private void generatePageMap() 

@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
 /**
- *
  * This class represents an integer number in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -47,11 +46,17 @@ public class COSInteger extends COSNumber
      */
     private static final COSInteger[] STATIC = new COSInteger[HIGH - LOW + 1];
 
-    static {
-        for (int i = 0; i < STATIC.length; i++) {
-            STATIC[i] = new COSInteger(i + LOW);
-        }
-    }
+    /** Constant for the number zero. */
+    public static final COSInteger ZERO = get(0); 
+
+    /** Constant for the number one. */
+    public static final COSInteger ONE = get(1); 
+
+    /** Constant for the number two. */
+    public static final COSInteger TWO = get(2); 
+
+    /** Constant for the number three. */
+    public static final COSInteger THREE = get(3); 
 
     /**
      * Returns a COSInteger instance with the given value.
@@ -61,7 +66,12 @@ public class COSInteger extends COSNumber
      */
     public static COSInteger get(long val) {
         if (LOW <= val && val <= HIGH) {
-            return STATIC[(int) val - LOW];
+            int index = (int) val - LOW;
+            // no synchronization needed
+            if (STATIC[index] == null) {
+                STATIC[index] = new COSInteger(val);
+            }
+            return STATIC[index];
         } else {
             return new COSInteger(val);
         }
@@ -209,4 +219,5 @@ public class COSInteger extends COSNumber
     {
         output.write(String.valueOf(value).getBytes());
     }
+
 }
