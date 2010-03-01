@@ -19,7 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSInteger;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
@@ -174,7 +174,7 @@ public class PDBorderStyleDictionary implements COSObjectable
         if (d == null)
         {
             d = new COSArray();
-            d.add( COSNumber.THREE );
+            d.add( COSInteger.THREE );
             getDictionary().setItem( "D", d );
         }
         return new PDLineDashPattern( d, 0 );

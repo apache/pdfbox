@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
@@ -71,7 +70,7 @@ public class PDFXrefStreamParser extends BaseParser
             if(indexArray == null)
             {
                 indexArray = new COSArray();
-                indexArray.add(COSNumber.ZERO);
+                indexArray.add(COSInteger.ZERO);
                 indexArray.add(stream.getDictionaryObject(COSName.SIZE));
             }
             

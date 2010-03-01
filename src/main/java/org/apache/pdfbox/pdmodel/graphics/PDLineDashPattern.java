@@ -44,7 +44,7 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
     {
         lineDashPattern = new COSArray();
         lineDashPattern.add( new COSArray() );
-        lineDashPattern.add( COSNumber.ZERO );
+        lineDashPattern.add( COSInteger.ZERO );
     }
 
     /**

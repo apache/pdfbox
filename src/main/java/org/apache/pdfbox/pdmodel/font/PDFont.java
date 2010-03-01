@@ -30,8 +30,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 
@@ -734,11 +734,11 @@ public abstract class PDFont implements COSObjectable
         {
             array = new COSArray();
             array.add( new COSFloat( 0.001f ) );
-            array.add( COSNumber.ZERO );
-            array.add( COSNumber.ZERO );
+            array.add( COSInteger.ZERO );
+            array.add( COSInteger.ZERO );
             array.add( new COSFloat( 0.001f ) );
-            array.add( COSNumber.ZERO );
-            array.add( COSNumber.ZERO );
+            array.add( COSInteger.ZERO );
+            array.add( COSInteger.ZERO );
         }
         matrix = new PDMatrix(array);
 

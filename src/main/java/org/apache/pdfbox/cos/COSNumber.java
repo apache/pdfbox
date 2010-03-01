@@ -26,28 +26,17 @@ import java.io.IOException;
  */
 public abstract class COSNumber extends COSBase
 {
-    
-    /**
-     * ZERO.
-    */
-    public static final COSInteger ZERO = COSInteger.get( 0 );
 
     /**
-     * ONE.
-    */
-    public static final COSInteger ONE = COSInteger.get( 1 );
+     * @deprecated Use the {@link COSInteger#ZERO} constant instead
+     */
+    public static final COSInteger ZERO = COSInteger.ZERO;
 
     /**
-     * TWO.
-    */
-    public static final COSInteger TWO = COSInteger.get( 2 );
+     * @deprecated Use the {@link COSInteger#ONE} constant instead
+     */
+    public static final COSInteger ONE = COSInteger.ONE;
 
-    /**
-     * THREE.
-    */
-    public static final COSInteger THREE = COSInteger.get( 3 );
-
-    
     /**
      * This will get the float value of this number.
      *

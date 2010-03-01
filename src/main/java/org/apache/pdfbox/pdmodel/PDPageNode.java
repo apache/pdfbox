@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 
@@ -48,7 +49,7 @@ public class PDPageNode implements COSObjectable
         page = new COSDictionary();
         page.setItem( COSName.TYPE, COSName.PAGES );
         page.setItem( COSName.KIDS, new COSArray() );
-        page.setItem( COSName.COUNT, COSNumber.ZERO );
+        page.setItem( COSName.COUNT, COSInteger.ZERO );
     }
 
     /**
