@@ -19,11 +19,13 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A form xobject.
@@ -111,7 +113,7 @@ public class PDXObjectForm extends PDXObject
     /**
      * An array of four numbers in the form coordinate system (see
      * below), giving the coordinates of the left, bottom, right, and top edges,
-     * respectively, of the form XObject’s bounding box. These boundaries are used
+     * respectively, of the form XObject's bounding box. These boundaries are used
      * to clip the form XObject and to determine its size for caching.
      *
      * @return The BBox of the form.
@@ -143,4 +145,27 @@ public class PDXObjectForm extends PDXObject
             getCOSStream().setItem( COSName.BBOX, bbox.getCOSArray() );
         }
     }
+    
+    /**
+     * This will get the optional Matrix of an XObjectForm.
+     * It maps the form space into the user space
+     * @return the form matrix
+     */
+    public Matrix getMatrix() 
+    {
+        Matrix retval = null;
+        COSArray array = (COSArray)getCOSStream().getDictionaryObject( COSName.MATRIX );
+        if( array != null )
+        {
+            retval = new Matrix();
+            retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
+            retval.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
+            retval.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
+            retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
+            retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
+            retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+        }
+        return retval;
+    }
+    
 }
