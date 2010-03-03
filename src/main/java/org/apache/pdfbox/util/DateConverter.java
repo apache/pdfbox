@@ -47,7 +47,14 @@ public class DateConverter
         new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
         new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
         new SimpleDateFormat("MM/dd/yyyy hh:mm:ss"),
-        new SimpleDateFormat("MM/dd/yyyy")};
+        new SimpleDateFormat("MM/dd/yyyy"),
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"), 
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
+        new SimpleDateFormat("EEEE, MMM dd, yyyy"), // Acrobat Distiller 1.0.2 for Macintosh
+        new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss"), // ECMP5
+        new SimpleDateFormat("EEEE MMM dd HH:mm:ss z yyyy"), // GNU Ghostscript 7.0.7
+        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma") // Acrobat Net Distiller 1.0 for Windows
+    };
 
     private DateConverter()
     {
