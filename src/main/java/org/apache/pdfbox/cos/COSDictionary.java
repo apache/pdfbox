@@ -982,7 +982,7 @@ public class COSDictionary extends COSBase
      */
     public int getInt( String key )
     {
-        return getInt( COSName.getPDFName( key ) );
+        return getInt( COSName.getPDFName( key ), -1 );
     }
 
     /**
@@ -1028,7 +1028,7 @@ public class COSDictionary extends COSBase
      */
     public int getInt( String key, int defaultValue )
     {
-        return getInt( new String []{ key }, defaultValue );
+        return getInt( COSName.getPDFName( key ), defaultValue );
     }
 
     /**
@@ -1042,7 +1042,13 @@ public class COSDictionary extends COSBase
      */
     public int getInt( COSName key, int defaultValue )
     {
-        return getInt(key.getName(), defaultValue );
+        int retval = defaultValue;
+        COSBase obj = getDictionaryObject( key );
+        if( obj != null && obj instanceof COSNumber)
+        {
+            retval = ((COSNumber)obj).intValue();
+        }
+        return retval;
     }
 
     /**
@@ -1055,7 +1061,7 @@ public class COSDictionary extends COSBase
      */
     public long getLong( String key )
     {
-        return getLong( COSName.getPDFName( key ) );
+        return getLong( COSName.getPDFName( key ), -1L );
     }
 
     /**
@@ -1101,7 +1107,7 @@ public class COSDictionary extends COSBase
      */
     public long getLong( String key, long defaultValue )
     {
-        return getLong( new String []{ key }, defaultValue );
+        return getLong( COSName.getPDFName( key ), defaultValue );
     }
 
     /**
@@ -1115,19 +1121,25 @@ public class COSDictionary extends COSBase
      */
     public long getLong( COSName key, long defaultValue )
     {
-        return getLong(key.getName(), defaultValue );
+        long retval = defaultValue;
+        COSBase obj = getDictionaryObject( key );
+        if( obj != null && obj instanceof COSNumber)
+        {
+            retval = ((COSNumber)obj).longValue();
+        }
+        return retval;
     }
 
     /**
      * This is a convenience method that will get the dictionary object that
-     * is expected to be an int.  -1 is returned if there is no value.
+     * is expected to be an float.  -1 is returned if there is no value.
      *
      * @param key The key to the item in the dictionary.
      * @return The float value.
      */
     public float getFloat( String key )
     {
-        return getFloat( COSName.getPDFName( key ) );
+        return getFloat( COSName.getPDFName( key ), -1 );
     }
 
     /**
