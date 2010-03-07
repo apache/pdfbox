@@ -136,6 +136,26 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
+     * Gets the alternate name of the field.
+     * 
+     * @return the alternate name of the field
+     */
+    public String getAlternateFieldName()
+    {
+        return this.getDictionary().getString("TU");
+    }
+
+    /**
+     * This will set the alternate name of the field.
+     * 
+     * @param alternateFieldName the alternate name of the field
+     */
+    public void setAlternateFieldName(String alternateFieldName)
+    {
+        this.getDictionary().setString("TU", alternateFieldName);
+    }
+
+    /**
      * Get the FT entry of the field.  This is a read only field and is set depending
      * on the actual type.  The field type is an inheritable attribute.  This method will
      * return only the direct value on this object.  Use the findFieldType for an upward
