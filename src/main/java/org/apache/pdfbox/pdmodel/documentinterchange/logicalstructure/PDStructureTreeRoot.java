@@ -16,10 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
+import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 
 /**
  * A root of a structure tree.
@@ -27,9 +31,11 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class PDStructureTreeRoot implements COSObjectable
+public class PDStructureTreeRoot extends PDStructureNode
 {
-    private COSDictionary dictionary;
+
+    public static final String TYPE = "StructTreeRoot";
+
 
     /**
      * Default Constructor.
@@ -37,8 +43,7 @@ public class PDStructureTreeRoot implements COSObjectable
      */
     public PDStructureTreeRoot()
     {
-        dictionary = new COSDictionary();
-        dictionary.setName( COSName.TYPE, "StructTreeRoot" );
+        super(TYPE);
     }
 
     /**
@@ -48,26 +53,82 @@ public class PDStructureTreeRoot implements COSObjectable
      */
     public PDStructureTreeRoot( COSDictionary dic )
     {
-        dictionary = dic;
+        super(dic);
+    }
+
+
+    /**
+     * Returns the ID tree.
+     * 
+     * @return the ID tree
+     */
+    public PDNameTreeNode getIDTree()
+    {
+        COSDictionary idTreeDic = (COSDictionary) this.getCOSDictionary()
+            .getDictionaryObject("IDTree");
+        if (idTreeDic != null)
+        {
+            return new PDNameTreeNode(idTreeDic, PDStructureElement.class);
+        }
+        return null;
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
+     * Sets the ID tree.
+     * 
+     * @param idTree the ID tree
      */
-    public COSBase getCOSObject()
+    public void setIDTree(PDNameTreeNode idTree)
     {
-        return dictionary;
+        this.getCOSDictionary().setItem("IDTree", idTree);
     }
 
     /**
-     * Get the low level dictionary that this object wraps.
-     *
-     * @return The cos dictionary that matches this Java object.
+     * Returns the next key in the parent tree.
+     * 
+     * @return the next key in the parent tree
      */
-    public COSDictionary getCOSDictionary()
+    public int getParentTreeNextKey()
     {
-        return dictionary;
+        return this.getCOSDictionary().getInt("ParentTreeNextKey");
     }
+
+    /**
+     * Returns the role map.
+     * 
+     * @return the role map
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getRoleMap()
+    {
+        COSBase rm = this.getCOSDictionary().getDictionaryObject("RoleMap");
+        if (rm instanceof COSDictionary)
+        {
+            try
+            {
+                return COSDictionaryMap.convertBasicTypesToMap((COSDictionary) rm);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return new Hashtable<String, String>();
+    }
+
+    /**
+     * Sets the role map.
+     * 
+     * @param roleMap the role map
+     */
+    public void setRoleMap(Map<String, String> roleMap)
+    {
+        COSDictionary rmDic = new COSDictionary();
+        for (String key : roleMap.keySet())
+        {
+            rmDic.setName(key, roleMap.get(key));
+        }
+        this.getCOSDictionary().setItem("RoleMap", rmDic);
+    }
+
 }

@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.util.PDFMarkedContentExtractor;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
@@ -54,6 +55,10 @@ public class Invoke extends OperatorProcessor
 
         Map xobjects = context.getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(name.getName());
+        if (this.context instanceof PDFMarkedContentExtractor)
+        {
+            ((PDFMarkedContentExtractor) this.context).xobject(xobject);
+        }
 
         if(xobject instanceof PDXObjectForm)
         {
