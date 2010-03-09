@@ -220,6 +220,66 @@
     </profile>
   </profiles>
 
+ <!-- Developers listed by PMC Chair, PMC all alphabetical-->
+  <developers>
+    <developer>
+        <id>lehmi</id>
+        <name>Andreas Lehmkühler</name>
+        <roles>
+            <role>PMC Chair</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>carrier</id>
+        <name>Brian Carrier</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>pkoch</id>
+        <name>Phillipp Koch</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>jeremias</id>
+        <name>Jeremias Maerki</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>blitchfield</id>
+        <name>Ben Litchfield</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>vfed</id>
+        <name>Villu Ruusmann</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>danielwilson</id>
+        <name>Daniel Wilson</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>jukka</id>
+	    <name>Jukka Zitting</name>
+		<roles>
+		  <role>PMC Member</role>
+		</roles>
+    </developer>
+  </developers>
+  
   <reporting>
     <plugins>
       <plugin>
