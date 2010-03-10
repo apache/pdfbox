@@ -20,11 +20,14 @@ import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.fontbox.cmap.CMap;
+import org.apache.pdfbox.encoding.conversion.EncodingConversionManager;
+import org.apache.pdfbox.encoding.conversion.EncodingConverter;
 
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -395,6 +398,30 @@ public abstract class PDFont implements COSObjectable
                         if( cmap == null )
                         {
                             String cmapName = encodingName.getName();
+                            if (encodingName.getName().equals( COSName.IDENTITY_H.getName() )) 
+                            {
+                                COSArray descendantFontArray =
+                                    (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
+                                if (descendantFontArray != null) 
+                                {
+                                    COSDictionary descendantFontDictionary = 
+                                        (COSDictionary)descendantFontArray.getObject( 0 );
+                                    PDFont descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+                                    COSDictionary cidsysteminfo = 
+                                        (COSDictionary)descendentFont.font.getDictionaryObject(COSName.CIDSYSTEMINFO);
+                                    if (cidsysteminfo != null) 
+                                    {
+                                        String ordering = cidsysteminfo.getString(COSName.ORDERING);
+                                        String registry = cidsysteminfo.getString(COSName.REGISTRY);
+                                        cmapName = registry + "-" + ordering+"-UCS2";
+                                    }
+                                }
+                            } 
+                            else 
+                            {
+                                cmapName = CMapSubstitution.substituteCMap( cmapName );
+                            }
+                            
                             String resourceRoot = "Resources/cmap/";
                             String resourceName = resourceRoot + cmapName;
                             parseCmap( resourceRoot, ResourceLoader.loadResource( resourceName ), encodingName );
@@ -442,6 +469,25 @@ public abstract class PDFont implements COSObjectable
         {
             retval = cmap.lookup( c, offset, length );
         }
+        
+        COSBase encodingCOS = font.getDictionaryObject(COSName.ENCODING);
+        if ( encodingCOS instanceof COSName ) 
+        {
+            EncodingConverter converter = EncodingConversionManager.getConverter(((COSName)encodingCOS).getName());
+            if ( converter != null ) 
+            {
+                if ( retval != null )
+                {
+                    retval = converter.convertString(retval);
+                }
+                else
+                {
+                    retval = converter.convertBytes(c, offset, length, cmap);
+                }
+                return retval;
+            }
+        }
+        
         //if we havn't found a value yet and
         //we are still on the first byte and
         //there is no cmap or the cmap does not have 2 byte mappings then try to encode
