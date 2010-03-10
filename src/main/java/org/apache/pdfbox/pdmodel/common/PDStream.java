@@ -306,7 +306,7 @@ public class PDStream implements COSObjectable
      *
      * @throws IOException if there is an error retrieving the parameters.
      */
-    public List getDecodeParams() throws IOException
+    public List getDecodeParms() throws IOException
     {
         List retval = null;
 
@@ -319,7 +319,7 @@ public class PDStream implements COSObjectable
         if( dp instanceof COSDictionary )
         {
             Map map = COSDictionaryMap.convertBasicTypesToMap( (COSDictionary)dp );
-            retval = new COSArrayList(map, dp, stream, COSName.DECODE_PARAMS );
+            retval = new COSArrayList(map, dp, stream, COSName.DECODE_PARMS );
         }
         else if( dp instanceof COSArray )
         {
@@ -338,14 +338,14 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * This will set the list of decode params.
+     * This will set the list of decode parameterss.
      *
-     * @param decodeParams The list of decode params.
+     * @param decodeParams The list of decode parameterss.
      */
-    public void setDecodeParams( List decodeParams )
+    public void setDecodeParms( List decodeParams )
     {
         stream.setItem(
-            COSName.DECODE_PARAMS, COSArrayList.converterToCOSArray( decodeParams ) );
+            COSName.DECODE_PARMS, COSArrayList.converterToCOSArray( decodeParams ) );
     }
 
     /**

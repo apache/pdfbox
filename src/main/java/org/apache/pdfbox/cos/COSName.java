@@ -179,9 +179,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DCT_DECODE_ABBREVIATION = new COSName( "DCT" );
 
-    /** "DecodeParams" */
-    public static final COSName DECODE_PARAMS = new COSName( "DecodeParams" );
-
     /** "DecodeParms" */
     public static final COSName DECODE_PARMS = new COSName( "DecodeParms" );
 
