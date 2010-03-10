@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -40,7 +39,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public abstract class PDCIDFont extends PDFont
 {
-    private Map widthCache = new HashMap();
+    private Map<Integer,Float> widthCache = new HashMap<Integer,Float>();
 
     /**
      * Constructor.
@@ -146,10 +145,10 @@ public abstract class PDCIDFont extends PDFont
     public float getFontWidth( byte[] c, int offset, int length ) throws IOException
     {
 
-        float retval = 0.0f;
+        float retval = getDefaultWidth();
         int code = getCodeFromArray( c, offset, length );
 
-        Float widthFloat = (Float)widthCache.get( new Integer( code ) );
+        Float widthFloat = widthCache.get( code );
         if( widthFloat == null )
         {
             COSArray widths = (COSArray)font.getDictionaryObject( COSName.W );
@@ -186,7 +185,7 @@ public abstract class PDCIDFont extends PDFont
                         }
                     }
                 }
-                widthCache.put( new Integer( code ), new Float( retval ) );
+                widthCache.put( code, retval );
             }
         }
         else
