@@ -51,13 +51,18 @@
     </menu>
     <menu name="Command Line Utilities">
       <item name="Index" href="commandlineutilities/index.html"/>
+      <item name="ConvertColorspace"
+            href="commandlineutilities/ConvertColorspace.html"/>
       <item name="Decrypt" href="commandlineutilities/Decrypt.html"/>
       <item name="Encrypt" href="commandlineutilities/Encrypt.html"/>
       <item name="ExtractText" href="commandlineutilities/ExtractText.html"/>
-      <item name="PDFToImage" href="commandlineutilities/PDFToImage.html"/>
+      <item name="Overlay" href="commandlineutilities/Overlay.html"/>
       <item name="PrintPDF" href="commandlineutilities/PrintPDF.html"/>
-      <item name="ConvertColorspace"
-            href="commandlineutilities/ConvertColorspace.html"/>
+      <item name="PDFDebugger" href="commandlineutilities/PDFDebugger.html"/>
+      <item name="PDFMerger" href="commandlineutilities/PDFMerger.html"/>
+      <item name="PDFReader" href="commandlineutilities/PDFReader.html"/>
+      <item name="PDFSplit" href="commandlineutilities/PDFSplit.html"/>
+      <item name="PDFToImage" href="commandlineutilities/PDFToImage.html"/>
       <item name="TextToPDF" href="commandlineutilities/TextToPDF.html"/>
     </menu>
     <menu name="Developers Guide">
