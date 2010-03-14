@@ -285,13 +285,6 @@
           <role>PMC Member</role>
         </roles>
     </developer>
-    <developer>
-        <id>jukka</id>
-	    <name>Jukka Zitting</name>
-		<roles>
-		  <role>PMC Member</role>
-		</roles>
-    </developer>
   </developers>
   
   <reporting>
