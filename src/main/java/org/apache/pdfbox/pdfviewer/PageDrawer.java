@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
@@ -176,6 +177,8 @@ public class PageDrawer extends PDFStreamEngine
             textPos.setValue(0, 1, (-1)*textPos.getValue(0, 1));
             textPos.setValue(1, 0, (-1)*textPos.getValue(1, 0));
             AffineTransform at = textPos.createAffineTransform();
+            PDMatrix fontMatrix = font.getFontMatrix();
+            at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 0) * 1000f);
             graphics.setClip(getGraphicsState().getCurrentClippingPath());
             font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
         }
