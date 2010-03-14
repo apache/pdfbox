@@ -49,16 +49,19 @@ import org.apache.fontbox.cff.encoding.CFFEncoding;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.Type1FontFormatter;
+import org.apache.fontbox.util.BoundingBox;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.exceptions.WrappedIOException;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -87,6 +90,8 @@ public class PDType1CFont extends PDSimpleFont
     private Float avgWidth = null;
 
     private PDRectangle fontBBox = null;
+
+    private PDMatrix fontMatrix = null;
 
     private static final Log log = LogFactory.getLog(PDType1CFont.class);
 
@@ -255,7 +260,33 @@ public class PDType1CFont extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
+    public PDMatrix getFontMatrix()
+    {
+        if( this.fontMatrix == null )
+        {
+            List<Number> numbers = (List<Number>)this.cffFont.getProperty("FontMatrix");
+            if( numbers != null && numbers.size() == 6 )
+            {
+                COSArray array = new COSArray();
+                for(Number number : numbers)
+                {
+                    array.add(new COSFloat(number.floatValue()));
+                }
+                this.fontMatrix = new PDMatrix(array);
+            }
+            else
+            {
+                this.fontMatrix = super.getFontMatrix();
+            }
+        }
+
+        return this.fontMatrix;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y )
         throws IOException
     {
         Graphics2D g2d = (Graphics2D)g;
@@ -482,7 +513,19 @@ public class PDType1CFont extends PDSimpleFont
             AFMParser afmParser = new AFMParser(is);
             afmParser.parse();
 
-           return afmParser.getResult();
+            FontMetric result = afmParser.getResult();
+
+            // Replace default FontBBox value with a newly computed one
+            BoundingBox bounds = result.getFontBBox();
+            List<Integer> numbers = Arrays.asList(
+                    Integer.valueOf((int)bounds.getLowerLeftX()),
+                    Integer.valueOf((int)bounds.getLowerLeftY()),
+                    Integer.valueOf((int)bounds.getUpperRightX()),
+                    Integer.valueOf((int)bounds.getUpperRightY())
+                );
+            font.addValueToTopDict("FontBBox", numbers);
+
+            return result;
         }
         finally
         {
