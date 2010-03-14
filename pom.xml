@@ -230,6 +230,13 @@
         </roles>
     </developer>
     <developer>
+        <id>blitchfield</id>
+        <name>Ben Litchfield</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
         <id>carrier</id>
         <name>Brian Carrier</name>
         <roles>
@@ -237,8 +244,8 @@
         </roles>
     </developer>
     <developer>
-        <id>pkoch</id>
-        <name>Phillipp Koch</name>
+        <id>danielwilson</id>
+        <name>Daniel Wilson</name>
         <roles>
           <role>PMC Member</role>
         </roles>
@@ -251,8 +258,22 @@
         </roles>
     </developer>
     <developer>
-        <id>blitchfield</id>
-        <name>Ben Litchfield</name>
+        <id>koch</id>
+        <name>Johannes Koch</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>jukka</id>
+        <name>Jukka Zitting</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>pkoch</id>
+        <name>Phillipp Koch</name>
         <roles>
           <role>PMC Member</role>
         </roles>
@@ -260,13 +281,6 @@
     <developer>
         <id>vfed</id>
         <name>Villu Ruusmann</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>danielwilson</id>
-        <name>Daniel Wilson</name>
         <roles>
           <role>PMC Member</role>
         </roles>
