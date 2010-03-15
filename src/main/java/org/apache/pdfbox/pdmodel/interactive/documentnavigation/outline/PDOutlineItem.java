@@ -90,6 +90,14 @@ public class PDOutlineItem extends PDOutlineNode
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public PDOutlineNode getParent()
+    {
+        return super.getParent();
+    }
+
+    /**
      * Return the previous sibling or null if there is no sibling.
      *
      * @return The previous sibling.

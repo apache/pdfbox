@@ -78,7 +78,7 @@ public class PDOutlineNode implements COSObjectable
      * @return The parent of this object, or null if this is the document outline and there
      * is no parent.
      */
-    public PDOutlineNode getParent()
+    protected PDOutlineNode getParent()
     {
         PDOutlineNode retval = null;
         COSDictionary parent = (COSDictionary)node.getDictionaryObject( "Parent", "P" );
