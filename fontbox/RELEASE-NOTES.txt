@@ -1,0 +1,54 @@
+Release Notes -- Apache FontBox -- Version 1.0.0
+
+Introduction
+------------
+
+Apache FontBox is an open source Java library for working with PDF fonts.
+
+The most notable changes in this release are the upgrade to Java 5, added
+support for Adobe CFF/Type2 fonts and switch of the build system from Ant
+to Maven. For more details, please refer to the following issues on the
+PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX:
+
+  [PDFBOX-542] Support for Adobe CFF/Type2 fonts
+  [PDFBOX-572] Upgrading PDFBox (incl. JempBox and FontBox) to use Java 5 ...
+  [PDFBOX-608] Bug in CMap implementation
+  [PDFBOX-613] Adobe CFF/Type2 font additions
+
+See the Apache PDFBox website at http://pdfbox.apache.org/ for more
+information about PDFBox and FontBox.
+
+Release Contents
+----------------
+
+This release consists of a single source archive packaged as a zip file.
+The archive can be unpacked with the jar tool from your JDK installation.
+See the README.txt file for instructions on how to build this release.
+
+The source archive is accompanied by SHA1 and MD5 checksums and a PGP
+signature that you can use to verify the authenticity of your download.
+The public key used for the PGP signature can be found at
+https://svn.apache.org/repos/asf/pdfbox/KEYS.
+
+About Apache PDFBox
+-------------------
+
+Apache PDFBox is an open source Java library for working with PDF documents.
+This project allows creation of new PDF documents, manipulation of existing
+documents and the ability to extract content from documents. Apache PDFBox
+also includes several command line utilities. Apache PDFBox is published
+under the Apache License, Version 2.0.
+
+For more information, visit http://pdfbox.apache.org/
+
+About The Apache Software Foundation
+------------------------------------
+
+Established in 1999, The Apache Software Foundation provides organizational,
+legal, and financial support for more than 100 freely-available,
+collaboratively-developed Open Source projects. The pragmatic Apache License
+enables individual and commercial users to easily deploy Apache software;
+the Foundation's intellectual property framework limits the legal exposure
+of its 2,500+ contributors.
+
+For more information, visit http://www.apache.org/
