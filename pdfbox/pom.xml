@@ -21,14 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>6</version>
+    <groupId>org.apache.pdfbox</groupId>
+    <artifactId>pdfbox-parent</artifactId>
+    <version>1.1.0-SNAPSHOT</version>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Apache PDFBox</name>
@@ -36,37 +35,17 @@
     Apache PDFBox is an open source Java library for working with PDF documents.
   </description>
   <inceptionYear>2002</inceptionYear>
-  <url>http://pdfbox.apache.org/</url>
-
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/browse/PDFBOX</url>
-  </issueManagement>
-
-  <scm>
-    <connection>
-      scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk
-    </connection>
-    <developerConnection>
-      scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk
-    </developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
-  </scm>
-
-  <properties>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>fontbox</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jempbox</artifactId>
-      <version>1.0.0</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -119,13 +98,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <target>1.5</target>
-          <source>1.5</source>
-        </configuration>
-      </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
@@ -220,73 +192,6 @@
     </profile>
   </profiles>
 
- <!-- Developers listed by PMC Chair, PMC all alphabetical-->
-  <developers>
-    <developer>
-        <id>lehmi</id>
-        <name>Andreas Lehmkühler</name>
-        <roles>
-            <role>PMC Chair</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>blitchfield</id>
-        <name>Ben Litchfield</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>carrier</id>
-        <name>Brian Carrier</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>danielwilson</id>
-        <name>Daniel Wilson</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>jeremias</id>
-        <name>Jeremias Maerki</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>koch</id>
-        <name>Johannes Koch</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>jukka</id>
-        <name>Jukka Zitting</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>pkoch</id>
-        <name>Phillipp Koch</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-    <developer>
-        <id>vfed</id>
-        <name>Villu Ruusmann</name>
-        <roles>
-          <role>PMC Member</role>
-        </roles>
-    </developer>
-  </developers>
-  
   <reporting>
     <plugins>
       <plugin>
