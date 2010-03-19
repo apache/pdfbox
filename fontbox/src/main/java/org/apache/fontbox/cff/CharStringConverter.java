@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A class to convert for a sequence of Type1/Type2 commands into a sequence of CharStringCommands.
+ * A class to translate Type2 CharString command sequence to Type1 CharString command sequence.
  * 
  * @author Villu Ruusmann
  * @version $Revision$
