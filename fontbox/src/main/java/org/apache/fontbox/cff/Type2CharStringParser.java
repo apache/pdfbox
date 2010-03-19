@@ -144,8 +144,9 @@ public class Type2CharStringParser
             int b3 = input.readUnsignedByte();
             int b4 = input.readUnsignedByte();
 
-            return Integer
-                    .valueOf((short) (b1 << 24 | b2 << 16 | b3 << 8 | b4));
+            // The lower bytes are representing the digits after 
+            // the decimal point and aren't needed in this context
+            return Integer.valueOf((short)(b1 << 8 | b2));
         } 
         else
         {
