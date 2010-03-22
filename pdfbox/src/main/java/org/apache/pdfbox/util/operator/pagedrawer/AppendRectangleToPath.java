@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -50,32 +50,28 @@ public class AppendRectangleToPath extends OperatorProcessor
         COSNumber w = (COSNumber)arguments.get( 2 );
         COSNumber h = (COSNumber)arguments.get( 3 );
 
-        double x1 = x.floatValue();
-        double y1 = y.floatValue();
+        double x1 = x.doubleValue();
+        double y1 = y.doubleValue();
         // create a pair of coordinates for the transformation 
-        double x2 = w.floatValue()+x1;
-        double y2 = h.floatValue()+y1;
+        double x2 = w.doubleValue()+x1;
+        double y2 = h.doubleValue()+y1;
 
         Point2D startCoords = drawer.transformedPoint(x1,y1);
         Point2D endCoords = drawer.transformedPoint(x2,y2);
 
-        double width = endCoords.getX()-startCoords.getX();
-        double height =  endCoords.getY()-startCoords.getY();
-        double xStart = startCoords.getX();
-        double yStart = startCoords.getY();
-        // we have to calculate the width and height from the two pairs of coordinates
-        // if the endCoords are above the startCoords we have to switch them
-        if (width < 0) 
-        {
-            xStart += width;
-            width = -width;
-        }
-        if (height < 0) 
-        {
-            yStart += height;
-            height = -height;
-        }
-        Rectangle2D rect = new Rectangle2D.Double(xStart, yStart, width, height);
-        drawer.getLinePath().append( rect, false );
+        float width = (float)(endCoords.getX()-startCoords.getX());
+        float height = (float)(endCoords.getY()-startCoords.getY());
+        float xStart = (float)startCoords.getX();
+        float yStart = (float)startCoords.getY();
+
+        // To ensure that the path is created in the right direction,
+        // we have to create it by combining single lines instead of
+        // creating a simple rectangle
+        GeneralPath path = drawer.getLinePath();
+        path.moveTo(xStart, yStart);
+        path.lineTo(xStart+width, yStart);
+        path.lineTo(xStart+width, yStart+height);
+        path.lineTo(xStart, yStart+height);
+        path.lineTo(xStart, yStart);
     }
 }
