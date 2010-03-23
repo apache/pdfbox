@@ -18,14 +18,15 @@ package org.apache.pdfbox.pdmodel.graphics;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
-//import java.awt.color.ColorSpace;
-//import java.awt.image.ColorModel;
+
 
 import java.io.IOException;
 
@@ -95,15 +96,86 @@ public class PDShading implements COSObjectable
     {
         return shadingname;
     }
-
+    
+    /**
+    * This will return the ShadingType -- an integer between 1 and 7 that specifies the gradient type.
+    * Required in all Shading Dictionaries.
+    *
+    * @return The Shading Type
+    */
     public int getShadingType()
     {
         return DictShading.getInt("ShadingType");
     }
     
+    /**
+    * This will return the Color Space.
+    * Required in all Shading Dictionaries.
+    *
+    * @return The Color Space of the shading dictionary
+    */
     public PDColorSpace getColorSpace() throws IOException
     {
         return PDColorSpaceFactory.createColorSpace(DictShading.getDictionaryObject("ColorSpace"));
+    }
+    
+    /**
+    * This will return a boolean flag indicating whether to antialias the shading pattern.
+    *
+    * @return The antialias flag, defaulting to False
+    */
+    public boolean getAntiAlias()
+    {
+        return DictShading.getBoolean("AntiAlias",false);
+    }
+    
+    /**
+    * Returns the coordinate array used by several of the gradient types. Interpretation depends on the ShadingType.
+    *
+    * @return The coordinate array.
+    */
+    public COSArray getCoords()
+    {
+        return (COSArray)(DictShading.getDictionaryObject("Coords"));
+    }
+    
+    /**
+    * Returns the function used by several of the gradient types. Interpretation depends on the ShadingType.
+    *
+    * @return The gradient function.
+    */
+    public PDFunction getFunction() throws IOException
+    {
+        return PDFunction.create(DictShading.getDictionaryObject("Function"));
+    }
+    
+    /**
+    * Returns the Domain array used by several of the gradient types. Interpretation depends on the ShadingType.
+    *
+    * @return The Domain array.
+    */
+    public COSArray getDomain()
+    {
+        return (COSArray)(DictShading.getDictionaryObject("Domain"));
+    }
+    
+    /**
+    * Returns the Extend array used by several of the gradient types. Interpretation depends on the ShadingType.
+    * Default is {false, false}.
+    *
+    * @return The Extend array.
+    */
+    public COSArray getExtend()
+    {
+        COSArray arExtend=(COSArray)(DictShading.getDictionaryObject("Extend"));
+        if (arExtend == null)
+        {
+            arExtend = new COSArray();
+            arExtend.add(COSBoolean.FALSE);
+            arExtend.add(COSBoolean.FALSE);
+        }
+        
+        return arExtend;
     }
     
     /**
@@ -112,6 +184,7 @@ public class PDShading implements COSObjectable
     public String toString() 
     {
         String sColorSpace;
+        String sFunction;
         try
         {
             sColorSpace = getColorSpace().toString();
@@ -119,9 +192,23 @@ public class PDShading implements COSObjectable
         {
             sColorSpace = "Failure retrieving ColorSpace: " + e.toString();
         }
+        try
+        {
+            sFunction = getFunction().toString();
+        }catch(IOException e)
+        {
+            sFunction = "n/a";
+        }
+        
+        
         String s = "Shading " + shadingname + "\n"
             + "\tShadingType: " + getShadingType() + "\n"
             + "\tColorSpace: " + sColorSpace + "\n"
+            + "\tAntiAlias: " + getAntiAlias() + "\n"
+            + "\tCoords: " + getCoords().toString() + "\n"
+            + "\tDomain: " + getDomain().toString() + "\n"
+            + "\tFunction: " + sFunction + "\n"
+            + "\tExtend: " + getExtend().toString() + "\n"
             + "\tRaw Value:\n" +
          DictShading.toString();
         
