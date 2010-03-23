@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 /**
  * An object reference.
  * 
- * @author Koch
+ * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
  * @version $Revision: $
  */
 public class PDObjectReference implements COSObjectable
@@ -80,7 +80,7 @@ public class PDObjectReference implements COSObjectable
      */
     public COSObjectable getReferencedObject()
     {
-        COSBase obj = this.getCOSDictionary().getDictionaryObject("Obj");
+        COSBase obj = this.getCOSDictionary().getDictionaryObject(COSName.OBJ);
         try
         {
             return PDAnnotation.createAnnotation(obj);
@@ -108,7 +108,7 @@ public class PDObjectReference implements COSObjectable
      */
     public void setReferencedObject(PDAnnotation annotation)
     {
-        this.getCOSDictionary().setItem("Obj", annotation);
+        this.getCOSDictionary().setItem(COSName.OBJ, annotation);
     }
 
     /**
@@ -118,7 +118,7 @@ public class PDObjectReference implements COSObjectable
      */
     public void setReferencedObject(PDXObject xobject)
     {
-        this.getCOSDictionary().setItem("Obj", xobject);
+        this.getCOSDictionary().setItem(COSName.OBJ, xobject);
     }
 
 }

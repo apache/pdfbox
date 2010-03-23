@@ -456,6 +456,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName MATRIX = new COSName( "Matrix" );
     /**
+     * "MCID"
+     */
+    public static final COSName MCID = new COSName("MCID");
+    /**
      * A common COSName value.
      */
     public static final COSName MEDIA_BOX = new COSName(  "MediaBox" );
@@ -481,6 +485,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /** "Numbs" */
     public static final COSName NUMS = new COSName( "Nums" );
+
+    /**
+     * "Obj"
+     */
+    public static final COSName OBJ = new COSName("Obj");
 
     /** "Outlines" */
     public static final COSName OUTLINES = new COSName("Outlines");
