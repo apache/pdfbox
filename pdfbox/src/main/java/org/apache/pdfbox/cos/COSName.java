@@ -75,6 +75,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName ANNOTS = new COSName( "Annots" );
     /**
+     * "Artifact"
+     */
+    public static final COSName ARTIFACT = new COSName("Artifact");
+    /**
      * A common COSName value.
      */
     public static final COSName ART_BOX = new COSName("ArtBox" );
@@ -86,6 +90,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName ASCII85_DECODE_ABBREVIATION = new COSName( "A85" );
+    /**
+     * "Attached"
+     */
+    public static final COSName ATTACHED = new COSName("Attached");
     /**
     * A common COSName value.
     */
@@ -486,6 +494,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "Numbs" */
     public static final COSName NUMS = new COSName( "Nums" );
 
+    /**
+     * "O"
+     */
+    public static final COSName O = new COSName("O");
+    
     /**
      * "Obj"
      */
