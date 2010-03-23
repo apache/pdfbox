@@ -55,8 +55,6 @@ public class SHFill extends OperatorProcessor
         try 
         {
             PageDrawer drawer = (PageDrawer)context;
-            //for now, just dump the arg list ...
-            log.info("shfill arguments: " + arguments.toString());
             drawer.SHFill((COSName)(arguments.get(0)));
             
         } 
