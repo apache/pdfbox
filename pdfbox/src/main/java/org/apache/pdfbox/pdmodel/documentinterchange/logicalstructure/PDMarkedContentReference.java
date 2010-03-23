@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * A marked-content reference.
  * 
- * @author Koch
+ * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
  * @version $Revision: $
  */
 public class PDMarkedContentReference implements COSObjectable
@@ -75,7 +75,8 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public PDPage getPage()
     {
-        COSDictionary pg = (COSDictionary) this.getCOSDictionary().getDictionaryObject("Pg");
+        COSDictionary pg = (COSDictionary) this.getCOSDictionary()
+            .getDictionaryObject(COSName.PG);
         if (pg != null)
         {
             return new PDPage(pg);
@@ -90,7 +91,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public void setPage(PDPage page)
     {
-        this.getCOSDictionary().setItem("Pg", page);
+        this.getCOSDictionary().setItem(COSName.PG, page);
     }
 
     /**
@@ -100,7 +101,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public int getMCID()
     {
-        return this.getCOSDictionary().getInt("MCID");
+        return this.getCOSDictionary().getInt(COSName.MCID);
     }
 
     /**
@@ -110,7 +111,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public void setMCID(int mcid)
     {
-        this.getCOSDictionary().setInt("MCID", mcid);
+        this.getCOSDictionary().setInt(COSName.MCID, mcid);
     }
 
 
