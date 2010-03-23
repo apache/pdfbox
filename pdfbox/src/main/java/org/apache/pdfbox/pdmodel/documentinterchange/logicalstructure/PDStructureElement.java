@@ -26,7 +26,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 
 /**
@@ -158,6 +157,173 @@ public class PDStructureElement extends PDStructureNode
     public void setPage(PDPage page)
     {
         this.getCOSDictionary().setItem(COSName.PG, page);
+    }
+
+    /**
+     * Returns the attributes together with their revision numbers (A).
+     * 
+     * @return the attributes
+     */
+    public Revisions<PDAttributeObject> getAttributes()
+    {
+        Revisions<PDAttributeObject> attributes =
+            new Revisions<PDAttributeObject>();
+        COSBase a = this.getCOSDictionary().getDictionaryObject(COSName.A);
+        if (a instanceof COSArray)
+        {
+            COSArray aa = (COSArray) a;
+            Iterator<COSBase> it = aa.iterator();
+            PDAttributeObject ao = null;
+            while (it.hasNext())
+            {
+                COSBase item = it.next();
+                if (item instanceof COSDictionary)
+                {
+                    ao = PDAttributeObject.create((COSDictionary) item);
+                    ao.setStructureElement(this);
+                    attributes.addObject(ao, 0);
+                }
+                else if (item instanceof COSInteger)
+                {
+                    attributes.setRevisionNumber(ao,
+                        ((COSInteger) item).intValue());
+                }
+            }
+        }
+        if (a instanceof COSDictionary)
+        {
+            PDAttributeObject ao = PDAttributeObject.create((COSDictionary) a);
+            ao.setStructureElement(this);
+            attributes.addObject(ao, 0);
+        }
+        return attributes;
+    }
+
+    /**
+     * Sets the attributes together with their revision numbers (A).
+     * 
+     * @param attributes the attributes
+     */
+    public void setAttributes(Revisions<PDAttributeObject> attributes)
+    {
+        COSName key = COSName.A;
+        if ((attributes.size() == 1) && (attributes.getRevisionNumber(0) == 0))
+        {
+            PDAttributeObject attributeObject = attributes.getObject(0);
+            attributeObject.setStructureElement(this);
+            this.getCOSDictionary().setItem(key, attributeObject);
+            return;
+        }
+        COSArray array = new COSArray();
+        for (int i = 0; i < attributes.size(); i++)
+        {
+            PDAttributeObject attributeObject = attributes.getObject(i);
+            attributeObject.setStructureElement(this);
+            int revisionNumber = attributes.getRevisionNumber(i);
+            if (revisionNumber < 0)
+            {
+                // TODO throw Exception because revision number must be > -1?
+            }
+            array.add(attributeObject);
+            array.add(COSInteger.get(revisionNumber));
+        }
+        this.getCOSDictionary().setItem(key, array);
+    }
+
+    /**
+     * Adds an attribute object.
+     * 
+     * @param attributeObject the attribute object
+     */
+    public void addAttribute(PDAttributeObject attributeObject)
+    {
+        COSName key = COSName.A;
+        attributeObject.setStructureElement(this);
+        COSBase a = this.getCOSDictionary().getDictionaryObject(key);
+        COSArray array = null;
+        if (a instanceof COSArray)
+        {
+            array = (COSArray) a;
+        }
+        else
+        {
+            array = new COSArray();
+            if (a != null)
+            {
+                array.add(a);
+                array.add(COSInteger.get(0));
+            }
+        }
+        this.getCOSDictionary().setItem(key, array);
+        array.add(attributeObject);
+        array.add(COSInteger.get(this.getRevisionNumber()));
+    }
+
+    /**
+     * Removes an attribute object.
+     * 
+     * @param attributeObject the attribute object
+     */
+    public void removeAttribute(PDAttributeObject attributeObject)
+    {
+        COSName key = COSName.A;
+        COSBase a = this.getCOSDictionary().getDictionaryObject(key);
+        if (a instanceof COSArray)
+        {
+            COSArray array = (COSArray) a;
+            array.remove(attributeObject.getCOSObject());
+            if ((array.size() == 2) && (array.getInt(1) == 0))
+            {
+                this.getCOSDictionary().setItem(key, array.getObject(0));
+            }
+        }
+        else
+        {
+            COSBase directA = a;
+            if (a instanceof COSObject)
+            {
+                directA = ((COSObject) a).getObject();
+            }
+            if (attributeObject.getCOSObject().equals(directA))
+            {
+                this.getCOSDictionary().setItem(key, null);
+            }
+        }
+        attributeObject.setStructureElement(null);
+    }
+
+    /**
+     * Updates the revision number for the given attribute object.
+     * 
+     * @param attributeObject the attribute object
+     */
+    public void attributeChanged(PDAttributeObject attributeObject)
+    {
+        COSName key = COSName.A;
+        COSBase a = this.getCOSDictionary().getDictionaryObject(key);
+        if (a instanceof COSArray)
+        {
+            COSArray array = (COSArray) a;
+            for (int i = 0; i < array.size(); i++)
+            {
+                COSBase entry = array.getObject(i);
+                if (entry.equals(attributeObject.getCOSObject()))
+                {
+                    COSBase next = array.get(i + 1);
+                    if (next instanceof COSInteger)
+                    {
+                        array.set(i + 1, COSInteger.get(this.getRevisionNumber()));
+                    }
+                }
+            }
+        }
+        else
+        {
+            COSArray array = new COSArray();
+            array.add(a);
+            array.add(COSInteger.get(this.getRevisionNumber()));
+            this.getCOSDictionary().setItem(key, array);
+        }
     }
 
     /**
