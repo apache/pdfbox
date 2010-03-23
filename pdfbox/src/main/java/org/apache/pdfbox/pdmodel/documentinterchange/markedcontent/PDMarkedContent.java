@@ -80,7 +80,7 @@ public class PDMarkedContent
     public int getMCID()
     {
         return this.getProperties() == null ? null :
-            this.getProperties().getInt("MCID");
+            this.getProperties().getInt(COSName.MCID);
     }
 
     /**
@@ -91,7 +91,7 @@ public class PDMarkedContent
     public String getLanguage()
     {
         return this.getProperties() == null ? null :
-            this.getProperties().getNameAsString("Lang");
+            this.getProperties().getNameAsString(COSName.LANG);
     }
 
     /**
@@ -102,7 +102,7 @@ public class PDMarkedContent
     public String getActualText()
     {
         return this.getProperties() == null ? null :
-            this.getProperties().getString("ActualText");
+            this.getProperties().getString(COSName.ACTUAL_TEXT);
     }
 
     /**
@@ -113,7 +113,18 @@ public class PDMarkedContent
     public String getAlternateDescription()
     {
         return this.getProperties() == null ? null :
-            this.getProperties().getString("Alt");
+            this.getProperties().getString(COSName.ALT);
+    }
+
+    /**
+     * Gets the expanded form (E).
+     * 
+     * @return the expanded form
+     */
+    public String getExpandedForm()
+    {
+        return this.getProperties() == null ? null :
+            this.getProperties().getString(COSName.E);
     }
 
     /**
