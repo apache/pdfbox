@@ -27,7 +27,7 @@ import org.apache.pdfbox.util.TextPosition;
 /**
  * A marked content.
  * 
- * @author Koch
+ * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
  * @version $Revision: $
  */
 public class PDMarkedContent
