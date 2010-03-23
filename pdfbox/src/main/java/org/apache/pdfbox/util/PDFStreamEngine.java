@@ -198,7 +198,7 @@ public class PDFStreamEngine
      */
     public void processStream( PDPage aPage, PDResources resources, COSStream cosStream ) throws IOException
     {
-        graphicsState = new PDGraphicsState();
+        graphicsState = new PDGraphicsState(aPage.findCropBox());
         textMatrix = null;
         textLineMatrix = null;
         graphicsStack.clear();

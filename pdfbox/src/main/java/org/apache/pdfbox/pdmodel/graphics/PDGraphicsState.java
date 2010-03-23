@@ -16,9 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.graphics;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.text.PDTextState;
 import org.apache.pdfbox.util.Matrix;
@@ -64,6 +67,21 @@ public class PDGraphicsState implements Cloneable
 
     private GeneralPath currentClippingPath;
 
+    /**
+     * Default constructor.
+     */
+    public PDGraphicsState() 
+    {
+    }    
+
+    /**
+     * Constructor with a given pagesize to initialize the clipping path.
+     * @param page the size of the page
+     */
+    public PDGraphicsState(PDRectangle page) 
+    {
+        currentClippingPath = new GeneralPath(new Rectangle(page.createDimension()));
+    }
     /**
      * Get the value of the CTM.
      *

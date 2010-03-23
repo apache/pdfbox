@@ -16,10 +16,7 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -60,7 +57,6 @@ public class BeginInlineImage extends OperatorProcessor
     {
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();
-        Dimension pageSize = drawer.getPageSize();
         Graphics2D graphics = drawer.getGraphics();
         //begin inline image object
         ImageParameters params = operator.getImageParameters();
@@ -76,7 +72,7 @@ public class BeginInlineImage extends OperatorProcessor
         }
         int imageWidth = awtImage.getWidth();
         int imageHeight = awtImage.getHeight();
-        double pageHeight = pageSize.getHeight();
+        double pageHeight = drawer.getPageSize().getHeight();
         
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
         int pageRotation = page.findRotation();
@@ -101,15 +97,7 @@ public class BeginInlineImage extends OperatorProcessor
                 rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
                 rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                 );
-        Shape clip = context.getGraphicsState().getCurrentClippingPath();
-        // If the pdf is printed, sometimes a NPE occurs, see PDFBOX-552 for details
-        // As a workaround we have to replace a possible null-value with a rectangle having 
-        // the same dimension than the page to be printed
-        if (clip == null)
-        {
-            clip = new Rectangle(pageSize);
-        }
-        graphics.setClip(clip);
+        graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
         graphics.drawImage( awtImage, at, null );
     }
 }
