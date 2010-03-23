@@ -116,7 +116,7 @@ public abstract class PDStructureNode implements COSObjectable
     public List<Object> getKids()
     {
         List<Object> kidObjects = new ArrayList<Object>();
-        COSBase k = this.getCOSDictionary().getDictionaryObject("K");
+        COSBase k = this.getCOSDictionary().getDictionaryObject(COSName.K);
         if (k instanceof COSArray)
         {
             Iterator<COSBase> kids = ((COSArray) k).iterator();
@@ -148,7 +148,7 @@ public abstract class PDStructureNode implements COSObjectable
      */
     public void setKids(List<Object> kids)
     {
-        this.getCOSDictionary().setItem("K",
+        this.getCOSDictionary().setItem(COSName.K,
             COSArrayList.converterToCOSArray(kids));
     }
 
@@ -188,11 +188,11 @@ public abstract class PDStructureNode implements COSObjectable
         {
             return;
         }
-        COSBase k = this.getCOSDictionary().getDictionaryObject("K");
+        COSBase k = this.getCOSDictionary().getDictionaryObject(COSName.K);
         if (k == null)
         {
             // currently no kid: set new kid as kids
-            this.getCOSDictionary().setItem("K", object);
+            this.getCOSDictionary().setItem(COSName.K, object);
         }
         else if (k instanceof COSArray)
         {
@@ -206,7 +206,7 @@ public abstract class PDStructureNode implements COSObjectable
             COSArray array = new COSArray();
             array.add(k);
             array.add(object);
-            this.getCOSDictionary().setItem("K", array);
+            this.getCOSDictionary().setItem(COSName.K, array);
         }
     }
 
@@ -248,7 +248,7 @@ public abstract class PDStructureNode implements COSObjectable
         {
             return;
         }
-        COSBase k = this.getCOSDictionary().getDictionaryObject("K");
+        COSBase k = this.getCOSDictionary().getDictionaryObject(COSName.K);
         if (k == null)
         {
             return;
@@ -281,7 +281,7 @@ public abstract class PDStructureNode implements COSObjectable
                 COSArray array = new COSArray();
                 array.add(newKid);
                 array.add(refKidBase);
-                this.getCOSDictionary().setItem("K", array);
+                this.getCOSDictionary().setItem(COSName.K, array);
             }
         }
     }
@@ -329,7 +329,7 @@ public abstract class PDStructureNode implements COSObjectable
         {
             return false;
         }
-        COSBase k = this.getCOSDictionary().getDictionaryObject("K");
+        COSBase k = this.getCOSDictionary().getDictionaryObject(COSName.K);
         if (k == null)
         {
             // no kids: objectable is not a kid
@@ -343,7 +343,7 @@ public abstract class PDStructureNode implements COSObjectable
             // if now only one kid: set remaining kid as kids
             if (array.size() == 1)
             {
-                this.getCOSDictionary().setItem("K", array.getObject(0));
+                this.getCOSDictionary().setItem(COSName.K, array.getObject(0));
             }
             return removed;
         }
@@ -358,7 +358,7 @@ public abstract class PDStructureNode implements COSObjectable
             }
             if (onlyKid)
             {
-                this.getCOSDictionary().setItem("K", null);
+                this.getCOSDictionary().setItem(COSName.K, null);
                 return true;
             }
             return false;
@@ -396,7 +396,7 @@ public abstract class PDStructureNode implements COSObjectable
         }
         if (kidDic != null)
         {
-            String type = kidDic.getNameAsString("Type");
+            String type = kidDic.getNameAsString(COSName.TYPE);
             if ((type == null) || PDStructureElement.TYPE.equals(type))
             {
                 // A structure element dictionary denoting another structure
@@ -408,7 +408,7 @@ public abstract class PDStructureNode implements COSObjectable
                 // An object reference dictionary denoting a PDF object
                 return new PDObjectReference(kidDic);
             }
-            else if ("MCR".equals(type))
+            else if (PDMarkedContentReference.TYPE.equals(type))
             {
                 // A marked-content reference dictionary denoting a
                 // marked-content sequence

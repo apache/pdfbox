@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 
@@ -65,7 +66,7 @@ public class PDStructureTreeRoot extends PDStructureNode
     public PDNameTreeNode getIDTree()
     {
         COSDictionary idTreeDic = (COSDictionary) this.getCOSDictionary()
-            .getDictionaryObject("IDTree");
+            .getDictionaryObject(COSName.ID_TREE);
         if (idTreeDic != null)
         {
             return new PDNameTreeNode(idTreeDic, PDStructureElement.class);
@@ -80,7 +81,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public void setIDTree(PDNameTreeNode idTree)
     {
-        this.getCOSDictionary().setItem("IDTree", idTree);
+        this.getCOSDictionary().setItem(COSName.ID_TREE, idTree);
     }
 
     /**
@@ -90,7 +91,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public int getParentTreeNextKey()
     {
-        return this.getCOSDictionary().getInt("ParentTreeNextKey");
+        return this.getCOSDictionary().getInt(COSName.PARENT_TREE_NEXT_KEY);
     }
 
     /**
@@ -101,7 +102,7 @@ public class PDStructureTreeRoot extends PDStructureNode
     @SuppressWarnings("unchecked")
     public Map<String, String> getRoleMap()
     {
-        COSBase rm = this.getCOSDictionary().getDictionaryObject("RoleMap");
+        COSBase rm = this.getCOSDictionary().getDictionaryObject(COSName.ROLE_MAP);
         if (rm instanceof COSDictionary)
         {
             try
@@ -128,7 +129,7 @@ public class PDStructureTreeRoot extends PDStructureNode
         {
             rmDic.setName(key, roleMap.get(key));
         }
-        this.getCOSDictionary().setItem("RoleMap", rmDic);
+        this.getCOSDictionary().setItem(COSName.ROLE_MAP, rmDic);
     }
 
 }

@@ -70,7 +70,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getStructureType()
     {
-        return this.getCOSDictionary().getNameAsString("S");
+        return this.getCOSDictionary().getNameAsString(COSName.S);
     }
 
     /**
@@ -80,7 +80,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setStructureType(String structureType)
     {
-        this.getCOSDictionary().setName("S", structureType);
+        this.getCOSDictionary().setName(COSName.S, structureType);
     }
 
     /**
@@ -116,7 +116,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getElementIdentifier()
     {
-        return this.getCOSDictionary().getString("ID");
+        return this.getCOSDictionary().getString(COSName.ID);
     }
 
     /**
@@ -126,7 +126,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setElementIdentifier(String id)
     {
-        this.getCOSDictionary().setString("ID", id);
+        this.getCOSDictionary().setString(COSName.ID, id);
     }
 
     /**
@@ -139,7 +139,7 @@ public class PDStructureElement extends PDStructureNode
     public PDPage getPage()
     {
         COSDictionary pageDic = (COSDictionary) this.getCOSDictionary()
-            .getDictionaryObject("Pg");
+            .getDictionaryObject(COSName.PG);
         if (pageDic == null)
         {
             return null;
@@ -155,7 +155,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setPage(PDPage page)
     {
-        this.getCOSDictionary().setItem("Pg", page);
+        this.getCOSDictionary().setItem(COSName.PG, page);
     }
 
     /**
@@ -165,7 +165,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public Revisions<String> getClassNames()
     {
-        String key = "C";
+        COSName key = COSName.C;
         Revisions<String> classNames = new Revisions<String>();
         COSBase c = this.getCOSDictionary().getDictionaryObject(key);
         if (c instanceof COSName)
@@ -202,7 +202,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setClassNames(Revisions<String> classNames)
     {
-        String key = "C";
+        COSName key = COSName.C;
         if ((classNames.size() == 1) && (classNames.getRevisionNumber(0) == 0))
         {
             String className = classNames.getObject(0);
@@ -231,7 +231,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void addClassName(String className)
     {
-        String key = "C";
+        COSName key = COSName.C;
         COSBase c = this.getCOSDictionary().getDictionaryObject(key);
         COSArray array = null;
         if (c instanceof COSArray)
@@ -259,7 +259,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void removeClassName(String className)
     {
-        String key = "C";
+        COSName key = COSName.C;
         COSBase c = this.getCOSDictionary().getDictionaryObject(key);
         COSName name = COSName.getPDFName(className);
         if (c instanceof COSArray)
@@ -312,7 +312,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getTitle()
     {
-        return this.getCOSDictionary().getString("T");
+        return this.getCOSDictionary().getString(COSName.T);
     }
 
     /**
@@ -322,7 +322,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setTitle(String title)
     {
-        this.getCOSDictionary().setString("T", title);
+        this.getCOSDictionary().setString(COSName.T, title);
     }
 
     /**
@@ -332,7 +332,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getLanguage()
     {
-        return this.getCOSDictionary().getString("Lang");
+        return this.getCOSDictionary().getString(COSName.LANG);
     }
 
     /**
@@ -342,7 +342,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setLanguage(String language)
     {
-        this.getCOSDictionary().setString("Lang", language);
+        this.getCOSDictionary().setString(COSName.LANG, language);
     }
 
     /**
@@ -352,7 +352,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getAlternateDescription()
     {
-        return this.getCOSDictionary().getString("Alt");
+        return this.getCOSDictionary().getString(COSName.ALT);
     }
 
     /**
@@ -362,7 +362,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setAlternateDescription(String alternateDescription)
     {
-        this.getCOSDictionary().setString("Alt", alternateDescription);
+        this.getCOSDictionary().setString(COSName.ALT, alternateDescription);
     }
 
     /**
@@ -372,7 +372,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getExpandedForm()
     {
-        return this.getCOSDictionary().getString("E");
+        return this.getCOSDictionary().getString(COSName.E);
     }
 
     /**
@@ -382,7 +382,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setExpandedForm(String expandedForm)
     {
-        this.getCOSDictionary().setString("E", expandedForm);
+        this.getCOSDictionary().setString(COSName.E, expandedForm);
     }
 
     /**
@@ -392,7 +392,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public String getActualText()
     {
-        return this.getCOSDictionary().getString("ActualText");
+        return this.getCOSDictionary().getString(COSName.ACTUAL_TEXT);
     }
 
     /**
@@ -402,7 +402,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setActualText(String actualText)
     {
-        this.getCOSDictionary().setString("ActualText", actualText);
+        this.getCOSDictionary().setString(COSName.ACTUAL_TEXT, actualText);
     }
 
     /**
