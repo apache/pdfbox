@@ -218,7 +218,7 @@ public abstract class PDStructureNode implements COSObjectable
      */
     public void insertBefore(PDStructureElement newKid, Object refKid)
     {
-        this.insertBefore((COSObjectable) newKid, refKid);
+        this.insertObjectableBefore(newKid, refKid);
     }
 
     /**
@@ -227,7 +227,7 @@ public abstract class PDStructureNode implements COSObjectable
      * @param newKid the objectable
      * @param refKid the reference kid
      */
-    protected void insertBefore(COSObjectable newKid, Object refKid)
+    protected void insertObjectableBefore(COSObjectable newKid, Object refKid)
     {
         if (newKid == null)
         {

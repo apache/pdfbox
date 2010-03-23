@@ -26,12 +26,14 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 
 /**
  * A structure element.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>,
+ *  <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
  * @version $Revision: 1.3 $
  */
 public class PDStructureElement extends PDStructureNode
@@ -202,6 +204,10 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setClassNames(Revisions<String> classNames)
     {
+        if (classNames == null)
+        {
+            return;
+        }
         COSName key = COSName.C;
         if ((classNames.size() == 1) && (classNames.getRevisionNumber(0) == 0))
         {
@@ -231,6 +237,10 @@ public class PDStructureElement extends PDStructureNode
      */
     public void addClassName(String className)
     {
+        if (className == null)
+        {
+            return;
+        }
         COSName key = COSName.C;
         COSBase c = this.getCOSDictionary().getDictionaryObject(key);
         COSArray array = null;
@@ -259,6 +269,10 @@ public class PDStructureElement extends PDStructureNode
      */
     public void removeClassName(String className)
     {
+        if (className == null)
+        {
+            return;
+        }
         COSName key = COSName.C;
         COSBase c = this.getCOSDictionary().getDictionaryObject(key);
         COSName name = COSName.getPDFName(className);
@@ -302,7 +316,19 @@ public class PDStructureElement extends PDStructureNode
      */
     public void setRevisionNumber(int revisionNumber)
     {
+        if (revisionNumber < 0)
+        {
+            // TODO throw Exception because revision number must be > -1?
+        }
         this.getCOSDictionary().setInt(COSName.R, revisionNumber);
+    }
+
+    /**
+     * Increments th revision number
+     */
+    public void incrementRevisionNumber()
+    {
+        this.setRevisionNumber(this.getRevisionNumber() + 1);
     }
 
     /**
@@ -434,6 +460,10 @@ public class PDStructureElement extends PDStructureNode
      */
     public void appendKid(PDMarkedContent markedContent)
     {
+        if (markedContent == null)
+        {
+            return;
+        }
         this.appendKid(COSInteger.get(markedContent.getMCID()));
     }
 
@@ -465,7 +495,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void insertBefore(COSInteger markedContentIdentifier, Object refKid)
     {
-        this.insertBefore(markedContentIdentifier, refKid);
+        this.insertBefore((COSBase) markedContentIdentifier, refKid);
     }
 
     /**
@@ -474,9 +504,10 @@ public class PDStructureElement extends PDStructureNode
      * @param markedContentReference the marked-content reference
      * @param refKid the reference kid
      */
-    public void insertBefore(PDMarkedContentReference markedContentReference, Object refKid)
+    public void insertBefore(PDMarkedContentReference markedContentReference,
+        Object refKid)
     {
-        this.insertBefore(markedContentReference, refKid);
+        this.insertObjectableBefore(markedContentReference, refKid);
     }
 
     /**
@@ -487,7 +518,7 @@ public class PDStructureElement extends PDStructureNode
      */
     public void insertBefore(PDObjectReference objectReference, Object refKid)
     {
-        this.insertBefore(objectReference, refKid);
+        this.insertObjectableBefore(objectReference, refKid);
     }
 
     /**
