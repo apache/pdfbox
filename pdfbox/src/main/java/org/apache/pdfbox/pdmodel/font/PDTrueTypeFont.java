@@ -111,9 +111,10 @@ public class PDTrueTypeFont extends PDSimpleFont
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDTrueTypeFont( COSDictionary fontDictionary )
+    public PDTrueTypeFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
+        ensureFontDescriptor();
     }
 
     /**
@@ -146,14 +147,50 @@ public class PDTrueTypeFont extends PDSimpleFont
         fontStream.addCompression();
         fd.setFontFile2( fontStream );
         retval.setFontDescriptor( fd );
+        InputStream ttfData = new FileInputStream(file);
+        try
+        {
+            loadDescriptorDictionary(retval, fd, ttfData);
+        }
+        finally
+        {
+            ttfData.close();
+        }
         //only support winansi encoding right now, should really
         //just use Identity-H with unicode mapping
         retval.setEncoding( new WinAnsiEncoding() );
+        return retval;
+    }
+
+    private void ensureFontDescriptor() throws IOException
+    {
+        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
+        if( fd == null )
+        {
+            fd = new PDFontDescriptorDictionary();
+            setFontDescriptor(fd);
+            InputStream ttfData = getExternalTTFData();
+            if( ttfData != null )
+            {
+                try
+                {
+                    loadDescriptorDictionary(this, fd, ttfData);
+                }
+                finally
+                {
+                    ttfData.close();
+                }
+            }
+        }
+    }
+
+    private static void loadDescriptorDictionary(PDTrueTypeFont retval, PDFontDescriptorDictionary fd, InputStream ttfData) throws IOException
+    {
         TrueTypeFont ttf = null;
         try
         {
             TTFParser parser = new TTFParser();
-            ttf = parser.parseTTF( file );
+            ttf = parser.parseTTF( ttfData );
             NamingTable naming = ttf.getNaming();
             List records = naming.getNameRecords();
             for( int i=0; i<records.size(); i++ )
@@ -317,8 +354,6 @@ public class PDTrueTypeFont extends PDSimpleFont
                 ttf.close();
             }
         }
-
-        return retval;
     }
 
     /**
@@ -386,6 +421,16 @@ public class PDTrueTypeFont extends PDSimpleFont
         writeFont(g2d, at, awtFont, fontSize, x, y, string);
     }
 
+    private InputStream getExternalTTFData() throws IOException
+    {
+        String ttfResource = externalFonts.getProperty( UNKNOWN_FONT );
+        String baseFont = getBaseFont();
+        if( baseFont != null && externalFonts.containsKey(baseFont) )
+        {
+            ttfResource = externalFonts.getProperty( baseFont );
+        }
+        return (ttfResource != null ? ResourceLoader.loadResource(ttfResource) : null);
+    }
 
     /**
      * Permit to load an external TTF Font program file
