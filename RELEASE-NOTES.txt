@@ -24,6 +24,9 @@ New Features
 Improvements
 
   [PDFBOX-628] Too many detours in COSDictionary convenience methods
+  [PDFBOX-630] Create PDDictionaryWrapper
+  [PDFBOX-633] Add indexOfObject and removeObject methods with ...
+  [PDFBOX-635] Fallback mechanism for broken CFF fonts
   [PDFBOX-643] Date conversion errors
   [PDFBOX-644] Move FontBox and JempBox under the same trunk with PDFBox
   [PDFBOX-646] Map the form space to user space if the optional form ...
