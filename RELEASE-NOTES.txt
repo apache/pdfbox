@@ -1,66 +1,54 @@
-Release Notes -- Apache PDFBox -- Version 1.0.0
+Release Notes -- Apache PDFBox -- Version 1.1.0
 
 Introduction
 ------------
 
 PDFBox is an open source Java library for working with PDF documents.
 
-The most notable changes in this release are the upgrade to Java 5, numerous
-performance improvements, support for page labels and Adobe CFF/Type2 fonts,
-and the switch of the default build system from Ant to Maven. For more
-details, please refer to the following issues on the PDFBox issue tracker
-at https://issues.apache.org/jira/browse/PDFBOX:
+This is an incremental feature release based on the earlier 1.0.0 release.
+Unlike previous PDFBox releases, this release contains also updated versions
+of the supporting FontBox and JempBox libraries. The other notable changes
+in this release include basic support for tagged PDF, various font handling
+improvements and better handling of CJK character sets. For more details,
+please refer to the following issues on the PDFBox issue tracker at
+https://issues.apache.org/jira/browse/PDFBOX.
 
 New Features
 
-  [PDFBOX-90]  Support explicit retrieval of page labels
-  [PDFBOX-505] Support for adding a textmatrix, textscaling and textrotation
-  [PDFBOX-526] Add ability to read encrypted file & write unencrypted file
-  [PDFBOX-542] Support for Adobe CFF/Type2 fonts
-  [PDFBOX-572] Upgrading PDFBox (incl. JempBox and FontBox) to use Java 5 ...
+  [PDFBOX-7]   extract information from tagged PDF
+  [PDFBOX-48]  Create a tagged PDF
+  [PDFBOX-67]  Implement StructTreeRoot/StructTree classes in the PDModel
+  [PDFBOX-636] Add decoded stream length to PDStream
+  [PDFBOX-640] Add getter/setter for alternate field name (TU) to PDField
 
 Improvements
 
-  [PDFBOX-514] maven pom's do not include source artifacts
-  [PDFBOX-531] Minor change to expose separating beads option through ...
-  [PDFBOX-532] getPageLabels method for PDocumentCatalog class.
-  [PDFBOX-545] Switch PDFBox build to Maven
-  [PDFBOX-558] PDPageDestination getPageNumber only returns page number ...
-  [PDFBOX-580] Use a dummy color instead of failing with unsupported ...
-  [PDFBOX-581] Avoid warnings for graphics operations when extracting text
-  [PDFBOX-599] PDFBox performance issue: TextPosition performance tweak
-  [PDFBOX-600] PDFBox performance issue: PDFTextStripper performance tweak
-  [PDFBOX-601] PDFBox performance issue: PDSimpleFont, PDFont performance ...
-  [PDFBOX-602] PDFBox performance issue: PDPage tweaks
-  [PDFBOX-603] PDFBox performance issue: Encoding.java getCharacter() ...
-  [PDFBOX-604] Various text extraction performance improvements
+  [PDFBOX-628] Too many detours in COSDictionary convenience methods
+  [PDFBOX-643] Date conversion errors
+  [PDFBOX-644] Move FontBox and JempBox under the same trunk with PDFBox
+  [PDFBOX-646] Map the form space to user space if the optional form ...
+  [PDFBOX-653] Document the missing command line tools
+  [PDFBOX-654] Extracting CJK text
+  [PDFBOX-655] Default character width should be used if width of a ...
+  [PDFBOX-663] Ensuring non-null FontDescriptor for external TrueType fonts
 
 Bug Fixes
 
-  [PDFBOX-50]  Hierarchical PDRadioCollections cannot be processed.
-  [PDFBOX-218] bad print
-  [PDFBOX-508] Lost spacing as a result of operator "Tc" ignoring.
-  [PDFBOX-519] NullPointerException in SetNonStrokingSeparation.java
-  [PDFBOX-520] Ignores char spacing (Tc) and word space (Tw) when ...
-  [PDFBOX-522] PDIndexed.java does not support a base color space other ...
-  [PDFBOX-536] missing iterator.hasNext() test in PDFXrefStreamParser
-  [PDFBOX-537] Endless loop in org.apache.pdfbox.pdfparser.BaseParser....
-  [PDFBOX-541] Infinite loop in BaseParser.parseCOSDictionary
-  [PDFBOX-549] Lost links when merging with PDFMergerUtility ...
-  [PDFBOX-552] NPE while printing a pdf with an image inside
-  [PDFBOX-555] Highlight.jsp (pdfbox.war) not working
-  [PDFBOX-557] Missing entries in glyphlist
-  [PDFBOX-571] Dubious handling of word spacing (Tw)
-  [PDFBOX-573] Maven build does not download files not inclued in ...
-  [PDFBOX-583] TextPosition#getIndividualWidths returns negative values
-  [PDFBOX-590] PDFXrefStreamParser iterates when no elements are available
-  [PDFBOX-591] PDFBox performance issue: BaseParser.readUntilEndStream() ...
-  [PDFBOX-593] ClassCastException in PDAppearanceDictionary
-  [PDFBOX-594] Typo: change getBoderStyle() to getBorderStyle()
-  [PDFBOX-596] PDActionURI: invalid getBase()
-  [PDFBOX-597] PDAcnnotation has methods not defined for all annotations
-  [PDFBOX-598] DateConverter.toCalendar doesn't clear milliseconds field
-  [PDFBOX-614] Rendering image results in java.lang.NoSuchMethodError: ...
+  [PDFBOX-55]  Invalid character while extracting text from a chinese pdf
+  [PDFBOX-116] PNG image page completely garbled
+  [PDFBOX-259] support request chinese-traditional
+  [PDFBOX-420] Japanese Characters are garbled.
+  [PDFBOX-619] Adobe CFF/Type2 font encoding enhancements
+  [PDFBOX-621] XMPSchema.getIntegerProperty does not return existing value
+  [PDFBOX-624] Misplaced text
+  [PDFBOX-632] Invalid page rendering while printing a PDF with an image ...
+  [PDFBOX-634] CFF parsing failure
+  [PDFBOX-637] problem with static code in COSInteger/COSNumber
+  [PDFBOX-645] PDDocumentOutline should not have getParent()
+  [PDFBOX-656] Typo: there is no DecodeParams value. The correct name is ...
+  [PDFBOX-658] Fix typo in FontMapping.properties
+  [PDFBOX-660] Applying FontMatrix scale factors to PDFont drawing operations
+  [PDFBOX-666] Ensure the correct path direction when drawing a rectangle
 
 Release Contents
 ----------------
