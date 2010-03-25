@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 <assembly>
-  <id>bin</id>
+  <id>src</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -23,23 +23,14 @@
     <fileSet>
       <directory>${project.basedir}</directory>
       <outputDirectory></outputDirectory>
-      <includes>
-        <include>*.txt</include>
-      </includes>
+      <excludes>
+        <exclude>**/target/**</exclude>
+        <exclude>**/.*/**</exclude>
+        <exclude>pdfbox/bin/**</exclude>
+        <exclude>pdfbox/download/**</exclude>
+        <exclude>pdfbox/external/**</exclude>
+        <exclude>pdfbox/tools/**</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
-  <dependencySets>
-    <dependencySet>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>org.apache.pdfbox:pdfbox</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>external</outputDirectory>
-      <excludes>
-        <exclude>org.apache.pdfbox:pdfbox</exclude>
-      </excludes>
-    </dependencySet>
-  </dependencySets>
 </assembly>

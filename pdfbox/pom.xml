@@ -165,33 +165,6 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>apache-release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <phase>package</phase>
-                <configuration>
-                  <descriptors>
-                    <descriptor>src/assembly/src.xml</descriptor>
-                    <descriptor>src/assembly/bin.xml</descriptor>
-                  </descriptors>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
   <reporting>
     <plugins>
       <plugin>
