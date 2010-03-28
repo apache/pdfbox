@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.Transparency;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -36,6 +37,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.predictor.PredictorAlgorithm;
 
 
@@ -146,12 +149,42 @@ public class PDPixelMap extends PDXObjectImage
             
             if (bpc == 1)
             {
-                byte[] map = new byte[] {(byte)0x00, (byte)0xff};
-                cm = new IndexColorModel(1, 2, map, map, map, 1);
+                byte[] map = null;
+                if (colorspace instanceof PDDeviceGray)
+                {
+                    map = new byte[] {(byte)0xff};
+                }
+                else if (colorspace instanceof PDICCBased)
+                {
+                    if ( ((PDICCBased)colorspace).getNumberOfComponents() == 1) 
+                    {
+                        map = new byte[] {(byte)0xff};
+                    }
+                    else
+                    {
+                        map = new byte[] {(byte)0x00, (byte)0xff};
+                    }
+                }
+                else
+                {
+                    map = new byte[] {(byte)0x00, (byte)0xff};
+                }
+                cm = new IndexColorModel(bpc, map.length, map, map, map, Transparency.OPAQUE);
             }
             else
             {
-                cm = colorspace.createColorModel( bpc );
+                if (colorspace instanceof PDICCBased) 
+                {
+                    if (((PDICCBased)colorspace).getNumberOfComponents() == 1) 
+                    {
+                        byte[] map = new byte[] {(byte)0xff};
+                        cm = new IndexColorModel(bpc, 1, map, map, map, Transparency.OPAQUE);
+                    }
+                    else
+                        cm = colorspace.createColorModel( bpc );
+                }
+                else
+                    cm = colorspace.createColorModel( bpc );
             }
             
             log.info("ColorModel: " + cm.toString());
