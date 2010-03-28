@@ -57,7 +57,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
 public class PDFMergerUtility
 {
 
-    private List sources;
+    private List<File> sources;
     private String destinationFileName;
 
     /**
@@ -65,7 +65,7 @@ public class PDFMergerUtility
      */
     public PDFMergerUtility()
     {
-        sources = new ArrayList();
+        sources = new ArrayList<File>();
     }
 
     /**
@@ -120,26 +120,20 @@ public class PDFMergerUtility
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
+        	java.util.Vector<PDDocument> tobeclosed = new java.util.Vector<PDDocument>();
+        	
             try
             {
-                Iterator sit = sources.iterator();
-                sourceFile = (File) sit.next();
+                Iterator<File> sit = sources.iterator();
+                sourceFile = sit.next();
                 destination = PDDocument.load(sourceFile);
+
                 while (sit.hasNext())
                 {
                     sourceFile = (File) sit.next();
                     source = PDDocument.load(sourceFile);
-                    try
-                    {
-                        appendDocument(destination, source);
-                    }
-                    finally
-                    {
-                        if (source != null)
-                        {
-                            source.close();
-                        }
-                    }
+                    tobeclosed.add(source);
+                    appendDocument(destination, source);
                 }
                 destination.save(destinationFileName);
             }
@@ -149,6 +143,9 @@ public class PDFMergerUtility
                 {
                     destination.close();
                 }
+            	for(PDDocument doc : tobeclosed){
+            		doc.close();
+            	} 
             }
         }
     }
@@ -298,11 +295,11 @@ public class PDFMergerUtility
         }
 
         //finally append the pages
-        List pages = source.getDocumentCatalog().getAllPages();
-        Iterator pageIter = pages.iterator();
+        List<PDPage> pages = source.getDocumentCatalog().getAllPages();
+        Iterator<PDPage> pageIter = pages.iterator();
         while( pageIter.hasNext() )
         {
-            PDPage page = (PDPage)pageIter.next();
+            PDPage page = pageIter.next();
             PDPage newPage =
                 new PDPage( (COSDictionary)cloneForNewDocument( destination, page.getCOSDictionary() ) );
             newPage.setCropBox( page.findCropBox() );
@@ -311,7 +308,8 @@ public class PDFMergerUtility
             destination.addPage( newPage );
         }
     }
-    Map clonedVersion = new HashMap();
+
+    Map<Object,COSBase> clonedVersion = new HashMap<Object,COSBase>();
 
 
   /**
