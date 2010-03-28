@@ -78,7 +78,7 @@ public class PDJpeg extends PDXObjectImage
         COSDictionary dic = getCOSStream();
         dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
         dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-        dic.setItem( COSName.TYPE, COSName.getPDFName( "XObject" ) );
+        dic.setItem( COSName.TYPE, COSName.XOBJECT );
 
         BufferedImage image = getRGBImage();
         if (image != null) 
@@ -111,7 +111,7 @@ public class PDJpeg extends PDXObjectImage
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
             dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-            dic.setItem( COSName.TYPE, COSName.getPDFName( "XObject" ) );
+            dic.setItem( COSName.TYPE, COSName.XOBJECT );
 
             setBitsPerComponent( 8 );
             setColorSpace( PDDeviceRGB.INSTANCE );

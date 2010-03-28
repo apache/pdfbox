@@ -78,11 +78,11 @@ public class PDDeviceNAttributes
     public Map getColorants() throws IOException
     {
         Map actuals = new HashMap();
-        COSDictionary colorants = (COSDictionary)dictionary.getDictionaryObject( COSName.getPDFName( "Colorants" ) );
+        COSDictionary colorants = (COSDictionary)dictionary.getDictionaryObject( COSName.COLORANTS );
         if( colorants == null )
         {
             colorants = new COSDictionary();
-            dictionary.setItem( COSName.getPDFName( "Colorants" ), colorants );
+            dictionary.setItem( COSName.COLORANTS, colorants );
         }
         for( COSName name : colorants.keySet() )
         {
@@ -105,6 +105,6 @@ public class PDDeviceNAttributes
         {
             colorantDict = COSDictionaryMap.convert( colorants );
         }
-        dictionary.setItem( COSName.getPDFName( "Colorants" ), colorantDict );
+        dictionary.setItem( COSName.COLORANTS, colorantDict );
     }
 }

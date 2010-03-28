@@ -43,20 +43,28 @@ public abstract class Encoding implements COSObjectable
     /**
      * This is a mapping from a character code to a character name.
      */
-    protected final Map<Integer, COSName> codeToName =
-        new HashMap<Integer, COSName>();
+//    protected final Map<Integer, COSName> codeToName =
+//        new HashMap<Integer, COSName>();
+    protected final Map<Integer, String> codeToName =
+        new HashMap<Integer, String>();
 
     /**
      * This is a mapping from a character name to a character code.
      */
-    protected final Map<COSName, Integer> nameToCode =
-        new HashMap<COSName, Integer>();
+//    protected final Map<COSName, Integer> nameToCode =
+//        new HashMap<COSName, Integer>();
+    protected final Map<String, Integer> nameToCode =
+        new HashMap<String, Integer>();
 
-    private static final Map<COSName, String> NAME_TO_CHARACTER =
-        new HashMap<COSName, String>();
+//    private static final Map<COSName, String> NAME_TO_CHARACTER =
+//        new HashMap<COSName, String>();
+    private static final Map<String, String> NAME_TO_CHARACTER =
+        new HashMap<String, String>();
 
-    private static final Map<String, COSName> CHARACTER_TO_NAME =
-        new HashMap<String, COSName>();
+//    private static final Map<String, COSName> CHARACTER_TO_NAME =
+//        new HashMap<String, COSName>();
+    private static final Map<String, String> CHARACTER_TO_NAME =
+        new HashMap<String, String>();
 
     static
     {
@@ -74,24 +82,24 @@ public abstract class Encoding implements COSObjectable
             }
         }
 
-        NAME_TO_CHARACTER.put( COSName.getPDFName( ".notdef" ), "" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "fi" ), "fi" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "fl" ), "fl" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "ffi" ), "ffi" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "ff" ), "ff" );
-        NAME_TO_CHARACTER.put( COSName.getPDFName( "pi" ), "pi" );
+        NAME_TO_CHARACTER.put( ".notdef", "" );
+        NAME_TO_CHARACTER.put( "fi", "fi" );
+        NAME_TO_CHARACTER.put( "fl", "fl" );
+        NAME_TO_CHARACTER.put( "ffi", "ffi" );
+        NAME_TO_CHARACTER.put( "ff", "ff" );
+        NAME_TO_CHARACTER.put( "pi", "pi" );
 
         // add some (alternative) glyph mappings. These are missing in
         // the original copy of the adobe glyphlist.txt 
         // also mapped as anglebracketleft
-        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketleft"), "\u3008");
+        NAME_TO_CHARACTER.put("angbracketleft", "\u3008");
         // also mapped as anglebracketright
-        NAME_TO_CHARACTER.put(COSName.getPDFName("angbracketright"), "\u3009");
+        NAME_TO_CHARACTER.put("angbracketright", "\u3009");
         // also mapped as copyright
-        NAME_TO_CHARACTER.put(COSName.getPDFName("circlecopyrt"), "\u00A9");
-        NAME_TO_CHARACTER.put(COSName.getPDFName("controlNULL"), "\u0000");
+        NAME_TO_CHARACTER.put("circlecopyrt", "\u00A9");
+        NAME_TO_CHARACTER.put("controlNULL", "\u0000");
 
-        for( Map.Entry<COSName, String> entry : NAME_TO_CHARACTER.entrySet() )
+        for( Map.Entry<String, String> entry : NAME_TO_CHARACTER.entrySet() )
         {
             CHARACTER_TO_NAME.put( entry.getValue(), entry.getKey() );
         }
@@ -130,7 +138,7 @@ public abstract class Encoding implements COSObjectable
                                 int characterCode = Integer.parseInt( tokenizer.nextToken(), 16 );
                                 value += (char)characterCode;
                             }
-                            NAME_TO_CHARACTER.put( COSName.getPDFName( characterName ), value );
+                            NAME_TO_CHARACTER.put( characterName, value );
                         }
                         catch( NumberFormatException nfe )
                         {
@@ -165,7 +173,7 @@ public abstract class Encoding implements COSObjectable
      * Returns an unmodifiable view of the Code2Name mapping.
      * @return the Code2Name map 
      */
-    public Map<Integer, COSName> getCodeToNameMap()
+    public Map<Integer, String> getCodeToNameMap()
     {
         return Collections.unmodifiableMap(codeToName);
     }
@@ -174,7 +182,7 @@ public abstract class Encoding implements COSObjectable
      * Returns an unmodifiable view of the Name2Code mapping.
      * @return the Name2Code map 
      */
-    public Map<COSName, Integer> getNameToCodeMap()
+    public Map<String, Integer> getNameToCodeMap()
     {
         return Collections.unmodifiableMap(nameToCode);
     }
@@ -185,7 +193,7 @@ public abstract class Encoding implements COSObjectable
      * @param code The character code that matches the character.
      * @param name The name of the character.
      */
-    protected void addCharacterEncoding( int code, COSName name )
+    protected void addCharacterEncoding( int code, String name )
     {
         codeToName.put( code, name );
         nameToCode.put( name, code );
@@ -200,12 +208,12 @@ public abstract class Encoding implements COSObjectable
      *
      * @throws IOException If there is no character code for the name.
      */
-    public int getCode( COSName name ) throws IOException
+    public int getCode( String name ) throws IOException
     {
         Integer code = nameToCode.get( name );
         if( code == null )
         {
-            throw new IOException( "No character code for character name '" + name.getName() + "'" );
+            throw new IOException( "No character code for character name '" + name + "'" );
         }
         return code;
     }
@@ -219,13 +227,13 @@ public abstract class Encoding implements COSObjectable
      *
      * @throws IOException If there is no name for the code.
      */
-    public COSName getName( int code ) throws IOException
+    public String getName( int code ) throws IOException
     {
-        COSName name = codeToName.get( code );
+        String name = codeToName.get( code );
         if( name == null )
         {
             //lets be forgiving for now
-            name = COSName.getPDFName( "space" );
+            name = "space";
             //throw new IOException( getClass().getName() +
             //                       ": No name for character code '" + code + "'" );
         }
@@ -241,9 +249,9 @@ public abstract class Encoding implements COSObjectable
      *
      * @throws IOException If there is no name for the character.
      */
-    public COSName getNameFromCharacter( char c ) throws IOException
+    public String getNameFromCharacter( char c ) throws IOException
     {
-        COSName name = CHARACTER_TO_NAME.get( Character.toString(c) );
+        String name = CHARACTER_TO_NAME.get( Character.toString(c) );
         if( name == null )
         {
             throw new IOException( "No name for character '" + c + "'" );
@@ -273,14 +281,14 @@ public abstract class Encoding implements COSObjectable
      *
      * @return The printable character for the code.
      */
-    public static String getCharacter( COSName name )
+    public static String getCharacter( String name )
     {
-        COSName baseName = name;
+        String baseName = name;
  
         String character = NAME_TO_CHARACTER.get( baseName );
         if( character == null )
         {
-            String nameStr = baseName.getName();
+            String nameStr = baseName;
             // test for Unicode name
             // (uniXXXX - XXXX must be a multiple of four;
             // each representing a hexadecimal Unicode code point)
@@ -320,7 +328,7 @@ public abstract class Encoding implements COSObjectable
                 if ( nameStr.indexOf('.') > 0 ) 
                 {
                     nameStr = nameStr.substring( 0, nameStr.indexOf('.') );
-                    baseName = COSName.getPDFName( nameStr );
+                    baseName = nameStr;
                     getCharacter(baseName);
                 }
 

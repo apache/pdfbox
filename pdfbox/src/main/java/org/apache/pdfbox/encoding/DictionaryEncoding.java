@@ -47,13 +47,13 @@ public class DictionaryEncoding extends Encoding
 
         //first set up the base encoding
         //The previious value WinAnsiEncoding() has been changed to StandardEnding
-        //see p 389 of the PDF 1.5 reférence table 5.11 entries in a dictionary encoding
+        //see p 389 of the PDF 1.5 refï¿½rence table 5.11 entries in a dictionary encoding
         //"If this entry is absent, the Differences entry describes differences from an implicit
         //base encoding. For a font program that is embedded in the PDF file, the
-        //implicit base encoding is the font program’s built-in encoding, as described
+        //implicit base encoding is the font programï¿½s built-in encoding, as described
         //above and further elaborated in the sections on specific font types below. Otherwise,
         //for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
-        //is the font’s built-in encoding."
+        //is the fontï¿½s built-in encoding."
 
         //so the default base encoding is standardEncoding
         Encoding baseEncoding = new StandardEncoding();
@@ -81,7 +81,7 @@ public class DictionaryEncoding extends Encoding
             else if( next instanceof COSName )
             {
                 COSName name = (COSName)next;
-                addCharacterEncoding( currentIndex++, name );
+                addCharacterEncoding( currentIndex++, name.getName() );
             }
         }
     }

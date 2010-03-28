@@ -357,7 +357,7 @@ public class PDType1CFont extends PDSimpleFont
             Integer code = (Integer)entry.getKey();
             String name = (String)entry.getValue();
             String uniName = "uni";
-            String character = (String)nameToCharacter.get(COSName.getPDFName(name));
+            String character = (String)nameToCharacter.get(name);
             if( character != null )
             {
                 for( int j = 0; j < character.length(); j++ )
@@ -456,11 +456,11 @@ public class PDType1CFont extends PDSimpleFont
         Map<Integer,String> result = new LinkedHashMap<Integer,String>();
         EncodingManager encodingManager = new EncodingManager();
         Encoding encoding = encodingManager.getEncoding(name);
-        for( Iterator<Map.Entry<Integer,COSName>> it = (encoding.getCodeToNameMap().entrySet()).iterator();
+        for( Iterator<Map.Entry<Integer,String>> it = (encoding.getCodeToNameMap().entrySet()).iterator();
                     it.hasNext();)
         {
-            Map.Entry<Integer,COSName> entry = it.next();
-            result.put(entry.getKey(), (entry.getValue()).getName());
+            Map.Entry<Integer,String> entry = it.next();
+            result.put(entry.getKey(), (entry.getValue()));
         }
 
         return result;

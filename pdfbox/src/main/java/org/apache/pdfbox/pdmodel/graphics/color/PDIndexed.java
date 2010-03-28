@@ -60,8 +60,8 @@ public class PDIndexed extends PDColorSpace
     public PDIndexed()
     {
         array = new COSArray();
-        array.add( COSName.getPDFName( NAME ) );
-        array.add( COSName.getPDFName( PDDeviceRGB.NAME ) );
+        array.add( COSName.INDEXED );
+        array.add( COSName.DEVICERGB );
         array.add( COSInteger.get( 255 ) );
         array.add( org.apache.pdfbox.cos.COSNull.NULL );
     }

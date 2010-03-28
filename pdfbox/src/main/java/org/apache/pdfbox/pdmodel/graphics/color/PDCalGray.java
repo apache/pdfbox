@@ -51,7 +51,7 @@ public class PDCalGray extends PDColorSpace
     {
         array = new COSArray();
         dictionary = new COSDictionary();
-        array.add( COSName.getPDFName( NAME ) );
+        array.add( COSName.CALGRAY );
         array.add( dictionary );
     }
 
@@ -133,7 +133,7 @@ public class PDCalGray extends PDColorSpace
     public float getGamma()
     {
         float retval = 1.0f;
-        COSNumber gamma = (COSNumber)dictionary.getDictionaryObject( COSName.getPDFName( "Gamma" ) );
+        COSNumber gamma = (COSNumber)dictionary.getDictionaryObject( COSName.GAMMA );
         if( gamma != null )
         {
             retval = gamma.floatValue();
@@ -148,7 +148,7 @@ public class PDCalGray extends PDColorSpace
      */
     public void setGamma( float value )
     {
-        dictionary.setItem( COSName.getPDFName( "Gamma" ), new COSFloat( value ) );
+        dictionary.setItem( COSName.GAMMA, new COSFloat( value ) );
     }
 
     /**
@@ -160,14 +160,14 @@ public class PDCalGray extends PDColorSpace
      */
     public PDTristimulus getWhitepoint()
     {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.getPDFName( "WhitePoint" ) );
+        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.WHITE_POINT );
         if( wp == null )
         {
             wp = new COSArray();
             wp.add( new COSFloat( 1.0f ) );
             wp.add( new COSFloat( 1.0f ) );
             wp.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.getPDFName( "WhitePoint" ), wp );
+            dictionary.setItem( COSName.WHITE_POINT, wp );
         }
         return new PDTristimulus( wp );
     }
@@ -183,7 +183,7 @@ public class PDCalGray extends PDColorSpace
         COSBase wpArray = wp.getCOSObject();
         if( wpArray != null )
         {
-            dictionary.setItem( COSName.getPDFName( "WhitePoint" ), wpArray );
+            dictionary.setItem( COSName.WHITE_POINT, wpArray );
         }
     }
 
@@ -196,14 +196,14 @@ public class PDCalGray extends PDColorSpace
      */
     public PDTristimulus getBlackPoint()
     {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.getPDFName( "BlackPoint" ) );
+        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.BLACK_POINT );
         if( bp == null )
         {
             bp = new COSArray();
             bp.add( new COSFloat( 0.0f ) );
             bp.add( new COSFloat( 0.0f ) );
             bp.add( new COSFloat( 0.0f ) );
-            dictionary.setItem( COSName.getPDFName( "BlackPoint" ), bp );
+            dictionary.setItem( COSName.BLACK_POINT, bp );
         }
         return new PDTristimulus( bp );
     }
@@ -221,6 +221,6 @@ public class PDCalGray extends PDColorSpace
         {
             bpArray = bp.getCOSObject();
         }
-        dictionary.setItem( COSName.getPDFName( "BlackPoint" ), bpArray );
+        dictionary.setItem( COSName.BLACK_POINT, bpArray );
     }
 }

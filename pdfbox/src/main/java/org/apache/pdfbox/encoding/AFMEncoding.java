@@ -22,7 +22,6 @@ import org.apache.fontbox.afm.CharMetric;
 import org.apache.fontbox.afm.FontMetric;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
 
 /**
  * This will handle the encoding from an AFM font.
@@ -42,11 +41,11 @@ public class AFMEncoding extends Encoding
     public AFMEncoding( FontMetric fontInfo )
     {
         metric = fontInfo;
-        Iterator characters = metric.getCharMetrics().iterator();
+        Iterator<CharMetric> characters = metric.getCharMetrics().iterator();
         while( characters.hasNext() )
         {
             CharMetric nextMetric = (CharMetric)characters.next();
-            addCharacterEncoding( nextMetric.getCharacterCode(), COSName.getPDFName( nextMetric.getName() ) );
+            addCharacterEncoding( nextMetric.getCharacterCode(), nextMetric.getName() );
         }
     }
 

@@ -151,19 +151,19 @@ public class PDType1AfmPfbFont extends PDType1Font
         int lastchar = 0;
 
         // widths
-        List listmetric = metric.getCharMetrics();
+        List<CharMetric> listmetric = metric.getCharMetrics();
         Encoding encoding = getEncoding();
         int maxWidths = 256;
-        List widths = new ArrayList(maxWidths);
+        List<Number> widths = new ArrayList(maxWidths);
         Integer zero = new Integer(250);
-        Iterator iter = listmetric.iterator();
+        Iterator<CharMetric> iter = listmetric.iterator();
         for( int i=0; i<maxWidths; i++ )
         {
             widths.add(zero);
         }
         while (iter.hasNext())
         {
-            CharMetric m = (CharMetric) iter.next();
+            CharMetric m = iter.next();
             int n = m.getCharacterCode();
             if (n > 0)
             {
@@ -188,27 +188,27 @@ public class PDType1AfmPfbFont extends PDType1Font
                 // so that I've to add them here by hand
                 if (m.getName().equals("adieresis"))
                 {
-                    widths.set(0344,(Float)widths.get(encoding.getCode(COSName.getPDFName( "a" ))));
+                    widths.set(0344,(Float)widths.get(encoding.getCode("a")));
                 }
                 else if (m.getName().equals("odieresis"))
                 {
-                    widths.set(0366,(Float)widths.get(encoding.getCode(COSName.getPDFName( "o" ))));
+                    widths.set(0366,(Float)widths.get(encoding.getCode("o")));
                 }
                 else if (m.getName().equals("udieresis"))
                 {
-                    widths.set(0374,(Float)widths.get(encoding.getCode(COSName.getPDFName( "u" ))));
+                    widths.set(0374,(Float)widths.get(encoding.getCode("u")));
                 }
                 else if (m.getName().equals("Adieresis"))
                 {
-                    widths.set(0304,(Float)widths.get(encoding.getCode(COSName.getPDFName( "A" ))));
+                    widths.set(0304,(Float)widths.get(encoding.getCode("A")));
                 }
                 else if (m.getName().equals("Odieresis"))
                 {
-                    widths.set(0326,(Float)widths.get(encoding.getCode(COSName.getPDFName( "O" ))));
+                    widths.set(0326,(Float)widths.get(encoding.getCode("O")));
                 }
                 else if (m.getName().equals("Udieresis"))
                 {
-                    widths.set(0334,(Float)widths.get(encoding.getCode(COSName.getPDFName( "U" ))));
+                    widths.set(0334,(Float)widths.get(encoding.getCode("U")));
                 }
             }
         }
@@ -229,7 +229,7 @@ public class PDType1AfmPfbFont extends PDType1Font
         array.add(COSInteger.ZERO);
         for (int i = 0; i < 256; i++) 
         {
-            array.add(encoding.getName(i));
+            array.add(COSName.getPDFName(encoding.getName(i)));
         }
         // my AFMPFB-Fonts has no character-codes for german umlauts
         // so that I've to add them here by hand

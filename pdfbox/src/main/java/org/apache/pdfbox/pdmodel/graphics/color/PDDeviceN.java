@@ -52,7 +52,7 @@ public class PDDeviceN extends PDColorSpace
     public PDDeviceN()
     {
         array = new COSArray();
-        array.add( COSName.getPDFName( NAME ) );
+        array.add( COSName.DEVICEN );
         array.add( COSName.getPDFName( "" ) );
     }
 

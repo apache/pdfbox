@@ -197,27 +197,26 @@ public class PDFMergerUtility
         }
 
         COSArray destThreads = (COSArray)destCatalog.getCOSDictionary().getDictionaryObject(
-                COSName.getPDFName( "Threads" ));
+                COSName.THREADS);
         COSArray srcThreads = (COSArray)cloneForNewDocument(
                 destination,
-                destCatalog.getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Threads" )));
+                destCatalog.getCOSDictionary().getDictionaryObject( COSName.THREADS ));
         if( destThreads == null )
         {
-            destCatalog.getCOSDictionary().setItem( COSName.getPDFName( "Threads" ), srcThreads );
+            destCatalog.getCOSDictionary().setItem( COSName.THREADS, srcThreads );
         }
         else
         {
             destThreads.addAll( srcThreads );
         }
 
-        COSName names = COSName.getPDFName( "Names" );
         PDDocumentNameDictionary destNames = destCatalog.getNames();
         PDDocumentNameDictionary srcNames = srcCatalog.getNames();
         if( srcNames != null )
         {
             if( destNames == null )
             {
-                destCatalog.getCOSDictionary().setItem( names, cloneForNewDocument( destination, srcNames ) );
+                destCatalog.getCOSDictionary().setItem( COSName.NAMES, cloneForNewDocument( destination, srcNames ) );
             }
             else
             {
@@ -252,9 +251,8 @@ public class PDFMergerUtility
             destCatalog.setPageMode( srcPageMode );
         }
 
-        COSName pageLabels = COSName.getPDFName( "PageLabels" );
-        COSDictionary destLabels = (COSDictionary)destCatalog.getCOSDictionary().getDictionaryObject( pageLabels );
-        COSDictionary srcLabels = (COSDictionary)srcCatalog.getCOSDictionary().getDictionaryObject( pageLabels );
+        COSDictionary destLabels = (COSDictionary)destCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGE_LABELS );
+        COSDictionary srcLabels = (COSDictionary)srcCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGE_LABELS );
         if( srcLabels != null )
         {
             int destPageCount = destination.getNumberOfPages();
@@ -263,14 +261,14 @@ public class PDFMergerUtility
             {
                 destLabels = new COSDictionary();
                 destNums = new COSArray();
-                destLabels.setItem( COSName.getPDFName( "Nums" ), destNums );
-                destCatalog.getCOSDictionary().setItem( pageLabels, destLabels );
+                destLabels.setItem( COSName.NUMS, destNums );
+                destCatalog.getCOSDictionary().setItem( COSName.PAGE_LABELS, destLabels );
             }
             else
             {
-                destNums = (COSArray)destLabels.getDictionaryObject( COSName.getPDFName( "Nums" ) );
+                destNums = (COSArray)destLabels.getDictionaryObject( COSName.NUMS );
             }
-            COSArray srcNums = (COSArray)srcLabels.getDictionaryObject( COSName.getPDFName( "Nums" ) );
+            COSArray srcNums = (COSArray)srcLabels.getDictionaryObject( COSName.NUMS );
             if (srcNums != null)
             {
                 for( int i=0; i<srcNums.size(); i+=2 )
@@ -283,15 +281,14 @@ public class PDFMergerUtility
             }
         }
 
-        COSName metadata = COSName.getPDFName( "Metadata" );
-        COSStream destMetadata = (COSStream)destCatalog.getCOSDictionary().getDictionaryObject( metadata );
-        COSStream srcMetadata = (COSStream)srcCatalog.getCOSDictionary().getDictionaryObject( metadata );
+        COSStream destMetadata = (COSStream)destCatalog.getCOSDictionary().getDictionaryObject( COSName.METADATA );
+        COSStream srcMetadata = (COSStream)srcCatalog.getCOSDictionary().getDictionaryObject( COSName.METADATA );
         if( destMetadata == null && srcMetadata != null )
         {
             PDStream newStream = new PDStream( destination, srcMetadata.getUnfilteredStream(), false );
             newStream.getStream().mergeInto( srcMetadata );
             newStream.addCompression();
-            destCatalog.getCOSDictionary().setItem( metadata, newStream );
+            destCatalog.getCOSDictionary().setItem( COSName.METADATA, newStream );
         }
 
         //finally append the pages

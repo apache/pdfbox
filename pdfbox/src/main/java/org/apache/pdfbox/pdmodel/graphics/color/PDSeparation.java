@@ -56,7 +56,7 @@ public class PDSeparation extends PDColorSpace
     public PDSeparation()
     {
         array = new COSArray();
-        array.add( COSName.getPDFName( NAME ) );
+        array.add( COSName.SEPARATION );
         array.add( COSName.getPDFName( "" ) );
     }
 
