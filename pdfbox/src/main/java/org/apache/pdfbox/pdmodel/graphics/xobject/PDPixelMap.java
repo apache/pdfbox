@@ -179,13 +179,9 @@ public class PDPixelMap extends PDXObjectImage
                 filter.setWidth(width);
                 filter.setHeight(height);
                 filter.setBpp((bpc * 3) / 8);
-                filter.decode(array, bufferData);
             }
-            else
-            {
-                System.arraycopy( array, 0,bufferData, 0, 
-                        (array.length<bufferData.length?array.length: bufferData.length) );
-            }
+            System.arraycopy( array, 0,bufferData, 0, 
+                    (array.length<bufferData.length?array.length: bufferData.length) );
             image = new BufferedImage(cm, raster, false, null);
             
             return image;
@@ -194,7 +190,7 @@ public class PDPixelMap extends PDXObjectImage
         {
             log.error(exception, exception);
             //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
-            //Returning the NULL falls through to Phlip Koch's TODO section.
+            //Returning the NULL falls through to Phillip Koch's TODO section.
             return null;
         }
     }
@@ -227,7 +223,7 @@ public class PDPixelMap extends PDXObjectImage
      */
     public COSDictionary getDecodeParams()
     {
-        COSBase decodeParms = getCOSStream().getDictionaryObject("DecodeParms");
+        COSBase decodeParms = getCOSStream().getDictionaryObject(COSName.DECODE_PARMS);
         if (decodeParms != null)
         {
             if (decodeParms instanceof COSDictionary)
@@ -270,7 +266,7 @@ public class PDPixelMap extends PDXObjectImage
         COSDictionary decodeParms = getDecodeParams();
         if (decodeParms != null)
         {
-            int i = decodeParms.getInt("Predictor");
+            int i = decodeParms.getInt(COSName.PREDICTOR);
             if (i != -1)
             {
                 return i;

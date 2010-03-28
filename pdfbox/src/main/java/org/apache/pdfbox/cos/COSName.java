@@ -557,9 +557,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName PG = new COSName("Pg");
     /**
-    * A common COSName value.
-    */
-    public static final COSName PREV = new COSName( "Prev" );
+     * A common COSName value.
+     */
+     public static final COSName PREDICTOR = new COSName( "Predictor" );
+     /**
+      * A common COSName value.
+      */
+      public static final COSName PREV = new COSName( "Prev" );
 
     /** "ProcSet" */
     public static final COSName PROC_SET = new COSName( "ProcSet" );
