@@ -69,17 +69,17 @@ public class ImageParameters
         return dictionary;
     }
 
-    private COSBase getCOSObject( String abbreviatedName, String name )
+    private COSBase getCOSObject( COSName abbreviatedName, COSName name )
     {
-        COSBase retval = dictionary.getDictionaryObject( COSName.getPDFName( abbreviatedName ) );
+        COSBase retval = dictionary.getDictionaryObject( abbreviatedName );
         if( retval == null )
         {
-            retval = dictionary.getDictionaryObject( COSName.getPDFName( name ) );
+            retval = dictionary.getDictionaryObject( name );
         }
         return retval;
     }
 
-    private int getNumberOrNegativeOne( String abbreviatedName, String name )
+    private int getNumberOrNegativeOne( COSName abbreviatedName, COSName name )
     {
         int retval = -1;
         COSNumber number = (COSNumber)getCOSObject( abbreviatedName, name );
@@ -98,7 +98,7 @@ public class ImageParameters
      */
     public int getBitsPerComponent()
     {
-        return getNumberOrNegativeOne( "BPC", "BitsPerComponent" );
+        return getNumberOrNegativeOne( COSName.BPC, COSName.BITS_PER_COMPONENT );
     }
 
     /**
@@ -108,7 +108,7 @@ public class ImageParameters
      */
     public void setBitsPerComponent( int bpc )
     {
-        dictionary.setInt( COSName.getPDFName( "BPC" ), bpc );
+        dictionary.setInt( COSName.BPC, bpc );
     }
 
 
@@ -135,7 +135,7 @@ public class ImageParameters
      */
     public PDColorSpace getColorSpace( Map colorSpaces ) throws IOException
     {
-        COSBase cs = getCOSObject( "CS", "ColorSpace" );
+        COSBase cs = getCOSObject( COSName.CS, COSName.COLORSPACE );
         PDColorSpace retval = null;
         if( cs != null )
         {
@@ -156,7 +156,7 @@ public class ImageParameters
         {
             base = cs.getCOSObject();
         }
-        dictionary.setItem( COSName.getPDFName( "CS" ), base );
+        dictionary.setItem( COSName.CS, base );
     }
 
     /**
@@ -167,7 +167,7 @@ public class ImageParameters
      */
     public int getHeight()
     {
-        return getNumberOrNegativeOne( "H", "Height" );
+        return getNumberOrNegativeOne( COSName.H, COSName.HEIGHT );
     }
 
     /**
@@ -177,7 +177,7 @@ public class ImageParameters
      */
     public void setHeight( int h )
     {
-        dictionary.setInt( COSName.getPDFName( "H" ), h );
+        dictionary.setInt( COSName.H, h );
     }
 
     /**
@@ -188,7 +188,7 @@ public class ImageParameters
      */
     public int getWidth()
     {
-        return getNumberOrNegativeOne( "W", "Width" );
+        return getNumberOrNegativeOne( COSName.W, COSName.WIDTH );
     }
 
     /**
@@ -198,7 +198,7 @@ public class ImageParameters
      */
     public void setWidth( int w )
     {
-        dictionary.setInt( COSName.getPDFName( "W" ), w );
+        dictionary.setInt( COSName.W, w );
     }
 
     /**

@@ -93,7 +93,7 @@ public class PDCcitt extends PDXObjectImage
 
         dic.setItem( COSName.FILTER, COSName.CCITTFAX_DECODE);
         dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-        dic.setItem( COSName.TYPE, COSName.getPDFName( "XObject" ) );
+        dic.setItem( COSName.TYPE, COSName.XOBJECT );
         dic.setItem( "DecodeParms", decodeParms);
 
         setBitsPerComponent( 1 );

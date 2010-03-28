@@ -67,7 +67,7 @@ public class PDICCBased extends PDColorSpace
     public PDICCBased( PDDocument doc )
     {
         array = new COSArray();
-        array.add( COSName.getPDFName( NAME ) );
+        array.add( COSName.ICCBASED );
         array.add( new PDStream( doc ) );
     }
 
@@ -174,7 +174,7 @@ public class PDICCBased extends PDColorSpace
      */
     public int getNumberOfComponents() throws IOException
     {
-        COSNumber n = (COSNumber)stream.getStream().getDictionaryObject( COSName.getPDFName( "N" ) );
+        COSNumber n = (COSNumber)stream.getStream().getDictionaryObject( COSName.N );
         return n.intValue();
     }
 
@@ -185,7 +185,7 @@ public class PDICCBased extends PDColorSpace
      */
     public void setNumberOfComponents( int n )
     {
-        stream.getStream().setInt( COSName.getPDFName( "N" ), n );
+        stream.getStream().setInt( COSName.N, n );
     }
 
     /**
@@ -198,30 +198,30 @@ public class PDICCBased extends PDColorSpace
      */
     public List getAlternateColorSpaces() throws IOException
     {
-        COSBase alternate = stream.getStream().getDictionaryObject( COSName.getPDFName( "Alternate" ) );
+        COSBase alternate = stream.getStream().getDictionaryObject( COSName.ALTERNATE );
         COSArray alternateArray = null;
         if( alternate == null )
         {
             alternateArray = new COSArray();
             int numComponents = getNumberOfComponents();
-            String csName = null;
+            COSName csName = null;
             if( numComponents == 1 )
             {
-                csName = PDDeviceGray.NAME;
+                csName = COSName.DEVICEGRAY;
             }
             else if( numComponents == 3 )
             {
-                csName = PDDeviceRGB.NAME;
+                csName = COSName.DEVICERGB;
             }
             else if( numComponents == 4 )
             {
-                csName = PDDeviceCMYK.NAME;
+                csName = COSName.DEVICECMYK;
             }
             else
             {
                 throw new IOException( "Unknown colorspace number of components:" + numComponents );
             }
-            alternateArray.add( COSName.getPDFName( csName ) );
+            alternateArray.add( csName );
         }
         else
         {
@@ -261,16 +261,16 @@ public class PDICCBased extends PDColorSpace
         {
             altArray = COSArrayList.converterToCOSArray( list );
         }
-        stream.getStream().setItem( COSName.getPDFName( "Alternate" ), altArray );
+        stream.getStream().setItem( COSName.ALTERNATE, altArray );
     }
 
     private COSArray getRangeArray( int n )
     {
-        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject( COSName.getPDFName( "Range" ) );
+        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject( COSName.RANGE);
         if( rangeArray == null )
         {
             rangeArray = new COSArray();
-            stream.getStream().setItem( COSName.getPDFName( "Range" ), rangeArray );
+            stream.getStream().setItem( COSName.RANGE, rangeArray );
             while( rangeArray.size() < n*2 )
             {
                 rangeArray.add( new COSFloat( -100 ) );
@@ -316,7 +316,7 @@ public class PDICCBased extends PDColorSpace
      */
     public COSStream getMetadata()
     {
-        return (COSStream)stream.getStream().getDictionaryObject( COSName.getPDFName( "Metadata" ) );
+        return (COSStream)stream.getStream().getDictionaryObject( COSName.METADATA );
     }
 
     /**
@@ -326,7 +326,7 @@ public class PDICCBased extends PDColorSpace
      */
     public void setMetadata( COSStream metadata )
     {
-        stream.getStream().setItem( COSName.getPDFName( "Metadata" ), metadata );
+        stream.getStream().setItem( COSName.METADATA, metadata );
     }
     
     // Need more info on the ICCBased ones ... Array contains very little.

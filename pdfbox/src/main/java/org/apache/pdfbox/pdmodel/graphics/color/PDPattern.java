@@ -45,7 +45,7 @@ public class PDPattern extends PDColorSpace
     public PDPattern()
     {
         array = new COSArray();
-        array.add( COSName.getPDFName( NAME ) );
+        array.add( COSName.PATTERN );
     }
 
     /**

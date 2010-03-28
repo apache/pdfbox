@@ -27,7 +27,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
 
-import java.util.Iterator;
 
 /**
  * This class represents the graphics state dictionary that is stored in the PDF document.
@@ -38,24 +37,6 @@ import java.util.Iterator;
  */
 public class PDExtendedGraphicsState implements COSObjectable
 {
-    private static final COSName LW = COSName.getPDFName( "LW" );
-    private static final COSName LC = COSName.getPDFName( "LC" );
-    private static final COSName LJ = COSName.getPDFName( "LJ" );
-    private static final COSName ML = COSName.getPDFName( "ML" );
-    private static final COSName D = COSName.getPDFName( "D" );
-    private static final COSName RI = COSName.getPDFName( "RI" );
-    private static final COSName OP = COSName.getPDFName( "OP" );
-    private static final COSName OP_NS = COSName.getPDFName( "op" );
-    private static final COSName OPM = COSName.getPDFName( "OPM" );
-    private static final COSName FONT = COSName.getPDFName( "Font" );
-    private static final COSName FL = COSName.getPDFName( "FL" );
-    private static final COSName SM = COSName.getPDFName( "SM" );
-    private static final COSName SA = COSName.getPDFName( "SA" );
-    private static final COSName CA = COSName.getPDFName( "CA" );
-    private static final COSName CA_NS = COSName.getPDFName( "ca" );
-    private static final COSName AIS = COSName.getPDFName( "AIS" );
-    private static final COSName TK = COSName.getPDFName( "TK" );
-
     /**
      * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
      */
@@ -82,7 +63,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDExtendedGraphicsState()
     {
         graphicsState = new COSDictionary();
-        graphicsState.setItem( COSName.TYPE, COSName.getPDFName( "ExtGState" ) );
+        graphicsState.setItem( COSName.TYPE, COSName.EXT_G_STATE );
     }
 
     /**
@@ -106,64 +87,64 @@ public class PDExtendedGraphicsState implements COSObjectable
     {
         for( COSName key : graphicsState.keySet() )
         {
-            if( key.equals( LW ) )
+            if( key.equals( COSName.LW ) )
             {
                 gs.setLineWidth( getLineWidth().doubleValue() );
             }
-            else if( key.equals( LC ) )
+            else if( key.equals( COSName.LC ) )
             {
                 gs.setLineCap( getLineCapStyle() );
             }
-            else if( key.equals( LJ ) )
+            else if( key.equals( COSName.LJ ) )
             {
                 gs.setLineJoin( getLineJoinStyle() );
             }
-            else if( key.equals( ML ) )
+            else if( key.equals( COSName.ML ) )
             {
                 gs.setMiterLimit( getMiterLimit().doubleValue() );
             }
-            else if( key.equals( D ) )
+            else if( key.equals( COSName.D ) )
             {
                 gs.setLineDashPattern( getLineDashPattern() );
             }
-            else if( key.equals( RI ) )
+            else if( key.equals( COSName.RI ) )
             {
                 gs.setRenderingIntent( getRenderingIntent() );
             }
-            else if( key.equals( OPM ) )
+            else if( key.equals( COSName.OPM ) )
             {
                 gs.setOverprintMode( getOverprintMode().doubleValue() );
             }
-            else if( key.equals( FONT ) )
+            else if( key.equals( COSName.FONT ) )
             {
                 PDFontSetting setting = getFontSetting();
                 gs.getTextState().setFont( setting.getFont() );
                 gs.getTextState().setFontSize( setting.getFontSize() );
             }
-            else if( key.equals( FL ) )
+            else if( key.equals( COSName.FL ) )
             {
                 gs.setFlatness( getFlatnessTolerance().floatValue() );
             }
-            else if( key.equals( SM ) )
+            else if( key.equals( COSName.SM ) )
             {
                 gs.setSmoothness( getSmoothnessTolerance().floatValue() );
             }
-            else if( key.equals( SA ) )
+            else if( key.equals( COSName.SA ) )
             {
                 gs.setStrokeAdjustment( getAutomaticStrokeAdjustment() );
             }
-            else if( key.equals( CA ) )
+            else if( key.equals( COSName.CA ) )
             {
                 gs.setAlphaConstants( getStrokingAlpaConstant().floatValue() );
             }/**
             else if( key.equals( CA_NS ) )
             {
             }**/
-            else if( key.equals( AIS ) )
+            else if( key.equals( COSName.AIS ) )
             {
                 gs.setAlphaSource( getAlphaSourceFlag() );
             }
-            else if( key.equals( TK ) )
+            else if( key.equals( COSName.TK ) )
             {
                 gs.getTextState().setKnockoutFlag( getTextKnockoutFlag() );
             }
@@ -197,7 +178,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getLineWidth()
     {
-        return getFloatItem( LW );
+        return getFloatItem( COSName.LW );
     }
 
     /**
@@ -207,7 +188,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setLineWidth( Float width )
     {
-        setFloatItem( LW, width );
+        setFloatItem( COSName.LW, width );
     }
 
     /**
@@ -217,7 +198,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public int getLineCapStyle()
     {
-        return graphicsState.getInt( LC );
+        return graphicsState.getInt( COSName.LC );
     }
 
     /**
@@ -227,7 +208,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setLineCapStyle( int style )
     {
-        graphicsState.setInt( LC, style );
+        graphicsState.setInt( COSName.LC, style );
     }
 
     /**
@@ -237,7 +218,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public int getLineJoinStyle()
     {
-        return graphicsState.getInt( LJ );
+        return graphicsState.getInt( COSName.LJ );
     }
 
     /**
@@ -247,7 +228,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setLineJoinStyle( int style )
     {
-        graphicsState.setInt( LJ, style );
+        graphicsState.setInt( COSName.LJ, style );
     }
 
 
@@ -258,7 +239,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getMiterLimit()
     {
-        return getFloatItem( ML );
+        return getFloatItem( COSName.ML );
     }
 
     /**
@@ -268,7 +249,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setMiterLimit( Float miterLimit )
     {
-        setFloatItem( ML, miterLimit );
+        setFloatItem( COSName.ML, miterLimit );
     }
 
     /**
@@ -279,7 +260,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDLineDashPattern getLineDashPattern()
     {
         PDLineDashPattern retval = null;
-        COSArray dp = (COSArray)graphicsState.getDictionaryObject( D );
+        COSArray dp = (COSArray)graphicsState.getDictionaryObject( COSName.D );
         if( dp != null )
         {
             retval = new PDLineDashPattern( dp );
@@ -294,7 +275,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setLineDashPattern( PDLineDashPattern dashPattern )
     {
-        graphicsState.setItem( D, dashPattern.getCOSObject() );
+        graphicsState.setItem( COSName.D, dashPattern.getCOSObject() );
     }
 
     /**
@@ -324,7 +305,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getStrokingOverprintControl()
     {
-        return graphicsState.getBoolean( OP, false );
+        return graphicsState.getBoolean( COSName.OP, false );
     }
 
     /**
@@ -334,7 +315,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setStrokingOverprintControl( boolean op )
     {
-        graphicsState.setBoolean( OP, op );
+        graphicsState.setBoolean( COSName.OP, op );
     }
 
     /**
@@ -345,7 +326,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getNonStrokingOverprintControl()
     {
-        return graphicsState.getBoolean( OP_NS, getStrokingOverprintControl() );
+        return graphicsState.getBoolean( COSName.OP_NS, getStrokingOverprintControl() );
     }
 
     /**
@@ -355,7 +336,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setNonStrokingOverprintControl( boolean op )
     {
-        graphicsState.setBoolean( OP_NS, op );
+        graphicsState.setBoolean( COSName.OP_NS, op );
     }
 
     /**
@@ -365,7 +346,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getOverprintMode()
     {
-        return getFloatItem( OPM );
+        return getFloatItem( COSName.OPM );
     }
 
     /**
@@ -375,7 +356,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setOverprintMode( Float overprintMode )
     {
-        setFloatItem( OPM, overprintMode );
+        setFloatItem( COSName.OPM, overprintMode );
     }
 
     /**
@@ -386,7 +367,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDFontSetting getFontSetting()
     {
         PDFontSetting setting = null;
-        COSArray font = (COSArray)graphicsState.getDictionaryObject( FONT );
+        COSArray font = (COSArray)graphicsState.getDictionaryObject( COSName.FONT );
         if( font != null )
         {
             setting = new PDFontSetting( font );
@@ -401,7 +382,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setFontSetting( PDFontSetting fs )
     {
-        graphicsState.setItem( FONT, fs );
+        graphicsState.setItem( COSName.FONT, fs );
     }
 
     /**
@@ -411,7 +392,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getFlatnessTolerance()
     {
-        return getFloatItem( FL );
+        return getFloatItem( COSName.FL );
     }
 
     /**
@@ -421,7 +402,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setFlatnessTolerance( Float flatness )
     {
-        setFloatItem( FL, flatness );
+        setFloatItem( COSName.FL, flatness );
     }
 
     /**
@@ -431,7 +412,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getSmoothnessTolerance()
     {
-        return getFloatItem( SM );
+        return getFloatItem( COSName.SM );
     }
 
     /**
@@ -441,7 +422,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setSmoothnessTolerance( Float smoothness )
     {
-        setFloatItem( SM, smoothness );
+        setFloatItem( COSName.SM, smoothness );
     }
 
     /**
@@ -451,7 +432,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getAutomaticStrokeAdjustment()
     {
-        return graphicsState.getBoolean( SA,false );
+        return graphicsState.getBoolean( COSName.SA,false );
     }
 
     /**
@@ -461,7 +442,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setAutomaticStrokeAdjustment( boolean sa )
     {
-        graphicsState.setBoolean( SA, sa );
+        graphicsState.setBoolean( COSName.SA, sa );
     }
 
     /**
@@ -471,7 +452,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getStrokingAlpaConstant()
     {
-        return getFloatItem( CA );
+        return getFloatItem( COSName.CA );
     }
 
     /**
@@ -481,7 +462,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setStrokingAlphaConstant( Float alpha )
     {
-        setFloatItem( CA, alpha );
+        setFloatItem( COSName.CA, alpha );
     }
 
     /**
@@ -491,7 +472,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getNonStrokingAlpaConstant()
     {
-        return getFloatItem( CA_NS );
+        return getFloatItem( COSName.CA_NS );
     }
 
     /**
@@ -501,7 +482,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setNonStrokingAlphaConstant( Float alpha )
     {
-        setFloatItem( CA_NS, alpha );
+        setFloatItem( COSName.CA_NS, alpha );
     }
 
     /**
@@ -511,7 +492,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getAlphaSourceFlag()
     {
-        return graphicsState.getBoolean( AIS, false );
+        return graphicsState.getBoolean( COSName.AIS, false );
     }
 
     /**
@@ -521,7 +502,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setAlphaSourceFlag( boolean alpha )
     {
-        graphicsState.setBoolean( AIS, alpha );
+        graphicsState.setBoolean( COSName.AIS, alpha );
     }
 
     /**
@@ -531,7 +512,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getTextKnockoutFlag()
     {
-        return graphicsState.getBoolean( TK,true );
+        return graphicsState.getBoolean( COSName.TK,true );
     }
 
     /**
@@ -541,7 +522,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setTextKnockoutFlag( boolean tk )
     {
-        graphicsState.setBoolean( TK, tk );
+        graphicsState.setBoolean( COSName.TK, tk );
     }
 
     /**

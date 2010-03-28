@@ -97,8 +97,8 @@ public abstract class PDSimpleFont extends PDFont
         if( metric != null )
         {
             Encoding encoding = getEncoding();
-            COSName characterName = encoding.getName( code );
-            retval = metric.getCharacterHeight( characterName.getName() );
+            String characterName = encoding.getName( code );
+            retval = metric.getCharacterHeight( characterName );
         }
         else
         {

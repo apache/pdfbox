@@ -274,7 +274,7 @@ file.
         {
             base = cs.getCOSObject();
         }
-        getCOSStream().setItem( COSName.getPDFName( "ColorSpace" ), base );
+        getCOSStream().setItem( COSName.COLORSPACE, base );
     }
 
     /**

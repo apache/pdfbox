@@ -84,7 +84,7 @@ public class PDShading implements COSObjectable
      */
     public COSBase getCOSObject()
     {
-        return COSName.getPDFName( getName() );
+        return COSName.SHADING;
     }
     
     /**

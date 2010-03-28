@@ -83,34 +83,34 @@ public abstract class PDFont implements COSObjectable
      */
     private CMap cmap = null;
 
-    private static Map<COSName, String> afmResources = null;
+    private static Map<String, String> afmResources = null;
     private static Map<COSName, CMap> cmapObjects = null;
-    private static Map<COSName, FontMetric> afmObjects = null;
+    private static Map<String, FontMetric> afmObjects = null;
 
     static
     {
         //these are read-only once they are created
-        afmResources = new HashMap<COSName, String>();
+        afmResources = new HashMap<String, String>();
 
         //these are read-write
         cmapObjects = Collections.synchronizedMap( new HashMap<COSName, CMap>() );
-        afmObjects = Collections.synchronizedMap( new HashMap<COSName, FontMetric>() );
+        afmObjects = Collections.synchronizedMap( new HashMap<String, FontMetric>() );
 
 
-        afmResources.put( COSName.getPDFName( "Courier-Bold" ), "Resources/afm/Courier-Bold.afm" );
-        afmResources.put( COSName.getPDFName( "Courier-BoldOblique" ), "Resources/afm/Courier-BoldOblique.afm" );
-        afmResources.put( COSName.getPDFName( "Courier" ), "Resources/afm/Courier.afm" );
-        afmResources.put( COSName.getPDFName( "Courier-Oblique" ), "Resources/afm/Courier-Oblique.afm" );
-        afmResources.put( COSName.getPDFName( "Helvetica" ), "Resources/afm/Helvetica.afm" );
-        afmResources.put( COSName.getPDFName( "Helvetica-Bold" ), "Resources/afm/Helvetica-Bold.afm" );
-        afmResources.put( COSName.getPDFName( "Helvetica-BoldOblique" ), "Resources/afm/Helvetica-BoldOblique.afm" );
-        afmResources.put( COSName.getPDFName( "Helvetica-Oblique" ), "Resources/afm/Helvetica-Oblique.afm" );
-        afmResources.put( COSName.getPDFName( "Symbol" ), "Resources/afm/Symbol.afm" );
-        afmResources.put( COSName.getPDFName( "Times-Bold" ), "Resources/afm/Times-Bold.afm" );
-        afmResources.put( COSName.getPDFName( "Times-BoldItalic" ), "Resources/afm/Times-BoldItalic.afm" );
-        afmResources.put( COSName.getPDFName( "Times-Italic" ), "Resources/afm/Times-Italic.afm" );
-        afmResources.put( COSName.getPDFName( "Times-Roman" ), "Resources/afm/Times-Roman.afm" );
-        afmResources.put( COSName.getPDFName( "ZapfDingbats" ), "Resources/afm/ZapfDingbats.afm" );
+        afmResources.put( "Courier-Bold" , "Resources/afm/Courier-Bold.afm" );
+        afmResources.put( "Courier-BoldOblique" , "Resources/afm/Courier-BoldOblique.afm" );
+        afmResources.put( "Courier" , "Resources/afm/Courier.afm" );
+        afmResources.put( "Courier-Oblique" , "Resources/afm/Courier-Oblique.afm" );
+        afmResources.put( "Helvetica" , "Resources/afm/Helvetica.afm" );
+        afmResources.put( "Helvetica-Bold" , "Resources/afm/Helvetica-Bold.afm" );
+        afmResources.put( "Helvetica-BoldOblique" , "Resources/afm/Helvetica-BoldOblique.afm" );
+        afmResources.put( "Helvetica-Oblique" , "Resources/afm/Helvetica-Oblique.afm" );
+        afmResources.put( "Symbol" , "Resources/afm/Symbol.afm" );
+        afmResources.put( "Times-Bold" , "Resources/afm/Times-Bold.afm" );
+        afmResources.put( "Times-BoldItalic" , "Resources/afm/Times-BoldItalic.afm" );
+        afmResources.put( "Times-Italic" , "Resources/afm/Times-Italic.afm" );
+        afmResources.put( "Times-Roman" , "Resources/afm/Times-Roman.afm" );
+        afmResources.put( "ZapfDingbats" , "Resources/afm/ZapfDingbats.afm" );
     }
 
     /**
@@ -263,8 +263,8 @@ public abstract class PDFont implements COSObjectable
         if( metric != null )
         {
             Encoding encoding = getEncoding();
-            COSName characterName = encoding.getName( code );
-            retval = metric.getCharacterWidth( characterName.getName() );
+            String characterName = encoding.getName( code );
+            retval = metric.getCharacterWidth( characterName );
         }
         return retval;
     }
@@ -298,15 +298,20 @@ public abstract class PDFont implements COSObjectable
     {
         if(afm==null){
         	COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
-            COSName name = null;
+            String name = null;
             if( baseFont instanceof COSName )
             {
-                name = (COSName)baseFont;
+                name = ((COSName)baseFont).getName();
+                if (name.indexOf("+") > -1)
+                {
+                    name = name.substring(name.indexOf("+")+1);
+                }
+
             }
             else if( baseFont instanceof COSString )
             {
                 COSString string = (COSString)baseFont;
-                name = COSName.getPDFName( string.getString() );
+                name = string.getString();
             }
             if( name != null )
             {
