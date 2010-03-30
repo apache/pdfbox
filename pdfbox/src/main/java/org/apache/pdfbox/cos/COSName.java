@@ -233,6 +233,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DCT_DECODE_ABBREVIATION = new COSName( "DCT" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DECODE = new COSName( "Decode" );
     /** "DecodeParms" */
     public static final COSName DECODE_PARMS = new COSName( "DecodeParms" );
 
@@ -434,6 +438,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName IMAGE = new COSName( "Image" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName IMAGE_MASK = new COSName( "ImageMask" );
 
     /** "Index" */
     public static final COSName INDEX = new COSName( "Index" );
