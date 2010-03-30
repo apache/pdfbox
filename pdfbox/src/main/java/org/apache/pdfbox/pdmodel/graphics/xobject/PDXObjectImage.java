@@ -24,6 +24,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -158,7 +159,7 @@ file.
      */
     public int getHeight()
     {
-        return getCOSStream().getInt( "Height", -1 );
+        return getCOSStream().getInt( COSName.HEIGHT, -1 );
     }
 
     /**
@@ -168,7 +169,7 @@ file.
      */
     public void setHeight( int height )
     {
-        getCOSStream().setInt( "Height", height );
+        getCOSStream().setInt( COSName.HEIGHT, height );
     }
 
     /**
@@ -178,7 +179,7 @@ file.
      */
     public int getWidth()
     {
-        return getCOSStream().getInt( "Width", -1 );
+        return getCOSStream().getInt( COSName.WIDTH, -1 );
     }
 
     /**
@@ -188,7 +189,7 @@ file.
      */
     public void setWidth( int width )
     {
-        getCOSStream().setInt( "Width", width );
+        getCOSStream().setInt( COSName.WIDTH, width );
     }
 
     /**
@@ -294,7 +295,7 @@ file.
      */
     public boolean getImageMask()
     {
-        return getCOSStream().getBoolean( "ImageMask", false );
+        return getCOSStream().getBoolean( COSName.IMAGE_MASK, false );
     }
     
     /**
@@ -305,5 +306,18 @@ file.
     public void setGraphicsState(PDGraphicsState newGS)
     {
         graphicsState = newGS;
+    }
+
+    /**
+     * Returns the Decode Array of an XObjectImage.
+     * @return the decode array
+     */
+    public COSArray getDecode() {
+        COSBase decode = getCOSStream().getDictionaryObject( COSName.DECODE );
+        if (decode != null && decode instanceof COSArray) 
+        {
+            return (COSArray)decode;
+        }
+        return null;
     }
 }

@@ -135,7 +135,6 @@ public class PDPixelMap extends PDXObjectImage
             int bpc = getBitsPerComponent();
             int predictor = getPredictor();
             List filters = getPDStream().getFilters();
-            ColorModel cm;
             
             byte[] array = getPDStream().getByteArray();
     
@@ -147,12 +146,23 @@ public class PDPixelMap extends PDXObjectImage
                 return null;
             }
             
+            ColorModel cm = null;
             if (bpc == 1)
             {
                 byte[] map = null;
                 if (colorspace instanceof PDDeviceGray)
                 {
-                    map = new byte[] {(byte)0xff};
+                    COSArray decode = getDecode();
+                    // we have to invert the b/w-values, 
+                    // if the Decode array exists and consists of (1,0)
+                    if (decode != null && decode.getInt(0) == 1)
+                    {
+                        map = new byte[] {(byte)0xff};
+                    }
+                    else
+                    {
+                        map = new byte[] {(byte)0x00, (byte)0xff};
+                    }
                 }
                 else if (colorspace instanceof PDICCBased)
                 {
