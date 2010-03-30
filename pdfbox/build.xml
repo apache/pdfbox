@@ -32,11 +32,11 @@
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
     <property name="download.dir" value="download" />
-    <property name="checkstyle.config" value="pdfbox-checkstyle.xml" />
+    <property name="checkstyle.config" value="../pdfbox-checkstyle.xml" />
     <property name="jar.dir" value="external" />
 
     <property name="project.name" value="pdfbox"/>
-    <property name="project.version" value="1.0-SNAPSHOT" />
+    <property name="project.version" value="1.2.0-SNAPSHOT" />
 
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
@@ -45,12 +45,12 @@
     <property name="ant.url" value="${maven.repo1}/org/apache/ant/ant/1.7.1/${ant.name}.jar" />
     <property name="ant.jar" value="${jar.dir}/ant.jar" />
 
-    <property name="fontbox.name" value="fontbox-1.0.0" />
-    <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/1.0.0/${fontbox.name}.jar" />
+    <property name="fontbox.name" value="fontbox-1.1.0" />
+    <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/1.1.0/${fontbox.name}.jar" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
 
-    <property name="jempbox.name" value="jempbox-1.0.0" />
-    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/1.0.0/${jempbox.name}.jar" />
+    <property name="jempbox.name" value="jempbox-1.1.0" />
+    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/1.1.0/${jempbox.name}.jar" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
     <property name="lucene.name" value="lucene-core-2.4.1" />
