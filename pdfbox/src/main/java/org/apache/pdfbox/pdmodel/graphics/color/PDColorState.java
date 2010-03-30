@@ -135,14 +135,25 @@ public class PDColorState implements Cloneable
             }
             else
             {
+                if (components.length == 1) 
+                {
+                    if (colorSpace.getName().equals(PDSeparation.NAME))
+                    {
+                        //Use that component as a single-integer RGB value
+                        return new Color((int)components[0]);
+                    }
+                    if (colorSpace.getName().equals(PDDeviceGray.NAME))
+                    {
+                        // Handling DeviceGray as a special case as with JVM 1.5.0_15 
+                        // and maybe others printing on Windows fails with an 
+                        // ArrayIndexOutOfBoundsException when selecting colors
+                        // and strokes e.g. sun.awt.windows.WPrinterJob.setTextColor
+                        return new Color(components[0],components[0],components[0]);
+                    }
+                }
                 Color override = iccOverrideColor;
                 ColorSpace cs = colorSpace.getJavaColorSpace();
-                if (colorSpace.getName().equals(PDSeparation.NAME) && components.length == 1)
-                {
-                    //Use that component as a single-integer RGB value
-                    return new Color((int)components[0]);
-                }
-                else if (cs instanceof ICC_ColorSpace && override != null)
+                if (cs instanceof ICC_ColorSpace && override != null)
                 {
                     log.warn(
                             "Using an ICC override color to avoid a potential"
