@@ -67,8 +67,8 @@ public class PageDrawer extends PDFStreamEngine
     private static final Log log = LogFactory.getLog(PageDrawer.class);
 
     private Graphics2D graphics;
-    private Dimension pageSize;
-    private PDPage page;
+    protected Dimension pageSize;
+    protected PDPage page;
 
     private GeneralPath linePath = new GeneralPath();
 
