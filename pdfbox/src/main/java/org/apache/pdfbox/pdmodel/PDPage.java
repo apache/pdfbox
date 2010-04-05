@@ -68,41 +68,42 @@ public class PDPage implements COSObjectable, Printable
 
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
     
+    private static final float MM_TO_UNITS = 1/(10*2.54f)*DEFAULT_USER_SPACE_UNIT_DPI;
+    
     private COSDictionary page;
 
     /**
      * A page size of LETTER or 8.5x11.
      */
-    public static final PDRectangle PAGE_SIZE_LETTER = new PDRectangle( 612, 792 );
+    public static final PDRectangle PAGE_SIZE_LETTER = new PDRectangle( 8.5f*DEFAULT_USER_SPACE_UNIT_DPI, 11f*DEFAULT_USER_SPACE_UNIT_DPI );
     /**
      * A page size of A0 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A0 = new PDRectangle( 2383, 3370 );
+    public static final PDRectangle PAGE_SIZE_A0 = new PDRectangle( 841*MM_TO_UNITS, 1189*MM_TO_UNITS );
     /**
      * A page size of A1 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A1 = new PDRectangle( 1685, 2383 );
+    public static final PDRectangle PAGE_SIZE_A1 = new PDRectangle( 594*MM_TO_UNITS, 841*MM_TO_UNITS );
     /**
      * A page size of A2 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A2 = new PDRectangle( 1192, 1685 );
+    public static final PDRectangle PAGE_SIZE_A2 = new PDRectangle( 420*MM_TO_UNITS, 594*MM_TO_UNITS );
     /**
      * A page size of A3 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A3 = new PDRectangle( 843, 1192 );
+    public static final PDRectangle PAGE_SIZE_A3 = new PDRectangle( 297*MM_TO_UNITS, 420*MM_TO_UNITS );
     /**
      * A page size of A4 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A4 = new PDRectangle( 596, 843 );
+    public static final PDRectangle PAGE_SIZE_A4 = new PDRectangle( 210*MM_TO_UNITS, 297*MM_TO_UNITS );
     /**
      * A page size of A5 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A5 = new PDRectangle( 421, 596 );
+    public static final PDRectangle PAGE_SIZE_A5 = new PDRectangle( 148*MM_TO_UNITS, 210*MM_TO_UNITS );
     /**
      * A page size of A6 Paper.
      */
-    public static final PDRectangle PAGE_SIZE_A6 = new PDRectangle( 298, 421 );
-
+    public static final PDRectangle PAGE_SIZE_A6 = new PDRectangle( 105*MM_TO_UNITS, 148*MM_TO_UNITS );
 
     /**
      * Creates a new instance of PDPage with a size of 8.5x11.
@@ -114,6 +115,20 @@ public class PDPage implements COSObjectable, Printable
         setMediaBox( PAGE_SIZE_LETTER );
     }
 
+    /**
+     * Creates a new instance of PDPage.
+	 *
+     * @param size The MediaBox or the page.
+     */
+    public PDPage(PDRectangle size)
+    {
+        page = new COSDictionary();
+        page.setItem( COSName.TYPE, COSName.PAGE );
+        setMediaBox( size );
+    }
+
+    
+    
     /**
      * Creates a new instance of PDPage.
      *
