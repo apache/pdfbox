@@ -53,7 +53,7 @@ public class PDCcitt extends PDXObjectImage
      */
     private static final Log log = LogFactory.getLog(PDCcitt.class);
 
-    private static final List FAX_FILTERS = new ArrayList();
+    private static final List<String> FAX_FILTERS = new ArrayList<String>();
 
     static
     {
@@ -94,12 +94,12 @@ public class PDCcitt extends PDXObjectImage
         dic.setItem( COSName.FILTER, COSName.CCITTFAX_DECODE);
         dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
         dic.setItem( COSName.TYPE, COSName.XOBJECT );
-        dic.setItem( "DecodeParms", decodeParms);
+        dic.setItem( COSName.DECODE_PARMS, decodeParms);
 
         setBitsPerComponent( 1 );
         setColorSpace( new PDDeviceGray() );
-        setWidth( decodeParms.getInt("Columns") );
-        setHeight( decodeParms.getInt("Rows") );
+        setWidth( decodeParms.getInt(COSName.COLUMNS) );
+        setHeight( decodeParms.getInt(COSName.ROWS) );
 
     }
 
@@ -238,12 +238,12 @@ public class PDCcitt extends PDXObjectImage
                 {
                     case 256:
                     {
-                        parms.setInt("Columns",val);
+                        parms.setInt(COSName.COLUMNS,val);
                         break;
                     }
                     case 257:
                     {
-                        parms.setInt("Rows",val);
+                        parms.setInt(COSName.ROWS,val);
                         break;
                     }
                     case 259:
@@ -262,7 +262,7 @@ public class PDCcitt extends PDXObjectImage
                     {
                         if (val == 1)
                         {
-                            parms.setBoolean("BlackIs1", true);
+                            parms.setBoolean(COSName.BLACK_IS_1, true);
                         }
                         break;
                     }
@@ -322,7 +322,7 @@ public class PDCcitt extends PDXObjectImage
                 throw new IOException("First image in tiff is not a single tile/strip");
             }
 
-            parms.setInt("K",k);
+            parms.setInt(COSName.K,k);
 
             raf.seek(dataoffset);
 
@@ -513,7 +513,14 @@ public class PDCcitt extends PDXObjectImage
             short comptype = 3; // T4 compression
             long t4options = 0; // Will set if 1d or 2d T4
 
-            COSBase dicOrArrayParms = options.getDictionaryObject("DecodeParms");
+            COSArray decode = getDecode();
+            // we have to invert the b/w-values, 
+            // if the Decode array exists and consists of (1,0)
+            if (decode != null && decode.getInt(0) == 1)
+            {
+                blackis1 = 1;
+            }
+            COSBase dicOrArrayParms = options.getDictionaryObject(COSName.DECODE_PARMS);
             COSDictionary decodeParms = null;
             if( dicOrArrayParms instanceof COSDictionary )
             {
@@ -533,8 +540,8 @@ public class PDCcitt extends PDXObjectImage
                     {
                         COSDictionary dic = (COSDictionary)parmsArray.getObject( i );
                         if (dic != null && 
-                ( dic.getDictionaryObject( "Columns" ) != null ||
-                            dic.getDictionaryObject( "Rows" ) != null))
+                                ( dic.getDictionaryObject(COSName.COLUMNS) != null ||
+                                        dic.getDictionaryObject(COSName.ROWS) != null))
                         {
                             decodeParms = dic;
                         }
@@ -544,13 +551,13 @@ public class PDCcitt extends PDXObjectImage
 
             if (decodeParms != null)
             {
-                cols = (short) decodeParms.getInt("Columns", cols);
-                rows = (short) decodeParms.getInt("Rows", rows);
-                if (decodeParms.getBoolean("BlackIs1", false))
+                cols = (short) decodeParms.getInt(COSName.COLUMNS, cols);
+                rows = (short) decodeParms.getInt(COSName.ROWS, rows);
+                if (decodeParms.getBoolean(COSName.BLACK_IS_1, false))
                 {
                     blackis1 = 1;
                 }
-                int k = decodeParms.getInt("K");  // Mandatory parm
+                int k = decodeParms.getInt(COSName.K);  // Mandatory parm
                 if (k < 0)
                 {
                     //T6
@@ -568,7 +575,7 @@ public class PDCcitt extends PDXObjectImage
             // If we couldn't get the number of rows, use the main item from XObject
             if (rows == 0)
             {
-                rows = (short) options.getInt("Height", rows);
+                rows = (short) options.getInt(COSName.HEIGHT, rows);
             }
 
             // Now put the tags into the tiffheader
@@ -580,7 +587,7 @@ public class PDCcitt extends PDXObjectImage
             addTag(259, comptype);    // T6
             addTag(262, blackis1); // Photometric Interpretation
             addTag(273, tiffheader.length); // Offset to start of image data - updated below
-            addTag(279, options.getInt("Length")); // Length of image data
+            addTag(279, options.getInt(COSName.LENGTH)); // Length of image data
             addTag(282, 300, 1); // X Resolution 300 (default unit Inches) This is arbitary
             addTag(283, 300, 1); // Y Resolution 300 (default unit Inches) This is arbitary
             if (comptype == 3)
