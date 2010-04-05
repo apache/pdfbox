@@ -131,7 +131,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName BLACK_IS_1 = new COSName( "BlackIs1" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName BLACK_POINT = new COSName( "BlackPoint" );
+        
     /**
      * A common COSName value.
      */
@@ -204,6 +209,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName COLORSPACE = new COSName( "ColorSpace" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName COLUMNS = new COSName( "Columns" );
     /**
     * A common COSName value.
     */
@@ -677,6 +686,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName ROTATE = new COSName(  "Rotate" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName ROWS = new COSName(  "Rows" );
     /**
     * A common COSName value.
     */
