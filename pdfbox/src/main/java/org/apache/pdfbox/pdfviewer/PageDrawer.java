@@ -16,10 +16,14 @@
  */
 package org.apache.pdfbox.pdfviewer;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.color.ColorSpace;
 import java.awt.geom.Area;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -134,38 +138,40 @@ public class PageDrawer extends PDFStreamEngine
 
     /**
      * You should override this method if you want to perform an action when a
-     * text is being processed. 
+     * text is being processed.
      *
-     * @param text The text to process 
+     * @param text The text to process
      */
     protected void processTextPosition( TextPosition text )
     {
-        //should use colorspaces for the font color but for now assume that
-        //the font color is black
         try
         {
-            if( this.getGraphicsState().getTextState().getRenderingMode() == PDTextState.RENDERING_MODE_FILL_TEXT )
-            {
-                graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
+            switch(this.getGraphicsState().getTextState().getRenderingMode()) {
+                case PDTextState.RENDERING_MODE_FILL_TEXT:
+                    graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
+                    break;
+                case PDTextState.RENDERING_MODE_STROKE_TEXT:
+                    graphics.setColor( this.getGraphicsState().getStrokingColor().getJavaColor() );
+                    break;
+                case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
+                    //basic support for text rendering mode "invisible"
+                    Color nsc = this.getGraphicsState().getStrokingColor().getJavaColor();
+                    float[] components = {Color.black.getRed(),Color.black.getGreen(),Color.black.getBlue()};
+                    Color  c = new Color(nsc.getColorSpace(),components,0f);
+                    graphics.setColor(c);
+                    break;
+                default:
+                    // TODO : need to implement....
+                    log.warn("Unsupported RenderingMode "
+                            + this.getGraphicsState().getTextState().getRenderingMode()
+                            + " in PageDrawer.processTextPosition()."
+                            + " Using RenderingMode "
+                            + PDTextState.RENDERING_MODE_FILL_TEXT
+                            + " instead");
+                    graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
             }
-            else if( this.getGraphicsState().getTextState().getRenderingMode() 
-                        == PDTextState.RENDERING_MODE_STROKE_TEXT )
-            {
-                graphics.setColor( this.getGraphicsState().getStrokingColor().getJavaColor() );
-            }
-            else
-            {
-                // TODO : need to implement....
-                log.warn("Unsupported RenderingMode "
-                        + this.getGraphicsState().getTextState().getRenderingMode()
-                        + " in PageDrawer.processTextPosition()."
-                        + " Using RenderingMode "
-                        + PDTextState.RENDERING_MODE_FILL_TEXT
-                        + " instead");
-                graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
-            }
-            PDFont font = text.getFont();
 
+            PDFont font = text.getFont();
             Matrix textPos = text.getTextPos().copy();
             float x = textPos.getXPosition();
             // the 0,0-reference has to be moved from the lower left (PDF) to the upper left (AWT-graphics)
