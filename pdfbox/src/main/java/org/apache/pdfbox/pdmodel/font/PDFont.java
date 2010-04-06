@@ -87,6 +87,11 @@ public abstract class PDFont implements COSObjectable
     private static Map<COSName, CMap> cmapObjects = null;
     private static Map<String, FontMetric> afmObjects = null;
 
+    /**
+     * This will be set if the font has a toUnicode stream.
+     */
+    private boolean hasToUnicode = false;
+
     static
     {
         //these are read-only once they are created
@@ -380,17 +385,15 @@ public abstract class PDFont implements COSObjectable
         {
             if( cmap == null )
             {
-                if( font.getDictionaryObject( COSName.TO_UNICODE ) instanceof COSStream )
+                COSBase toUnicode = font.getDictionaryObject( COSName.TO_UNICODE );
+                if( toUnicode instanceof COSStream )
                 {
-                    COSStream toUnicode = (COSStream)font.getDictionaryObject( COSName.TO_UNICODE );
-                    if( toUnicode != null )
-                    {
-                        parseCmap( null, toUnicode.getUnfilteredStream(), null );
-                    }
+                    hasToUnicode = true;
+                    parseCmap( null, ((COSStream)toUnicode).getUnfilteredStream(), null );
                 }
                 else
                 {
-                    COSBase encoding = getEncodingObject(); //font.getDictionaryObject( COSName.ENCODING );
+                    COSBase encoding = getEncodingObject();
                     if( encoding instanceof COSStream )
                     {
                         COSStream encodingStream = (COSStream)encoding;
@@ -475,8 +478,9 @@ public abstract class PDFont implements COSObjectable
             retval = cmap.lookup( c, offset, length );
         }
         
-        COSBase encodingCOS = font.getDictionaryObject(COSName.ENCODING);
-        if ( encodingCOS instanceof COSName ) 
+        COSBase encodingCOS = getEncodingObject();
+        // The converter isn't needed if an unicode mapping is already given by the font dictionary  
+        if ( !hasToUnicode && encodingCOS instanceof COSName ) 
         {
             EncodingConverter converter = EncodingConversionManager.getConverter(((COSName)encodingCOS).getName());
             if ( converter != null ) 
