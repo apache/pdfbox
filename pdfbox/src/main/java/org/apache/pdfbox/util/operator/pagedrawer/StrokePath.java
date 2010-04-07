@@ -64,15 +64,15 @@ public class StrokePath extends OperatorProcessor
             {
                 lineWidth = lineWidth * ctm.getXScale();
             }
-            Graphics2D graphics = ((PageDrawer)context).getGraphics();
-            BasicStroke stroke = (BasicStroke)graphics.getStroke();
+            
+            BasicStroke stroke = (BasicStroke)drawer.getStroke();
             if (stroke == null)
             {
-                graphics.setStroke( new BasicStroke( lineWidth ) );
+                drawer.setStroke( new BasicStroke( lineWidth ) );
             }
             else
             {
-                graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), 
+                drawer.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), 
                         stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
             }
             drawer.strokePath();

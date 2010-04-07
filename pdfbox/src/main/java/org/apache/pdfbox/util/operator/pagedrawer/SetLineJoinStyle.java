@@ -46,15 +46,15 @@ public class SetLineJoinStyle extends org.apache.pdfbox.util.operator.SetLineJoi
     {
         super.process( operator, arguments );
         int lineJoinStyle = context.getGraphicsState().getLineJoin();
-        Graphics2D graphics = ((PageDrawer)context).getGraphics();
-        BasicStroke stroke = (BasicStroke)graphics.getStroke();
+        PageDrawer drawer = (PageDrawer)context;
+        BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null)
         {
-            graphics.setStroke( new BasicStroke(1,BasicStroke.CAP_SQUARE,lineJoinStyle) );
+            drawer.setStroke( new BasicStroke(1,BasicStroke.CAP_SQUARE,lineJoinStyle) );
         }
         else
         {
-            graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), lineJoinStyle,
+            drawer.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), lineJoinStyle,
                     stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
         }
     }

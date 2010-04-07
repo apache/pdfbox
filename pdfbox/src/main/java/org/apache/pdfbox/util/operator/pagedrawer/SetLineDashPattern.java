@@ -47,17 +47,17 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
     {
         super.process( operator, arguments );
         PDLineDashPattern lineDashPattern = context.getGraphicsState().getLineDashPattern();
-        Graphics2D graphics = ((PageDrawer)context).getGraphics();
-        BasicStroke stroke = (BasicStroke)graphics.getStroke();
+        PageDrawer drawer = (PageDrawer)context;
+        BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null) 
         {
             if (lineDashPattern.isDashPatternEmpty()) 
             {
-                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f) );
+                drawer.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f) );
             }
             else
             {
-                graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, 
+                drawer.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, 
                         lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
             }
         }
@@ -65,12 +65,12 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
         {
             if (lineDashPattern.isDashPatternEmpty()) 
             {
-                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), 
+                drawer.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), 
                         stroke.getLineJoin(), stroke.getMiterLimit()) );
             }
             else
             {
-                graphics.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), 
+                drawer.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), 
                         stroke.getMiterLimit(), lineDashPattern.getCOSDashPattern().toFloatArray(), 
                         lineDashPattern.getPhaseStart()) );
             }

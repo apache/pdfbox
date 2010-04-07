@@ -49,15 +49,15 @@ public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
         {
             lineWidth = 1;
         }
-        Graphics2D graphics = ((PageDrawer)context).getGraphics();
-        BasicStroke stroke = (BasicStroke)graphics.getStroke();
+        PageDrawer drawer = (PageDrawer)context;
+        BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null)
         {
-            graphics.setStroke( new BasicStroke( lineWidth ) );
+            drawer.setStroke( new BasicStroke( lineWidth ) );
         }
         else
         {
-            graphics.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), 
+            drawer.setStroke( new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), 
                     stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()) );
         }
     }

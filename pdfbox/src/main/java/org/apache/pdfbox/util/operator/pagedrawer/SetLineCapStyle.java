@@ -46,15 +46,15 @@ public class SetLineCapStyle extends org.apache.pdfbox.util.operator.SetLineCapS
     {
         super.process( operator, arguments );
         int lineCapStyle = context.getGraphicsState().getLineCap();
-        Graphics2D graphics = ((PageDrawer)context).getGraphics();
-        BasicStroke stroke = (BasicStroke)graphics.getStroke();
+        PageDrawer drawer = (PageDrawer)context;
+        BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null)
         {
-            graphics.setStroke( new BasicStroke(1,lineCapStyle,BasicStroke.JOIN_MITER) );
+            drawer.setStroke( new BasicStroke(1,lineCapStyle,BasicStroke.JOIN_MITER) );
         }
         else
         {
-            graphics.setStroke( new BasicStroke(stroke.getLineWidth(), lineCapStyle, stroke.getLineJoin(), 
+            drawer.setStroke( new BasicStroke(stroke.getLineWidth(), lineCapStyle, stroke.getLineJoin(), 
                     stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
         }
     }
