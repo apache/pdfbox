@@ -108,8 +108,8 @@ public class Invoke extends OperatorProcessor
                         rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
                         rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                     );
-                graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
-                graphics.drawImage( awtImage, at, null );
+               
+                drawer.drawImage( awtImage, at );
             }
             catch( Exception e )
             {

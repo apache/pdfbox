@@ -29,6 +29,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -368,6 +369,19 @@ public class PageDrawer extends PDFStreamEngine
             graphicsState.setCurrentClippingPath(clippingPath);
         }
         getLinePath().reset();
+    }
+    
+    /**
+     * Draw the AWT image. Called by Invoke.
+     * Moved into PageDrawer so that Invoke doesn't have to reach in here for Graphics as that breaks extensibility.
+     *
+     * @param awtImage The image to draw.
+     * @param at The transformation to use when drawing.
+     * 
+     */
+    public void drawImage(Image awtImage, AffineTransform at){        
+                graphics.setClip(getGraphicsState().getCurrentClippingPath());
+                graphics.drawImage( awtImage, at, null );
     }
     
     /**
