@@ -293,6 +293,17 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * This will return the current stroke.
+     *
+     * @return The current stroke.
+     * 
+     */
+    public BasicStroke getStroke()
+    {
+        return (BasicStroke)getGraphics().getStroke();
+    }
+    
+    /**
      * Stroke the path.
      *
      * @throws IOException If there is an IO error while stroking the path.
