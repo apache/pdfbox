@@ -481,8 +481,15 @@
         <property name="release.name" value="${project.name}-${project.version}" />
         <echo>Building JUnit</echo>
 	<exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\junit.dll" />
@@ -490,8 +497,15 @@
         </exec>
         <echo>Building BC Prov</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
@@ -500,8 +514,15 @@
         </exec>
         <echo>Building BC Mail</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
@@ -511,8 +532,15 @@
         </exec>
         <echo>Building FontBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\${fontbox.name}.dll" />
@@ -520,24 +548,45 @@
         </exec>
         <echo>Building JempBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\${jempbox.name}.dll" />
             <arg value="${jempbox.jar}" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\${lucene.name}.dll" />
             <arg value="${lucene.jar}" />
         </exec>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${lucene.name}.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
@@ -546,8 +595,15 @@
         </exec>
         <echo>Building Commons Logging</echo>
 	<exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\commons-logging.dll" />
@@ -555,8 +611,15 @@
         </exec>
         <echo>Building PDFBox</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin/${jempbox.name}.dll" />
             <arg value="-reference:bin/${lucene.name}.dll" />
@@ -572,98 +635,184 @@
         </exec>
         <echo>Building Decrypt</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-out:${bin.dir}\Decrypt.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\Decrypt.class" />
         </exec>
+        <echo>Building Encrypt</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\Encrypt.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\Encrypt.class" />
         </exec>
+        <echo>Building ExportFDF</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExportFDF.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ExportFDF.class" />
         </exec>
+        <echo>Building ExportXFDF</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExportXFDF.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ExportXFDF.class" />
         </exec>
+        <echo>Building ExtractImages</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExtractImages.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractImages.class" />
         </exec>
+        <echo>Building ExtractText</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExtractText.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractText.class" />
         </exec>
+        <echo>Building ImportFDF</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ImportFDF.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
+        <echo>Building IimportXFDF</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ImportXFDF.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
+        <echo>Building Overlay</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\Overlay.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\Overlay.class" />
         </exec>
+        <echo>Building PDFSplit</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\PDFSplit.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
+        <echo>Building PDFReader</echo>
         <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
