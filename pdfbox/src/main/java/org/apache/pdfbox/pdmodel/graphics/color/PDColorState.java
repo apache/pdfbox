@@ -171,10 +171,53 @@ public class PDColorState implements Cloneable
         // from the potentially complex color management code.
         catch (Exception e)
         {
-            log.warn("Unable to create the color instance "
+            Color cGuess;
+            String sMsg = "Unable to create the color instance "
                     + Arrays.toString(components) + " in color space "
-                    + colorSpace + "; using black instead", e);
-            return Color.BLACK;
+                    + colorSpace + "; guessing color ... ";
+            try
+            {
+                switch(components.length)
+                {
+                    case 1://Use that component as a single-integer RGB value
+                        cGuess = new Color((int)components[0]);
+                        sMsg += "\nInterpretating as single-integer RGB";
+                        break;
+                    case 3: //RGB
+                        cGuess = new Color(components[0],components[1],components[2]);
+                        sMsg += "\nInterpretating as RGB";
+                        break;
+                    case 4: //CMYK
+                        //do a rough conversion to RGB as I'm not getting the CMYK to work.
+                        //http://www.codeproject.com/KB/applications/xcmyk.aspx
+                        float R, G, B, K;
+                        K = components[3];
+
+                        R = components[0] * (1f - K) + K;
+                        G = components[1] * (1f - K) + K;
+                        B = components[2] * (1f - K) + K;
+                    
+                        R = (1f - R);
+                        G = (1f - G);
+                        B = (1f - B);
+                                
+                        cGuess = new Color( R,G,B );
+                        sMsg += "\nInterpretating as CMYK";
+                        break;
+                    default:
+                        
+                        sMsg += "\nUnable to guess using " + components.length + " components; using black instead";
+                         cGuess = Color.BLACK;
+                }
+            }
+            catch (Exception e2)
+            {
+                sMsg += "\nColor interpolation failed; using black instead\n";
+                sMsg += e2.toString();
+                cGuess = Color.BLACK;
+            }
+            log.warn(sMsg, e);
+            return cGuess;
         }
     }
 
