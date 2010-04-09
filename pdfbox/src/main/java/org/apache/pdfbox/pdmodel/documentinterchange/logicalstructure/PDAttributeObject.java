@@ -16,9 +16,15 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDDictionaryWrapper;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDExportFormatAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDLayoutAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDListAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDPrintFieldAttributeObject;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeObject;
 
 /**
  * An attribute object.
@@ -39,9 +45,35 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     public static PDAttributeObject create(COSDictionary dictionary)
     {
         String owner = dictionary.getNameAsString(COSName.O);
-        if (PDUserAttributeObject.USER_PROPERTIES.equals(owner))
+        if (PDUserAttributeObject.OWNER_USER_PROPERTIES.equals(owner))
         {
             return new PDUserAttributeObject(dictionary);
+        }
+        else if (PDListAttributeObject.OWNER_LIST.equals(owner))
+        {
+            return new PDListAttributeObject(dictionary);
+        }
+        else if (PDPrintFieldAttributeObject.OWNER_PRINT_FIELD.equals(owner))
+        {
+            return new PDPrintFieldAttributeObject(dictionary);
+        }
+        else if (PDTableAttributeObject.OWNER_TABLE.equals(owner))
+        {
+            return new PDTableAttributeObject(dictionary);
+        }
+        else if (PDLayoutAttributeObject.OWNER_LAYOUT.equals(owner))
+        {
+            return new PDLayoutAttributeObject(dictionary);
+        }
+        else if (PDExportFormatAttributeObject.OWNER_XML_1_00.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_HTML_3_20.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_HTML_4_01.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_OEB_1_00.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_RTF_1_05.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_CSS_1_00.equals(owner)
+            || PDExportFormatAttributeObject.OWNER_CSS_2_00.equals(owner))
+        {
+            return new PDExportFormatAttributeObject(dictionary);
         }
         return new PDDefaultAttributeObject(dictionary);
     }
@@ -123,12 +155,12 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     /**
      * Notifies the attribute object change listeners if the attribute is changed.
      * 
-     * @param oldValue old value
-     * @param newValue new value
+     * @param oldBase old value
+     * @param newBase new value
      */
-    protected void potentiallyNotifyChanged(Object oldValue, Object newValue)
+    protected void potentiallyNotifyChanged(COSBase oldBase, COSBase newBase)
     {
-        if (this.isValueChanged(oldValue, newValue))
+        if (this.isValueChanged(oldBase, newBase))
         {
             this.notifyChanged();
         }
@@ -142,7 +174,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @return <code>true</code> if the value is changed, <code>false</code>
      * otherwise
      */
-    private boolean isValueChanged(Object oldValue, Object newValue)
+    private boolean isValueChanged(COSBase oldValue, COSBase newValue)
     {
         if (oldValue == null)
         {
@@ -173,6 +205,12 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
         return new StringBuilder("O=").append(this.getOwner()).toString();
     }
 
+    /**
+     * Creates a String representation of an Object array.
+     * 
+     * @param array the Object array
+     * @return the String representation
+     */
     protected static String arrayToString(Object[] array)
     {
         StringBuilder sb = new StringBuilder("[");
@@ -187,6 +225,12 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
         return sb.append(']').toString();
     }
 
+    /**
+     * Creates a String representation of a float array.
+     * 
+     * @param array the float array
+     * @return the String representation
+     */
     protected static String arrayToString(float[] array)
     {
         StringBuilder sb = new StringBuilder("[");

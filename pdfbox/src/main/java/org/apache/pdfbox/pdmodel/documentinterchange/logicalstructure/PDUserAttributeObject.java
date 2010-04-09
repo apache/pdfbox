@@ -35,7 +35,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     /**
      * Attribute owner for user properties
      */
-    public static final String USER_PROPERTIES = "UserProperties";
+    public static final String OWNER_USER_PROPERTIES = "UserProperties";
 
 
     /**
@@ -43,7 +43,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      */
     public PDUserAttributeObject()
     {
-        this.setOwner(USER_PROPERTIES);
+        this.setOwner(OWNER_USER_PROPERTIES);
     }
 
     /**
@@ -61,7 +61,7 @@ public class PDUserAttributeObject extends PDAttributeObject
      * 
      * @return the user properties
      */
-    public List<PDUserProperty> getUserProperties()
+    public List<PDUserProperty> getOwnerUserProperties()
     {
         COSArray p = (COSArray) this.getCOSDictionary()
             .getDictionaryObject(COSName.P);
@@ -129,7 +129,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     {
         return new StringBuilder().append(super.toString())
             .append(", userProperties=")
-            .append(this.getUserProperties()).toString();
+            .append(this.getOwnerUserProperties()).toString();
     }
 
 }
