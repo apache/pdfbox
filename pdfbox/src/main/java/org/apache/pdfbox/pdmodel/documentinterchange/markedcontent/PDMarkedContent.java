@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDArtifactMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.util.TextPosition;
 
@@ -32,6 +33,23 @@ import org.apache.pdfbox.util.TextPosition;
  */
 public class PDMarkedContent
 {
+
+    /**
+     * Creates a marked-content sequence.
+     * 
+     * @param tag the tag
+     * @param properties the properties
+     * @return the marked-content sequence
+     */
+    public static PDMarkedContent create(COSName tag, COSDictionary properties)
+    {
+        if (COSName.ARTIFACT.equals(tag))
+        {
+            new PDArtifactMarkedContent(properties);
+        }
+        return new PDMarkedContent(tag, properties);
+    }
+
 
     private String tag;
     private COSDictionary properties;
