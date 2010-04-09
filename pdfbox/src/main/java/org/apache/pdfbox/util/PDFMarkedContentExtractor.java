@@ -116,7 +116,7 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
 
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
     {
-        PDMarkedContent markedContent = new PDMarkedContent(tag, properties);
+        PDMarkedContent markedContent = PDMarkedContent.create(tag, properties);
         if (this.currentMarkedContents.isEmpty())
         {
             this.markedContents.add(markedContent);
