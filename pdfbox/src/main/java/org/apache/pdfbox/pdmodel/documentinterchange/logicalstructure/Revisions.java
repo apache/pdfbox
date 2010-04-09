@@ -89,7 +89,7 @@ public class Revisions<T>
      * @param object the object
      * @param revisionNumber the revision number
      */
-    protected void addObject(T object, int revisionNumber)
+    public void addObject(T object, int revisionNumber)
     {
         this.getObjects().add(object);
         this.getRevisionNumbers().add(revisionNumber);
