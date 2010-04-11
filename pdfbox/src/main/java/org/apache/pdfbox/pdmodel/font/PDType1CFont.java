@@ -21,7 +21,6 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -285,14 +284,12 @@ public class PDType1CFont extends PDSimpleFont
 
     /**
      * {@inheritDoc}
-     */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y )
-        throws IOException
+     */    
+    public Font getawtFont() throws IOException
     {
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        writeFont(g2d, at, this.awtFont, fontSize, x, y, string);
+        return awtFont;
     }
+    
 
     private void load() throws IOException
     {
