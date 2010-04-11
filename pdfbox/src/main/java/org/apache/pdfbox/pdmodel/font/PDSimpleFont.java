@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
@@ -27,6 +28,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.fontbox.afm.FontMetric;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -51,6 +55,12 @@ public abstract class PDSimpleFont extends PDFont
 
     private float avgFontWidth = 0.0f;
 
+    
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDSimpleFont.class);
+    
     /**
      * Constructor.
      */
@@ -70,12 +80,25 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
+    * Looks up, creates, returns  the AWT Font.
+    */
+    public Font getawtFont() throws IOException
+    {
+        log.error("Not yet implemented:" + getClass().getName() );
+        return null;
+    }
+    
+    /**
      * {@inheritDoc}
      */
     public void drawString( String string, Graphics g, float fontSize, 
             AffineTransform at, float x, float y ) throws IOException
     {
-        System.err.println( "Not yet implemented:" + getClass().getName() );
+       Font _awtFont = getawtFont();
+
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        writeFont(g2d, at, _awtFont, fontSize, x, y, string);
     }
 
     /**

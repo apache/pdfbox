@@ -20,7 +20,6 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.HashMap;
@@ -189,8 +188,7 @@ public class PDType1Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, 
-            AffineTransform at, float x, float y ) throws IOException
+    public Font getawtFont() throws IOException
     {
         if( awtFont == null )
         {
@@ -243,9 +241,7 @@ public class PDType1Font extends PDSimpleFont
                 log.info("Using font "+awtFont.getName()+ " instead");
             }
         }
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        writeFont(g2d, at, awtFont, fontSize, x, y, string);
+        return awtFont;
     }
 
 }

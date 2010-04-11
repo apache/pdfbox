@@ -44,7 +44,6 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 
 import java.util.ArrayList;
@@ -356,13 +355,9 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void drawString( String string, Graphics g, float fontSize, 
-            AffineTransform at, float x, float y ) throws IOException
+    public Font getawtFont() throws IOException
     {
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
+         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
         if( awtFont == null )
         {
             PDStream ff2Stream = fd.getFontFile2();
@@ -415,10 +410,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 log.info("Using font "+awtFont.getName()+ " instead");
             }
         }
-
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        writeFont(g2d, at, awtFont, fontSize, x, y, string);
+        return awtFont;
     }
 
     private InputStream getExternalTTFData() throws IOException
