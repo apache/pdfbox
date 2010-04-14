@@ -81,7 +81,7 @@
     <property name="icu4j.url" value="${maven.repo1}/com/ibm/icu/icu4j/3.8/${icu4j.name}.jar" />
     <property name="icu4j.jar" value="${jar.dir}/${icu4j.name}.jar" />
 
-	<property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
+    <property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
     <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
     <property name="beanutils.url" value="${maven.repo2}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
     <property name="beanutils.jar" value="${tool.dir}/commons-beanutils.jar" />
@@ -91,7 +91,7 @@
     <property name="testoutput.dir" value="${target.dir}/test-output"/>
     <property name="testoutput-ext.dir" value="${target.dir}/test-output-ext"/>
     <property name="testinput-ext.dir" value="${target.dir}/test-input-ext"/>
-    <property name="jiraattachment.url" value="http://issues.apache.org/jira/secure/attachment"/>
+    <property name="jiraattachment.url" value="https://issues.apache.org/jira/secure/attachment"/>
     <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
     <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
     <property name="testfiles2.url" value="${jiraattachment.url}/12413231/input-ext2.jar"/>
