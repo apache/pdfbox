@@ -86,10 +86,9 @@ public class PDAnnotationLink extends PDAnnotation
      *
      * @return The action to be performed when this annotation is activated.
      *
-     * @throws IOException If there is an error creating the action.
      * TODO not all annotations have an A entry
      */
-    public PDAction getAction() throws IOException
+    public PDAction getAction()
     {
         COSDictionary action = (COSDictionary)
             this.getDictionary().getDictionaryObject( COSName.A );

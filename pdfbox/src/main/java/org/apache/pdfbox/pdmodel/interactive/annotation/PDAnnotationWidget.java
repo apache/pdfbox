@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -151,10 +149,8 @@ public class PDAnnotationWidget extends PDAnnotation
      * Get the action to be performed when this annotation is to be activated.
      *
      * @return The action to be performed when this annotation is activated.
-     *
-     * @throws IOException If there is an error creating the action.
      */
-    public PDAction getAction() throws IOException
+    public PDAction getAction()
     {
         COSDictionary action = (COSDictionary)
             this.getDictionary().getDictionaryObject( COSName.A );
