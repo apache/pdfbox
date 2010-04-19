@@ -24,11 +24,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.File;
 
-import org.apache.pdfbox.cos.COSName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -38,8 +37,13 @@ import org.apache.pdfbox.util.ResourceLoader;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.15 $
  */
-public abstract class Encoding implements COSObjectable
-{
+public abstract class Encoding implements COSObjectable {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(Encoding.class);
+
     /**
      * This is a mapping from a character code to a character name.
      */
@@ -304,9 +308,7 @@ public abstract class Encoding implements COSObjectable
 
                         if ( ( characterCode > 0xD7FF ) && ( characterCode < 0xE000 ) )
                         {
-                            Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
-                                    "Unicode character name with not allowed code area: " +
-                                    nameStr );
+                            log.warn( "Unicode character name with not allowed code area: " + nameStr );
                         }
                         else
                         {
@@ -315,9 +317,7 @@ public abstract class Encoding implements COSObjectable
                     } 
                     catch (NumberFormatException nfe) 
                     {
-                        Logger.getLogger(Encoding.class.getName()).log( Level.WARNING,
-                                "Not a number in Unicode character name: " +
-                                nameStr );
+                        log.warn( "Not a number in Unicode character name: " + nameStr );
                     }
                 }
                 character = uniStr.toString();
