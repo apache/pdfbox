@@ -19,6 +19,7 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -69,7 +70,42 @@ public class TestDateUtil extends TestCase
         assertEquals(52, c.get(Calendar.MINUTE)); 
         assertEquals(58, c.get(Calendar.SECOND)); 
         assertEquals(0, c.get(Calendar.MILLISECOND)); 
-    } 
+    }
+
+    public void testDateConverter() throws Exception {
+        TimeZone timezone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        try {
+            assertDate("2010-01-01T00:00:00+00:00", "D:2010");
+            assertDate("2010-01-01T00:00:00+00:00", "2010");
+            assertDate("2010-04-23T00:00:00+00:00", "D:20100423");
+            assertDate("2010-04-23T00:00:00+00:00", "20100423");
+
+            // assertDate("2007-04-30T19:36:47+????", "20070430193647+713'00'");
+            // assertDate("2007-08-21T10:35:22+00:00", "Tue Aug 21 10:35:22 2007");
+            assertDate("2008-11-04T00:00:00+00:00", "Tuesday, November 04, 2008");
+            // assertDate("2007-12-17T02:02:03+00:00", "200712172:2:3");
+            // assertDate("????", "Unknown");
+            // assertDate("2009-03-19T20:01:22+00:00", "20090319 200122");
+            //  assertDate("2008-05-12T09:47:00+00:00", "9:47 5/12/2008");
+
+            // assertDate("2009-04-01T00:00:00+02:00", "20090401+0200");
+            assertDate("2008-01-11T00:00:00+00:00", "Friday, January 11, 2008");
+            // assertDate("2009-04-01T00:00:00+04:00", "20090401+04'00'");
+            // assertDate("2009-04-01T00:00:00+09:00", "20090401+09'00'");
+            // assertDate("2009-04-01T00:00:00-02:00", "20090401-02'00'");
+            // assertDate("2009-04-01T06:01:01+00:00", "20090401 01:01:01 -0500");
+            // assertDate("2000-05-26T11:25:10+00:00", "26 May 2000 11:25:10");
+            // assertDate("2000-05-26T11:25:00+00:00", "26 May 2000 11:25");
+        } finally {
+            TimeZone.setDefault(timezone);
+        }
+    }
+
+    private void assertDate(String expected, String date) throws Exception {
+        Calendar calendar = DateConverter.toCalendar(date);
+        assertEquals(expected, DateConverter.toISO8601(calendar));
+    }
 
     /**
      * Set the tests in the suite for this test class.
