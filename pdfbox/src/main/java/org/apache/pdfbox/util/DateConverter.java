@@ -38,8 +38,6 @@ import org.apache.pdfbox.cos.COSString;
  */
 public class DateConverter
 {
-    private static final SimpleDateFormat PDF_DATE_FORMAT = new SimpleDateFormat( "yyyyMMddHHmmss" );
-
     //The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF documents
     //will use that date, so I have added a couple other potential formats
     //to try if the original one does not work.
@@ -53,7 +51,48 @@ public class DateConverter
         new SimpleDateFormat("EEEE, MMM dd, yyyy"), // Acrobat Distiller 1.0.2 for Macintosh
         new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss"), // ECMP5
         new SimpleDateFormat("EEEE MMM dd HH:mm:ss z yyyy"), // GNU Ghostscript 7.0.7
-        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma") // Acrobat Net Distiller 1.0 for Windows
+        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma"), // Acrobat Net Distiller 1.0 for Windows
+        new SimpleDateFormat("d/MM/yyyy hh:mm:ss"), // PDFBOX-164
+        new SimpleDateFormat("dd/MM/yyyy hh:mm:ss"), // PDFBOX-170
+        new SimpleDateFormat("EEEEEEEEEE, MMMMMMMMMMMM dd, yyyy"),  // PDFBOX-465 
+        new SimpleDateFormat("dd MMM yyyy hh:mm:ss"),  // for 26 May 2000 11:25:00          
+        new SimpleDateFormat("dd MMM yyyy hh:mm"),  // for 26 May 2000 11:25
+		new SimpleDateFormat("M/dd/yyyy hh:mm:ss"),		
+		new SimpleDateFormat("MM/d/yyyy hh:mm:ss"),
+		new SimpleDateFormat("M/dd/yyyy"),		
+		new SimpleDateFormat("MM/d/yyyy"),
+		new SimpleDateFormat("M/d/yyyy hh:mm:ss"),
+		new SimpleDateFormat("M/d/yyyy"),
+		new SimpleDateFormat("M/d/yy hh:mm:ss"),
+		new SimpleDateFormat("M/d/yy"),
+        new SimpleDateFormat("yyyymmdd hh:mm:ss Z"), // 
+        new SimpleDateFormat("yyyymmdd hh:mm:ss"), 	 // 
+        new SimpleDateFormat("yyyymmdd'+00''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+01''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+02''00'''"), //             
+        new SimpleDateFormat("yyyymmdd'+03''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+04''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+05''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+06''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+07''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+08''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+09''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+10''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+11''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'+12''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-01''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-02''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-03''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-04''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-05''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-06''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-07''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-08''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-09''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-10''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-11''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-12''00'''"), // 
+        new SimpleDateFormat("yyyymmdd"), // for 20090401+0200   
     };
 
     private DateConverter()
@@ -79,7 +118,8 @@ public class DateConverter
             long hours = Math.abs( offsetInMinutes/60 );
             long minutes = Math.abs( offsetInMinutes%60 );
             buffer.append( "D:" );
-            buffer.append( PDF_DATE_FORMAT.format( date.getTime() ) );
+            // PDFBOX-402 , SimpleDateFormat is not thread safe, created it when you use it.
+            buffer.append( new SimpleDateFormat( "yyyyMMddHHmmss" ).format( date.getTime() ) );
             if( offsetInMinutes == 0 )
             {
                 buffer.append( "Z" );
