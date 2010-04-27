@@ -307,27 +307,15 @@ public class PDPageContentStream
             xobjectMappings.put( xobject, objMapping );
             xobjects.put( objMapping, xobject );
         }
-        appendRawCommands( SAVE_GRAPHICS_STATE );
-        appendRawCommands( formatDecimal.format( width ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( 0 ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( 0 ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( height ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( x ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( y ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( CONCATENATE_MATRIX );
+        saveGraphicsState();
+        concatenate2CTM(width, 0, 0, height, x, y);
         appendRawCommands( SPACE );
         appendRawCommands( "/" );
         appendRawCommands( objMapping );
         appendRawCommands( SPACE );
         appendRawCommands( XOBJECT_DO );
         appendRawCommands( SPACE );
-        appendRawCommands( RESTORE_GRAPHICS_STATE );
+        restoreGraphicsState();
     }
 
     /**
@@ -421,6 +409,33 @@ public class PDPageContentStream
         double angleCos = Math.cos(angle);
         double angleSin = Math.sin(angle);
         setTextMatrix( angleCos, angleSin, -angleSin, angleCos, tx, ty);
+    }
+
+    /**
+     * The Cm operator. Concatenates the current transformation matrix with the given values.
+     * @param a The a value of the matrix.
+     * @param b The b value of the matrix.
+     * @param c The c value of the matrix.
+     * @param d The d value of the matrix.
+     * @param e The e value of the matrix.
+     * @param f The f value of the matrix.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void concatenate2CTM( double a, double b, double c, double d, double e, double f ) throws IOException
+    {
+        appendRawCommands( formatDecimal.format( a ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( b ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( c ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( d ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( e ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( f ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( CONCATENATE_MATRIX );
     }
 
     /**
@@ -858,6 +873,25 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( LINE_WIDTH );
     }
+
+    /**
+     * q operator. Saves the current graphics state.
+     * @throws IOException If an error occurs while writing to the stream.
+     */
+    public void saveGraphicsState() throws IOException 
+    {
+        appendRawCommands( SAVE_GRAPHICS_STATE);
+    }
+
+    /**
+     * Q operator. Restores the current graphics state.
+     * @throws IOException If an error occurs while writing to the stream.
+     */
+    public void restoreGraphicsState() throws IOException 
+    {
+        appendRawCommands( RESTORE_GRAPHICS_STATE );
+    }
+
     /**
      * This will append raw commands to the content stream.
      *
