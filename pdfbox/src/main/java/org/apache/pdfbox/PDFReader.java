@@ -64,6 +64,7 @@ public class PDFReader extends javax.swing.JFrame
     
     private int currentPage = 0;
     private int numberOfPages = 0;
+    private String currentFilename = null;
     
     /**
      * Constructor.
@@ -198,12 +199,17 @@ public class PDFReader extends javax.swing.JFrame
         setBounds((screenSize.width-700)/2, (screenSize.height-600)/2, 700, 600);
     }
 
+
+    private void updateTitle() {
+        setTitle( "PDFBox - " + currentFilename + " ("+(currentPage+1)+"/"+numberOfPages+")");
+    }
     
     private void nextPage()
     {
         if (currentPage < numberOfPages-1) 
         {
             currentPage++;
+            updateTitle();
             showPage(currentPage);
         }
     }
@@ -213,6 +219,7 @@ public class PDFReader extends javax.swing.JFrame
         if (currentPage > 0 ) 
         {
             currentPage--;
+            updateTitle();
             showPage(currentPage);
         }
     }
@@ -283,10 +290,11 @@ public class PDFReader extends javax.swing.JFrame
         File f = new File( file );
         input = new FileInputStream(f);
         document = parseDocument( input );
-        setTitle( "PDFBox - " + f.getAbsolutePath() );
         pages = document.getDocumentCatalog().getAllPages();
         numberOfPages = pages.size();
+        currentFilename = f.getAbsolutePath();
         currentPage = 0;
+        updateTitle();
         showPage(0);
     }
     
