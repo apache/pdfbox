@@ -469,6 +469,65 @@ public abstract class BaseParser
     }
 
     /**
+     * This is really a bug in the Document creators code, but it caused a crash
+     * in PDFBox, the first bug was in this format:
+     * /Title ( (5)
+     * /Creator which was patched in 1 place.
+     * However it missed the case where the Close Paren was escaped
+     * 
+     * The second bug was in this format 
+     * /Title (c:\)
+     * /Producer 
+     * 
+     * This patch  moves this code out of the parseCOSString method, so it can be used twice.
+     * 
+     * 
+     * @param bracesParameter the number of braces currently open.
+     * 
+     * @return the corrected value of the brace counter
+     * @throws IOException
+     */
+	private int checkForMissingCloseParen(final int bracesParameter) throws IOException {
+		int braces=bracesParameter;
+	    byte[] nextThreeBytes = new byte[3];
+	    int amountRead = pdfSource.read(nextThreeBytes);
+	
+	    //lets handle the special case seen in Bull  River Rules and Regulations.pdf
+	    //The dictionary looks like this
+	    //    2 0 obj
+	    //    <<
+	    //        /Type /Info
+	    //        /Creator (PaperPort http://www.scansoft.com)
+	    //        /Producer (sspdflib 1.0 http://www.scansoft.com)
+	    //        /Title ( (5)
+	    //        /Author ()
+	    //        /Subject ()
+	    //
+	    // Notice the /Title, the braces are not even but they should
+	    // be.  So lets assume that if we encounter an this scenario
+	    //   <end_brace><new_line><opening_slash> then that
+	    // means that there is an error in the pdf and assume that
+	    // was the end of the document.
+	    //
+	    if( amountRead == 3 )
+	    {
+	        if(( nextThreeBytes[0] == 0x0d &&  // Look for a carriage return
+	             nextThreeBytes[1] == 0x0a &&  // Look for a new line
+	             nextThreeBytes[2] == 0x2f ) || // Look for a slash / 
+	                                           // Add a second case without a new line
+	            (nextThreeBytes[0] == 0x0d &&  // Look for a carriage return
+	             nextThreeBytes[1] == 0x2f ))  // Look for a slash /
+	        {
+	            braces = 0;
+	        }
+	    }
+	    if (amountRead > 0) 
+        {
+            pdfSource.unread( nextThreeBytes, 0, amountRead );
+        }
+	    return braces;
+	}
+    /**
      * This will parse a PDF string.
      *
      * @return The parsed PDF string.
@@ -505,46 +564,12 @@ public abstract class BaseParser
         {
             char ch = (char)c;
             int nextc = -2; // not yet read
-            //if( log.isDebugEnabled() )
-            //{
-            //    log.debug( "Parsing COSString character '" + c + "' code=" + (int)c );
-            //}
 
             if(ch == closeBrace)
             {
-                braces--;
-                byte[] nextThreeBytes = new byte[3];
-                int amountRead = pdfSource.read(nextThreeBytes);
-
-                //lets handle the special case seen in Bull  River Rules and Regulations.pdf
-                //The dictionary looks like this
-                //    2 0 obj
-                //    <<
-                //        /Type /Info
-                //        /Creator (PaperPort http://www.scansoft.com)
-                //        /Producer (sspdflib 1.0 http://www.scansoft.com)
-                //        /Title ( (5)
-                //        /Author ()
-                //        /Subject ()
-                //
-                // Notice the /Title, the braces are not even but they should
-                // be.  So lets assume that if we encounter an this scenario
-                //   <end_brace><new_line><opening_slash> then that
-                // means that there is an error in the pdf and assume that
-                // was the end of the document.
-                if( amountRead == 3 )
-                {
-                    if( nextThreeBytes[0] == 0x0d &&
-                            nextThreeBytes[1] == 0x0a &&
-                            nextThreeBytes[2] == 0x2f )
-                    {
-                        braces = 0;
-                    }
-                }
-                if (amountRead > 0) 
-                {
-                    pdfSource.unread( nextThreeBytes, 0, amountRead );
-                }
+            	
+            	braces--;
+            	braces=checkForMissingCloseParen(braces);
                 if( braces != 0 )
                 {
                     retval.append( ch );
@@ -576,8 +601,18 @@ public abstract class BaseParser
                 case 'f':
                     retval.append( '\f' );
                     break;
-                case '(':
                 case ')':
+                	// PDFBox 276 /Title (c:\)
+                	braces=checkForMissingCloseParen(braces);
+                    if( braces != 0 )
+                    {
+                        retval.append( ch );
+                    }
+                    else {
+                    	retval.append('\\');
+                    }
+                    break;
+                case '(':
                 case '\\':
                     retval.append( next );
                     break;
