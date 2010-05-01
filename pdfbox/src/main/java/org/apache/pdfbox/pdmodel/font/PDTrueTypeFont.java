@@ -323,7 +323,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
             int firstChar = 0;
-            int maxWidths=256;
+            int maxWidths = glyphToCCode.length;
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
             List widths = new ArrayList(maxWidths);
