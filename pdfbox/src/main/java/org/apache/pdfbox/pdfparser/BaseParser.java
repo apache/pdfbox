@@ -606,7 +606,7 @@ public abstract class BaseParser
                 	braces=checkForMissingCloseParen(braces);
                     if( braces != 0 )
                     {
-                        retval.append( ch );
+                        retval.append( next );
                     }
                     else {
                     	retval.append('\\');
