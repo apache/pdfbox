@@ -369,18 +369,26 @@ public class PDFStreamParser extends BaseParser
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
         StringBuffer buffer = new StringBuffer(4);
+        int nextChar = (int)pdfSource.peek();
         while(
-            !isWhitespace() &&
-            !isClosing() &&
-            !pdfSource.isEOF() &&
-            pdfSource.peek() != (int)'[' &&
-            pdfSource.peek() != (int)'<' &&
-            pdfSource.peek() != (int)'(' &&
-            pdfSource.peek() != (int)'/' &&
-            (pdfSource.peek() < (int)'0' ||
-             pdfSource.peek() > (int)'9' ) )
+            nextChar != -1 && // EOF
+            !isWhitespace(nextChar) &&
+            !isClosing(nextChar) &&
+            nextChar != (int)'[' &&
+            nextChar != (int)'<' &&
+            nextChar != (int)'(' &&
+            nextChar != (int)'/' &&
+            (nextChar < (int)'0' ||
+             nextChar > (int)'9' ) )
         {
-            buffer.append( (char)pdfSource.read() );
+            char currentChar = (char)pdfSource.read();
+            nextChar = (int)pdfSource.peek();
+            buffer.append( currentChar );
+            // Type3 Glyph description has operators with a number in the name 
+            if (currentChar == 'd' && (nextChar == '0' || nextChar == '1') ) {
+                buffer.append( (char)pdfSource.read() );
+                nextChar = (int)pdfSource.peek();
+            }
         }
         return buffer.toString();
     }
