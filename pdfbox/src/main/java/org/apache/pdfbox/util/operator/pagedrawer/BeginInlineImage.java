@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -57,7 +56,6 @@ public class BeginInlineImage extends OperatorProcessor
     {
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();
-        Graphics2D graphics = drawer.getGraphics();
         //begin inline image object
         ImageParameters params = operator.getImageParameters();
         PDInlinedImage image = new PDInlinedImage();
@@ -97,7 +95,6 @@ public class BeginInlineImage extends OperatorProcessor
                 rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
                 rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                 );
-        graphics.setClip(context.getGraphicsState().getCurrentClippingPath());
-        graphics.drawImage( awtImage, at, null );
+        drawer.drawImage(awtImage, at);
     }
 }
