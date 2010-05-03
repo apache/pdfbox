@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -42,36 +43,36 @@ public class DateConverter
     //will use that date, so I have added a couple other potential formats
     //to try if the original one does not work.
     private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
-        new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
-        new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
-        new SimpleDateFormat("MM/dd/yyyy hh:mm:ss"),
-        new SimpleDateFormat("MM/dd/yyyy"),
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"), 
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
-        new SimpleDateFormat("EEEE, MMM dd, yyyy"), // Acrobat Distiller 1.0.2 for Macintosh
-        new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss"), // ECMP5
-        new SimpleDateFormat("EEEE MMM dd HH:mm:ss z yyyy"), // GNU Ghostscript 7.0.7
-        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma"), // Acrobat Net Distiller 1.0 for Windows
-        new SimpleDateFormat("d/MM/yyyy hh:mm:ss"), // PDFBOX-164
-        new SimpleDateFormat("dd/MM/yyyy hh:mm:ss"), // PDFBOX-170
-        new SimpleDateFormat("EEEEEEEEEE, MMMMMMMMMMMM dd, yyyy"),  // PDFBOX-465 
-        new SimpleDateFormat("dd MMM yyyy hh:mm:ss"),  // for 26 May 2000 11:25:00          
-        new SimpleDateFormat("dd MMM yyyy hh:mm"),  // for 26 May 2000 11:25
-		new SimpleDateFormat("M/dd/yyyy hh:mm:ss"),		
-		new SimpleDateFormat("MM/d/yyyy hh:mm:ss"),
-		new SimpleDateFormat("M/dd/yyyy"),		
-		new SimpleDateFormat("MM/d/yyyy"),
-		new SimpleDateFormat("M/d/yyyy hh:mm:ss"),
-		new SimpleDateFormat("M/d/yyyy"),
-		new SimpleDateFormat("M/d/yy hh:mm:ss"),
-		new SimpleDateFormat("M/d/yy"),
+        new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a", Locale.ENGLISH),
+        new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a", Locale.ENGLISH),
+        new SimpleDateFormat("MM/dd/yyyy hh:mm:ss", Locale.ENGLISH),
+        new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH),
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH), 
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.ENGLISH),
+        new SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.ENGLISH), // Acrobat Distiller 1.0.2 for Macintosh
+        new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss", Locale.ENGLISH), // ECMP5
+        new SimpleDateFormat("EEEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH), // GNU Ghostscript 7.0.7
+        new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma", Locale.ENGLISH), // Acrobat Net Distiller 1.0 for Windows
+        new SimpleDateFormat("d/MM/yyyy hh:mm:ss", Locale.ENGLISH), // PDFBOX-164
+        new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.ENGLISH), // PDFBOX-170
+        new SimpleDateFormat("EEEEEEEEEE, MMMMMMMMMMMM dd, yyyy", Locale.ENGLISH),  // PDFBOX-465 
+        new SimpleDateFormat("dd MMM yyyy hh:mm:ss", Locale.ENGLISH),  // for 26 May 2000 11:25:00          
+        new SimpleDateFormat("dd MMM yyyy hh:mm", Locale.ENGLISH),  // for 26 May 2000 11:25
+		new SimpleDateFormat("M/dd/yyyy hh:mm:ss", Locale.ENGLISH),		
+		new SimpleDateFormat("MM/d/yyyy hh:mm:ss", Locale.ENGLISH),
+		new SimpleDateFormat("M/dd/yyyy", Locale.ENGLISH),
+		new SimpleDateFormat("MM/d/yyyy", Locale.ENGLISH),
+		new SimpleDateFormat("M/d/yyyy hh:mm:ss", Locale.ENGLISH),
+		new SimpleDateFormat("M/d/yyyy", Locale.ENGLISH),
+		new SimpleDateFormat("M/d/yy hh:mm:ss", Locale.ENGLISH),
+		new SimpleDateFormat("M/d/yy", Locale.ENGLISH),
         new SimpleDateFormat("yyyymmdd hh:mm:ss Z"), // 
         new SimpleDateFormat("yyyymmdd hh:mm:ss"), 	 // 
         new SimpleDateFormat("yyyymmdd'+00''00'''"), // 
         new SimpleDateFormat("yyyymmdd'+01''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+02''00'''"), //             
+        new SimpleDateFormat("yyyymmdd'+02''00'''"), // 
         new SimpleDateFormat("yyyymmdd'+03''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+04''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+04''00'''"), // 
         new SimpleDateFormat("yyyymmdd'+05''00'''"), // 
         new SimpleDateFormat("yyyymmdd'+06''00'''"), // 
         new SimpleDateFormat("yyyymmdd'+07''00'''"), // 
@@ -92,8 +93,15 @@ public class DateConverter
         new SimpleDateFormat("yyyymmdd'-10''00'''"), // 
         new SimpleDateFormat("yyyymmdd'-11''00'''"), // 
         new SimpleDateFormat("yyyymmdd'-12''00'''"), // 
-        new SimpleDateFormat("yyyymmdd"), // for 20090401+0200   
+        new SimpleDateFormat("yyyymmdd"), // for 20090401+0200
     };
+//    static
+//    {
+//        for (int i = 0; i < POTENTIAL_FORMATS.length; i++)
+//        {
+//            POTENTIAL_FORMATS[i].setTimeZone(TimeZone.getTimeZone("UTC"));
+//        }
+//    }
 
     private DateConverter()
     {
@@ -119,7 +127,7 @@ public class DateConverter
             long minutes = Math.abs( offsetInMinutes%60 );
             buffer.append( "D:" );
             // PDFBOX-402 , SimpleDateFormat is not thread safe, created it when you use it.
-            buffer.append( new SimpleDateFormat( "yyyyMMddHHmmss" ).format( date.getTime() ) );
+            buffer.append( new SimpleDateFormat( "yyyyMMddHHmmss" , Locale.ENGLISH).format( date.getTime() ) );
             if( offsetInMinutes == 0 )
             {
                 buffer.append( "Z" );
