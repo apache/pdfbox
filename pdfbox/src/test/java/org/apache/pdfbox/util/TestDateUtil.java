@@ -53,8 +53,14 @@ public class TestDateUtil extends TestCase
     public void testExtract()
         throws Exception
     {
-        assertEquals( DateConverter.toCalendar( "D:05/12/2005" ), new GregorianCalendar( 2005, 4, 12 ) );
-        assertEquals( DateConverter.toCalendar( "5/12/2005 15:57:16" ), new GregorianCalendar( 2005, 4,12,15,57,16 ) );
+        TimeZone timezone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        try {
+            assertEquals( DateConverter.toCalendar( "D:05/12/2005" ), new GregorianCalendar( 2005, 4, 12 ) );
+            assertEquals( DateConverter.toCalendar( "5/12/2005 15:57:16" ), new GregorianCalendar( 2005, 4,12,15,57,16 ) );
+        } finally {
+            TimeZone.setDefault(timezone);
+        }
     }
 
     /**
