@@ -238,9 +238,12 @@ public class PDFMergerUtility
             else
             {
                 PDOutlineItem first = srcOutline.getFirstChild();
-                PDOutlineItem clonedFirst = new PDOutlineItem( (COSDictionary)cloneForNewDocument(
-                        destination, first ));
-                destOutline.appendChild( clonedFirst );
+                if(first != null)
+                {
+                    PDOutlineItem clonedFirst = new PDOutlineItem( (COSDictionary)cloneForNewDocument(
+                            destination, first ));
+                    destOutline.appendChild( clonedFirst );
+                }
             }
         }
 
