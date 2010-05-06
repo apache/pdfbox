@@ -17,11 +17,12 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -32,10 +33,9 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccess;
-
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.ImageParameters;
+import org.apache.pdfbox.util.PDFOperator;
 
 /**
  * This will parse a PDF byte stream and extract operands and such.
@@ -118,6 +118,68 @@ public class PDFStreamParser extends BaseParser
     public List<Object> getTokens()
     {
         return streamObjects;
+    }
+    
+    public void close() throws IOException
+    {
+    	pdfSource.close();
+    }
+
+    /**
+     * This will get an iterator which can be used to parse the stream
+     * one token after the other.
+     * 
+     * @return an iterator to get one token after the other
+     */
+    public Iterator<Object> getTokenIterator()
+    {
+        return new Iterator<Object>()
+        {
+			private Object	token;
+			
+			private void tryNext()
+			{
+				try {
+					if(token == null)
+					{
+						token = parseNextToken();
+					}
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		    /**
+		     * {@inheritDoc}
+		     */
+			public boolean hasNext() 
+			{
+				tryNext();
+				return token != null;
+			}
+
+		    /**
+		     * {@inheritDoc}
+		     */
+			public Object next() {
+				tryNext();
+				Object tmp = token;
+				if(tmp == null)
+				{
+					throw new NoSuchElementException();
+				}
+				token = null;
+				return tmp;
+			}
+
+		    /**
+		     * {@inheritDoc}
+		     */
+			public void remove() 
+			{
+				throw new UnsupportedOperationException();
+			}
+        };
     }
 
     /**
