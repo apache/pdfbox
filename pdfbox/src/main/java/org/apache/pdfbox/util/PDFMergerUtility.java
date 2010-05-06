@@ -17,7 +17,10 @@
 package org.apache.pdfbox.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,15 +60,16 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
 public class PDFMergerUtility
 {
 
-    private List<File> sources;
+    private List<InputStream> sources;
     private String destinationFileName;
+    private OutputStream destinationStream;
 
     /**
      * Instantiate a new PDFMergerUtility.
      */
     public PDFMergerUtility()
     {
-        sources = new ArrayList<File>();
+        sources = new ArrayList<InputStream>();
     }
 
     /**
@@ -86,7 +90,26 @@ public class PDFMergerUtility
     {
         this.destinationFileName = destination;
     }
+    
+    /**
+     * Get the destination OutputStream.
+     * @return Returns the destination OutputStream.
+     */
+    public OutputStream getDestinationStream()
+    {
+        return destinationStream;
+    }
 
+    /**
+     * Set the destination OutputStream.
+     * @param destination
+     *            The destination to set.
+     */
+    public void setDestinationStream(OutputStream destinationStream)
+    {
+        this.destinationStream = destinationStream;
+    }
+    
     /**
      * Add a source file to the list of files to merge.
      *
@@ -94,17 +117,51 @@ public class PDFMergerUtility
      */
     public void addSource(String source)
     {
-        sources.add(new File(source));
+        try 
+        {
+            sources.add(new FileInputStream(new File(source)));
+        } 
+        catch(Exception e) 
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Add a source file to the list of files to mere.
+     * Add a source file to the list of files to merge.
      *
      * @param source File representing source document
      */
     public void addSource(File source)
     {
+        try 
+        {
+            sources.add(new FileInputStream(source));
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Add a source to the list of documents to merge.
+     *
+     * @param source InputStream representing source document
+     */
+    public void addSource(InputStream source)
+    {
         sources.add(source);
+    }
+    
+    /**
+     * Add a list of sources to the list of documents to merge.
+     *
+     * @param source List of InputStream objects representing source documents
+     */
+    public void addSources(List<InputStream> sources)
+    {
+        this.sources.addAll(sources);
     }
 
     /**
@@ -116,7 +173,7 @@ public class PDFMergerUtility
     public void mergeDocuments() throws IOException, COSVisitorException
     {
         PDDocument destination = null;
-        File sourceFile;
+        InputStream sourceFile;
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
@@ -124,18 +181,21 @@ public class PDFMergerUtility
         	
             try
             {
-                Iterator<File> sit = sources.iterator();
+                Iterator<InputStream> sit = sources.iterator();
                 sourceFile = sit.next();
                 destination = PDDocument.load(sourceFile);
 
                 while (sit.hasNext())
                 {
-                    sourceFile = (File) sit.next();
+                    sourceFile = sit.next();
                     source = PDDocument.load(sourceFile);
                     tobeclosed.add(source);
                     appendDocument(destination, source);
                 }
-                destination.save(destinationFileName);
+                if(destinationStream == null)
+                    destination.save(destinationFileName);
+                else
+                    destination.save(destinationStream);
             }
             finally
             {
