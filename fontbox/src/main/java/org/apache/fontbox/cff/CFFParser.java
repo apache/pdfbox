@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.fontbox.cff.CFFOperator;
 import org.apache.fontbox.cff.charset.CFFCharset;
 import org.apache.fontbox.cff.charset.CFFExpertCharset;
 import org.apache.fontbox.cff.charset.CFFExpertSubsetCharset;
@@ -623,7 +624,9 @@ public class CFFParser
         {
             for (Entry entry : entries)
             {
-                if (entry.operator.equals(operator))
+            	// Check for null entry before comparing the Font
+                if (entry != null && entry.operator != null && 
+                    entry.operator.equals(operator))
                 {
                     return entry;
                 }
