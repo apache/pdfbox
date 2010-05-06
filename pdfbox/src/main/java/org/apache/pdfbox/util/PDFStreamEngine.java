@@ -478,7 +478,7 @@ public class PDFStreamEngine
 
             totalCharCnt += c.length();
 
-            if( spacingText == 0 && (i + codeLength) < string.length )
+            if( spacingText == 0 && (i + codeLength) < (string.length - 1) )
             {
                 continue;
             }
