@@ -103,7 +103,8 @@ public class COSString extends COSBase
         {
             boolean unicode16 = false;
             char[] chars = value.toCharArray();
-            for( int i=0; i<chars.length; i++ )
+            int length = chars.length;
+            for( int i=0; i<length; i++ )
             {
                 if( chars[i] > 255 )
                 {
@@ -174,15 +175,16 @@ public class COSString extends COSBase
     public static COSString createFromHexString( String hex ) throws IOException
     {
         COSString retval = new COSString();
-        StringBuffer hexBuffer = new StringBuffer( hex.trim() );
+        StringBuilder hexBuffer = new StringBuilder( hex.trim() );
         //if odd number then the last hex digit is assumed to be 0
-        if( hexBuffer.length() % 2 == 1 )
+        if( hexBuffer.length() % 2 != 0 )
         {
-            hexBuffer.append( "0" );
+            hexBuffer.append( '0' );
         }
-        for( int i=0; i<hexBuffer.length();)
+        int length = hexBuffer.length(); 
+        for( int i=0; i<length;)
         {
-            String hexChars = "" + hexBuffer.charAt( i++ ) + hexBuffer.charAt( i++ );
+            String hexChars = String.valueOf(hexBuffer.charAt( i++ )) + hexBuffer.charAt( i++ );
             try
             {
                 retval.append( Integer.parseInt( hexChars, 16 ) );
@@ -202,9 +204,10 @@ public class COSString extends COSBase
      */
     public String getHexString()
     {
-        StringBuffer retval = new StringBuffer( out.size() * 2 );
+        StringBuilder retval = new StringBuilder( out.size() * 2 );
         byte[] data = getBytes();
-        for( int i=0; i<data.length; i++ )
+        int length = data.length;
+        for( int i=0; i<length; i++ )
         {
             retval.append( COSHEXTable.HEX_TABLE[ (data[i]+256)%256 ] );
         }
@@ -318,7 +321,8 @@ public class COSString extends COSBase
         boolean outsideASCII = false;
         //Lets first check if we need to escape this string.
         byte[] bytes = getBytes();
-        for( int i=0; i<bytes.length && !outsideASCII; i++ )
+        int length = bytes.length; 
+        for( int i=0; i<length && !outsideASCII; i++ )
         {
             //if the byte is negative then it is an eight bit byte and is
             //outside the ASCII range.
@@ -327,7 +331,7 @@ public class COSString extends COSBase
         if( !outsideASCII || forceLiteralForm )
         {
             output.write(STRING_OPEN);
-            for( int i=0; i<bytes.length; i++ )
+            for( int i=0; i<length; i++ )
             {
                 int b = (bytes[i]+256)%256;
                 switch( b )
@@ -376,7 +380,7 @@ public class COSString extends COSBase
         else
         {
             output.write(HEX_STRING_OPEN);
-            for(int i=0; i<bytes.length; i++ )
+            for(int i=0; i<length; i++ )
             {
                 output.write( COSHEXTable.TABLE[ (bytes[i]+256)%256 ] );
             }
