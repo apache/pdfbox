@@ -79,7 +79,8 @@ public class ICU4JImpl
         StringBuilder builder = null;
         int p = 0;
         int q = 0;
-        for (; q < str.length(); q++) 
+        int strLength = str.length();
+        for (; q < strLength; q++) 
         {
             // We only normalize if the codepoint is in a given range.
             // Otherwise, NFKC converts too many things that would cause
@@ -90,7 +91,7 @@ public class ICU4JImpl
             if ((0xFB00 <= c && c <= 0xFDFF) || (0xFE70 <= c && c <= 0xFEFF))
             {
                 if (builder == null) {
-                    builder = new StringBuilder(str.length() * 2);
+                    builder = new StringBuilder(strLength * 2);
                 }
                 builder.append(str.substring(p, q));
                 // Some fonts map U+FDF2 differently than the Unicode spec.
@@ -126,8 +127,9 @@ public class ICU4JImpl
      */      
     public String normalizeDiac(String str)
     {
-        String retStr = "";
-        for (int i = 0; i < str.length(); i++) 
+        StringBuilder retStr = new StringBuilder();
+        int strLength = str.length();
+        for (int i = 0; i < strLength; i++) 
         {
             char c = str.charAt(i);
             if(Character.getType(c) == Character.NON_SPACING_MARK 
@@ -138,13 +140,13 @@ public class ICU4JImpl
                  * Trim because some decompositions have an extra space, such as
                  * U+00B4
                  */
-                retStr += Normalizer.normalize(c, Normalizer.NFKC).trim();
+                retStr.append(Normalizer.normalize(c, Normalizer.NFKC).trim());
             }
             else
             {
-                retStr += str.charAt(i);
+                retStr.append(str.charAt(i));
             }
         }
-        return retStr;
+        return retStr.toString();
     }
 }
