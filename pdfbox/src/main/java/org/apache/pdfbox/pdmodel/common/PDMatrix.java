@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSNumber;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class PDMatrix implements Cloneable, COSObjectable
+public class PDMatrix implements COSObjectable
 {
     private COSArray matrix;
 
