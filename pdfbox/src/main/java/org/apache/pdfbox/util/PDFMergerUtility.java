@@ -493,7 +493,14 @@ public class PDFMergerUtility
         }
         else if( base instanceof COSObject )
         {
-            cloneMerge(destination, ((COSObject) base).getObject(),((COSObject) target).getObject() );
+            if(target instanceof COSObject)
+            {
+                cloneMerge(destination, ((COSObject) base).getObject(),((COSObject) target).getObject() );
+            }
+            else if(target instanceof COSDictionary)
+            {
+                cloneMerge(destination, ((COSObject)base).getObject(), ((COSDictionary)target));
+            }
             clonedVersion.put( base, retval );
         }
         else if( base instanceof COSArray )
