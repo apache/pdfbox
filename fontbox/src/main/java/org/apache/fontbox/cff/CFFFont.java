@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -206,6 +205,40 @@ public class CFFFont
         return mappings;
     }
 
+	/**
+	 * Return the Width value of the given Glyph identifier
+	 * 
+	 * @param SID
+	 * @return -1 if the SID is missing from the Font.
+	 * @throws IOException
+	 */
+	public int getWidth(int SID) throws IOException {
+		int nominalWidth = privateDict.containsKey("nominalWidthX") ? ((Number)privateDict.get("nominalWidthX")).intValue() : 0;
+		int defaultWidth = privateDict.containsKey("defaultWidthX") ? ((Number)privateDict.get("defaultWidthX")).intValue() : 1000 ;
+		for (Mapping m : getMappings() ){
+			if (m.getSID() == SID) {
+
+				CharStringRenderer csr = null;
+				if (((Number)getProperty("CharstringType")).intValue() == 2 ) {
+					List<Object> lSeq = m.toType2Sequence();
+					csr = new CharStringRenderer(false);
+					csr.render(lSeq);
+				} else {
+					List<Object> lSeq = m.toType1Sequence();
+					csr = new CharStringRenderer();
+					csr.render(lSeq);
+				}
+
+				// ---- If the CharString has a Width nominalWidthX must be added, 
+				//	    otherwise it is the default width.
+				return csr.getWidth() != 0 ? csr.getWidth() + nominalWidth : defaultWidth;
+			}
+		}
+
+		// ---- Width not found, return the default width
+		return defaultWidth;
+	}
+    
     /**
      * Returns the CFFEncoding of the font.
      * @return the encoding

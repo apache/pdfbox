@@ -28,12 +28,23 @@ import java.util.List;
  */
 public class CharStringRenderer extends CharStringHandler
 {
-
+        // TODO CharStringRenderer as abstract Class with two inherited classes according to the Charsstring type....
+    private boolean isCharstringType1 = true;
+    private boolean isFirstCommand = true;
+     
     private GeneralPath path = null;
     private Point2D sidebearingPoint = null;
     private Point2D referencePoint = null;
     private int width = 0;
-
+     
+    public CharStringRenderer() {
+        isCharstringType1 = true;
+    }
+ 
+    public CharStringRenderer(boolean isType1) {
+        isCharstringType1 = isType1;
+    }
+ 
     /**
      * Renders the given sequence and returns the result as a GeneralPath.
      * @param sequence the given charstring sequence
@@ -48,14 +59,165 @@ public class CharStringRenderer extends CharStringHandler
         handleSequence(sequence);
         return path;
     }
-
+ 
     /**
      * {@inheritDoc}
      */
     public void handleCommand(List<Integer> numbers, CharStringCommand command)
     {
+        if (isCharstringType1) {
+            handleCommandType1(numbers, command);
+        } else {
+            handleCommandType2(numbers, command);
+        }
+    }
+ 
+    /**
+     * 
+     * @param numbers
+     * @param command
+     */
+    private void handleCommandType2(List<Integer> numbers, CharStringCommand command) {
+        String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
+ 
+        if ("vmoveto".equals(name)) //
+        {
+            if (isFirstCommand && numbers.size() == 2) {
+                setWidth(numbers.get(0));
+                rmoveTo(Integer.valueOf(0), numbers.get(1));     
+            } else {
+                rmoveTo(Integer.valueOf(0), numbers.get(0));
+            }
+        } 
+        else if ("rlineto".equals(name)) //
+        {
+            if (isFirstCommand && numbers.size() == 3) {
+                setWidth(numbers.get(0));
+                rlineTo(numbers.get(1), numbers.get(2));
+            } else {
+                rlineTo(numbers.get(0), numbers.get(1));
+            }
+        } 
+        else if ("hlineto".equals(name))//
+        {
+            if (isFirstCommand && numbers.size() == 2) {
+                setWidth(numbers.get(0));   
+                rlineTo(numbers.get(1), Integer.valueOf(0));    
+            } else {
+                rlineTo(numbers.get(0), Integer.valueOf(0));
+            }
+        } 
+        else if ("vlineto".equals(name))//
+        {
+            if (isFirstCommand && numbers.size() == 2) {
+                setWidth(numbers.get(0));
+                rlineTo(Integer.valueOf(0), numbers.get(1));
+            } else {
+                rlineTo(Integer.valueOf(0), numbers.get(0));
+            }
+        } 
+        else if ("rrcurveto".equals(name))//
+        {
+            if (isFirstCommand && numbers.size() == 7) {
+                setWidth(numbers.get(0));
+                rrcurveTo(numbers.get(1), numbers.get(2), numbers.get(3), numbers
+                        .get(4), numbers.get(5), numbers.get(6));
+            } else {
+                rrcurveTo(numbers.get(0), numbers.get(1), numbers.get(2), numbers
+                        .get(3), numbers.get(4), numbers.get(5));
+            }
+        }
+        else if ("closepath".equals(name))
+        {
+            closePath();
+        } 
+        else if ("rmoveto".equals(name))//
+        {
+            if (isFirstCommand && numbers.size() == 3) {
+                setWidth(numbers.get(0));
+                rmoveTo(numbers.get(1), numbers.get(2));
+            } else {
+                rmoveTo(numbers.get(0), numbers.get(1));
+            }
+        } 
+        else if ("hmoveto".equals(name)) //
+        {
+            if (isFirstCommand && numbers.size() == 2) {
+                setWidth(numbers.get(0));
+                rmoveTo(numbers.get(1), Integer.valueOf(0));
+            } else { 
+                rmoveTo(numbers.get(0), Integer.valueOf(0));
+            }           
+        } 
+        else if ("vhcurveto".equals(name))
+        {
+            if (isFirstCommand && numbers.size() == 5) {
+                setWidth(numbers.get(0));
+                rrcurveTo(Integer.valueOf(0), numbers.get(1), numbers.get(2),
+                        numbers.get(3), numbers.get(4), Integer.valueOf(0));
+            } else {
+                rrcurveTo(Integer.valueOf(0), numbers.get(0), numbers.get(1),
+                        numbers.get(2), numbers.get(3), Integer.valueOf(0));
+            }
+ 
+        } 
+        else if ("hvcurveto".equals(name))
+        {
+            if (isFirstCommand && numbers.size() == 5) {
+                setWidth(numbers.get(0));            
+                rrcurveTo(numbers.get(1), Integer.valueOf(0), numbers.get(2),
+                        numbers.get(3), Integer.valueOf(0), numbers.get(4));
+            } else {
+                rrcurveTo(numbers.get(0), Integer.valueOf(0), numbers.get(1),
+                        numbers.get(2), Integer.valueOf(0), numbers.get(3));
+            }
+        }
+        else if ("hstem".equals(name)) {
+            if (numbers.size() % 2 == 1 ) {
+                setWidth(numbers.get(0));
+            }
+        }
+        else if ("vstem".equals(name)) {
+            if (numbers.size() % 2 == 1 ) {
+                setWidth(numbers.get(0));
+            }   
+        }
+        else if ("hstemhm".equals(name)) {
+            if (numbers.size() % 2 == 1 ) {
+                setWidth(numbers.get(0));
+            }
+        }
+        else if ("hstemhm".equals(name)) {
+            if (numbers.size() % 2 == 1) {
+                setWidth(numbers.get(0));
+            }
+        }
+        else if ("cntrmask".equals(name)) {
+            if (numbers.size() == 1 ) {
+                setWidth(numbers.get(0));
+            }
+        }
+        else if ("hintmask".equals(name)) {
+            if (numbers.size() == 1 ) {
+                setWidth(numbers.get(0));
+            }
+        }else if ("endchar".equals(name)) {
+            if (numbers.size() == 1 ) {
+                setWidth(numbers.get(0));
+            }
+        }
+ 
+        if (isFirstCommand) {  isFirstCommand = false; }
+    }
+ 
+    /**
+     * 
+     * @param numbers
+     * @param command
+     */
+    private void handleCommandType1(List<Integer> numbers, CharStringCommand command) {
         String name = CharStringCommand.TYPE1_VOCABULARY.get(command.getKey());
-
+ 
         if ("vmoveto".equals(name))
         {
             rmoveTo(Integer.valueOf(0), numbers.get(0));
@@ -110,7 +272,7 @@ public class CharStringRenderer extends CharStringHandler
                     numbers.get(2), Integer.valueOf(0), numbers.get(3));
         }
     }
-
+ 
     private void rmoveTo(Number dx, Number dy)
     {
         Point2D point = referencePoint;
@@ -120,16 +282,16 @@ public class CharStringRenderer extends CharStringHandler
         }
         referencePoint = null;
         path.moveTo((float)(point.getX() + dx.doubleValue()),
-                    (float)(point.getY() + dy.doubleValue()));
+                (float)(point.getY() + dy.doubleValue()));
     }
-
+ 
     private void rlineTo(Number dx, Number dy)
     {
         Point2D point = path.getCurrentPoint();
         path.lineTo((float)(point.getX() + dx.doubleValue()),
-                    (float)(point.getY() + dy.doubleValue()));
+                (float)(point.getY() + dy.doubleValue()));
     }
-
+ 
     private void rrcurveTo(Number dx1, Number dy1, Number dx2, Number dy2,
             Number dx3, Number dy3)
     {
@@ -142,38 +304,38 @@ public class CharStringRenderer extends CharStringHandler
         float y3 = y2 + dy3.floatValue();
         path.curveTo(x1, y1, x2, y2, x3, y3);
     }
-
+ 
     private void closePath()
     {
         referencePoint = path.getCurrentPoint();
         path.closePath();
     }
-
+ 
     private void pointSb(Number x, Number y)
     {
         sidebearingPoint = new Point2D.Float(x.floatValue(), y.floatValue());
     }
-
+ 
     /**
      * Returns the bounds of the renderer path.
      * @return the bounds as Rectangle2D
      */
-    public Rectangle2D getBounds()
+     public Rectangle2D getBounds()
     {
-        return path.getBounds2D();
+         return path.getBounds2D();
     }
-
-    /**
-     * Returns the width of the current command.
-     * @return the width
-     */
-    public int getWidth()
-    {
-        return width;
-    }
-
-    private void setWidth(int width)
-    {
-        this.width = width;
-    }
+ 
+     /**
+      * Returns the width of the current command.
+      * @return the width
+      */
+     public int getWidth()
+     {
+         return width;
+     }
+ 
+     private void setWidth(int width)
+     {
+         this.width = width;
+     }
 }
