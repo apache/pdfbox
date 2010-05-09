@@ -17,7 +17,8 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
-
+import java.util.Map;
+import java.util.HashMap;
 /**
  * An encoding entry for a cmap.
  * 
@@ -31,6 +32,8 @@ public class CMAPEncodingEntry
     private int platformEncodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
+    private Map<Integer, Integer> characterCodeToGlyphId = new HashMap<Integer, Integer>();
+
     /**
      * This will read the required data from the stream.
      * 
@@ -63,9 +66,10 @@ public class CMAPEncodingEntry
         {
             byte[] glyphMapping = data.read( 256 );
             glyphIdToCharacterCode = new int[256];
-            for( int i=0;i<glyphMapping.length; i++ )
+            for( int i=0;i < glyphMapping.length; i++ )
             {
-                glyphIdToCharacterCode[i]=(glyphMapping[i]+256)%256;
+                int glyphIndex = (glyphMapping[i]+256)%256;
+                glyphIdToCharacterCode[glyphIndex]=i;
             }
         }
         else if( subtableFormat == 2 )
@@ -117,6 +121,7 @@ public class CMAPEncodingEntry
                         if( rangeOffset == 0 )
                         {
                             glyphIdToCharacterCode[ ((j+delta)%65536) ]=j;
+                            characterCodeToGlyphId.put(j, ((j+delta)%65536));
                         }
                         else
                         {
@@ -133,6 +138,7 @@ public class CMAPEncodingEntry
                                 if( glyphIdToCharacterCode[glyphIndex] == 0 )
                                 {
                                     glyphIdToCharacterCode[glyphIndex] = j;
+                                    characterCodeToGlyphId.put(j, glyphIndex);
                                 }
                             }
                             
@@ -150,6 +156,7 @@ public class CMAPEncodingEntry
             for( int i=0; i<entryCount; i++)
             {
                 glyphIdToCharacterCode[glyphIdArray[i]] = firstCode+i;
+                characterCodeToGlyphId.put((firstCode+i), glyphIdArray[i]);
             }
         }
         else
@@ -201,5 +208,21 @@ public class CMAPEncodingEntry
     public void setPlatformId(int platformIdValue)
     {
         this.platformId = platformIdValue;
+    }
+
+    /**
+     * Returns the GlyphId linked with the given character code. 
+     * @param characterCode
+     * @return glyphId
+     */
+    public int getGlyphId(int characterCode) {
+    	if (this.characterCodeToGlyphId.containsKey(characterCode)) 
+    	{
+    		return this.characterCodeToGlyphId.get(characterCode);
+    	} 
+    	else 
+    	{
+    		return 0;
+    	}
     }
 }
