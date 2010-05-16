@@ -436,6 +436,12 @@ public class PDFTextStripper extends PDFStreamEngine
         //default is to do nothing
     }
 
+    private static final float ENDOFLASTTEXTX_RESET_VALUE = -1;
+    private static final float MAXYFORLINE_RESET_VALUE = -Float.MAX_VALUE;
+    private static final float EXPECTEDSTARTOFNEXTWORDX_RESET_VALUE = -Float.MAX_VALUE;
+    private static final float MAXHEIGHTFORLINE_RESET_VALUE = -1;
+    private static final float MINYTOPFORLINE_RESET_VALUE = Float.MAX_VALUE;
+    private static final float LASTWORDSPACING_RESET_VALUE = -1;
 
     /**
      * This will print the text of the processed page to "output".
@@ -447,11 +453,12 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void writePage() throws IOException    
     {
-        float maxYForLine = -1;
-        float minYTopForLine = Float.MAX_VALUE;
-        float endOfLastTextX = -1;
-        float lastWordSpacing = -1;
-        float maxHeightForLine = -1;
+        float maxYForLine = MAXYFORLINE_RESET_VALUE;
+        float minYTopForLine = MINYTOPFORLINE_RESET_VALUE;
+        float endOfLastTextX = ENDOFLASTTEXTX_RESET_VALUE;
+        float lastWordSpacing = LASTWORDSPACING_RESET_VALUE;
+        float maxHeightForLine = MAXHEIGHTFORLINE_RESET_VALUE;
+
         TextPosition lastPosition = null;
 
         for( int i = 0; i < charactersByArticle.size(); i++)
@@ -616,8 +623,8 @@ public class PDFTextStripper extends PDFStreamEngine
                 
                 //Compares the values obtained by the average method and the wordSpacing method and picks
                 //the smaller number. 
-                float expectedStartOfNextWordX = -1;
-                if(endOfLastTextX != -1)
+                float expectedStartOfNextWordX = EXPECTEDSTARTOFNEXTWORDX_RESET_VALUE;
+                if(endOfLastTextX != ENDOFLASTTEXTX_RESET_VALUE)
                 {
                     if(deltaCharWidth > deltaSpace)
                     {
@@ -660,11 +667,11 @@ public class PDFTextStripper extends PDFStreamEngine
 
                         writeLineSeparator( );
 
-                        endOfLastTextX = -1;
-                        expectedStartOfNextWordX = -1;
-                        maxYForLine = -1;
-                        maxHeightForLine = -1;
-                        minYTopForLine = Float.MAX_VALUE;
+                        endOfLastTextX = ENDOFLASTTEXTX_RESET_VALUE;
+                        expectedStartOfNextWordX = EXPECTEDSTARTOFNEXTWORDX_RESET_VALUE;
+                        maxYForLine = MAXYFORLINE_RESET_VALUE;
+                        maxHeightForLine = MAXHEIGHTFORLINE_RESET_VALUE;
+                        minYTopForLine = MINYTOPFORLINE_RESET_VALUE;
                     }
 
                     //Test if our TextPosition starts after a new word would be expected to start. 
