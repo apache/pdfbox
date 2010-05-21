@@ -25,7 +25,7 @@ angbracketright;3009
 circlecopyrt;00A9
 controlNULL;0000
 #
-# TeX-related mappings
+# TeX-related mappings using named values
 #
 angbracketleftbig;2329
 angbracketleftBig;2329
@@ -35,6 +35,16 @@ angbracketrightBig;232A
 angbracketrightbig;232A
 angbracketrightBigg;232A
 angbracketrightbigg;232A
+arrowhookleft;21AA
+arrowhookright;21A9
+arrowlefttophalf;21BC
+arrowleftbothalf;21BD
+arrownortheast;2197
+arrownorthwest;2196
+arrowrighttophalf;21C0
+arrowrightbothalf;21C1
+arrowsoutheast;2198
+arrowsouthwest;2199
 backslashbig;2216
 backslashBig;2216
 backslashBigg;2216
@@ -89,6 +99,7 @@ floorrightbigg;230B
 hatwide;0302
 hatwider;0302
 hatwidest;0302
+intercal;1D40
 integraldisplay;222B
 integraltext;222B
 intersectiondisplay;22C2
@@ -132,3 +143,18 @@ unionsqtext;2294
 uniontext;22C3
 vextenddouble;2225
 vextendsingle;2223
+#
+# TeX-related mappings using hexadecimal or decimal values
+#
+x1b;FB00
+x1c;FB01
+x1d;FB02
+x1e;FB03
+x8a;0141
+xff;00DF
+a27;FB00
+a28;FB01
+a29;FB02
+a30;FB03
+a138;0141
+a255;00DF
