@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.edit;
 
 import java.awt.Color;
 import java.awt.color.ColorSpace;
+import java.awt.geom.Path2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -99,13 +100,22 @@ public class PDPageContentStream
     private static final String K_NON_STROKING = "k\n";
     private static final String G_STROKING = "G\n";
     private static final String G_NON_STROKING = "g\n";
-    private static final String APPEND_RECTANGLE = "re\n";
-    private static final String FILL = "f\n";
+    private static final String RECTANGLE = "re\n";
+    private static final String FILL_NON_ZERO = "f\n";
+    private static final String FILL_EVEN_ODD = "f*\n";
     private static final String LINE_TO = "l\n";
     private static final String MOVE_TO = "m\n";
+    private static final String CLOSE_STROKE = "s\n";
     private static final String STROKE = "S\n";
     private static final String LINE_WIDTH = "w\n";
-
+    private static final String CLOSE_SUBPATH = "h\n";
+    private static final String CLIP_PATH_NON_ZERO = "W\n";
+    private static final String CLIP_PATH_EVEN_ODD = "W*\n";
+    private static final String NOP = "n\n";
+    private static final String BEZIER_312 = "c\n";
+    private static final String BEZIER_32 = "v\n";
+    private static final String BEZIER_313 = "y\n";
+    
 
     private static final String SET_STROKING_COLORSPACE = "CS\n";
     private static final String SET_NON_STROKING_COLORSPACE = "cs\n";
@@ -811,6 +821,28 @@ public class PDPageContentStream
     }
 
     /**
+     * Add a rectangle to the current path.
+     *
+     * @param x The lower left x coordinate.
+     * @param y The lower left y coordinate.
+     * @param width The width of the rectangle.
+     * @param height The height of the rectangle.
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void addRect( float x, float y, float width, float height ) throws IOException
+    {
+        appendRawCommands( formatDecimal.format( x ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( width ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( height ) );
+        appendRawCommands( SPACE );
+        appendRawCommands( RECTANGLE );
+    }
+
+    /**
      * Draw a rectangle on the page using the current non stroking color.
      *
      * @param x The lower left x coordinate.
@@ -821,28 +853,91 @@ public class PDPageContentStream
      */
     public void fillRect( float x, float y, float width, float height ) throws IOException
     {
-        appendRawCommands( formatDecimal.format( x ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( y ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( width ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( height ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( APPEND_RECTANGLE );
-        appendRawCommands( FILL );
+        addRect(x, y, width, height);
+        fill(Path2D.WIND_NON_ZERO);
     }
 
     /**
-     * Draw a line on the page using the current non stroking color and the current line width.
+     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x2 , y2 ) as the Bézier control points
+     * @param x1 x coordinate of the point 1
+     * @param y1 y coordinate of the point 1
+     * @param x2 x coordinate of the point 2
+     * @param y2 y coordinate of the point 2
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If there is an error while adding the .
+     */
+    public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    {
+        appendRawCommands( formatDecimal.format( x1) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y1) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( x2) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y2) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( x3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( BEZIER_312 );
+    }
+
+    /**
+     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * point to the point (x3 , y3 ), using the current point and (x2 , y2 ) as the Bézier control points
+     * @param x2 x coordinate of the point 2
+     * @param y2 y coordinate of the point 2
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If there is an error while adding the .
+     */
+    public void addBezier32(float x2, float y2, float x3, float y3) throws IOException
+    {
+        appendRawCommands( formatDecimal.format( x2) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y2) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( x3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( BEZIER_32 );
+    }
+
+    /**
+     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points
+     * @param x1 x coordinate of the point 1
+     * @param y1 y coordinate of the point 1
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If there is an error while adding the .
+     */
+    public void addBezier31(float x1, float y1, float x3, float y3) throws IOException
+    {
+        appendRawCommands( formatDecimal.format( x1) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y1) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( x3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y3) );
+        appendRawCommands( SPACE );
+        appendRawCommands( BEZIER_313 );
+    }
+    /**
+     * add a line to the current path.
      *
      * @param xStart The start x coordinate.
      * @param yStart The start y coordinate.
      * @param xEnd The end x coordinate.
      * @param yEnd The end y coordinate.
-     * @throws IOException If there is an error while drawing on the screen.
+     * @throws IOException If there is an error while adding the line.
      */
-    public void drawLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
+    public void addLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
     {
         // moveTo
         appendRawCommands( formatDecimal.format( xStart) );
@@ -856,12 +951,144 @@ public class PDPageContentStream
         appendRawCommands( formatDecimal.format( yEnd ) );
         appendRawCommands( SPACE );
         appendRawCommands( LINE_TO );
+    }
+    
+    /**
+     * Draw a line on the page using the current non stroking color and the current line width.
+     *
+     * @param xStart The start x coordinate.
+     * @param yStart The start y coordinate.
+     * @param xEnd The end x coordinate.
+     * @param yEnd The end y coordinate.
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void drawLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
+    {
+        addLine(xStart, yStart, xEnd, yEnd);
         // stroke
-        appendRawCommands( STROKE );
-
+        stroke();
+    }
+    
+    /**
+     * Add a polygon to the current path.
+     * @param x x coordinate of each points
+     * @param y y coordinate of each points
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void addPolygon(float[] x, float[] y) throws IOException
+    {
+        if (x.length != y.length)
+        {
+            throw new IOException( "Error: some points are missing coordinate" );
+        }
+        for (int i = 0; i < x.length; i++)
+        {
+            appendRawCommands( formatDecimal.format( x[i]) );
+            appendRawCommands( SPACE );
+            appendRawCommands( formatDecimal.format( y[i]) );
+            appendRawCommands( SPACE );
+            if (i == 0)
+            {
+                appendRawCommands( MOVE_TO );
+            }
+            else
+            {
+                appendRawCommands( LINE_TO );
+            }
+        }
+        closeSubPath();
+    }
+       
+    /**
+     * Draw a polygon on the page using the current non stroking color.
+     * @param x x coordinate of each points
+     * @param y y coordinate of each points
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void drawPolygon(float[] x, float[] y) throws IOException
+    {
+        addPolygon(x, y);
+        stroke();
     }
 
-     /**
+    /**
+     * Draw and fill a polygon on the page using the current non stroking color.
+     * @param x x coordinate of each points
+     * @param y y coordinate of each points
+     * @throws IOException If there is an error while drawing on the screen.
+     */
+    public void fillPolygon(float[] x, float[] y) throws IOException
+    {
+        addPolygon(x, y);
+        fill(Path2D.WIND_NON_ZERO);
+    }
+       
+    /**
+     * Stroke the path.
+     */
+    public void stroke() throws IOException 
+    {
+        appendRawCommands( STROKE );
+    }
+    
+    /**
+     * Close and stroke the path.
+     */
+    public void closeAndStroke() throws IOException 
+    {
+        appendRawCommands( CLOSE_STROKE );
+    }
+    
+    /**
+     * Fill the path.
+     */
+    public void fill(int windingRule) throws IOException 
+    {
+        if (windingRule == Path2D.WIND_NON_ZERO)
+        {
+            appendRawCommands( FILL_NON_ZERO );
+        }
+        else if (windingRule == Path2D.WIND_EVEN_ODD)
+        {
+            appendRawCommands( FILL_EVEN_ODD );
+        }
+        else 
+        {
+            throw new IOException( "Error: unknown value for winding rule" );
+        }
+            
+    }
+
+    /**
+     * Close subpath.
+     */
+    public void closeSubPath() throws IOException 
+    {
+        appendRawCommands( CLOSE_SUBPATH );
+    }
+
+    /**
+     * Clip path.
+     */
+    public void clipPath(int windingRule) throws IOException 
+    {
+        if (windingRule == Path2D.WIND_NON_ZERO)
+        {
+            appendRawCommands( CLIP_PATH_NON_ZERO );
+            appendRawCommands( NOP );
+        }
+        else if (windingRule == Path2D.WIND_EVEN_ODD)
+        {
+            appendRawCommands( CLIP_PATH_EVEN_ODD );
+            appendRawCommands( NOP );
+        }
+        else 
+        {
+            throw new IOException( "Error: unknown value for winding rule" );
+        }
+    }
+
+    /**
      * Set linewidth to the given value.
      *
      * @param lineWidth The width which is used for drwaing.
