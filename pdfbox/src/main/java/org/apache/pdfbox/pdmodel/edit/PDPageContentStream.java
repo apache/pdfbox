@@ -18,7 +18,7 @@ package org.apache.pdfbox.pdmodel.edit;
 
 import java.awt.Color;
 import java.awt.color.ColorSpace;
-import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -854,7 +854,7 @@ public class PDPageContentStream
     public void fillRect( float x, float y, float width, float height ) throws IOException
     {
         addRect(x, y, width, height);
-        fill(Path2D.WIND_NON_ZERO);
+        fill(PathIterator.WIND_NON_ZERO);
     }
 
     /**
@@ -928,6 +928,41 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( BEZIER_313 );
     }
+    
+    
+    /**
+     * Add a line to the given coordinate. 
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @throws IOException If there is an error while adding the line.
+     */
+    public void moveTo( float x, float y) throws IOException
+    {
+        // moveTo
+        appendRawCommands( formatDecimal.format( x) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y) );
+        appendRawCommands( SPACE );
+        appendRawCommands( MOVE_TO );
+    }
+
+    /**
+     * Add a move to the given coordinate.
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     * @throws IOException If there is an error while adding the line.
+     */
+    public void lineTo( float x, float y) throws IOException
+    {
+        // moveTo
+        appendRawCommands( formatDecimal.format( x) );
+        appendRawCommands( SPACE );
+        appendRawCommands( formatDecimal.format( y) );
+        appendRawCommands( SPACE );
+        appendRawCommands( LINE_TO );
+    }
     /**
      * add a line to the current path.
      *
@@ -940,17 +975,9 @@ public class PDPageContentStream
     public void addLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
     {
         // moveTo
-        appendRawCommands( formatDecimal.format( xStart) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( yStart) );
-        appendRawCommands( SPACE );
-        appendRawCommands( MOVE_TO );
+        moveTo(xStart, yStart);
         // lineTo
-        appendRawCommands( formatDecimal.format( xEnd ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( formatDecimal.format( yEnd ) );
-        appendRawCommands( SPACE );
-        appendRawCommands( LINE_TO );
+        lineTo(xEnd, yEnd);
     }
     
     /**
@@ -983,17 +1010,13 @@ public class PDPageContentStream
         }
         for (int i = 0; i < x.length; i++)
         {
-            appendRawCommands( formatDecimal.format( x[i]) );
-            appendRawCommands( SPACE );
-            appendRawCommands( formatDecimal.format( y[i]) );
-            appendRawCommands( SPACE );
             if (i == 0)
             {
-                appendRawCommands( MOVE_TO );
+                moveTo(x[i], y[i]);
             }
             else
             {
-                appendRawCommands( LINE_TO );
+                lineTo(x[i], y[i]);
             }
         }
         closeSubPath();
@@ -1020,7 +1043,7 @@ public class PDPageContentStream
     public void fillPolygon(float[] x, float[] y) throws IOException
     {
         addPolygon(x, y);
-        fill(Path2D.WIND_NON_ZERO);
+        fill(PathIterator.WIND_NON_ZERO);
     }
        
     /**
@@ -1044,11 +1067,11 @@ public class PDPageContentStream
      */
     public void fill(int windingRule) throws IOException 
     {
-        if (windingRule == Path2D.WIND_NON_ZERO)
+        if (windingRule == PathIterator.WIND_NON_ZERO)
         {
             appendRawCommands( FILL_NON_ZERO );
         }
-        else if (windingRule == Path2D.WIND_EVEN_ODD)
+        else if (windingRule == PathIterator.WIND_EVEN_ODD)
         {
             appendRawCommands( FILL_EVEN_ODD );
         }
@@ -1072,12 +1095,12 @@ public class PDPageContentStream
      */
     public void clipPath(int windingRule) throws IOException 
     {
-        if (windingRule == Path2D.WIND_NON_ZERO)
+        if (windingRule == PathIterator.WIND_NON_ZERO)
         {
             appendRawCommands( CLIP_PATH_NON_ZERO );
             appendRawCommands( NOP );
         }
-        else if (windingRule == Path2D.WIND_EVEN_ODD)
+        else if (windingRule == PathIterator.WIND_EVEN_ODD)
         {
             appendRawCommands( CLIP_PATH_EVEN_ODD );
             appendRawCommands( NOP );
