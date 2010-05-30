@@ -66,7 +66,7 @@ public class SetStrokingSeparation extends OperatorProcessor
             {
                 PDSeparation sep = (PDSeparation) colorSpace;
                 colorSpace = sep.getAlternateColorSpace();
-                argList = sep.getColorValues().toList();
+                argList = sep.calculateColorValues(arguments.get(0)).toList();
             }
 
             if (colorSpace instanceof PDDeviceGray)
@@ -89,13 +89,10 @@ public class SetStrokingSeparation extends OperatorProcessor
             {
                 newOperator = new SetStrokingCalRGBColor();
             }
-            else if (colorSpace instanceof PDSeparation)
-            {
-                newOperator = new SetStrokingSeparation();
-            }
 
             if (newOperator != null) 
             {
+                color.setColorSpace(colorSpace);
                 newOperator.setContext(getContext());
                 newOperator.process(operator, argList);
             }

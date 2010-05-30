@@ -17,7 +17,7 @@
 package org.apache.pdfbox.pdmodel.common.function;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import java.io.IOException;
@@ -29,76 +29,105 @@ import java.lang.Math;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class PDFunctionType2 extends PDDictionaryFunction
+public class PDFunctionType2 extends PDFunction
 {
     
-    private COSArray C0, C1;
-
     /**
-     * Constructor to create a new blank type 2 function.
+     * The C0 values of the exponential function.
      */
-    protected PDFunctionType2()
-    {
-        super( 2 );
-    }
+    private COSArray C0;
+    /**
+     * The C1 values of the exponential function.
+     */
+    private COSArray C1;
 
     /**
      * Constructor.
      *
-     * @param functionDictionary The prepopulated function dictionary.
+     * @param functionStream The function .
      */
-    public PDFunctionType2( COSDictionary functionDictionary )
+    public PDFunctionType2(COSBase function)
     {
-        super( functionDictionary );
+        super( function );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getFunctionType()
+    {
+        return 2;
     }
 
     /**
     * {@inheritDoc}
     */
-    public COSArray Eval(COSArray input) throws IOException
+    public COSArray eval(COSArray input) throws IOException
     {
         //This function performs exponential interpolation.
         //It uses only a single value as its input, but may produce a multi-valued output.
         //See PDF Reference section 3.9.2.
                 
-        double x = input.toFloatArray()[0];
-        COSArray y = new COSArray();
-        for (int j=0;j<getC0().size();j++)
+        double inputValue = input.toFloatArray()[0];
+        double exponent = getN();
+        COSArray c0 = getC0();
+        COSArray c1 = getC1();
+        COSArray functionResult = new COSArray();
+        int c0Size = c0.size();
+        for (int j=0;j<c0Size;j++)
         {
             //y[j] = C0[j] + x^N*(C1[j] - C0[j])
-            float FofX =(float)( ((COSFloat)C0.get(j)).floatValue() + java.lang.Math.pow(x,(double)getN())*(((COSFloat)C1.get(j)).floatValue() - ((COSFloat)C0.get(j)).floatValue()) );
-            y.add( new COSFloat( FofX));
+            float result = ((COSFloat)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSFloat)c1.get(j)).floatValue() - ((COSFloat)c0.get(j)).floatValue());
+            functionResult.add( new COSFloat( result));
         }
-        
-        return y;
+        // clip to range if available
+        return clipToRange(functionResult);
     }
     
-    protected COSArray getC0()
+    /**
+     * Returns the C0 values of the function, 0 if empty.
+     * @return a COSArray with the C0 values
+     */
+    public COSArray getC0()
     {
         if(C0 == null)
         {
-            C0 = getRangeArray("C0",1);
-        }        
+            C0 = (COSArray)getDictionary().getDictionaryObject( COSName.C0 );
+            if ( C0 == null )
+            {
+                // C0 is optional, default = 0
+                C0 = new COSArray();
+                C0.add( new COSFloat( 0 ) );
+            }
+        }
         return C0;
     }
     
-    protected COSArray getC1()
+    /**
+     * Returns the C1 values of the function, 1 if empty.
+     * @return a COSArray with the C1 values
+     */
+    public COSArray getC1()
     {
         if(C1 == null)
         {
-            //can't use getRangeArray here as the default is 1.0, not 0.0.
-            C1 = (COSArray)getCOSDictionary().getDictionaryObject( COSName.getPDFName( "C1" ) );
+            C1 = (COSArray)getDictionary().getDictionaryObject( COSName.C1 );
             if( C1 == null )
             {
+                // C1 is optional, default = 1
                 C1 = new COSArray();
-                getCOSDictionary().setItem( "C1", C1 );
                 C1.add( new COSFloat( 1 ) );
             }      
         }            
         return C1;
     }
     
-    protected float getN(){
-        return getCOSDictionary().getFloat("N");
+    /**
+     * Returns the exponent of the function.
+     * @return the float value of the exponent
+     */
+    public float getN()
+    {
+        return getDictionary().getFloat(COSName.N);
     }
 }

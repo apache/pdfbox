@@ -20,9 +20,11 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -35,6 +37,85 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public abstract class PDFunction implements COSObjectable
 {
+
+    private PDStream functionStream = null;
+    private COSDictionary functionDictionary = null;
+    private COSArray domain = null;
+    private COSArray range = null;
+
+    /**
+     * Constructor.
+     *
+     * @param functionStream The function stream.
+     */
+    public PDFunction( COSBase function )
+    {
+        if (function instanceof COSStream)
+        {
+            functionStream = new PDStream( (COSStream)function );
+            functionStream.getStream().setName( COSName.TYPE, "Function" );
+        }
+        else if (function instanceof COSDictionary)
+        {
+            functionDictionary = (COSDictionary)function;
+        }
+    }
+
+    /**
+     * Returns the function type.
+     * 
+     * Possible values are:
+     * 
+     * 0 - Sampled function
+     * 2 - Exponential interpolation function
+     * 3 - Stitching function
+     * 4 - PostScript calculator function
+     * 
+     * @return the function type.
+     */
+    public abstract int getFunctionType();
+    
+    /**
+     * Returns the COSObject.
+     *
+     * {@inheritDoc}
+     */
+    public COSBase getCOSObject()
+    {
+        if (functionStream != null)
+        {
+            return functionStream.getCOSObject();
+        }
+        else 
+        {
+            return functionDictionary;
+        }
+    }
+
+    /**
+     * Returns the stream.
+     * @return The stream for this object.
+     */
+    public COSDictionary getDictionary()
+    {
+        if (functionStream != null)
+        {
+            return functionStream.getStream();
+        }
+        else 
+        {
+            return functionDictionary;
+        }
+    }
+
+    /**
+     * Returns the underlying PDStream.
+     * @return The stream.
+     */
+    protected PDStream getPDStream()
+    {
+        return functionStream;
+    }
     /**
      * Create the correct PD Model function based on the COS base function.
      *
@@ -51,45 +132,27 @@ public abstract class PDFunction implements COSObjectable
         {
             function = ((COSObject)function).getCOSObject();
         }
-        if( function instanceof COSDictionary )
+        COSDictionary functionDictionary = (COSDictionary)function;
+        int functionType =  functionDictionary.getInt( COSName.FUNCTION_TYPE );
+        if( functionType == 0 )
         {
-            COSDictionary funcDic = (COSDictionary)function;
-            int functionType =  funcDic.getInt( "FunctionType" );
-            if( function instanceof COSStream )
-            {
-                if( functionType == 0 )
-                {
-                    retval = new PDFunctionType0(new PDStream((COSStream)function));
-                }
-                else if( functionType == 4 )
-                {
-                    retval = new PDFunctionType4(new PDStream((COSStream)function));
-                }
-                else
-                {
-                    throw new IOException( "Error: Unknown stream function type " + functionType );
-                }
-            }
-            else
-            {
-                if( functionType == 2 )
-                {
-                    retval = new PDFunctionType2(funcDic);
-                }
-                else if( functionType == 3 )
-                {
-                    retval = new PDFunctionType3(funcDic);
-                }
-                else
-                {
-                    throw new IOException( "Error: Unknown dictionary function type " + functionType );
-                }
-            }
-
+            retval = new PDFunctionType0(functionDictionary);
+        }
+        else if( functionType == 2 )
+        {
+            retval = new PDFunctionType2(functionDictionary);
+        }
+        else if( functionType == 3 )
+        {
+            retval = new PDFunctionType3(functionDictionary);
+        }
+        else if( functionType == 4 )
+        {
+            retval = new PDFunctionType4(functionDictionary);
         }
         else
         {
-            throw new IOException( "Error: Unknown COS type for function " + function );
+            throw new IOException( "Error: Unknown function type " + functionType );
         }
         return retval;
     }
@@ -104,7 +167,11 @@ public abstract class PDFunction implements COSObjectable
      * @return The number of input parameters that have a range
      * specified.
      */
-    public abstract int getNumberOfOutputParameters();
+    public int getNumberOfOutputParameters()
+    {
+        COSArray rangeValues = getRangeValues();
+        return rangeValues.size() / 2;
+    }
 
     /**
      * This will get the range for a certain output parameters.  This is will never
@@ -115,15 +182,22 @@ public abstract class PDFunction implements COSObjectable
      *
      * @return The range for this component.
      */
-    public abstract PDRange getRangeForOutput(int n);
+    public PDRange getRangeForOutput(int n)
+    {
+        COSArray rangeValues = getRangeValues();
+        return new PDRange( rangeValues, n );
+    }
 
     /**
-     * This will set the a range for output parameter.
+     * This will set the range values.
      *
-     * @param range The new range for the output parameter.
-     * @param n The ouput parameter number to set the range for.
+     * @param range The new range values.
      */
-    public abstract void setRangeForOutput(PDRange range, int n);
+    public void setRangeValues(COSArray rangeValues)
+    {
+        range = rangeValues;
+        getDictionary().setItem(COSName.RANGE, rangeValues);
+    }
 
     /**
      * This will get the number of input parameters that
@@ -132,7 +206,11 @@ public abstract class PDFunction implements COSObjectable
      * @return The number of input parameters that have a domain
      * specified.
      */
-    public abstract int getNumberOfInputParameters();
+    public int getNumberOfInputParameters()
+    {
+        COSArray array = getDomainValues();
+        return array.size() / 2;
+    }
 
     /**
      * This will get the range for a certain input parameter.  This is will never
@@ -143,16 +221,22 @@ public abstract class PDFunction implements COSObjectable
      *
      * @return The domain range for this component.
      */
-    public abstract PDRange getDomainForInput(int n);
+    public PDRange getDomainForInput(int n) 
+    {
+        COSArray domainValues = getDomainValues();
+        return new PDRange( domainValues, n );
+    }
 
     /**
-     * This will set the domain for the input values.
+     * This will set the domain values.
      *
-     * @param range The new range for the input.
-     * @param n The number of the input parameter to set the domain for.
+     * @param range The new domain values.
      */
-    public abstract void setDomainForInput(PDRange range, int n);
-
+    public void setDomainValues(COSArray domainValues)
+    {
+        domain = domainValues;
+        getDictionary().setItem(COSName.DOMAIN, domainValues);
+    }
 
     /**
      * Evaluates the function at the given input.
@@ -161,6 +245,91 @@ public abstract class PDFunction implements COSObjectable
      * @param input The array of input values for the function. In many cases will be an array of a single value, but not always.
      * @return The of outputs the function returns based on those inputs. In many cases will be an array of a single value, but not always.
      */
-    public abstract COSArray Eval(COSArray input) throws IOException;
+    public abstract COSArray eval(COSArray input) throws IOException;
+    
+    /**
+     * Returns all ranges for the output values as COSArray .
+     * Required for type 0 and type 4 functions
+     * @return the ranges array. 
+     */
+    protected COSArray getRangeValues() 
+    {
+        if (range == null) 
+        {
+            range = (COSArray)getDictionary().getDictionaryObject( COSName.RANGE );
+        }
+        return range;
+    }
+
+    /**
+     * Returns all domains for the input values as COSArray.
+     * Required for all function types.
+     * @return the domains array. 
+     */
+    private COSArray getDomainValues()
+    {
+        if (domain == null) 
+        {
+            domain = (COSArray)getDictionary().getDictionaryObject( COSName.DOMAIN );
+        }
+        return domain;
+    }
+
+    /**
+     * Clip the given input values to the ranges.
+     * 
+     * @param inputArray the input values
+     * @return the clipped values
+     */
+    protected COSArray clipToRange(COSArray inputArray) 
+    {
+        COSArray rangesArray = getRangeValues();
+        COSArray result = null;
+        if (rangesArray != null) 
+        {
+            float[] inputValues = inputArray.toFloatArray();
+            float[] rangeValues = rangesArray.toFloatArray();
+            result = new COSArray();
+            int numberOfRanges = rangeValues.length/2;
+            for (int i=0; i<numberOfRanges; i++)
+                result.add(new COSFloat( clipToRange(inputValues[i], rangeValues[2*i], rangeValues[2*i+1])));
+        }
+        else
+        {
+            result = inputArray;
+        }
+        return result;
+    }
+
+    /**
+     * Clip the given input value to the given range.
+     * 
+     * @param x the input value
+     * @param rangeMin the min value of the range
+     * @param rangeMax the max value of the range
+
+     * @return the clipped value
+     */
+    protected float clipToRange(float x, float rangeMin, float rangeMax) 
+    {
+        return Math.min(Math.max(x, rangeMin), rangeMax);
+    }
+
+    /**
+     * For a given value of x, interpolate calculates the y value 
+     * on the line defined by the two points (xRangeMin , xRangeMax ) 
+     * and (yRangeMin , yRangeMax ).
+     * 
+     * @param x
+     * @param xRangeMin
+     * @param xRangeMax
+     * @param yRangeMin
+     * @param yRangeMax
+     * @return the interpolated y value
+     */
+    protected float interpolate(float x, float xRangeMin, float xRangeMax, float yRangeMin, float yRangeMax) 
+    {
+        return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
+    }
 
 }
