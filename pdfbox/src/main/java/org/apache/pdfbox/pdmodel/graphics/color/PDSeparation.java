@@ -27,9 +27,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
+import org.apache.pdfbox.pdmodel.common.function.PDFunctionType4;
 
 /**
  * This class represents a Separation color space.
@@ -207,31 +206,15 @@ public class PDSeparation extends PDColorSpace
         array.set( 3, tint );
     }
     
-    
-    
-    /*
-    Some of the key values are stored within the COSDictionary, item 3 in the array.
-    I don't necessarily want to expose the entire dictionary publicly (except in toString()),
-    but need access privately in order to expose the color values publicly.
-    */
-    private COSDictionary getDictionary() throws IOException
-    {
-        return (COSDictionary) array.getObject( 3);
-    }
-    
     /**
-     * Returns the components of the color in the alternate colorspace for a tint value of 1.0.
+     * Returns the components of the color in the alternate colorspace for the given tint value.
      * @return COSArray with the color components
      * @throws IOException If the tint function is not supported
      */
-    public COSArray getColorValues() throws IOException
+    public COSArray calculateColorValues(COSBase tintValue) throws IOException
     {
         PDFunction tintTransform = getTintTransform();
-        if(tintTransform instanceof PDFunctionType2)
-        {
-            return (COSArray) getDictionary().getDictionaryObject("C1");
-        }
-        else
+        if(tintTransform instanceof PDFunctionType4)
         {
             log.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
                     + " in "+getClass().getName()+".getColorValues()"
@@ -247,6 +230,12 @@ public class PDSeparation extends PDColorSpace
                 retval.add(new COSFloat(colorValue));
             }
             return retval;
+        }
+        else
+        {
+            COSArray tint = new COSArray();
+            tint.add(tintValue);
+            return tintTransform.eval(tint);
         }
     }
 }

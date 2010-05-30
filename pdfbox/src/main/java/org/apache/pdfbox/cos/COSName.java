@@ -148,6 +148,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName BITS_PER_SAMPLE = new COSName("BitsPerSample" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName BOUNDS = new COSName("Bounds" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName BPC = new COSName("BPC" );
     /**
     * A common COSName value.
@@ -157,6 +165,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * "C"
      */
     public static final COSName C = new COSName("C");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName C0 = new COSName( "C0" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName C1 = new COSName( "C1" );
     /**
      * A common COSName value.
      */
@@ -285,7 +301,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "DL" */
     public static final COSName DL = new COSName( "DL" );
 
-    /** "DP" */
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DOMAIN = new COSName( "Domain" );
+
+     /** "DP" */
     public static final COSName DP = new COSName( "DP" );
 
     /**
@@ -306,8 +327,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName EMBEDDED_FILES = new COSName( "EmbeddedFiles" );
 
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
+    public static final COSName ENCODE = new COSName( "Encode" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName ENCODING = new COSName( "Encoding" );
     /**
      * A common COSName value.
@@ -416,9 +441,17 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName FRM = new COSName( "FRM" );
-     /**
-      * A common COSName value.
-      */
+    /**
+     * A common COSName value.
+     */
+    public static final COSName FUNCTION_TYPE = new COSName( "FunctionType" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName FUNCTIONS = new COSName( "Functions" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName GAMMA = new COSName( "Gamma" );
     /**
      * A common COSName value.

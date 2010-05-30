@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.common.function;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+
 import java.io.IOException;
 
 /**
@@ -27,34 +27,32 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class PDFunctionType4 extends PDStreamFunction
+public class PDFunctionType4 extends PDFunction
 {
-
-    /**
-     * Constructor to create a new blank type 4 function.
-     *
-     * @param doc The document that the function will be part of.
-     */
-    protected PDFunctionType4( PDDocument doc )
-    {
-        super( doc, 4 );
-    }
 
     /**
      * Constructor.
      *
-     * @param functionDictionary The prepopulated function dictionary.
+     * @param functionStream The function .
      */
-    public PDFunctionType4( PDStream functionDictionary )
+    public PDFunctionType4(COSBase function)
     {
-        super( functionDictionary );
+        super( function );
     }
-    
-    
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getFunctionType()
+    {
+        return 4;
+    }
+
     /**
     * {@inheritDoc}
     */
-    public COSArray Eval(COSArray input) throws IOException
+    public COSArray eval(COSArray input) throws IOException
     {
         //Implementation here will require evaluation of PostScript functions.
         //See section 3.9.4 of the PDF Reference.

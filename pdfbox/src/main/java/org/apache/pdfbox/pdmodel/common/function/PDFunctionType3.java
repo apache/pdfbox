@@ -17,9 +17,11 @@
 package org.apache.pdfbox.pdmodel.common.function;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDRange;
+
 import java.io.IOException;
 
 /**
@@ -28,81 +30,138 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class PDFunctionType3 extends PDDictionaryFunction
+public class PDFunctionType3 extends PDFunction
 {
 
-    /**
-     * Constructor to create a new blank type 3 function.
-     */
-    protected PDFunctionType3()
-    {
-        super( 3 );
-    }
-
+    private COSArray functions = null;
+    private COSArray encode = null;
+    private COSArray bounds = null;
+    
     /**
      * Constructor.
      *
-     * @param functionDictionary The prepopulated function dictionary.
+     * @param functionStream The function .
      */
-    public PDFunctionType3( COSDictionary functionDictionary )
+    public PDFunctionType3(COSBase function)
     {
-        super( functionDictionary );
+        super( function );
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public int getFunctionType()
+    {
+        return 3;
+    }
+    
+    /**
     * {@inheritDoc}
     */
-    public COSArray Eval(COSArray input) throws IOException
+    public COSArray eval(COSArray input) throws IOException
     {
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
         //See PDF Reference section 3.9.3.
-        
-        PDFunction F=null;
+        PDFunction function = null;
         float x = ((COSFloat)input.get(0)).floatValue();
-        COSArray Domain = getDomainForInput(1).getCOSArray();
-        
-        if (getBounds().size() == 0)
+        PDRange domain = getDomainForInput(1);
+        // clip input value to domain
+        x = clipToRange(x, domain.getMin(), domain.getMax());
+
+        float[] boundsValues = getBounds().toFloatArray();
+        int boundsSize = boundsValues.length;
+        if (boundsSize == 0 || x < boundsValues[0])
         {
-            F = PDFunction.create(getFunctions().get(0));
+            function = PDFunction.create(getFunctions().get(0));
+            PDRange encode = getEncodeForParameter(0);
+            if (boundsSize == 0)
+            {
+                x = interpolate(x, domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
+            }
+            else
+            {
+                x = interpolate(x, domain.getMin(), boundsValues[0], encode.getMin(), encode.getMax());
+            }
         }
         else
         {
-            //check boundary conditions first ...
-            if (x < ((COSFloat)Domain.get(0)).floatValue())
-                F = PDFunction.create(getFunctions().get(0));
-            else if (x > ((COSFloat)Domain.get(1)).floatValue())
-                F = PDFunction.create(getFunctions().get(getFunctions().size()-1));
-            else
+            for (int i=0; i<boundsSize-1; i++)
             {
-                float[] fBounds = getBounds().toFloatArray();
-                for (int k = 0; k<getBounds().size(); k++){
-                    if (x <= fBounds[k])
-                    {
-                        F = PDFunction.create(getFunctions().get(k));
-                        break;
-                    }
-                }
-                if(F==null) //must be in last partition
+                if ( x >= boundsValues[i] && x < boundsValues[i+1] )
                 {
-                    F = PDFunction.create(getFunctions().get(getFunctions().size()-1));
+                    function = PDFunction.create(getFunctions().get(i+1));
+                    PDRange encode = getEncodeForParameter(i+1);
+                    x = interpolate(x, boundsValues[i], boundsValues[i+1], encode.getMin(), encode.getMax());
+                    break;
                 }
             }
+            if(function==null) //must be in last partition
+            {
+                function = PDFunction.create(getFunctions().get(boundsSize+1));
+                PDRange encode = getEncodeForParameter(boundsSize+1);
+                x = interpolate(x, boundsValues[boundsSize-1], domain.getMax(), encode.getMin(), encode.getMax());
+            }
         }
-        return F.Eval(input);
+        COSArray functionValues = new COSArray();
+        functionValues.add(new COSFloat(x));
+        COSArray functionResult = function.eval(functionValues);
+        // clip to range if available
+        return clipToRange(functionResult);
     }
     
-    protected COSArray getFunctions()
+    /**
+     * Returns all functions values as COSArray.
+     * 
+     * @return the functions array. 
+     */
+    public COSArray getFunctions()
     {
-        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Functions" )  ));
+        if (functions == null)
+        {
+            functions = (COSArray)(getDictionary().getDictionaryObject( COSName.FUNCTIONS ));
+        }
+        return functions;
     }
     
-    protected COSArray getBounds()
+    /**
+     * Returns all bounds values as COSArray.
+     * 
+     * @return the bounds array. 
+     */
+    public COSArray getBounds()
     {
-        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Bounds" )  ));
+        if (bounds == null) 
+        {
+            bounds = (COSArray)(getDictionary().getDictionaryObject( COSName.BOUNDS ));
+        }
+        return bounds;
     }
     
-    protected COSArray getEncode()
+    /**
+     * Returns all encode values as COSArray.
+     * 
+     * @return the encode array. 
+     */
+    public COSArray getEncode()
     {
-        return (COSArray)(getCOSDictionary().getDictionaryObject( COSName.getPDFName( "Encode" )  ));
+        if (encode == null)
+        {
+            encode = (COSArray)(getDictionary().getDictionaryObject( COSName.ENCODE ));
+        }
+        return encode;
     }
+    
+    /**
+     * Get the encode for the input parameter.
+     *
+     * @param paramNum The function parameter number.
+     *
+     * @return The encode parameter range or null if none is set.
+     */
+    private PDRange getEncodeForParameter(int n) 
+    {
+        COSArray encodeValues = getEncode();
+        return new PDRange( encodeValues, n );
+    }
+
 }
