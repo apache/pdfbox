@@ -47,6 +47,7 @@
     <module>fontbox</module>
     <module>jempbox</module>
     <module>pdfbox</module>
+    <module>app</module>
   </modules>
 
   <build>
