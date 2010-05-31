@@ -23,13 +23,17 @@ import java.io.IOException;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
+import org.apache.pdfbox.pdmodel.common.function.PDFunctionType4;
 
 /**
  * This class represents a DeviceN color space.
@@ -39,6 +43,12 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
  */
 public class PDDeviceN extends PDColorSpace
 {
+   
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDDeviceN.class);
+
     /**
      * The name of this color space.
      */
@@ -98,7 +108,21 @@ public class PDDeviceN extends PDColorSpace
      */
     protected ColorSpace createColorSpace() throws IOException
     {
-        throw new IOException( "Not implemented" );
+        try
+        {
+            PDColorSpace alt = getAlternateColorSpace();
+            return alt.getJavaColorSpace();
+        }
+        catch (IOException ioexception)
+        {
+            log.error(ioexception, ioexception);
+            throw ioexception;
+        }
+        catch (Exception exception)
+        {
+            log.error(exception, exception);
+            throw new IOException("Failed to Create ColorSpace");
+        }
     }
 
     /**
@@ -112,7 +136,8 @@ public class PDDeviceN extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        throw new IOException( "Not implemented" );
+        log.info("About to create ColorModel for " + getAlternateColorSpace().toString());
+        return getAlternateColorSpace().createColorModel(bpc);
     }
 
     /**
@@ -120,7 +145,7 @@ public class PDDeviceN extends PDColorSpace
      *
      * @return A list of colorants
      */
-    public List getColorantNames()
+    public List<COSBase> getColorantNames()
     {
         COSArray names = (COSArray)array.getObject( 1 );
         return COSArrayList.convertCOSNameCOSArrayToList( names );
@@ -131,7 +156,7 @@ public class PDDeviceN extends PDColorSpace
      *
      * @param names The list of colorant names.
      */
-    public void setColorantNames( List names )
+    public void setColorantNames( List<COSBase> names )
     {
         COSArray namesArray = COSArrayList.convertStringListToCOSNameCOSArray( names );
         array.set( 1, namesArray );
@@ -226,4 +251,38 @@ public class PDDeviceN extends PDColorSpace
             array.set( 4, attributes.getCOSDictionary() );
         }
     }
+    
+    /**
+     * Returns the components of the color in the alternate colorspace for the given tint value.
+     * @return COSArray with the color components
+     * @throws IOException If the tint function is not supported
+     */
+    public COSArray calculateColorValues(List<COSBase> tintValues) throws IOException
+    {
+        PDFunction tintTransform = getTintTransform();
+        if(tintTransform instanceof PDFunctionType4)
+        {
+            log.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
+                    + " in "+getClass().getName()+".getColorValues()"
+                    + " using color black instead.");
+            int numberOfComponents = getAlternateColorSpace().getNumberOfComponents();
+            // To get black as color:
+            // 0.0f is used for the single value(s) if the colorspace is gray or RGB based
+            // 1.0f is used for the single value if the colorspace is CMYK based
+            float colorValue = numberOfComponents == 4 ? 1.0f : 0.0f;
+            COSArray retval = new COSArray();
+            for (int i=0;i<numberOfComponents;i++) 
+            {
+                retval.add(new COSFloat(colorValue));
+            }
+            return retval;
+        }
+        else
+        {
+            COSArray tint = new COSArray();
+            tint.addAll(tintValues);
+            return tintTransform.eval(tint);
+        }
+    }
+
 }
