@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
@@ -81,6 +82,11 @@ public class SetStrokingColor extends OperatorProcessor
             {
                 newOperator = new SetStrokingSeparation();
             }
+            else if (colorSpace instanceof PDDeviceN)
+            {
+                newOperator = new SetStrokingDeviceN();
+            }
+
             if (newOperator != null) 
             {
                 newOperator.setContext(getContext());
