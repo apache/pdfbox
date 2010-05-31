@@ -54,7 +54,7 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Embed-Dependency>*;scope=provided;inline=org/apache/**|Resources/**</Embed-Dependency>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
-            <Main-Class>org.apache.pdfbox.ExtractText</Main-Class>
+            <Main-Class>org.apache.pdfbox.PDFBox</Main-Class>
           </instructions>
         </configuration>
       </plugin>
