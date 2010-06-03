@@ -40,6 +40,7 @@ public class CMapParser
     private static final String BEGIN_CODESPACE_RANGE = "begincodespacerange";
     private static final String BEGIN_BASE_FONT_CHAR = "beginbfchar";
     private static final String BEGIN_BASE_FONT_RANGE = "beginbfrange";
+    private static final String BEGIN_CID_RANGE = "begincidrange";
     private static final String USECMAP = "usecmap";
     
     private static final String MARK_END_OF_DICTIONARY = ">>";
@@ -153,7 +154,7 @@ public class CMapParser
                         }
                     }
                 }
-               else if( op.op.equals( BEGIN_BASE_FONT_RANGE ) )
+                else if( op.op.equals( BEGIN_BASE_FONT_RANGE ) )
                 {
                     Number cosCount = (Number)previousToken;
                     
@@ -200,6 +201,25 @@ public class CMapParser
                                     tokenBytes = (byte[])array.get( arrayIndex );
                                 }
                             }
+                        }
+                    }
+                }
+                else if( op.op.equals( BEGIN_CID_RANGE ) )
+                {
+                    int numberOfLines = (Integer)previousToken;
+                    for (int n=0; n < numberOfLines;n++) {
+                        byte[] startCode = (byte[])parseNextToken( cmapStream );
+                        int start = createIntFromBytes(startCode);
+                        byte[] endCode = (byte[])parseNextToken( cmapStream );
+                        int end = createIntFromBytes(endCode);
+                        int mappedCode = (Integer)parseNextToken( cmapStream );
+                        int numberOfMappings = end-start;
+                        byte[] mappedBytes = createBytesFromInt(mappedCode); 
+                        for (int i=0; i<numberOfMappings; i++) {
+                            String mappedStr = createStringFromBytes(startCode);
+                            result.addMapping(mappedBytes, mappedStr);
+                            increment(startCode);
+                            increment(mappedBytes);
                         }
                     }
                 }
@@ -441,6 +461,14 @@ public class CMapParser
         }
     }
     
+    private int createIntFromBytes(byte[] bytes) 
+    {
+        int intValue = (bytes[0]+256)%256;
+        intValue <<= 8;
+        intValue += (bytes[1]+256)%256;
+        return intValue;
+    }
+    
     private String createStringFromBytes( byte[] bytes ) throws IOException
     {
         String retval = null;
@@ -455,25 +483,33 @@ public class CMapParser
         return retval;
     }
 
+    private byte[] createBytesFromInt( int value ) throws IOException
+    {
+        byte[] bytes = new byte[2];
+        bytes[1] = (byte)(value % 256);
+        bytes[0] = (byte)(value & 0x00 >> 8);
+        return bytes;
+    }
+
     private int compare( byte[] first, byte[] second )
     {
         int retval = 1;
-        boolean done = false;
-        for( int i=0; i<first.length && !done; i++ )
+        int firstLength = first.length;
+        for( int i=0; i<firstLength; i++ )
         {
             if( first[i] == second[i] )
             {
-                //move to next position
+                continue;
             }
             else if( ((first[i]+256)%256) < ((second[i]+256)%256) )
             {
-                done = true;
                 retval = -1;
+                break;
             }
             else
             {
-                done = true;
                 retval = 1;
+                break;
             }
         }
         return retval;
