@@ -70,6 +70,11 @@ public class PDPage implements COSObjectable, Printable
     
     private static final float MM_TO_UNITS = 1/(10*2.54f)*DEFAULT_USER_SPACE_UNIT_DPI;
     
+    /**
+     * Fully transparent that can fall back to white when image type has no alpha.
+     */
+    private static final Color TRANSPARENT_WHITE = new Color( 255, 255, 255, 0 ); 
+    
     private COSDictionary page;
 
     /**
@@ -706,7 +711,7 @@ public class PDPage implements COSObjectable, Printable
             
         BufferedImage retval = new BufferedImage( widthPx, heightPx, imageType );
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
-        graphics.setBackground( Color.WHITE );
+        graphics.setBackground( TRANSPARENT_WHITE );
         graphics.clearRect( 0, 0, retval.getWidth(), retval.getHeight() );
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
