@@ -76,11 +76,9 @@ public class CMap
     public String lookup( byte[] code, int offset, int length )
     {
         String result = null;
-        Integer key = null;
         if( length == 1 )
         {
-            
-            key = new Integer( (code[offset]+256)%256 );
+            int key = (code[offset]+256)%256;
             result = singleByteMappings.get( key );
         }
         else if( length == 2 )
@@ -88,9 +86,7 @@ public class CMap
             int intKey = (code[offset]+256)%256;
             intKey <<= 8;
             intKey += (code[offset+1]+256)%256;
-            key = new Integer( intKey );
-
-            result = doubleByteMappings.get( key );
+            result = doubleByteMappings.get( intKey );
         }
 
         return result;
@@ -108,21 +104,20 @@ public class CMap
     {
         if( src.length == 1 )
         {
-            singleByteMappings.put( new Integer( 0xFF & src[0] ), dest );
+            singleByteMappings.put( (src[0]+256)%256 , dest );
         }
         else if( src.length == 2 )
         {
-            int intSrc = src[0]&0xFF;
+            int intSrc = (src[0]+256)%256;
             intSrc <<= 8;
-            intSrc |= (src[1]&0xFF);
-            doubleByteMappings.put( new Integer( intSrc ), dest );
+            intSrc += (src[1]+256)%256;
+            doubleByteMappings.put( intSrc , dest );
         }
         else
         {
             throw new IOException( "Mapping code should be 1 or two bytes and not " + src.length );
         }
     }
-
 
     /**
      * This will add a codespace range.
