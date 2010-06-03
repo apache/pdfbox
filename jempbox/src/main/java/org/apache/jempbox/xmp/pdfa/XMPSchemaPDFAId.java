@@ -42,7 +42,7 @@ public class XMPSchemaPDFAId extends XMPSchema
      */
     public XMPSchemaPDFAId( XMPMetadata parent )
     {
-        super( parent, "pdfaType", NAMESPACE );
+        super( parent, "pdfaid", NAMESPACE );
     }
     
     /**
