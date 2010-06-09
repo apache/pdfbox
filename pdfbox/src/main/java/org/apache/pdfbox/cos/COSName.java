@@ -242,6 +242,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName CROP_BOX = new COSName(  "CropBox" );
     /**
+     * The Crypt filter.
+     */
+    public static final COSName CRYPT = new COSName( "Crypt" );
+    /**
      * A common COSName value.
      */
     public static final COSName CS = new COSName(  "CS" );
@@ -472,6 +476,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "IDTree" */
     public static final COSName ID_TREE = new COSName("IDTree");
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName IDENTITY = new COSName( "Identity" );
     /**
     * A common COSName value.
     */
