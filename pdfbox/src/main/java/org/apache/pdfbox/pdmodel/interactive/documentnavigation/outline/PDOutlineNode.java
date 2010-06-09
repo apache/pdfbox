@@ -141,7 +141,13 @@ public class PDOutlineNode implements COSObjectable
             PDOutlineItem previousLastChild = getLastChild();
             previousLastChild.insertSiblingAfter( outlineNode );
         }
-        setLastChild( outlineNode );
+        
+        PDOutlineItem lastNode = outlineNode;
+        while(lastNode.getNextSibling() != null)
+        {
+            lastNode = lastNode.getNextSibling();
+        }
+        setLastChild( lastNode );
     }
 
     /**
