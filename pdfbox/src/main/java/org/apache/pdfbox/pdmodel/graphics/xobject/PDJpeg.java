@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.IOException;
@@ -36,6 +38,7 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
@@ -47,7 +50,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 public class PDJpeg extends PDXObjectImage
 {
 
-    private static final List DCT_FILTERS = new ArrayList();
+    private static final List<String> DCT_FILTERS = new ArrayList();
 
     static
     {
@@ -101,20 +104,66 @@ public class PDJpeg extends PDXObjectImage
     public PDJpeg( PDDocument doc, BufferedImage bi ) throws IOException
     {
         super( new PDStream( doc ), "jpg" );
-
+        BufferedImage alpha = null;
+        if (bi.getColorModel().hasAlpha())
+        {
+            alpha = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+            Graphics2D g = alpha.createGraphics();
+            g.setColor(Color.BLACK);
+            g.drawRect(0, 0, bi.getWidth(), bi.getHeight());
+            g.setColor(Color.WHITE);
+            g.drawImage(bi, 0, 0, null);
+            int alphaHeight = alpha.getHeight();
+            int alphaWidth = alpha.getWidth();
+            int whiteRGB = (Color.WHITE).getRGB();
+            for(int y = 0; y < alphaHeight; y++)
+            {
+                for(int x = 0; x < alphaWidth; x++)
+                {
+                    Color color = new Color(alpha.getRGB(x, y));
+                    if(color.getRed() != 0 && color.getGreen() != 0 && color.getBlue() != 0)
+                    {
+                        alpha.setRGB(x, y, whiteRGB);
+                    }
+                }
+            }
+            BufferedImage image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_USHORT_565_RGB);
+            g = image.createGraphics();
+            g.drawImage(bi, 0, 0, null);
+            bi = image;
+        }
+        
         java.io.OutputStream os = getCOSStream().createFilteredStream();
         try
         {
-
             ImageIO.write(bi,"jpeg",os);
 
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
             dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
             dic.setItem( COSName.TYPE, COSName.XOBJECT );
-
+            PDXObjectImage alphaPdImage = null;
+            if(alpha != null)
+            {
+                alphaPdImage = new PDJpeg(doc, alpha);
+                dic.setItem(COSName.SMASK, alphaPdImage);
+            }
             setBitsPerComponent( 8 );
-            setColorSpace( PDDeviceRGB.INSTANCE );
+            if (bi.getColorModel().getNumComponents() == 3) 
+            {
+                setColorSpace( PDDeviceRGB.INSTANCE );
+            } 
+            else
+            {
+                if (bi.getColorModel().getNumComponents() == 1) 
+                {
+                    setColorSpace( new PDDeviceGray() );
+                } 
+                else 
+                {
+                    throw new IllegalStateException();
+                }
+            }
             setHeight( bi.getHeight() );
             setWidth( bi.getWidth() );
         }
