@@ -198,6 +198,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName CCITTFAX_DECODE_ABBREVIATION = new COSName( "CCF" );
     /**
+     * A common COSName value.
+     */
+    public static final COSName CF = new COSName( "CF" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName CFM = new COSName( "CFM" );
+    /**
     * A common COSName value.
     */
     public static final COSName CHAR_PROCS = new COSName( "CharProcs" );
@@ -706,6 +714,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName RECIPIENTS = new COSName( "Recipients" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName REGISTRY = new COSName( "Registry" );
     /**
     * A common COSName value.
@@ -765,10 +777,26 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName STANDARD_ENCODING = new COSName( "StandardEncoding" );
-
+    /**
+     * A common COSName value.
+     */
+    public static final COSName STD_CF = new COSName( "StdCF" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName STM_F = new COSName( "StmF" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName STR_F = new COSName( "StrF" );
+  
     /** "StructTreeRoot" */
     public static final COSName STRUCT_TREE_ROOT = new COSName("StructTreeRoot");
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SUB_FILTER = new COSName( "SubFilter" );
     /**
     * A common COSName value.
     */
@@ -815,6 +843,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName TYPE3 = new COSName(  "Type3" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName U = new COSName( "U" );
     /** "URI" */
     public static final COSName URI = new COSName("URI");
 
