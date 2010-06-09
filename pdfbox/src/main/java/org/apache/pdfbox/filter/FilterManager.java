@@ -46,6 +46,7 @@ public class FilterManager
         Filter asciiHexFilter = new ASCIIHexFilter();
         Filter ascii85Filter = new ASCII85Filter();
         Filter runLengthFilter = new RunLengthDecodeFilter();
+        Filter cryptFilter = new CryptFilter();
 
         addFilter( COSName.FLATE_DECODE, flateFilter );
         addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
@@ -61,7 +62,7 @@ public class FilterManager
         addFilter( COSName.ASCII85_DECODE_ABBREVIATION, ascii85Filter );
         addFilter( COSName.RUN_LENGTH_DECODE, runLengthFilter );
         addFilter( COSName.RUN_LENGTH_DECODE_ABBREVIATION, runLengthFilter );
-
+        addFilter( COSName.CRYPT, cryptFilter );
     }
 
     /**
