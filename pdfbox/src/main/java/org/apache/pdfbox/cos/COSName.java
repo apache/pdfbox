@@ -770,6 +770,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName SM = new COSName( "SM" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SMASK = new COSName( "SMask" );
     /** "Size" */
     public static final COSName SIZE = new COSName( "Size" );
 
