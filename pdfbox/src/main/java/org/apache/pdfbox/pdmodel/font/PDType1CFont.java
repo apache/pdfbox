@@ -19,9 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -96,6 +93,10 @@ public class PDType1CFont extends PDSimpleFont
 
     private static final byte[] SPACE_BYTES = {(byte)32};
 
+    private COSDictionary descendantDescriptor = null;
+    private COSDictionary fontDescriptor = null;
+    private COSDictionary fontDict = null;
+    
     /**
      * Constructor.
      * @param fontDictionary the corresponding dictionary
@@ -103,7 +104,22 @@ public class PDType1CFont extends PDSimpleFont
     public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
-
+        fontDict = fontDictionary;
+        fontDescriptor = (COSDictionary)fontDict.getDictionaryObject(COSName.FONT_DESC);
+        if (fontDescriptor == null)
+        {
+            fontDescriptor = fontDict;
+        }
+        COSArray descendantFontArray =
+            (COSArray)fontDescriptor.getDictionaryObject( COSName.DESCENDANT_FONTS );
+        if (descendantFontArray != null) 
+        {
+            descendantDescriptor = (COSDictionary)descendantFontArray.getObject( 0 );
+            if (descendantDescriptor != null)
+            {
+                descendantDescriptor = (COSDictionary)descendantDescriptor.getDictionaryObject( COSName.FONT_DESC );
+            }
+        }
         load();
     }
 
@@ -387,10 +403,13 @@ public class PDType1CFont extends PDSimpleFont
 
     private byte[] loadBytes() throws IOException
     {
-        COSDictionary fontDic = (COSDictionary)super.font.getDictionaryObject(COSName.FONT_DESC);
-        if( fontDic != null )
+        if( fontDescriptor != null )
         {
-            COSStream ff3Stream = (COSStream)fontDic.getDictionaryObject("FontFile3");
+            COSStream ff3Stream = (COSStream)fontDescriptor.getDictionaryObject(COSName.FONT_FILE3);
+            if( ff3Stream == null )
+            {
+                ff3Stream = (COSStream)descendantDescriptor.getDictionaryObject(COSName.FONT_FILE3);
+            }
             if( ff3Stream != null )
             {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -424,7 +443,7 @@ public class PDType1CFont extends PDSimpleFont
     private Map<Integer,String> loadOverride() throws IOException
     {
         Map<Integer,String> result = new LinkedHashMap<Integer,String>();
-        COSBase encoding = super.font.getDictionaryObject(COSName.ENCODING);
+        COSBase encoding = descendantDescriptor != null ? descendantDescriptor.getDictionaryObject(COSName.ENCODING) : fontDict.getDictionaryObject(COSName.ENCODING);
         if( encoding instanceof COSName )
         {
             COSName name = (COSName)encoding;

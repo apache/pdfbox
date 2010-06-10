@@ -268,6 +268,23 @@ public abstract class PDSimpleFont extends PDFont
                 {
                 	fontDescriptor = new PDFontDescriptorAFM( afm );
                 }
+                else
+                {
+                    COSArray descendantFontArray =
+                        (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
+                    if (descendantFontArray != null) 
+                    {
+                        fd = (COSDictionary)descendantFontArray.getObject( 0 );
+                        if (fd != null)
+                        {
+                            fd = (COSDictionary)fd.getDictionaryObject( COSName.FONT_DESC );
+                            if (fd != null)
+                            {
+                                fontDescriptor = new PDFontDescriptorDictionary( fd );
+                            }
+                        }
+                    }
+                }
             }
             else
             {
@@ -303,7 +320,7 @@ public abstract class PDSimpleFont extends PDFont
      */
     public PDStream getToUnicode() throws IOException
     {
-        return PDStream.createFromCOS( font.getDictionaryObject( "ToUnicode" ) );
+        return PDStream.createFromCOS( font.getDictionaryObject( COSName.TO_UNICODE ) );
     }
 
     /**
@@ -313,7 +330,7 @@ public abstract class PDSimpleFont extends PDFont
      */
     public void setToUnicode( PDStream unicode )
     {
-        font.setItem( "ToUnicode", unicode );
+        font.setItem( COSName.TO_UNICODE, unicode );
     }
 
     /**
@@ -364,7 +381,7 @@ public abstract class PDSimpleFont extends PDFont
             }
             catch (NoninvertibleTransformException e) 
             {
-                System.err.println( "Error in "+getClass().getName()+".writeFont:"+e);
+                log.error("Error in "+getClass().getName()+".writeFont",e);
             }
         }
         else 
