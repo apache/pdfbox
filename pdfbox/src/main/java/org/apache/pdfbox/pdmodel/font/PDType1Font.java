@@ -102,17 +102,7 @@ public class PDType1Font extends PDSimpleFont
      */
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font( "ZapfDingbats" );
 
-    /**
-     * Hardcoded copy of the Font.TYPE1_FONT constant in Java 5. PDFBox should
-     * compile and work also with Java 1.4, so we can't rely on Java 5 features
-     * being always available. The code that uses this constant will fail
-     * gracefully if support for Type 1 fonts are not available.
-     *
-     * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-379">PDFBOX-379</a>
-     */
-    private static final int TYPE1_FONT = 1;
-
-    private static final Map STANDARD_14 = new HashMap();
+    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
     static
     {
         STANDARD_14.put( TIMES_ROMAN.getBaseFont(), TIMES_ROMAN );
@@ -197,25 +187,37 @@ public class PDType1Font extends PDSimpleFont
             if (fd != null && fd instanceof PDFontDescriptorDictionary)
             {
                 PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
-                PDStream ffStream = fdDictionary.getFontFile();
-                if( ffStream == null && fdDictionary.getFontFile3() != null)
-                {
-                    // TODO FontFile3-streams containing CIDFontType0C or OpenType fonts aren't yet supported
-                    log.info("Embedded font-type is not supported " + fd.getFontName() );
-                }
-                if( ffStream != null )
+                if( fdDictionary.getFontFile() != null )
                 {
                     try 
                     {
-                        // create a font with the embedded data
-                        awtFont = Font.createFont( TYPE1_FONT, ffStream.createInputStream() );
+                        // create a type1 font with the embedded data
+                        awtFont = Font.createFont( Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream() );
                     } 
                     catch (FontFormatException e) 
                     {
-                        log.info("Can't read the embedded font " + fd.getFontName() );
+                        log.info("Can't read the embedded type1 font " + fd.getFontName() );
                     }
                 }
-                else 
+                else if ( fdDictionary.getFontFile2() != null)
+                {
+                    try 
+                    {
+                        // create a true type font with the embedded data
+                        awtFont = Font.createFont( Font.TRUETYPE_FONT, fdDictionary.getFontFile2().createInputStream() );
+                    } 
+                    catch (FontFormatException e) 
+                    {
+                        log.info("Can't read the embedded true type font " + fd.getFontName() );
+                    }
+                }
+                else if( fdDictionary.getFontFile3() != null)
+                {
+                    PDType1CFont type1CFont = new PDType1CFont( super.font );
+                    awtFont = type1CFont.getawtFont();
+                }
+                
+                if (awtFont == null)
                 {
                     // check if the font is part of our environment
                     awtFont = FontManager.getAwtFont(fd.getFontName());
@@ -243,5 +245,5 @@ public class PDType1Font extends PDSimpleFont
         }
         return awtFont;
     }
-
+    
 }
