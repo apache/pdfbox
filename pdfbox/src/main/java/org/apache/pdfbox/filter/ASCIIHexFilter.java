@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.persistence.util.COSHEXTable;
@@ -33,6 +35,10 @@ import org.apache.pdfbox.persistence.util.COSHEXTable;
 public class ASCIIHexFilter implements Filter
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(ASCIIHexFilter.class);
     /**
      * Whitespace.
      *   0  0x00  Null (NUL)
@@ -76,7 +82,7 @@ public class ASCIIHexFilter implements Filter
        
             if(REVERSE_HEX[firstByte] == -1)
             {
-                System.out.println("Invalid Hex Code; int: " + firstByte + " char: " + (char) firstByte);
+                log.error("Invalid Hex Code; int: " + firstByte + " char: " + (char) firstByte);
             }
             value = REVERSE_HEX[firstByte] * 16;
             secondByte = compressedData.read();
@@ -91,7 +97,7 @@ public class ASCIIHexFilter implements Filter
             {
                 if(REVERSE_HEX[secondByte] == -1)
                 {
-                    System.out.println("Invalid Hex Code; int: " + secondByte + " char: " + (char) secondByte);
+                    log.error("Invalid Hex Code; int: " + secondByte + " char: " + (char) secondByte);
                 }
                 value += REVERSE_HEX[secondByte];
             }
