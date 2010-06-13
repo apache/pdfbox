@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -38,6 +40,11 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class CCITTFaxDecodeFilter implements Filter
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(CCITTFaxDecodeFilter.class);
+
     // Filter will write 15 TAG's
     // If you add or remove TAG's you will have to modify this value
     private static final int TAG_COUNT = 15;
@@ -64,10 +71,6 @@ public class CCITTFaxDecodeFilter implements Filter
     public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex) 
         throws IOException
     {
-        // log.warn( "Warning: CCITTFaxDecode.decode is not implemented yet,
-        // skipping this stream." );
-
-
         // Get ImageParams from PDF
         COSBase baseObj = options.getDictionaryObject(new String[] {"DecodeParms","DP"});
         COSDictionary dict = null;
@@ -97,11 +100,11 @@ public class CCITTFaxDecodeFilter implements Filter
                     + baseObj.getClass().getName() );
         }
 
-        int width = options.getInt("Width");
-        int height = options.getInt("Height");
+        int width = options.getInt(COSName.WIDTH);
+        int height = options.getInt(COSName.HEIGHT);
         int length = options.getInt(COSName.LENGTH);
-        int compressionType = dict.getInt("K");
-        boolean blackIs1 = dict.getBoolean("BlackIs1", false);
+        int compressionType = dict.getInt(COSName.K);
+        boolean blackIs1 = dict.getBoolean(COSName.BLACK_IS_1, false);
 
 
         // HEADER-INFO and starting point of TAG-DICTIONARY
@@ -127,7 +130,6 @@ public class CCITTFaxDecodeFilter implements Filter
             result.write(buffer, 0, Math.min(lentoread, 32768));
             lentoread = lentoread - Math.min(lentoread, 32738);
         }
-        //System.out.println("Gelesen: " + sum);
 
         // TAG-COUNT
         writeTagCount(result);
@@ -191,7 +193,6 @@ public class CCITTFaxDecodeFilter implements Filter
     {
         byte[] header = { 'M', 'M', 0, '*' };// Big-endian
         result.write(header);
-
 
         // Add imagelength to offset
         offset += length;
@@ -726,6 +727,6 @@ public class CCITTFaxDecodeFilter implements Filter
     public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
         throws IOException
     {
-        System.err.println("Warning: CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
+        log.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
     }
 }

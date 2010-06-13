@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
@@ -46,6 +48,11 @@ import org.apache.pdfbox.cos.COSDictionary;
  */
 public class RunLengthDecodeFilter implements Filter
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(RunLengthDecodeFilter.class);
+
     private static final int RUN_LENGTH_EOD = 128;
 
     /**
@@ -94,6 +101,6 @@ public class RunLengthDecodeFilter implements Filter
     public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
         throws IOException
     {
-        System.err.println( "Warning: RunLengthDecodeFilter.encode is not implemented yet, skipping this stream." );
+        log.warn( "RunLengthDecodeFilter.encode is not implemented yet, skipping this stream." );
     }
 }
