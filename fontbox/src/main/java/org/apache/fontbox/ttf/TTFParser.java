@@ -109,27 +109,41 @@ public class TTFParser
         List<TTFTable> initialized = new ArrayList<TTFTable>();
         //need to initialize a couple tables in a certain order
         HeaderTable head = font.getHeader();
+        if (head == null) {
+        	throw new IOException("head is mandatory");
+        }
         raf.seek( head.getOffset() );
         head.initData( font, raf );
         initialized.add( head );
         
-        
         HorizontalHeaderTable hh = font.getHorizontalHeader();
+        if (hh == null) {
+        	throw new IOException("hhead is mandatory");
+        }
         raf.seek( hh.getOffset() );
         hh.initData( font, raf );
         initialized.add( hh );
         
         MaximumProfileTable maxp = font.getMaximumProfile();
+        if (maxp == null) {
+        	throw new IOException("maxp is mandatory");
+        }
         raf.seek( maxp.getOffset() );
         maxp.initData( font, raf );
         initialized.add( maxp );
         
         PostScriptTable post = font.getPostScript();
+        if (post == null) {
+        	throw new IOException("post is mandatory");
+        }
         raf.seek( post.getOffset() );
         post.initData( font, raf );
         initialized.add( post );
         
         IndexToLocationTable loc = font.getIndexToLocation();
+        if (loc == null) {
+        	throw new IOException("loca is mandatory");
+        }
         raf.seek( loc.getOffset() );
         loc.initData( font, raf );
         initialized.add( loc );
@@ -190,14 +204,6 @@ public class TTFParser
         else if( tag.equals( PostScriptTable.TAG ) )
         {
             retval = new PostScriptTable();
-        }
-        else if( tag.equals( GlyphTable.TAG ) )
-        {
-            retval = new GlyphTable();
-        }
-        else if( tag.equals( GlyphTable.TAG ) )
-        {
-            retval = new GlyphTable();
         }
         else if( tag.equals( DigitalSignatureTable.TAG ) )
         {

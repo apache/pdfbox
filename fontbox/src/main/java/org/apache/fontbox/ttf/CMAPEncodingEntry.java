@@ -75,19 +75,50 @@ public class CMAPEncodingEntry
         else if( subtableFormat == 2 )
         {
             int[] subHeaderKeys = new int[256];
+            // ---- keep the Max Index of the SubHeader array to know its length
+            int maxSubHeaderIndex = 0;
             for( int i=0; i<256; i++)
             {
                 subHeaderKeys[i] = data.readUnsignedShort();
+                maxSubHeaderIndex = Math.max(maxSubHeaderIndex, (int)(subHeaderKeys[i]/8));
             }
-            int firstCode = data.readUnsignedShort();
-            int entryCount = data.readUnsignedShort();
-            short idDelta = data.readSignedShort();
-            int idRangeOffset = data.readUnsignedShort();
-            //BJL
-            //HMM the TTF spec is not very clear about what is suppose to
-            //happen here.  If you know please submit a patch or point
-            //me to some better documentation.
-            throw new IOException( "Not yet implemented:" + subtableFormat );
+                
+            // ---- Read all SubHeaders to avoid useless seek on DataSource
+            SubHeader[] subHeaders = new SubHeader[maxSubHeaderIndex + 1]; 
+            for (int i = 0; i <= maxSubHeaderIndex ; ++i ) 
+            {
+                int firstCode = data.readUnsignedShort();
+                int entryCount = data.readUnsignedShort();
+                short idDelta = data.readSignedShort();
+                int idRangeOffset = data.readUnsignedShort();
+                subHeaders[i] = new SubHeader(firstCode, entryCount, idDelta, idRangeOffset);
+            }
+                
+            long startGlyphIndexOffset = data.getCurrentPosition();
+            glyphIdToCharacterCode = new int[numGlyphs];
+            for ( int i = 0; i <= maxSubHeaderIndex ; ++i )
+            {
+                SubHeader sh = subHeaders[i];
+                int firstCode = sh.getFirstCode();
+                for ( int j = 0 ; j < sh.getEntryCount() ; ++j)
+                {
+                    // ---- compute the Character Code
+                    int charCode = ( i * 8 );
+                    charCode = (charCode << 8 ) + (firstCode + j);
+                    
+                    // ---- Go to the CharacterCOde position in the Sub Array 
+                    //      of the glyphIndexArray 
+                    //      glyphIndexArray contains Unsigned Short so add (j * 2) bytes 
+                    //      at the index position
+                    data.seek(startGlyphIndexOffset + sh.getIdRangeOffset() + (j*2));
+                    int p = data.readUnsignedShort();
+                    // ---- compute the glyphIndex 
+                    p = p + sh.getIdDelta() % 65536;
+                    
+                    glyphIdToCharacterCode[p] = charCode;
+                    characterCodeToGlyphId.put(charCode, p);
+                }
+            }        
         }
         else if( subtableFormat == 4 )
         {
@@ -225,4 +256,65 @@ public class CMAPEncodingEntry
     		return 0;
     	}
     }
+    
+    /**
+     * Class used to manage CMap - Format 2
+     */
+    private class SubHeader {
+        
+        private int firstCode;
+        private int entryCount;
+        /**
+         * used to compute the GlyphIndex :
+         * P = glyphIndexArray.SubArray[pos]
+         * GlyphIndex = P + idDelta % 65536
+         */
+        private short idDelta;
+        /**
+         * Number of bytes to skip to reach the firstCode in the 
+         * glyphIndexArray 
+         */
+        private int idRangeOffset;
+        
+        private SubHeader(int firstCode, int entryCount, short idDelta, int idRangeOffset) 
+        {
+            this.firstCode = firstCode;
+            this.entryCount = entryCount;
+            this.idDelta = idDelta;
+            this.idRangeOffset = idRangeOffset;
+        }    
+    
+        /**
+         * @return the firstCode
+         */
+        private int getFirstCode() 
+        {
+            return firstCode;
+        }
+    
+        /**
+         * @return the entryCount
+         */
+        private int getEntryCount() 
+        {
+            return entryCount;
+        }    
+    
+        /**
+         * @return the idDelta
+         */
+        private short getIdDelta() 
+        {
+            return idDelta;
+        }
+    
+        /**
+         * @return the idRangeOffset
+         */
+        private int getIdRangeOffset() 
+        {
+            return idRangeOffset;
+        }
+    }
+
 }
