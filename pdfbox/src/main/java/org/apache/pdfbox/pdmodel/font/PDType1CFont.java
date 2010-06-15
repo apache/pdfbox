@@ -140,13 +140,15 @@ public class PDType1CFont extends PDSimpleFont
 
     private String getCharacter( byte[] bytes, int offset, int length )
     {
-        if( length != 1)
+        if (length > 2)
         {
             return null;
         }
-
-        Integer code = Integer.valueOf(bytes[offset] & 0xff);
-
+        int code = bytes[offset] & 0xff;
+        if (length == 2)
+        {
+            code = code * 256 + bytes[offset+1] & 0xff;
+        }
         return (String)this.codeToCharacter.get(code);
     }
 
@@ -198,12 +200,16 @@ public class PDType1CFont extends PDSimpleFont
 
     private String getName( byte[] bytes, int offset, int length )
     {
-        if( length != 1 )
+        if (length > 2)
         {
             return null;
         }
-
-        Integer code = Integer.valueOf(bytes[offset] & 0xff);
+        
+        int code = bytes[offset] & 0xff;
+        if (length == 2)
+        {
+            code = code * 256 + bytes[offset+1] & 0xff;
+        }
 
         return (String)this.codeToName.get(code);
     }
@@ -574,12 +580,14 @@ public class PDType1CFont extends PDSimpleFont
      */
     private static class PDFEncoding extends CFFEncoding
     {
-        // TODO unused??
-        private CFFEncoding parentEncoding = null;
 
         private PDFEncoding( CFFEncoding parent )
         {
-            parentEncoding = parent;
+            Iterator<Entry> parentEntries = parent.getEntries().iterator();
+            while(parentEntries.hasNext())
+            {
+                addEntry(parentEntries.next());
+            }
         }
 
         public boolean isFontSpecific()
@@ -587,10 +595,6 @@ public class PDType1CFont extends PDSimpleFont
             return true;
         }
 
-        public void register( int code, int sid )
-        {
-            super.register(code, sid);
-        }
     }
 
     /**
@@ -599,12 +603,13 @@ public class PDType1CFont extends PDSimpleFont
      */
     private static class PDFCharset extends CFFCharset
     {
-        // TODO unused??
-        private CFFCharset parentCharset = null;
-
         private PDFCharset( CFFCharset parent )
         {
-            parentCharset = parent;
+            Iterator<Entry> parentEntries = parent.getEntries().iterator();
+            while(parentEntries.hasNext())
+            {
+                addEntry(parentEntries.next());
+            }
         }
 
         public boolean isFontSpecific()
@@ -612,10 +617,6 @@ public class PDType1CFont extends PDSimpleFont
             return true;
         }
 
-        public void register( int sid, String name )
-        {
-            super.register(sid, name);
-        }
     }
 
 }
