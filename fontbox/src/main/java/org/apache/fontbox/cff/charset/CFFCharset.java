@@ -83,6 +83,15 @@ public abstract class CFFCharset
     }
 
     /**
+     * Add a single entry.
+     * @param entry the entry to be added
+     */
+    public void addEntry(Entry entry)
+    {
+        entries.add(entry);
+    }
+
+    /**
      * A list of all entries within this charset.
      * @return a list of all entries
      */

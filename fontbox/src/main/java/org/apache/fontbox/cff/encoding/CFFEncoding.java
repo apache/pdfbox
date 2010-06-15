@@ -84,6 +84,15 @@ public abstract class CFFEncoding
     }
 
     /**
+     * Add a single entry.
+     * @param entry the entry to be added
+     */
+    public void addEntry(Entry entry)
+    {
+        entries.add(entry);
+    }
+
+    /**
      * A list of all entries within this encoding.
      * @return a list of all entries
      */
