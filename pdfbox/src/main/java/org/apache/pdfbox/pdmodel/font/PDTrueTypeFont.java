@@ -130,30 +130,44 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     /**
-     * This will load a TTF to be embedding into a document.
+     * This will load a TTF to be embedded into a document.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param file A TTF file stream.
-     * @return A PDF TTF.
+     * @param file a ttf file.
+     * @return a PDTrueTypeFont instance.
      * @throws IOException If there is an error loading the data.
      */
     public static PDTrueTypeFont loadTTF( PDDocument doc, File file ) throws IOException
     {
+        return loadTTF( doc, new FileInputStream( file ) );
+    } 
+    
+    /**
+     * This will load a TTF to be embedded into a document.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param stream a ttf input stream.
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont loadTTF( PDDocument doc, InputStream stream ) throws IOException
+    { 
         PDTrueTypeFont retval = new PDTrueTypeFont();
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
-        PDStream fontStream = new PDStream(doc, new FileInputStream( file ), false );
-        fontStream.getStream().setInt( COSName.LENGTH1, (int)file.length() );
+        retval.setFontDescriptor( fd );
+        PDStream fontStream = new PDStream(doc, stream, false );
+        fontStream.getStream().setInt( COSName.LENGTH1, fontStream.getByteArray().length );
         fontStream.addCompression();
         fd.setFontFile2( fontStream );
-        retval.setFontDescriptor( fd );
-        InputStream ttfData = new FileInputStream(file);
+        // As the stream was close within the PDStream constructor, we have to recreate it
+        stream = fontStream.createInputStream();
         try
         {
-            loadDescriptorDictionary(retval, fd, ttfData);
+            loadDescriptorDictionary(retval, fd, stream); 
         }
         finally
         {
-            ttfData.close();
+            stream.close();
         }
         //only support winansi encoding right now, should really
         //just use Identity-H with unicode mapping
@@ -355,6 +369,9 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Font getawtFont() throws IOException
     {
          PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
