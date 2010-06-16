@@ -152,11 +152,23 @@ public class PDDocument implements Pageable
         // or references to arrays which have references to pages
         // or references to arrays which have references to arrays which have references to pages
         // or ... (I think you get the idea...)
-        COSArray pageNodes = ((COSArrayList)(getDocumentCatalog().getPages().getKids())).toList();
-        
-        for(int arrayCounter=0; arrayCounter < pageNodes.size(); ++arrayCounter) 
+        processListOfPageReferences(getDocumentCatalog().getPages().getKids());
+    }
+    
+    private void processListOfPageReferences(List<Object> pageNodes)
+    {
+        for(int i=0; i < pageNodes.size(); ++i) 
         {
-            parseCatalogObject((COSObject)pageNodes.get(arrayCounter));
+            Object pageOrArray = pageNodes.get(i);
+            if(pageOrArray instanceof PDPage)
+            {
+                COSArray pageArray = ((COSArrayList)(((PDPage)pageOrArray).getParent()).getKids()).toList();
+                parseCatalogObject((COSObject)pageArray.get(i));
+            }
+            else if(pageOrArray instanceof PDPageNode)
+            {
+                processListOfPageReferences(((PDPageNode)pageOrArray).getKids());
+            }
         }
     }
              
