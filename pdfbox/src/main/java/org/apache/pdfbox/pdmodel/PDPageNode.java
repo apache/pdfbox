@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -40,6 +42,11 @@ import java.util.List;
 public class PDPageNode implements COSObjectable
 {
     private COSDictionary page;
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDPageNode.class);
 
     /**
      * Creates a new instance of PDPage.
@@ -178,7 +185,11 @@ public class PDPageNode implements COSObjectable
     private static COSArray getAllKids(List result, COSDictionary page, boolean recurse)
     {
         COSArray kids = (COSArray)page.getDictionaryObject( COSName.KIDS );
-
+        if ( kids == null)
+        {
+            log.error("No Kids found in getAllKids(). Probably a malformed pdf.");
+            return null;
+        }
         for( int i=0; i<kids.size(); i++ )
         {
             COSBase obj = kids.getObject( i );
