@@ -227,7 +227,24 @@ public class PDPixelMap extends PDXObjectImage
                     (array.length<bufferData.length?array.length: bufferData.length) );
             image = new BufferedImage(cm, raster, false, null);
             
-            return image;
+	        // If there is a 'soft mask' image then we use that as a transparency mask.
+	        PDXObjectImage smask = getSMaskImage();
+	        if (smask != null)
+	        {
+                BufferedImage smaskBI = smask.getRGBImage();
+                
+               	COSArray decodeArray = smask.getDecode();
+               	
+               	CompositeImage compositeImage = new CompositeImage(image, smaskBI);
+               	BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+
+                return rgbImage;
+	        }
+	        else
+	        {
+	        	// But if there is no soft mask, use the unaltered image.
+	            return image;
+	        }
         } 
         catch (Exception exception)
         {
