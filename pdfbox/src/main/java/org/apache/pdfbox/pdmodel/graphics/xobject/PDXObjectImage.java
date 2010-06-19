@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -95,6 +96,27 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public abstract BufferedImage getRGBImage() throws IOException;
 
+    /**
+     * Returns a PDXObjectImage of the SMask image, if there is one.
+     * See section 11.5 of the pdf specification for details on Soft Masks.
+     *
+     * @return the PDXObjectImage of the SMask if there is one, else <code>null</code>.
+     */
+    public PDXObjectImage getSMaskImage() throws IOException
+    {
+    	COSStream cosStream = getPDStream().getStream();
+    	COSBase smask = cosStream.getDictionaryObject(COSName.SMASK);
+    	
+    	if (smask == null)
+    	{
+    		return null;
+    	}
+    	else
+    	{
+    		return (PDXObjectImage)PDXObject.createXObject(smask);
+    	}
+    }
+    
     /**
      * Writes the Image to out.
      * @param out the OutputStream that the Image is written to.

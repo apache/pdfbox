@@ -33,6 +33,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.IIOException;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -50,7 +51,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 public class PDJpeg extends PDXObjectImage
 {
 
-    private static final List<String> DCT_FILTERS = new ArrayList();
+    private static final List<String> DCT_FILTERS = new ArrayList<String>();
 
     static
     {
@@ -198,7 +199,8 @@ public class PDJpeg extends PDXObjectImage
                 readError = true;
             } 
             catch (Exception ignore) 
-            {}
+            {
+            }
 
             // 2. try to read jpeg again. some jpegs have some strange header containing
             //    "Adobe " at some place. so just replace the header with a valid jpeg header.
@@ -232,9 +234,26 @@ public class PDJpeg extends PDXObjectImage
                 imgFile.delete();
             }
         }
-        return bi;
-    }
+        
+        // If there is a 'soft mask' image then we use that as a transparency mask.
+        PDXObjectImage smask = getSMaskImage();
+        if (smask != null)
+        {
+            BufferedImage smaskBI = smask.getRGBImage();
+            
+           	COSArray decodeArray = smask.getDecode();
+           	CompositeImage compositeImage = new CompositeImage(bi, smaskBI);
+           	BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
 
+            return rgbImage;
+        }
+        else
+        {
+        	// But if there is no soft mask, use the unaltered image.
+            return bi;
+        }
+    }
+    
     /**
      * This writes the JPeg to out.
      * {@inheritDoc}
