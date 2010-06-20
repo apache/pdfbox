@@ -55,6 +55,11 @@ public class PDIndexed extends PDColorSpace
     private COSArray array;
 
     /**
+     * The lookup data as byte array.
+     */
+    private byte[] lookupData;
+    
+    /**
      * Constructor, default DeviceRGB, hival 255.
      */
     public PDIndexed()
@@ -220,38 +225,46 @@ public class PDIndexed extends PDColorSpace
         return (data[lookupIndex*numberOfComponents + componentNumber]+256)%256;
     }
 
-    private byte[] getLookupData() throws IOException
+    /**
+     * Get the lookup data table.
+     * 
+     * @return a byte array containing the the lookup data.
+     * @throws IOException if an error occurs.
+     */
+    public byte[] getLookupData() throws IOException
     {
-        COSBase lookupTable = array.getObject( 3 );
-        byte[] data = null;
-        if( lookupTable instanceof COSString )
+        if ( lookupData == null)
         {
-            data = ((COSString)lookupTable).getBytes();
-        }
-        else if( lookupTable instanceof COSStream )
-        {
-            //Data will be small so just load the whole thing into memory for
-            //easier processing
-            COSStream lookupStream = (COSStream)lookupTable;
-            InputStream input = lookupStream.getUnfilteredStream();
-            ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-            byte[] buffer = new byte[ 1024 ];
-            int amountRead;
-            while( (amountRead = input.read(buffer, 0, buffer.length)) != -1 )
+            COSBase lookupTable = array.getObject( 3 );
+            if( lookupTable instanceof COSString )
             {
-                output.write( buffer, 0, amountRead );
+                lookupData = ((COSString)lookupTable).getBytes();
             }
-            data = output.toByteArray();
+            else if( lookupTable instanceof COSStream )
+            {
+                //Data will be small so just load the whole thing into memory for
+                //easier processing
+                COSStream lookupStream = (COSStream)lookupTable;
+                InputStream input = lookupStream.getUnfilteredStream();
+                ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
+                byte[] buffer = new byte[ 1024 ];
+                int amountRead;
+                while( (amountRead = input.read(buffer, 0, buffer.length)) != -1 )
+                {
+                    output.write( buffer, 0, amountRead );
+                }
+                lookupData = output.toByteArray();
+            }
+            else if( lookupTable == null )
+            {
+                lookupData = new byte[0];
+            }
+            else
+            {
+                throw new IOException( "Error: Unknown type for lookup table " + lookupTable );
+            }
         }
-        else if( lookupTable == null )
-        {
-            data = new byte[0];
-        }
-        else
-        {
-            throw new IOException( "Error: Unknown type for lookup table " + lookupTable );
-        }
-        return data;
+        return lookupData;
     }
 
     /**

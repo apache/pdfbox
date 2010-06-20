@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Transparency;
+import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -39,6 +40,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
+import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.predictor.PredictorAlgorithm;
 
 
@@ -192,6 +194,41 @@ public class PDPixelMap extends PDXObjectImage
                     }
                     else
                         cm = colorspace.createColorModel( bpc );
+                }
+                else if (colorspace instanceof PDIndexed)
+                {
+                    PDIndexed csIndexed = (PDIndexed)colorspace;
+                    ColorModel baseColorModel = csIndexed.getBaseColorSpace().createColorModel(bpc);
+                    int size = csIndexed.getHighValue();
+                    byte[] index = csIndexed.getLookupData();
+                    COSArray decode = getDecode();
+                    boolean isOpaque = (decode != null && decode.getInt(0) == 1) ? true : false;
+                    boolean hasAlpha = baseColorModel.hasAlpha();
+                    if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
+                    {
+                        throw new IOException( "Not implemented" );
+                    }
+                    byte[] r = new byte[size+1];
+                    byte[] g = new byte[size+1];
+                    byte[] b = new byte[size+1];
+                    byte[] a = new byte[size+1];
+                    byte[] inData = new byte[baseColorModel.getNumComponents()];
+                    for( int i = 0; i <= size; i++ )
+                    {
+                        System.arraycopy(index, i * inData.length, inData, 0, inData.length);
+                        r[i] = (byte)baseColorModel.getRed(inData);
+                        g[i] = (byte)baseColorModel.getGreen(inData);
+                        b[i] = (byte)baseColorModel.getBlue(inData);
+                        if( hasAlpha )
+                        {
+                            a[i] = (byte)baseColorModel.getAlpha(inData);
+                        }
+                        else
+                        {
+                            a[i] = isOpaque ? (byte)0xFF : (byte)0x00;
+                        }
+                    }
+                    cm = new IndexColorModel(bpc, size+1, r, g, b, a);
                 }
                 else
                     cm = colorspace.createColorModel( bpc );
