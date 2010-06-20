@@ -35,6 +35,7 @@ import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -72,7 +73,7 @@ public class PDFTextStripper extends PDFStreamEngine
     private float spacingTolerance = .5f;
     private float averageCharTolerance = .3f;
 
-    private List pageArticles = null;
+    private List<PDThreadBead> pageArticles = null;
     /**
      * The charactersByArticle is used to extract text by article divisions.  For example
      * a PDF that has two columns like a newspaper, we want to extract the first column and
@@ -88,9 +89,9 @@ public class PDFTextStripper extends PDFStreamEngine
      *
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
-    protected Vector charactersByArticle = new Vector();
+    protected Vector<List<TextPosition>> charactersByArticle = new Vector<List<TextPosition>>();
 
-    private Map characterListMapping = new HashMap();
+    private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
 
     /**
      * The platforms lineseparator.
@@ -206,6 +207,15 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public void resetEngine()
+    {
+        super.resetEngine();
+        currentPageNo = 0;
+    }
+    
+    /**
      * This will take a PDDocument and write the text of that document to the print writer.
      *
      * @param doc The document to get the data from.
@@ -216,8 +226,6 @@ public class PDFTextStripper extends PDFStreamEngine
     public void writeText( PDDocument doc, Writer outputStream ) throws IOException
     {
         resetEngine();
-
-        currentPageNo = 0;
         document = doc;
         output = outputStream;
         startDocument(document);
@@ -255,7 +263,7 @@ public class PDFTextStripper extends PDFStreamEngine
      *
      * @throws IOException If there is an error parsing the text.
      */
-    protected void processPages( List pages ) throws IOException
+    protected void processPages( List<COSObjectable> pages ) throws IOException
     {
         if( startBookmark != null )
         {
@@ -279,7 +287,7 @@ public class PDFTextStripper extends PDFStreamEngine
         }
 
 
-        Iterator pageIter = pages.iterator();
+        Iterator<COSObjectable> pageIter = pages.iterator();
         while( pageIter.hasNext() )
         {
             PDPage nextPage = (PDPage)pageIter.next();
@@ -293,7 +301,7 @@ public class PDFTextStripper extends PDFStreamEngine
         }
     }
 
-    private int getPageNumber( PDOutlineItem bookmark, List allPages ) throws IOException
+    private int getPageNumber( PDOutlineItem bookmark, List<COSObjectable> allPages ) throws IOException
     {
         int pageNumber = -1;
         PDPage page = bookmark.findDestinationPage( document );
@@ -355,11 +363,11 @@ public class PDFTextStripper extends PDFStreamEngine
             {
                 if( numberOfArticleSections < originalSize )
                 {
-                    ((List)charactersByArticle.get( i )).clear();
+                    ((List<TextPosition>)charactersByArticle.get( i )).clear();
                 }
                 else
                 {
-                    charactersByArticle.set( i, new ArrayList() );
+                    charactersByArticle.set( i, new ArrayList<TextPosition>() );
                 }
             }
 
@@ -463,14 +471,14 @@ public class PDFTextStripper extends PDFStreamEngine
 
         for( int i = 0; i < charactersByArticle.size(); i++)
         {
-            List textList = (List)charactersByArticle.get( i );
+            List<TextPosition> textList = (List<TextPosition>)charactersByArticle.get( i );
             if( sortByPosition )
             {
                 TextPositionComparator comparator = new TextPositionComparator();
                 Collections.sort( textList, comparator );
             }
 
-            Iterator textIter = textList.iterator();
+            Iterator<TextPosition> textIter = textList.iterator();
 
             /* Before we can display the text, we need to do some normalizing.
              * Arabic and Hebrew text is right to left and is typically stored
@@ -492,7 +500,7 @@ public class PDFTextStripper extends PDFStreamEngine
 
             while( textIter.hasNext() )
             {
-                TextPosition position = (TextPosition)textIter.next();
+                TextPosition position = textIter.next();
                 String stringValue = position.getCharacter();
 
                 for (int a = 0; a < stringValue.length(); a++) 
@@ -549,7 +557,7 @@ public class PDFTextStripper extends PDFStreamEngine
             float previousAveCharWidth = -1;
             while( textIter.hasNext() )
             {
-                TextPosition position = (TextPosition)textIter.next();
+                TextPosition position = textIter.next();
                 String characterValue = position.getCharacter();
 
                 //Resets the average character width when we see a change in font 
@@ -816,10 +824,10 @@ public class PDFTextStripper extends PDFStreamEngine
             String textCharacter = text.getCharacter();
             float textX = text.getX();
             float textY = text.getY();
-            List sameTextCharacters = (List)characterListMapping.get( textCharacter );
+            List<TextPosition> sameTextCharacters = (List<TextPosition>)characterListMapping.get( textCharacter );
             if( sameTextCharacters == null )
             {
-                sameTextCharacters = new ArrayList();
+                sameTextCharacters = new ArrayList<TextPosition>();
                 characterListMapping.put( textCharacter, sameTextCharacters );
             }
 
@@ -838,7 +846,7 @@ public class PDFTextStripper extends PDFStreamEngine
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
             for( int i=0; i<sameTextCharacters.size() && textCharacter != null; i++ )
             {
-                TextPosition character = (TextPosition)sameTextCharacters.get( i );
+                TextPosition character = sameTextCharacters.get( i );
                 String charCharacter = character.getCharacter();
                 float charX = character.getX();
                 float charY = character.getY();
@@ -932,7 +940,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 articleDivisionIndex = charactersByArticle.size()-1;
             }
 
-            List textList = (List) charactersByArticle.get( articleDivisionIndex );
+            List<TextPosition> textList = (List<TextPosition>) charactersByArticle.get( articleDivisionIndex );
 
             /* In the wild, some PDF encoded documents put diacritics (accents on
              * top of characters) into a separate Tj element.  When displaying them
@@ -1119,7 +1127,7 @@ public class PDFTextStripper extends PDFStreamEngine
      *
      * @return A double List of TextPositions for all text strings on the page.
      */
-    protected List getCharactersByArticle()
+    protected Vector<List<TextPosition>> getCharactersByArticle()
     {
         return charactersByArticle;
     }
