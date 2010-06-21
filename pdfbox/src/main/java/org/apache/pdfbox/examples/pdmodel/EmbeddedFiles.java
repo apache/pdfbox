@@ -18,9 +18,10 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
@@ -100,9 +101,7 @@ public class EmbeddedFiles
             fs.setEmbeddedFile( ef );
 
             //now add the entry to the embedded file tree and set in the document.
-            Map efMap = new HashMap();
-            efMap.put( "My first attachment", fs );
-            efTree.setNames( efMap );
+            efTree.setNames( Collections.singletonMap( "My first attachment",  fs ) );
             PDDocumentNameDictionary names = new PDDocumentNameDictionary( doc.getDocumentCatalog() );
             names.setEmbeddedFiles( efTree );
             doc.getDocumentCatalog().setNames( names );
