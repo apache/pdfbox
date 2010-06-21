@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -162,32 +162,30 @@ public class PDNameTreeNode implements COSObjectable
 
 
     /**
-     * This will return a map of names.  The key will be a java.lang.String the value will
-     * depend on where this class is being used.
+     * This will return a map of names. The key will be a string, and the
+     * value will depend on where this class is being used.
      *
-     * @return A map of cos objects.
-     *
+     * @return ordered map of cos objects
      * @throws IOException If there is an error while creating the sub types.
      */
-    public Map getNames() throws IOException
+    public Map<String, Object> getNames() throws IOException
     {
-        Map names = null;
         COSArray namesArray = (COSArray)node.getDictionaryObject( COSName.NAMES );
         if( namesArray != null )
         {
-            names = new HashMap();
+            Map<String, Object> names = new LinkedHashMap<String, Object>();
             for( int i=0; i<namesArray.size(); i+=2 )
             {
                 COSString key = (COSString)namesArray.getObject(i);
                 COSBase cosValue = namesArray.getObject( i+1 );
-                Object pdValue = convertCOSToPD( cosValue );
-
-                names.put( key.getString(), pdValue );
+                names.put( key.getString(), convertCOSToPD( cosValue ) );
             }
-            names = Collections.unmodifiableMap(names);
+            return Collections.unmodifiableMap(names);
         }
-
-        return names;
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -231,9 +229,9 @@ public class PDNameTreeNode implements COSObjectable
      * values must be a COSObjectable.  This method will set the appropriate upper and lower
      * limits based on the keys in the map.
      *
-     * @param names The map of names to objects.
+     * @param names map of names to objects, or <code>null</code>
      */
-    public void setNames( Map names )
+    public void setNames( Map<String, ? extends COSObjectable> names )
     {
         if( names == null )
         {
@@ -242,26 +240,16 @@ public class PDNameTreeNode implements COSObjectable
         }
         else
         {
-            List keys = new ArrayList( names.keySet() );
-            Collections.sort( keys );
             COSArray array = new COSArray();
-            for( int i=0; i<keys.size(); i++ )
-            {
-                String key = (String)keys.get(i);
-                array.add( new COSString( key ) );
-                COSObjectable obj = (COSObjectable)names.get( key );
-                array.add( obj );
+            List<String> keys = new ArrayList<String>(names.keySet());
+            Collections.sort(keys);
+            for (String key : keys) {
+                array.add(new COSString(key));
+                array.add(names.get(key));
             }
-            String lower = null;
-            String upper = null;
-            if( keys.size() > 0 )
-            {
-                lower = (String)keys.get( 0 );
-                upper = (String)keys.get( keys.size()-1 );
-            }
-            setUpperLimit( upper );
-            setLowerLimit( lower );
-            node.setItem( "Names", array );
+            setLowerLimit(keys.get(0));
+            setUpperLimit(keys.get(keys.size() - 1));
+            node.setItem("Names", array);
         }
     }
 
