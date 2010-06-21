@@ -1284,4 +1284,35 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         this.averageCharTolerance = averageCharToleranceValue;
     }
+
+    /**
+     * Reverse characters of a compound Arabic glyph.
+     * When shouldSortByPosition() is true, inspect the sequence encoded
+     * by one glyph. If the glyph encodes two or more Arabic characters,
+     * reverse these characters from a logical order to a visual order.
+     * This ensures that the bidirectional algorithm that runs later will
+     * convert them back to a logical order.
+     * 
+     * @param str a string obtained from font.encoding()
+     */
+    public String inspectFontEncoding(String str)
+    {
+        if (!sortByPosition || str == null || str.length() < 2)
+            return str;
+
+        for (int i = 0; i < str.length(); ++i)
+        {
+            if (Character.getDirectionality(str.charAt(i))
+                    != Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC)
+                return str;
+        }
+
+        StringBuilder reversed = new StringBuilder(str.length());
+        for (int i = str.length() - 1; i >= 0; --i)
+        {
+            reversed.append(str.charAt(i));
+        }
+        return reversed.toString();
+    }
+
 }
