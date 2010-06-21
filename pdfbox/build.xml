@@ -28,7 +28,6 @@
     <property name="test.dir" value="src/test/java" />
     <property name="testfiles.dir" value="src/test/resources" />
     <property name="bin.dir" value="bin" />
-    <property name="war.dir" value="pdfbox.war" />
     <property name="tool.dir" value="tools" />
     <property name="resources.dir" value="src/main/resources" />
     <property name="download.dir" value="download" />
@@ -404,12 +403,6 @@
                 <attribute name="Implementation-URL" value="http://pdfbox.apache.org/"/>
             </manifest>
         </jar>
-        <zip zipfile="./${target.dir}/${project.name}-${project.version}.war">
-            <fileset dir="${war.dir}" />
-            <zipfileset dir="./${target.dir}" prefix="WEB-INF/lib">
-                <include name="${release.name}.jar" />
-            </zipfileset>
-        </zip>
     </target>
 
     <!-- We use Maven to create the release packages. Keep this target for -->

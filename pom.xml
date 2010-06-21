@@ -49,6 +49,7 @@
     <module>pdfbox</module>
     <module>lucene</module>
     <module>ant</module>
+    <module>war</module>
     <module>app</module>
   </modules>
 
