@@ -55,14 +55,17 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
     private TextNormalize normalize = null;
 
     /**
-     * Instantiate a new PDFTextStripper object.  This object will load properties from
-     * Resources/PDFTextStripper.properties and will not do anything special to 
-     * convert the text to a more encoding-specific output.  
+     * Instantiate a new PDFTextStripper object. This object will load
+     * properties from PDFMarkedContentExtractor.properties and will not
+     * do anything special to convert the text to a more encoding-specific
+     * output.
+     *
      * @throws IOException If there is an error loading the properties.
      */
     public PDFMarkedContentExtractor() throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PDFMarkedContentExtractor.properties", true ) );
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PDFMarkedContentExtractor.properties", true ) );
         this.outputEncoding = null;
         this.normalize = new TextNormalize(this.outputEncoding);
     }
@@ -84,18 +87,19 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
         this.outputEncoding = null;
         this.normalize = new TextNormalize(this.outputEncoding);
     }
+
     /**
-     * Instantiate a new PDFTextStripper object. This object will load properties from
-     * Resources/PDFTextStripper.properties and will apply encoding-specific
-     * conversions to the output text.  
+     * Instantiate a new PDFTextStripper object. This object will load
+     * properties from PDFMarkedContentExtractor.properties and will apply
+     * encoding-specific conversions to the output text.
      *
      * @param encoding The encoding that the output will be written in.
-     *
      * @throws IOException If there is an error reading the properties.
      */
     public PDFMarkedContentExtractor( String encoding ) throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PDFMarkedContentExtractor.properties", true ));
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PDFMarkedContentExtractor.properties", true ));
         this.outputEncoding = encoding;
         this.normalize = new TextNormalize(this.outputEncoding);
     }

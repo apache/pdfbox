@@ -120,14 +120,17 @@ public class PDFTextStripper extends PDFStreamEngine
     private TextNormalize normalize = null;
 
     /**
-     * Instantiate a new PDFTextStripper object.  This object will load properties from
-     * Resources/PDFTextStripper.properties and will not do anything special to 
-     * convert the text to a more encoding-specific output.  
+     * Instantiate a new PDFTextStripper object. This object will load
+     * properties from PDFTextStripper.properties and will not do
+     * anything special to convert the text to a more encoding-specific
+     * output.
+     *
      * @throws IOException If there is an error loading the properties.
      */
     public PDFTextStripper() throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PDFTextStripper.properties", true ) );
         this.outputEncoding = null;
         normalize = new TextNormalize(this.outputEncoding);
     }
@@ -150,17 +153,17 @@ public class PDFTextStripper extends PDFStreamEngine
         normalize = new TextNormalize(this.outputEncoding);
     }
     /**
-     * Instantiate a new PDFTextStripper object. This object will load properties from
-     * Resources/PDFTextStripper.properties and will apply encoding-specific
-     * conversions to the output text.  
+     * Instantiate a new PDFTextStripper object. This object will load
+     * properties from PDFTextStripper.properties and will apply
+     * encoding-specific conversions to the output text.
      *
      * @param encoding The encoding that the output will be written in.
-     *
      * @throws IOException If there is an error reading the properties.
      */
     public PDFTextStripper( String encoding ) throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ));
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PDFTextStripper.properties", true ));
         this.outputEncoding = encoding;
         normalize = new TextNormalize(this.outputEncoding);
     }

@@ -77,46 +77,23 @@ public abstract class PDFont implements COSObjectable
      * This is only used if this is a font object and it has an encoding.
      */
     private Encoding fontEncoding = null;
+
     /**
      * This is only used if this is a font object and it has an encoding and it is
      * a type0 font with a cmap.
      */
     private CMap cmap = null;
 
-    private static Map<String, String> afmResources = null;
-    private static Map<COSName, CMap> cmapObjects = null;
-    private static Map<String, FontMetric> afmObjects = null;
+    private static Map<COSName, CMap> cmapObjects =
+        Collections.synchronizedMap( new HashMap<COSName, CMap>() );
+
+    private static Map<String, FontMetric> afmObjects =
+        Collections.synchronizedMap( new HashMap<String, FontMetric>() );
 
     /**
      * This will be set if the font has a toUnicode stream.
      */
     private boolean hasToUnicode = false;
-
-    static
-    {
-        //these are read-only once they are created
-        afmResources = new HashMap<String, String>();
-
-        //these are read-write
-        cmapObjects = Collections.synchronizedMap( new HashMap<COSName, CMap>() );
-        afmObjects = Collections.synchronizedMap( new HashMap<String, FontMetric>() );
-
-
-        afmResources.put( "Courier-Bold" , "Resources/afm/Courier-Bold.afm" );
-        afmResources.put( "Courier-BoldOblique" , "Resources/afm/Courier-BoldOblique.afm" );
-        afmResources.put( "Courier" , "Resources/afm/Courier.afm" );
-        afmResources.put( "Courier-Oblique" , "Resources/afm/Courier-Oblique.afm" );
-        afmResources.put( "Helvetica" , "Resources/afm/Helvetica.afm" );
-        afmResources.put( "Helvetica-Bold" , "Resources/afm/Helvetica-Bold.afm" );
-        afmResources.put( "Helvetica-BoldOblique" , "Resources/afm/Helvetica-BoldOblique.afm" );
-        afmResources.put( "Helvetica-Oblique" , "Resources/afm/Helvetica-Oblique.afm" );
-        afmResources.put( "Symbol" , "Resources/afm/Symbol.afm" );
-        afmResources.put( "Times-Bold" , "Resources/afm/Times-Bold.afm" );
-        afmResources.put( "Times-BoldItalic" , "Resources/afm/Times-BoldItalic.afm" );
-        afmResources.put( "Times-Italic" , "Resources/afm/Times-Italic.afm" );
-        afmResources.put( "Times-Roman" , "Resources/afm/Times-Roman.afm" );
-        afmResources.put( "ZapfDingbats" , "Resources/afm/ZapfDingbats.afm" );
-    }
 
     /**
      * This will clear AFM resources that are stored statically.
@@ -302,7 +279,7 @@ public abstract class PDFont implements COSObjectable
     protected FontMetric getAFM() throws IOException
     {
         if(afm==null){
-        	COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
+            COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
             String name = null;
             if( baseFont instanceof COSName )
             {
@@ -320,22 +297,14 @@ public abstract class PDFont implements COSObjectable
             }
             if( name != null )
             {
-            	afm = afmObjects.get( name );
+                afm = afmObjects.get( name );
                 if( afm == null )
                 {
-                    String resource = afmResources.get( name );
-                    if( resource == null )
+                    String resource =
+                        "org/apache/pdfbox/resources/afm/" + name + ".afm";
+                    InputStream afmStream = ResourceLoader.loadResource( resource );
+                    if( afmStream != null )
                     {
-                        //ok for now
-                        //throw new IOException( "Unknown AFM font '" + name.getName() + "'" );
-                    }
-                    else
-                    {
-                        InputStream afmStream = ResourceLoader.loadResource( resource );
-                        if( afmStream == null )
-                        {
-                            throw new IOException( "Can't handle font width:" + resource );
-                        }
                         AFMParser parser = new AFMParser( afmStream );
                         parser.parse();
                         afm = parser.getResult();
@@ -429,8 +398,8 @@ public abstract class PDFont implements COSObjectable
                             {
                                 cmapName = CMapSubstitution.substituteCMap( cmapName );
                             }
-                            
-                            String resourceRoot = "Resources/cmap/";
+
+                            String resourceRoot = "org/apache/pdfbox/resources/cmap/";
                             String resourceName = resourceRoot + cmapName;
                             parseCmap( resourceRoot, ResourceLoader.loadResource( resourceName ), encodingName );
                             if( cmap == null && !encodingName.getName().equals( COSName.IDENTITY_H.getName() ) )

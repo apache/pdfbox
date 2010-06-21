@@ -72,8 +72,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     private static final Log log = LogFactory.getLog(PDTrueTypeFont.class);
 
     /**
-     * This is the key to a property in the Resources/PDFBox_External_Fonts.properties file
-     * to load a Font when a mapping does not exist for the current font.
+     * This is the key to a property in the PDFBox_External_Fonts.properties
+     * file to load a Font when a mapping does not exist for the current font.
      */
     public static final String UNKNOWN_FONT = "UNKNOWN_FONT";
 
@@ -86,12 +86,13 @@ public class PDTrueTypeFont extends PDSimpleFont
     {
         try
         {
-            ResourceLoader.loadProperties( "Resources/PDFBox_External_Fonts.properties", externalFonts );
+            ResourceLoader.loadProperties(
+                    "org/apache/pdfbox/resources/PDFBox_External_Fonts.properties",
+                    externalFonts );
         }
         catch( IOException io )
         {
-            io.printStackTrace();
-            throw new RuntimeException( "Error loading font resources" );
+            throw new RuntimeException( "Error loading font resources", io );
         }
     }
 
@@ -447,9 +448,7 @@ public class PDTrueTypeFont extends PDSimpleFont
      * Vertical7 Inc.
      *
      * @param fd The font descriptor currently used
-     *
      * @return A PDStream with the Font File program, null if fd is null
-     *grep -r
      * @throws IOException If the font is not found
      */
     private TrueTypeFont getExternalFontFile2(PDFontDescriptorDictionary fd)

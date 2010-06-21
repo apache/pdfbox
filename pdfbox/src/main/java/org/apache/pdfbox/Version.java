@@ -31,7 +31,8 @@ import org.apache.pdfbox.util.ResourceLoader;
  */
 public class Version
 {
-    private static final String PDFBOX_VERSION_PROPERTIES = "Resources/pdfbox.version";
+    private static final String PDFBOX_VERSION_PROPERTIES =
+        "org/apache/pdfbox/resources/pdfbox.properties";
 
     private Version()
     {

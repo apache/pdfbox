@@ -84,7 +84,8 @@ public class PageDrawer extends PDFStreamEngine
      */
     public PageDrawer() throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PageDrawer.properties", true ) );
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PageDrawer.properties", true ) );
     }
 
     /**

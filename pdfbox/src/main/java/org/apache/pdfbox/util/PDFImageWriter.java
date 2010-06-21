@@ -59,11 +59,9 @@ public class PDFImageWriter extends PDFStreamEngine
 
     /**
      * Instantiate a new PDFImageWriter object.
-     * @throws IOException If there is an error loading the properties.
      */
-    public PDFImageWriter() throws IOException
+    public PDFImageWriter()
     {
-        super();// ResourceLoader.loadProperties( "Resources/PDFImageWriter.properties", true ) );
     }
 
     /**

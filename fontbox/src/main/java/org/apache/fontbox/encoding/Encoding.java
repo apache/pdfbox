@@ -43,11 +43,6 @@ public abstract class Encoding
     private static final Map<String,String> NAME_TO_CHARACTER = new HashMap<String,String>();
     private static final Map<String,String> CHARACTER_TO_NAME = new HashMap<String,String>();
 
-    static
-    {
-    }
-
-
     /**
      * This will add a character encoding.
      *
