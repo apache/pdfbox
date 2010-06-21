@@ -85,7 +85,11 @@ public class PDAppearanceDictionary implements COSObjectable
     public Map getNormalAppearance()
     {
         COSBase ap = dictionary.getDictionaryObject( COSName.getPDFName( "N" ) );
-        if( ap instanceof COSStream )
+        if ( ap == null )
+        { 
+            return null; 
+        }
+        else if( ap instanceof COSStream )
         {
             COSStream aux = (COSStream) ap;
             ap = new COSDictionary();
