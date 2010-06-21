@@ -124,13 +124,15 @@ public class PageDrawer extends PDFStreamEngine
                     appearanceName = "default";
                 }
                 Map appearanceMap = appearDictionary.getNormalAppearance();
-                PDAppearanceStream appearance =
-                    (PDAppearanceStream)appearanceMap.get( appearanceName );
-                if( appearance != null )
-                {
-                    g.translate( (int)rect.getLowerLeftX(), (int)-rect.getLowerLeftY()  );
-                    processSubStream( page, appearance.getResources(), appearance.getStream() );
-                    g.translate( (int)-rect.getLowerLeftX(), (int)+rect.getLowerLeftY()  );
+                if (appearanceMap != null) { 
+                    PDAppearanceStream appearance = 
+                        (PDAppearanceStream)appearanceMap.get( appearanceName ); 
+                    if( appearance != null ) 
+                    { 
+                        g.translate( (int)rect.getLowerLeftX(), (int)-rect.getLowerLeftY() ); 
+                        processSubStream( page, appearance.getResources(), appearance.getStream() ); 
+                        g.translate( (int)-rect.getLowerLeftX(), (int)+rect.getLowerLeftY() ); 
+                    }
                 }
             }
         }
