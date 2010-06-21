@@ -177,17 +177,16 @@ public class PDTrueTypeFont extends PDSimpleFont
 
     private void ensureFontDescriptor() throws IOException
     {
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
-        if( fd == null )
+        if( getFontDescriptor() == null )
         {
-            fd = new PDFontDescriptorDictionary();
-            setFontDescriptor(fd);
+            PDFontDescriptorDictionary fdd = new PDFontDescriptorDictionary(); 
+            setFontDescriptor(fdd);
             InputStream ttfData = getExternalTTFData();
             if( ttfData != null )
             {
                 try
                 {
-                    loadDescriptorDictionary(this, fd, ttfData);
+                    loadDescriptorDictionary(this, fdd, ttfData);
                 }
                 finally
                 {
