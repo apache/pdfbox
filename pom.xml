@@ -47,6 +47,8 @@
     <module>fontbox</module>
     <module>jempbox</module>
     <module>pdfbox</module>
+    <module>lucene</module>
+    <module>ant</module>
     <module>app</module>
   </modules>
 
