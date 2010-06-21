@@ -115,6 +115,15 @@ public class PDNameTreeNode implements COSObjectable
      */
     public void setKids( List kids )
     {
+        if (kids != null && kids.size() > 0)
+        {
+            PDNameTreeNode firstKid = (PDNameTreeNode) kids.get(0);
+            PDNameTreeNode lastKid = (PDNameTreeNode) kids.get(kids.size() - 1);
+            String lowerLimit = firstKid.getLowerLimit();
+            this.setLowerLimit(lowerLimit);
+            String upperLimit = lastKid.getUpperLimit();
+            this.setUpperLimit(upperLimit);
+        }
         node.setItem( "Kids", COSArrayList.converterToCOSArray( kids ) );
     }
 
