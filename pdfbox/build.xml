@@ -41,10 +41,6 @@
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
 
-    <property name="ant.name" value="ant-1.7.1" />
-    <property name="ant.url" value="${maven.repo1}/org/apache/ant/ant/1.7.1/${ant.name}.jar" />
-    <property name="ant.jar" value="${jar.dir}/ant.jar" />
-
     <property name="fontbox.name" value="fontbox-1.1.0" />
     <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/1.1.0/${fontbox.name}.jar" />
     <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
@@ -52,14 +48,6 @@
     <property name="jempbox.name" value="jempbox-1.1.0" />
     <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/1.1.0/${jempbox.name}.jar" />
     <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
-
-    <property name="lucene.name" value="lucene-core-2.4.1" />
-    <property name="lucene.url" value="${maven.repo1}/org/apache/lucene/lucene-core/2.4.1/${lucene.name}.jar" />
-    <property name="lucene.jar" value="${jar.dir}/${lucene.name}.jar" />
-
-    <property name="lucene-demos.name" value="lucene-demos-2.4.1" />
-    <property name="lucene-demos.url" value="${maven.repo1}/org/apache/lucene/lucene-demos/2.4.1/${lucene-demos.name}.jar" />
-    <property name="lucene-demos.jar" value="${jar.dir}/${lucene-demos.name}.jar" />
 
     <property name="bcprov.name" value="bcprov-jdk15-1.44" />
     <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15/1.44/${bcprov.name}.jar" />
@@ -266,10 +254,7 @@
                          value="src/test/resources/logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
-                <pathelement path="${ant.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${lucene.jar}" />
-                <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
@@ -293,10 +278,7 @@
                          value="src/test/resources/logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
-                <pathelement path="${ant.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${lucene.jar}" />
-                <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
@@ -316,10 +298,7 @@
                          value="src/test/resources/logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
-                <pathelement path="${ant.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${lucene.jar}" />
-                <pathelement path="${lucene-demo.jar}" />
                 <pathelement path="${fontbox.jar}" />
                 <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
@@ -330,25 +309,6 @@
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.TestAll" />
         </junit>
-    </target>
-
-    <target name="indexTestDocuments" depends="compile">
-        <java fork="yes" classname="org.apache.pdfbox.searchengine.lucene.IndexFiles" classpathref="build.classpath">
-            <arg value="-create" />
-            <arg value="-index" />
-            <arg value="index" />
-            <arg value="test-pdf" />
-        </java>
-    </target>
-
-    <target name="testPDF2Text" depends="compile">
-        <taskdef name="pdf2text" classname="org.apache.pdfbox.ant.PDFToTextTask" classpathref="build.classpath" />
-        <pdf2text>
-            <fileset dir="test-pdf">
-                <include name="**/*.pdf" />
-                <include name="**/*.PDF" />
-            </fileset>
-        </pdf2text>
     </target>
 
     <target name="testexist">
@@ -395,15 +355,7 @@
         </checkstyle>
     </target>
 
-	<target name="get.externallibs">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${lucene.url}"/>
-            <param name="destfile" value="${lucene.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${lucene-demos.url}"/>
-            <param name="destfile" value="${lucene-demos.jar}"/>
-        </antcall>
+    <target name="get.externallibs">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${fontbox.url}"/>
             <param name="destfile" value="${fontbox.jar}"/>
@@ -411,10 +363,6 @@
         <antcall target="downloadfile">
             <param name="sourcefile" value="${jempbox.url}"/>
             <param name="destfile" value="${jempbox.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${ant.url}"/>
-            <param name="destfile" value="${ant.jar}"/>
         </antcall>
         <antcall target="downloadfile">
             <param name="sourcefile" value="${bcmail.url}"/>
@@ -450,10 +398,10 @@
             <metainf dir="." includes="*.txt"/>
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Implementation-Title" value="Apache PDFBox (incubating)"/>
+                <attribute name="Implementation-Title" value="Apache PDFBox"/>
                 <attribute name="Implementation-Version" value="${project.version}"/>
                 <attribute name="Implementation-Vendor" value="The Apache Software Foundation"/>
-                <attribute name="Implementation-URL" value="http://incubator.apache.org/pdfbox/"/>
+                <attribute name="Implementation-URL" value="http://pdfbox.apache.org/"/>
             </manifest>
         </jar>
         <zip zipfile="./${target.dir}/${project.name}-${project.version}.war">
@@ -562,39 +510,8 @@
             <arg value="-out:${bin.dir}\${jempbox.name}.dll" />
             <arg value="${jempbox.jar}" />
         </exec>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-out:${bin.dir}\${lucene.name}.dll" />
-            <arg value="${lucene.jar}" />
-        </exec>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
-            <arg value="-reference:bin/${lucene.name}.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-out:${bin.dir}\${lucene-demos.name}.dll" />
-            <arg value="${lucene-demos.jar}" />
-        </exec>
         <echo>Building Commons Logging</echo>
-	<exec executable="${ikvmc}">
+        <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
@@ -622,8 +539,6 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin/${jempbox.name}.dll" />
-            <arg value="-reference:bin/${lucene.name}.dll" />
-            <arg value="-reference:bin/${lucene-demos.name}.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/${bcmail.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
@@ -845,8 +760,6 @@
                encoding="ISO-8859-1"
                breakiterator="yes">
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-            <link href="http://lucene.apache.org/java/2_4_1/api/"/>
-            <!--<link href="http://jakarta.apache.org/ant/manual/api/" />-->
         </javadoc>
         <!-- PDFBOX-461: Disable javadoc creation timestamp -->
         <replaceregexp match="&lt;!-- Generated by javadoc .* --&gt;"
