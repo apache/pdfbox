@@ -65,9 +65,9 @@ public abstract class Encoding implements COSObjectable {
     static
     {
         //Loads the official Adobe Glyph List
-        loadGlyphList("Resources/glyphlist.txt");
+        loadGlyphList("org/apache/pdfbox/resources/glyphlist.txt");
         //Loads some additional glyph mappings
-        loadGlyphList("Resources/additional_glyphlist.txt");
+        loadGlyphList("org/apache/pdfbox/resources/additional_glyphlist.txt");
 
         // Load an external glyph list file that user can give as JVM property
         String location = System.getProperty("glyphlist_ext");

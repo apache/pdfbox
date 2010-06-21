@@ -151,7 +151,7 @@
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="find.adobefiles">
-        <available property="adobefiles.found" file="${dest.dir}/Resources/cmap"/>
+        <available property="adobefiles.found" file="${dest.dir}/org/apache/pdfbox/resources/cmap"/>
     </target>
 
     <target name="get.adobefiles"
@@ -173,8 +173,8 @@
             <param name="sourcefile" value="${adobefiles.glyph.url}"/>
             <param name="destfile" value="${adobefiles.glyph.txt}"/>
         </antcall>
-        <copy todir="${dest.dir}/Resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
-        <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/cmap">
+        <copy todir="${dest.dir}/org/apache/pdfbox/resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
+        <unjar src="${adobefiles.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
                 <include name="com/adobe/pdf/pcfi/japanese/*"/>
@@ -183,7 +183,7 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.additional.jar}" dest="${dest.dir}/Resources/cmap">
+        <unjar src="${adobefiles.additional.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
             <patternset>
                 <include name="ac15/CMap/*"/>
                 <include name="ag15/CMap/*"/>
@@ -197,10 +197,10 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.removed.jar}" dest="${dest.dir}/Resources/cmap">
+        <unjar src="${adobefiles.removed.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.jar}" dest="${dest.dir}/Resources/afm">
+        <unjar src="${adobefiles.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/afm">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/afm/*"/>
             </patternset>
@@ -385,9 +385,9 @@
         </antcall>
 	</target>
 
-  	<target name="package" depends="get.externallibs,compile" description="Package pdfbox into a jar file">
+    <target name="package" depends="get.externallibs,compile" description="Package pdfbox into a jar file">
         <property name="release.name" value="${project.name}-${project.version}" />
-        <propertyfile file="${resources.dir}/Resources/pdfbox.version">
+        <propertyfile file="${resources.dir}/org/apache/pdfbox/resources/pdfbox.version">
             <entry  key="pdfbox.version" value="${release.name}"/>
         </propertyfile>
 

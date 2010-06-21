@@ -41,7 +41,9 @@ public class FontManager
     static {
         try
         {
-            ResourceLoader.loadProperties( "Resources/FontMapping.properties", fontMapping );
+            ResourceLoader.loadProperties(
+                    "org/apache/pdfbox/resources/FontMapping.properties",
+                    fontMapping );
         }
         catch( IOException io )
         {

@@ -53,7 +53,8 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     public PrintImageLocations() throws IOException
     {
-        super( ResourceLoader.loadProperties( "Resources/PDFTextStripper.properties", true ) );
+        super( ResourceLoader.loadProperties(
+                "org/apache/pdfbox/resources/PDFTextStripper.properties", true ) );
     }
 
     /**

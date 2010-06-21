@@ -79,6 +79,12 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -137,8 +143,9 @@
           <instructions>
             <Bundle-DocURL>http://pdfbox.apache.org/</Bundle-DocURL>
             <Include-Resource>
+              {maven-resources},
               META-INF=target/maven-shared-archive-resources/META-INF,
-              Resources=target/classes/Resources
+              org/apache/pdfbox/resources=target/classes/org/apache/pdfbox/resources
             </Include-Resource>
           </instructions>
         </configuration>
