@@ -285,6 +285,7 @@ public class PDNameTreeNode implements COSObjectable
             arr = new COSArray();
             arr.add( null );
             arr.add( null );
+            node.setItem(COSName.LIMITS, arr);
         }
         arr.setString( 1, upper );
     }
@@ -318,6 +319,7 @@ public class PDNameTreeNode implements COSObjectable
             arr = new COSArray();
             arr.add( null );
             arr.add( null );
+            node.setItem(COSName.LIMITS, arr);
         }
         arr.setString( 0, lower );
     }
