@@ -285,7 +285,17 @@ public class PDFStreamEngine
         //subclasses can override to provide specific functionality.
     }
 
-    
+    /**
+     * A method provided as an event interface to allow a subclass to perform
+     * some specific functionality on the string encoded by a glyph.
+     *
+     * @param str The string to be processed.
+     */
+    protected String inspectFontEncoding( String str )
+    {
+        return str;
+    }
+
     /**
      * Process encoded text from the PDF Stream. 
      * You should override this method if you want to perform an action when 
@@ -380,6 +390,7 @@ public class PDFStreamEngine
                 codeLength++;
                 c = font.encode( string, i, codeLength );
             }
+            c = inspectFontEncoding(c);
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
