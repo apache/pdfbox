@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.searchengine.lucene;
+package org.apache.pdfbox.lucene;
 
 /*
  * This source was originally written as an example for the lucene project.

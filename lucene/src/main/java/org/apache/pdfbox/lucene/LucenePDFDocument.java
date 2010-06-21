@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.searchengine.lucene;
+package org.apache.pdfbox.lucene;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,7 +108,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.23 $
  */
-public final class LucenePDFDocument
+public class LucenePDFDocument
 {
     private static final char FILE_SEPARATOR = System.getProperty("file.separator").charAt(0);
 
