@@ -81,7 +81,7 @@ public class Invoke extends OperatorProcessor
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = drawer.getPageSize().getHeight();
 
-                log.info("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+                log.debug("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
         
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 int pageRotation = page.findRotation();
@@ -90,21 +90,27 @@ public class Invoke extends OperatorProcessor
                 ctmAT.scale(1f/imageWidth, 1f/imageHeight);
                 Matrix rotationMatrix = new Matrix();
                 rotationMatrix.setFromAffineTransform( ctmAT );
+                // calculate the inverse rotation angle
+                // scaleX = m00 = cos
+                // shearX = m01 = -sin
+                // tan = sin/cos
+                double angle = Math.atan(ctmAT.getShearX()/ctmAT.getScaleX());
+                Matrix translationMatrix = null;
                 if (pageRotation == 0 || pageRotation == 180) 
                 {
-                    rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition()-ctm.getYScale());
+                    translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getXScale()), (float)(pageHeight-2*ctm.getYPosition()-Math.cos(angle)*ctm.getYScale())); 
                 }
                 else if (pageRotation == 90 || pageRotation == 270) 
                 {
-                    rotationMatrix.setValue(2,0,(float)ctm.getXPosition()-ctm.getYScale());
-                    rotationMatrix.setValue(2,1,(float)pageHeight-ctm.getYPosition());
+                    translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getYScale()), (float)(pageHeight-2*ctm.getYPosition())); 
                 }
+                rotationMatrix = rotationMatrix.multiply(translationMatrix);
                 rotationMatrix.setValue(0, 1, (-1)*rotationMatrix.getValue(0, 1));
                 rotationMatrix.setValue(1, 0, (-1)*rotationMatrix.getValue(1, 0));
 
                 AffineTransform at = new AffineTransform(
                         rotationMatrix.getValue(0,0),rotationMatrix.getValue(0,1),
-                        rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
+                        rotationMatrix.getValue(1,0),rotationMatrix.getValue(1,1),
                         rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
                     );
                
