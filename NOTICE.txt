@@ -8,23 +8,3 @@ Based on source code originally developed in the PDFBox, JempBox and
 FontBox projects.
 Copyright (c) 2002-2007, www.pdfbox.org
 Copyright (c) 2006-2007, www.jempbox.org
-
-This product contains Bouncy Castle encryption libraries.
-Copyright (c) 2000-2006 The Legion Of The Bouncy Castle
-(http://www.bouncycastle.org)
-
-This product contains International Components for Unicode library.
-Copyright (c) 1995-2009 International Business Machines Corporation and others 
-(http://site.icu-project.org/)
-
-This product contains JUnit testing framework library.
-Licensed under the Common Public License - v 1.0
-(http://www.junit.org/)
-
-This product contains AFM and CMap mapping files from Adobe 
-Copyright (c) 1989-2007 Adobe Systems Incorporated
-(http://www.adobe.com/devnet/font/#pcfi)
-
-This product contains glyph mapping file from Adobe 
-Copyright (c) 1997,1998,2002,2007 Adobe Systems Incorporated
-(http://www.adobe.com/devnet/opentype/archives/glyph.html)
