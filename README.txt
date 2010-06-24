@@ -14,17 +14,22 @@ build PDFBox. The recommended build command is:
     mvn clean install
 
 The default build will compile the Java sources and package the binary
-classes into a jar package. See the Maven documentation for all the
+classes into jar packages. See the Maven documentation for all the
 other available build options.
 
 There is also an Ant build that you can use to build the same binaries.
 The Ant build can also produce .NET DLLs if you have IKVM.NET
-<http://www.ikvm.net/> installed. See the build.xml file for details.
+<http://www.ikvm.net/> installed. See the build.xml file in the pdfbox
+subdirectory for details.
 
 PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
 
 Known Limitations and Problems
 ==============================
+
+See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
+the full list of known issues and requested features. Some of the more
+commont issues are:
 
 1. You get text like "G38G43G36G51G5" instead of what you expect when you are
    extracting text. This is because the characters are a meaningless internal
@@ -33,20 +38,18 @@ Known Limitations and Problems
    enhancement.
 
 2. You get an error message like "java.io.IOException: Can't handle font width"
-   this MIGHT be due to the fact that you don't have the Resources directory
-   in your classpath. The easiest solution is to simply include the
-   apache-pdfbox-x.x.x.jar in your classpath.
+   this MIGHT be due to the fact that you don't have the
+   org/apache/pdfbox/resources directory in your classpath. The easiest
+   solution is to simply include the apache-pdfbox-x.x.x.jar in your classpath.
 
 3. You get text that has the correct characters, but in the wrong
    order.  This mght be because you have not enabled sorting.  The text
    in PDF files is stored in chunks and the chunks do not need to be stored 
    in the order that they are displayed on a page.  By default, PDFBox does 
-   not sort the text.  Also, if you have text in a language that reads right to left 
-   (such as Arabic or Hebrew), make sure you have the ICU4J jar file in your 
-   classpath.  This library is needed to properly hande right to left text.
-
-See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
-the full list of known issues and requested features.
+   not sort the text.  Also, if you have text in a language that reads right
+   to left (such as Arabic or Hebrew), make sure you have the ICU4J jar file
+   in your classpath. This library is needed to properly hande right to
+   left text.
 
 License (see also LICENSE.txt)
 ==============================
