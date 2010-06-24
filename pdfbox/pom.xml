@@ -157,6 +157,7 @@
           <excludes>
             <exclude>src/test/resources/input/rendering/*.ai</exclude>
             <exclude>download/glyphlist.txt</exclude>
+            <exclude>release.properties</exclude>
           </excludes>
         </configuration>
       </plugin>
