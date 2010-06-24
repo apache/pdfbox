@@ -39,6 +39,24 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>1.44</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <version>1.44</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>3.8</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -52,7 +70,7 @@
           <instructions>
             <Export-Package>org.apache.pdfbox.*</Export-Package>
             <Embed-Transitive>true</Embed-Transitive>
-            <Embed-Dependency>*;scope=provided;inline=org/apache/**</Embed-Dependency>
+            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|com/ibm/icu/**</Embed-Dependency>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
             <Main-Class>org.apache.pdfbox.PDFBox</Main-Class>
           </instructions>
