@@ -83,6 +83,15 @@
           </links>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <useReleaseProfile>false</useReleaseProfile>
+          <goals>deploy</goals>
+          <arguments>-Papache-release,pedantic</arguments>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+        </configuration>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -90,6 +99,11 @@
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
             <version>0.6</version>
+            <configuration>
+              <excludes>
+                <exclude>release.properties</exclude>
+              </excludes>
+            </configuration>
           </plugin>
       </plugins>
     </pluginManagement>
