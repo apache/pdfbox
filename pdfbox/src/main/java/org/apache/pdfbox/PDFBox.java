@@ -29,7 +29,7 @@ public class PDFBox {
             String command = args[0];
             String[] arguments = new String[args.length - 1];
             System.arraycopy(args, 1, arguments, 0, arguments.length);
-
+            boolean exitAfterCallingMain = true;
             try {
                 if (command.equals("ConvertColorspace")) {
                     ConvertColorspace.main(arguments);
@@ -45,12 +45,12 @@ public class PDFBox {
                     PrintPDF.main(arguments);
                 } else if (command.equals("PDFDebugger")) {
                     PDFDebugger.main(arguments);
+                    exitAfterCallingMain = false;
                 } else if (command.equals("PDFMerger")) {
                     PDFMerger.main(arguments);
                 } else if (command.equals("PDFReader")) {
                     PDFReader.main(arguments);
-                } else if (command.equals("PDFReader")) {
-                    PDFReader.main(arguments);
+                    exitAfterCallingMain = false;
                 } else if (command.equals("PDFSplit")) {
                     PDFSplit.main(arguments);
                 } else if (command.equals("PDFToImage")) {
@@ -58,7 +58,12 @@ public class PDFBox {
                 } else if (command.equals("TextToPDF")) {
                     TextToPDF.main(arguments);
                 }
-                System.exit(0);
+                else {
+                    showMessageAndExit();
+                }
+                if (exitAfterCallingMain) {
+                    System.exit(0);
+                }
             } catch (Exception e) {
                 System.err.println(
                         command + " failed with the following exception:");
@@ -66,10 +71,14 @@ public class PDFBox {
                 System.exit(1);
             }
         }
-
-        System.err.println(
-            "usage: java pdfbox-app-x.y.z.jar <command> <args..>");
-        System.exit(1);
+        else {
+            showMessageAndExit();
+        }
     }
 
+    private static void showMessageAndExit() {
+        System.err.println(
+                "usage: java pdfbox-app-x.y.z.jar <command> <args..>");
+        System.exit(1);
+    }
 }
