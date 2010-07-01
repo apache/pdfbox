@@ -87,8 +87,51 @@ public abstract class PDFont implements COSObjectable
     private static Map<COSName, CMap> cmapObjects =
         Collections.synchronizedMap( new HashMap<COSName, CMap>() );
 
-    private static Map<String, FontMetric> afmObjects =
-        Collections.synchronizedMap( new HashMap<String, FontMetric>() );
+    /**
+     * The static map of the default Adobe font metrics.
+     */
+    private static final Map<String, FontMetric> afmObjects =
+        Collections.unmodifiableMap( getAdobeFontMetrics() );
+
+    private static Map<String, FontMetric> getAdobeFontMetrics() {
+        Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
+        addAdobeFontMetric( metrics, "Courier-Bold" );
+        addAdobeFontMetric( metrics, "Courier-BoldOblique" );
+        addAdobeFontMetric( metrics, "Courier" );
+        addAdobeFontMetric( metrics, "Courier-Oblique" );
+        addAdobeFontMetric( metrics, "Helvetica" );
+        addAdobeFontMetric( metrics, "Helvetica-Bold" );
+        addAdobeFontMetric( metrics, "Helvetica-BoldOblique" );
+        addAdobeFontMetric( metrics, "Helvetica-Oblique" );
+        addAdobeFontMetric( metrics, "Symbol" );
+        addAdobeFontMetric( metrics, "Times-Bold" );
+        addAdobeFontMetric( metrics, "Times-BoldItalic" );
+        addAdobeFontMetric( metrics, "Times-Italic" );
+        addAdobeFontMetric( metrics, "Times-Roman" );
+        addAdobeFontMetric( metrics, "ZapfDingbats" );
+        return metrics;
+    }
+
+    private static void addAdobeFontMetric(
+            Map<String, FontMetric> metrics, String name ) {
+        try {
+            String resource =
+                "org/apache/pdfbox/resources/afm/" + name + ".afm";
+            InputStream afmStream = ResourceLoader.loadResource( resource );
+            if( afmStream != null )
+            {
+                try {
+                    AFMParser parser = new AFMParser( afmStream );
+                    parser.parse();
+                    metrics.put( name, parser.getResult() );
+                } finally {
+                    afmStream.close();
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+    }
 
     /**
      * This will be set if the font has a toUnicode stream.
@@ -103,12 +146,11 @@ public abstract class PDFont implements COSObjectable
      * SPECIAL NOTE: The font calculations are currently in COSObject, which
      * is where they will reside until PDFont is mature enough to take them over.
      * PDFont is the appropriate place for them and not in COSObject but we need font
-     * calculations for text extractaion.  THIS METHOD WILL BE MOVED OR REMOVED
+     * calculations for text extraction.  THIS METHOD WILL BE MOVED OR REMOVED
      * TO ANOTHER LOCATION IN A FUTURE VERSION OF PDFBOX.
      */
     public static void clearResources()
     {
-        afmObjects.clear();
         cmapObjects.clear();
     }
 
@@ -298,19 +340,6 @@ public abstract class PDFont implements COSObjectable
             if( name != null )
             {
                 afm = afmObjects.get( name );
-                if( afm == null )
-                {
-                    String resource =
-                        "org/apache/pdfbox/resources/afm/" + name + ".afm";
-                    InputStream afmStream = ResourceLoader.loadResource( resource );
-                    if( afmStream != null )
-                    {
-                        AFMParser parser = new AFMParser( afmStream );
-                        parser.parse();
-                        afm = parser.getResult();
-                        afmObjects.put( name, afm );
-                    }
-                }
             }
         }
         return afm;
