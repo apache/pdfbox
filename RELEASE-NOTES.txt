@@ -1,19 +1,28 @@
-Release Notes -- Apache PDFBox -- Version 1.2.0
+Release Notes -- Apache PDFBox -- Version 1.2.1
 
 Introduction
 ------------
 
 PDFBox is an open source Java library for working with PDF documents.
 
-This is an incremental feature release based on the earlier 1.1.0 release.
-When upgrading to this release, please note that the Ant and Lucene
-integration code has been moved to separate pdfbox-ant and pdfbox-lucene
-components that are also included in this release. The PDFBox resource
-directory has also been moved from /Resources to /org/apache/pdfbox/resources,
-so you will need to update your paths if your application adds extra resources
-to PDFBox. For more details on these changes and all the other fixes and
-improvements included in this release, please refer to the following issues
-on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
+PDFBox 1.2.1 is a patch release that fixes issues reported against the
+earlier 1.2.0 release, most notably a performance regression caused by
+repeated attempts to load missing font metrics (PDFBOX-765).
+
+See below for a list of all changes in the 1.2.x releases. For more
+details about these changes and known issues in this release, see the
+PDFBox issue tracker at  https://issues.apache.org/jira/browse/PDFBOX
+
+Changes in PDFBox 1.2.1
+-----------------------
+
+Bug fixes
+
+  [PDFBOX-762] PDFBox wrapper doesn't work with PDFReader and PDFDebugger
+  [PDFBOX-765] Performance regression in PDFBox 1.2.0
+
+Changes in PDFBox 1.2.0
+-----------------------
 
 New Features
 
