@@ -28,7 +28,7 @@
 
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox-parent</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.2.1</version>
   <packaging>pom</packaging>
 
   <name>PDFBox parent</name>
@@ -177,8 +177,8 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/1.2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/1.2</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/branches/1.2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/tags/1.2.1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/tags/1.2.1</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/pom/tags/1.2.1</url>
   </scm>
 </project>
