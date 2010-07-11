@@ -36,17 +36,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDDocumentInformation implements COSObjectable
 {
-    private static final COSName TITLE = COSName.getPDFName( "Title" );
-    private static final COSName AUTHOR = COSName.getPDFName( "Author" );
-    private static final COSName SUBJECT = COSName.getPDFName( "Subject" );
-    private static final COSName KEYWORDS = COSName.getPDFName( "Keywords" );
-    private static final COSName CREATOR = COSName.getPDFName( "Creator" );
-    private static final COSName PRODUCER = COSName.getPDFName( "Producer" );
-    private static final COSName CREATION_DATE = COSName.getPDFName( "CreationDate" );
-    private static final COSName MODIFICATION_DATE = COSName.getPDFName( "ModDate" );
-    private static final COSName TRAPPED = COSName.getPDFName( "Trapped" );
     private COSDictionary info;
-
 
     /**
      * Default Constructor.
@@ -93,7 +83,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getTitle()
     {
-        return info.getString( TITLE );
+        return info.getString( COSName.TITLE );
     }
 
     /**
@@ -103,7 +93,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setTitle( String title )
     {
-        info.setString( TITLE, title );
+        info.setString( COSName.TITLE, title );
     }
 
     /**
@@ -113,7 +103,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getAuthor()
     {
-        return info.getString( AUTHOR );
+        return info.getString( COSName.AUTHOR );
     }
 
     /**
@@ -123,7 +113,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setAuthor( String author )
     {
-        info.setString( AUTHOR, author );
+        info.setString( COSName.AUTHOR, author );
     }
 
     /**
@@ -133,7 +123,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getSubject()
     {
-        return info.getString( SUBJECT );
+        return info.getString( COSName.SUBJECT );
     }
 
     /**
@@ -143,7 +133,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setSubject( String subject )
     {
-        info.setString( SUBJECT, subject );
+        info.setString( COSName.SUBJECT, subject );
     }
 
     /**
@@ -153,7 +143,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getKeywords()
     {
-        return info.getString( KEYWORDS );
+        return info.getString( COSName.KEYWORDS );
     }
 
     /**
@@ -163,7 +153,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setKeywords( String keywords )
     {
-        info.setString( KEYWORDS, keywords );
+        info.setString( COSName.KEYWORDS, keywords );
     }
 
     /**
@@ -173,7 +163,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getCreator()
     {
-        return info.getString( CREATOR );
+        return info.getString( COSName.CREATOR );
     }
 
     /**
@@ -183,7 +173,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setCreator( String creator )
     {
-        info.setString( CREATOR, creator );
+        info.setString( COSName.CREATOR, creator );
     }
 
     /**
@@ -193,7 +183,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getProducer()
     {
-        return info.getString( PRODUCER );
+        return info.getString( COSName.PRODUCER );
     }
 
     /**
@@ -203,7 +193,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setProducer( String producer )
     {
-        info.setString( PRODUCER, producer );
+        info.setString( COSName.PRODUCER, producer );
     }
 
     /**
@@ -215,7 +205,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public Calendar getCreationDate() throws IOException
     {
-        return info.getDate( CREATION_DATE );
+        return info.getDate( COSName.CREATION_DATE );
     }
 
     /**
@@ -225,7 +215,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setCreationDate( Calendar date )
     {
-        info.setDate( CREATION_DATE, date );
+        info.setDate( COSName.CREATION_DATE, date );
     }
 
     /**
@@ -237,7 +227,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public Calendar getModificationDate() throws IOException
     {
-        return info.getDate( MODIFICATION_DATE );
+        return info.getDate( COSName.MOD_DATE );
     }
 
     /**
@@ -247,7 +237,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public void setModificationDate( Calendar date )
     {
-        info.setDate( MODIFICATION_DATE, date );
+        info.setDate( COSName.MOD_DATE, date );
     }
 
     /**
@@ -258,7 +248,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public String getTrapped()
     {
-        return info.getNameAsString( TRAPPED );
+        return info.getNameAsString( COSName.TRAPPED );
     }
 
     /**
@@ -304,6 +294,6 @@ public class PDDocumentInformation implements COSObjectable
                                         "'True', 'False', or 'Unknown'" );
         }
 
-        info.setName( TRAPPED, value );
+        info.setName( COSName.TRAPPED, value );
     }
 }
