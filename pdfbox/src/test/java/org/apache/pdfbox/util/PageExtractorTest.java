@@ -41,6 +41,16 @@ public class PageExtractorTest extends TestCase {
     protected void tearDown() throws Exception {
     }
 
+    private void closeDoc(PDDocument doc) {
+        if(doc != null) {
+            try {
+                doc.close(); 
+            } catch(Exception e) {
+                /* Can't do much about this... */ 
+            };
+        }
+    }
+    
     /**
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
@@ -48,6 +58,7 @@ public class PageExtractorTest extends TestCase {
         System.out.println("extract");
         
         PDDocument sourcePdf = null;
+        PDDocument result = null;
         try {
             try {
                 // this should work for most users
@@ -57,34 +68,40 @@ public class PageExtractorTest extends TestCase {
                 sourcePdf = PDDocument.load("pdfbox/pdfbox/src/test/resources/input/cweb.pdf");
             }
             PageExtractor instance = new PageExtractor(sourcePdf);
-            PDDocument result = instance.extract();
+            result = instance.extract();
             assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());
+            closeDoc(result);
             
             instance = new PageExtractor(sourcePdf, 1, 1);
             result = instance.extract();
             assertEquals(1, result.getNumberOfPages());
+            closeDoc(result);
             
             instance = new PageExtractor(sourcePdf, 1, 5);
             result = instance.extract();
             assertEquals(5, result.getNumberOfPages());
+            closeDoc(result);
             
             instance = new PageExtractor(sourcePdf, 5, 10);
             result = instance.extract();
             assertEquals(6, result.getNumberOfPages());
+            closeDoc(result);
             
             instance = new PageExtractor(sourcePdf, -100, 50000);
             result = instance.extract();
             assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());
+            closeDoc(result);
             
             instance = new PageExtractor(sourcePdf, 2, 1);
             result = instance.extract();
             assertEquals(0, result.getNumberOfPages());
+            closeDoc(result);
         } catch(Exception e) {
             e.printStackTrace();
             fail("Exception was thrown: " + e.getMessage());
         } finally {
-            if(sourcePdf != null)
-                try { sourcePdf.close(); } catch(Exception e) { /* Can't do much about this... */ };
+            closeDoc(sourcePdf);
+            closeDoc(result);
         }
     }    
 }
