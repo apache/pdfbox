@@ -86,18 +86,34 @@ public class PageExtractor {
         return extractedDocument;
     }
 
+    /**
+     * Gets the first page number to be extracted.
+     * @return the first page number which should be extracted
+     */
     public int getStartPage() {
         return startPage;
     }
 
+    /**
+     * Sets the first page number to be extracted.
+     * @param startPage the first page number which should be extracted
+     */
     public void setStartPage(int startPage) {
         this.startPage = startPage;
     }
 
+    /**
+     * Gets the last page number (inclusive) to be extracted.
+     * @return the last page number which should be extracted
+     */
     public int getEndPage() {
         return endPage;
     }
 
+    /**
+     * Sets the last page number to be extracted.
+     * @param endPage the last page number which should be extracted
+     */
     public void setEndPage(int endPage) {
         this.endPage = endPage;
     }

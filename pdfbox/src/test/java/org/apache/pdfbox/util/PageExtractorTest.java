@@ -55,8 +55,6 @@ public class PageExtractorTest extends TestCase {
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
     public void testExtract() throws Exception {
-        System.out.println("extract");
-        
         PDDocument sourcePdf = null;
         PDDocument result = null;
         try {
@@ -97,7 +95,6 @@ public class PageExtractorTest extends TestCase {
             assertEquals(0, result.getNumberOfPages());
             closeDoc(result);
         } catch(Exception e) {
-            e.printStackTrace();
             fail("Exception was thrown: " + e.getMessage());
         } finally {
             closeDoc(sourcePdf);
