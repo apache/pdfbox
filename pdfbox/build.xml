@@ -22,31 +22,46 @@
     <property environment="env"/>
 
     <property name="build.compiler" value="modern" />
-    <property name="src.dir" value="src/main/java" />
-    <property name="target.dir" value="target" />
-    <property name="dest.dir" value="${target.dir}/classes" />
-    <property name="test.dir" value="src/test/java" />
-    <property name="testfiles.dir" value="src/test/resources" />
-    <property name="bin.dir" value="bin" />
-    <property name="tool.dir" value="tools" />
-    <property name="resources.dir" value="src/main/resources" />
+
     <property name="download.dir" value="download" />
-    <property name="checkstyle.config" value="../pdfbox-checkstyle.xml" />
     <property name="jar.dir" value="external" />
 
-    <property name="project.name" value="pdfbox"/>
-    <property name="project.version" value="1.2.0-SNAPSHOT" />
+    <property name="project.version" value="1.3.0-SNAPSHOT" />
+
+    <!-- pdfbox -->
+    <property name="pdfbox.project.name" value="pdfbox"/>
+    <property name="pdfbox.src.dir" value="src/main/java" />
+	<property name="pdfbox.target.dir" value="target" />
+    <property name="pdfbox.dest.dir" value="classes" />
+    <property name="pdfbox.test.dir" value="src/test/java" />
+    <property name="pdfbox.testfiles.dir" value="/src/test/resources" />
+    <property name="pdfbox.bin.dir" value="bin" />
+    <property name="pdfbox.tool.dir" value="tools" />
+    <property name="pdfbox.resources.dir" value="src/main/resources" />
+    <property name="pdfbox.checkstyle.config" value="pdfbox-checkstyle.xml" />
+
+    <!-- fontbox -->
+    <property name="fontbox.project.name" value="fontbox"/>
+    <property name="fontbox.src.dir" value="../${fontbox.project.name}/src/main/java" />
+    <property name="fontbox.target.dir" value="../${fontbox.project.name}/target" />
+    <property name="fontbox.dest.dir" value="../${fontbox.project.name}/classes" />
+    <property name="fontbox.test.dir" value="../${fontbox.project.name}/src/test/java" />
+    <property name="fontbox.testfiles.dir" value="../${fontbox.project.name}/src/test/resources" />
+    <property name="fontbox.bin.dir" value="../${fontbox.project.name}/bin" />
+    <property name="fontbox.tool.dir" value="../${fontbox.project.name}/tools" />
+
+    <!-- jempbox -->
+    <property name="jempbox.project.name" value="jempbox"/>
+    <property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
+    <property name="jempbox.target.dir" value="../${jempbox.project.name}/target" />
+    <property name="jempbox.dest.dir" value="../${jempbox.project.name}/classes" />
+    <property name="jempbox.test.dir" value="../${jempbox.project.name}/src/test/java" />
+    <property name="jempbox.testfiles.dir" value="../${jempbox.project.name}/src/test/resources" />
+    <property name="jempbox.bin.dir" value="../${jempbox.project.name}/bin" />
+    <property name="jempbox.tool.dir" value="../${jempbox.project.name}/tools" />
 
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
-
-    <property name="fontbox.name" value="fontbox-1.1.0" />
-    <property name="fontbox.url" value="${maven.repo1}/org/apache/pdfbox/fontbox/1.1.0/${fontbox.name}.jar" />
-    <property name="fontbox.jar" value="${jar.dir}/${fontbox.name}.jar" />
-
-    <property name="jempbox.name" value="jempbox-1.1.0" />
-    <property name="jempbox.url" value="${maven.repo1}/org/apache/pdfbox/jempbox/1.1.0/${jempbox.name}.jar" />
-    <property name="jempbox.jar" value="${jar.dir}/${jempbox.name}.jar" />
 
     <property name="bcprov.name" value="bcprov-jdk15-1.44" />
     <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15/1.44/${bcprov.name}.jar" />
@@ -56,8 +71,8 @@
     <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15/1.44/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
-    <property name="junit.name" value="junit-3.8.2" />
-    <property name="junit.url" value="${maven.repo2}/junit/junit/3.8.2/${junit.name}.jar" />
+    <property name="junit.name" value="junit-4.8.1" />
+    <property name="junit.url" value="${maven.repo2}/junit/junit/4.8.1/${junit.name}.jar" />
     <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
     <property name="logging.name" value="commons-logging-1.1.1" />
@@ -75,9 +90,9 @@
     <property name="antlr.url" value="${maven.repo2}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
     <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
-    <property name="testoutput.dir" value="${target.dir}/test-output"/>
-    <property name="testoutput-ext.dir" value="${target.dir}/test-output-ext"/>
-    <property name="testinput-ext.dir" value="${target.dir}/test-input-ext"/>
+    <property name="testoutput.dir" value="${pdfbox.target.dir}/test-output"/>
+    <property name="testoutput-ext.dir" value="${pdfbox.target.dir}/test-output-ext"/>
+    <property name="testinput-ext.dir" value="${pdfbox.target.dir}/test-input-ext"/>
     <property name="jiraattachment.url" value="https://issues.apache.org/jira/secure/attachment"/>
     <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
     <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
@@ -105,12 +120,28 @@
     <property name="ikvm.dir" value="."/>
     <property name="ikvmc" value="${ikvm.dir}/bin/ikvmc.exe"/>
 
-    <path id="build.classpath">
+    <path id="pdfbox.build.classpath">
         <fileset dir="${jar.dir}" >
             <include name="**/*.jar" />
         </fileset>
-        <pathelement path="${dest.dir}" />
-        <pathelement path="${resources.dir}" />
+        <pathelement path="${pdfbox.dest.dir}" />
+        <pathelement path="${pdfbox.resources.dir}" />
+    </path>
+
+    <path id="fontbox.build.classpath">
+        <fileset dir="${jar.dir}" >
+            <include name="**/*.jar" />
+        </fileset>
+        <pathelement path="${fontbox.dest.dir}" />
+        <pathelement path="${fontbox.resources.dir}" />
+    </path>
+
+    <path id="jempbox.build.classpath">
+        <fileset dir="${jar.dir}" >
+            <include name="**/*.jar" />
+        </fileset>
+        <pathelement path="${fontbox.dest.dir}" />
+        <pathelement path="${fontbox.resources.dir}" />
     </path>
 
     <path id="checkstyle.classpath">
@@ -120,35 +151,77 @@
         <pathelement path="${antlr.jar}" />
     </path>
 
-    <target name="clean" description="Remove all generated files">
-        <delete dir="${target.dir}"/>
-        <delete dir="${bin.dir}"/>
+    <target name="pdfbox.clean" description="Remove all generated files">
+        <delete dir="${pdfbox.target.dir}"/>
+        <delete dir="${pdfbox.bin.dir}"/>
         <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
         <delete dir="${testoutput-ext.dir}"/>
     </target>
 
+    <target name="fontbox.clean" description="Remove all generated files">
+        <delete dir="${fontbox.target.dir}"/>
+        <delete dir="${fontbox.bin.dir}"/>
+    </target>
+
+    <target name="jempbox.clean" description="Remove all generated files">
+        <delete dir="${jempbox.target.dir}"/>
+        <delete dir="${jempbox.bin.dir}"/>
+    </target>
+
     <target name="pdfbox.init">
-        <mkdir dir="${dest.dir}"/>
-        <mkdir dir="${bin.dir}" />
+        <mkdir dir="${pdfbox.dest.dir}"/>
+        <mkdir dir="${pdfbox.bin.dir}" />
         <mkdir dir="${testoutput.dir}" />
         <mkdir dir="${testoutput.dir}/rendering" />
         <mkdir dir="${testoutput-ext.dir}" />
         <mkdir dir="${testoutput-ext.dir}/rendering" />
     </target>
 
-    <target name="compile" depends="pdfbox.init,get.adobefiles"
-            description="Compile Java source files">
-        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
-        <javac srcdir="${src.dir}" destdir="${dest.dir}"
-               target="1.5" source="1.5" debug="on" deprecation="on"
-               classpathref="build.classpath" encoding="ISO-8859-1"/>
-        <javac srcdir="${test.dir}" destdir="${dest.dir}"
-               target="1.5" source="1.5" debug="on" deprecation="on"
-               classpathref="build.classpath" encoding="ISO-8859-1"/>
+    <target name="fontbox.init">
+        <mkdir dir="${fontbox.dest.dir}"/>
+        <mkdir dir="${fontbox.bin.dir}" />
     </target>
 
-    <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
+    <target name="jempbox.init">
+        <mkdir dir="${jempbox.dest.dir}"/>
+        <mkdir dir="${jempbox.bin.dir}" />
+    </target>
+
+  	<target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init,get.adobefiles"
+            description="Compile Java source files">
+        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
+        <javac srcdir="${pdfbox.src.dir}" destdir="${pdfbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="pdfbox.build.classpath" encoding="ISO-8859-1"/>
+        <javac srcdir="${pdfbox.test.dir}" destdir="${pdfbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="pdfbox.build.classpath" encoding="ISO-8859-1"/>
+    </target>
+
+    <target name="fontbox.compile" depends="fontbox.init"
+            description="Compile Java source files">
+        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
+        <javac srcdir="${fontbox.src.dir}" destdir="${fontbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="fontbox.build.classpath" encoding="ISO-8859-1"/>
+        <javac srcdir="${fontbox.test.dir}" destdir="${fontbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="fontbox.build.classpath" encoding="ISO-8859-1"/>
+    </target>
+
+    <target name="jempbox.compile" depends="jempbox.init"
+            description="Compile Java source files">
+        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
+        <javac srcdir="${jempbox.src.dir}" destdir="${jempbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="jempbox.build.classpath" encoding="ISO-8859-1"/>
+        <javac srcdir="${jempbox.test.dir}" destdir="${jempbox.dest.dir}"
+               target="1.5" source="1.5" debug="on" deprecation="on"
+               classpathref="jempbox.build.classpath" encoding="ISO-8859-1"/>
+    </target>
+
+   	<target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="find.adobefiles">
         <available property="adobefiles.found" file="${dest.dir}/org/apache/pdfbox/resources/cmap"/>
@@ -173,8 +246,8 @@
             <param name="sourcefile" value="${adobefiles.glyph.url}"/>
             <param name="destfile" value="${adobefiles.glyph.txt}"/>
         </antcall>
-        <copy todir="${dest.dir}/org/apache/pdfbox/resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
-        <unjar src="${adobefiles.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
+        <copy todir="${pdfbox.dest.dir}/org/apache/pdfbox/resources/" file="${adobefiles.glyph.txt}" overwrite="true"/> 
+        <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/cmap">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
                 <include name="com/adobe/pdf/pcfi/japanese/*"/>
@@ -183,7 +256,7 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.additional.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
+        <unjar src="${adobefiles.additional.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/cmap">
             <patternset>
                 <include name="ac15/CMap/*"/>
                 <include name="ag15/CMap/*"/>
@@ -197,10 +270,10 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.removed.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/cmap">
+        <unjar src="${adobefiles.removed.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/cmap">
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.jar}" dest="${dest.dir}/org/apache/pdfbox/resources/afm">
+        <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/afm">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/afm/*"/>
             </patternset>
@@ -244,7 +317,7 @@
         <unjar src="${testfiles.encryption.jar}" dest="${testinput-ext.dir}"/>
     </target>
 
-    <target name="testextract" depends="clean,compile" description="Test text extraction">
+    <target name="testextract" depends="clean,pdfbox.compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -254,20 +327,20 @@
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${fontbox.jar}" />
-                <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${icu4j.jar}" />
-                <pathelement path="${dest.dir}"/>
-                <pathelement path="${resources.dir}" />
+                <pathelement path="${pdfbox.dest.dir}"/>
+                <pathelement path="${pdfbox.resources.dir}" />
+                <pathelement path="${fontbox.dest.dir}"/>
+                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.util.TestTextStripper" />
         </junit>
     </target>
 
-    <target name="testimage" depends="clean,compile" description="Test image rendering">
+    <target name="testimage" depends="clean,pdfbox.compile" description="Test image rendering">
         <junit printsummary="off" fork="on" dir="."  >
             <jvmarg value="-Xmx1024M"/>
             <jvmarg value="-Xms512M"/>
@@ -278,32 +351,32 @@
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${fontbox.jar}" />
-                <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${icu4j.jar}" />
-                <pathelement path="${dest.dir}"/>
-                <pathelement path="${resources.dir}" />
+                <pathelement path="${pdfbox.dest.dir}"/>
+                <pathelement path="${pdfbox.resources.dir}" />
+                <pathelement path="${fontbox.dest.dir}"/>
+                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.util.TestPDFToImage" />
         </junit>
     </target>
 
-    <target name="test-junit" depends="clean,compile" description="run junit tests">
+    <target name="test-junit" depends="clean,pdfbox.compile" description="run junit tests">
         <junit printsummary="off" fork="on" dir=".">
             <sysproperty key="java.util.logging.config.file"
                          value="src/test/resources/logging.properties"/>
             <classpath>
                 <pathelement path="${junit.jar}" />
                 <pathelement path="${logging.jar}" />
-                <pathelement path="${fontbox.jar}" />
-                <pathelement path="${jempbox.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
-                <pathelement path="${dest.dir}"/>
-                <pathelement path="${resources.dir}" />
+                <pathelement path="${pdfbox.dest.dir}"/>
+                <pathelement path="${pdfbox.resources.dir}" />
+                <pathelement path="${fontbox.dest.dir}"/>
+                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.TestAll" />
@@ -342,7 +415,7 @@
         </antcall>
     </target>
 
-    <target name="checkstyle" depends="compile,get.checkstyle">
+    <target name="checkstyle" depends="pdfbox.compile,get.checkstyle">
         <!-- This doesn't work when run from netbeans for some reason -->
         <taskdef name="checkstyle"
                  classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
@@ -354,15 +427,7 @@
         </checkstyle>
     </target>
 
-    <target name="get.externallibs">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${fontbox.url}"/>
-            <param name="destfile" value="${fontbox.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${jempbox.url}"/>
-            <param name="destfile" value="${jempbox.jar}"/>
-        </antcall>
+    <target name="get.externallibs.pdfbox">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${bcmail.url}"/>
             <param name="destfile" value="${bcmail.jar}"/>
@@ -385,15 +450,37 @@
         </antcall>
 	</target>
 
-    <target name="package" depends="get.externallibs,compile" description="Package pdfbox into a jar file">
-        <property name="release.name" value="${project.name}-${project.version}" />
-        <propertyfile file="${resources.dir}/org/apache/pdfbox/resources/pdfbox.version">
-            <entry  key="pdfbox.version" value="${release.name}"/>
+    <target name="get.externallibs.fontbox">
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${junit.url}"/>
+            <param name="destfile" value="${junit.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${logging.url}"/>
+            <param name="destfile" value="${logging.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="get.externallibs.jempbox">
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${junit.url}"/>
+            <param name="destfile" value="${junit.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${logging.url}"/>
+            <param name="destfile" value="${logging.jar}"/>
+        </antcall>
+    </target>
+
+	<target name="pdfbox.package" depends="get.externallibs.pdfbox,pdfbox.compile" description="Package pdfbox into a jar file">
+        <property name="pdfbox.release.name" value="${pdfbox.project.name}-${project.version}" />
+        <propertyfile file="${pdfbox.resources.dir}/org/apache/pdfbox/resources/pdfbox.version">
+            <entry  key="pdfbox.version" value="${pdfbox.release.name}"/>
         </propertyfile>
 
-        <jar jarfile="./${target.dir}/${release.name}.jar">
-            <fileset dir="${dest.dir}"/>
-            <fileset dir="${resources.dir}"/>
+        <jar jarfile="./${pdfbox.target.dir}/${pdfbox.release.name}.jar">
+            <fileset dir="${pdfbox.dest.dir}"/>
+            <fileset dir="${pdfbox.resources.dir}"/>
             <metainf dir="." includes="*.txt"/>
             <manifest>
                 <attribute name="Built-By" value="${user.name}"/>
@@ -405,9 +492,43 @@
         </jar>
     </target>
 
-    <!-- We use Maven to create the release packages. Keep this target for -->
+    <target name="fontbox.package" depends="get.externallibs.fontbox,fontbox.compile" description="Package fontbox into a jar file">
+        <property name="fontbox.release.name" value="${fontbox.project.name}-${project.version}" />
+
+        <jar jarfile="./${jar.dir}/${fontbox.release.name}.jar">
+            <fileset dir="${fontbox.dest.dir}"/>
+            <metainf dir="." includes="*.txt"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Implementation-Title" value="Apache FontBox"/>
+                <attribute name="Implementation-Version" value="${project.version}"/>
+                <attribute name="Implementation-Vendor" value="The Apache Software Foundation"/>
+                <attribute name="Implementation-URL" value="http://pdfbox.apache.org/"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jempbox.package" depends="get.externallibs.jempbox,jempbox.compile" description="Package jempbox into a jar file">
+        <property name="jempbox.release.name" value="${jempbox.project.name}-${project.version}" />
+
+        <jar jarfile="./${jar.dir}/${jempbox.release.name}.jar">
+            <fileset dir="${jempbox.dest.dir}"/>
+            <metainf dir="." includes="*.txt"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Implementation-Title" value="Apache JempBox"/>
+                <attribute name="Implementation-Version" value="${project.version}"/>
+                <attribute name="Implementation-Vendor" value="The Apache Software Foundation"/>
+                <attribute name="Implementation-URL" value="http://pdfbox.apache.org/"/>
+            </manifest>
+        </jar>
+    </target>
+
+	<!-- We use Maven to create the release packages. Keep this target for -->
     <!-- now for backwards compatibility with old build scripts and habits -->
-    <target name="dist" depends="clean,package,javadoc,build.NET,checkstyle"/>
+    <target name="dist" depends="pdfbox.clean,pdfbox.package,javadoc,build.NET,checkstyle"/>
+
+    <target name="clean" depends="fontbox.clean,jempbox.clean,pdfbox.clean"/>
 
     <target name="checkForIKVM">
         <condition property="IKVMAvailable">
@@ -418,7 +539,7 @@
         </condition>
     </target>
 
-    <target name="build.NET" depends="checkForIKVM,package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
+    <target name="build.NET" depends="checkForIKVM,pdfbox.package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
         <property name="release.name" value="${project.name}-${project.version}" />
         <echo>Building JUnit</echo>
 	<exec executable="${ikvmc}">
@@ -738,15 +859,15 @@
         </exec>-->
     </target>
 
-    <target name="javadoc" depends="compile" description="Create Javadocs">
-        <property name="release.name" value="${project.name}-${project.version}" />
+    <target name="javadoc" depends="pdfbox.compile" description="Create Javadocs">
+        <property name="pdfbox.release.name" value="${project.name}-${project.version}" />
         <javadoc packagenames="org.*"
-               sourcepath="${src.dir}"
-               destdir="${target.dir}/javadoc"
+               sourcepath="${pdfbox.src.dir}"
+               destdir="${pdfbox.target.dir}/javadoc"
                author="true"
                version="true"
                use="true"
-               windowtitle="${release.name} API"
+               windowtitle="${pdfbox.release.name} API"
                doctitle="${project.name}"
                verbose="no"
                classpathref="build.classpath"
@@ -758,7 +879,7 @@
         <replaceregexp match="&lt;!-- Generated by javadoc .* --&gt;"
                        replace="&lt;!-- Generated by javadoc --&gt;"
                        flags="g" byline="true">
-            <fileset dir="${target.dir}/javadoc" includes="**/*.html" />
+            <fileset dir="${pdfbox.target.dir}/javadoc" includes="**/*.html" />
         </replaceregexp>
     </target>
 
