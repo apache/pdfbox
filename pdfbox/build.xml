@@ -25,6 +25,7 @@
 
     <property name="download.dir" value="download" />
     <property name="jar.dir" value="external" />
+    <property name="tool.dir" value="tools" />
 
     <property name="project.version" value="1.3.0-SNAPSHOT" />
 
@@ -32,33 +33,32 @@
     <property name="pdfbox.project.name" value="pdfbox"/>
     <property name="pdfbox.src.dir" value="src/main/java" />
 	<property name="pdfbox.target.dir" value="target" />
-    <property name="pdfbox.dest.dir" value="classes" />
+    <property name="pdfbox.dest.dir" value="${pdfbox.target.dir}/classes" />
     <property name="pdfbox.test.dir" value="src/test/java" />
     <property name="pdfbox.testfiles.dir" value="/src/test/resources" />
     <property name="pdfbox.bin.dir" value="bin" />
-    <property name="pdfbox.tool.dir" value="tools" />
     <property name="pdfbox.resources.dir" value="src/main/resources" />
-    <property name="pdfbox.checkstyle.config" value="pdfbox-checkstyle.xml" />
+    <property name="pdfbox.checkstyle.config" value="../pdfbox-checkstyle.xml" />
 
     <!-- fontbox -->
     <property name="fontbox.project.name" value="fontbox"/>
+    <property name="fontbox.release.name" value="${fontbox.project.name}-${project.version}" />
     <property name="fontbox.src.dir" value="../${fontbox.project.name}/src/main/java" />
     <property name="fontbox.target.dir" value="../${fontbox.project.name}/target" />
-    <property name="fontbox.dest.dir" value="../${fontbox.project.name}/classes" />
+    <property name="fontbox.jar" value="${fontbox.target.dir}/${fontbox.release.name}.jar" />
+    <property name="fontbox.dest.dir" value="${fontbox.target.dir}/classes" />
     <property name="fontbox.test.dir" value="../${fontbox.project.name}/src/test/java" />
     <property name="fontbox.testfiles.dir" value="../${fontbox.project.name}/src/test/resources" />
-    <property name="fontbox.bin.dir" value="../${fontbox.project.name}/bin" />
-    <property name="fontbox.tool.dir" value="../${fontbox.project.name}/tools" />
 
     <!-- jempbox -->
     <property name="jempbox.project.name" value="jempbox"/>
-    <property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
+    <property name="jempbox.release.name" value="${jempbox.project.name}-${project.version}" />
+	<property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
     <property name="jempbox.target.dir" value="../${jempbox.project.name}/target" />
-    <property name="jempbox.dest.dir" value="../${jempbox.project.name}/classes" />
+    <property name="jempbox.jar" value="${jempbox.target.dir}/${jempbox.release.name}.jar" />
+    <property name="jempbox.dest.dir" value="${jempbox.target.dir}/classes" />
     <property name="jempbox.test.dir" value="../${jempbox.project.name}/src/test/java" />
     <property name="jempbox.testfiles.dir" value="../${jempbox.project.name}/src/test/resources" />
-    <property name="jempbox.bin.dir" value="../${jempbox.project.name}/bin" />
-    <property name="jempbox.tool.dir" value="../${jempbox.project.name}/tools" />
 
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
@@ -124,6 +124,8 @@
         <fileset dir="${jar.dir}" >
             <include name="**/*.jar" />
         </fileset>
+        <pathelement path="${fontbox.jar}" />
+        <pathelement path="${jempbox.jar}" />
         <pathelement path="${pdfbox.dest.dir}" />
         <pathelement path="${pdfbox.resources.dir}" />
     </path>
@@ -161,12 +163,10 @@
 
     <target name="fontbox.clean" description="Remove all generated files">
         <delete dir="${fontbox.target.dir}"/>
-        <delete dir="${fontbox.bin.dir}"/>
     </target>
 
     <target name="jempbox.clean" description="Remove all generated files">
         <delete dir="${jempbox.target.dir}"/>
-        <delete dir="${jempbox.bin.dir}"/>
     </target>
 
     <target name="pdfbox.init">
@@ -180,12 +180,10 @@
 
     <target name="fontbox.init">
         <mkdir dir="${fontbox.dest.dir}"/>
-        <mkdir dir="${fontbox.bin.dir}" />
     </target>
 
     <target name="jempbox.init">
         <mkdir dir="${jempbox.dest.dir}"/>
-        <mkdir dir="${jempbox.bin.dir}" />
     </target>
 
   	<target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init,get.adobefiles"
@@ -420,10 +418,10 @@
         <taskdef name="checkstyle"
                  classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
                  classpathref="checkstyle.classpath" />
-        <checkstyle config="${checkstyle.config}"
+        <checkstyle config="${pdfbox.checkstyle.config}"
                     classpathref="checkstyle.classpath"
                     failOnViolation="false">
-            <fileset dir="${src.dir}" />
+            <fileset dir="${pdfbox.src.dir}" />
         </checkstyle>
     </target>
 
@@ -493,9 +491,7 @@
     </target>
 
     <target name="fontbox.package" depends="get.externallibs.fontbox,fontbox.compile" description="Package fontbox into a jar file">
-        <property name="fontbox.release.name" value="${fontbox.project.name}-${project.version}" />
-
-        <jar jarfile="./${jar.dir}/${fontbox.release.name}.jar">
+        <jar jarfile="${fontbox.jar}">
             <fileset dir="${fontbox.dest.dir}"/>
             <metainf dir="." includes="*.txt"/>
             <manifest>
@@ -509,9 +505,7 @@
     </target>
 
     <target name="jempbox.package" depends="get.externallibs.jempbox,jempbox.compile" description="Package jempbox into a jar file">
-        <property name="jempbox.release.name" value="${jempbox.project.name}-${project.version}" />
-
-        <jar jarfile="./${jar.dir}/${jempbox.release.name}.jar">
+        <jar jarfile="${jempbox.jar}">
             <fileset dir="${jempbox.dest.dir}"/>
             <metainf dir="." includes="*.txt"/>
             <manifest>
@@ -540,7 +534,7 @@
     </target>
 
     <target name="build.NET" depends="checkForIKVM,pdfbox.package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
-        <property name="release.name" value="${project.name}-${project.version}" />
+        <property name="release.name" value="${pdfbox.project.name}-${project.version}" />
         <echo>Building JUnit</echo>
 	<exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
@@ -660,7 +654,7 @@
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\${release.name}.dll" />
-            <arg value="target\${release.name}.jar" />
+            <arg value="${pdfbox.target.dir}\${release.name}.jar" />
         </exec>
         <echo>Building Decrypt</echo>
         <exec executable="${ikvmc}">
@@ -677,7 +671,7 @@
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-out:${bin.dir}\Decrypt.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\Decrypt.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Decrypt.class" />
         </exec>
         <echo>Building Encrypt</echo>
         <exec executable="${ikvmc}">
@@ -694,7 +688,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\Encrypt.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\Encrypt.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Encrypt.class" />
         </exec>
         <echo>Building ExportFDF</echo>
         <exec executable="${ikvmc}">
@@ -710,7 +704,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExportFDF.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\ExportFDF.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExportFDF.class" />
         </exec>
         <echo>Building ExportXFDF</echo>
         <exec executable="${ikvmc}">
@@ -727,7 +721,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExportXFDF.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\ExportXFDF.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExportXFDF.class" />
         </exec>
         <echo>Building ExtractImages</echo>
         <exec executable="${ikvmc}">
@@ -761,7 +755,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ExtractText.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractText.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExtractText.class" />
         </exec>
         <echo>Building ImportFDF</echo>
         <exec executable="${ikvmc}">
@@ -778,7 +772,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ImportFDF.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
         <echo>Building IimportXFDF</echo>
         <exec executable="${ikvmc}">
@@ -795,7 +789,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\ImportXFDF.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
         <echo>Building Overlay</echo>
         <exec executable="${ikvmc}">
@@ -812,7 +806,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\Overlay.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\Overlay.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Overlay.class" />
         </exec>
         <echo>Building PDFSplit</echo>
         <exec executable="${ikvmc}">
@@ -829,7 +823,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\PDFSplit.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
         <echo>Building PDFReader</echo>
         <exec executable="${ikvmc}">
@@ -846,7 +840,7 @@
             <arg value="-reference:bin/${fontbox.name}.dll" />
             <arg value="-reference:bin\${release.name}.dll" />
             <arg value="-out:${bin.dir}\PDFReader.exe" />
-            <arg value="${target.dir}\classes\org\apache\pdfbox\PDFReader.class" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFReader.class" />
         </exec>
         <!--The Swing/AWT support in classpath is not quite good enough to make this
             work, so for now we will just leave blank.-->
@@ -870,7 +864,7 @@
                windowtitle="${pdfbox.release.name} API"
                doctitle="${project.name}"
                verbose="no"
-               classpathref="build.classpath"
+               classpathref="pdfbox.build.classpath"
                encoding="ISO-8859-1"
                breakiterator="yes">
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
