@@ -44,8 +44,14 @@ public class PDFText2HTML extends PDFTextStripper
      */
     public PDFText2HTML(String encoding) throws IOException 
     {
-        this.outputEncoding = encoding;
-        this.lineSeparator = "<br>" + System.getProperty("line.separator");
+        super(encoding);
+        setLineSeparator(systemLineSeparator);
+        setParagraphStart("<p>");
+        setParagraphEnd("</p>"+systemLineSeparator);
+        setPageStart("<div style=\"page-break-before:always; page-break-after:always\">");
+        setPageEnd("</div>"+systemLineSeparator);
+        setArticleStart(systemLineSeparator);
+        setArticleEnd(systemLineSeparator);
     }
 
     /**
@@ -108,16 +114,16 @@ public class PDFText2HTML extends PDFTextStripper
         }
         else 
         {
-            Iterator textIter = getCharactersByArticle().iterator();
+            Iterator<List<TextPosition>> textIter = getCharactersByArticle().iterator();
             float lastFontSize = -1.0f;
 
             StringBuffer titleText = new StringBuffer();
             while (textIter.hasNext()) 
             {
-                Iterator textByArticle = ((List) textIter.next()).iterator();
+                Iterator<TextPosition> textByArticle = textIter.next().iterator();
                 while (textByArticle.hasNext()) 
                 {
-                    TextPosition position = (TextPosition) textByArticle.next();
+                    TextPosition position = textByArticle.next();
 
                     float currentFontSize = position.getFontSize();
                     //If we're past 64 chars we will assume that we're past the title
@@ -169,6 +175,7 @@ public class PDFText2HTML extends PDFTextStripper
      */
     protected void endArticle() throws IOException 
     {
+        super.endArticle();
         super.writeString("</div>");
     }
 
