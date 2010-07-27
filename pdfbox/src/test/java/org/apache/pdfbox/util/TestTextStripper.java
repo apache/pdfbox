@@ -266,7 +266,12 @@ public class TestTextStripper extends TestCase
             //Allows for sorted tests 
             stripper.setSortByPosition(bSort);
             stripper.writeText(document, writer);
-
+            // close the written file before reading it again
+            writer.close();
+            writer = null;
+            os.close();
+            os = null;
+            
 
             if (bLogResult)
             {
@@ -311,10 +316,11 @@ public class TestTextStripper extends TestCase
                     }
 
                     log.error("FAILURE: Line mismatch for file " + inFile.getName() +
+                            " ( sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
                             " at actual line: " + actualReader.getLineNumber());
                     log.error("  expected line was: \"" + expectedLine + "\"");
-                    log.error("  actual line was:   \"" + actualLine + "\"");
+                    log.error("  actual line was:   \"" + actualLine + "\"" + "\n");
 
                     //lets report all lines, even though this might produce some verbose logging
                     //break;
@@ -328,14 +334,6 @@ public class TestTextStripper extends TestCase
         }
         finally
         {
-            if( writer != null )
-            {
-                writer.close();
-            }
-            if( os != null )
-            {
-                os.close();
-            }
             if( document != null )
             {
                 document.close();
