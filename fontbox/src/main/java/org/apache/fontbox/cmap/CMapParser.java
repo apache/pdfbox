@@ -165,10 +165,10 @@ public class CMapParser
                         Object nextToken = parseNextToken( cmapStream );
                         List<byte[]> array = null;
                         byte[] tokenBytes = null;
-                        if( nextToken instanceof List )
+                        if( nextToken instanceof List<?> )
                         {
-                            array = (List)nextToken;
-                            tokenBytes = (byte[])array.get( 0 );
+                            array = (List<byte[]>)nextToken;
+                            tokenBytes = array.get( 0 );
                         }
                         else
                         {
@@ -487,7 +487,7 @@ public class CMapParser
     {
         byte[] bytes = new byte[2];
         bytes[1] = (byte)(value % 256);
-        bytes[0] = (byte)(value & 0x00 >> 8);
+        bytes[0] = (byte)(value / 256);
         return bytes;
     }
 
