@@ -94,7 +94,15 @@ public abstract class PDSimpleFont extends PDFont
     public void drawString( String string, Graphics g, float fontSize, 
             AffineTransform at, float x, float y ) throws IOException
     {
-       Font _awtFont = getawtFont();
+        Font _awtFont = getawtFont();
+
+        // mdavis - fix fontmanager.so/dll on sun.font.FileFont.getGlyphImage
+        // for font with bad cmaps? 
+        if (_awtFont.canDisplayUpTo(string) != -1) { 
+            log.warn("Changing font on <" + string + "> from <"
+                    + _awtFont.getName() + "> to the default font");
+            _awtFont = null; 
+        }
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
