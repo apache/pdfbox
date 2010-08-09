@@ -23,6 +23,11 @@ import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+
+import javax.print.PrintService;
+import javax.print.attribute.standard.Media;
+import javax.print.attribute.standard.OrientationRequested;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -115,6 +120,8 @@ public class PDDocument implements Pageable
      * from this documents
      */
     private boolean allSecurityToBeRemoved = false;
+
+    private PrinterJob currentPrinterJob = null;
 
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
@@ -951,6 +958,9 @@ public class PDDocument implements Pageable
         PDPage page = (PDPage)getDocumentCatalog().getAllPages().get( pageIndex );
         Dimension mediaBox = page.findMediaBox().createDimension();
         Dimension cropBox = page.findCropBox().createDimension();
+        PrintService printService = currentPrinterJob.getPrintService();
+        Object ob = printService.getDefaultAttributeValue(OrientationRequested.class);
+
         double diffWidth = 0;
         double diffHeight = 0;
         double mediaWidth = mediaBox.getWidth();
@@ -963,13 +973,25 @@ public class PDDocument implements Pageable
             diffWidth = (mediaWidth - cropWidth)/2;
             diffHeight = (mediaHeight - cropHeight)/2;
         }
-        Paper paper = new Paper();
-        paper.setImageableArea( diffWidth, diffHeight, cropWidth, cropHeight);
-        paper.setSize( mediaWidth, mediaHeight );
-        PageFormat format = new PageFormat();
+        PageFormat format = currentPrinterJob.defaultPage();
+        Paper paper = format.getPaper();
+
+        if ( "landscape" == ob.toString() )
+        {
+           format.setOrientation(PageFormat.LANDSCAPE);
+           paper.setImageableArea( diffHeight, diffWidth, cropHeight, cropWidth);
+           paper.setSize( mediaHeight, mediaWidth );
+        }
+        else
+        {
+           format.setOrientation(PageFormat.PORTRAIT);
+           paper.setImageableArea( diffWidth, diffHeight, cropWidth, cropHeight);
+           paper.setSize( mediaWidth, mediaHeight );
+        }
+
         format.setPaper( paper );
         return format;
-    }
+    } 
 
     /**
      * {@inheritDoc}
@@ -1000,6 +1022,7 @@ public class PDDocument implements Pageable
             throw new PrinterException( "You do not have permission to print this document." );
         }
         printJob.setPageable(this);
+	currentPrinterJob=printJob;
         if( printJob.printDialog() )
         {
             printJob.print();
@@ -1058,6 +1081,7 @@ public class PDDocument implements Pageable
             throw new PrinterException( "You do not have permission to print this document." );
         }
         printJob.setPageable(this);
+	currentPrinterJob=printJob;
         printJob.print();
     }
 
