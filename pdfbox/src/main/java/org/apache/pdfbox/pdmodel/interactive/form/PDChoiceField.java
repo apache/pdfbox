@@ -21,9 +21,11 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 
 /**
  * A class for handling the PDF field as a choicefield.
@@ -63,12 +65,14 @@ public class PDChoiceField extends PDVariableText
         }
         else
         {
-            COSBase option = options.getObject( 0 );
-            if( option instanceof COSArray )
-            {
-                for( int i=0; i<options.size() && indexSelected == -1; i++ )
+            // YXJ: Changed the order of the loops. Acrobat produces PDF's
+            // where sometimes there is 1 string and the rest arrays.
+            // This code works either way.
+            for( int i=0; i<options.size() && indexSelected == -1; i++ ) {
+                COSBase option = options.getObject( i );
+                if( option instanceof COSArray )
                 {
-                    COSArray keyValuePair = (COSArray)options.get( i );
+                    COSArray keyValuePair = (COSArray)option;
                     COSString key = (COSString)keyValuePair.getObject( 0 );
                     COSString value = (COSString)keyValuePair.getObject( 1 );
                     if( optionValue.equals( key.getString() ) || optionValue.equals( value.getString() ) )
@@ -80,12 +84,9 @@ public class PDChoiceField extends PDVariableText
                         indexSelected = i;
                     }
                 }
-            }
-            else
-            {
-                for( int i=0; i<options.size() && indexSelected == -1; i++ )
+                else
                 {
-                    COSString value = (COSString)options.get( i );
+                    COSString value = (COSString)option;
                     if( optionValue.equals( value.getString() ) )
                     {
                         super.setValue( optionValue );
@@ -108,6 +109,5 @@ public class PDChoiceField extends PDVariableText
             }
         }
     }
-
 
 }
