@@ -331,6 +331,12 @@ public class CMapParser
                         {
                             intValue = 10 + theNextByte - 'a';
                         }
+                        else if( theNextByte == 0x20 )
+                        {
+                            // skipping whitespaces
+                            theNextByte = is.read();
+                            continue;
+                        }
                         else
                         {
                             throw new IOException( "Error: expected hex character and not " + 
