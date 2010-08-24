@@ -233,8 +233,8 @@ public class PDPixelMap extends PDXObjectImage
                 else
                     cm = colorspace.createColorModel( bpc );
             }
-            
-            log.info("ColorModel: " + cm.toString());
+
+            log.debug("ColorModel: " + cm.toString());
             WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
             DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
