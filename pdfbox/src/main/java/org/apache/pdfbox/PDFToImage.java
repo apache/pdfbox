@@ -22,8 +22,12 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import java.util.List;
+
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.PDFImageWriter;
 
 /**
@@ -42,6 +46,7 @@ public class PDFToImage
     private static final String OUTPUT_PREFIX = "-outputPrefix";
     private static final String COLOR = "-color";
     private static final String RESOLUTION = "-resolution";
+    private static final String CROPBOX = "-cropbox";
 
     /**
      * private constructor.
@@ -68,6 +73,10 @@ public class PDFToImage
         int endPage = Integer.MAX_VALUE;
         String color = "rgb";
         int resolution;
+	float cropBoxLowerLeftX = 0;
+	float cropBoxLowerLeftY = 0;
+	float cropBoxUpperRightX = 0;
+	float cropBoxUpperRightY = 0;
         try
         {
             resolution = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -124,6 +133,17 @@ public class PDFToImage
             {
                 i++;
                 resolution = Integer.parseInt(args[i]);
+            }
+            else if( args[i].equals( CROPBOX ) )
+            {
+                i++;
+	        cropBoxLowerLeftX = Float.valueOf(args[i]).floatValue();
+                i++;
+	        cropBoxLowerLeftY = Float.valueOf(args[i]).floatValue();
+                i++;
+	        cropBoxUpperRightX = Float.valueOf(args[i]).floatValue();
+                i++;
+	        cropBoxUpperRightY = Float.valueOf(args[i]).floatValue();
             }
             else
             {
@@ -199,6 +219,13 @@ public class PDFToImage
                     System.exit( 2 );
                 }
 
+                //si une cropBox a ete specifier, appeler la methode de modification de cropbox
+		//changeCropBoxes(PDDocument document,float a, float b, float c,float d)
+		if ( cropBoxLowerLeftX!=0 || cropBoxLowerLeftY!=0 || cropBoxUpperRightX!=0 || cropBoxUpperRightY!=0 )
+		{
+		  changeCropBoxes(document,cropBoxLowerLeftX, cropBoxLowerLeftY, cropBoxUpperRightX, cropBoxUpperRightY);
+		}
+
                 //Make the call
                 PDFImageWriter imageWriter = new PDFImageWriter();
                 boolean success = imageWriter.writeImage(document, imageFormat, password,
@@ -237,6 +264,7 @@ public class PDFToImage
             "  -endPage <number>              The last page to extract(inclusive)\n" +
             "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
             "  -resolution <number>           The bitmap resolution in dpi\n" +
+            "  -cropbox <number> <number> <number> <number> The page area to export\n" +
             "  <PDF file>                     The PDF document to use\n"
             );
         System.exit( 1 );
@@ -256,4 +284,24 @@ public class PDFToImage
         }
         return retval.toString();
     }
+
+    private static void changeCropBoxes(PDDocument document,float a, float b, float c,float d)
+    {
+      List pages = document.getDocumentCatalog().getAllPages();
+      for( int i = 0; i < pages.size(); i++ )
+      {
+              System.out.println("resizing page");
+	      PDPage page = (PDPage)pages.get( i );
+	      PDRectangle rectangle = new PDRectangle();
+              rectangle.setLowerLeftX(a);
+              rectangle.setLowerLeftY(b);
+              rectangle.setUpperRightX(c);
+              rectangle.setUpperRightY(d);
+	      page.setMediaBox(rectangle);
+	      page.setCropBox(rectangle);
+
+      }
+
+    }
+
 }
