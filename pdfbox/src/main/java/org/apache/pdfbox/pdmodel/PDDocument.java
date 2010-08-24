@@ -25,7 +25,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 
 import javax.print.PrintService;
-import javax.print.attribute.standard.Media;
 import javax.print.attribute.standard.OrientationRequested;
 
 import java.io.BufferedInputStream;
@@ -1011,22 +1010,7 @@ public class PDDocument implements Pageable
      */
     public void print(PrinterJob printJob) throws PrinterException
     {
-        if(printJob == null)
-        {
-            throw new PrinterException( "The delivered printJob is null." );
-        }
-        AccessPermission currentPermissions = this.getCurrentAccessPermission();
-
-        if(!currentPermissions.canPrint())
-        {
-            throw new PrinterException( "You do not have permission to print this document." );
-        }
-        printJob.setPageable(this);
-	currentPrinterJob=printJob;
-        if( printJob.printDialog() )
-        {
-            printJob.print();
-        }
+        print(printJob, false);
     }
 
     /**
@@ -1070,19 +1054,22 @@ public class PDDocument implements Pageable
      */
     public void silentPrint( PrinterJob printJob ) throws PrinterException
     {
-        if(printJob == null)
-        {
-            throw new PrinterException( "The delivered printJob is null." );
-        }
-        AccessPermission currentPermissions = this.getCurrentAccessPermission();
+        print(printJob, true);
+    }
 
-        if(!currentPermissions.canPrint())
-        {
-            throw new PrinterException( "You do not have permission to print this document." );
+    private void print(PrinterJob job, boolean silent) throws PrinterException {
+        if (job == null) {
+            throw new PrinterException("The given printer job is null.");
+        } else if (!getCurrentAccessPermission().canPrint()) {
+            throw new PrinterException(
+                    "You do not have permission to print this document.");
+        } else {
+            currentPrinterJob = job;
+            job.setPageable(this);
+            if (silent || job.printDialog()) {
+                job.print();
+            }
         }
-        printJob.setPageable(this);
-	currentPrinterJob=printJob;
-        printJob.print();
     }
 
     /**
