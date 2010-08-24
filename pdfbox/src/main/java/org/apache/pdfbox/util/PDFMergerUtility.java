@@ -63,6 +63,7 @@ public class PDFMergerUtility
     private List<InputStream> sources;
     private String destinationFileName;
     private OutputStream destinationStream;
+    private boolean ignoreAcroFormErrors = false;
 
     /**
      * Instantiate a new PDFMergerUtility.
@@ -241,18 +242,29 @@ public class PDFMergerUtility
             destCatalog.setOpenAction( srcCatalog.getOpenAction() );
         }
 
-        PDAcroForm destAcroForm = destCatalog.getAcroForm();
-        PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
-        if( destAcroForm == null )
+        try
         {
-            cloneForNewDocument( destination, srcAcroForm );
-            destCatalog.setAcroForm( srcAcroForm );
-        }
-        else
-        {
-            if( srcAcroForm != null )
+            PDAcroForm destAcroForm = destCatalog.getAcroForm();
+            PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
+            if( destAcroForm == null )
             {
-                mergeAcroForm(destination, destAcroForm, srcAcroForm);
+                cloneForNewDocument( destination, srcAcroForm );
+                destCatalog.setAcroForm( srcAcroForm );
+            }
+            else
+            {
+                if( srcAcroForm != null )
+                {
+                    mergeAcroForm(destination, destAcroForm, srcAcroForm);
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            // if we are not ignoring exceptions, we'll re-throw this
+            if(!ignoreAcroFormErrors)
+            {
+                throw (IOException)e;
             }
         }
 
@@ -595,6 +607,16 @@ public class PDFMergerUtility
                 destFields.add(destField);
             }
         }
+    }
+
+    public boolean isIgnoreAcroFormErrors()
+    {
+        return ignoreAcroFormErrors;
+    }
+
+    public void setIgnoreAcroFormErrors(boolean ignoreAcroFormErrors)
+    {
+        this.ignoreAcroFormErrors = ignoreAcroFormErrors;
     }
     
 
