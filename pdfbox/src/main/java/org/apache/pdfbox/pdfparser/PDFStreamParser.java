@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -314,7 +315,13 @@ public class PDFStreamParser extends BaseParser
                         dotNotRead = false;
                     }
                 }
-                retval = COSNumber.get( buf.toString() );
+                String number = buf.toString();
+                if (number.equals("-")) {
+                    // See https://issues.apache.org/jira/browse/PDFBOX-592
+                    retval = COSInteger.ZERO;
+                } else {
+                    retval = COSNumber.get( number );
+                }
                 break;
             }
             case 'B':
