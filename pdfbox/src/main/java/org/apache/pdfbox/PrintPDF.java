@@ -22,6 +22,8 @@ import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import java.io.File;
+
 /**
  * This is a command line program that will print a PDF document.
  *
@@ -100,7 +102,9 @@ public class PrintPDF
             {
                 document.decrypt( password );
             }
+
             PrinterJob printJob = PrinterJob.getPrinterJob();
+            printJob.setJobName(new File(pdfFile).getName());
 
             if(printerName != null )
             {
