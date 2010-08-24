@@ -543,7 +543,8 @@ public class PDFParser extends BaseParser
                     // the combination of a dict and the stream/endstream forms a complete stream object
                     throw new IOException("stream not preceded by dictionary");
                 }
-                endObjectKey = readString();
+                skipSpaces();
+                endObjectKey = readLine();
             }
             
             COSObjectKey key = new COSObjectKey( number, genNum );
@@ -563,18 +564,27 @@ public class PDFParser extends BaseParser
             
             if( !endObjectKey.equals( "endobj" ) )
             {
-                               if (endObjectKey.startsWith( "endobj" ) ) 
-                               {
-                                       /*
-                                         * Some PDF files don't contain a new line after endobj so we 
-                                         * need to make sure that the next object number is getting read separately
-                                         * and not part of the endobj keyword. Ex. Some files would have "endobj28"
-                                         * instead of "endobj"
-                                         */
-                                        pdfSource.unread( endObjectKey.substring( 6 ).getBytes() );
-                                    } 
-                                    else if( !pdfSource.isEOF() )                
-                                    {
+                if (endObjectKey.startsWith( "endobj" ) ) 
+                {
+                    /*
+                     * Some PDF files don't contain a new line after endobj so we 
+                     * need to make sure that the next object number is getting read separately
+                     * and not part of the endobj keyword. Ex. Some files would have "endobj28"
+                     * instead of "endobj"
+                     */
+                    pdfSource.unread( endObjectKey.substring( 6 ).getBytes() );
+                } 
+                else if(endObjectKey.trim().endsWith("endobj"))
+                {
+                    /*
+                     * Some PDF files contain junk (like ">> ", in the case of a PDF
+                     * I found which was created by Exstream Dialogue Version 5.0.039)
+                     * in which case we ignore the data before endobj and just move on
+                     */
+                    log.warn("expected='endobj' actual='" + endObjectKey + "' ");
+                }
+                else if( !pdfSource.isEOF() )
+                {
                     try
                     {
                         //It is possible that the endobj  is missing, there
