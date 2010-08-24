@@ -101,7 +101,7 @@ public abstract class PDSimpleFont extends PDFont
         if (_awtFont.canDisplayUpTo(string) != -1) { 
             log.warn("Changing font on <" + string + "> from <"
                     + _awtFont.getName() + "> to the default font");
-            _awtFont = null; 
+            _awtFont = Font.decode(null); 
         }
 
         Graphics2D g2d = (Graphics2D)g;
