@@ -459,12 +459,22 @@ public class PDFParser extends BaseParser
             if (peekedChar == 's')
             {  
                 parseStartXref();
-                //verify that EOF exists 
-                String eof = readExpectedString( "%%EOF" );
-                if( eof.indexOf( "%%EOF" )== -1 && !pdfSource.isEOF() )
-                {
-                    throw new IOException( "expected='%%EOF' actual='" + eof + "' next=" + readString() +
-                            " next=" +readString() );
+                // readString() calls skipSpaces() will skip comments... that's 
+                // bad for us b/c the %%EOF flag is a comment
+                while(isWhitespace(pdfSource.peek()) && !pdfSource.isEOF())
+                    pdfSource.read(); // read (get rid of) all the whitespace
+                String eof = "";
+                if(!pdfSource.isEOF())
+                    readLine(); // if there's more data to read, get the EOF flag
+                
+                // verify that EOF exists
+                if("%%EOF".equals(eof)) {
+                    // PDF does not conform to spec, we should warn someone
+                    log.warn("expected='%%EOF' actual='" + eof + "'");
+                    // if we're not at the end of a file, this is a really big deal!
+                    if(!pdfSource.isEOF())
+                        throw new IOException( "expected='%%EOF' actual='" + eof +
+                                "' next=" + readString() + " next=" +readString() );
                 }
                 isEndOfFile = true; 
             }
