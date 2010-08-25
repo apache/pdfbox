@@ -315,13 +315,7 @@ public class PDFStreamParser extends BaseParser
                         dotNotRead = false;
                     }
                 }
-                String number = buf.toString();
-                if (number.equals("-")) {
-                    // See https://issues.apache.org/jira/browse/PDFBOX-592
-                    retval = COSInteger.ZERO;
-                } else {
-                    retval = COSNumber.get( number );
-                }
+                retval = COSNumber.get( buf.toString() );
                 break;
             }
             case 'B':
