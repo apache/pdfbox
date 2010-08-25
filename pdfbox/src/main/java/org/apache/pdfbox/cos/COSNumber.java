@@ -80,6 +80,10 @@ public abstract class COSNumber extends COSBase
             char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') {
                 return COSInteger.get(digit - '0');
+            } else if (digit == '-' || digit == '.') {
+                // See https://issues.apache.org/jira/browse/PDFBOX-592
+                new Exception(number).printStackTrace();
+                return COSInteger.ZERO;
             } else {
                 throw new IOException("Not a number: " + number);
             }
