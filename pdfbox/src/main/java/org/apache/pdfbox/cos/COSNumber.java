@@ -82,7 +82,6 @@ public abstract class COSNumber extends COSBase
                 return COSInteger.get(digit - '0');
             } else if (digit == '-' || digit == '.') {
                 // See https://issues.apache.org/jira/browse/PDFBOX-592
-                new Exception(number).printStackTrace();
                 return COSInteger.ZERO;
             } else {
                 throw new IOException("Not a number: " + number);
