@@ -212,10 +212,47 @@ public abstract class BaseParser
                 {
                     //an invalid dictionary, we are expecting
                     //the key, read until we can recover
-                    log.warn("Invalid dictionary, found:" + (char)c + " but expected:\''");
+                    log.warn("Invalid dictionary, found: '" + (char)c + "' but expected: '/'");
                     int read = pdfSource.read();
                     while(read != -1 && read != '/' && read != '>')
                     {
+                        // in addition to stopping when we find / or >, we also want 
+                        // to stop when we find endstream or endobj.
+                        if(read==E) {
+                            read = pdfSource.read();
+                            if(read==N) {
+                                read = pdfSource.read();
+                                if(read==D) {
+                                    read = pdfSource.read();
+                                    if(read==S) {
+                                        read = pdfSource.read();
+                                        if(read==T) {
+                                            read = pdfSource.read();
+                                            if(read==R) {
+                                                read = pdfSource.read();
+                                                if(read==E) {
+                                                    read = pdfSource.read();
+                                                    if(read==A) {
+                                                        read = pdfSource.read();
+                                                        if(read==M) {
+                                                            return obj; // we're done reading this object!
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else if(read==O) {
+                                        read = pdfSource.read();
+                                        if(read==B) {
+                                            read = pdfSource.read();
+                                            if(read==J) {
+                                                return obj; // we're done reading this object!
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         read = pdfSource.read();
                     }
                     if(read != -1) 
@@ -765,8 +802,15 @@ public abstract class BaseParser
             }
             else
             {
-                log.warn("Corrupt object reference" );
                 //it could be a bad object in the array which is just skipped
+                log.warn("Corrupt object reference" );
+                
+                // This could also be an "endobj" or "endstream" which means we can assume that
+                // the array has ended.
+                String isThisTheEnd = readString();
+                pdfSource.unread(isThisTheEnd.getBytes());
+                if("endobj".equals(isThisTheEnd) || "endstream".equals(isThisTheEnd))
+                    return po;
             }
             skipSpaces();
         }
@@ -1027,7 +1071,10 @@ public abstract class BaseParser
                     throw new IOException( "Unknown dir object c='" + c +
                             "' cInt=" + (int)c + " peek='" + (char)peek + "' peekInt=" + peek + " " + pdfSource );
                 }
-
+                
+                // if it's an endstream/endobj, we want to put it back so the caller will see it
+                if("endobj".equals(badString) || "endstream".equals(badString))
+                    pdfSource.unread(badString.getBytes());
             }
         }
         }
