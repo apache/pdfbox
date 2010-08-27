@@ -471,10 +471,9 @@ public class PDFParser extends BaseParser
                 if("%%EOF".equals(eof)) {
                     // PDF does not conform to spec, we should warn someone
                     log.warn("expected='%%EOF' actual='" + eof + "'");
-                    // if we're not at the end of a file, this is a really big deal!
+                    // if we're not at the end of a file, just put it back and move on
                     if(!pdfSource.isEOF())
-                        throw new IOException( "expected='%%EOF' actual='" + eof +
-                                "' next=" + readString() + " next=" +readString() );
+                        pdfSource.unread(eof.getBytes());
                 }
                 isEndOfFile = true; 
             }
