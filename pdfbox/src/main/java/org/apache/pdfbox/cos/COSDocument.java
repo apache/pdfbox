@@ -450,7 +450,7 @@ public class COSDocument extends COSBase
             for( COSObject next : parser.getObjects() )
             {
                 COSObjectKey key = new COSObjectKey( next );
-                if(objectPool.get(key) == null)
+                if(objectPool.get(key) == null || objectPool.get(key).getObject() == null)
                 {
                     COSObject obj = getObjectFromPool(key);
                     obj.setObject(next.getObject());
