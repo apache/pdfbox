@@ -55,14 +55,18 @@ public class DictionaryEncoding extends Encoding
         //for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
         //is the font�s built-in encoding."
 
-        //so the default base encoding is standardEncoding
-        Encoding baseEncoding = new StandardEncoding();
+        Encoding baseEncoding = null;
         COSName baseEncodingName = (COSName)encoding.getDictionaryObject( COSName.BASE_ENCODING );
 
         if( baseEncodingName != null )
         {
             EncodingManager manager = new EncodingManager();
             baseEncoding = manager.getEncoding( baseEncodingName );
+        }
+        else
+        {
+            //the default base encoding is standardEncoding
+            baseEncoding = new StandardEncoding();
         }
         nameToCode.putAll( baseEncoding.nameToCode );
         codeToName.putAll( baseEncoding.codeToName );

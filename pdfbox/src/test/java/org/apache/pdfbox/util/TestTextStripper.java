@@ -307,14 +307,7 @@ public class TestTextStripper extends TestCase
                 }
                 if (!stringsEqual(expectedLine, actualLine))
                 {
-                    // PDFBOX-568: testextract failure on Linux and Mac OS X
-                    // Don't flag a test failure that we already know about.
-                    // TODO: Remove this check once PDFBOX-568 is fixed.
-                    if (!"sample_fonts_solidconvertor.pdf".equals(inFile.getName())) 
-                    {
-                        this.bFail = true;
-                    }
-
+                    this.bFail = true;
                     log.error("FAILURE: Line mismatch for file " + inFile.getName() +
                             " ( sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
