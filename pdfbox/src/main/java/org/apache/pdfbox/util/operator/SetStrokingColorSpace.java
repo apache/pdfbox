@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -69,11 +68,5 @@ public class SetStrokingColorSpace extends OperatorProcessor
             }
         }
         color.setColorSpaceValue( values );
-
-        if (context instanceof PageDrawer)
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            drawer.colorChanged(true);
-        }
     }
 }

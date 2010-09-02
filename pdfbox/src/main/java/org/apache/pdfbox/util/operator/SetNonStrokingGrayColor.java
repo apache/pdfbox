@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -56,11 +55,5 @@ public class SetNonStrokingGrayColor extends OperatorProcessor
             throw new IOException( "Error: Expected at least one argument when setting non stroking gray color");
         }
         colorInstance.setColorSpaceValue( values );
-
-        if (context instanceof PageDrawer)
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            drawer.colorChanged(false);
-        }
     }
 }
