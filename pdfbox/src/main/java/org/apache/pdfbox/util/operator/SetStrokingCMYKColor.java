@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.util.PDFOperator;
@@ -52,11 +51,5 @@ public class SetStrokingCMYKColor extends OperatorProcessor
             values[i] = ((COSNumber)arguments.get( i )).floatValue();
         }
         color.setColorSpaceValue( values );
-
-        if (context instanceof PageDrawer)
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            drawer.colorChanged(true);
-        }
     }
 }
