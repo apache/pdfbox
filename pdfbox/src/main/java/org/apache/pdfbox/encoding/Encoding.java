@@ -44,6 +44,7 @@ public abstract class Encoding implements COSObjectable {
      */
     private static final Log log = LogFactory.getLog(Encoding.class);
 
+    public static final String NOTDEF = ".notdef";
     /**
      * This is a mapping from a character code to a character name.
      */
@@ -80,7 +81,7 @@ public abstract class Encoding implements COSObjectable {
             }
         }
 
-        NAME_TO_CHARACTER.put( ".notdef", "" );
+        NAME_TO_CHARACTER.put( NOTDEF, "" );
         NAME_TO_CHARACTER.put( "fi", "fi" );
         NAME_TO_CHARACTER.put( "fl", "fl" );
         NAME_TO_CHARACTER.put( "ffi", "ffi" );
@@ -188,7 +189,7 @@ public abstract class Encoding implements COSObjectable {
      * @param code The character code that matches the character.
      * @param name The name of the character.
      */
-    protected void addCharacterEncoding( int code, String name )
+    public void addCharacterEncoding( int code, String name )
     {
         codeToName.put( code, name );
         nameToCode.put( name, code );
@@ -273,7 +274,7 @@ public abstract class Encoding implements COSObjectable {
      *
      * @return The printable character for the code.
      */
-    public static String getCharacter( String name )
+    public String getCharacter( String name )
     {
         String character = NAME_TO_CHARACTER.get( name );
         if( character == null )
@@ -314,33 +315,10 @@ public abstract class Encoding implements COSObjectable {
                     character = name;
                 }
             }
-            // this encoding is used in pdfs generated with TeX/LateX 
-            else if (name.length() <= 4 && (name.startsWith("x") || name.startsWith("a")) ) 
+            else if (nameToCode.containsKey(name)) 
             {
-                try 
-                {
-                    int value = Integer.parseInt(name.substring(1), (name.startsWith("x") ? 16 : 10));
-                    // add some additional mapping for values < 32 and = 127
-                    if (value >=0 && value <= 9) 
-                    {
-                        value += 161;
-                    }
-                    else if (value >= 10 && value < 32) 
-                    {
-                        value += 163;
-                    }
-                    else if ( value == 127)
-                    {
-                        value = 196;
-                    }
-                    character = Character.toString((char)value);
-                    NAME_TO_CHARACTER.put(name, character);
-                }
-                catch(NumberFormatException exception) 
-                {
-                    log.warn( "Not a number in character name: " + name );
-                    character = name;
-                }
+                int code = nameToCode.get(name);
+                character = Character.toString((char)code);
             }
             else 
             {
@@ -349,5 +327,5 @@ public abstract class Encoding implements COSObjectable {
         }
         return character;
     } 
-
+    
 }
