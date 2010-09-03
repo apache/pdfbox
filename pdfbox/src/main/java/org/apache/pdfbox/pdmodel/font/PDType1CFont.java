@@ -476,8 +476,7 @@ public class PDType1CFont extends PDSimpleFont
     private Map<Integer,String> loadEncoding(COSName name) throws IOException
     {
         Map<Integer,String> result = new LinkedHashMap<Integer,String>();
-        EncodingManager encodingManager = new EncodingManager();
-        Encoding encoding = encodingManager.getEncoding(name);
+        Encoding encoding = EncodingManager.INSTANCE.getEncoding(name);
         for( Iterator<Map.Entry<Integer,String>> it = (encoding.getCodeToNameMap().entrySet()).iterator();
                     it.hasNext();)
         {

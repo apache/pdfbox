@@ -220,10 +220,10 @@ public abstract class PDFont implements COSObjectable
                 }
                 if (cmap == null && cmapName != null)
                 {
-                    EncodingManager manager = getEncodingManager();
                     try 
                     {
-                        fontEncoding = manager.getEncoding( encodingName );
+                        fontEncoding =
+                            EncodingManager.INSTANCE.getEncoding(encodingName);
                     }
                     catch(IOException exception) 
                     {
@@ -811,7 +811,9 @@ public abstract class PDFont implements COSObjectable
                                     // ignore the first token
                                     st.nextElement();
                                     String type1Encoding = st.nextToken();
-                                    fontEncoding = getEncodingManager().getEncoding(COSName.getPDFName(type1Encoding));
+                                    fontEncoding =
+                                        EncodingManager.INSTANCE.getEncoding(
+                                                COSName.getPDFName(type1Encoding));
                                     break;
                                 }
                             }
@@ -859,13 +861,5 @@ public abstract class PDFont implements COSObjectable
     {
         return this.getCOSObject().hashCode();
     }
-    
-    private static EncodingManager encodingManager = null;
-    
-    protected static EncodingManager getEncodingManager(){
-        if(encodingManager == null){
-            encodingManager = new EncodingManager();
-        }
-        return encodingManager;
-    }
+
 }
