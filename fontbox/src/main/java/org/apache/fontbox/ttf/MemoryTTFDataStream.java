@@ -169,7 +169,7 @@ public class MemoryTTFDataStream extends TTFDataStream
      * @param off The offset into the buffer.
      * @param len The length into the buffer.
      * 
-     * @return The number of bytes read.
+     * @return The number of bytes read, or -1 at the end of the stream
      * 
      * @throws IOException If there is an error reading from the stream.
      */
@@ -178,11 +178,14 @@ public class MemoryTTFDataStream extends TTFDataStream
             int len)
      throws IOException
      {
-        int amountRead = Math.min( len, data.length-currentPosition );
-        System.arraycopy(data,currentPosition,b, off, amountRead );
-        currentPosition+=amountRead;
-        
-        return amountRead;
+        if (currentPosition < data.length) {
+            int amountRead = Math.min( len, data.length-currentPosition );
+            System.arraycopy(data,currentPosition,b, off, amountRead );
+            currentPosition+=amountRead;
+            return amountRead;
+        } else {
+            return -1;
+        }
      }
     
     /**
