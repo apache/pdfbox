@@ -16,17 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.awt.Dimension;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
-import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-
-import javax.print.PrintService;
-import javax.print.attribute.standard.OrientationRequested;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,8 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -68,6 +62,10 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 /**
  * This is the in-memory representation of the PDF document.  You need to call
  * close() on this object when you are done using it!!
+ * <p>
+ * This class implements the {@link Pageable} interface, but since PDFBox
+ * version 1.3.0 you should be using the {@link PDPageable} adapter instead
+ * (see <a href="https://issues.apache.org/jira/browse/PDFBOX-788">PDFBOX-788</a>).
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.47 $
@@ -119,8 +117,6 @@ public class PDDocument implements Pageable
      * from this documents
      */
     private boolean allSecurityToBeRemoved = false;
-
-    private PrinterJob currentPrinterJob = null;
 
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
@@ -950,46 +946,22 @@ public class PDDocument implements Pageable
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the format of the page at the given index when using a
+     * default printer job returned by  {@link PrinterJob#getPrinterJob()}.
+     *
+     * @deprecated Use the {@link PDPageable} adapter class
+     * @param i page index, zero-based
+     * @return page format
+     * @throws IndexOutOfBoundsException if the page index is invalid
      */
     public PageFormat getPageFormat(int pageIndex)
     {
-        PDPage page = (PDPage)getDocumentCatalog().getAllPages().get( pageIndex );
-        Dimension mediaBox = page.findMediaBox().createDimension();
-        Dimension cropBox = page.findCropBox().createDimension();
-        PrintService printService = currentPrinterJob.getPrintService();
-        Object ob = printService.getDefaultAttributeValue(OrientationRequested.class);
-
-        double diffWidth = 0;
-        double diffHeight = 0;
-        double mediaWidth = mediaBox.getWidth();
-        double mediaHeight = mediaBox.getHeight();
-        double cropWidth = cropBox.getWidth();
-        double cropHeight = cropBox.getHeight();
-        // we have to center the ImageableArea if the cropBox is smaller than the mediaBox
-        if (!mediaBox.equals(cropBox))
-        {
-            diffWidth = (mediaWidth - cropWidth)/2;
-            diffHeight = (mediaHeight - cropHeight)/2;
+        try {
+            PrinterJob printerJob = PrinterJob.getPrinterJob();
+            return new PDPageable(this, printerJob).getPageFormat(pageIndex);
+        } catch (PrinterException e) {
+            throw new RuntimeException(e);
         }
-        PageFormat format = currentPrinterJob.defaultPage();
-        Paper paper = format.getPaper();
-
-        if ( "landscape" == ob.toString() )
-        {
-           format.setOrientation(PageFormat.LANDSCAPE);
-           paper.setImageableArea( diffHeight, diffWidth, cropHeight, cropWidth);
-           paper.setSize( mediaHeight, mediaWidth );
-        }
-        else
-        {
-           format.setOrientation(PageFormat.PORTRAIT);
-           paper.setImageableArea( diffWidth, diffHeight, cropWidth, cropHeight);
-           paper.setSize( mediaWidth, mediaHeight );
-        }
-
-        format.setPaper( paper );
-        return format;
     } 
 
     /**
@@ -1060,12 +1032,8 @@ public class PDDocument implements Pageable
     private void print(PrinterJob job, boolean silent) throws PrinterException {
         if (job == null) {
             throw new PrinterException("The given printer job is null.");
-        } else if (!getCurrentAccessPermission().canPrint()) {
-            throw new PrinterException(
-                    "You do not have permission to print this document.");
         } else {
-            currentPrinterJob = job;
-            job.setPageable(this);
+            job.setPageable(new PDPageable(this, job));
             if (silent || job.printDialog()) {
                 job.print();
             }
