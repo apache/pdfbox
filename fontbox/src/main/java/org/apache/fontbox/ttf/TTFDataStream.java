@@ -194,7 +194,11 @@ public abstract class TTFDataStream
                 && (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1) {
             totalAmountRead += amountRead;
         }
-        return data;
+        if (totalAmountRead == numberOfBytes) {
+            return data;
+        } else {
+            throw new IOException("Unexpected end of TTF stream reached");
+        }
     }
     
     /**
@@ -204,7 +208,7 @@ public abstract class TTFDataStream
      * @param off The offset into the buffer.
      * @param len The length into the buffer.
      * 
-     * @return The number of bytes read.
+     * @return The number of bytes read, or -1 at the end of the stream
      * 
      * @throws IOException If there is an error reading from the stream.
      */
