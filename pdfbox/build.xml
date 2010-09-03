@@ -226,17 +226,6 @@
             <param name="sourcefile" value="${adobefiles.url}"/>
             <param name="destfile" value="${adobefiles.jar}"/>
         </antcall>
-        <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/cmap">
-            <patternset>
-                <include name="com/adobe/pdf/pcfi/chinese_t/*"/>
-                <include name="com/adobe/pdf/pcfi/japanese/*"/>
-                <include name="com/adobe/pdf/pcfi/korean/*"/>
-                <include name="com/adobe/pdf/pcfi/vietnamese/*"/>
-                <exclude name="**/*.pdf"/>
-                <exclude name="**/*.txt"/>
-            </patternset>
-            <mapper type="flatten"/>
-        </unjar>
         <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/afm">
             <patternset>
                 <include name="com/adobe/pdf/pcfi/afm/*.afm"/>
