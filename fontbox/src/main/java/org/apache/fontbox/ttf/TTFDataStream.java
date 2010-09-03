@@ -189,11 +189,10 @@ public abstract class TTFDataStream
         byte[] data = new byte[ numberOfBytes ];
         int amountRead = 0;
         int totalAmountRead = 0;
-        while( (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1 && 
-               totalAmountRead < numberOfBytes )
-        {
+        //read at most numberOfBytes bytes from the stream.
+        while (totalAmountRead < numberOfBytes
+                && (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1) {
             totalAmountRead += amountRead;
-            //read at most numberOfBytes bytes from the stream.
         }
         return data;
     }
