@@ -27,6 +27,14 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class MacRomanEncoding extends Encoding
 {
+
+    /**
+     * Singleton instance of this class.
+     *
+     * @since Apache PDFBox 1.3.0
+     */
+    public static final MacRomanEncoding INSTANCE = new MacRomanEncoding();
+
     /**
      * Constructor.
      */

@@ -18,9 +18,6 @@ package org.apache.pdfbox.encoding;
 
 import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -31,43 +28,43 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class EncodingManager
 {
-    private static final Map<COSName, Encoding> ENCODINGS =
-        new HashMap<COSName, Encoding>();
 
-    static
-    {
-        ENCODINGS.put( COSName.MAC_ROMAN_ENCODING, new MacRomanEncoding() );
-        ENCODINGS.put( COSName.PDF_DOC_ENCODING, new PdfDocEncoding() );
-        ENCODINGS.put( COSName.STANDARD_ENCODING, new StandardEncoding() );
-        ENCODINGS.put( COSName.WIN_ANSI_ENCODING, new WinAnsiEncoding() );
-    }
+    /**
+     * Default singleton instance of this class.
+     *
+     * @since Apache PDFBox 1.3.0
+     */
+    public static final EncodingManager INSTANCE = new EncodingManager();
 
     /**
      * This will get the standard encoding.
      *
      * @return The standard encoding.
      */
-    public Encoding getStandardEncoding()
-    {
-        return ENCODINGS.get( COSName.STANDARD_ENCODING );
+    public Encoding getStandardEncoding() {
+        return StandardEncoding.INSTANCE;
     }
 
     /**
      * This will get an encoding by name.
      *
      * @param name The name of the encoding to get.
-     *
      * @return The encoding that matches the name.
-     *
-     * @throws IOException If there is not encoding with that name.
+     * @throws IOException if there is no encoding with that name.
      */
-    public Encoding getEncoding( COSName name ) throws IOException
-    {
-        Encoding encoding = ENCODINGS.get( name );
-        if( encoding == null )
-        {
-            throw new IOException( "Unknown encoding for '" + name.getName() + "'" );
+    public Encoding getEncoding( COSName name ) throws IOException {
+        if (COSName.STANDARD_ENCODING.equals(name)) {
+            return StandardEncoding.INSTANCE;
+        } else if (COSName.WIN_ANSI_ENCODING.equals(name)) {
+            return WinAnsiEncoding.INSTANCE;
+        } else if (COSName.MAC_ROMAN_ENCODING.equals(name)) {
+            return MacRomanEncoding.INSTANCE;
+        } else if (COSName.PDF_DOC_ENCODING.equals(name)) {
+            return PdfDocEncoding.INSTANCE;
+        } else {
+            throw new IOException(
+                    "Unknown encoding for '" + name.getName() + "'");
         }
-        return encoding;
     }
+
 }

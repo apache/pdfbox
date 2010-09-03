@@ -27,6 +27,14 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class WinAnsiEncoding extends Encoding
 {
+
+    /**
+     * Singleton instance of this class.
+     *
+     * @since Apache PDFBox 1.3.0
+     */
+    public static final WinAnsiEncoding INSTANCE = new WinAnsiEncoding();
+
     /**
      * Constructor.
      */
