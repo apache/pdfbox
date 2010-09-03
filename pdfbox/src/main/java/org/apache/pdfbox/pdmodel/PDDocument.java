@@ -811,7 +811,7 @@ public class PDDocument implements Pageable
      */
     public static PDDocument load( File file, RandomAccess scratchFile ) throws IOException
     {
-        return load( new FileInputStream( file ) );
+        return load( new FileInputStream( file ), scratchFile );
     }
 
     /**
