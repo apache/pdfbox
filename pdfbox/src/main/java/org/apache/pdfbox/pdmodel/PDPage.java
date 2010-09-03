@@ -54,6 +54,10 @@ import java.util.List;
 
 /**
  * This represents a single page in a PDF document.
+ * <p>
+ * This class implements the {@link Printable} interface, but since PDFBox
+ * version 1.3.0 you should be using the {@link PDPageable} adapter instead
+ * (see <a href="https://issues.apache.org/jira/browse/PDFBOX-788">PDFBOX-788</a>).
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.29 $
@@ -808,23 +812,22 @@ public class PDPage implements COSObjectable, Printable
     }
 
     /**
-     * {@inheritDoc}
+     * @deprecated Use the {@link PDPageable} adapter class
      */
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
         throws PrinterException
     {
-        int retval = Printable.PAGE_EXISTS;
         try
         {
             PageDrawer drawer = new PageDrawer();
             PDRectangle cropBox = findCropBox();
             drawer.drawPage( graphics, this, cropBox.createDimension() );
+            return PAGE_EXISTS;
         }
         catch( IOException io )
         {
             throw new PrinterIOException( io );
         }
-        return retval;
     }
 
     /**

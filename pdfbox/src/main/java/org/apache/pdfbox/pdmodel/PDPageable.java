@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import static javax.print.attribute.standard.OrientationRequested.LANDSCAPE;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
@@ -32,15 +33,15 @@ import javax.print.PrintService;
 import javax.print.attribute.standard.OrientationRequested;
 
 /**
- * Adapter class that implements the {@link Pageable} interface for
- * printing a given PDF document. Note that the given PDF document should
- * not be modified (pages added, removed, etc.) while an instance of this
- * class is being used.
+ * Adapter class that implements the {@link Pageable} and {@link Printable}
+ * interfaces for printing a given PDF document. Note that the given PDF
+ * document should not be modified (pages added, removed, etc.) while an
+ * instance of this class is being used.
  *
  * @since Apache PDFBox 1.3.0
  * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-788">PDFBOX-788</a>
  */
-public class PDPageable implements Pageable {
+public class PDPageable implements Pageable, Printable {
 
     /**
      * List of all pages in the given PDF document.
@@ -162,6 +163,28 @@ public class PDPageable implements Pageable {
      */
     public Printable getPrintable(int i) throws IndexOutOfBoundsException {
         return pages.get(i);
+    }
+
+    //-----------------------------------------------------------< Printable >
+
+    /**
+     * Prints the page at the given index.
+     *
+     * @param graphics printing target
+     * @param format page format
+     * @param i page index, zero-based
+     * @return {@link Printable#PAGE_EXISTS} if the page was printed,
+     *         or {@link Printable#NO_SUCH_PAGE} if page index was invalid
+     * @throws PrinterException if printing failed
+     */
+    @SuppressWarnings("deprecation")
+    public int print(Graphics graphics, PageFormat format, int i)
+            throws PrinterException {
+        if (0 <= i && i < pages.size()) {
+            return pages.get(i).print(graphics, format, i);
+        } else {
+            return NO_SUCH_PAGE;
+        }
     }
 
 }
