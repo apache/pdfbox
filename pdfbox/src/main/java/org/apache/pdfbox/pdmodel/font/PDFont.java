@@ -53,6 +53,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -177,7 +178,7 @@ public abstract class PDFont implements COSObjectable
         determineEncoding();
     }
 
-    private void determineEncoding()
+   	private void determineEncoding()
     {
         String cmapName = null;
         COSName encodingName = null;
@@ -289,10 +290,7 @@ public abstract class PDFont implements COSObjectable
                 log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
             }
         }
-//        if (fontEncoding == null)
-//        {
-            getEncodingFromFont();
-//        }
+        getEncodingFromFont();
     }
 
     /**
@@ -513,14 +511,14 @@ public abstract class PDFont implements COSObjectable
         }
         
         // there is no cmap but probably an encoding with a suitable mapping
-        if( retval == null && length == 1)
+        if( retval == null )
         {
             Encoding encoding = getEncoding();
             if( encoding != null )
             {
                 retval = encoding.getCharacter( getCodeFromArray( c, offset, length ) );
             }
-            if( retval == null && cmap == null)
+            if( retval == null && (cmap == null || length == 2))
             {
                 retval = getStringFromArray( c, offset, length );
             }
@@ -537,7 +535,15 @@ public abstract class PDFont implements COSObjectable
             SINGLE_CHAR_STRING[i] = new String( new byte[] {(byte)i} );
             for( int j=0; j<256; j++ )
             {
-                DOUBLE_CHAR_STRING[i][j] = new String( new byte[] {(byte)i, (byte)j} );
+                try
+                {
+                    DOUBLE_CHAR_STRING[i][j] = new String( new byte[] {(byte)i, (byte)j}, "UTF-16BE" );
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                    // Nothing should happen here
+                    e.printStackTrace();
+                }
             }
         }
     }
