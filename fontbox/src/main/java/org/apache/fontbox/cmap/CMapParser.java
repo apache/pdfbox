@@ -40,6 +40,7 @@ public class CMapParser
     private static final String BEGIN_CODESPACE_RANGE = "begincodespacerange";
     private static final String BEGIN_BASE_FONT_CHAR = "beginbfchar";
     private static final String BEGIN_BASE_FONT_RANGE = "beginbfrange";
+    private static final String BEGIN_CID_CHAR = "begincidchar";
     private static final String BEGIN_CID_RANGE = "begincidrange";
     private static final String USECMAP = "usecmap";
     
@@ -204,6 +205,17 @@ public class CMapParser
                         }
                     }
                 }
+                else if( op.op.equals( BEGIN_CID_CHAR ) )
+                {
+                    Number cosCount = (Number)previousToken;
+                    for( int j=0; j<cosCount.intValue(); j++ )
+                    {
+                        byte[] inputCode = (byte[])parseNextToken( cmapStream );
+                        int mappedCode = (Integer)parseNextToken( cmapStream );
+                        String mappedStr = createStringFromBytes(inputCode);
+                        result.addCIDMapping(mappedCode, mappedStr);
+                    }
+                }
                 else if( op.op.equals( BEGIN_CID_RANGE ) )
                 {
                     int numberOfLines = (Integer)previousToken;
@@ -213,13 +225,11 @@ public class CMapParser
                         byte[] endCode = (byte[])parseNextToken( cmapStream );
                         int end = createIntFromBytes(endCode);
                         int mappedCode = (Integer)parseNextToken( cmapStream );
-                        int numberOfMappings = end-start;
-                        byte[] mappedBytes = createBytesFromInt(mappedCode); 
-                        for (int i=0; i<numberOfMappings; i++) {
+                        int endOfMappings = mappedCode + end-start;
+                        while (mappedCode<=endOfMappings) {
                             String mappedStr = createStringFromBytes(startCode);
-                            result.addMapping(mappedBytes, mappedStr);
+                            result.addCIDMapping(mappedCode++, mappedStr);
                             increment(startCode);
-                            increment(mappedBytes);
                         }
                     }
                 }

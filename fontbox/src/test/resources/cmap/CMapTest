@@ -22,10 +22,26 @@
   <0000> <02FF>
 endcodespacerange
 
-3 begincidrange
+2 beginbfchar
+<000A> <002A>
+<010A> <002B>
+endbfchar
+
+2 beginbfrange
+<0001> <0009> <0041>
+<0100> <0109> <0030>
+endbfrange
+
+3 begincidchar
+<0200> 512
+<0208> 520
+<020A> 522
+endcidchar
+
+2 begincidrange
 <0000> <00ff> 0
 <0100> <01ff> 256
-<0200> <02ff> 512
+endcidrange
 
 endcmap
 
