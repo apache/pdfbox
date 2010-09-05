@@ -42,13 +42,33 @@ public class TestCMapParser extends TestCase
         CMapParser parser = new CMapParser();
         CMap cMap = parser.parse( resourceDir, new FileInputStream(new File(inDir,"CMapTest")));
         
-        byte[] bytes1 = {0,65};
+        // char mappings
+        byte[] bytes1 = {0,1};
         assertTrue("A".equals(cMap.lookup(bytes1, 0, 2)));
 
-        byte[] bytes2 = {1,24};
-        String str2 = "\u0118";
+        byte[] bytes2 = {1,00};
+        String str2 = "0";
         assertTrue(str2.equals(cMap.lookup(bytes2, 0, 2)));
 
+        byte[] bytes3 = {0,10};
+        String str3 = "*";
+        assertTrue(str3.equals(cMap.lookup(bytes3, 0, 2)));
+
+        byte[] bytes4 = {1,10};
+        String str4 = "+";
+        assertTrue(str4.equals(cMap.lookup(bytes4, 0, 2)));
+
+        // CID mappings
+        int cid1 = 65;
+        assertTrue("A".equals(cMap.lookupCID(cid1)));
+
+        int cid2 = 280;
+        String strCID2 = "\u0118";
+        assertTrue(strCID2.equals(cMap.lookupCID(cid2)));
+        
+        int cid3 = 520;
+        String strCID3 = "\u0208";
+        assertTrue(strCID3.equals(cMap.lookupCID(cid3)));
     }
 
 }

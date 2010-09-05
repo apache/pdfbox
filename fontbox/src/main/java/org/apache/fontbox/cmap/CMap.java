@@ -35,6 +35,7 @@ public class CMap
     private List<CodespaceRange> codeSpaceRanges = new ArrayList<CodespaceRange>();
     private Map<Integer,String> singleByteMappings = new HashMap<Integer,String>();
     private Map<Integer,String> doubleByteMappings = new HashMap<Integer,String>();
+    private Map<Integer,String> cidMappings = new HashMap<Integer,String>();
 
     /**
      * Creates a new instance of CMap.
@@ -65,6 +66,15 @@ public class CMap
     }
 
     /**
+     * This will tell if this cmap has any CID mappings.
+     * 
+     * @return true If there are any CID mappings, false otherwise.
+     */
+    public boolean hasCIDMappings()
+    {
+        return cidMappings.size() > 0;
+    }
+    /**
      * This will perform a lookup into the map.
      *
      * @param code The code used to lookup.
@@ -93,6 +103,21 @@ public class CMap
     }
 
     /**
+     * This will perform a lookup into the CID map.
+     *
+     * @param code The code used to lookup.
+     *
+     * @return The string that matches the lookup.
+     */
+    public String lookupCID( int code )
+    {
+        if( cidMappings.containsKey(code) )
+        {
+            return cidMappings.get(code);
+        }
+        return null;
+    }
+    /**
      * This will add a mapping.
      *
      * @param src The src to the mapping.
@@ -119,6 +144,19 @@ public class CMap
         }
     }
 
+    /**
+     * This will add a CID mapping.
+     *
+     * @param src The CID to the mapping.
+     * @param dest The dest to the mapping.
+     *
+     * @throws IOException if the src is invalid.
+     */
+    public void addCIDMapping( int src, String dest ) throws IOException
+    {
+        cidMappings.put( src , dest );
+    }
+    
     /**
      * This will add a codespace range.
      *
