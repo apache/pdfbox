@@ -257,9 +257,20 @@ public class FlateFilter implements Filter
                 {
                     case 2:// PRED TIFF SUB
                         /**
-                         * @todo decode tiff
+                         * @TODO decode tiff with bitsPerComponent != 8; e.g. for 4 bpc each nibble must be subtracted separately
                          */
-                        throw new IOException("TIFF-Predictor not supported");
+                        if ( bitsPerComponent != 8 )
+                        {
+                    	  	throw new IOException("TIFF-Predictor with " + bitsPerComponent + " bits per component not supported");
+                        }
+                        // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
+                      	for (int p = bpp; p < rowlength; p++)
+	                      {
+	                          int sub = actline[p] & 0xff;
+	                          int left = actline[p - bpp] & 0xff;
+	                          actline[p] = (byte) (sub + left);
+	                      }
+	                      break;
                     case 11:// PRED SUB
                         for (int p = bpp; p < rowlength; p++)
                         {
