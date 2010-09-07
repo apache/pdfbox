@@ -92,7 +92,11 @@ public class PostScriptTable extends TTFTable
             {
                 int index = data.readUnsignedShort();
                 glyphNameIndex[i] = index;
-                maxIndex = Math.max( maxIndex, index );
+                // PDFBOX-808: Index numbers between 32768 and 65535 are
+                // reserved for future use, so we should just ignore them
+                if (index <= 32767) {
+                    maxIndex = Math.max( maxIndex, index );
+                }
             }
             String[] nameArray = null;
             if( maxIndex >= 258 )
@@ -117,7 +121,9 @@ public class PostScriptTable extends TTFTable
                 }
                 else
                 {
-                    throw new IOException( "Unknown glyph name index:" + index );
+                    // PDFBOX-808: Index numbers between 32768 and 65535 are
+                    // reserved for future use, so we should just ignore them
+                    glyphNames[i] = ".undefined";
                 }
             }
         }
