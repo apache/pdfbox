@@ -110,7 +110,7 @@ public class FlateFilter implements Filter
                 byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
 
                 // Decode data using given predictor
-                if (predictor==-1 || predictor == 1 || predictor == 10)
+                if (predictor==-1 || predictor == 1 )
                 {
                     try 
                     {
@@ -205,9 +205,9 @@ public class FlateFilter implements Filter
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];
 
-        if (predictor == 1 || predictor == 10)
+        if (predictor == 1 )
         {
-            // No prediction or PNG NONE
+            // No prediction
             int i = 0;
             while ((i = data.read(buffer)) != -1)
             {
@@ -228,8 +228,10 @@ public class FlateFilter implements Filter
 
             while (!done && data.available() > 0)
             {
-                if (predictor == 15)
+            	  // test for PNG predictor; each value >= 10 (not only 15) indicates usage of PNG predictor
+              	if (predictor >= 10)
                 {
+            		    // PNG predictor; each row starts with predictor type (0, 1, 2, 3, 4)
                     linepredictor = data.read();// read per line predictor
                     if (linepredictor == -1)
                     {
@@ -238,10 +240,8 @@ public class FlateFilter implements Filter
                     }
                     else
                     {
-                        linepredictor += 10; // add 10 to tread value 1 as 11
+                        linepredictor += 10; // add 10 to tread value 0 as 10, 1 as 11, ...
                     }
-                    // (instead of PRED NONE) and 2
-                    // as 12 (instead of PRED TIFF)
                 }
 
                 // read line
@@ -271,6 +271,9 @@ public class FlateFilter implements Filter
 	                          actline[p] = (byte) (sub + left);
 	                      }
 	                      break;
+                    case 10:// PRED NONE
+                    	// do nothing
+                      break;
                     case 11:// PRED SUB
                         for (int p = bpp; p < rowlength; p++)
                         {
