@@ -342,4 +342,19 @@ file.
         }
         return null;
     }
+
+    /** 
+     * Returns the optional mask of a XObjectImage if there is one.
+     * 
+     * @return The mask as COSArray otherwise null.
+     */
+    public COSArray getMask()
+    {
+        COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
+        if (mask != null)
+        {
+            return (COSArray)mask;
+        }
+        return null;
+    }
 }

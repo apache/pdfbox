@@ -201,9 +201,8 @@ public class PDPixelMap extends PDXObjectImage
                     ColorModel baseColorModel = csIndexed.getBaseColorSpace().createColorModel(bpc);
                     int size = csIndexed.getHighValue();
                     byte[] index = csIndexed.getLookupData();
-                    COSArray decode = getDecode();
-                    boolean isOpaque = (decode != null && decode.getInt(0) == 1) ? true : false;
                     boolean hasAlpha = baseColorModel.hasAlpha();
+                    COSArray maskArray = getMask();
                     if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
                     {
                         throw new IOException( "Not implemented" );
@@ -211,7 +210,7 @@ public class PDPixelMap extends PDXObjectImage
                     byte[] r = new byte[size+1];
                     byte[] g = new byte[size+1];
                     byte[] b = new byte[size+1];
-                    byte[] a = new byte[size+1];
+                    byte[] a = hasAlpha ? new byte[size+1] : null;
                     byte[] inData = new byte[baseColorModel.getNumComponents()];
                     for( int i = 0; i <= size; i++ )
                     {
@@ -223,12 +222,21 @@ public class PDPixelMap extends PDXObjectImage
                         {
                             a[i] = (byte)baseColorModel.getAlpha(inData);
                         }
+                    }
+                    if (hasAlpha)
+                    {
+                        cm = new IndexColorModel(bpc, size+1, r, g, b, a);
+                    }
+                    else {
+                        if (maskArray != null)
+                        {
+                            cm = new IndexColorModel(bpc, size+1, r, g, b, maskArray.getInt(0));
+                        }
                         else
                         {
-                            a[i] = isOpaque ? (byte)0xFF : (byte)0x00;
+                            cm = new IndexColorModel(bpc, size+1, r, g, b);
                         }
                     }
-                    cm = new IndexColorModel(bpc, size+1, r, g, b, a);
                 }
                 else
                     cm = colorspace.createColorModel( bpc );
@@ -350,7 +358,7 @@ public class PDPixelMap extends PDXObjectImage
      * <li>11 PNG prediction (on encoding, PNG Sub on all rows)
      * <li>12 PNG prediction (on encoding, PNG Up on all rows)
      * <li>13 PNG prediction (on encoding, PNG Average on all rows)
-     * <li>14 PNG prediction (on encoding, PNG Paeth on all rows)
+     * <li>14 PNG prediction (on encoding, PNG Path on all rows)
      * <li>15 PNG prediction (on encoding, PNG optimum)
      * </ul>
      *
