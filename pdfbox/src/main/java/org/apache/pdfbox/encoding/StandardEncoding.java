@@ -94,7 +94,7 @@ public class StandardEncoding extends Encoding
         addCharacterEncoding( 0303, "circumflex" );
         addCharacterEncoding( 0072, "colon" );
         addCharacterEncoding( 0054, "comma" );
-        addCharacterEncoding( 0250, "currency1" );
+        addCharacterEncoding( 0250, "currency" );
         addCharacterEncoding( 0144, "d" );
         addCharacterEncoding( 0262, "dagger" );
         addCharacterEncoding( 0263, "daggerdbl" );
