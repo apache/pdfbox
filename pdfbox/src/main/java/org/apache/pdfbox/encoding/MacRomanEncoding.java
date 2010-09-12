@@ -127,7 +127,7 @@ public class MacRomanEncoding extends Encoding
         addCharacterEncoding( 072, "colon" );
         addCharacterEncoding( 054, "comma" );
         addCharacterEncoding( 0251, "copyright" );
-        addCharacterEncoding( 0333, "currency1" );
+        addCharacterEncoding( 0333, "currency" );
         addCharacterEncoding( 0144, "d" );
         addCharacterEncoding( 0240, "dagger" );
         addCharacterEncoding( 0340, "daggerdbl" );

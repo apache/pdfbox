@@ -135,7 +135,7 @@ public class PdfDocEncoding extends Encoding
         addCharacterEncoding( 072, "colon" );
         addCharacterEncoding( 054, "comma" );
         addCharacterEncoding( 0251, "copyright" );
-        addCharacterEncoding( 0244, "currency1" );
+        addCharacterEncoding( 0244, "currency" );
         addCharacterEncoding( 0144, "d" );
         addCharacterEncoding( 0201, "dagger" );
         addCharacterEncoding( 0202, "daggerdbl" );
