@@ -597,8 +597,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName MARK_INFO = new COSName("MarkInfo");
 
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
+    public static final COSName MASK = new COSName( "Mask" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName MATRIX = new COSName( "Matrix" );
     /**
      * "MCID"
