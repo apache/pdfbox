@@ -137,15 +137,12 @@ public class ColorSpaceCMYK extends ColorSpace
         if (colorvalue != null && colorvalue.length == 4) 
         {
             // First of all we have to convert from CMYK to CMY
-            float c = ( colorvalue[0] * ( 1 - colorvalue[3] ) + colorvalue[3] );
-            float m = ( colorvalue[1] * ( 1 - colorvalue[3] ) + colorvalue[3] );
-            float y = ( colorvalue[2] * ( 1 - colorvalue[3] ) + colorvalue[3] );
+            float k = colorvalue[3];
+            float c = ( colorvalue[0] * ( 1 - k ) + k );
+            float m = ( colorvalue[1] * ( 1 - k ) + k );
+            float y = ( colorvalue[2] * ( 1 - k ) + k );
             // Now we have to convert from CMY to RGB
-            float[] rgbvalues = new float[3];
-            rgbvalues[0] = 1 - c;
-            rgbvalues[1] = 1 - m;
-            rgbvalues[2] = 1 - y;
-            return rgbvalues;
+            return new float[] { 1 - c, 1 - m, 1 - y };
         }
         return null;
     }
