@@ -44,11 +44,9 @@ public class GlyphTable extends TTFTable
     {
         MaximumProfileTable maxp = ttf.getMaximumProfile();
         IndexToLocationTable loc = ttf.getIndexToLocation();
-        PostScriptTable post = ttf.getPostScript();
         long[] offsets = loc.getOffsets();
         int numGlyphs = maxp.getNumGlyphs();
         glyphs = new GlyphData[numGlyphs];
-        String[] glyphNames = post.getGlyphNames(); 
         for( int i=0; i<numGlyphs-1; i++ )
         {
             GlyphData glyph = new GlyphData();

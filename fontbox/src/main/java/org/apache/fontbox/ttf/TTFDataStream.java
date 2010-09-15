@@ -123,8 +123,25 @@ public abstract class TTFDataStream
     public abstract int readUnsignedShort() throws IOException;
     
     /**
+     * Read an unsigned byte array.
+     * 
+     * @return An unsigned byte array.
+     * @throws IOException If there is an error reading the data.
+     */
+    public int[] readUnsignedByteArray( int length ) throws IOException
+    {
+        int[] array = new int[ length ];
+        for( int i=0; i<length; i++ )
+        {
+            array[i] = read();
+        }
+        return array;
+    }
+    
+    /**
      * Read an unsigned short array.
      * 
+     * @param length The length of the array to read.
      * @param length The length of the array to read.
      * @return An unsigned short array.
      * @throws IOException If there is an error reading the data.
