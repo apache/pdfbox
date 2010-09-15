@@ -44,6 +44,14 @@ public class CMapParser
     private static final String BEGIN_CID_RANGE = "begincidrange";
     private static final String USECMAP = "usecmap";
     
+    private static final String WMODE = "WMode";
+    private static final String CMAP_NAME = "CMapName";
+    private static final String CMAP_VERSION = "CMapVersion";
+    private static final String CMAP_TYPE = "CMapType";
+    private static final String REGISTRY = "Registry";
+    private static final String ORDERING = "Ordering";
+    private static final String SUPPLEMENT = "Supplement";
+    
     private static final String MARK_END_OF_DICTIONARY = ">>";
     private static final String MARK_END_OF_ARRAY = "]";
     
@@ -232,6 +240,44 @@ public class CMapParser
                             increment(startCode);
                         }
                     }
+                }
+            }
+            else if (token instanceof LiteralName){
+                LiteralName literal = (LiteralName)token;
+                if (WMODE.equals(literal.name)) 
+                {
+                    int wmode = (Integer)parseNextToken(cmapStream);
+                    result.setWMode(wmode);
+                }
+                else if (CMAP_NAME.equals(literal.name)) 
+                {
+                    LiteralName name = (LiteralName)parseNextToken(cmapStream);
+                    result.setName(name.name);
+                }
+                else if (CMAP_VERSION.equals(literal.name)) 
+                {
+                    String version = ((Double)parseNextToken(cmapStream)).toString();
+                    result.setVersion(version);
+                }
+                else if (CMAP_TYPE.equals(literal.name)) 
+                {
+                    int type = (Integer)parseNextToken(cmapStream);
+                    result.setType(type);
+                }
+                else if (REGISTRY.equals(literal.name)) 
+                {
+                    String registry = (String)parseNextToken(cmapStream);
+                    result.setRegistry(registry);
+                }
+                else if (ORDERING.equals(literal.name)) 
+                {
+                    String ordering = (String)parseNextToken(cmapStream);
+                    result.setOrdering(ordering);
+                }
+                else if (SUPPLEMENT.equals(literal.name)) 
+                {
+                    int supplement = (Integer)parseNextToken(cmapStream);
+                    result.setSupplement(supplement);
                 }
             }
             previousToken = token;
@@ -480,8 +526,11 @@ public class CMapParser
     private int createIntFromBytes(byte[] bytes) 
     {
         int intValue = (bytes[0]+256)%256;
-        intValue <<= 8;
-        intValue += (bytes[1]+256)%256;
+        if (bytes.length == 2) 
+        {
+            intValue <<= 8;
+            intValue += (bytes[1]+256)%256;
+        }
         return intValue;
     }
     
@@ -497,14 +546,6 @@ public class CMapParser
             retval = new String( bytes, "UTF-16BE" );
         }
         return retval;
-    }
-
-    private byte[] createBytesFromInt( int value ) throws IOException
-    {
-        byte[] bytes = new byte[2];
-        bytes[1] = (byte)(value % 256);
-        bytes[0] = (byte)(value / 256);
-        return bytes;
     }
 
     private int compare( byte[] first, byte[] second )

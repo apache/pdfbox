@@ -32,6 +32,16 @@ import java.util.Iterator;
  */
 public class CMap
 {
+    
+    private int wmode = 0;
+    private String cmapName = null;
+    private String cmapVersion = null;
+    private int cmapType = -1;
+    
+    private String registry = null;
+    private String ordering = null;
+    private int supplement = 0;
+    
     private List<CodespaceRange> codeSpaceRanges = new ArrayList<CodespaceRange>();
     private Map<Integer,String> singleByteMappings = new HashMap<Integer,String>();
     private Map<Integer,String> doubleByteMappings = new HashMap<Integer,String>();
@@ -223,5 +233,147 @@ public class CMap
             }
         }
         return false;
-     }
+    }
+    
+    /**
+     * Returns the WMode of a CMap.
+     *
+     * 0 represents a horizontal and 1 represents a vertical orientation.
+     * 
+     * @return
+     */
+    public int getWMode() 
+    {
+        return wmode;
+    }
+
+    /**
+     * Sets the WMode of a CMap.
+     * 
+     * @param newWMode the new WMode.
+     */
+    public void setWMode(int newWMode) 
+    {
+        wmode = newWMode;
+    }
+
+    /**
+     * Returns the name of the CMap.
+     * 
+     * @return the CMap name.
+     */
+    public String getName() 
+    {
+        return cmapName;
+    }
+
+    /**
+     * Sets the name of the CMap.
+     * 
+     * @param name the CMap name.
+     */
+    public void setName(String name) 
+    {
+        cmapName = name;
+    }
+
+    /**
+     * Returns the version of the CMap.
+     * 
+     * @return the CMap version.
+     */
+    public String getVersion() 
+    {
+        return cmapVersion;
+    }
+
+    /**
+     * Sets the version of the CMap.
+     * 
+     * @param version the CMap version.
+     */
+    public void setVersion(String version) 
+    {
+        cmapVersion = version;
+    }
+
+    /**
+     * Returns the type of the CMap.
+     * 
+     * @return the CMap type.
+     */
+    public int getType() 
+    {
+        return cmapType;
+    }
+
+    /**
+     * Sets the type of the CMap.
+     * 
+     * @param type the CMap type.
+     */
+    public void setType(int type) 
+    {
+        cmapType = type;
+    }
+
+    /**
+     * Returns the registry of the CIDSystemInfo.
+     * 
+     * @return the registry.
+     */
+    public String getRegistry() 
+    {
+        return registry;
+    }
+
+    /**
+     * Sets the registry of the CIDSystemInfo.
+     * 
+     * @param newRegistry the registry.
+     */
+    public void setRegistry(String newRegistry) 
+    {
+        registry = newRegistry;
+    }
+
+    /**
+     * Returns the ordering of the CIDSystemInfo.
+     * 
+     * @return the ordering.
+     */
+    public String getOrdering() 
+    {
+        return ordering;
+    }
+
+    /**
+     * Sets the ordering of the CIDSystemInfo.
+     * 
+     * @param newOrdering the ordering.
+     */
+    public void setOrdering(String newOrdering) 
+    {
+        ordering = newOrdering;
+    }
+
+    /**
+     * Returns the supplement of the CIDSystemInfo.
+     * 
+     * @return the supplement.
+     */
+    public int getSupplement() 
+    {
+        return supplement;
+    }
+
+    /**
+     * Sets the supplement of the CIDSystemInfo.
+     * 
+     * @param newSupplement the supplement.
+     */
+    public void setSupplement(int newSupplement) 
+    {
+        supplement = newSupplement;
+    }
 }
