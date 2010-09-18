@@ -246,38 +246,59 @@ public class CMapParser
                 LiteralName literal = (LiteralName)token;
                 if (WMODE.equals(literal.name)) 
                 {
-                    int wmode = (Integer)parseNextToken(cmapStream);
-                    result.setWMode(wmode);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof Integer)
+                    {
+                        result.setWMode((Integer)next);
+                    }
                 }
                 else if (CMAP_NAME.equals(literal.name)) 
                 {
-                    LiteralName name = (LiteralName)parseNextToken(cmapStream);
-                    result.setName(name.name);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof LiteralName)
+                    {
+                        result.setName(((LiteralName)next).name);
+                    }
                 }
                 else if (CMAP_VERSION.equals(literal.name)) 
                 {
-                    String version = ((Double)parseNextToken(cmapStream)).toString();
-                    result.setVersion(version);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof String)
+                    {
+                        result.setVersion((String)next);
+                    }
                 }
                 else if (CMAP_TYPE.equals(literal.name)) 
                 {
-                    int type = (Integer)parseNextToken(cmapStream);
-                    result.setType(type);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof Integer)
+                    {
+                        result.setType((Integer)next);
+                    }
                 }
                 else if (REGISTRY.equals(literal.name)) 
                 {
-                    String registry = (String)parseNextToken(cmapStream);
-                    result.setRegistry(registry);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof String)
+                    {
+                        result.setRegistry((String)next);
+                    }
                 }
                 else if (ORDERING.equals(literal.name)) 
                 {
-                    String ordering = (String)parseNextToken(cmapStream);
-                    result.setOrdering(ordering);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof String)
+                    {
+                        result.setOrdering((String)next);
+                    }
                 }
                 else if (SUPPLEMENT.equals(literal.name)) 
                 {
-                    int supplement = (Integer)parseNextToken(cmapStream);
-                    result.setSupplement(supplement);
+                    Object next = parseNextToken(cmapStream);
+                    if (next instanceof Integer)
+                    {
+                        result.setSupplement((Integer)next);
+                    }
                 }
             }
             previousToken = token;
