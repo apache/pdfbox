@@ -17,10 +17,10 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccess;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -111,19 +110,19 @@ public class PDCcitt extends PDXObjectImage
     public BufferedImage getRGBImage() throws IOException
     {
         BufferedImage retval = null;
-        
+
         InputStream tiff = new TiffWrapper(
                 getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
                 getCOSStream());
-        try 
+        try
         {
             retval = ImageIO.read(tiff);
         }
         catch (Exception e)
         {
             log.error(e, e);
-        } 
-        finally 
+        }
+        finally
         {
             if (tiff != null)
             {
@@ -498,12 +497,13 @@ public class PDCcitt extends PDXObjectImage
             // plus 12 bytes for each IFD, 4 bytes as a pointer to the next IFD (will be 0)
             // plus the length of the additional data
 
-            tiffheader = new byte[10 + (12 * numOfTags ) + 4 + maxAdditionalData];
+            int ifdSize = 10 + (12 * numOfTags ) + 4;
+            tiffheader = new byte[ifdSize + maxAdditionalData];
             java.util.Arrays.fill(tiffheader,(byte)0);
             System.arraycopy(basicHeader,0,tiffheader,0,basicHeader.length);
 
             // Additional data outside the IFD starts after the IFD's and pointer to the next IFD (0)
-            additionalOffset = 10 + (12 * numOfTags ) + 4;
+            additionalOffset = ifdSize;
 
             // Now work out the variable values from TIFF defaults,
             // PDF Defaults and the Dictionary for this XObject
@@ -514,7 +514,7 @@ public class PDCcitt extends PDXObjectImage
             long t4options = 0; // Will set if 1d or 2d T4
 
             COSArray decode = getDecode();
-            // we have to invert the b/w-values, 
+            // we have to invert the b/w-values,
             // if the Decode array exists and consists of (1,0)
             if (decode != null && decode.getInt(0) == 1)
             {
@@ -539,7 +539,7 @@ public class PDCcitt extends PDXObjectImage
                     for( int i=0; i<parmsArray.size() && decodeParms == null; i++ )
                     {
                         COSDictionary dic = (COSDictionary)parmsArray.getObject( i );
-                        if (dic != null && 
+                        if (dic != null &&
                                 ( dic.getDictionaryObject(COSName.COLUMNS) != null ||
                                         dic.getDictionaryObject(COSName.ROWS) != null))
                         {
@@ -557,7 +557,7 @@ public class PDCcitt extends PDXObjectImage
                 {
                     blackis1 = 1;
                 }
-                int k = decodeParms.getInt(COSName.K);  // Mandatory parm
+                int k = decodeParms.getInt(COSName.K, 0);  // Mandatory parm
                 if (k < 0)
                 {
                     //T6
@@ -635,13 +635,19 @@ public class PDCcitt extends PDXObjectImage
             tiffheader[offset]=(byte)(tag & 0xff);
             tiffheader[offset+1]=(byte)((tag>>8) & 0xff);
             tiffheader[offset+2]=2;  // Type Ascii
-            tiffheader[offset+4]=1;  // One Value
+            int len = value.length() + 1;
+            tiffheader[offset+4]=(byte)(len & 0xff);
             tiffheader[offset+8]=(byte)(additionalOffset & 0xff);
             tiffheader[offset+9]=(byte)((additionalOffset>>8) & 0xff);
             tiffheader[offset+10]=(byte)((additionalOffset>>16) & 0xff);
             tiffheader[offset+11]=(byte)((additionalOffset>>24) & 0xff);
-            System.arraycopy(value.getBytes(), 0, tiffheader, additionalOffset, value.length());
-            additionalOffset += value.length() + 1;
+            try {
+                System.arraycopy(value.getBytes("US-ASCII"), 0,
+                        tiffheader, additionalOffset, value.length());
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("Incompatible VM without US-ASCII encoding", e);
+            }
+            additionalOffset += len;
         }
 
         private void addTag(int tag, long numerator, long denominator)
