@@ -530,6 +530,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName JAVA_SCRIPT = new COSName( "JavaScript" );
 
     /**
+     * A common COSName value.
+     */
+    public static final COSName JBIG2_DECODE = new COSName( "JBIG2Decode" );
+    /**
     * A common COSName value.
     */
     public static final COSName JPX_DECODE = new COSName( "JPXDecode" );

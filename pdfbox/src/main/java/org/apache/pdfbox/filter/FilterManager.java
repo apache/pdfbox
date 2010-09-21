@@ -48,7 +48,8 @@ public class FilterManager
         Filter runLengthFilter = new RunLengthDecodeFilter();
         Filter cryptFilter = new CryptFilter();
         Filter jpxFilter = new JPXFilter();
-
+        Filter jbig2Filter = new JBIG2Filter();
+        
         addFilter( COSName.FLATE_DECODE, flateFilter );
         addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
         addFilter( COSName.DCT_DECODE, dctFilter );
@@ -65,6 +66,7 @@ public class FilterManager
         addFilter( COSName.RUN_LENGTH_DECODE_ABBREVIATION, runLengthFilter );
         addFilter( COSName.CRYPT, cryptFilter );
         addFilter( COSName.JPX_DECODE, jpxFilter );
+        addFilter( COSName.JBIG2_DECODE, jbig2Filter );
         
     }
 

@@ -268,6 +268,14 @@ file.
                         log.info("About to return NULL from CCITT branch");
                     }
             }
+            else if( COSName.JBIG2_DECODE.equals( filter ) )
+            {
+                retval = new PDDeviceGray();
+                if (retval == null) 
+                {
+                    log.info("About to return NULL from JBIG2 branch");
+                }
+            }
             else if (getImageMask())
             {
                 //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
