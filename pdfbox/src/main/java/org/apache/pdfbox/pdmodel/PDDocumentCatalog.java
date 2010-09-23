@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -121,7 +120,7 @@ public class PDDocumentCatalog implements COSObjectable
     {
         document = doc;
         root = new COSDictionary();
-        root.setItem( COSName.TYPE, new COSString( "Catalog" ) );
+        root.setItem( COSName.TYPE, COSName.CATALOG );
         document.getDocument().getTrailer().setItem( COSName.ROOT, root );
     }
 
