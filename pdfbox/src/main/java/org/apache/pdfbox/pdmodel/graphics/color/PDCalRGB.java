@@ -24,9 +24,11 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
-
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
 import java.io.IOException;
 
 /**
@@ -110,7 +112,13 @@ public class PDCalRGB extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        throw new IOException( "Not implemented" );
+        int[] nBits = {bpc, bpc, bpc};
+        return new ComponentColorModel( getJavaColorSpace(),
+                   nBits,
+                   false,
+                   false,
+                   Transparency.OPAQUE,
+                   DataBuffer.TYPE_BYTE);
     }
 
     /**
