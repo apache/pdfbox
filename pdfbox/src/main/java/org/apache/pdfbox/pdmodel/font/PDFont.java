@@ -119,8 +119,8 @@ public abstract class PDFont implements COSObjectable
         return metrics;
     }
 
-    private static String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
-    private static String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
+    private final static String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
+    private final static String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
 
     private static void addAdobeFontMetric(
             Map<String, FontMetric> metrics, String name ) {
