@@ -42,19 +42,20 @@ public class ShowTextGlyph extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSArray array = (COSArray)arguments.get( 0 );
-        float adjustment=0;
-        for( int i=0; i<array.size(); i++ )
+        int arraySize = array.size();
+        float fontsize = context.getGraphicsState().getTextState().getFontSize();
+        float horizontalScaling = context.getGraphicsState().getTextState().getHorizontalScalingPercent()/100;
+        for( int i=0; i<arraySize; i++ )
         {
             COSBase next = array.get( i );
             if( next instanceof COSNumber )
             {
-                adjustment = ((COSNumber)next).floatValue();
-
+                float adjustment = ((COSNumber)next).floatValue();
                 Matrix adjMatrix = new Matrix();
-                adjustment=(-adjustment/1000)*context.getGraphicsState().getTextState().getFontSize() *
-                    (context.getGraphicsState().getTextState().getHorizontalScalingPercent()/100);
+                adjustment=-(adjustment/1000)*horizontalScaling*fontsize;
+                // TODO vertical writing mode
                 adjMatrix.setValue( 2, 0, adjustment );
-                context.setTextMatrix( adjMatrix.multiply( context.getTextMatrix() ) );
+                context.setTextMatrix( adjMatrix.multiply(context.getTextMatrix()) );
             }
             else if( next instanceof COSString )
             {

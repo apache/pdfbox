@@ -19,6 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
@@ -36,7 +37,7 @@ public class GSave extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        context.getGraphicsStack().push( context.getGraphicsState().clone() );
+        context.getGraphicsStack().push( (PDGraphicsState)context.getGraphicsState().clone() );
     }
 
 }
