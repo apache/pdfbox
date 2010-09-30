@@ -19,7 +19,6 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
@@ -43,7 +43,10 @@ import org.apache.pdfbox.pdmodel.PDResources;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
+import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -74,15 +77,15 @@ public class PDFStreamEngine
 
     private Matrix textMatrix = null;
     private Matrix textLineMatrix = null;
-    private Stack graphicsStack = new Stack();
+    private Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
 
-    private Map operators = new HashMap();
+    private Map<String,OperatorProcessor> operators = new HashMap<String,OperatorProcessor>();
 
-    private Stack streamResourcesStack = new Stack();
+    private Stack<StreamResources> streamResourcesStack = new Stack<StreamResources>();
 
     private PDPage page;
 
-    private Map documentFontCache = new HashMap();
+    private Map<String,PDFont> documentFontCache = new HashMap<String,PDFont>();
     
     private int validCharCnt;
     private int totalCharCnt;
@@ -93,10 +96,10 @@ public class PDFStreamEngine
      */
     private static class StreamResources
     {
-        private Map fonts;
-        private Map colorSpaces;
-        private Map xobjects;
-        private Map graphicsStates;
+        private Map<String,PDFont> fonts;
+        private Map<String,PDColorSpace> colorSpaces;
+        private Map<String,PDXObject> xobjects;
+        private Map<String,PDExtendedGraphicsState> graphicsStates;
         private PDResources resources;
         
         private StreamResources()
@@ -233,7 +236,7 @@ public class PDFStreamEngine
         }
         try
         {
-            List arguments = new ArrayList();
+            List<COSBase> arguments = new ArrayList<COSBase>();
             
             parser = new PDFStreamParser( cosStream );
             Iterator<Object> iter = parser.getTokenIterator();
@@ -252,7 +255,7 @@ public class PDFStreamEngine
                 }
                 else
                 {
-                    arguments.add( next );
+                    arguments.add( (COSBase)next );
                 }
                 if(log.isDebugEnabled())
                 {
@@ -331,11 +334,13 @@ public class PDFStreamEngine
         //this might be a different number
         final float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
         float spaceWidthText=0;
-        
-        try{ // to avoid crash as described in PDFBOX-614
+        try
+        {   
+            // to avoid crash as described in PDFBOX-614
             // lets see what the space displacement should be
             spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
-        }catch (Throwable exception)
+        }
+        catch (Throwable exception)
         {
             log.warn( exception, exception);
         }
@@ -348,38 +353,21 @@ public class PDFStreamEngine
             spaceWidthText *= .80f;
         }
         
-        
-        /* Convert textMatrix to display units */
-        final Matrix initialMatrix = new Matrix();
-        initialMatrix.setValue(0,0,1);
-        initialMatrix.setValue(0,1,0);
-        initialMatrix.setValue(0,2,0);
-        initialMatrix.setValue(1,0,0);
-        initialMatrix.setValue(1,1,1);
-        initialMatrix.setValue(1,2,0);
-        initialMatrix.setValue(2,0,0);
-        initialMatrix.setValue(2,1,riseText);
-        initialMatrix.setValue(2,2,1);
-
-        final Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-        final Matrix dispMatrix = initialMatrix.multiply( ctm );
-
-        Matrix textMatrixStDisp = textMatrix.multiply( dispMatrix );
-        Matrix textMatrixEndDisp = null;
-
-        final float xScaleDisp = textMatrixStDisp.getXScale();
-        final float yScaleDisp = textMatrixStDisp.getYScale(); 
-        
-        final float spaceWidthDisp = spaceWidthText * xScaleDisp * fontSizeText;
-        final float wordSpacingDisp = wordSpacingText * xScaleDisp * fontSizeText; 
+        final float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText;
         
         float maxVerticalDisplacementText = 0;
 
-        float[] individualWidthsBuffer = new float[string.length];
-        StringBuilder characterBuffer = new StringBuilder(string.length);
+        Matrix textStateParameters = new Matrix();
+        textStateParameters.setValue(0,0, fontSizeText*horizontalScalingText);
+        textStateParameters.setValue(1,1, fontSizeText);
+        textStateParameters.setValue(2,1, riseText);
+
+        int pageRotation = page.findRotation();
+        float pageHeight = page.findMediaBox().getHeight();
+        float pageWidth = page.findMediaBox().getWidth();
 
         int codeLength = 1;
-        for( int i=0; i<string.length; i+=codeLength )
+        for( int i=0; i<string.length; i+=codeLength)
         {
             // Decode the value to a Unicode character
             codeLength = 1;
@@ -390,16 +378,14 @@ public class PDFStreamEngine
                 codeLength++;
                 c = font.encode( string, i, codeLength );
             }
-            c = inspectFontEncoding(c);
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
-            float characterHorizontalDisplacementText = 
-                (font.getFontWidth( string, i, codeLength )/glyphSpaceToTextSpaceFactor); 
+            float characterHorizontalDisplacementText = (font.getFontWidth( string, i, codeLength )/1000f);
             maxVerticalDisplacementText = 
                 Math.max( 
                     maxVerticalDisplacementText, 
-                    font.getFontHeight( string, i, codeLength)/glyphSpaceToTextSpaceFactor);
+                    characterHorizontalDisplacementText);
 
             // PDF Spec - 5.5.2 Word Spacing
             //
@@ -419,24 +405,17 @@ public class PDFStreamEngine
             // applying word spacing to either the non-32 space or to the character
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
-            float spacingText = characterSpacingText;
+            float spacingText = 0;
             if( (string[i] == 0x20) && codeLength == 1 )
             {
                 spacingText += wordSpacingText;
             }
-
-            /* The text matrix gets updated after each glyph is placed.  The updated
-             * version will have the X and Y coordinates for the next glyph.
-             */
-            Matrix glyphMatrixStDisp = textMatrix.multiply( dispMatrix );
-
-            //The adjustment will always be zero.  The adjustment as shown in the
-            //TJ operator will be handled separately.
-            float adjustment=0;
+            // Convert textMatrix to display units
+            Matrix textMatrixStart = textStateParameters.copy().multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
+            
             // TODO : tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
-            float tx = ((characterHorizontalDisplacementText-adjustment/glyphSpaceToTextSpaceFactor)*fontSizeText)
-                    * horizontalScalingText;
+            float tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
             float ty = 0;
 
             Matrix td = new Matrix();
@@ -445,84 +424,48 @@ public class PDFStreamEngine
 
             textMatrix = td.multiply( textMatrix );
 
-            Matrix glyphMatrixEndDisp = textMatrix.multiply( dispMatrix );
-
-            float sx = spacingText * horizontalScalingText;
-            float sy = 0;
-
-            Matrix sd = new Matrix();
-            sd.setValue( 2, 0, sx );
-            sd.setValue( 2, 1, sy );
-
-            textMatrix = sd.multiply( textMatrix );
+            // The text matrix gets updated after each glyph is placed.  The updated
+            // version will have the X and Y coordinates for the next glyph.
+            Matrix textMatrixEnd = textStateParameters.copy().multiply(textMatrix.copy()).multiply(getGraphicsState().getCurrentTransformationMatrix());
 
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
-
-            float widthText = glyphMatrixEndDisp.getXPosition() - glyphMatrixStDisp.getXPosition();
-
-            while( characterBuffer.length() + ( c != null ? c.length() : 1 ) > individualWidthsBuffer.length )
-            {
-                float[] tmp = new float[individualWidthsBuffer.length * 2];
-                System.arraycopy( individualWidthsBuffer, 0, tmp, 0, individualWidthsBuffer.length );
-                individualWidthsBuffer = tmp;
-            }
+            float widthText = textMatrixEnd.getXPosition() - textMatrixStart.getXPosition();
 
             //there are several cases where one character code will
             //output multiple characters.  For example "fi" or a
             //glyphname that has no mapping like "visiblespace"
             if( c != null )
             {
-                Arrays.fill(
-                        individualWidthsBuffer,
-                        characterBuffer.length(),
-                        characterBuffer.length() + c.length(),
-                        widthText / c.length());
-
-                validCharCnt += c.length();
+                validCharCnt++;
             }
             else 
             {
                 // PDFBOX-373: Replace a null entry with "?" so it is
                 // not printed as "(null)"
                 c = "?";
-
-                individualWidthsBuffer[characterBuffer.length()] = widthText;
             }
-            characterBuffer.append(c);
+            totalCharCnt++;
 
-            totalCharCnt += c.length();
-
-            if( spacingText == 0 && (i + codeLength) < (string.length - 1) )
-            {
-                continue;
-            }
-
-            textMatrixEndDisp = glyphMatrixEndDisp;
-
-            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * yScaleDisp;
-
-            float[] individualWidths = new float[characterBuffer.length()];
-            System.arraycopy( individualWidthsBuffer, 0, individualWidths, 0, individualWidths.length );
+            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText;
 
             // process the decoded text
             processTextPosition(
                     new TextPosition(
-                            page,
-                            textMatrixStDisp,
-                            textMatrixEndDisp,
+                            pageRotation,
+                            pageWidth,
+                            pageHeight,
+                            textMatrixStart,
+                            textMatrixEnd,
                             totalVerticalDisplacementDisp,
-                            individualWidths,
+                            widthText,
                             spaceWidthDisp,
-                            characterBuffer.toString(),
+                            c,
                             font,
                             fontSizeText,
-                            (int)(fontSizeText * textMatrix.getXScale()),
-                            wordSpacingDisp ));
+                            (int)(fontSizeText * textMatrix.getXScale())
+                            ));
 
-            textMatrixStDisp = textMatrix.multiply( dispMatrix );
-
-            characterBuffer.setLength(0);
         }
     }
 
@@ -534,7 +477,7 @@ public class PDFStreamEngine
      *
      * @throws IOException If there is an error processing the operation.
      */
-    public void processOperator( String operation, List arguments ) throws IOException
+    public void processOperator( String operation, List<COSBase> arguments ) throws IOException
     {
         try
         {
@@ -555,7 +498,7 @@ public class PDFStreamEngine
      *
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator( PDFOperator operator, List arguments ) throws IOException
+    protected void processOperator( PDFOperator operator, List<COSBase> arguments ) throws IOException
     {
         try
         {
@@ -584,51 +527,51 @@ public class PDFStreamEngine
     /**
      * @return Returns the colorSpaces.
      */
-    public Map getColorSpaces()
+    public Map<String,PDColorSpace> getColorSpaces()
     {
-        return ((StreamResources) streamResourcesStack.peek()).colorSpaces;
+        return streamResourcesStack.peek().colorSpaces;
     }
 
     /**
      * @return Returns the colorSpaces.
      */
-    public Map getXObjects()
+    public Map<String,PDXObject> getXObjects()
     {
-        return ((StreamResources) streamResourcesStack.peek()).xobjects;
+        return streamResourcesStack.peek().xobjects;
     }
 
     /**
      * @param value The colorSpaces to set.
      */
-    public void setColorSpaces(Map value)
+    public void setColorSpaces(Map<String,PDColorSpace> value)
     {
-        ((StreamResources) streamResourcesStack.peek()).colorSpaces = value;
+        streamResourcesStack.peek().colorSpaces = value;
     }
     /**
      * @return Returns the fonts.
      */
-    public Map getFonts()
+    public Map<String,PDFont> getFonts()
     {
-        return ((StreamResources) streamResourcesStack.peek()).fonts;
+        return streamResourcesStack.peek().fonts;
     }
     /**
      * @param value The fonts to set.
      */
-    public void setFonts(Map value)
+    public void setFonts(Map<String,PDFont> value)
     {
-        ((StreamResources) streamResourcesStack.peek()).fonts = value;
+        streamResourcesStack.peek().fonts = value;
     }
     /**
      * @return Returns the graphicsStack.
      */
-    public Stack getGraphicsStack()
+    public Stack<PDGraphicsState> getGraphicsStack()
     {
         return graphicsStack;
     }
     /**
      * @param value The graphicsStack to set.
      */
-    public void setGraphicsStack(Stack value)
+    public void setGraphicsStack(Stack<PDGraphicsState> value)
     {
         graphicsStack = value;
     }
@@ -649,14 +592,14 @@ public class PDFStreamEngine
     /**
      * @return Returns the graphicsStates.
      */
-    public Map getGraphicsStates()
+    public Map<String,PDExtendedGraphicsState> getGraphicsStates()
     {
-        return ((StreamResources) streamResourcesStack.peek()).graphicsStates;
+        return streamResourcesStack.peek().graphicsStates;
     }
     /**
      * @param value The graphicsStates to set.
      */
-    public void setGraphicsStates(Map value)
+    public void setGraphicsStates(Map<String,PDExtendedGraphicsState> value)
     {
         ((StreamResources) streamResourcesStack.peek()).graphicsStates = value;
     }
@@ -693,7 +636,7 @@ public class PDFStreamEngine
      */
     public PDResources getResources()
     {
-        return ((StreamResources) streamResourcesStack.peek()).resources;
+        return streamResourcesStack.peek().resources;
     }
 
     /**

@@ -47,6 +47,7 @@ public class TextPosition
     private PDFont font;
     private float fontSize;
     private int fontSizePt;
+    // TODO remove unused value
     private float wordSpacing;  // word spacing value, in display units
 
     /**
@@ -111,6 +112,60 @@ public class TextPosition
         this.wordSpacing = ws;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param pageRotation rotation of the page that the text is located in
+     * @param pageWidth rotation of the page that the text is located in
+     * @param pageHeight rotation of the page that the text is located in
+     * @param textPositionSt TextMatrix for start of text (in display units)
+     * @param textPositionEnd TextMatrix for end of text (in display units)
+     * @param maxFontH Maximum height of text (in display units)
+     * @param individualWidth The width of the given character/string. (in ? units)
+     * @param spaceWidth The width of the space character. (in display units)
+     * @param string The character to be displayed.
+     * @param currentFont The current for for this text position.
+     * @param fontSizeValue The new font size.
+     * @param fontSizeInPt The font size in pt units.
+     */
+    public TextPosition(
+            int pageRotation,
+            float pageWidth,
+            float pageHeight,
+            Matrix textPositionSt,
+            Matrix textPositionEnd,
+            float maxFontH,
+            float individualWidth,
+            float spaceWidth,
+            String string,
+            PDFont currentFont,
+            float fontSizeValue,
+            int fontSizeInPt
+    )
+    {
+        this.textPos = textPositionSt;
+
+        this.endX = textPositionEnd.getXPosition();
+        this.endY = textPositionEnd.getYPosition();
+
+        this.rot = pageRotation;
+        // make sure it is 0 to 270 and no negative numbers
+        if(this.rot < 0)
+        {
+            rot += 360;
+        }
+
+        this.maxTextHeight = maxFontH;
+        this.pageHeight = pageHeight;
+        this.pageWidth = pageWidth;
+
+        this.widths = new float[]{individualWidth};
+        this.widthOfSpace = spaceWidth;
+        this.str = string;
+        this.font = currentFont;
+        this.fontSize = fontSizeValue;
+        this.fontSizePt = fontSizeInPt;
+    }
     /**
      * Return the string of characters stored in this object.
      *
@@ -393,6 +448,7 @@ public class TextPosition
      *
      * @return The current word spacing.
      */
+    @Deprecated 
     public float getWordSpacing()
     {
         return wordSpacing;
