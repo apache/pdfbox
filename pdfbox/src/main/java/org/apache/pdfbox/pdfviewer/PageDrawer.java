@@ -16,14 +16,11 @@
  */
 package org.apache.pdfbox.pdfviewer;
 
-import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.color.ColorSpace;
 import java.awt.geom.Area;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -52,8 +49,6 @@ import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 import org.apache.pdfbox.util.TextPosition;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSDictionary;
 
 
@@ -190,7 +185,9 @@ public class PageDrawer extends PDFStreamEngine
             PDMatrix fontMatrix = font.getFontMatrix();
             at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 0) * 1000f);
             graphics.setClip(getGraphicsState().getCurrentClippingPath());
-            font.drawString( text.getCharacter(), graphics, text.getFontSize(), at, x, y );
+            // the fontSize is no longer needed as it is already part of the transformation
+            // we should remove it from the parameter list in the long run
+            font.drawString( text.getCharacter(), graphics, 1, at, x, y );
         }
         catch( IOException io )
         {
@@ -327,6 +324,7 @@ public class PageDrawer extends PDFStreamEngine
      * @param bStroking true for the stroking color, false for the non-stroking color
      * @throws IOException if an I/O error occurs
      */
+    @Deprecated
     public void colorChanged(boolean bStroking) throws IOException
     {
         //logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
