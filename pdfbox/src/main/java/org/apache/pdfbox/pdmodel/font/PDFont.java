@@ -338,7 +338,7 @@ public abstract class PDFont implements COSObjectable
      */
     public float getStringWidth( String string ) throws IOException
     {
-        byte[] data = string.getBytes();
+        byte[] data = string.getBytes("ISO-8859-1");
         float totalWidth = 0;
         for( int i=0; i<data.length; i++ )
         {
