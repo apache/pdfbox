@@ -106,7 +106,7 @@ public abstract class PDSimpleFont extends PDFont
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        writeFont(g2d, at, _awtFont, fontSize, x, y, string);
+        writeFont(g2d, at, _awtFont, x, y, string);
     }
 
     /**
@@ -359,14 +359,13 @@ public abstract class PDSimpleFont extends PDFont
      * @param g2d The graphics to draw onto.
      * @param at The transformation matrix with all infos for scaling and shearing of the font.
      * @param awtFont The font to draw.
-     * @param fontSize The size of the font to draw.
      * @param x The x coordinate to draw at.
      * @param y The y coordinate to draw at.
      * @param string The string to draw.
      *
      */
     protected void writeFont(final Graphics2D g2d, final AffineTransform at, final Font awtFont,
-                             final float fontSize, final float x, final float y, final String string) 
+                             final float x, final float y, final String string) 
     {
         // check if we have a rotation
         if (!at.isIdentity()) 
@@ -376,7 +375,7 @@ public abstract class PDSimpleFont extends PDFont
                 AffineTransform atInv = at.createInverse();
                 // do only apply the size of the transform, rotation will be realized by rotating the graphics,
                 // otherwise the hp printers will not render the font
-                g2d.setFont(awtFont.deriveFont(fontSize));
+                g2d.setFont(awtFont.deriveFont(1f));
                 // apply the inverse transformation to the graphics, which should be the same as applying the
                 // transformation itself to the text
                 g2d.transform(at);
@@ -394,7 +393,7 @@ public abstract class PDSimpleFont extends PDFont
         }
         else 
         {
-            g2d.setFont( awtFont.deriveFont( at ).deriveFont( fontSize ) );
+            g2d.setFont( awtFont.deriveFont( at ) );
             g2d.drawString( string, x, y );
         }
     }
