@@ -33,7 +33,7 @@
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
     <property name="pdfbox.src.dir" value="src/main/java" />
-	<property name="pdfbox.target.dir" value="target" />
+    <property name="pdfbox.target.dir" value="target" />
     <property name="pdfbox.dest.dir" value="${pdfbox.target.dir}/classes" />
     <property name="pdfbox.test.dir" value="src/test/java" />
     <property name="pdfbox.testfiles.dir" value="/src/test/resources" />
@@ -53,7 +53,7 @@
     <!-- jempbox -->
     <property name="jempbox.project.name" value="jempbox"/>
     <property name="jempbox.release.name" value="${jempbox.project.name}-${project.version}" />
-	<property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
+    <property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
     <property name="jempbox.target.dir" value="../${jempbox.project.name}/target" />
     <property name="jempbox.jar" value="${jempbox.target.dir}/${jempbox.release.name}.jar" />
     <property name="jempbox.dest.dir" value="${jempbox.target.dir}/classes" />
@@ -108,8 +108,8 @@
     <property name="adobefiles.url" value="${maven.repo2}/com/adobe/pdf/pcfi/2010.08.09/pcfi-2010.08.09.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2010.08.09.jar"/>
 
-	<property name="file" value=""/>
-	
+    <property name="file" value=""/>
+
     <!--.NET properties -->
     <property name="ikvm.dir" value="."/>
     <property name="ikvmc" value="${ikvm.dir}/bin/ikvmc.exe"/>
@@ -180,7 +180,7 @@
         <mkdir dir="${jempbox.dest.dir}"/>
     </target>
 
-  	<target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init,get.adobefiles"
+    <target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init,get.adobefiles"
             description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
         <javac srcdir="${pdfbox.src.dir}" destdir="${pdfbox.dest.dir}"
@@ -213,7 +213,7 @@
                classpathref="jempbox.build.classpath" encoding="ISO-8859-1"/>
     </target>
 
-   	<target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
+    <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="find.adobefiles">
         <available property="adobefiles.found" file="${dest.dir}/org/apache/pdfbox/resources/cmap"/>
@@ -407,7 +407,7 @@
             <param name="sourcefile" value="${icu4j.url}"/>
             <param name="destfile" value="${icu4j.jar}"/>
         </antcall>
-	</target>
+    </target>
 
     <target name="get.externallibs.fontbox">
         <antcall target="downloadfile">
@@ -431,7 +431,7 @@
         </antcall>
     </target>
 
-	<target name="pdfbox.package" depends="get.externallibs.pdfbox,pdfbox.compile" description="Package pdfbox into a jar file">
+    <target name="pdfbox.package" depends="get.externallibs.pdfbox,pdfbox.compile" description="Package pdfbox into a jar file">
         <property name="pdfbox.release.name" value="${pdfbox.project.name}-${project.version}" />
         <propertyfile file="${pdfbox.resources.dir}/org/apache/pdfbox/resources/pdfbox.version">
             <entry  key="pdfbox.version" value="${pdfbox.release.name}"/>
@@ -479,7 +479,7 @@
         </jar>
     </target>
 
-	<!-- We use Maven to create the release packages. Keep this target for -->
+    <!-- We use Maven to create the release packages. Keep this target for -->
     <!-- now for backwards compatibility with old build scripts and habits -->
     <target name="dist" depends="pdfbox.clean,pdfbox.package,javadoc,build.NET,checkstyle"/>
 
@@ -497,7 +497,7 @@
     <target name="build.NET" depends="checkForIKVM,pdfbox.package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
         <property name="release.name" value="${pdfbox.project.name}-${project.version}" />
         <echo>Building JUnit</echo>
-	<exec executable="${ikvmc}">
+    <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
