@@ -17,14 +17,15 @@
 package org.apache.pdfbox.encoding;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.StringTokenizer;
-import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,14 +38,17 @@ import org.apache.pdfbox.util.ResourceLoader;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.15 $
  */
-public abstract class Encoding implements COSObjectable {
+public abstract class Encoding implements COSObjectable
+{
 
     /**
      * Log instance.
      */
     private static final Log log = LogFactory.getLog(Encoding.class);
 
+    /** Identifies a non-mapped character. */
     public static final String NOTDEF = ".notdef";
+
     /**
      * This is a mapping from a character code to a character name.
      */
@@ -97,7 +101,7 @@ public abstract class Encoding implements COSObjectable {
     /**
      * Loads a glyph list from a given location and populates the NAME_TO_CHARACTER hashmap
      * for character lookups.
-     * @param location - The string location of the glyphlist file 
+     * @param location - The string location of the glyphlist file
      */
     private static void loadGlyphList(String location)
     {
@@ -105,6 +109,11 @@ public abstract class Encoding implements COSObjectable {
         try
         {
             InputStream resource = ResourceLoader.loadResource( location );
+            if (resource == null)
+            {
+                throw new MissingResourceException("Glyphlist not found: " + location,
+                        Encoding.class.getName(), location);
+            }
             glyphStream = new BufferedReader( new InputStreamReader( resource ) );
             String line = null;
             while( (line = glyphStream.readLine()) != null )
@@ -167,16 +176,16 @@ public abstract class Encoding implements COSObjectable {
 
     /**
      * Returns an unmodifiable view of the Code2Name mapping.
-     * @return the Code2Name map 
+     * @return the Code2Name map
      */
     public Map<Integer, String> getCodeToNameMap()
     {
         return Collections.unmodifiableMap(codeToName);
     }
-      
+
     /**
      * Returns an unmodifiable view of the Name2Code mapping.
-     * @return the Name2Code map 
+     * @return the Name2Code map
      */
     public Map<String, Integer> getNameToCodeMap()
     {
@@ -280,7 +289,7 @@ public abstract class Encoding implements COSObjectable {
         if( character == null )
         {
             // test if we have a suffix and if so remove it
-            if ( name.indexOf('.') > 0 ) 
+            if ( name.indexOf('.') > 0 )
             {
                 character = getCharacter(name.substring( 0, name.indexOf('.') ));
             }
@@ -291,7 +300,7 @@ public abstract class Encoding implements COSObjectable {
             {
                 int nameLength = name.length();
                 StringBuilder uniStr = new StringBuilder();
-                try 
+                try
                 {
                     for ( int chPos = 3; chPos + 4 <= nameLength; chPos += 4 )
                     {
@@ -305,27 +314,27 @@ public abstract class Encoding implements COSObjectable {
                         {
                             uniStr.append( (char) characterCode );
                         }
-                    } 
+                    }
                     character = uniStr.toString();
                     NAME_TO_CHARACTER.put(name, character);
                 }
-                catch (NumberFormatException nfe) 
+                catch (NumberFormatException nfe)
                 {
                     log.warn( "Not a number in Unicode character name: " + name );
                     character = name;
                 }
             }
-            else if (nameToCode.containsKey(name)) 
+            else if (nameToCode.containsKey(name))
             {
                 int code = nameToCode.get(name);
                 character = Character.toString((char)code);
             }
-            else 
+            else
             {
                 character = name;
             }
         }
         return character;
-    } 
-    
+    }
+
 }
