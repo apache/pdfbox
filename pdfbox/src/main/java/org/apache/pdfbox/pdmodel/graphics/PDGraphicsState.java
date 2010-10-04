@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics;
 
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
@@ -70,18 +69,25 @@ public class PDGraphicsState implements Cloneable
     /**
      * Default constructor.
      */
-    public PDGraphicsState() 
+    public PDGraphicsState()
     {
-    }    
+    }
 
     /**
      * Constructor with a given pagesize to initialize the clipping path.
      * @param page the size of the page
      */
-    public PDGraphicsState(PDRectangle page) 
+    public PDGraphicsState(PDRectangle page)
     {
         currentClippingPath = new GeneralPath(new Rectangle(page.createDimension()));
+        if (page.getLowerLeftX() != 0 || page.getLowerLeftY() != 0)
+        {
+            //Compensate for offset
+            this.currentTransformationMatrix = this.currentTransformationMatrix.multiply(
+                    Matrix.getTranslatingInstance(-page.getLowerLeftX(), -page.getLowerLeftY()));
+        }
     }
+
     /**
      * Get the value of the CTM.
      *
@@ -401,7 +407,7 @@ public class PDGraphicsState implements Cloneable
             {
                 clone.setLineDashPattern( (PDLineDashPattern)lineDashPattern.clone() );
             }
-            if (currentClippingPath != null) 
+            if (currentClippingPath != null)
             {
                 clone.setCurrentClippingPath((GeneralPath)currentClippingPath.clone());
             }
@@ -437,9 +443,9 @@ public class PDGraphicsState implements Cloneable
      * This will set the current clipping path.
      *
      * @param pCurrentClippingPath The current clipping path.
-     * 
+     *
      */
-    public void setCurrentClippingPath(Shape pCurrentClippingPath) 
+    public void setCurrentClippingPath(Shape pCurrentClippingPath)
     {
         if (pCurrentClippingPath != null)
         {
@@ -464,7 +470,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The current clipping path.
      */
-    public Shape getCurrentClippingPath() 
+    public Shape getCurrentClippingPath()
     {
         return currentClippingPath;
     }
