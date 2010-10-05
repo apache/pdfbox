@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.examples.persistence;
+package org.apache.pdfbox;
 
 import java.io.IOException;
 
@@ -78,7 +78,7 @@ public class WriteDecodedDoc
                 }
             }
 
-            for (Iterator i = doc.getDocument().getObjects().iterator(); i.hasNext();)
+            for (Iterator<COSObject> i = doc.getDocument().getObjects().iterator(); i.hasNext();)
             {
                 COSBase base = ((COSObject) i.next()).getObject();
                 if (base instanceof COSStream)
