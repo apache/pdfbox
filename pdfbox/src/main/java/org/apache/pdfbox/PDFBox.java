@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox;
 
+
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
@@ -57,6 +58,8 @@ public class PDFBox {
                     PDFToImage.main(arguments);
                 } else if (command.equals("TextToPDF")) {
                     TextToPDF.main(arguments);
+                } else if (command.equals("WriteDecodedDoc")) {
+                    WriteDecodedDoc.main(arguments);
                 }
                 else {
                     showMessageAndExit();
