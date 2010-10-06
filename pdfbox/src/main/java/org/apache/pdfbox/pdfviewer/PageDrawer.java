@@ -161,7 +161,7 @@ public class PageDrawer extends PDFStreamEngine
                     break;
                 default:
                     // TODO : need to implement....
-                    log.warn("Unsupported RenderingMode "
+                    log.debug("Unsupported RenderingMode "
                             + this.getGraphicsState().getTextState().getRenderingMode()
                             + " in PageDrawer.processTextPosition()."
                             + " Using RenderingMode "
