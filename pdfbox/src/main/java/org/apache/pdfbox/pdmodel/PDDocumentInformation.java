@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel;
 import java.io.IOException;
 
 import java.util.Calendar;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -249,6 +251,21 @@ public class PDDocumentInformation implements COSObjectable
     public String getTrapped()
     {
         return info.getNameAsString( COSName.TRAPPED );
+    }
+
+    /**
+     * This will get the keys of all metadata information fields for the document.
+     *
+     * @return all metadata key strings.
+     * @since Apache PDFBox 1.3.0
+     */
+    public Set<String> getMetadataKeys()
+    {
+        Set<String> keys = new TreeSet<String>();
+        for (COSName key : info.keySet()) {
+            keys.add(key.getName());
+        }
+        return keys;
     }
 
     /**
