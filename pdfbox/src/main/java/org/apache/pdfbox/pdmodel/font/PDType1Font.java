@@ -18,9 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
 /**
  * This is implementation of the Type1 Font.
@@ -151,6 +148,7 @@ public class PDType1Font extends PDSimpleFont
     {
         this();
         setBaseFont( baseFont );
+        setEncoding(new WinAnsiEncoding());
     }
 
     /**
