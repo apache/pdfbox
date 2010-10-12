@@ -293,6 +293,28 @@ public abstract class SecurityHandler
                                 encryptedStream,
                                 stream.createFilteredStream() );
     }
+    
+    /**
+     * This will encrypt a stream, but not the dictionary as the dictionary is
+     * encrypted by visitFromString() in COSWriter and we don't want to encrypt
+     * it twice.
+     *
+     * @param stream The stream to decrypt.
+     * @param objNum The object number.
+     * @param genNum The object generation number.
+     *
+     * @throws CryptographyException If there is an error getting the stream.
+     * @throws IOException If there is an error getting the stream data.
+     */
+    public void encryptStream( COSStream stream, long objNum, long genNum )
+        throws CryptographyException, IOException
+    {
+        InputStream encryptedStream = stream.getFilteredStream();
+        encryptData( objNum,
+                                genNum,
+                                encryptedStream,
+                                stream.createFilteredStream() );
+    }
 
     /**
      * This will decrypt a dictionary.

@@ -903,7 +903,7 @@ public class COSWriter implements ICOSVisitor
         {
             if(willEncrypt)
             {
-                document.getSecurityHandler().decryptStream(
+                document.getSecurityHandler().encryptStream(
                     obj,
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
