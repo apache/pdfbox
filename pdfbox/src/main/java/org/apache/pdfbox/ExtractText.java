@@ -229,6 +229,7 @@ public class ExtractText
                 {
                     stripper = new PDFTextStripper(encoding);
                 }
+                stripper.setForceParsing( force );
                 stripper.setSortByPosition( sort );
                 stripper.setShouldSeparateByBeads( separateBeads );
                 stripper.setStartPage( startPage );

@@ -230,20 +230,18 @@ public class TestTextStripper extends TestCase
             log.info("Preparing to parse " + inFile.getName() + " for standard test");
         }
 
-        OutputStream os = null;
-        Writer writer = null;
-        PDDocument document = null;
+        if (!outDir.exists()) 
+        {
+            if (!outDir.mkdirs()) 
+            {
+                throw (new Exception("Error creating " + outDir.getAbsolutePath() + " directory"));
+            }
+        }
+
+        PDDocument document = PDDocument.load(inFile);
         try
         {
-            if (!outDir.exists()) 
-            {
-                if (!outDir.mkdirs()) 
-                {
-                    throw (new Exception("Error creating " + outDir.getAbsolutePath() + " directory"));
-                }
-            }
             
-            document = PDDocument.load(inFile);
             File outFile = null;
             File expectedFile = null;
 
@@ -258,20 +256,23 @@ public class TestTextStripper extends TestCase
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
 
-            os = new FileOutputStream(outFile);
-            os.write( 0xFF );
-            os.write( 0xFE );
-            writer = new OutputStreamWriter(os,encoding);
+            OutputStream os = new FileOutputStream(outFile);
+            try {
+                os.write( 0xFF );
+                os.write( 0xFE );
 
-            //Allows for sorted tests 
-            stripper.setSortByPosition(bSort);
-            stripper.writeText(document, writer);
-            // close the written file before reading it again
-            writer.close();
-            writer = null;
-            os.close();
-            os = null;
-            
+                Writer writer = new OutputStreamWriter(os, encoding);
+                try {
+                    //Allows for sorted tests 
+                    stripper.setSortByPosition(bSort);
+                    stripper.writeText(document, writer);
+                } finally {
+                    // close the written file before reading it again
+                    writer.close();
+                }
+            } finally {
+                os.close();
+            }
 
             if (bLogResult)
             {
@@ -327,10 +328,7 @@ public class TestTextStripper extends TestCase
         }
         finally
         {
-            if( document != null )
-            {
-                document.close();
-            }
+            document.close();
         }
     }
 

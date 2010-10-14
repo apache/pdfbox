@@ -42,16 +42,32 @@ public class PDFXrefStreamParser extends BaseParser
     /**
      * Constructor.
      *
+     * @since Apache PDFBox 1.3.0
+     * @param strm The stream to parse.
+     * @param doc The document for the current parsing.
+     * @param forceParcing flag to skip malformed or otherwise unparseable
+     *                     input where possible
+     * @throws IOException If there is an error initializing the stream.
+     */
+    public PDFXrefStreamParser(
+            COSStream strm, COSDocument doc, boolean forceParsing)
+            throws IOException {
+        super(strm.getUnfilteredStream(), forceParsing);
+        setDocument(doc);
+        stream = strm;
+    }
+
+    /**
+     * Constructor.
+     *
      * @param strm The stream to parse.
      * @param doc The document for the current parsing.
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFXrefStreamParser(COSStream strm, COSDocument doc) throws IOException
-    {
-        super(strm.getUnfilteredStream());
-        setDocument(doc);
-        stream = strm;
+    public PDFXrefStreamParser(COSStream strm, COSDocument doc)
+            throws IOException {
+        this(strm, doc, false);
     }
 
     /**

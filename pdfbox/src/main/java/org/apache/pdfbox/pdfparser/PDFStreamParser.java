@@ -27,7 +27,6 @@ import java.util.NoSuchElementException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -53,15 +52,31 @@ public class PDFStreamParser extends BaseParser
     /**
      * Constructor that takes a stream to parse.
      *
+     * @since Apache PDFBox 1.3.0
+     * @param stream The stream to read data from.
+     * @param raf The random access file.
+     * @param forceParcing flag to skip malformed or otherwise unparseable
+     *                     input where possible
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public PDFStreamParser(
+            InputStream stream, RandomAccess raf, boolean forceParsing)
+            throws IOException {
+        super(stream, forceParsing);
+        file = raf;
+    }
+
+    /**
+     * Constructor that takes a stream to parse.
+     *
      * @param stream The stream to read data from.
      * @param raf The random access file.
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public PDFStreamParser( InputStream stream, RandomAccess raf ) throws IOException
-    {
-        super( stream );
-        file = raf;
+    public PDFStreamParser(InputStream stream, RandomAccess raf)
+            throws IOException {
+        this(stream, raf, FORCE_PARSING);
     }
 
     /**
@@ -74,6 +89,20 @@ public class PDFStreamParser extends BaseParser
     public PDFStreamParser( PDStream stream ) throws IOException
     {
        this( stream.createInputStream(), stream.getStream().getScratchFile() );
+    }
+
+    /**
+     * Constructor.
+     *
+     * @since Apache PDFBox 1.3.0
+     * @param stream The stream to parse.
+     * @param forceParcing flag to skip malformed or otherwise unparseable
+     *                     input where possible
+     * @throws IOException If there is an error initializing the stream.
+     */
+    public PDFStreamParser(COSStream stream, boolean forceParsing)
+            throws IOException {
+       this(stream.getUnfilteredStream(), stream.getScratchFile(), forceParsing);
     }
 
     /**

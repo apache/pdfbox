@@ -59,8 +59,6 @@ public class PDFParser extends BaseParser
 
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
-    private boolean forceParsing = false; 
-    
     /**
      * A list of duplicate objects found when Parsing the PDF
      * File. 
@@ -81,9 +79,8 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser( InputStream input ) throws IOException
-    {
-        this(input, null);
+    public PDFParser( InputStream input ) throws IOException {
+        this(input, null, FORCE_PARSING);
     }
 
     /**
@@ -94,10 +91,8 @@ public class PDFParser extends BaseParser
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFParser(InputStream input, RandomAccess rafi)
-        throws IOException
-    {
-        super(input);
-        this.raf = rafi;
+        throws IOException {
+        this(input, rafi, FORCE_PARSING);
     }
     
     /**
@@ -111,11 +106,9 @@ public class PDFParser extends BaseParser
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFParser(InputStream input, RandomAccess rafi, boolean force)
-        throws IOException
-    {
-        super(input);
+        throws IOException {
+        super(input, force);
         this.raf = rafi;
-        this.forceParsing = force;
     }
 
     /**

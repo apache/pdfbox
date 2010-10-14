@@ -172,8 +172,22 @@ public class COSString extends COSBase
      * @return A cos string with the hex characters converted to their actual bytes.
      * @throws IOException If there is an error with the hex string.
      */
-    public static COSString createFromHexString( String hex ) throws IOException
-    {
+    public static COSString createFromHexString(String hex)
+            throws IOException {
+        return createFromHexString(hex, false);
+    }
+
+    /**
+     * Creates a COS string from a string of hex characters, optionally
+     * ignoring malformed input.
+     *
+     * @param hex A hex string.
+     * @param force flag to ignore malformed input
+     * @return A cos string with the hex characters converted to their actual bytes.
+     * @throws IOException If there is an error with the hex string.
+     */
+    public static COSString createFromHexString(String hex, boolean force)
+            throws IOException {
         COSString retval = new COSString();
         StringBuilder hexBuffer = new StringBuilder( hex.trim() );
         //if odd number then the last hex digit is assumed to be 0
@@ -182,16 +196,19 @@ public class COSString extends COSBase
             hexBuffer.append( '0' );
         }
         int length = hexBuffer.length(); 
-        for( int i=0; i<length;)
-        {
-            String hexChars = String.valueOf(hexBuffer.charAt( i++ )) + hexBuffer.charAt( i++ );
-            try
-            {
-                retval.append( Integer.parseInt( hexChars, 16 ) );
-            }
-            catch( NumberFormatException e )
-            {
-                throw new IOException( "Error: Expected hex number, actual='" + hexChars + "'" );
+        for (int i = 0; i < length; i += 2) {
+            try {
+                retval.append(
+                        Integer.parseInt(hexBuffer.substring(i, i + 2), 16));
+            } catch (NumberFormatException e) {
+                if (force) {
+                    retval.append('?');
+                } else {
+                    IOException exception =
+                        new IOException("Invalid hex string: " + hex);
+                    exception.initCause(e);
+                    throw exception;
+                }
             }
         }
         return retval;

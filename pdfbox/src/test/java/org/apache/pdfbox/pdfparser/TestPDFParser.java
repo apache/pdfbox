@@ -115,7 +115,7 @@ public class TestPDFParser extends TestCase
          */
         public TestParser( InputStream input) throws IOException
         {
-            super( input );
+            super( input, false );
         }
 
         /**
