@@ -413,14 +413,12 @@ public class PDDocument implements Pageable
         if( documentCatalog == null )
         {
             COSDictionary trailer = document.getTrailer();
-            COSDictionary infoDic = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
-            if( infoDic == null )
-            {
-                documentCatalog = new PDDocumentCatalog( this );
-            }
-            else
-            {
-                documentCatalog = new PDDocumentCatalog( this, infoDic );
+            COSBase dictionary = trailer.getDictionaryObject( COSName.ROOT );
+            if (dictionary instanceof COSDictionary) {
+                documentCatalog =
+                    new PDDocumentCatalog(this, (COSDictionary) dictionary);
+            } else {
+                documentCatalog = new PDDocumentCatalog(this);
             }
 
         }
