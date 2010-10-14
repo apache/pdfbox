@@ -17,13 +17,13 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.io.ByteArrayPushBackInputStream;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
 
@@ -90,6 +90,12 @@ public abstract class BaseParser
     public static final String DEF = "def";
 
     /**
+     * Default value of the {@link #forceParsing} flag.
+     */
+    protected static final boolean FORCE_PARSING =
+        Boolean.getBoolean("org.apache.pdfbox.forceParsing");
+
+    /**
      * This is the stream that will be read from.
      */
     protected PushBackInputStream pdfSource;
@@ -98,30 +104,46 @@ public abstract class BaseParser
      * This is the document that will be parsed.
      */
     protected COSDocument document;
-    
+
+    /**
+     * Flag to skip malformed or otherwise unparseable input where possible.
+     */
+    protected final boolean forceParsing;
+
+    /**
+     * Constructor.
+     *
+     * @since Apache PDFBox 1.3.0
+     * @param input The input stream to read the data from.
+     * @param forceParcing flag to skip malformed or otherwise unparseable
+     *                     input where possible
+     * @throws IOException If there is an error reading the input stream.
+     */
+    public BaseParser(InputStream input, boolean forceParsing)
+            throws IOException {
+        this.pdfSource = new PushBackInputStream(
+                new BufferedInputStream(input, 16384),  4096);
+        this.forceParsing = forceParsing;
+    }
+
     /**
      * Constructor.
      *
      * @param input The input stream to read the data from.
-     *
      * @throws IOException If there is an error reading the input stream.
      */
-    public BaseParser( InputStream input) throws IOException
-    {
-        //pdfSource = new PushBackByteArrayStream( input );
-        pdfSource = new PushBackInputStream( new BufferedInputStream( input, 16384 ), 4096 );
+    public BaseParser(InputStream input) throws IOException {
+        this(input, FORCE_PARSING);
     }
 
     /**
      * Constructor.
      *
      * @param input The array to read the data from.
-     *
      * @throws IOException If there is an error reading the byte data.
      */
-    protected BaseParser(byte[] input) throws IOException
-    {
-        pdfSource = new ByteArrayPushBackInputStream(input);
+    protected BaseParser(byte[] input) throws IOException {
+        this(new ByteArrayInputStream(input));
     }
 
     /**
@@ -747,7 +769,8 @@ public abstract class BaseParser
         }
         if( openBrace == '<' )
         {
-            retval = COSString.createFromHexString( retval.getString() );
+            retval = COSString.createFromHexString(
+                    retval.getString(), forceParsing);
         }
         return retval;
     }

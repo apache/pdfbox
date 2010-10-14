@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 
+import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -89,7 +90,12 @@ public class PDFStreamEngine
     
     private int validCharCnt;
     private int totalCharCnt;
-    
+
+    /**
+     * Flag to skip malformed or otherwise unparseable input where possible.
+     */
+    private boolean forceParsing = false;
+
     /**
      * This is a simple internal class used by the Stream engine to handle the
      * resources stack.
@@ -163,7 +169,14 @@ public class PDFStreamEngine
         totalCharCnt = 0;
     }
 
-    
+    public boolean isForceParsing() {
+        return forceParsing;
+    }
+
+    public void setForceParsing(boolean forceParsing) {
+        this.forceParsing = forceParsing;
+    }
+
     /**
      * Register a custom operator processor with the engine.
      *
@@ -220,60 +233,52 @@ public class PDFStreamEngine
      *
      * @throws IOException If there is an exception while processing the stream.
      */
-    public void processSubStream( PDPage aPage, PDResources resources, COSStream cosStream ) throws IOException
-    {
+    public void processSubStream(
+            PDPage aPage, PDResources resources, COSStream cosStream)
+            throws IOException {
         page = aPage;
-        PDFStreamParser parser = null;
-        if( resources != null )
-        {
+        if (resources != null) {
             StreamResources sr = new StreamResources();
             sr.fonts = resources.getFonts( documentFontCache );
             sr.colorSpaces = resources.getColorSpaces();
             sr.xobjects = resources.getXObjects();
             sr.graphicsStates = resources.getGraphicsStates();
             sr.resources = resources;
-            streamResourcesStack.push(sr);
-        }
-        try
-        {
-            List<COSBase> arguments = new ArrayList<COSBase>();
-            
-            parser = new PDFStreamParser( cosStream );
-            Iterator<Object> iter = parser.getTokenIterator();
 
-            while( iter.hasNext() )
-            {
-                Object next = iter.next();
-                if( next instanceof COSObject )
-                {
-                    arguments.add( ((COSObject)next).getObject() );
-                }
-                else if( next instanceof PDFOperator )
-                {
-                    processOperator( (PDFOperator)next, arguments );
-                    arguments = new ArrayList();
-                }
-                else
-                {
-                    arguments.add( (COSBase)next );
-                }
-                if(log.isDebugEnabled())
-                {
-                    log.debug("token: " + next);
-                }
-            }
-        }
-        finally
-        {
-            if (parser != null) {
-                parser.close();
-            }
-            if( resources != null )
-            {
+            streamResourcesStack.push(sr);
+            try {
+                processSubStream(cosStream);
+            } finally {
                 streamResourcesStack.pop();
             }
+        } else {
+            processSubStream(cosStream);
         }
+    }
 
+    private void processSubStream(COSStream cosStream) throws IOException {
+        List<COSBase> arguments = new ArrayList<COSBase>();
+        PDFStreamParser parser = new PDFStreamParser(cosStream, forceParsing);
+        try {
+            Iterator<Object> iter = parser.getTokenIterator();
+
+            while (iter.hasNext()) {
+                Object next = iter.next();
+                if (log.isDebugEnabled()) {
+                    log.debug("processing substream token: " + next);
+                }
+                if (next instanceof COSObject) {
+                    arguments.add(((COSObject) next).getObject());
+                } else if (next instanceof PDFOperator) {
+                    processOperator((PDFOperator) next, arguments);
+                    arguments = new ArrayList<COSBase>();
+                } else {
+                    arguments.add((COSBase) next);
+                }
+            }
+        } finally {
+            parser.close();
+        }
     }
 
     

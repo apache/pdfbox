@@ -72,13 +72,53 @@ public class COSDocument extends COSBase
     /**
      * This file will store the streams in order to conserve memory.
      */
-    private RandomAccess scratchFile = null;
+    private final RandomAccess scratchFile;
 
-    private File tmpFile = null;
+    private final File tmpFile;
 
     private String headerString = "%PDF-1.4";
 
     private boolean warnMissingClose = true;
+
+    private boolean closed = false;
+
+    /**
+     * Flag to skip malformed or otherwise unparseable input where possible.
+     */
+    private final boolean forceParsing;
+
+    /**
+     * Constructor that will use the given random access file for storage
+     * of the PDF streams. The client of this method is responsible for
+     * deleting the storage if necessary that this file will write to. The
+     * close method will close the file though.
+     *
+     * @param scratchFile the random access file to use for storage
+     * @param forceParsing flag to skip malformed or otherwise unparseable
+     *                     document content where possible
+     */
+    public COSDocument(RandomAccess scratchFile, boolean forceParsing) {
+        this.scratchFile = scratchFile;
+        this.tmpFile = null;
+        this.forceParsing = forceParsing;
+    }
+
+    /**
+     * Constructor that will use a temporary file in the given directory
+     * for storage of the PDF streams. The temporary file is automatically
+     * removed when this document gets closed.
+     *
+     * @param scratchDir directory for the temporary file,
+     *                   or <code>null</code> to use the system default
+     * @param forceParsing flag to skip malformed or otherwise unparseable
+     *                     document content where possible
+     */
+    public COSDocument(File scratchDir, boolean forceParsing)
+            throws IOException {
+        this.tmpFile = File.createTempFile("pdfbox-", ".tmp", scratchDir);
+        this.scratchFile = new RandomAccessFile(tmpFile, "rw");
+        this.forceParsing = forceParsing;
+    }
 
     /**
      * Constructor.  Uses the java.io.tmpdir value to create a file
@@ -86,9 +126,8 @@ public class COSDocument extends COSBase
      *
      *  @throws IOException If there is an error creating the tmp file.
      */
-    public COSDocument() throws IOException
-    {
-        this( new File( System.getProperty( "java.io.tmpdir" ) ) );
+    public COSDocument() throws IOException {
+        this((File) null);
     }
 
     /**
@@ -99,10 +138,8 @@ public class COSDocument extends COSBase
      *
      *  @throws IOException If there is an error creating the tmp file.
      */
-    public COSDocument( File scratchDir ) throws IOException
-    {
-        tmpFile = File.createTempFile( "pdfbox", "tmp", scratchDir );
-        scratchFile = new RandomAccessFile( tmpFile, "rw" );
+    public COSDocument(File scratchDir) throws IOException {
+        this(scratchDir, false);
     }
 
     /**
@@ -113,9 +150,8 @@ public class COSDocument extends COSBase
      *
      * @param file The random access file to use for storage.
      */
-    public COSDocument( RandomAccess file )
-    {
-        scratchFile = file;
+    public COSDocument(RandomAccess file) {
+        this(file, false);
     }
 
     /**
@@ -379,15 +415,12 @@ public class COSDocument extends COSBase
      */
     public void close() throws IOException
     {
-        if( scratchFile != null )
-        {
+        if (!closed) {
             scratchFile.close();
-            scratchFile = null;
-        }
-        if( tmpFile != null )
-        {
-            tmpFile.delete();
-            tmpFile = null;
+            if (tmpFile != null) {
+                tmpFile.delete();
+            }
+            closed = true;
         }
     }
 
@@ -399,12 +432,12 @@ public class COSDocument extends COSBase
      */
     protected void finalize() throws IOException
     {
-        if( this.warnMissingClose && ( tmpFile != null || scratchFile != null ) )
-        {
-            Throwable t = new Throwable( "Warning: You did not close the PDF Document" );
-            t.printStackTrace();
+        if (!closed) {
+            if (warnMissingClose) {
+                log.warn( "Warning: You did not close a PDF Document" );
+            }
+            close();
         }
-        close();
     }
 
     /**
@@ -445,7 +478,8 @@ public class COSDocument extends COSBase
         for( COSObject objStream : getObjectsByType( "ObjStm" ) )
         {
             COSStream stream = (COSStream)objStream.getObject();
-            PDFObjectStreamParser parser = new PDFObjectStreamParser( stream, this );
+            PDFObjectStreamParser parser =
+                new PDFObjectStreamParser(stream, this, forceParsing);
             parser.parse();
             for( COSObject next : parser.getObjects() )
             {
@@ -524,7 +558,8 @@ public class COSDocument extends COSBase
         {
             COSStream stream = (COSStream)xrefStream.getObject();
             trailerDict.addAll(stream);
-            PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, this);
+            PDFXrefStreamParser parser =
+                new PDFXrefStreamParser(stream, this, forceParsing);
             parser.parse();
         }
         setTrailer( trailerDict );
