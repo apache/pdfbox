@@ -42,7 +42,9 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
@@ -334,6 +336,7 @@ public class PDFStreamEngine
         //were a single byte will result in two output characters "fi"
         
         final PDFont font = graphicsState.getTextState().getFont();
+        PDMatrix fontMatrix = font.getFontMatrix();
         
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
@@ -386,7 +389,18 @@ public class PDFStreamEngine
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
-            float characterHorizontalDisplacementText = (font.getFontWidth( string, i, codeLength )/1000f);
+            float characterHorizontalDisplacementText = font.getFontWidth( string, i, codeLength );
+            // Type3 fonts are providing the width of a character in glyph space units
+            if (font instanceof PDType3Font)
+            {
+                // multiply the witdh with the scaling factor of the font matrix
+                characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrix.getValue(0, 0);
+            }
+            // all other fonts are providing the width of a character in thousandths of a unit of text space
+            else
+            {
+                characterHorizontalDisplacementText = characterHorizontalDisplacementText/1000f;
+            }
             maxVerticalDisplacementText = 
                 Math.max( 
                     maxVerticalDisplacementText, 
