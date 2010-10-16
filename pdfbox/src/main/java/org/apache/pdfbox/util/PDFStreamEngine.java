@@ -37,7 +37,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 
-import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -361,8 +360,6 @@ public class PDFStreamEngine
             spaceWidthText *= .80f;
         }
         
-        final float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText;
-        
         float maxVerticalDisplacementText = 0;
 
         Matrix textStateParameters = new Matrix();
@@ -386,6 +383,9 @@ public class PDFStreamEngine
                 codeLength++;
                 c = font.encode( string, i, codeLength );
             }
+
+            // the space width has to be transformed into display units
+            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText * textMatrix.getValue(0, 0) * getGraphicsState().getCurrentTransformationMatrix().getValue(0, 0);
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
