@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.common;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
@@ -93,12 +94,25 @@ public class PDPageLabels implements COSObjectable
             return;
         }
         PDNumberTreeNode root = new PDNumberTreeNode(dict, COSDictionary.class);
-        Map<Integer, COSDictionary> numbers = root.getNumbers();
-        for (Entry<Integer, COSDictionary> i : numbers.entrySet())
-        {
-            labels.put(i.getKey(), new PDPageLabelRange(i.getValue()));
+        findLabels(root);
+    }
+    
+    private void findLabels(PDNumberTreeNode node) throws IOException {
+        if (node.getKids() != null) {
+            List<PDNumberTreeNode> kids = node.getKids();
+            for (PDNumberTreeNode kid : kids) {
+                findLabels(kid);
+            }
+        }
+        else if (node.getNumbers() != null) {
+            Map<Integer, COSDictionary> numbers = node.getNumbers();
+            for (Entry<Integer, COSDictionary> i : numbers.entrySet())
+            {
+                labels.put(i.getKey(), new PDPageLabelRange(i.getValue()));
+            }
         }
     }
+
 
     /**
      * Returns the number of page label ranges.
