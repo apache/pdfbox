@@ -181,8 +181,8 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/1.3/pdfbox-parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/1.3/pdfbox-parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/branches/1.3/pdfbox-parent</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/1.3/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/1.3/parent</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/pom/branches/1.3/parent</url>
   </scm>
 </project>
