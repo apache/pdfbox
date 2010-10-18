@@ -74,7 +74,7 @@ limitations under the License.
 Unmodifiable files
 ==================
 
-Apache PDFBox contains Adobe CMap and Glyph files that may be redistributed
+Apache PDFBox contains the Adobe glyph list file that may be redistributed
 only in *unmodified* form. See the LICENSE file for the exact licensing
 conditions.
 

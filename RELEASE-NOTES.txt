@@ -1,97 +1,85 @@
-Release Notes -- Apache PDFBox -- Version 1.2.0
+Release Notes -- Apache PDFBox -- Version 1.3.0
 
 Introduction
 ------------
 
 PDFBox is an open source Java library for working with PDF documents.
 
-This is an incremental feature release based on the earlier 1.1.0 release.
-When upgrading to this release, please note that the Ant and Lucene
-integration code has been moved to separate pdfbox-ant and pdfbox-lucene
-components that are also included in this release. The PDFBox resource
-directory has also been moved from /Resources to /org/apache/pdfbox/resources,
-so you will need to update your paths if your application adds extra resources
-to PDFBox. For more details on these changes and all the other fixes and
-improvements included in this release, please refer to the following issues
-on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
+This is an incremental feature release based on the earlier 1.x releases.
+This release contains many improvements and fixes especially related to
+handling of fonts, colors and malformed PDFs. Another notable change is
+the inclusion of updated CMap files released by Adobe under a BSD license.
+For more details on these changes and all the other fixes and improvements
+included in this release, please refer to the following issues on the
+PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 New Features
 
-  [PDFBOX-687] Standalone PDFBox jar
-  [PDFBOX-722] Add support to draw or fill a polygon
-  [PDFBOX-730] Basic implementation of Crypt filter
+  [PDFBOX-11]  CID to Unicode mapping
+  [PDFBOX-192] Find encodings in FontFile3 - CompactFont Format
+  [PDFBOX-777] Add utility class to easily extract a range of pages from a PDF
+  [PDFBOX-791] PDFToImage : add the ability to select the area to export ...
+  [PDFBOX-851] Add WriteDecodedDoc to standalone app
 
 Improvements
 
-  [PDFBOX-410] Two small performance issue in COSString, these are not bugs
-  [PDFBOX-441] remove CosName nameMap cache
-  [PDFBOX-582] Ignoring text over images
-  [PDFBOX-622] Bad required namespace prefix for XMPSchemaPDFAId
-  [PDFBOX-651] Team list should be filled out or deleted ... it confuses ...
-  [PDFBOX-668] TrueType Font - Feature for CMAPEncodingEntry
-  [PDFBOX-669] CFFFont - Management of CIDKeyed
-  [PDFBOX-670] TrueType - Management of CMap format 2
-  [PDFBOX-675] Upgrade .Net build to use IKVM version 0.42
-  [PDFBOX-676] Predefined paper sizes in PDPage are slightly off
-  [PDFBOX-688] Refactoring rendering-related classes/methods for extensibility
-  [PDFBOX-689] Documentation of dependencies is incorrect
-  [PDFBOX-696] PDTrueTypeFont limits number of glyph widths to 256...
-  [PDFBOX-699] Add support for InputStreams to PDFMergerUtility
-  [PDFBOX-701] Additional date formats
-  [PDFBOX-702] Adding method to manipulate the current transformation matrix
-  [PDFBOX-707] Add the current page and the number of pages to the title
-  [PDFBOX-726] PDFTextStripper: allow access to currentPageNo variable
-  [PDFBOX-732] Loading TTF font files from the classpath
-  [PDFBOX-733] Implementation of function types 0,2 and 3 to be used in ...
-  [PDFBOX-735] Automatic license header checks
-  [PDFBOX-736] Implementation of the DeviceN colorspace
-  [PDFBOX-742] [patch] Please don't print logging statements to System.err
-  [PDFBOX-752] Move Lucene and Ant code into separate components
-  [PDFBOX-753] Move PDFBox war into a separate component
-  [PDFBOX-754] Move Resources to org.apache.pdfbox.resources
+  [PDFBOX-494] Addtional CMap files from adobe
+  [PDFBOX-554] Handle JPEG2000 images via JPXDecode filter
+  [PDFBOX-592] please accommodate '-' where a number is expected
+  [PDFBOX-704] Implementation of additional CMAP Formats for TrueType fonts
+  [PDFBOX-764] Access to metadata keys in the PD model
+  [PDFBOX-769] Update/adjust used junit version
+  [PDFBOX-782] Update/reactivate ant build
+  [PDFBOX-796] Objects from streams overwrite objects already read with ..
+  [PDFBOX-798] Better handle out of spec PDFs
+  [PDFBOX-799] Add ability to ignore errors with AcroForms
+  [PDFBOX-801] PDPixelMap is too verbose
+  [PDFBOX-802] Better handle corrupt/missing %%EOF flags at the end of a file
+  [PDFBOX-803] Improved handling erronous data between endstream and ...
+  [PDFBOX-812] Remove dependency on PageDrawer from text only operators
+  [PDFBOX-820] Support TIFF predictor 2 with FlateDecode, patch included
+  [PDFBOX-826] Increase performance of ColorSpaceCMYK.toRGB, patch attached
 
 Bug Fixes
 
-  [PDFBOX-164] Error converting Date with LucenePDFDocument
-  [PDFBOX-170] Another converting date error with LucenePDFDocument
-  [PDFBOX-276] IOException on parsing a PDF file
-  [PDFBOX-295] CMapParser "cidrange" support
-  [PDFBOX-323] Images with transparency are not rendered correctly
-  [PDFBOX-397] merge dont work
-  [PDFBOX-402] Bug when using PDF Box in a threaded environment.
-  [PDFBOX-406] Small error in class defination in PDMatrix it should ...
-  [PDFBOX-513] PDJpeg does not support transparency/alpha
-  [PDFBOX-515] The handle is invalid when merging 2 pdfs from different ...
-  [PDFBOX-534] PDF file created with LaTeX is bad parsed
-  [PDFBOX-563] Class Cast thrown when merging PDF's
-  [PDFBOX-574] PDFBox image extraction fails with an ...
-  [PDFBOX-584] convertToImage seems to invert colors
-  [PDFBOX-638] PDNameTreeNode setLower/UpperLimit don't set dictionary entries
-  [PDFBOX-639] PDNameTreeNode: Limits are only set when setting Names
-  [PDFBOX-641] PDNameTreeNode: Keys in Names shall be sorted
-  [PDFBOX-659] Newlines added in the middle of words
-  [PDFBOX-665] Photometric interpretation incorrect on G3 encoded image ...
-  [PDFBOX-672] Regression: PNG image page completely garbled
-  [PDFBOX-673] Ant build problems in PDFBox
-  [PDFBOX-674] ArrayIndexOutOfBounds Exception when printing on Windows
-  [PDFBOX-679] Corruption of Arabic output due to Japanese bug fix
-  [PDFBOX-681] ClassCastException in PDTrueTypeFont.ensureFontDescriptor()
-  [PDFBOX-683] PDFStreamParser can't read "d0" and "d1" operators
-  [PDFBOX-684] Incorrect ordering of compound Arabic glyphs
-  [PDFBOX-685] inefficient implementation in org.apache.pdfbox.util....
-  [PDFBOX-695] COSStream doesn't actually stream tokens, causing OOM in ...
-  [PDFBOX-700] NullPointerException when trying to merge PDFs
-  [PDFBOX-703] Null pointer Exception with org.apache.fontbox.cff...
-  [PDFBOX-705] Error print bar code
-  [PDFBOX-711] Findbugs: Bug: Doomed test for equality to NaN ...
-  [PDFBOX-716] right parenthess are not handled properly in bookmarks
-  [PDFBOX-717] Bookmarks don't match up to any page
-  [PDFBOX-719] Bookmarks not merged correctly by PDFMergerUtility
-  [PDFBOX-724] ClassCastException when merging PDFs using PDFMergerUtility
-  [PDFBOX-737] Fix potential NullPointer exception in PDPageNode
-  [PDFBOX-738] Preserve transparency when converting to image with rgba
-  [PDFBOX-739] Problem converting pdf page w/ fully embedded TTF font, ...
-  [PDFBOX-743] PDAppereanceDictionary#getNormalAppearance might throw NPE
+  [PDFBOX-58]  Problems with text extraction form Polish documents.
+  [PDFBOX-99]  Indexed color images have wrong colors after encryption
+  [PDFBOX-122] Exception in text extraction
+  [PDFBOX-257] PDFMergerUtility may create non-unique AcroForm field names
+  [PDFBOX-265] Somtimes, TextPosition have incorrect value ..
+  [PDFBOX-291] Text Extraction strips 1 char when extracting a twin pair
+  [PDFBOX-439] Incorrect text for Exolab.pdf in Regression Test
+  [PDFBOX-440] Improper text produced depending on font for ...
+  [PDFBOX-506] PDFBox can't parse PDF documents from jstor.org
+  [PDFBOX-568] testextract failure on Linux and Mac OS X
+  [PDFBOX-667] Last characters in a line overlap when a PDF is printed
+  [PDFBOX-686] Invalid text rendering while printing a PDF
+  [PDFBOX-772] Re-setting filled properties of PDDocumentInformation do ...
+  [PDFBOX-780] EXCEPTION_ACCESS_VIOLATION in fontmanager.so/fontmanager.dll
+  [PDFBOX-786] PDChoiceField's implementation of SetValue does not work ...
+  [PDFBOX-787] CMap parser doesn't work for double byte mappings with ...
+  [PDFBOX-788] PrintPDF does not take the windows default printer ...
+  [PDFBOX-789] Error by text extraction
+  [PDFBOX-790] Text extraction from PDF generated from MS Word fails
+  [PDFBOX-793] scratchfile ignored in PDDocument load( File file, ...
+  [PDFBOX-805] Extratced ascii text in CJK document is malformed
+  [PDFBOX-808] PDTrueTypeFont.loadTTF() freezes (at TTFDataStream.java:195)
+  [PDFBOX-810] Problem in extracting roman page numbers [PDPageLabels.java]
+  [PDFBOX-813] ClassCastException: COSInteger cannot be cast to COSDictionary
+  [PDFBOX-815] PDFont.getEncodingManager is not thread safe; FIX included
+  [PDFBOX-822] Wrong handling of PNG predictors with FlateDecode, patch ...
+  [PDFBOX-825] Wrong opacity for images with indexed color space
+  [PDFBOX-828] Spaces dissapear and text is shifted left
+  [PDFBOX-834] IIOException: Error 2 when displaying PDF containing CCITT ...
+  [PDFBOX-836] Write2File Fails for PDCalRGB
+  [PDFBOX-839] Use COSName constant instead of COSString
+  [PDFBOX-840] Umlauts font size calculation problem
+  [PDFBOX-841] [pdfbox-app] maven-bundle-configuration problem
+  [PDFBOX-842] Documentation: prominent example has out-of-date class name
+  [PDFBOX-844] AFM-files aren't loaded
+  [PDFBOX-846] TextExtraction mixes case of text
+  [PDFBOX-848] PageDrawer does not take the full CropBox into account
+  [PDFBOX-857] Define a standard encoding for the standard 14 fonts
 
 Release Contents
 ----------------
