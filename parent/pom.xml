@@ -176,9 +176,4 @@
     </developer>
   </developers>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/1.2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/1.2</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/branches/1.2</url>
-  </scm>
 </project>
