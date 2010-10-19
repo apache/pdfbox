@@ -635,6 +635,11 @@ public class COSWriter implements ICOSVisitor
                 {
                     COSNull.NULL.accept( this );
                 }
+                else if( current instanceof COSString )
+                {
+                    COSString copy = new COSString(((COSString)current).getString());
+                    copy.accept(this);
+                }
                 else
                 {
                     current.accept(this);
