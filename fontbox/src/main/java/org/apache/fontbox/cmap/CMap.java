@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
@@ -45,7 +46,9 @@ public class CMap
     private List<CodespaceRange> codeSpaceRanges = new ArrayList<CodespaceRange>();
     private Map<Integer,String> singleByteMappings = new HashMap<Integer,String>();
     private Map<Integer,String> doubleByteMappings = new HashMap<Integer,String>();
-    private Map<Integer,String> cidMappings = new HashMap<Integer,String>();
+
+    private final Map<Integer,String> cidMappings = new HashMap<Integer,String>();
+    private final List<CIDRange> cidRanges = new LinkedList<CIDRange>();
 
     /**
      * Creates a new instance of CMap.
@@ -82,8 +85,9 @@ public class CMap
      */
     public boolean hasCIDMappings()
     {
-        return cidMappings.size() > 0;
+        return !cidMappings.isEmpty() || !cidRanges.isEmpty();
     }
+
     /**
      * This will perform a lookup into the map.
      *
@@ -119,14 +123,20 @@ public class CMap
      *
      * @return The string that matches the lookup.
      */
-    public String lookupCID( int code )
-    {
-        if( cidMappings.containsKey(code) )
-        {
+    public String lookupCID(int code) {
+        if (cidMappings.containsKey(code)) {
             return cidMappings.get(code);
+        } else {
+            for (CIDRange range : cidRanges) {
+                int ch = range.unmap(code);
+                if (ch != -1) {
+                    return Character.toString((char) ch);
+                }
+            }
+            return null;
         }
-        return null;
     }
+
     /**
      * This will add a mapping.
      *
@@ -166,7 +176,11 @@ public class CMap
     {
         cidMappings.put( src , dest );
     }
-    
+
+    public void addCIDRange(char from, char to, int cid) {
+        cidRanges.add(0, new CIDRange(from, to, cid));
+    }
+
     /**
      * This will add a codespace range.
      *

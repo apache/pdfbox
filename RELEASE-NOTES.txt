@@ -1,14 +1,19 @@
-Release Notes -- Apache PDFBox -- Version 1.3.0
+Release Notes -- Apache PDFBox -- Version 1.3.1
 
 Introduction
 ------------
 
-PDFBox is an open source Java library for working with PDF documents.
+Apache PDFBox is an open source Java library for working with PDF documents.
 
-This is an incremental feature release based on the earlier 1.x releases.
+PDFBox 1.3 is an incremental feature release based on earlier releases.
 This release contains many improvements and fixes especially related to
 handling of fonts, colors and malformed PDFs. Another notable change is
 the inclusion of updated CMap files released by Adobe under a BSD license.
+
+PDFBox 1.3.1 fixes a memory use regression detected in the 1.3.0 release
+candidate. This release also contains a fix for the handling of indexed
+images in encrypted PDFs.
+
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
@@ -80,6 +85,8 @@ Bug Fixes
   [PDFBOX-846] TextExtraction mixes case of text
   [PDFBOX-848] PageDrawer does not take the full CropBox into account
   [PDFBOX-857] Define a standard encoding for the standard 14 fonts
+  [PDFBOX-866] Indexed images are sometimes corrupted when encrypting the PDF
+  [PDFBOX-874] OutOfMemoryError in text extraction tests
 
 Release Contents
 ----------------
