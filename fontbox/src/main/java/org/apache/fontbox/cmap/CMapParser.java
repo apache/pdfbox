@@ -233,11 +233,17 @@ public class CMapParser
                         byte[] endCode = (byte[])parseNextToken( cmapStream );
                         int end = createIntFromBytes(endCode);
                         int mappedCode = (Integer)parseNextToken( cmapStream );
-                        int endOfMappings = mappedCode + end-start;
-                        while (mappedCode<=endOfMappings) {
-                            String mappedStr = createStringFromBytes(startCode);
-                            result.addCIDMapping(mappedCode++, mappedStr);
-                            increment(startCode);
+                        if (startCode.length <= 2 && endCode.length <= 2) {
+                            result.addCIDRange(
+                                    (char) start, (char) end, mappedCode);
+                        } else {
+                            // TODO: Is this even possible?
+                            int endOfMappings = mappedCode + end-start;
+                            while (mappedCode<=endOfMappings) {
+                                String mappedStr = createStringFromBytes(startCode);
+                                result.addCIDMapping(mappedCode++, mappedStr);
+                                increment(startCode);
+                            }
                         }
                     }
                 }
