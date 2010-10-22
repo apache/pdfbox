@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,6 +32,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 
 /**
  * This represents a set of resources available at the page/pages/stream level.
@@ -291,5 +291,32 @@ public class PDResources implements COSObjectable
             dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
         }
         resources.setItem( COSName.EXT_G_STATE, dic );
+    }
+
+    /**
+     * Returns the dictionary mapping resource names to property list dictionaries for marked
+     * content.
+     * @return the property list
+     */
+    public PDPropertyList getProperties()
+    {
+        PDPropertyList retval = null;
+        COSDictionary props = (COSDictionary)resources.getDictionaryObject(COSName.PROPERTIES);
+
+        if (props != null)
+        {
+            retval = new PDPropertyList(props);
+        }
+        return retval;
+    }
+
+    /**
+     * Sets the dictionary mapping resource names to property list dictionaries for marked
+     * content.
+     * @param props the property list
+     */
+    public void setProperties(PDPropertyList props)
+    {
+        resources.setItem(COSName.PROPERTIES, props.getCOSObject());
     }
 }

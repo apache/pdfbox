@@ -16,6 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -23,14 +31,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-
-import java.io.IOException;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This is a Map that will automatically sync the contents to a COSDictionary.
@@ -154,7 +154,7 @@ public class COSDictionaryMap implements Map
      */
     public Set entrySet()
     {
-        throw new RuntimeException( "Not yet implemented" );
+        return Collections.unmodifiableSet(actuals.entrySet());
     }
 
     /**

@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
@@ -33,13 +32,13 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDURIDictionary;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDDocumentCatalogAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDURIDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThread;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 
@@ -551,17 +550,37 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
+     * Returns the PDF specification version this document conforms to.
+     *
+     * @return The PDF version.
+     */
+    public String getVersion()
+    {
+        return root.getNameAsString(COSName.VERSION);
+    }
+
+    /**
+     * Sets the PDF specification version this document conforms to.
+     *
+     * @param version the PDF version (ex. "1.4")
+     */
+    public void setVersion(String version)
+    {
+        root.setName(COSName.VERSION, version);
+    }
+
+    /**
      * Returns the page labels descriptor of the document.
-     * 
+     *
      * @return the page labels descriptor of the document.
-     * 
+     *
      * @throws IOException If there is a problem retrieving the page labels.
      */
-    public PDPageLabels getPageLabels() throws IOException 
+    public PDPageLabels getPageLabels() throws IOException
     {
         PDPageLabels labels = null;
         COSDictionary dict = (COSDictionary) root.getDictionaryObject(COSName.PAGE_LABELS);
-        if (dict != null) 
+        if (dict != null)
         {
             labels = new PDPageLabels(document, dict);
         }
@@ -573,9 +592,39 @@ public class PDDocumentCatalog implements COSObjectable
      *
      * @param labels the new page label descriptor to set.
      */
-    public void setPageLabels(PDPageLabels labels) 
+    public void setPageLabels(PDPageLabels labels)
     {
         root.setItem(COSName.PAGE_LABELS, labels);
+    }
+
+    /**
+     * Get the optional content properties dictionary associated with this document.
+     *
+     * @return the optional properties dictionary or null if it is not present
+     * @since PDF 1.5
+     */
+    public PDOptionalContentProperties getOCProperties()
+    {
+        PDOptionalContentProperties retval = null;
+        COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.OCPROPERTIES);
+        if (dict != null)
+        {
+            retval = new PDOptionalContentProperties(dict);
+        }
+
+        return retval;
+    }
+
+    /**
+     * Set the optional content properties dictionary.
+     *
+     * @param ocProperties the optional properties dictionary
+     * @since PDF 1.5
+     */
+    public void setOCProperties(PDOptionalContentProperties ocProperties)
+    {
+        //TODO Check for PDF 1.5 or higher
+        root.setItem(COSName.OCPROPERTIES, ocProperties);
     }
 
 }

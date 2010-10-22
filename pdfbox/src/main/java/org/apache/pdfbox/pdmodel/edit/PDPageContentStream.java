@@ -18,26 +18,26 @@ package org.apache.pdfbox.pdmodel.edit;
 
 import java.awt.Color;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.text.NumberFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
@@ -50,11 +50,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.util.MapUtil;
-
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 
 
 /**
@@ -69,8 +64,8 @@ public class PDPageContentStream
     private PDPage page;
     private OutputStream output;
     private boolean inTextMode = false;
-    private Map<PDFont,String> fontMappings = new HashMap<PDFont,String>();
-    private Map<PDXObject,String> xobjectMappings = new HashMap<PDXObject,String>();
+    private Map<PDFont,String> fontMappings;
+    private Map<PDXObject,String> xobjectMappings;
     private PDResources resources;
     private Map fonts;
     private Map xobjects;
@@ -115,7 +110,12 @@ public class PDPageContentStream
     private static final String BEZIER_312 = "c\n";
     private static final String BEZIER_32 = "v\n";
     private static final String BEZIER_313 = "y\n";
-    
+
+    private static final String MP = "MP\n";
+    private static final String DP = "DP\n";
+    private static final String BMC = "BMC\n";
+    private static final String BDC = "BDC\n";
+    private static final String EMC = "EMC\n";
 
     private static final String SET_STROKING_COLORSPACE = "CS\n";
     private static final String SET_NON_STROKING_COLORSPACE = "cs\n";
@@ -161,8 +161,15 @@ public class PDPageContentStream
             resources = new PDResources();
             page.setResources( resources );
         }
+
+        //Fonts including reverse lookup
         fonts = resources.getFonts();
-        xobjects = resources.getImages();
+        fontMappings = reverseMap(fonts, PDFont.class);
+
+        //XObjects including reverse lookup
+        xobjects = resources.getXObjects();
+        xobjectMappings = reverseMap(xobjects, PDXObject.class);
+
         // If request specifies the need to append to the document
         if(appendContent)
         {
@@ -215,6 +222,17 @@ public class PDPageContentStream
         }
         formatDecimal.setMaximumFractionDigits( 10 );
         formatDecimal.setGroupingUsed( false );
+    }
+
+    private <T> Map<T, String> reverseMap(Map map, Class<T> keyClass)
+    {
+        Map<T, String> reversed = new java.util.HashMap<T, String>();
+        for (Object o : map.entrySet())
+        {
+            Map.Entry entry = (Map.Entry)o;
+            reversed.put(keyClass.cast(entry.getValue()), (String)entry.getKey());
+        }
+        return reversed;
     }
 
     /**
@@ -300,6 +318,20 @@ public class PDPageContentStream
      */
     public void drawXObject( PDXObject xobject, float x, float y, float width, float height ) throws IOException
     {
+        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        drawXObject(xobject, transform);
+    }
+
+    /**
+     * Draw an xobject(form or image) using the given {@link AffineTransform} to position
+     * the xobject.
+     *
+     * @param xobject The xobject to draw.
+     * @param transform the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawXObject( PDXObject xobject, AffineTransform transform ) throws IOException
+    {
         String xObjectPrefix = null;
         if( xobject instanceof PDXObjectImage )
         {
@@ -318,19 +350,20 @@ public class PDPageContentStream
             xobjects.put( objMapping, xobject );
         }
         saveGraphicsState();
-        concatenate2CTM(width, 0, 0, height, x, y);
+        appendRawCommands( SPACE );
+        concatenate2CTM(transform);
         appendRawCommands( SPACE );
         appendRawCommands( "/" );
         appendRawCommands( objMapping );
         appendRawCommands( SPACE );
         appendRawCommands( XOBJECT_DO );
-        appendRawCommands( SPACE );
         restoreGraphicsState();
     }
 
+
     /**
      * The Td operator.
-     * A current text matrix will be replaced with a new one (1 0 0 1 x y). 
+     * A current text matrix will be replaced with a new one (1 0 0 1 x y).
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @throws IOException If there is an error writing to the stream.
@@ -350,7 +383,7 @@ public class PDPageContentStream
 
     /**
      * The Tm operator. Sets the text matrix to the given values.
-     * A current text matrix will be replaced with the new one. 
+     * A current text matrix will be replaced with the new one.
      * @param a The a value of the matrix.
      * @param b The b value of the matrix.
      * @param c The c value of the matrix.
@@ -381,8 +414,20 @@ public class PDPageContentStream
     }
 
     /**
+    * The Tm operator. Sets the text matrix to the given values.
+    * A current text matrix will be replaced with the new one.
+    * @param matrix the transformation matrix
+    * @throws IOException If there is an error writing to the stream.
+    */
+    public void setTextMatrix(AffineTransform matrix) throws IOException
+    {
+        appendMatrix(matrix);
+        appendRawCommands(SET_TEXT_MATRIX);
+    }
+
+    /**
      * The Tm operator. Sets the text matrix to the given scaling and translation values.
-     * A current text matrix will be replaced with the new one. 
+     * A current text matrix will be replaced with the new one.
      * @param sx The scaling factor in x-direction.
      * @param sy The scaling factor in y-direction.
      * @param tx The translation value in x-direction.
@@ -396,7 +441,7 @@ public class PDPageContentStream
 
     /**
      * The Tm operator. Sets the text matrix to the given translation values.
-     * A current text matrix will be replaced with the new one. 
+     * A current text matrix will be replaced with the new one.
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
      * @throws IOException If there is an error writing to the stream.
@@ -408,7 +453,7 @@ public class PDPageContentStream
 
     /**
      * The Tm operator. Sets the text matrix to the given rotation and translation values.
-     * A current text matrix will be replaced with the new one. 
+     * A current text matrix will be replaced with the new one.
      * @param angle The angle used for the counterclockwise rotation in radians.
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
@@ -446,6 +491,18 @@ public class PDPageContentStream
         appendRawCommands( formatDecimal.format( f ) );
         appendRawCommands( SPACE );
         appendRawCommands( CONCATENATE_MATRIX );
+    }
+
+    /**
+     * The Cm operator. Concatenates the current transformation matrix with the given
+     * {@link AffineTransform}.
+     * @param at the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void concatenate2CTM(AffineTransform at) throws IOException
+    {
+        appendMatrix(at);
+        appendRawCommands(CONCATENATE_MATRIX);
     }
 
     /**
@@ -858,7 +915,7 @@ public class PDPageContentStream
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * Append a cubic Bézier curve to the current path. The curve extends from the current
      * point to the point (x3 , y3 ), using (x1 , y1 ) and (x2 , y2 ) as the Bézier control points
      * @param x1 x coordinate of the point 1
      * @param y1 y coordinate of the point 1
@@ -886,7 +943,7 @@ public class PDPageContentStream
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * Append a cubic Bézier curve to the current path. The curve extends from the current
      * point to the point (x3 , y3 ), using the current point and (x2 , y2 ) as the Bézier control points
      * @param x2 x coordinate of the point 2
      * @param y2 y coordinate of the point 2
@@ -908,7 +965,7 @@ public class PDPageContentStream
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current 
+     * Append a cubic Bézier curve to the current path. The curve extends from the current
      * point to the point (x3 , y3 ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points
      * @param x1 x coordinate of the point 1
      * @param y1 y coordinate of the point 1
@@ -928,10 +985,10 @@ public class PDPageContentStream
         appendRawCommands( SPACE );
         appendRawCommands( BEZIER_313 );
     }
-    
-    
+
+
     /**
-     * Add a line to the given coordinate. 
+     * Add a line to the given coordinate.
      *
      * @param x The x coordinate.
      * @param y The y coordinate.
@@ -979,7 +1036,7 @@ public class PDPageContentStream
         // lineTo
         lineTo(xEnd, yEnd);
     }
-    
+
     /**
      * Draw a line on the page using the current non stroking color and the current line width.
      *
@@ -995,7 +1052,7 @@ public class PDPageContentStream
         // stroke
         stroke();
     }
-    
+
     /**
      * Add a polygon to the current path.
      * @param x x coordinate of each points
@@ -1021,7 +1078,7 @@ public class PDPageContentStream
         }
         closeSubPath();
     }
-       
+
     /**
      * Draw a polygon on the page using the current non stroking color.
      * @param x x coordinate of each points
@@ -1045,27 +1102,27 @@ public class PDPageContentStream
         addPolygon(x, y);
         fill(PathIterator.WIND_NON_ZERO);
     }
-       
+
     /**
      * Stroke the path.
      */
-    public void stroke() throws IOException 
+    public void stroke() throws IOException
     {
         appendRawCommands( STROKE );
     }
-    
+
     /**
      * Close and stroke the path.
      */
-    public void closeAndStroke() throws IOException 
+    public void closeAndStroke() throws IOException
     {
         appendRawCommands( CLOSE_STROKE );
     }
-    
+
     /**
      * Fill the path.
      */
-    public void fill(int windingRule) throws IOException 
+    public void fill(int windingRule) throws IOException
     {
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
@@ -1075,17 +1132,17 @@ public class PDPageContentStream
         {
             appendRawCommands( FILL_EVEN_ODD );
         }
-        else 
+        else
         {
             throw new IOException( "Error: unknown value for winding rule" );
         }
-            
+
     }
 
     /**
      * Close subpath.
      */
-    public void closeSubPath() throws IOException 
+    public void closeSubPath() throws IOException
     {
         appendRawCommands( CLOSE_SUBPATH );
     }
@@ -1093,7 +1150,7 @@ public class PDPageContentStream
     /**
      * Clip path.
      */
-    public void clipPath(int windingRule) throws IOException 
+    public void clipPath(int windingRule) throws IOException
     {
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
@@ -1105,7 +1162,7 @@ public class PDPageContentStream
             appendRawCommands( CLIP_PATH_EVEN_ODD );
             appendRawCommands( NOP );
         }
-        else 
+        else
         {
             throw new IOException( "Error: unknown value for winding rule" );
         }
@@ -1125,10 +1182,47 @@ public class PDPageContentStream
     }
 
     /**
+     * Begin a marked content sequence.
+     * @param tag the tag
+     * @throws IOException if an I/O error occurs
+     */
+    public void beginMarkedContentSequence(COSName tag) throws IOException
+    {
+        appendCOSName(tag);
+        appendRawCommands(SPACE);
+        appendRawCommands(BMC);
+    }
+
+    /**
+     * Begin a marked content sequence with a reference to an entry in the page resources'
+     * Properties dictionary.
+     * @param tag the tag
+     * @param propsName the properties reference
+     * @throws IOException if an I/O error occurs
+     */
+    public void beginMarkedContentSequence(COSName tag, COSName propsName) throws IOException
+    {
+        appendCOSName(tag);
+        appendRawCommands(SPACE);
+        appendCOSName(propsName);
+        appendRawCommands(SPACE);
+        appendRawCommands(BDC);
+    }
+
+    /**
+     * End a marked content sequence.
+     * @throws IOException if an I/O error occurs
+     */
+    public void endMarkedContentSequence() throws IOException
+    {
+        appendRawCommands(EMC);
+    }
+
+    /**
      * q operator. Saves the current graphics state.
      * @throws IOException If an error occurs while writing to the stream.
      */
-    public void saveGraphicsState() throws IOException 
+    public void saveGraphicsState() throws IOException
     {
         appendRawCommands( SAVE_GRAPHICS_STATE);
     }
@@ -1137,7 +1231,7 @@ public class PDPageContentStream
      * Q operator. Restores the current graphics state.
      * @throws IOException If an error occurs while writing to the stream.
      */
-    public void restoreGraphicsState() throws IOException 
+    public void restoreGraphicsState() throws IOException
     {
         appendRawCommands( RESTORE_GRAPHICS_STATE );
     }
@@ -1174,6 +1268,27 @@ public class PDPageContentStream
     public void appendRawCommands( int data ) throws IOException
     {
         output.write( data );
+    }
+
+    /**
+     * This will append a {@link COSName} to the content stream.
+     * @param name the name
+     * @throws IOException If an error occurs while writing to the stream.
+     */
+    public void appendCOSName(COSName name) throws IOException
+    {
+        name.writePDF(output);
+    }
+
+    private void appendMatrix(AffineTransform transform) throws IOException
+    {
+        double[] values = new double[6];
+        transform.getMatrix(values);
+        for (double v : values)
+        {
+            appendRawCommands(formatDecimal.format(v));
+            appendRawCommands(SPACE);
+        }
     }
 
     /**
