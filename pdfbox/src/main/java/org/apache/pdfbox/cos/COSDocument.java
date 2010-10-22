@@ -18,7 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
-
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFXrefStreamParser;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
@@ -520,6 +518,17 @@ public class COSDocument extends COSBase
                 objectPool.put(key, obj);
             }
         }
+        return obj;
+    }
+
+    /**
+     * Removes an object from the object pool.
+     * @param key the object key
+     * @return the object that was removed or null if the object was not found
+     */
+    public COSObject removeObject(COSObjectKey key)
+    {
+        COSObject obj = objectPool.remove(key);
         return obj;
     }
 

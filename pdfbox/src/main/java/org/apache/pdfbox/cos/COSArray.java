@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -32,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.24 $
  */
-public class COSArray extends COSBase
+public class COSArray extends COSBase implements Iterable<COSBase>
 {
     private List<COSBase> objects = new ArrayList<COSBase>();
 
@@ -235,7 +233,7 @@ public class COSArray extends COSBase
     public int getInt( int index, int defaultValue )
     {
         int retval = defaultValue;
-        if ( index < size() ) 
+        if ( index < size() )
         {
             Object obj = objects.get( index );
             if( obj instanceof COSNumber )
@@ -377,7 +375,7 @@ public class COSArray extends COSBase
     /**
      * This will remove an element from the array.
      * This method will also remove a reference to the object.
-     * 
+     *
      * @param o The object to remove.
      * @return <code>true</code> if the object was removed, <code>false</code>
      *  otherwise
@@ -443,7 +441,7 @@ public class COSArray extends COSBase
     /**
      * This will return the index of the entry or -1 if it is not found.
      * This method will also find references to indirect objects.
-     * 
+     *
      * @param object The object to search for.
      * @return The index of the object or -1.
      */
@@ -538,11 +536,11 @@ public class COSArray extends COSBase
             add( new COSFloat( value[i] ) );
         }
     }
-    
+
     /**
      *  Return contents of COSArray as a Java List.
-     *  
-     *  @return the COSArray as List 
+     *
+     *  @return the COSArray as List
      */
     public List<COSBase> toList()
     {

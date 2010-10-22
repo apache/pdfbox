@@ -22,18 +22,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,7 +38,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -91,7 +86,7 @@ public class PDFMergerUtility
     {
         this.destinationFileName = destination;
     }
-    
+
     /**
      * Get the destination OutputStream.
      * @return Returns the destination OutputStream.
@@ -110,7 +105,7 @@ public class PDFMergerUtility
     {
         this.destinationStream = destinationStream;
     }
-    
+
     /**
      * Add a source file to the list of files to merge.
      *
@@ -118,11 +113,11 @@ public class PDFMergerUtility
      */
     public void addSource(String source)
     {
-        try 
+        try
         {
             sources.add(new FileInputStream(new File(source)));
-        } 
-        catch(Exception e) 
+        }
+        catch(Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -135,7 +130,7 @@ public class PDFMergerUtility
      */
     public void addSource(File source)
     {
-        try 
+        try
         {
             sources.add(new FileInputStream(source));
         }
@@ -144,7 +139,7 @@ public class PDFMergerUtility
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Add a source to the list of documents to merge.
      *
@@ -154,7 +149,7 @@ public class PDFMergerUtility
     {
         sources.add(source);
     }
-    
+
     /**
      * Add a list of sources to the list of documents to merge.
      *
@@ -178,8 +173,8 @@ public class PDFMergerUtility
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
-        	java.util.Vector<PDDocument> tobeclosed = new java.util.Vector<PDDocument>();
-        	
+            java.util.Vector<PDDocument> tobeclosed = new java.util.Vector<PDDocument>();
+
             try
             {
                 Iterator<InputStream> sit = sources.iterator();
@@ -194,9 +189,13 @@ public class PDFMergerUtility
                     appendDocument(destination, source);
                 }
                 if(destinationStream == null)
+                {
                     destination.save(destinationFileName);
+                }
                 else
+                {
                     destination.save(destinationStream);
+                }
             }
             finally
             {
@@ -204,9 +203,10 @@ public class PDFMergerUtility
                 {
                     destination.close();
                 }
-            	for(PDDocument doc : tobeclosed){
-            		doc.close();
-            	} 
+                for (PDDocument doc : tobeclosed)
+                {
+                    doc.close();
+                }
             }
         }
     }
@@ -242,20 +242,22 @@ public class PDFMergerUtility
             destCatalog.setOpenAction( srcCatalog.getOpenAction() );
         }
 
+        PDFCloneUtility cloner = new PDFCloneUtility(destination);
+
         try
         {
             PDAcroForm destAcroForm = destCatalog.getAcroForm();
             PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
             if( destAcroForm == null )
             {
-                cloneForNewDocument( destination, srcAcroForm );
+                cloner.cloneForNewDocument( srcAcroForm );
                 destCatalog.setAcroForm( srcAcroForm );
             }
             else
             {
                 if( srcAcroForm != null )
                 {
-                    mergeAcroForm(destination, destAcroForm, srcAcroForm);
+                    mergeAcroForm(cloner, destAcroForm, srcAcroForm);
                 }
             }
         }
@@ -270,8 +272,7 @@ public class PDFMergerUtility
 
         COSArray destThreads = (COSArray)destCatalog.getCOSDictionary().getDictionaryObject(
                 COSName.THREADS);
-        COSArray srcThreads = (COSArray)cloneForNewDocument(
-                destination,
+        COSArray srcThreads = (COSArray)cloner.cloneForNewDocument(
                 destCatalog.getCOSDictionary().getDictionaryObject( COSName.THREADS ));
         if( destThreads == null )
         {
@@ -288,13 +289,14 @@ public class PDFMergerUtility
         {
             if( destNames == null )
             {
-                destCatalog.getCOSDictionary().setItem( COSName.NAMES, cloneForNewDocument( destination, srcNames ) );
+                destCatalog.getCOSDictionary().setItem( COSName.NAMES,
+                        cloner.cloneForNewDocument( srcNames ) );
             }
             else
             {
-                cloneMerge(destination, srcNames, destNames);
-            }   
-                
+                cloner.cloneMerge(srcNames, destNames);
+            }
+
         }
 
         PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
@@ -304,7 +306,7 @@ public class PDFMergerUtility
             if( destOutline == null )
             {
                 PDDocumentOutline cloned =
-                    new PDDocumentOutline( (COSDictionary)cloneForNewDocument( destination, srcOutline ) );
+                    new PDDocumentOutline( (COSDictionary)cloner.cloneForNewDocument( srcOutline ) );
                 destCatalog.setDocumentOutline( cloned );
             }
             else
@@ -312,8 +314,8 @@ public class PDFMergerUtility
                 PDOutlineItem first = srcOutline.getFirstChild();
                 if(first != null)
                 {
-                    PDOutlineItem clonedFirst = new PDOutlineItem( (COSDictionary)cloneForNewDocument(
-                            destination, first ));
+                    PDOutlineItem clonedFirst = new PDOutlineItem(
+                            (COSDictionary)cloner.cloneForNewDocument( first ));
                     destOutline.appendChild( clonedFirst );
                 }
             }
@@ -326,8 +328,10 @@ public class PDFMergerUtility
             destCatalog.setPageMode( srcPageMode );
         }
 
-        COSDictionary destLabels = (COSDictionary)destCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGE_LABELS );
-        COSDictionary srcLabels = (COSDictionary)srcCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGE_LABELS );
+        COSDictionary destLabels = (COSDictionary)destCatalog.getCOSDictionary().getDictionaryObject(
+                COSName.PAGE_LABELS);
+        COSDictionary srcLabels = (COSDictionary)srcCatalog.getCOSDictionary().getDictionaryObject(
+                COSName.PAGE_LABELS);
         if( srcLabels != null )
         {
             int destPageCount = destination.getNumberOfPages();
@@ -351,7 +355,7 @@ public class PDFMergerUtility
                     COSNumber labelIndex = (COSNumber)srcNums.getObject( i );
                     long labelIndexValue = labelIndex.intValue();
                     destNums.add( COSInteger.get( labelIndexValue + destPageCount ) );
-                    destNums.add( cloneForNewDocument( destination, srcNums.getObject( i+1 ) ) );
+                    destNums.add( cloner.cloneForNewDocument( srcNums.getObject( i+1 ) ) );
                 }
             }
         }
@@ -373,7 +377,7 @@ public class PDFMergerUtility
         {
             PDPage page = pageIter.next();
             PDPage newPage =
-                new PDPage( (COSDictionary)cloneForNewDocument( destination, page.getCOSDictionary() ) );
+                new PDPage( (COSDictionary)cloner.cloneForNewDocument( page.getCOSDictionary() ) );
             newPage.setCropBox( page.findCropBox() );
             newPage.setMediaBox( page.findMediaBox() );
             newPage.setRotation( page.findRotation() );
@@ -381,204 +385,19 @@ public class PDFMergerUtility
         }
     }
 
-    Map<Object,COSBase> clonedVersion = new HashMap<Object,COSBase>();
 
-
-  /**
-   * 
-   * @param destination
-   * @param base
-   * @return
-   * @throws IOException
-   */
-    private COSBase cloneForNewDocument( PDDocument destination, Object base ) throws IOException
-    {
-        if( base == null )
-        {
-            return null;
-        }
-        COSBase retval = (COSBase)clonedVersion.get( base );
-        if( retval != null )
-        {
-            //we are done, it has already been converted.
-        }
-        else if( base instanceof List )
-        {
-            COSArray array = new COSArray();
-            List list = (List)base;
-            for( int i=0; i<list.size(); i++ )
-            {
-                array.add( cloneForNewDocument( destination, list.get( i ) ) );
-            }
-            retval = array;
-        }
-        else if( base instanceof COSObjectable && !(base instanceof COSBase) )
-        {
-            retval = cloneForNewDocument( destination, ((COSObjectable)base).getCOSObject() );
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSObject )
-        {
-            COSObject object = (COSObject)base;
-            retval = cloneForNewDocument( destination, object.getObject() );
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSArray )
-        {
-            COSArray newArray = new COSArray();
-            COSArray array = (COSArray)base;
-            for( int i=0; i<array.size(); i++ )
-            {
-                newArray.add( cloneForNewDocument( destination, array.get( i ) ) );
-            }
-            retval = newArray;
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSStream )
-        {
-            COSStream originalStream = (COSStream)base;
-            PDStream stream = new PDStream( destination, originalStream.getFilteredStream(), true );
-            clonedVersion.put( base, stream.getStream() );
-            for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
-            {
-                stream.getStream().setItem(
-                        entry.getKey(),
-                        cloneForNewDocument(destination, entry.getValue()));
-            }
-            retval = stream.getStream();
-        }
-        else if( base instanceof COSDictionary )
-        {
-            COSDictionary dic = (COSDictionary)base;
-            retval = new COSDictionary();
-            clonedVersion.put( base, retval );
-            for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
-            {
-                ((COSDictionary)retval).setItem(
-                        entry.getKey(),
-                        cloneForNewDocument(destination, entry.getValue()));
-            }
-        }
-        else
-        {
-            retval = (COSBase)base;
-        }
-        clonedVersion.put( base, retval );
-        return retval;
-    }
-
-
-    /**
-     * Deep clone and Merge from Base to Target.<br/>
-     * base and target must be instances of the same class.
-     * @param destination
-     * @param base
-     * @param target
-     * @throws IOException
-     */
-    private void cloneMerge( PDDocument destination, COSObjectable base, COSObjectable target) throws IOException
-    {
-        if( base == null )
-        {
-            return;
-        }
-        COSBase retval = (COSBase)clonedVersion.get( base );
-        if( retval != null )
-        {
-          return;
-          //we are done, it has already been converted. // ### Is that correct for cloneMerge???
-        }
-        else if( base instanceof List )
-        {
-            COSArray array = new COSArray();
-            List list = (List)base;
-            for( int i=0; i<list.size(); i++ )
-            {
-                array.add( cloneForNewDocument( destination, list.get( i ) ) );
-            }
-            ((List)target).add(array);
-        }
-        else if( base instanceof COSObjectable && !(base instanceof COSBase) )
-        {
-            cloneMerge(destination, ((COSObjectable)base).getCOSObject(), ((COSObjectable)target).getCOSObject() );
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSObject )
-        {
-            if(target instanceof COSObject)
-            {
-                cloneMerge(destination, ((COSObject) base).getObject(),((COSObject) target).getObject() );
-            }
-            else if(target instanceof COSDictionary)
-            {
-                cloneMerge(destination, ((COSObject)base).getObject(), ((COSDictionary)target));
-            }
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSArray )
-        {
-            COSArray array = (COSArray)base;
-            for( int i=0; i<array.size(); i++ )
-            {
-              ((COSArray)target).add( cloneForNewDocument( destination, array.get( i ) ) );
-            }
-            clonedVersion.put( base, retval );
-        }
-        else if( base instanceof COSStream )
-        {
-          // does that make sense???
-            COSStream originalStream = (COSStream)base;
-            PDStream stream = new PDStream( destination, originalStream.getFilteredStream(), true );
-            clonedVersion.put( base, stream.getStream() );
-            for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
-            {
-                stream.getStream().setItem(
-                        entry.getKey(),
-                        cloneForNewDocument(destination, entry.getValue()));
-            }
-            retval = stream.getStream(); 
-            target = retval;
-        }
-        else if( base instanceof COSDictionary )
-        {
-            COSDictionary dic = (COSDictionary)base;
-            clonedVersion.put( base, retval );
-            for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
-            {
-                COSName key = entry.getKey();
-                COSBase value = entry.getValue();
-                if (((COSDictionary)target).getItem(key)!=null)
-                {
-                   cloneMerge(destination, value,((COSDictionary)target).getItem(key));
-                } 
-                else 
-                {
-                  ((COSDictionary)target).setItem( key, cloneForNewDocument(destination, value));
-                }
-            }
-        }
-        else
-        {
-            retval = (COSBase)base;
-        }
-        clonedVersion.put( base, retval );
-        
-    }
-
-    
-    
     private int nextFieldNum = 1;
 
     /**
      * Merge the contents of the source form into the destination form
      * for the destination file.
      *
-     * @param destination the destination document
+     * @param cloner the object cloner for the destination document
      * @param destAcroForm the destination form
      * @param srcAcroForm the source form
      * @throws IOException If an error occurs while adding the field.
      */
-    private void mergeAcroForm(PDDocument destination, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
+    private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
         throws IOException
     {
         List destFields = destAcroForm.getFields();
@@ -597,7 +416,7 @@ public class PDFMergerUtility
                 PDField destField =
                     PDFieldFactory.createField(
                         destAcroForm,
-                        (COSDictionary)cloneForNewDocument(destination, srcField.getDictionary() ));
+                        (COSDictionary)cloner.cloneForNewDocument(srcField.getDictionary() ));
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
                 if ( destAcroForm.getField(destField.getFullyQualifiedName()) != null )
@@ -618,6 +437,6 @@ public class PDFMergerUtility
     {
         this.ignoreAcroFormErrors = ignoreAcroFormErrors;
     }
-    
+
 
 }

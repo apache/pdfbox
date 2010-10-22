@@ -24,7 +24,7 @@ import org.apache.pdfbox.cos.COSObject;
  * @author Michael Traut
  * @version $Revision: 1.5 $
  */
-public class COSObjectKey
+public class COSObjectKey implements Comparable<COSObjectKey>
 {
     private long number;
     private long generation;
@@ -113,4 +113,33 @@ public class COSObjectKey
     {
         return "" + getNumber() + " " + getGeneration() + " R";
     }
+
+    /** {@inheritDoc} */
+    public int compareTo(COSObjectKey other)
+    {
+        if (getNumber() < other.getNumber())
+        {
+            return -1;
+        }
+        else if (getNumber() > other.getNumber())
+        {
+            return 1;
+        }
+        else
+        {
+            if (getGeneration() < other.getGeneration())
+            {
+                return -1;
+            }
+            else if (getGeneration() > other.getGeneration())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
 }

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
 
@@ -570,11 +569,11 @@ public class COSDictionary extends COSBase
         COSBase name = getDictionaryObject( key );
         if( name != null )
         {
-            if ( name instanceof COSName) 
+            if ( name instanceof COSName)
             {
                 retval = ((COSName)name).getName();
             }
-            else if ( name instanceof COSString) 
+            else if ( name instanceof COSString)
             {
                 retval = ((COSString)name).getString();
             }
@@ -1242,7 +1241,8 @@ public class COSDictionary extends COSBase
      * @since Apache PDFBox 1.1.0
      * @return name-value entries in this dictionary
      */
-    public Set<Map.Entry<COSName, COSBase>> entrySet() {
+    public Set<Map.Entry<COSName, COSBase>> entrySet()
+    {
         return items.entrySet();
     }
 
@@ -1271,7 +1271,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This will add all of the dictionarys keys/values to this dictionary.
-     * Only called when adding keys to a trailer that already exists. 
+     * Only called when adding keys to a trailer that already exists.
      *
      * @param dic The dic to get the keys from.
      */
@@ -1280,9 +1280,9 @@ public class COSDictionary extends COSBase
         for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
         {
             /*
-             * If we're at a second trailer, we have a linearized 
+             * If we're at a second trailer, we have a linearized
              * pdf file, meaning that the first Size entry represents
-             * all of the objects so we don't need to grab the second. 
+             * all of the objects so we don't need to grab the second.
              */
             if(!entry.getKey().getName().equals("Size")
                     || !items.containsKey(COSName.getPDFName("Size")))
@@ -1338,7 +1338,7 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
-    
+
     /**
      * {@inheritDoc}
      */

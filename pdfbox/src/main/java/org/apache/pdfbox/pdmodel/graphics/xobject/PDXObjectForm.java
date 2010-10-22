@@ -16,12 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.geom.AffineTransform;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
-
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -145,13 +147,13 @@ public class PDXObjectForm extends PDXObject
             getCOSStream().setItem( COSName.BBOX, bbox.getCOSArray() );
         }
     }
-    
+
     /**
      * This will get the optional Matrix of an XObjectForm.
      * It maps the form space into the user space
      * @return the form matrix
      */
-    public Matrix getMatrix() 
+    public Matrix getMatrix()
     {
         Matrix retval = null;
         COSArray array = (COSArray)getCOSStream().getDictionaryObject( COSName.MATRIX );
@@ -167,5 +169,21 @@ public class PDXObjectForm extends PDXObject
         }
         return retval;
     }
-    
+
+    /**
+     * Sets the optional Matrix entry for the form XObject.
+     * @param transform the transformation matrix
+     */
+    public void setMatrix(AffineTransform transform)
+    {
+        COSArray matrix = new COSArray();
+        double[] values = new double[6];
+        transform.getMatrix(values);
+        for (double v : values)
+        {
+            matrix.add(new COSFloat((float)v));
+        }
+        getCOSStream().setItem(COSName.MATRIX, matrix);
+    }
+
 }

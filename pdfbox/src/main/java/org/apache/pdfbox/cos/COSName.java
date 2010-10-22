@@ -18,10 +18,9 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
@@ -129,9 +128,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName BASE_FONT = new COSName( "BaseFont" );
+
+    /** the COSName for "BaseState". */
+    public static final COSName BASE_STATE = new COSName( "BaseState" );
+
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
     public static final COSName BBOX = new COSName( "BBox" );
     /**
      * A common COSName value.
@@ -141,7 +144,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName BLACK_POINT = new COSName( "BlackPoint" );
-        
+
     /**
      * A common COSName value.
      */
@@ -651,11 +654,25 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * "O"
      */
     public static final COSName O = new COSName("O");
-    
+
     /**
      * "Obj"
      */
     public static final COSName OBJ = new COSName("Obj");
+
+    /** the COSName for the content group tag. */
+    public static final COSName OC = new COSName("OC");
+    /** the COSName for an optional content group. */
+    public static final COSName OCG = new COSName("OCG");
+    /** the COSName for the optional content group list. */
+    public static final COSName OCGS = new COSName("OCGs");
+    /** the COSName for the optional content properties. */
+    public static final COSName OCPROPERTIES = new COSName("OCProperties");
+
+    /** the COSName for the "OFF" value. */
+    public static final COSName OFF = new COSName("OFF");
+    /** the COSName for the "ON" value. */
+    public static final COSName ON = new COSName("ON");
 
     /**
      * A common COSName value.
@@ -674,6 +691,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /** "OpenAction" */
     public static final COSName OPEN_ACTION = new COSName("OpenAction");
+
+    /** A common COSName value. */
+     public static final COSName ORDER = new COSName( "Order" );
 
     /**
      * A common COSName value.
@@ -730,13 +750,16 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName PREV = new COSName( "Prev" );
 
-    /** "ProcSet" */
+    /** The COSName value for "ProcSet". */
     public static final COSName PROC_SET = new COSName( "ProcSet" );
 
     /**
      * A common COSName value.
      */
     public static final COSName PRODUCER = new COSName( "Producer" );
+
+    /** The COSName value for "Properties". */
+    public static final COSName PROPERTIES = new COSName( "Properties" );
 
     /**
      * A common COSName value.
@@ -828,7 +851,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName STR_F = new COSName( "StrF" );
-  
+
     /** "StructTreeRoot" */
     public static final COSName STRUCT_TREE_ROOT = new COSName("StructTreeRoot");
 
@@ -848,7 +871,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName SUBTYPE = new COSName( "Subtype" );
-    
+
     /**
      * "T"
      */
@@ -902,6 +925,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName U = new COSName( "U" );
+    /** the COSName for the "Unchanged" value. */
+    public static final COSName UNCHANGED = new COSName("Unchanged");
     /** "URI" */
     public static final COSName URI = new COSName("URI");
 
@@ -937,7 +962,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName WHITE_POINT = new COSName( "WhitePoint" );
-    
+
     /** "XObject" */
     public static final COSName XOBJECT = new COSName( "XObject" );
 
@@ -986,7 +1011,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * that are created.
      *
      * @param aName The name of the COSName object.
-     * @param staticValue Indicates if the COSName object is static so that it can 
+     * @param staticValue Indicates if the COSName object is static so that it can
      *        be stored in the HashMap without synchronizing.
      */
     private COSName( String aName, boolean staticValue )
