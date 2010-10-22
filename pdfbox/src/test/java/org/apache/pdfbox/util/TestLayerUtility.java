@@ -91,24 +91,30 @@ public class TestLayerUtility extends TestCase
         }
 
         PDDocument doc = PDDocument.load(targetFile);
-        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        try
+        {
+            PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
-        //OCGs require PDF 1.5 or later
-        //TODO need some comfortable way to enable/check the PDF version
-        //assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
-        //assertEquals("1.5", catalog.getVersion());
+            //OCGs require PDF 1.5 or later
+            //TODO need some comfortable way to enable/check the PDF version
+            //assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
+            //assertEquals("1.5", catalog.getVersion());
 
-        PDPage page = (PDPage)catalog.getAllPages().get(0);
-        PDPropertyList props = page.findResources().getProperties();
-        assertNotNull(props);
-        PDOptionalContentGroup ocg = props.getOptionalContentGroup(COSName.getPDFName("MC0"));
-        assertNotNull(ocg);
-        assertEquals("overlay", ocg.getName());
+            PDPage page = (PDPage)catalog.getAllPages().get(0);
+            PDPropertyList props = page.findResources().getProperties();
+            assertNotNull(props);
+            PDOptionalContentGroup ocg = props.getOptionalContentGroup(COSName.getPDFName("MC0"));
+            assertNotNull(ocg);
+            assertEquals("overlay", ocg.getName());
 
-        PDOptionalContentProperties ocgs = catalog.getOCProperties();
-        PDOptionalContentGroup overlay = ocgs.getGroup("overlay");
-        assertEquals(ocg.getName(), overlay.getName());
-
+            PDOptionalContentProperties ocgs = catalog.getOCProperties();
+            PDOptionalContentGroup overlay = ocgs.getGroup("overlay");
+            assertEquals(ocg.getName(), overlay.getName());
+        }
+        finally
+        {
+            doc.close();
+        }
     }
 
     private File createMainPDF() throws IOException, COSVisitorException
