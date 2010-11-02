@@ -270,7 +270,7 @@ public abstract class PDFont implements COSObjectable
             cmap = cmapObjects.get( cmapName );
         }
         FontMetric metric = getAFM();
-        if( metric != null )
+        if( metric != null && fontEncoding == null)
         {
             fontEncoding = new AFMEncoding( metric );
         }
