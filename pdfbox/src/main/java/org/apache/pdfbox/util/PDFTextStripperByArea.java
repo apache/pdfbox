@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSStream;
@@ -38,10 +39,11 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public class PDFTextStripperByArea extends PDFTextStripper
 {
-    private List regions = new ArrayList();
-    private Map regionArea = new HashMap();
-    private Map regionCharacterList = new HashMap();
-    private Map regionText = new HashMap();
+    private List<String> regions = new ArrayList<String>();
+    private Map<String,Rectangle2D> regionArea = new HashMap<String,Rectangle2D>();
+    private Map<String,Vector<ArrayList<TextPosition>>> regionCharacterList = 
+        new HashMap<String,Vector<ArrayList<TextPosition>>>();
+    private Map<String,StringWriter> regionText = new HashMap<String,StringWriter>();
 
     /**
      * Constructor.
@@ -53,7 +55,42 @@ public class PDFTextStripperByArea extends PDFTextStripper
         setPageSeparator( "" );
     }
 
+        
     /**
+     * Instantiate a new PDFTextStripperArea object. Loading all of the operator
+     * mappings from the properties object that is passed in. Does not convert
+     * the text to more encoding-specific output.
+     * 
+     * @param props
+     *            The properties containing the mapping of operators to
+     *            PDFOperator classes.
+     * 
+     * @throws IOException
+     *             If there is an error reading the properties.
+     */
+    public PDFTextStripperByArea(Properties props) throws IOException
+    {
+        super(props);
+        setPageSeparator("");
+    }
+
+    /**
+     * Instantiate a new PDFTextStripperArea object. This object will load
+     * properties from PDFTextStripper.properties and will apply
+     * encoding-specific conversions to the output text.
+     * 
+     * @param encoding
+     *            The encoding that the output will be written in.
+     * @throws IOException
+     *             If there is an error reading the properties.
+     */
+    public PDFTextStripperByArea(String encoding) throws IOException
+    {
+        super(encoding);
+        setPageSeparator("");
+    }
+    
+   /**
      * Add a new region to group text by.
      *
      * @param regionName The name of the region.
@@ -70,7 +107,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
      *
      * @return A list of java.lang.String objects to identify the region names.
      */
-    public List getRegions()
+    public List<String> getRegions()
     {
         return regions;
     }
@@ -83,7 +120,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     public String getTextForRegion( String regionName )
     {
-        StringWriter text = (StringWriter)regionText.get( regionName );
+        StringWriter text = regionText.get( regionName );
         return text.toString();
     }
 
@@ -95,16 +132,16 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     public void extractRegions( PDPage page ) throws IOException
     {
-        Iterator regionIter = regions.iterator();
+        Iterator<String> regionIter = regions.iterator();
         while( regionIter.hasNext() )
         {
             setStartPage(getCurrentPageNo());
             setEndPage(getCurrentPageNo());
             //reset the stored text for the region so this class
             //can be reused.
-            String regionName = (String)regionIter.next();
-            Vector regionCharactersByArticle = new Vector();
-            regionCharactersByArticle.add( new ArrayList() );
+            String regionName = regionIter.next();
+            Vector<ArrayList<TextPosition>> regionCharactersByArticle = new Vector<ArrayList<TextPosition>>();
+            regionCharactersByArticle.add( new ArrayList<TextPosition>() );
             regionCharacterList.put( regionName, regionCharactersByArticle );
             regionText.put( regionName, new StringWriter() );
         }
@@ -123,11 +160,11 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     protected void processTextPosition( TextPosition text )
     {
-        Iterator regionIter = regionArea.keySet().iterator();
+        Iterator<String> regionIter = regionArea.keySet().iterator();
         while( regionIter.hasNext() )
         {
-            String region = (String)regionIter.next();
-            Rectangle2D rect = (Rectangle2D)regionArea.get( region );
+            String region = regionIter.next();
+            Rectangle2D rect = regionArea.get( region );
             if( rect.contains( text.getX(), text.getY() ) )
             {
                 charactersByArticle = (Vector)regionCharacterList.get( region );
@@ -144,12 +181,12 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     protected void writePage() throws IOException
     {
-        Iterator regionIter = regionArea.keySet().iterator();
+        Iterator<String> regionIter = regionArea.keySet().iterator();
         while( regionIter.hasNext() )
         {
-            String region = (String)regionIter.next();
+            String region = regionIter.next();
             charactersByArticle = (Vector)regionCharacterList.get( region );
-            output = (StringWriter)regionText.get( region );
+            output = regionText.get( region );
             super.writePage();
         }
     }
