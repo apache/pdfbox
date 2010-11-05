@@ -72,7 +72,7 @@ public class CCITTFaxDecodeFilter implements Filter
         throws IOException
     {
         // Get ImageParams from PDF
-        COSBase baseObj = options.getDictionaryObject(new String[] {"DecodeParms","DP"});
+        COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         COSDictionary dict = null;
         if( baseObj instanceof COSDictionary )
         {
@@ -100,9 +100,15 @@ public class CCITTFaxDecodeFilter implements Filter
                     + baseObj.getClass().getName() );
         }
 
-        int width = options.getInt(COSName.WIDTH);
-        int height = options.getInt(COSName.HEIGHT);
+        int width = options.getInt(COSName.WIDTH, COSName.W);
+        int height = options.getInt(COSName.HEIGHT, COSName.H);
         int length = options.getInt(COSName.LENGTH);
+        // if the length isn't given within the dictionary,
+        // the length of the inputstream is used
+        if (length == -1) 
+        {
+            length = compressedData.available();
+        }
         int compressionType = dict.getInt(COSName.K);
         boolean blackIs1 = dict.getBoolean(COSName.BLACK_IS_1, false);
 
