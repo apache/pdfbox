@@ -149,6 +149,8 @@ public class COSDictionary extends COSBase
      * @param secondKey The second key to try.
      *
      * @return The object that matches the key.
+     * 
+     * @deprecated  use {@link #getDictionaryObject(COSName, COSName)} using COSName constants instead
      */
     public COSBase getDictionaryObject( String firstKey, String secondKey )
     {
@@ -160,6 +162,28 @@ public class COSDictionary extends COSBase
         return retval;
     }
 
+    /**
+     * This is a special case of getDictionaryObject that takes multiple keys, it will handle
+     * the situation where multiple keys could get the same value, ie if either CS or ColorSpace
+     * is used to get the colorspace.
+     * This will get an object from this dictionary.  If the object is a reference then it will
+     * dereference it and get it from the document.  If the object is COSNull then
+     * null will be returned.
+     *
+     * @param firstKey The first key to try.
+     * @param secondKey The second key to try.
+     *
+     * @return The object that matches the key.
+     */
+    public COSBase getDictionaryObject( COSName firstKey, COSName secondKey )
+    {
+        COSBase retval = getDictionaryObject( firstKey );
+        if( retval == null && secondKey != null)
+        {
+            retval = getDictionaryObject( secondKey );
+        }
+        return retval;
+    }
     /**
      * This is a special case of getDictionaryObject that takes multiple keys, it will handle
      * the situation where multiple keys could get the same value, ie if either CS or ColorSpace
@@ -902,8 +926,23 @@ public class COSDictionary extends COSBase
      */
     public boolean getBoolean( COSName key, boolean defaultValue )
     {
+        return getBoolean( key, null, defaultValue);
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that
+     * is expected to be a COSBoolean and convert it to a primitive boolean.
+     *
+     * @param firstKey The first key to the item in the dictionary.
+     * @param secondKey The second key to the item in the dictionary.
+     * @param defaultValue The value returned if the entry is null.
+     *
+     * @return The entry converted to a boolean.
+     */
+    public boolean getBoolean( COSName firstKey, COSName secondKey, boolean defaultValue )
+    {
         boolean retval = defaultValue;
-        COSBase bool = getDictionaryObject( key );
+        COSBase bool = getDictionaryObject( firstKey, secondKey );
         if( bool != null && bool instanceof COSBoolean)
         {
             retval = ((COSBoolean)bool).getValue();
@@ -1041,8 +1080,37 @@ public class COSDictionary extends COSBase
      */
     public int getInt( COSName key, int defaultValue )
     {
+        return getInt( key, null, defaultValue);
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that
+     * is expected to be an integer.  If the dictionary value is null then the
+     * default Value -1 will be returned.
+     *
+     * @param firstKey The first key to the item in the dictionary.
+     * @param secondKey The second key to the item in the dictionary.
+     * @return The integer value.
+     */
+    public int getInt( COSName firstKey, COSName secondKey )
+    {
+        return getInt( firstKey, secondKey, -1 );
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that
+     * is expected to be an integer.  If the dictionary value is null then the
+     * default Value will be returned.
+     *
+     * @param firstKey The first key to the item in the dictionary.
+     * @param secondKey The second key to the item in the dictionary.
+     * @param defaultValue The value to return if the dictionary item is null.
+     * @return The integer value.
+     */
+    public int getInt( COSName firstKey, COSName secondKey, int defaultValue )
+    {
         int retval = defaultValue;
-        COSBase obj = getDictionaryObject( key );
+        COSBase obj = getDictionaryObject( firstKey, secondKey );
         if( obj != null && obj instanceof COSNumber)
         {
             retval = ((COSNumber)obj).intValue();
