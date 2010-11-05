@@ -335,11 +335,13 @@ public class PDFStreamEngine
         //were a single byte will result in two output characters "fi"
         
         final PDFont font = graphicsState.getTextState().getFont();
+        // TODO move that to PDFont
+        boolean isType3Font = font instanceof PDType3Font;
         PDMatrix fontMatrix = font.getFontMatrix();
         
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
-        final float glyphSpaceToTextSpaceFactor = 1f/font.getFontMatrix().getValue( 0, 0 );
+        final float glyphSpaceToTextSpaceFactor = 1f/fontMatrix.getValue( 0, 0 );
         float spaceWidthText=0;
         try
         {   
@@ -391,7 +393,7 @@ public class PDFStreamEngine
             // get the width and height of this character in text units 
             float characterHorizontalDisplacementText = font.getFontWidth( string, i, codeLength );
             // Type3 fonts are providing the width of a character in glyph space units
-            if (font instanceof PDType3Font)
+            if (isType3Font)
             {
                 // multiply the witdh with the scaling factor of the font matrix
                 characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrix.getValue(0, 0);
@@ -430,23 +432,28 @@ public class PDFStreamEngine
                 spacingText += wordSpacingText;
             }
             // Convert textMatrix to display units
-            Matrix textMatrixStart = textStateParameters.copy().multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
+            Matrix textMatrixStart = textStateParameters.multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
             
             // TODO : tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
-            float tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
+            float tx = ((characterHorizontalDisplacementText)*fontSizeText)*horizontalScalingText;
             float ty = 0;
-
             Matrix td = new Matrix();
             td.setValue( 2, 0, tx );
             td.setValue( 2, 1, ty );
 
-            textMatrix = td.multiply( textMatrix );
-
             // The text matrix gets updated after each glyph is placed.  The updated
             // version will have the X and Y coordinates for the next glyph.
-            Matrix textMatrixEnd = textStateParameters.copy().multiply(textMatrix.copy()).multiply(getGraphicsState().getCurrentTransformationMatrix());
+            // textMatrixEnd contains the coordinates of the end of the last glyph without 
+            // taking characterSpacingText and spacintText into account, otherwise it'll be
+            // impossible to detect new words within text extraction
+            Matrix textMatrixEnd = textStateParameters.multiply(td).multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
 
+            // add some spacing to the text matrix (see comment above)
+            tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
+            td.setValue( 2, 0, tx );
+            textMatrix = td.multiply( textMatrix );
+            
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
             float widthText = textMatrixEnd.getXPosition() - textMatrixStart.getXPosition();
