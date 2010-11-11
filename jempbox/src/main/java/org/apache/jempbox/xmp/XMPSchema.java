@@ -820,6 +820,10 @@ public class XMPSchema
                     }
                 }
             }
+            else if (property.getChildNodes().getLength() == 1 && Node.TEXT_NODE == property.getFirstChild().getNodeType())
+            {
+                retval = property.getFirstChild().getNodeValue();
+            }
         }
         return retval;
     }
