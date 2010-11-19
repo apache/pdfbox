@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfviewer;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import java.io.IOException;
 
@@ -39,6 +40,7 @@ public class PDFPagePanel extends JPanel
     private PDPage page;
     private PageDrawer drawer = null;
     private Dimension pageDimension = null;
+    private Dimension drawDimension = null;
 
     /**
      * Constructor.
@@ -59,7 +61,16 @@ public class PDFPagePanel extends JPanel
     {
         page = pdfPage;
         PDRectangle pageSize = page.findMediaBox();
-        pageDimension = pageSize.createDimension();
+        drawDimension = pageSize.createDimension();
+        int rotation = page.findRotation();
+        if (rotation == 90 || rotation == 270)
+        {
+            pageDimension = new Dimension(drawDimension.height, drawDimension.width);
+        }
+        else
+        {
+            pageDimension = drawDimension;
+        }
         setSize( pageDimension );
         setBackground( java.awt.Color.white );
     }
@@ -73,7 +84,16 @@ public class PDFPagePanel extends JPanel
         {
             g.setColor( getBackground() );
             g.fillRect( 0, 0, getWidth(), getHeight() );
-            drawer.drawPage( g, page, pageDimension );
+
+            int rotation = page.findRotation();
+            if (rotation == 90 || rotation == 270)
+            {
+                Graphics2D g2D = (Graphics2D)g;
+                g2D.translate(pageDimension.getWidth(), 0.0f);
+                g2D.rotate(Math.toRadians(rotation));
+            }
+
+            drawer.drawPage( g, page, drawDimension );
         }
         catch( IOException e )
         {
