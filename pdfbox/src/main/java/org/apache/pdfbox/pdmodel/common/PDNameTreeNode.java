@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -39,6 +41,7 @@ import org.apache.pdfbox.cos.COSString;
  */
 public class PDNameTreeNode implements COSObjectable
 {
+    private static final Log log = LogFactory.getLog(PDNameTreeNode.class);
     private COSDictionary node;
     private Class valueType = null;
 
@@ -147,14 +150,21 @@ public class PDNameTreeNode implements COSObjectable
         else
         {
             List kids = getKids();
-            for( int i=0; i<kids.size() && retval == null; i++ )
+            if (kids != null) 
             {
-                PDNameTreeNode childNode = (PDNameTreeNode)kids.get( i );
-                if( childNode.getLowerLimit().compareTo( name ) <= 0 &&
-                        childNode.getUpperLimit().compareTo( name ) >= 0 )
+                for( int i=0; i<kids.size() && retval == null; i++ )
                 {
-                    retval = childNode.getValue( name );
+                    PDNameTreeNode childNode = (PDNameTreeNode)kids.get( i );
+                    if( childNode.getLowerLimit().compareTo( name ) <= 0 &&
+                        childNode.getUpperLimit().compareTo( name ) >= 0 )
+                    {
+                        retval = childNode.getValue( name );
+                    }
                 }
+            }
+            else
+            {
+                log.warn("NameTreeNode does not have \"names\" nor \"kids\" objects.");
             }
         }
         return retval;
