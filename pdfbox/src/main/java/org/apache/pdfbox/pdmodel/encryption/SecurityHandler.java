@@ -196,7 +196,7 @@ public abstract class SecurityHandler
      * @param output The output to write the encrypted data to.
      * @throws CryptographyException If there is an error during the encryption.
      * @throws IOException If there is an error reading the data.
-     * @depricated While this works fine for RC4 encryption, it will never decrypt AES data
+     * @deprecated While this works fine for RC4 encryption, it will never decrypt AES data
      *             You should use encryptData(objectNumber, genNumber, data, output, decrypt)
      *             which can do everything.  This function is just here for compatibility
      *             reasons and will be removed in the future.
