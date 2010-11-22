@@ -801,7 +801,7 @@ public abstract class PDFont implements COSObjectable
                             }
                             if (line.startsWith("/Encoding")) 
                             {
-                                if(line.endsWith("array")) 
+                                if(line.contains("array")) 
                                 {
                                     StringTokenizer st = new StringTokenizer(line);
                                     // ignore the first token
@@ -829,7 +829,10 @@ public abstract class PDFont implements COSObjectable
                                 st.nextElement();
                                 int index = Integer.parseInt(st.nextToken());
                                 String name = st.nextToken();
-                                encoding.addCharacterEncoding(index, name.replace("/", ""));
+                                if(encoding == null)
+                                    log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
+                                else
+                                    encoding.addCharacterEncoding(index, name.replace("/", ""));
                             }
                         }
                         in.close();
