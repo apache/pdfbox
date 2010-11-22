@@ -164,7 +164,9 @@ public class PDStream implements COSObjectable
         }
         else if( base instanceof COSArray )
         {
-            retval = new PDStream( new COSStreamArray( (COSArray)base ) );
+            if (((COSArray)base).size() > 0) {
+                retval = new PDStream( new COSStreamArray( (COSArray)base ) );
+            }
         }
         else
         {
