@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -29,6 +31,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -39,6 +48,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
 import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -60,6 +70,11 @@ public abstract class SecurityHandler
 
     private static final int DEFAULT_KEY_LENGTH = 40;
 
+    /*
+     * See 7.6.2, page 58, PDF 32000-1:2008
+     */
+    private final static byte[] AES_SALT = {(byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54};
+    
     /**
      * The value of V field of the Encryption dictionary.
      */
@@ -90,6 +105,11 @@ public abstract class SecurityHandler
 
     private Set potentialSignatures = new HashSet();
 
+    /*
+     * If true, AES will be used
+     */
+    private boolean aes;
+    
     /**
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
@@ -167,6 +187,26 @@ public abstract class SecurityHandler
         }
     }
 
+    /**
+     * Encrypt a set of data.
+     *
+     * @param objectNumber The data object number.
+     * @param genNumber The data generation number.
+     * @param data The data to encrypt.
+     * @param output The output to write the encrypted data to.
+     * @throws CryptographyException If there is an error during the encryption.
+     * @throws IOException If there is an error reading the data.
+     * @depricated While this works fine for RC4 encryption, it will never decrypt AES data
+     *             You should use encryptData(objectNumber, genNumber, data, output, decrypt)
+     *             which can do everything.  This function is just here for compatibility
+     *             reasons and will be removed in the future.
+     */
+    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output)
+    throws CryptographyException, IOException
+    {
+        // default to encrypting since the function is named "encryptData"
+        encryptData(objectNumber, genNumber, data, output, false);
+    }
 
     /**
      * Encrypt a set of data.
@@ -175,12 +215,13 @@ public abstract class SecurityHandler
      * @param genNumber The data generation number.
      * @param data The data to encrypt.
      * @param output The output to write the encrypted data to.
+     * @param decrypt true to decrypt the data, false to encrypt it
      *
      * @throws CryptographyException If there is an error during the encryption.
      * @throws IOException If there is an error reading the data.
      */
-    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output)
-        throws CryptographyException, IOException
+    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output, boolean decrypt) 
+    throws CryptographyException, IOException
     {
         byte[] newKey = new byte[ encryptionKey.length + 5 ];
         System.arraycopy( encryptionKey, 0, newKey, 0, encryptionKey.length );
@@ -201,7 +242,11 @@ public abstract class SecurityHandler
         try
         {
             MessageDigest md = MessageDigest.getInstance( "MD5" );
-            digestedKey = md.digest( newKey );
+            md.update(newKey);
+            if (aes) {
+                md.update(AES_SALT);
+            }
+            digestedKey = md.digest();
         }
         catch( NoSuchAlgorithmException e )
         {
@@ -213,13 +258,57 @@ public abstract class SecurityHandler
         byte[] finalKey = new byte[ length ];
         System.arraycopy( digestedKey, 0, finalKey, 0, length );
 
-        rc4.setKey( finalKey );
-        rc4.write( data, output );
+        if (aes)
+        {
+            byte[] iv = new byte[16];
+    
+            data.read(iv);
+    
+            try {
+                Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    
+                SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
+    
+                IvParameterSpec ips = new IvParameterSpec(iv);
+    
+                decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
+    
+                CipherInputStream cipherStream = new CipherInputStream(data, decryptCipher);
+                
+                try {
+                    byte buffer[] = new byte[4096];
+                    long count = 0L;
+                    for(int n = 0; -1 != (n = cipherStream.read(buffer));)
+                    {
+                        output.write(buffer, 0, n);
+                        count += n;
+                    }
+                }
+                finally {
+                    cipherStream.close();
+                }
+            }
+            catch (InvalidKeyException e) {
+                throw new WrappedIOException(e);
+            }
+            catch (InvalidAlgorithmParameterException e) {
+                throw new WrappedIOException(e);
+            }
+            catch (NoSuchAlgorithmException e) {
+                throw new WrappedIOException(e);
+            }
+            catch (NoSuchPaddingException e) {
+                throw new WrappedIOException(e);
+            }
+        }
+        else {
+            rc4.setKey( finalKey );
+            rc4.write( data, output );
+        }
+        
         output.flush();
-
     }
-
-
+    
     /**
      * This will decrypt an object in the document.
      *
@@ -291,7 +380,8 @@ public abstract class SecurityHandler
         encryptData( objNum,
                                 genNum,
                                 encryptedStream,
-                                stream.createFilteredStream() );
+                                stream.createFilteredStream(),
+                                true /* decrypt */);
     }
     
     /**
@@ -313,7 +403,8 @@ public abstract class SecurityHandler
         encryptData( objNum,
                                 genNum,
                                 encryptedStream,
-                                stream.createFilteredStream() );
+                                stream.createFilteredStream(),
+                                false /* encrypt */);
     }
 
     /**
@@ -357,7 +448,7 @@ public abstract class SecurityHandler
     {
         ByteArrayInputStream data = new ByteArrayInputStream( string.getBytes() );
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        encryptData( objNum, genNum, data, buffer );
+        encryptData( objNum, genNum, data, buffer, true /* decrypt */ );
         string.reset();
         string.append( buffer.toByteArray() );
     }
@@ -410,5 +501,19 @@ public abstract class SecurityHandler
     public AccessPermission getCurrentAccessPermission()
     {
         return currentAccessPermission;
+    }
+
+    /*
+     * True if AES is used for encryption and decryption.
+     */
+    public boolean isAES() {
+        return aes;
+    }
+
+    /*
+     * Set to true if AES for encryption and decryption should be used.
+     */
+    public void setAES(boolean aes) {
+        this.aes = aes;
     }
 }

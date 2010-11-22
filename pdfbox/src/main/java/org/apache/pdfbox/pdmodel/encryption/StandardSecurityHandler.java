@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -232,6 +233,20 @@ public class StandardSecurityHandler extends SecurityHandler
                 "Error: The supplied password does not match either the owner or user password in the document." );
         }
 
+        // detect whether AES encryption is used. This assumes that the encryption algo is 
+        // stored in the PDCryptFilterDictionary
+        PDCryptFilterDictionary stdCryptFilterDictionary =  doc.getEncryptionDictionary().
+                getStdCryptFilterDictionary();
+
+        if (stdCryptFilterDictionary != null)
+        {
+            COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
+
+            if (cryptFilterMethod != null) {
+                setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()));
+            }
+        }
+        
         this.proceedDecryption();
     }
 
