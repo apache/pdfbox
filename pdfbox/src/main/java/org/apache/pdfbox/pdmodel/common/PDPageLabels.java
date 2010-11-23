@@ -108,7 +108,8 @@ public class PDPageLabels implements COSObjectable
             Map<Integer, COSDictionary> numbers = node.getNumbers();
             for (Entry<Integer, COSDictionary> i : numbers.entrySet())
             {
-                labels.put(i.getKey(), new PDPageLabelRange(i.getValue()));
+                if(i.getKey() >= 0)
+                    labels.put(i.getKey(), new PDPageLabelRange(i.getValue()));
             }
         }
     }
