@@ -322,16 +322,19 @@ public class PDDocument implements Pageable
         try
         {
             PDStream src = page.getContents();
-            PDStream dest = new PDStream( new COSStream( src.getStream(), document.getScratchFile() ) );
-            importedPage.setContents( dest );
-            os = dest.createOutputStream();
-
-            byte[] buf = new byte[10240];
-            int amountRead = 0;
-            is = src.createInputStream();
-            while((amountRead = is.read(buf,0,10240)) > -1)
+            if(src != null)
             {
-                os.write(buf, 0, amountRead);
+                PDStream dest = new PDStream( new COSStream( src.getStream(), document.getScratchFile() ) );
+                importedPage.setContents( dest );
+                os = dest.createOutputStream();
+
+                byte[] buf = new byte[10240];
+                int amountRead = 0;
+                is = src.createInputStream();
+                while((amountRead = is.read(buf,0,10240)) > -1)
+                {
+                    os.write(buf, 0, amountRead);
+                }
             }
             addPage( importedPage );
         }
