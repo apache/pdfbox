@@ -29,7 +29,7 @@ public class TestPDDocumentCatalog extends TestCase {
     public void testPageLabels() throws Exception {
         PDDocument doc = null;
         try {
-            doc = PDDocument.load("pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/test_pagelabels.pdf");
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
             assertEquals(12, labels.length);
@@ -59,7 +59,7 @@ public class TestPDDocumentCatalog extends TestCase {
     public void testLabelsOnMalformedPdf() throws Exception {
         PDDocument doc = null;
         try {
-            doc = PDDocument.load("pdfbox/pdfbox/src/test/resources/org/apache/pdfbox/pdmodel/page_label.pdf");
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("page_label.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
