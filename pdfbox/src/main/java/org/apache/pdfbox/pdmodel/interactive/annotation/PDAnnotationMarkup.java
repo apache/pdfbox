@@ -26,15 +26,40 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- * This class represents the additonal fields of a Markup type Annotation.
- *
+ * This class represents the additonal fields of a Markup type Annotation.  See
+ * section 12.5.6 of ISO32000-1:2008 (starting with page 390) for details on
+ * annotation types.
  *
  * @author Paul King
  * @version $Revision: 1.1 $
  */
-public abstract class PDAnnotationMarkup extends PDAnnotation
+public class PDAnnotationMarkup extends PDAnnotation
 {
-
+    /**
+     * Constant for a FreeText type of annotation.
+     */
+    public static final String SUB_TYPE_FREETEXT = "FreeText";
+    /**
+     * Constant for an Polygon type of annotation.
+     */
+    public static final String SUB_TYPE_POLYGON = "Polygon";
+    /**
+     * Constant for an PolyLine type of annotation.
+     */
+    public static final String SUB_TYPE_POLYLINE = "PolyLine";
+    /**
+     * Constant for an Caret type of annotation.
+     */
+    public static final String SUB_TYPE_CARET = "Caret";
+    /**
+     * Constant for an Ink type of annotation.
+     */
+    public static final String SUB_TYPE_INK = "Ink";
+    /**
+     * Constant for an Sound type of annotation.
+     */
+    public static final String SUB_TYPE_SOUND = "Sound";
+  
     /*
      * The various values of the reply type as defined in the PDF 1.7 reference
      * Table 170
