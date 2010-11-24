@@ -46,7 +46,7 @@ public class Splitter
     protected PDDocument currentDocument = null;
 
     private int splitAtPage=1;
-    private List newDocuments = null;
+    private List<PDDocument> newDocuments = null;
 
     /**
      * The current page number that we are processing, zero based.
@@ -62,9 +62,9 @@ public class Splitter
      *
      * @throws IOException If there is an IOError
      */
-    public List split( PDDocument document ) throws IOException
+    public List<PDDocument> split( PDDocument document ) throws IOException
     {
-        newDocuments = new ArrayList();
+        newDocuments = new ArrayList<PDDocument>();
         pdfDocument = document;
 
         List pages = pdfDocument.getDocumentCatalog().getAllPages();
@@ -180,7 +180,8 @@ public class Splitter
         PDPage imported = currentDocument.importPage( page );
         imported.setCropBox( page.findCropBox() );
         imported.setMediaBox( page.findMediaBox() );
-        imported.setResources( page.findResources() );
+        // only the resources of the page will be copied
+        imported.setResources( page.getResources() );
         imported.setRotation( page.findRotation() );
         pageNumber++;
     }
