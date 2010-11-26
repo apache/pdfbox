@@ -62,6 +62,9 @@ public class PDFTextStripper extends PDFStreamEngine
 
     private static final String thisClassName = PDFTextStripper.class.getSimpleName().toLowerCase();
 
+    private static float DEFAULT_INDENT_THRESHOLD = 2.0f;
+    private static float DEFAULT_DROP_THRESHOLD = 2.5f;
+
     //enable the ability to set the default indent/drop thresholds
     //with -D system properties:
     //    pdftextstripper.indent
@@ -125,9 +128,6 @@ public class PDFTextStripper extends PDFStreamEngine
     private boolean sortByPosition = false;
     private boolean addMoreFormatting = false;
     
-    private static float DEFAULT_INDENT_THRESHOLD = 2.0f;
-    private static float DEFAULT_DROP_THRESHOLD = 2.5f;
-
     private float indentThreshold = DEFAULT_INDENT_THRESHOLD;
     private float dropThreshold = DEFAULT_DROP_THRESHOLD;
 
