@@ -338,6 +338,8 @@ public class PDFStreamEngine
         // TODO move that to PDFont
         boolean isType3Font = font instanceof PDType3Font;
         PDMatrix fontMatrix = font.getFontMatrix();
+        float fontMatrixXScaling = fontMatrix.getValue(0, 0);
+        float fontMatrixYScaling = fontMatrix.getValue(1, 1);
         
         //This will typically be 1000 but in the case of a type3 font
         //this might be a different number
@@ -373,6 +375,7 @@ public class PDFStreamEngine
         float pageHeight = page.findMediaBox().getHeight();
         float pageWidth = page.findMediaBox().getWidth();
 
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         int codeLength = 1;
         for( int i=0; i<string.length; i+=codeLength)
         {
@@ -387,26 +390,29 @@ public class PDFStreamEngine
             }
 
             // the space width has to be transformed into display units
-            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText * textMatrix.getValue(0, 0) * getGraphicsState().getCurrentTransformationMatrix().getValue(0, 0);
+            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText * textMatrix.getValue(0, 0) * ctm.getValue(0, 0);
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
             float characterHorizontalDisplacementText = font.getFontWidth( string, i, codeLength );
+            float characterVerticalDisplacementText = font.getFontHeight( string, i, codeLength );
             // Type3 fonts are providing the width of a character in glyph space units
             if (isType3Font)
             {
-                // multiply the witdh with the scaling factor of the font matrix
-                characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrix.getValue(0, 0);
+                // multiply the width/height with the scaling factor of the font matrix
+                characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrixXScaling;
+                characterVerticalDisplacementText = characterVerticalDisplacementText * fontMatrixYScaling;
             }
-            // all other fonts are providing the width of a character in thousandths of a unit of text space
+            // all other fonts are providing the width/height of a character in thousandths of a unit of text space
             else
             {
                 characterHorizontalDisplacementText = characterHorizontalDisplacementText/1000f;
+                characterVerticalDisplacementText = characterVerticalDisplacementText/1000f;
             }
             maxVerticalDisplacementText = 
                 Math.max( 
                     maxVerticalDisplacementText, 
-                    characterHorizontalDisplacementText);
+                    characterVerticalDisplacementText);
 
             // PDF Spec - 5.5.2 Word Spacing
             //
@@ -432,7 +438,7 @@ public class PDFStreamEngine
                 spacingText += wordSpacingText;
             }
             // Convert textMatrix to display units
-            Matrix textMatrixStart = textStateParameters.multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
+            Matrix textMatrixStart = textStateParameters.multiply(textMatrix).multiply(ctm);
             
             // TODO : tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
@@ -447,7 +453,7 @@ public class PDFStreamEngine
             // textMatrixEnd contains the coordinates of the end of the last glyph without 
             // taking characterSpacingText and spacintText into account, otherwise it'll be
             // impossible to detect new words within text extraction
-            Matrix textMatrixEnd = textStateParameters.multiply(td).multiply(textMatrix).multiply(getGraphicsState().getCurrentTransformationMatrix());
+            Matrix textMatrixEnd = textStateParameters.multiply(td).multiply(textMatrix).multiply(ctm);
 
             // add some spacing to the text matrix (see comment above)
             tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
@@ -473,7 +479,7 @@ public class PDFStreamEngine
             }
             totalCharCnt++;
 
-            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText;
+            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * textMatrix.getYScale();
 
             // process the decoded text
             processTextPosition(
