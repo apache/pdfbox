@@ -30,7 +30,12 @@ import org.apache.pdfbox.cos.COSNumber;
 public class PDMatrix implements COSObjectable
 {
     private COSArray matrix;
-
+    // the number of row elements depends on the number of elements
+    // within the given matrix
+    // 3x3 e.g. Matrix of a CalRGB colorspace dictionary
+    // 3x2 e.g. FontMatrix of a type 3 font
+    private int numberOfRowElements = 3;
+    
     /**
      * Constructor.
      */
@@ -55,7 +60,10 @@ public class PDMatrix implements COSObjectable
      */
     public PDMatrix( COSArray array )
     {
-        matrix = array;
+        if ( array.size() == 6) 
+        {
+            numberOfRowElements = 2;
+        }
     }
 
     /**
@@ -89,7 +97,7 @@ public class PDMatrix implements COSObjectable
      */
     public float getValue( int row, int column )
     {
-        return ((COSNumber)matrix.get( row*3 + column )).floatValue();
+        return ((COSNumber)matrix.get( row*numberOfRowElements + column )).floatValue();
     }
 
     /**
@@ -101,6 +109,6 @@ public class PDMatrix implements COSObjectable
      */
     public void setValue( int row, int column, float value )
     {
-        matrix.set( row*3+column, new COSFloat( value ) );
+        matrix.set( row*numberOfRowElements+column, new COSFloat( value ) );
     }
 }
