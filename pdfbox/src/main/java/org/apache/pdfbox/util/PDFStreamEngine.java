@@ -354,7 +354,7 @@ public class PDFStreamEngine
         {   
             // to avoid crash as described in PDFBOX-614
             // lets see what the space displacement should be
-            spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
+            spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )*glyphSpaceToTextSpaceFactor);
         }
         catch (Throwable exception)
         {
@@ -363,7 +363,7 @@ public class PDFStreamEngine
         
         if( spaceWidthText == 0 )
         {
-            spaceWidthText = (font.getAverageFontWidth()/glyphSpaceToTextSpaceFactor);
+            spaceWidthText = (font.getAverageFontWidth()*glyphSpaceToTextSpaceFactor);
             //The average space width appears to be higher than necessary
             //so lets make it a little bit smaller.
             spaceWidthText *= .80f;
