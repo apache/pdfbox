@@ -335,15 +335,20 @@ public class PDFStreamEngine
         //were a single byte will result in two output characters "fi"
         
         final PDFont font = graphicsState.getTextState().getFont();
-        // TODO move that to PDFont
-        boolean isType3Font = font instanceof PDType3Font;
-        PDMatrix fontMatrix = font.getFontMatrix();
-        float fontMatrixXScaling = fontMatrix.getValue(0, 0);
-        float fontMatrixYScaling = fontMatrix.getValue(1, 1);
-        
-        //This will typically be 1000 but in the case of a type3 font
-        //this might be a different number
-        final float glyphSpaceToTextSpaceFactor = 1f/fontMatrix.getValue( 0, 0 );
+        // all fonts are providing the width/height of a character in thousandths of a unit of text space
+        float fontMatrixXScaling = 1/1000f;
+        float fontMatrixYScaling = 1/1000f;
+        float glyphSpaceToTextSpaceFactor = 1/1000f;
+        // expect Type3 fonts, those are providing the width of a character in glyph space units
+        if (font instanceof PDType3Font)
+        {
+            PDMatrix fontMatrix = font.getFontMatrix();
+            fontMatrixXScaling = fontMatrix.getValue(0, 0);
+            fontMatrixYScaling = fontMatrix.getValue(1, 1);
+            //This will typically be 1000 but in the case of a type3 font
+            //this might be a different number
+            glyphSpaceToTextSpaceFactor = 1f/fontMatrix.getValue( 0, 0 );
+        }
         float spaceWidthText=0;
         try
         {   
@@ -396,19 +401,11 @@ public class PDFStreamEngine
             // get the width and height of this character in text units 
             float characterHorizontalDisplacementText = font.getFontWidth( string, i, codeLength );
             float characterVerticalDisplacementText = font.getFontHeight( string, i, codeLength );
-            // Type3 fonts are providing the width of a character in glyph space units
-            if (isType3Font)
-            {
-                // multiply the width/height with the scaling factor of the font matrix
-                characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrixXScaling;
-                characterVerticalDisplacementText = characterVerticalDisplacementText * fontMatrixYScaling;
-            }
-            // all other fonts are providing the width/height of a character in thousandths of a unit of text space
-            else
-            {
-                characterHorizontalDisplacementText = characterHorizontalDisplacementText/1000f;
-                characterVerticalDisplacementText = characterVerticalDisplacementText/1000f;
-            }
+
+            // multiply the width/height with the scaling factor
+            characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrixXScaling;
+            characterVerticalDisplacementText = characterVerticalDisplacementText * fontMatrixYScaling;
+
             maxVerticalDisplacementText = 
                 Math.max( 
                     maxVerticalDisplacementText, 
@@ -497,7 +494,6 @@ public class PDFStreamEngine
                             fontSizeText,
                             (int)(fontSizeText * textMatrix.getXScale())
                             ));
-
         }
     }
 
