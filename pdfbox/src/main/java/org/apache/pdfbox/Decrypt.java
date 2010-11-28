@@ -59,7 +59,7 @@ public class Decrypt
 
     private void decrypt( String[] args ) throws Exception
     {
-        if( args.length < 2 || args.length > 3 )
+        if( args.length < 2 || args.length > 5 )
         {
             usage();
         }
