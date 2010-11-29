@@ -484,6 +484,8 @@ public abstract class BaseParser
                                                 //found the whole marker
                                                 pdfSource.unread( ENDSTREAM );
                                                 return;
+                                            }else{
+                                                out.write(ENDSTREAM, 0, 8);
                                             }
                                         }else{
                                             out.write(ENDSTREAM, 0, 7);
@@ -505,6 +507,8 @@ public abstract class BaseParser
                                     //found whole marker
                                     pdfSource.unread( ENDOBJ );
                                     return;
+                                }else{
+                                    out.write(ENDOBJ, 0, 5);
                                 }
                             }else{
                                 out.write(ENDOBJ, 0, 4);
