@@ -64,6 +64,7 @@ public class PDMatrix implements COSObjectable
         {
             numberOfRowElements = 2;
         }
+        matrix = array;
     }
 
     /**
