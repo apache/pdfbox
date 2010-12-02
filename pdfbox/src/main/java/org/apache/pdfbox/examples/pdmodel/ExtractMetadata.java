@@ -21,6 +21,7 @@ import org.apache.jempbox.xmp.XMPSchemaBasic;
 import org.apache.jempbox.xmp.XMPSchemaDublinCore;
 import org.apache.jempbox.xmp.XMPSchemaPDF;
 
+import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -66,6 +67,21 @@ public class ExtractMetadata
             {
                 document = PDDocument.load( args[0] );
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
+                if (document.isEncrypted()) 
+                {
+                    try
+                    {
+                        document.decrypt("");
+                    }
+                    catch( InvalidPasswordException e )
+                    {
+                        System.err.println( "Error: The document is encrypted." );
+                    }
+                    catch( org.apache.pdfbox.exceptions.CryptographyException e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
                 PDMetadata meta = catalog.getMetadata();
                 XMPMetadata metadata = meta.exportXMPMetadata();
 
