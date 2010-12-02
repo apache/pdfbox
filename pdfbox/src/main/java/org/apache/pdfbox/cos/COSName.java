@@ -382,6 +382,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "Encrypt" */
     public static final COSName ENCRYPT = new COSName( "Encrypt" );
 
+    /** "EncryptMetaData" */
+    public static final COSName ENCRYPT_META_DATA = new COSName( "EncryptMetadata" );
+    
     /** "ExtGState" */
     public static final COSName EXT_G_STATE = new COSName( "ExtGState" );
 

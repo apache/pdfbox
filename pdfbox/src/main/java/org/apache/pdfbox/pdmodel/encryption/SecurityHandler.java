@@ -223,6 +223,10 @@ public abstract class SecurityHandler
     public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output, boolean decrypt) 
     throws CryptographyException, IOException
     {
+        if (aes && !decrypt) {
+            throw new IllegalArgumentException("AES encryption is not yet implemented.");
+        }
+        
         byte[] newKey = new byte[ encryptionKey.length + 5 ];
         System.arraycopy( encryptionKey, 0, newKey, 0, encryptionKey.length );
         //PDF 1.4 reference pg 73
