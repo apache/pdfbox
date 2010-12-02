@@ -24,6 +24,7 @@ import org.apache.jempbox.xmp.XMPSchemaPDF;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 
 import java.text.DateFormat;
@@ -66,7 +67,6 @@ public class ExtractMetadata
             try
             {
                 document = PDDocument.load( args[0] );
-                PDDocumentCatalog catalog = document.getDocumentCatalog();
                 if (document.isEncrypted()) 
                 {
                     try
@@ -82,33 +82,47 @@ public class ExtractMetadata
                         e.printStackTrace();
                     }
                 }
+                PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDMetadata meta = catalog.getMetadata();
-                XMPMetadata metadata = meta.exportXMPMetadata();
-
-                XMPSchemaDublinCore dc = metadata.getDublinCoreSchema();
-                if (dc != null)
+                if ( meta != null)
                 {
-                    display("Title:", dc.getTitle());
-                    display("Description:", dc.getDescription());
-                    list("Creators: ", dc.getCreators());
-                    list("Dates:", dc.getDates());
+                    XMPMetadata metadata = meta.exportXMPMetadata();
+    
+                    XMPSchemaDublinCore dc = metadata.getDublinCoreSchema();
+                    if (dc != null)
+                    {
+                        display("Title:", dc.getTitle());
+                        display("Description:", dc.getDescription());
+                        list("Creators: ", dc.getCreators());
+                        list("Dates:", dc.getDates());
+                    }
+    
+                    XMPSchemaPDF pdf = metadata.getPDFSchema();
+                    if (pdf != null)
+                    {
+                        display("Keywords:", pdf.getKeywords());
+                        display("PDF Version:", pdf.getPDFVersion());
+                        display("PDF Producer:", pdf.getProducer());
+                    }
+    
+                    XMPSchemaBasic basic = metadata.getBasicSchema();
+                    if (basic != null)
+                    {
+                        display("Create Date:", basic.getCreateDate());
+                        display("Modify Date:", basic.getModifyDate());
+                        display("Creator Tool:", basic.getCreatorTool());
+                    }
                 }
-
-                XMPSchemaPDF pdf = metadata.getPDFSchema();
-                if (pdf != null)
+                else
                 {
-                    display("Keywords:", pdf.getKeywords());
-                    display("PDF Version:", pdf.getPDFVersion());
-                    display("PDF Producer:", pdf.getProducer());
+                    // The pdf doesn't contain any metadata, try to use the document information instead
+                    PDDocumentInformation information = document.getDocumentInformation();
+                    if ( information != null)
+                    {
+                        showDocumentInformation(information);
+                    }
                 }
-
-                XMPSchemaBasic basic = metadata.getBasicSchema();
-                if (basic != null)
-                {
-                    display("Create Date:", basic.getCreateDate());
-                    display("Modify Date:", basic.getModifyDate());
-                    display("Creator Tool:", basic.getCreatorTool());
-                }
+                
             }
             finally
             {
@@ -120,6 +134,15 @@ public class ExtractMetadata
         }
     }
 
+    private static void showDocumentInformation(PDDocumentInformation information)
+    {
+        display("Title:", information.getTitle());
+        display("Subject:", information.getSubject());
+        display("Author:", information.getAuthor());
+        display("Creator:", information.getCreator());
+        display("Producer:", information.getProducer());
+    }
+    
     private static void list(String title, List list)
     {
         if (list == null)
