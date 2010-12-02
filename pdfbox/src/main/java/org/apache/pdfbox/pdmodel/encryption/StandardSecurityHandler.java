@@ -180,6 +180,9 @@ public class StandardSecurityHandler extends SecurityHandler
             documentIDBytes = new byte[0];
         }
 
+        // we need to know whether the meta data was encrypted for password calculation
+        boolean encryptMetadata = dictionary.isEncryptMetaData();
+        
         byte[] u = dictionary.getUserKey();
         byte[] o = dictionary.getOwnerKey();
 
@@ -191,7 +194,8 @@ public class StandardSecurityHandler extends SecurityHandler
                 dicPermissions,
                 documentIDBytes,
                 dicRevision,
-                dicLength );
+                dicLength,
+                encryptMetadata);
         boolean isOwnerPassword =
             isOwnerPassword(
                 password.getBytes(),
@@ -200,7 +204,8 @@ public class StandardSecurityHandler extends SecurityHandler
                 dicPermissions,
                 documentIDBytes,
                 dicRevision,
-                dicLength );
+                dicLength,
+                encryptMetadata);
 
         if( isUserPassword )
         {
@@ -212,7 +217,8 @@ public class StandardSecurityHandler extends SecurityHandler
                     dicPermissions,
                     documentIDBytes,
                     dicRevision,
-                    dicLength );
+                    dicLength,
+                    encryptMetadata );
         }
         else if( isOwnerPassword )
         {
@@ -225,7 +231,8 @@ public class StandardSecurityHandler extends SecurityHandler
                     dicPermissions,
                     documentIDBytes,
                     dicRevision,
-                    dicLength );
+                    dicLength,
+                    encryptMetadata);
         }
         else
         {
@@ -330,10 +337,10 @@ public class StandardSecurityHandler extends SecurityHandler
 
         byte[] u = computeUserPassword(
             userPassword.getBytes("ISO-8859-1"),
-            o, permissionInt, id.getBytes(), revision, length);
+            o, permissionInt, id.getBytes(), revision, length, true);
 
         encryptionKey = computeEncryptedKey(
-            userPassword.getBytes("ISO-8859-1"), o, permissionInt, id.getBytes(), revision, length);
+            userPassword.getBytes("ISO-8859-1"), o, permissionInt, id.getBytes(), revision, length, true);
 
         encryptionDictionary.setOwnerKey(o);
         encryptionDictionary.setUserKey(u);
@@ -366,11 +373,12 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length)
+            int length,
+            boolean encryptMetadata)
             throws CryptographyException, IOException
     {
         byte[] userPassword = getUserPassword( ownerPassword, o, encRevision, length );
-        return isUserPassword( userPassword, u, o, permissions, id, encRevision, length );
+        return isUserPassword( userPassword, u, o, permissions, id, encRevision, length, encryptMetadata );
     }
 
     /**
@@ -501,7 +509,8 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length )
+            int length,
+            boolean encryptMetadata)
             throws CryptographyException
         {
             byte[] result = new byte[ length ];
@@ -531,6 +540,15 @@ public class StandardSecurityHandler extends SecurityHandler
 
                 //step 5
                 md.update( id );
+                
+                //(Security handlers of revision 4 or greater) If document metadata is not being encrypted, 
+                //pass 4 bytes with the value 0xFFFFFFFF to the MD5 hash function.
+                //see 7.6.3.3 Algorithm 2 Step f of PDF 32000-1:2008
+                if( encRevision == 4 && !encryptMetadata)
+                {
+                    md.update(new byte[]{(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff});
+                }
+                
                 byte[] digest = md.digest();
 
                 //step 6
@@ -581,12 +599,13 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length )
+            int length,
+            boolean encryptMetadata)
             throws CryptographyException, IOException
         {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
             //STEP 1
-            byte[] encryptionKey = computeEncryptedKey( password, o, permissions, id, encRevision, length );
+            byte[] encryptionKey = computeEncryptedKey( password, o, permissions, id, encRevision, length, encryptMetadata );
 
             if( encRevision == 2 )
             {
@@ -764,12 +783,14 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length)
+            int length,
+            boolean encryptMetadata)
             throws CryptographyException, IOException
         {
             boolean matches = false;
             //STEP 1
-            byte[] computedValue = computeUserPassword( password, o, permissions, id, encRevision, length );
+            byte[] computedValue = computeUserPassword( password, o, permissions, id, encRevision, length, 
+                    encryptMetadata );
             if( encRevision == 2 )
             {
                 //STEP 2
@@ -810,11 +831,12 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length)
+            int length,
+            boolean encryptMetadata )
             throws CryptographyException, IOException
             {
                 return isUserPassword(password.getBytes(),
-                        u,o,permissions, id, encRevision, length);
+                        u,o,permissions, id, encRevision, length, encryptMetadata);
             }
 
     /**
@@ -840,11 +862,12 @@ public class StandardSecurityHandler extends SecurityHandler
             int permissions,
             byte[] id,
             int encRevision,
-            int length)
+            int length,
+            boolean encryptMetadata)
             throws CryptographyException, IOException
             {
                 return isOwnerPassword(password.getBytes(),
-                        u,o,permissions, id, encRevision, length);
+                        u,o,permissions, id, encRevision, length, encryptMetadata);
             }
 
     private static final boolean arraysEqual( byte[] first, byte[] second, int count )

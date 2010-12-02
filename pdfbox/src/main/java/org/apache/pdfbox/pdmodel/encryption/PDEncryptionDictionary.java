@@ -20,6 +20,8 @@ package org.apache.pdfbox.pdmodel.encryption;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -301,6 +303,25 @@ public class PDEncryptionDictionary
         return encryptionDictionary.getInt( COSName.P, 0 );
     }
 
+    /**
+     * Will get the EncryptMetaData dictionary info.
+     * 
+     * @return true if EncryptMetaData is explicitly set to false (the default is true)
+     */
+    public boolean isEncryptMetaData()
+    {
+        // default is true (see 7.6.3.2 Standard Encryption Dictionary PDF 32000-1:2008)
+        boolean encryptMetaData = true;
+        
+        COSBase value = encryptionDictionary.getDictionaryObject(COSName.ENCRYPT_META_DATA);
+        
+        if (value instanceof COSBoolean) {
+            encryptMetaData = ((COSBoolean)value).getValue();
+        }
+        
+        return encryptMetaData;
+    }
+    
     /**
      * This will set the Recipients field of the dictionary. This field contains an array
      * of string.
