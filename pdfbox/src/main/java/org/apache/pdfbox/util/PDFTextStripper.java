@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+import org.apache.pdfbox.util.TextPosition;
 
 
 /**
@@ -727,7 +728,7 @@ public class PDFTextStripper extends PDFStreamEngine
                         writeLine(normalize(line,isRtlDominant,hasRtl),isRtlDominant);
                         line.clear();
 
-                        lastLineStartPosition = handleLineSeparation(current, lastPosition, lastLineStartPosition);
+                        lastLineStartPosition = handleLineSeparation(current, lastPosition, lastLineStartPosition, maxHeightForLine);
 
                         endOfLastTextX = ENDOFLASTTEXTX_RESET_VALUE;
                         expectedStartOfNextWordX = EXPECTEDSTARTOFNEXTWORDX_RESET_VALUE;
@@ -1561,13 +1562,14 @@ public class PDFTextStripper extends PDFStreamEngine
      * @param lastPosition the previous text position
      * @param lastLineStartPosition the last text position that followed a line
      *        separator.
+     * @param maxHeightForLine max height for positions since lastLineStartPosition
      * @throws IOException
      */
     protected PositionWrapper handleLineSeparation(PositionWrapper current,
-            PositionWrapper lastPosition, PositionWrapper lastLineStartPosition)
+            PositionWrapper lastPosition, PositionWrapper lastLineStartPosition, float maxHeightForLine)
             throws IOException {
         current.setLineStart();
-        isParagraphSeparation(current, lastPosition, lastLineStartPosition);
+        isParagraphSeparation(current, lastPosition, lastLineStartPosition, maxHeightForLine);
         lastLineStartPosition = current;
         if (current.isParagraphStart())  {
             if(lastPosition.isArticleStart()) {
@@ -1605,9 +1607,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * @param lastPosition the previous text position (should not be null).
      * @param lastLineStartPosition the last text position that followed a line
      *            separator. May be null.
+     * @param maxHeightForLine max height for text positions since lasLineStartPosition.
      */
     protected void isParagraphSeparation(PositionWrapper position,  
-            PositionWrapper lastPosition, PositionWrapper lastLineStartPosition){
+            PositionWrapper lastPosition, PositionWrapper lastLineStartPosition, float maxHeightForLine){
         boolean result = false;
         if(lastLineStartPosition == null) {
             result = true;
@@ -1616,7 +1619,7 @@ public class PDFTextStripper extends PDFStreamEngine
                     lastPosition.getTextPosition().getYDirAdj());
             float xGap = (position.getTextPosition().getXDirAdj()-
                     lastLineStartPosition.getTextPosition().getXDirAdj());//do we need to flip this for rtl?
-            if(yGap > (getDropThreshold()*position.getTextPosition().getHeightDir())){
+            if(yGap > (getDropThreshold()*maxHeightForLine)){
                         result = true;
             }else if(xGap > (getIndentThreshold()*position.getTextPosition().getWidthOfSpace())){
                 //text is indented, but try to screen for hanging indent
