@@ -183,7 +183,7 @@ public class PageDrawer extends PDFStreamEngine
             textPos.setValue(1, 0, (-1)*textPos.getValue(1, 0));
             AffineTransform at = textPos.createAffineTransform();
             PDMatrix fontMatrix = font.getFontMatrix();
-            at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 0) * 1000f);
+            at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 1) * 1000f);
             graphics.setClip(getGraphicsState().getCurrentClippingPath());
             // the fontSize is no longer needed as it is already part of the transformation
             // we should remove it from the parameter list in the long run
