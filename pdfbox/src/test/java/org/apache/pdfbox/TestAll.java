@@ -75,6 +75,7 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPDDocumentInformation.class );
         suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
+        suite.addTestSuite( org.apache.pdfbox.TestTextToPdf.class );
         return suite;
     }
 }

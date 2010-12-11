@@ -56,8 +56,8 @@ public class TextToPDF
         PDDocument doc = null;
         try
         {
-
-            int margin = 40;
+        	
+            final int margin = 40;
             float height = font.getFontDescriptor().getFontBoundingBox().getHeight()/1000;
 
             //calculate font height and increase by 5 percent.
@@ -69,8 +69,17 @@ public class TextToPDF
             PDPageContentStream contentStream = null;
             float y = -1;
             float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
+            
+            // There is a special case of creating a PDF document from an empty string.
+            boolean textIsEmpty = true;
+            
             while( (nextLine = data.readLine()) != null )
             {
+            	
+            	// The input text is nonEmpty. New pages will be created and added
+            	// to the PDF document as they are needed, depending on the length of
+            	// the text.
+            	textIsEmpty = false;
 
                 String[] lineWords = nextLine.trim().split( " " );
                 int lineIndex = 0;
@@ -94,6 +103,8 @@ public class TextToPDF
                            lengthIfUsingNextWord < maxStringLength );
                     if( y < margin )
                     {
+                    	// We have crossed the end-of-page boundary and need to extend the
+                    	// document by another page.
                         page = new PDPage();
                         doc.addPage( page );
                         if( contentStream != null )
@@ -122,6 +133,15 @@ public class TextToPDF
 
 
             }
+            
+            // If the input text was the empty string, then the above while loop will have short-circuited
+            // and we will not have added any PDPages to the document.
+            // So in order to make the resultant PDF document readable by Adobe Reader etc, we'll add an empty page.
+            if (textIsEmpty)
+            {
+            	doc.addPage(page);
+            }
+            
             if( contentStream != null )
             {
                 contentStream.endText();
@@ -140,7 +160,7 @@ public class TextToPDF
     }
 
     /**
-     * This will create a PDF document with a single image on it.
+     * This will create a PDF document with some text in it.
      * <br />
      * see usage() for commandline
      *
