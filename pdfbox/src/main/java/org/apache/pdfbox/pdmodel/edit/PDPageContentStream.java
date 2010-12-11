@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -61,6 +63,11 @@ import org.apache.pdfbox.util.MapUtil;
  */
 public class PDPageContentStream
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDPageContentStream.class);
+
     private PDPage page;
     private OutputStream output;
     private boolean inTextMode = false;
@@ -154,6 +161,22 @@ public class PDPageContentStream
     public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress )
         throws IOException
     {
+        this(document,sourcePage,appendContent,compress,false);
+    }
+    /**
+     * Create a new PDPage content stream.
+     *
+     * @param document The document the page is part of.
+     * @param sourcePage The page to write the contents to.
+     * @param appendContent Indicates whether content will be overwritten. If false all previous content is deleted.
+     * @param compress Tell if the content stream should compress the page contents.
+     * @param resetContext Tell if the graphic context should be reseted.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress, boolean resetContext )
+            throws IOException
+    {
+        
         page = sourcePage;
         resources = page.getResources();
         if( resources == null )
@@ -170,12 +193,14 @@ public class PDPageContentStream
         xobjects = resources.getXObjects();
         xobjectMappings = reverseMap(xobjects, PDXObject.class);
 
-        // If request specifies the need to append to the document
-        if(appendContent)
-        {
-            // Get the pdstream from the source page instead of creating a new one
-            PDStream contents = sourcePage.getContents();
+        // Get the pdstream from the source page instead of creating a new one
+        PDStream contents = sourcePage.getContents();
+        boolean hasContent = contents != null;
 
+        // If request specifies the need to append to the document
+        if(appendContent && hasContent)
+        {
+            
             // Create a pdstream to append new content
             PDStream contentsToAppend = new PDStream( document );
 
@@ -199,21 +224,48 @@ public class PDPageContentStream
 
             if( compress )
             {
-                List filters = new ArrayList();
+                List<COSName> filters = new ArrayList<COSName>();
                 filters.add( COSName.FLATE_DECODE );
                 contentsToAppend.setFilters( filters );
+            }
+
+            if (resetContext)
+            {
+                // create a new stream to encapsulate the existing stream 
+                PDStream saveGraphics = new PDStream( document );
+                output = saveGraphics.createOutputStream();
+                // save the initial/unmodified graphics context
+                saveGraphicsState();
+                close();
+                if( compress )
+                {
+                    List<COSName> filters = new ArrayList<COSName>();
+                    filters.add( COSName.FLATE_DECODE );
+                    saveGraphics.setFilters( filters );
+                }
+                // insert the new stream at the beginning
+                compoundStream.insertCOSStream(saveGraphics);
             }
 
             // Sets the compoundStream as page contents
             sourcePage.setContents( new PDStream(compoundStream) );
             output = contentsToAppend.createOutputStream();
+            if (resetContext)
+            {
+                // restore the initial/unmodified graphics context
+                restoreGraphicsState();
+            }
         }
         else
         {
-            PDStream contents = new PDStream( document );
+            if (hasContent)
+            {
+                log.warn("You are overwriting an existing content, you should use the append mode");
+            }
+            contents = new PDStream( document );
             if( compress )
             {
-                List filters = new ArrayList();
+                List<COSName> filters = new ArrayList<COSName>();
                 filters.add( COSName.FLATE_DECODE );
                 contents.setFilters( filters );
             }

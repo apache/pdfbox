@@ -83,7 +83,7 @@ public class COSStreamArray extends COSStream
     /**
      * This will get the number of streams in the array.
      *
-     * @return the numer of streams
+     * @return the number of streams
      */
     public int getStreamCount()
     {
@@ -130,8 +130,7 @@ public class COSStreamArray extends COSStream
      */
     public String toString()
     {
-        String result = "COSStream{}";
-        return result;
+        return "COSStream{}";
     }
 
     /**
@@ -177,17 +176,6 @@ public class COSStreamArray extends COSStream
     public InputStream getFilteredStream() throws IOException
     {
         throw new IOException( "Error: Not allowed to get filtered stream from array of streams." );
-        /**
-        Vector inputStreams = new Vector();
-        byte[] inbetweenStreamBytes = "\n".getBytes();
-
-        for( int i=0;i<streams.size(); i++ )
-        {
-            COSStream stream = (COSStream)streams.getObject( i );
-        }
-
-        return new SequenceInputStream( inputStreams.elements() );
-        **/
     }
 
     /**
@@ -199,7 +187,7 @@ public class COSStreamArray extends COSStream
      */
     public InputStream getUnfilteredStream() throws IOException
     {
-        Vector inputStreams = new Vector();
+        Vector<InputStream> inputStreams = new Vector<InputStream>();
         byte[] inbetweenStreamBytes = "\n".getBytes();
 
         for( int i=0;i<streams.size(); i++ )
@@ -307,6 +295,19 @@ public class COSStreamArray extends COSStream
     public void appendStream(COSStream streamToAppend)
     {
         streams.add(streamToAppend);
+    }
+    
+    /**
+     * Insert the given stream at the beginning of the existing stream array.
+     * @param streamToBeInserted
+     */
+    public void insertCOSStream(PDStream streamToBeInserted)
+    {
+        COSArray tmp = new COSArray();
+        tmp.add(streamToBeInserted);
+        tmp.addAll(streams);
+        streams.clear();
+        streams = tmp;
     }
 
 }
