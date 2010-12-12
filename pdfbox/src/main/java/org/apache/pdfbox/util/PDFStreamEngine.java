@@ -381,6 +381,11 @@ public class PDFStreamEngine
         float pageWidth = page.findMediaBox().getWidth();
 
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        Matrix textXctm = new Matrix();
+        Matrix textMatrixEnd = new Matrix();
+        Matrix td = new Matrix();
+        Matrix tempMatrix = new Matrix();
+
         int codeLength = 1;
         for( int i=0; i<string.length; i+=codeLength)
         {
@@ -434,14 +439,17 @@ public class PDFStreamEngine
             {
                 spacingText += wordSpacingText;
             }
+            textXctm = textMatrix.multiply(ctm, textXctm);
             // Convert textMatrix to display units
-            Matrix textMatrixStart = textStateParameters.multiply(textMatrix).multiply(ctm);
+            // We need to instantiate a new Matrix instance here as it is passed to the TextPosition constructor below.
+            Matrix textMatrixStart = textStateParameters.multiply(textXctm);
             
             // TODO : tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
             float tx = ((characterHorizontalDisplacementText)*fontSizeText)*horizontalScalingText;
             float ty = 0;
-            Matrix td = new Matrix();
+            // reset the matrix instead of creating a new one
+            td.reset();
             td.setValue( 2, 0, tx );
             td.setValue( 2, 1, ty );
 
@@ -450,16 +458,20 @@ public class PDFStreamEngine
             // textMatrixEnd contains the coordinates of the end of the last glyph without 
             // taking characterSpacingText and spacintText into account, otherwise it'll be
             // impossible to detect new words within text extraction
-            Matrix textMatrixEnd = textStateParameters.multiply(td).multiply(textMatrix).multiply(ctm);
+            tempMatrix = textStateParameters.multiply(td, tempMatrix);
+            textMatrixEnd = tempMatrix.multiply(textXctm, textMatrixEnd);
+            final float endXPosition = textMatrixEnd.getXPosition();
+            final float endYPosition = textMatrixEnd.getYPosition();
 
             // add some spacing to the text matrix (see comment above)
             tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
             td.setValue( 2, 0, tx );
-            textMatrix = td.multiply( textMatrix );
+            textMatrix = td.multiply(textMatrix, textMatrix );
             
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
-            float widthText = textMatrixEnd.getXPosition() - textMatrixStart.getXPosition();
+            float startXPosition = textMatrixStart.getXPosition();
+            float widthText = endXPosition - startXPosition;
 
             //there are several cases where one character code will
             //output multiple characters.  For example "fi" or a
@@ -485,7 +497,8 @@ public class PDFStreamEngine
                             pageWidth,
                             pageHeight,
                             textMatrixStart,
-                            textMatrixEnd,
+                            endXPosition,
+                            endYPosition,
                             totalVerticalDisplacementDisp,
                             widthText,
                             spaceWidthDisp,
