@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
+import org.apache.pdfbox.util.TestMatrix;
 
 /**
  * This is a holder for all test cases in the pdfbox system.
@@ -67,6 +68,7 @@ public class TestAll extends TestCase
     {
         TestSuite suite = new TestSuite();
         suite.addTest( TestDateUtil.suite() );
+        suite.addTest( TestMatrix.suite() );
         suite.addTestSuite( TestFilters.class );
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );

@@ -55,7 +55,7 @@ public class ShowTextGlyph extends OperatorProcessor
                 adjustment=-(adjustment/1000)*horizontalScaling*fontsize;
                 // TODO vertical writing mode
                 adjMatrix.setValue( 2, 0, adjustment );
-                context.setTextMatrix( adjMatrix.multiply(context.getTextMatrix()) );
+                context.setTextMatrix( adjMatrix.multiply(context.getTextMatrix(), adjMatrix) );
             }
             else if( next instanceof COSString )
             {
