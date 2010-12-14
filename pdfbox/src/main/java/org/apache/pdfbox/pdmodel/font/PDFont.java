@@ -824,7 +824,7 @@ public abstract class PDFont implements COSObjectable
                                 }
                             }
                             else if (line.startsWith("dup")) {
-                                StringTokenizer st = new StringTokenizer(line);
+                                StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
                                 // ignore the first token
                                 st.nextElement();
                                 int index = Integer.parseInt(st.nextToken());
