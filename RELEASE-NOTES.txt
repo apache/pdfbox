@@ -1,4 +1,4 @@
-Release Notes -- Apache PDFBox -- Version 1.3.0
+Release Notes -- Apache PDFBox -- Version 1.4.0
 
 Introduction
 ------------
@@ -7,79 +7,48 @@ PDFBox is an open source Java library for working with PDF documents.
 
 This is an incremental feature release based on the earlier 1.x releases.
 This release contains many improvements and fixes especially related to
-handling of fonts, colors and malformed PDFs. Another notable change is
-the inclusion of updated CMap files released by Adobe under a BSD license.
+text extraction, AES decryption and malformed PDFs.
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 New Features
 
-  [PDFBOX-11]  CID to Unicode mapping
-  [PDFBOX-192] Find encodings in FontFile3 - CompactFont Format
-  [PDFBOX-777] Add utility class to easily extract a range of pages from a PDF
-  [PDFBOX-791] PDFToImage : add the ability to select the area to export ...
-  [PDFBOX-851] Add WriteDecodedDoc to standalone app
+  [PDFBOX-865] - Optional Content Groups (OCGs aka layers): initial support
+  [PDFBOX-913] - Add program which decompresses object streams
 
 Improvements
 
-  [PDFBOX-494] Addtional CMap files from adobe
-  [PDFBOX-554] Handle JPEG2000 images via JPXDecode filter
-  [PDFBOX-592] please accommodate '-' where a number is expected
-  [PDFBOX-704] Implementation of additional CMAP Formats for TrueType fonts
-  [PDFBOX-764] Access to metadata keys in the PD model
-  [PDFBOX-769] Update/adjust used junit version
-  [PDFBOX-782] Update/reactivate ant build
-  [PDFBOX-796] Objects from streams overwrite objects already read with ..
-  [PDFBOX-798] Better handle out of spec PDFs
-  [PDFBOX-799] Add ability to ignore errors with AcroForms
-  [PDFBOX-801] PDPixelMap is too verbose
-  [PDFBOX-802] Better handle corrupt/missing %%EOF flags at the end of a file
-  [PDFBOX-803] Improved handling erronous data between endstream and ...
-  [PDFBOX-812] Remove dependency on PageDrawer from text only operators
-  [PDFBOX-820] Support TIFF predictor 2 with FlateDecode, patch included
-  [PDFBOX-826] Increase performance of ColorSpaceCMYK.toRGB, patch attached
+  [PDFBOX-521] - Improved PDF Text Extraction that notes paragraph boundaries
+  [PDFBOX-885] - Add constructors from super class to PDFTextStripperByArea to support encoding
+  [PDFBOX-893] - Performance improvement in PDFStreamEngine and Matrix (patch included)
+  [PDFBOX-909] - Add support for a 6 element matrix
+  [PDFBOX-914] - Using TextToPDF to create a PDF from the empty string produces unreadble PDF file (patch included)
 
 Bug Fixes
 
-  [PDFBOX-58]  Problems with text extraction form Polish documents.
-  [PDFBOX-99]  Indexed color images have wrong colors after encryption
-  [PDFBOX-122] Exception in text extraction
-  [PDFBOX-257] PDFMergerUtility may create non-unique AcroForm field names
-  [PDFBOX-265] Somtimes, TextPosition have incorrect value ..
-  [PDFBOX-291] Text Extraction strips 1 char when extracting a twin pair
-  [PDFBOX-439] Incorrect text for Exolab.pdf in Regression Test
-  [PDFBOX-440] Improper text produced depending on font for ...
-  [PDFBOX-506] PDFBox can't parse PDF documents from jstor.org
-  [PDFBOX-568] testextract failure on Linux and Mac OS X
-  [PDFBOX-667] Last characters in a line overlap when a PDF is printed
-  [PDFBOX-686] Invalid text rendering while printing a PDF
-  [PDFBOX-772] Re-setting filled properties of PDDocumentInformation do ...
-  [PDFBOX-780] EXCEPTION_ACCESS_VIOLATION in fontmanager.so/fontmanager.dll
-  [PDFBOX-786] PDChoiceField's implementation of SetValue does not work ...
-  [PDFBOX-787] CMap parser doesn't work for double byte mappings with ...
-  [PDFBOX-788] PrintPDF does not take the windows default printer ...
-  [PDFBOX-789] Error by text extraction
-  [PDFBOX-790] Text extraction from PDF generated from MS Word fails
-  [PDFBOX-793] scratchfile ignored in PDDocument load( File file, ...
-  [PDFBOX-805] Extratced ascii text in CJK document is malformed
-  [PDFBOX-808] PDTrueTypeFont.loadTTF() freezes (at TTFDataStream.java:195)
-  [PDFBOX-810] Problem in extracting roman page numbers [PDPageLabels.java]
-  [PDFBOX-813] ClassCastException: COSInteger cannot be cast to COSDictionary
-  [PDFBOX-815] PDFont.getEncodingManager is not thread safe; FIX included
-  [PDFBOX-822] Wrong handling of PNG predictors with FlateDecode, patch ...
-  [PDFBOX-825] Wrong opacity for images with indexed color space
-  [PDFBOX-828] Spaces dissapear and text is shifted left
-  [PDFBOX-834] IIOException: Error 2 when displaying PDF containing CCITT ...
-  [PDFBOX-836] Write2File Fails for PDCalRGB
-  [PDFBOX-839] Use COSName constant instead of COSString
-  [PDFBOX-840] Umlauts font size calculation problem
-  [PDFBOX-841] [pdfbox-app] maven-bundle-configuration problem
-  [PDFBOX-842] Documentation: prominent example has out-of-date class name
-  [PDFBOX-844] AFM-files aren't loaded
-  [PDFBOX-846] TextExtraction mixes case of text
-  [PDFBOX-848] PageDrawer does not take the full CropBox into account
-  [PDFBOX-857] Define a standard encoding for the standard 14 fonts
+  [PDFBOX-28] - Spliiting a PDF creates unnecessarily large chunks
+  [PDFBOX-671] - Cannot use PDFToImage to convert Chinese PDF pages into images.
+  [PDFBOX-751] - Text Extraction truncates last character when image page has sideways text
+  [PDFBOX-759] - Special characters not extracted
+  [PDFBOX-779] - All English characters and some Chinese words are separated by a space
+  [PDFBOX-806] - Failure to extract dc:description when the value is the node text
+  [PDFBOX-854] - PDPageContentStream.drawString() doesn't work with all PDFs
+  [PDFBOX-872] - ERROR org.apache.pdfbox.filter.FlateFilter - Stop reading corrupt stream
+  [PDFBOX-881] - Incorrect output when word spacing is achieved by matrix translation
+  [PDFBOX-883] - Special characters are not correctly handled anymore when printing or exporting to image
+  [PDFBOX-887] - CCITTFaxDecodeFilter doesn't use the abbreviated names for image parameters
+  [PDFBOX-888] - Decrypt doesn't allow more then 3 args
+  [PDFBOX-889] - Empty page causes NPE in importPage
+  [PDFBOX-896] - PDFViewer doesn't render landscape mode correctly
+  [PDFBOX-897] - NullPointerException PDFFont#getEncodingFromFont with a PDF book because Type1Encoding is null
+  [PDFBOX-898] - COSStreamArray NullPointerException. firstStream is null if COSArray contains no items
+  [PDFBOX-900] - ArrayIndexOutOfBoundsException with extracting labels from malformed document
+  [PDFBOX-902] - ClassCastException caused by unhandled Markup Annotations.
+  [PDFBOX-907] - Encrypted Key not correctly calculated when the meta data is not encrypted
+  [PDFBOX-910] - certain sequences (such as endstrea[^m] are eaten by BaseParser#readUntilEndStream
+  [PDFBOX-918] - Can't parse PDF
+  [PDFBOX-921] - NumberFormatException when parsing a type1 font
 
 Release Contents
 ----------------
