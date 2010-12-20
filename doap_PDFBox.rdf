@@ -37,6 +37,11 @@
     <release>
       <Version>
         <name>Apache PDFBox</name>
+        <created>2010-12-20</created>
+        <revision>1.4.0</revision>
+      </Version>
+      <Version>
+        <name>Apache PDFBox</name>
         <created>2010-10-26</created>
         <revision>1.3.1</revision>
       </Version>
@@ -75,7 +80,7 @@
     <asfext:implements><asfext:Standard>
       <asfext:title>Portable document format (PDF)</asfext:title>
       <asfext:body>Adobe Systems Incorporated</asfext:body>
-      <asfext:id>PDF</asfext:id>
+      <asfext:id>ISO 32000-1</asfext:id>
       <asfext:url rdf:resource="http://www.adobe.com/devnet/pdf/pdf_reference.html"/>
     </asfext:Standard></asfext:implements>
   </Project>
