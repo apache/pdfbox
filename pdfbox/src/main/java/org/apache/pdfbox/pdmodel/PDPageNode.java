@@ -184,6 +184,8 @@ public class PDPageNode implements COSObjectable
      */
     private static COSArray getAllKids(List result, COSDictionary page, boolean recurse)
     {
+        if(page == null)
+            return null;
         COSArray kids = (COSArray)page.getDictionaryObject( COSName.KIDS );
         if ( kids == null)
         {
