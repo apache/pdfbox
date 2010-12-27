@@ -136,7 +136,7 @@ public class PDPageNode implements COSObjectable
     public PDPageNode getParent()
     {
         PDPageNode parent = null;
-        COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( "Parent", "P" );
+        COSDictionary parentDic = (COSDictionary)page.getDictionaryObject(COSName.PARENT, COSName.P);
         if( parentDic != null )
         {
             parent = new PDPageNode( parentDic );
