@@ -106,7 +106,16 @@ public class PDPageNode implements COSObjectable
      */
     public long getCount()
     {
-        return ((COSNumber)page.getDictionaryObject( COSName.COUNT )).intValue();
+        if(page == null)
+        {
+            return 0L;
+        }
+        COSBase num = page.getDictionaryObject(COSName.COUNT);
+        if(num == null)
+        {
+            return 0L;
+        }
+        return ((COSNumber) num).intValue();
     }
 
     /**
