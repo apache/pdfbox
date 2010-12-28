@@ -177,7 +177,10 @@ public class COSArrayList implements List
         }
         else
         {
-            array.add( ((COSObjectable)o).getCOSObject() );
+            if(array != null)
+            {
+                array.add(((COSObjectable)o).getCOSObject());
+            }
         }
         return actual.add(o);
     }
