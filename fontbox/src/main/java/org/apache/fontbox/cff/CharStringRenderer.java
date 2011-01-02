@@ -19,6 +19,8 @@ package org.apache.fontbox.cff;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,7 +52,7 @@ public class CharStringRenderer extends CharStringHandler
      * @param sequence the given charstring sequence
      * @return the rendered GeneralPath 
      */
-    public GeneralPath render(List<Object> sequence)
+    public GeneralPath render(List<Object> sequence) throws IOException
     {
         path = new GeneralPath();
         sidebearingPoint = new Point2D.Float(0, 0);
@@ -63,13 +65,14 @@ public class CharStringRenderer extends CharStringHandler
     /**
      * {@inheritDoc}
      */
-    public void handleCommand(List<Integer> numbers, CharStringCommand command)
+    public List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
     {
         if (isCharstringType1) {
             handleCommandType1(numbers, command);
         } else {
             handleCommandType2(numbers, command);
         }
+        return null;
     }
  
     /**
