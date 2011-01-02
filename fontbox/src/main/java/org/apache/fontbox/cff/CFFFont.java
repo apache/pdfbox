@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.fontbox.cff.IndexData;
 import org.apache.fontbox.cff.charset.CFFCharset;
 import org.apache.fontbox.cff.encoding.CFFEncoding;
 
@@ -43,6 +44,8 @@ public class CFFFont
     private CFFEncoding fontEncoding = null;
     private CFFCharset fontCharset = null;
     private Map<String, byte[]> charStringsDict = new LinkedHashMap<String, byte[]>();
+    private IndexData globalSubrIndex = null;
+    private IndexData localSubrIndex = null;
 
     /**
      * The name of the font.
@@ -293,7 +296,7 @@ public class CFFFont
         Number defaultWidthX = (Number) getProperty("defaultWidthX");
         Number nominalWidthX = (Number) getProperty("nominalWidthX");
         return new CharStringConverter(defaultWidthX.intValue(), nominalWidthX
-                .intValue());
+                .intValue(), getGlobalSubrIndex(), getLocalSubrIndex());
     }
 
     /**
@@ -316,7 +319,40 @@ public class CFFFont
                 + charStringsDict + "]";
     }
 
+    
     /**
+     * Sets the global subroutine index data.
+     * @param globalSubrIndex the IndexData object containing the global subroutines 
+     */
+    public void setGlobalSubrIndex(IndexData globalSubrIndex) {
+		this.globalSubrIndex = globalSubrIndex;
+	}
+
+    /** 
+     * Returns the global subroutine index data.
+     * @return the dictionary
+     */
+	public IndexData getGlobalSubrIndex() {
+		return globalSubrIndex;
+	}
+	
+    /** 
+     * Returns the local subroutine index data.
+     * @return the dictionary
+     */
+	public IndexData getLocalSubrIndex() {
+		return localSubrIndex;
+	}
+	
+    /**
+     * Sets the local subroutine index data.
+     * @param localSubrIndex the IndexData object containing the local subroutines 
+     */
+	public void setLocalSubrIndex(IndexData localSubrIndex) {
+		this.localSubrIndex = localSubrIndex;	
+	}
+
+	/**
      * This class is used for the font mapping.
      *
      */

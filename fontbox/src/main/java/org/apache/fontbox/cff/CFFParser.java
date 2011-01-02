@@ -49,7 +49,6 @@ public class CFFParser
     private IndexData nameIndex = null;
     private IndexData topDictIndex = null;
     private IndexData stringIndex = null;
-    private IndexData globalSubrIndex = null;
 
     /**
      * Parsing CFF Font using a byte array as input.
@@ -64,12 +63,13 @@ public class CFFParser
         nameIndex = readIndexData(input);
         topDictIndex = readIndexData(input);
         stringIndex = readIndexData(input);
-        globalSubrIndex = readIndexData(input);
+        IndexData globalSubrIndex = readIndexData(input);
 
         List<CFFFont> fonts = new ArrayList<CFFFont>();
-        for (int i = 0; i < nameIndex.count; i++)
+        for (int i = 0; i < nameIndex.getCount(); i++)
         {
             CFFFont font = parseFont(i);
+            font.setGlobalSubrIndex(globalSubrIndex);
             fonts.add(font);
         }
         return fonts;
@@ -88,23 +88,22 @@ public class CFFParser
     private static IndexData readIndexData(CFFDataInput input)
             throws IOException
     {
-        IndexData index = new IndexData();
-        index.count = input.readCard16();
-        if (index.count == 0)
+        int count = input.readCard16();
+        IndexData index = new IndexData(count);
+        if (count == 0)
         {
             return index;
         }
-        index.offSize = input.readOffSize();
-        index.offset = new int[index.count + 1];
-        for (int i = 0; i < index.offset.length; i++)
+        int offSize = input.readOffSize();
+        for (int i = 0; i <= count; i++)
         {
-            index.offset[i] = input.readOffset(index.offSize);
+            index.setOffset(i, input.readOffset(offSize));
         }
-        index.data = new int[index.offset[index.offset.length - 1]
-                - index.offset[0]];
-        for (int i = 0; i < index.data.length; i++)
+        int dataSize = index.getOffset(count) - index.getOffset(0);
+        index.initData(dataSize);
+        for (int i = 0; i < dataSize; i++)
         {
-            index.data[i] = input.readCard8();
+            index.setData(i, input.readCard8());
         }
         return index;
     }
@@ -334,13 +333,13 @@ public class CFFParser
         else
         {
             input.setPosition(charsetId);
-            charset = readCharset(input, charStringsIndex.count);
+            charset = readCharset(input, charStringsIndex.getCount());
         }
         font.setCharset(charset);
         font.getCharStringsDict().put(".notdef", charStringsIndex.getBytes(0));
-        int[] gids = new int[charStringsIndex.count];
+        int[] gids = new int[charStringsIndex.getCount()];
         List<CFFCharset.Entry> glyphEntries = charset.getEntries();
-        for (int i = 1; i < charStringsIndex.count; i++)
+        for (int i = 1; i < charStringsIndex.getCount(); i++)
         {
             CFFCharset.Entry glyphEntry = glyphEntries.get(i - 1);
             gids[i - 1] = glyphEntry.getSID();
@@ -382,7 +381,7 @@ public class CFFParser
             List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String, Object>>();
     		CFFFontROS fontRos = (CFFFontROS)font;
 
-        	for (int i = 0; i < fdIndex.count; ++i) {
+        	for (int i = 0; i < fdIndex.getCount(); ++i) {
         		byte[] b = fdIndex.getBytes(i);
         		CFFDataInput fontDictInput = new CFFDataInput(b);
         		DictData fontDictData = readDictData(fontDictInput);
@@ -426,6 +425,17 @@ public class CFFParser
     	        privDict.put("defaultWidthX", getNumber(privateDict, "defaultWidthX", Integer.valueOf(0)));
     	        privDict.put("nominalWidthX", getNumber(privateDict, "nominalWidthX", Integer.valueOf(0)));
 
+    	        int localSubrOffset = (Integer)getNumber(privateDict, "Subrs", Integer.valueOf(0));
+    	        if (localSubrOffset == 0)
+    	        {
+    	            font.setLocalSubrIndex(new IndexData(0));
+    	        }
+    	        else
+    	        {
+    	            input.setPosition(privateOffset + localSubrOffset);
+    	            font.setLocalSubrIndex(readIndexData(input));
+    	        }
+    	        
     	        privateDictionaries.add(privDict);
         	}
 
@@ -435,7 +445,7 @@ public class CFFParser
         	DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
         	int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         	input.setPosition(fdSelectPos);
-        	CIDKeyedFDSelect fdSelect = readFDSelect(input, charStringsIndex.count, fontRos);
+        	CIDKeyedFDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), fontRos);
 
 	        font.addValueToPrivateDict("defaultWidthX", Integer.valueOf(1000));
 	        font.addValueToPrivateDict("nominalWidthX", Integer.valueOf(0));
@@ -466,6 +476,17 @@ public class CFFParser
 	        font.addValueToPrivateDict("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", Integer.valueOf(0)));
 	        font.addValueToPrivateDict("defaultWidthX", getNumber(privateDict, "defaultWidthX", Integer.valueOf(0)));
 	        font.addValueToPrivateDict("nominalWidthX", getNumber(privateDict, "nominalWidthX", Integer.valueOf(0)));
+	        
+	        int localSubrOffset = (Integer)getNumber(privateDict, "Subrs", Integer.valueOf(0));
+	        if (localSubrOffset == 0)
+	        {
+	            font.setLocalSubrIndex(new IndexData(0));
+	        }
+	        else
+	        {
+	            input.setPosition(privateOffset + localSubrOffset);
+	            font.setLocalSubrIndex(readIndexData(input));
+	        }
         }
 
         return font;
@@ -477,8 +498,13 @@ public class CFFParser
         {
             return CFFStandardString.getName(index);
         }
-        DataInput dataInput = new DataInput(stringIndex.getBytes(index - 391));
-        return dataInput.getString();
+        if (index - 391 <= stringIndex.getCount()) {
+            DataInput dataInput = new DataInput(stringIndex.getBytes(index - 391));
+            return dataInput.getString();
+        }
+        else {
+            return CFFStandardString.getName(0);
+        }
     }
 
     private String getString(DictData dict, String name) throws IOException
@@ -814,23 +840,20 @@ public class CFFParser
     {
         Format1Charset charset = new Format1Charset();
         charset.format = format;
-        charset.range = new Format1Charset.Range1[0];
+        List<Format1Charset.Range1> ranges = new ArrayList<Format1Charset.Range1>();
         for (int i = 0; i < nGlyphs - 1;)
         {
-            Format1Charset.Range1[] newRange = new Format1Charset.Range1[charset.range.length + 1];
-            System.arraycopy(charset.range, 0, newRange, 0,
-                    charset.range.length);
-            charset.range = newRange;
             Format1Charset.Range1 range = new Format1Charset.Range1();
             range.first = dataInput.readSID();
             range.nLeft = dataInput.readCard8();
-            charset.range[charset.range.length - 1] = range;
+            ranges.add(range);
             for (int j = 0; j < 1 + range.nLeft; j++)
             {
                 charset.register(range.first + j, readString(range.first + j));
             }
             i += 1 + range.nLeft;
         }
+        charset.range = ranges.toArray(new Format1Charset.Range1[0]);
         return charset;
     }
     
@@ -875,36 +898,6 @@ public class CFFParser
             return getClass().getName() + "[major=" + major + ", minor="
                     + minor + ", hdrSize=" + hdrSize + ", offSize=" + offSize
                     + "]";
-        }
-    }
-
-    /**
-     * Inner class holding the IndexData of a CFF font. 
-     */
-    private static class IndexData
-    {
-        private int count;
-        private int offSize;
-        private int[] offset;
-        private int[] data;
-
-        public byte[] getBytes(int index)
-        {
-            int length = offset[index + 1] - offset[index];
-            byte[] bytes = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                bytes[i] = (byte) data[offset[index] - 1 + i];
-            }
-            return bytes;
-        }
-
-        @Override
-        public String toString()
-        {
-            return getClass().getName() + "[count=" + count + ", offSize="
-                    + offSize + ", offset=" + Arrays.toString(offset)
-                    + ", data=" + Arrays.toString(data) + "]";
         }
     }
 
