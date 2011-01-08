@@ -234,13 +234,7 @@ public abstract class Encoding implements COSObjectable
      */
     public String getName( int code ) throws IOException
     {
-        String name = codeToName.get( code );
-        if( name == null )
-        {
-            //lets be forgiving for now
-            name = "space";
-        }
-        return name;
+        return codeToName.get( code );
     }
 
     /**
@@ -273,7 +267,12 @@ public abstract class Encoding implements COSObjectable
      */
     public String getCharacter( int code ) throws IOException
     {
-        return getCharacter( getName( code ) );
+        String name = getName( code );
+        if (name != null)
+        {
+            return getCharacter( getName( code ) );
+        }
+        return null;
     }
 
     /**
