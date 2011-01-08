@@ -16,29 +16,36 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.awt.Graphics;
-import java.awt.geom.AffineTransform;
+import java.awt.Font;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * This is implementation of the Type0 Font. Note that currently
- * this class simply falls back to the Type1 font implementation
- * when drawing text.
+ * This is implementation of the Type0 Font. 
  * See <a href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a>
  * for the related improvement issue.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.9 $
  */
-public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
+public class PDType0Font extends PDSimpleFont
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDType0Font.class);
+
+    private COSArray descendantFontArray;
     private PDFont descendentFont;
+    private COSDictionary descendantFontDictionary;
+    private Font awtFont;
     /**
      * Constructor.
      */
@@ -56,22 +63,44 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     public PDType0Font( COSDictionary fontDictionary )
     {
         super( fontDictionary );
+        descendantFontDictionary = (COSDictionary)getDescendantFonts().getObject( 0 );
+        if (descendantFontDictionary != null)
+        {
+            try 
+            {
+                descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+            }
+            catch (IOException exception)
+            {
+                log.error("Error while creating the descendant font!");
+            }
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
-        throws IOException
+    public Font getawtFont() throws IOException
     {
-        // TODO: PDFBOX-605: Better support for Type0 fonts 
-        super.drawString(string, g, fontSize, at, x, y);
+        if (awtFont == null)
+        {
+            if (descendentFont != null) 
+            {
+                awtFont = ((PDSimpleFont)descendentFont).getawtFont();
+            }
+            if (awtFont == null)
+            {
+                awtFont = FontManager.getStandardFont();
+                log.info("Using font "+awtFont.getName()+ " instead of "+descendentFont.getFontDescriptor().getFontName());
+            }
+        }
+        return awtFont;
     }
-
+    
     /**
-     * This will get the fonts bouding box.
+     * This will get the fonts bounding box.
      *
-     * @return The fonts bouding box.
+     * @return The fonts bounding box.
      *
      * @throws IOException If there is an error getting the bounding box.
      */
@@ -93,14 +122,6 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getFontWidth( byte[] c, int offset, int length ) throws IOException
     {
-        if (descendentFont == null) 
-        {
-            COSArray descendantFontArray =
-                (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
-            
-            COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-            descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-        }
         return descendentFont.getFontWidth( c, offset, length );
     }
 
@@ -117,14 +138,6 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getFontHeight( byte[] c, int offset, int length ) throws IOException
     {
-        if (descendentFont == null) 
-        {
-            COSArray descendantFontArray =
-                (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
-            
-            COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-            descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-        }
         return descendentFont.getFontHeight( c, offset, length );
     }
 
@@ -137,14 +150,24 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
      */
     public float getAverageFontWidth() throws IOException
     {
-        if (descendentFont == null) 
-        {
-            COSArray descendantFontArray =
-                (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
-            
-            COSDictionary descendantFontDictionary = (COSDictionary)descendantFontArray.getObject( 0 );
-            descendentFont = PDFontFactory.createFont( descendantFontDictionary );
-        }
         return descendentFont.getAverageFontWidth();
     }
+ 
+    private COSArray getDescendantFonts()
+    {
+        if (descendantFontArray == null)
+        {
+            descendantFontArray = (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
+        }
+        return descendantFontArray;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public float getFontWidth( int charCode ) 
+    {
+        return descendentFont.getFontWidth(charCode);
+    }
+
 }

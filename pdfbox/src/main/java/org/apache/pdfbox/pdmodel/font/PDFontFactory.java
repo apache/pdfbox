@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -107,29 +106,6 @@ public class PDFontFactory
         if( subType.equals( COSName.TYPE1) )
         {
             retval = new PDType1Font( dic );
-
-            COSDictionary fontDic = (COSDictionary)dic.getDictionaryObject(COSName.FONT_DESC);
-            if( fontDic != null )
-            {
-                COSStream ffStream = (COSStream)fontDic.getDictionaryObject("FontFile");
-                COSStream ff3Stream = (COSStream)fontDic.getDictionaryObject("FontFile3");
-
-                if( ffStream == null && ff3Stream != null )
-                {
-                    String ff3SubType = ff3Stream.getNameAsString(COSName.SUBTYPE);
-                    if( ff3SubType.equals("Type1C") )
-                    {
-                        try 
-                        {
-                            retval = new PDType1CFont( dic );
-                        }
-                        catch( Exception e )
-                        {
-                            log.warn("Failed to create Type1C font. Falling back to Type1 font", e);
-                        }
-                    }
-                }
-            }
         }
         else if( subType.equals( COSName.MM_TYPE1 ) )
         {

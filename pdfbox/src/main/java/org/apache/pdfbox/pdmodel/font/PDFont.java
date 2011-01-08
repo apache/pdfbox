@@ -16,19 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.fontbox.cmap.CMap;
 
-import org.apache.pdfbox.encoding.AFMEncoding;
-import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.EncodingManager;
-import org.apache.pdfbox.encoding.Type1Encoding;
-import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -36,7 +29,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -49,9 +41,7 @@ import org.apache.pdfbox.util.ResourceLoader;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -59,7 +49,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * This is the base class for all PDF fonts.
@@ -69,11 +58,6 @@ import java.util.StringTokenizer;
  */
 public abstract class PDFont implements COSObjectable
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDFont.class);
 
     /**
      * The cos dictionary for this font.
@@ -86,13 +70,23 @@ public abstract class PDFont implements COSObjectable
     private Encoding fontEncoding = null;
 
     /**
+     *  The descriptor of the font
+     */
+    private PDFontDescriptor fontDescriptor = null;
+
+    /**
      * This is only used if this is a font object and it has an encoding and it is
      * a type0 font with a cmap.
      */
     protected CMap cmap = null;
 
-    private static Map<String, CMap> cmapObjects =
+    protected static Map<String, CMap> cmapObjects =
         Collections.synchronizedMap( new HashMap<String, CMap>() );
+    
+    /**
+     *  A list a floats representing the widths
+     */
+    private List<Float> widths = null;
 
     /**
      * The static map of the default Adobe font metrics.
@@ -100,6 +94,8 @@ public abstract class PDFont implements COSObjectable
     private static final Map<String, FontMetric> afmObjects =
         Collections.unmodifiableMap( getAdobeFontMetrics() );
 
+    // TODO move the Map to PDType1Font as these are the 14 Standard fonts
+    // which are definitely Type 1 fonts
     private static Map<String, FontMetric> getAdobeFontMetrics() {
         Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
         addAdobeFontMetric( metrics, "Courier-Bold" );
@@ -119,7 +115,7 @@ public abstract class PDFont implements COSObjectable
         return metrics;
     }
 
-    private final static String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
+    protected final static String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
     private final static String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
 
     private static void addAdobeFontMetric(
@@ -178,121 +174,56 @@ public abstract class PDFont implements COSObjectable
         determineEncoding();
     }
 
-   	private void determineEncoding()
+    /**
+     * This will get the font descriptor for this font.
+     *
+     * @return The font descriptor for this font.
+     *
+     */
+    public PDFontDescriptor getFontDescriptor()
     {
-        String cmapName = null;
-        COSName encodingName = null;
-        COSBase toUnicode = font.getDictionaryObject( COSName.TO_UNICODE );
-        COSBase encoding = getEncodingObject(); 
-        if( toUnicode != null )
+        if(fontDescriptor == null)
         {
-            if ( toUnicode instanceof COSStream )
+            COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
+            if (fd != null) 
             {
-                try {
-                    parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream(), null);
-                }
-                catch(IOException exception) 
-                {
-                    log.error("Error: Could not load embedded CMAP" );
-                }
+                fontDescriptor = new PDFontDescriptorDictionary( fd );
             }
-            else if ( toUnicode instanceof COSName)
+            else
             {
-                encodingName = (COSName)toUnicode;
-                cmap = cmapObjects.get( encodingName.getName() );
-                if (cmap == null) 
+                FontMetric afm = getAFM();
+                if( afm != null )
                 {
-                    cmapName = encodingName.getName();
+                    fontDescriptor = new PDFontDescriptorAFM( afm );
                 }
             }
         }
-        if (encoding != null) 
-        {
-            if (encoding instanceof COSName) 
-            {
-                if (cmap == null)
-                {
-                    encodingName = (COSName)encoding;
-                    cmap = cmapObjects.get( encodingName.getName() );
-                    if (cmap == null) 
-                    {
-                        cmapName = encodingName.getName();
-                    }
-                }
-                if (cmap == null && cmapName != null)
-                {
-                    try 
-                    {
-                        fontEncoding =
-                            EncodingManager.INSTANCE.getEncoding(encodingName);
-                    }
-                    catch(IOException exception) 
-                    {
-                        log.debug("Debug: Could not find encoding for " + encodingName );
-                    }
-                }
-            }
-            else if (encoding instanceof COSDictionary) 
-            {
-                try 
-                {
-                    fontEncoding = new DictionaryEncoding((COSDictionary)encoding);
-                }
-                catch(IOException exception) 
-                {
-                    log.error("Error: Could not create the DictionaryEncoding" );
-                }
-            }
-            else if(encoding instanceof COSStream )
-            {
-                if (cmap == null)
-                {
-                    COSStream encodingStream = (COSStream)encoding;
-                    try 
-                    {
-                        parseCmap( null, encodingStream.getUnfilteredStream(), null );
-                    }
-                    catch(IOException exception) 
-                    {
-                        log.error("Error: Could not parse the embedded CMAP" );
-                    }
-                }
-            }
-        }
-        COSDictionary cidsysteminfo = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (cidsysteminfo != null) 
-        {
-            String ordering = cidsysteminfo.getString(COSName.ORDERING);
-            String registry = cidsysteminfo.getString(COSName.REGISTRY);
-            int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
-            cmapName = registry + "-" + ordering+ "-" + supplement;
-            cmapName = CMapSubstitution.substituteCMap( cmapName );
-            cmap = cmapObjects.get( cmapName );
-        }
-        FontMetric metric = getAFM();
-        if( metric != null && fontEncoding == null)
-        {
-            fontEncoding = new AFMEncoding( metric );
-        }
-        
-        if (cmap == null && cmapName != null) 
-        {
-            String resourceName = resourceRootCMAP + cmapName;
-            try {
-                parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), encodingName );
-                if( cmap == null && encodingName == null)
-                {
-                    log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
-                }
-            }
-            catch(IOException exception) 
-            {
-                log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
-            }
-        }
-        getEncodingFromFont();
+        return fontDescriptor;
     }
-
+    
+    /**
+     * This will set the font descriptor.
+     *
+     * @param fontDescriptor The font descriptor.
+     */
+    public void setFontDescriptor( PDFontDescriptorDictionary fontDescriptor )
+    {
+        COSDictionary dic = null;
+        if( fontDescriptor != null )
+        {
+            dic = fontDescriptor.getCOSDictionary();
+        }
+        font.setItem( COSName.FONT_DESC, dic );
+        this.fontDescriptor = fontDescriptor;
+    }
+    
+    /**
+     * Determines the encoding for the font.
+     * This method as to be overwritten, as there are different 
+     * possibilities to define a mapping.
+     */
+   	protected abstract void determineEncoding();
+    
     /**
      * {@inheritDoc}
      */
@@ -477,7 +408,7 @@ public abstract class PDFont implements COSObjectable
      * </pre>
      * @return
      */
-    private COSBase getEncodingObject(){
+    protected COSBase getEncodingObject(){
     	if(encodingObject==null){
     		encodingObject = font.getDictionaryObject( COSName.ENCODING );
     	}
@@ -566,7 +497,7 @@ public abstract class PDFont implements COSObjectable
         return retval;
     }
 
-    private void parseCmap( String cmapRoot, InputStream cmapStream, COSName encodingName )
+    protected void parseCmap( String cmapRoot, InputStream cmapStream, COSName encodingName )
     {
         if( cmapStream != null )
         {
@@ -600,10 +531,8 @@ public abstract class PDFont implements COSObjectable
      * modified by Christophe Huault : DGBS Strasbourg huault@free.fr october 2004
      *
      * @return The encoding to use.
-     *
-     * @throws IOException If there is an error getting the encoding.
      */
-    public Encoding getEncoding() throws IOException
+    public Encoding getEncoding()
     {
         return fontEncoding;
     }
@@ -640,7 +569,11 @@ public abstract class PDFont implements COSObjectable
         return subtype;
     }
 
-    private boolean isType1Font() {
+    /**
+     * Determines if the font is a type 1 font.
+     * @return returns true if the font is a type 1 font
+     */
+    protected boolean isType1Font() {
         getSubType();
         return type1Font;
     }
@@ -722,8 +655,15 @@ public abstract class PDFont implements COSObjectable
      */
     public List getWidths()
     {
-        COSArray array = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
-        return COSArrayList.convertFloatCOSArrayToList( array );
+        if (widths == null)
+        {
+            COSArray array = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
+            if (array != null)
+            {
+                widths = COSArrayList.convertFloatCOSArrayToList( array );
+            }
+        }
+        return widths;
     }
 
     /**
@@ -733,7 +673,8 @@ public abstract class PDFont implements COSObjectable
      */
     public void setWidths( List widths )
     {
-        font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( widths ) );
+        this.widths = widths;
+        font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( this.widths ) );
     }
 
     /**
@@ -766,87 +707,6 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * Tries to get the encoding for the type1 font.
-     *
-     */
-    private void getEncodingFromFont()
-    {
-        // This whole section of code needs to be replaced with an actual type1 font parser!!
-        // Get the font program from the embedded type font.
-        if (isType1Font()) {
-            COSDictionary fontDescriptor = (COSDictionary) font.getDictionaryObject(
-                COSName.FONT_DESC);
-            if( fontDescriptor != null )
-            {
-                COSStream fontFile = (COSStream) fontDescriptor.getDictionaryObject(
-                    COSName.FONT_FILE);
-                if( fontFile != null )
-                {
-                    try 
-                    {
-                        BufferedReader in =
-                                new BufferedReader(new InputStreamReader(fontFile.getUnfilteredStream()));
-                        
-                        // this section parses the font program stream searching for a /Encoding entry
-                        // if it contains an array of values a Type1Encoding will be returned
-                        // if it encoding contains an encoding name the corresponding Encoding will be returned
-                        String line = "";
-                        Type1Encoding encoding = null;
-                        while( (line = in.readLine()) != null)
-                        {
-                            if (line.startsWith("currentdict end")) {
-                                if (encoding != null)
-                                    fontEncoding = encoding;
-                                break;
-                            }
-                            if (line.startsWith("/Encoding")) 
-                            {
-                                if(line.contains("array")) 
-                                {
-                                    StringTokenizer st = new StringTokenizer(line);
-                                    // ignore the first token
-                                    st.nextElement();
-                                    int arraySize = Integer.parseInt(st.nextToken());
-                                    encoding = new Type1Encoding(arraySize);
-                                }
-                                // if there is already an encoding, we don't need to
-                                // assign another one
-                                else if (fontEncoding == null)
-                                {
-                                    StringTokenizer st = new StringTokenizer(line);
-                                    // ignore the first token
-                                    st.nextElement();
-                                    String type1Encoding = st.nextToken();
-                                    fontEncoding =
-                                        EncodingManager.INSTANCE.getEncoding(
-                                                COSName.getPDFName(type1Encoding));
-                                    break;
-                                }
-                            }
-                            else if (line.startsWith("dup")) {
-                                StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
-                                // ignore the first token
-                                st.nextElement();
-                                int index = Integer.parseInt(st.nextToken());
-                                String name = st.nextToken();
-                                if(encoding == null)
-                                    log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
-                                else
-                                    encoding.addCharacterEncoding(index, name.replace("/", ""));
-                            }
-                        }
-                        in.close();
-                    }
-                    catch(IOException exception) 
-                    {
-                        log.error("Error: Could not extract the encoding from the embedded type1 font.");
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * This will get the fonts bounding box.
      *
      * @return The fonts bounding box.
@@ -869,6 +729,32 @@ public abstract class PDFont implements COSObjectable
     public int hashCode()
     {
         return this.getCOSObject().hashCode();
+    }
+
+    /**
+     * Determines the width of the given character.
+     * @param charCode the code of the given character 
+     * @return the width of the character
+     */
+    public float getFontWidth( int charCode )
+    {
+        float width = -1;
+        int firstChar = getFirstChar();
+        int lastChar = getLastChar();
+        if (charCode >= firstChar && charCode <= lastChar)
+        {
+            List<Float> widths = getWidths();
+            width = widths.get(charCode-firstChar).floatValue();
+        }
+        else 
+        {
+            PDFontDescriptor fd = getFontDescriptor();
+            if (fd instanceof PDFontDescriptorDictionary)
+            {
+                width = fd.getMissingWidth();
+            }
+        }
+        return width;
     }
 
 }

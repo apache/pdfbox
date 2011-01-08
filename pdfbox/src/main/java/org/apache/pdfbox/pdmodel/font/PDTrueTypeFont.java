@@ -42,9 +42,6 @@ import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +77,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     private Font awtFont = null;
 
     private static Properties externalFonts = new Properties();
-    private static Map loadedExternalFonts = new HashMap();
+    private static Map<String,TrueTypeFont> loadedExternalFonts = new HashMap<String,TrueTypeFont>();
 
     static
     {
@@ -164,7 +161,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         stream = fontStream.createInputStream();
         try
         {
-            loadDescriptorDictionary(retval, fd, stream); 
+            retval.loadDescriptorDictionary(fd, stream); 
         }
         finally
         {
@@ -187,7 +184,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 try
                 {
-                    loadDescriptorDictionary(this, fdd, ttfData);
+                    loadDescriptorDictionary(fdd, ttfData);
                 }
                 finally
                 {
@@ -197,7 +194,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
     }
 
-    private static void loadDescriptorDictionary(PDTrueTypeFont retval, PDFontDescriptorDictionary fd, InputStream ttfData) throws IOException
+    private void loadDescriptorDictionary(PDFontDescriptorDictionary fd, InputStream ttfData) throws IOException
     {
         TrueTypeFont ttf = null;
         try
@@ -205,13 +202,13 @@ public class PDTrueTypeFont extends PDSimpleFont
             TTFParser parser = new TTFParser();
             ttf = parser.parseTTF( ttfData );
             NamingTable naming = ttf.getNaming();
-            List records = naming.getNameRecords();
+            List<NameRecord> records = naming.getNameRecords();
             for( int i=0; i<records.size(); i++ )
             {
-                NameRecord nr = (NameRecord)records.get( i );
+                NameRecord nr = records.get( i );
                 if( nr.getNameId() == NameRecord.NAME_POSTSCRIPT_NAME )
                 {
-                    retval.setBaseFont( nr.getString() );
+                    setBaseFont( nr.getString() );
                     fd.setFontName( nr.getString() );
                 }
                 else if( nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME )
@@ -355,9 +352,9 @@ public class PDTrueTypeFont extends PDSimpleFont
                         new Integer( (int)(widthValues[i]* 1000f)/header.getUnitsPerEm() ) );
                 }
             }
-            retval.setWidths( widths );
-            retval.setFirstChar( firstChar );
-            retval.setLastChar( firstChar + widths.size()-1 );
+            setWidths( widths );
+            setFirstChar( firstChar );
+            setLastChar( firstChar + widths.size()-1 );
 
         }
         finally

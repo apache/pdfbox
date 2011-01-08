@@ -18,15 +18,24 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.afm.FontMetric;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.encoding.AFMEncoding;
+import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This is implementation of the Type1 Font.
@@ -42,6 +51,7 @@ public class PDType1Font extends PDSimpleFont
      */
     private static final Log log = LogFactory.getLog(PDType1Font.class);
 
+    private PDType1CFont type1CFont = null;
     /**
      * Standard Base 14 Font.
      */
@@ -137,6 +147,21 @@ public class PDType1Font extends PDSimpleFont
     public PDType1Font( COSDictionary fontDictionary )
     {
         super( fontDictionary );
+        PDFontDescriptor fd = getFontDescriptor();
+        if (fd != null && fd instanceof PDFontDescriptorDictionary)
+        {
+            // a Type1 font may contain a Type1C font
+            PDStream fontFile3 = ((PDFontDescriptorDictionary)fd).getFontFile3();
+            if (fontFile3 != null)
+            {
+                try 
+                {
+                    type1CFont = new PDType1CFont( super.font );
+                    awtFont = type1CFont.getawtFont();
+                }
+                catch (IOException exception) {}
+            }
+        }
     }
 
     /**
@@ -197,21 +222,9 @@ public class PDType1Font extends PDSimpleFont
                         log.info("Can't read the embedded type1 font " + fd.getFontName() );
                     }
                 }
-                else if ( fdDictionary.getFontFile2() != null)
-                {
-                    try 
-                    {
-                        // create a true type font with the embedded data
-                        awtFont = Font.createFont( Font.TRUETYPE_FONT, fdDictionary.getFontFile2().createInputStream() );
-                    } 
-                    catch (FontFormatException e) 
-                    {
-                        log.info("Can't read the embedded true type font " + fd.getFontName() );
-                    }
-                }
                 else if( fdDictionary.getFontFile3() != null)
                 {
-                    PDType1CFont type1CFont = new PDType1CFont( super.font );
+                    type1CFont = new PDType1CFont( super.font );
                     awtFont = type1CFont.getawtFont();
                 }
                 
@@ -243,5 +256,113 @@ public class PDType1Font extends PDSimpleFont
         }
         return awtFont;
     }
+
+    protected void determineEncoding()
+    {
+        super.determineEncoding();
+        Encoding fontEncoding = getEncoding();
+        if(fontEncoding == null)
+        {
+            FontMetric metric = getAFM();
+            if (metric != null)
+            {
+                fontEncoding = new AFMEncoding( metric );
+            }
+        }
+        if (fontEncoding == null)
+        {
+            getEncodingFromFont();
+        }
+        setEncoding(fontEncoding);
+    }
     
+    /**
+     * Tries to get the encoding for the type1 font.
+     *
+     */
+    private void getEncodingFromFont()
+    {
+        // This whole section of code needs to be replaced with an actual type1 font parser!!
+        // Get the font program from the embedded type font.
+        PDFontDescriptor fontDescriptor = getFontDescriptor();
+        if( fontDescriptor != null && fontDescriptor instanceof PDFontDescriptorDictionary)
+        {
+            PDStream fontFile = ((PDFontDescriptorDictionary)fontDescriptor).getFontFile();
+            if( fontFile != null )
+            {
+                try 
+                {
+                    BufferedReader in =
+                            new BufferedReader(new InputStreamReader(fontFile.createInputStream()));
+                    
+                    // this section parses the font program stream searching for a /Encoding entry
+                    // if it contains an array of values a Type1Encoding will be returned
+                    // if it encoding contains an encoding name the corresponding Encoding will be returned
+                    String line = "";
+                    Type1Encoding encoding = null;
+                    while( (line = in.readLine()) != null)
+                    {
+                        if (line.startsWith("currentdict end")) {
+                            if (encoding != null)
+                                setEncoding(encoding);
+                            break;
+                        }
+                        if (line.startsWith("/Encoding")) 
+                        {
+                            if(line.contains("array")) 
+                            {
+                                StringTokenizer st = new StringTokenizer(line);
+                                // ignore the first token
+                                st.nextElement();
+                                int arraySize = Integer.parseInt(st.nextToken());
+                                encoding = new Type1Encoding(arraySize);
+                            }
+                            // if there is already an encoding, we don't need to
+                            // assign another one
+                            else if (getEncoding() == null)
+                            {
+                                StringTokenizer st = new StringTokenizer(line);
+                                // ignore the first token
+                                st.nextElement();
+                                String type1Encoding = st.nextToken();
+                                setEncoding(
+                                    EncodingManager.INSTANCE.getEncoding(
+                                            COSName.getPDFName(type1Encoding)));
+                                break;
+                            }
+                        }
+                        else if (line.startsWith("dup")) {
+                            StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
+                            // ignore the first token
+                            st.nextElement();
+                            int index = Integer.parseInt(st.nextToken());
+                            String name = st.nextToken();
+                            if(encoding == null)
+                                log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
+                            else
+                                encoding.addCharacterEncoding(index, name.replace("/", ""));
+                        }
+                    }
+                    in.close();
+                }
+                catch(IOException exception) 
+                {
+                    log.error("Error: Could not extract the encoding from the embedded type1 font.");
+                }
+            }
+        }
+    }
+
+    @Override
+    public String encode(byte[] c, int offset, int length) throws IOException
+    {
+        if (type1CFont != null && getEncoding() == null)
+        {
+            return type1CFont.encode(c, offset, length);
+        }
+        else
+        {
+            return super.encode(c, offset, length);
+        }
+    }
 }

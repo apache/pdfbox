@@ -37,6 +37,9 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSObjectable
 {
     private COSDictionary dic;
+    private float xHeight = Float.NEGATIVE_INFINITY;
+    private float capHeight = Float.NEGATIVE_INFINITY;
+    private int flags = -1;
 
     /**
      * Constructor.
@@ -44,7 +47,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public PDFontDescriptorDictionary()
     {
         dic = new COSDictionary();
-        dic.setName( "Type", "FontDescriptor" );
+        dic.setItem( COSName.TYPE, COSName.FONT_DESC );
     }
 
     /**
@@ -148,7 +151,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getFontWeight()
     {
-        return dic.getFloat( "FontWeight",0 );
+        return dic.getFloat( COSName.FONT_WEIGHT,0 );
     }
 
     /**
@@ -158,7 +161,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setFontWeight( float fontWeight )
     {
-        dic.setFloat( "FontWeight", fontWeight );
+        dic.setFloat( COSName.FONT_WEIGHT, fontWeight );
     }
 
     /**
@@ -203,7 +206,11 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public int getFlags()
     {
-        return dic.getInt( "Flags", 0 );
+        if (flags == -1)
+        {
+            flags = dic.getInt( COSName.FLAGS, 0 );
+        }
+        return flags;
     }
 
     /**
@@ -213,13 +220,14 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setFlags( int flags )
     {
-        dic.setInt( "Flags", flags );
+        dic.setInt( COSName.FLAGS, flags );
+        this.flags = flags;
     }
 
     /**
-     * This will get the fonts bouding box.
+     * This will get the fonts bounding box.
      *
-     * @return The fonts bouding box.
+     * @return The fonts bounding box.
      */
     public PDRectangle getFontBoundingBox()
     {
@@ -254,7 +262,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getItalicAngle()
     {
-        return dic.getFloat( "ItalicAngle", 0 );
+        return dic.getFloat( COSName.ITALIC_ANGLE, 0 );
     }
 
     /**
@@ -264,7 +272,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setItalicAngle( float angle )
     {
-        dic.setFloat( "ItalicAngle", angle );
+        dic.setFloat( COSName.ITALIC_ANGLE, angle );
     }
 
     /**
@@ -274,7 +282,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getAscent()
     {
-        return dic.getFloat( "Ascent", 0 );
+        return dic.getFloat( COSName.ASCENT, 0 );
     }
 
     /**
@@ -284,7 +292,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setAscent( float ascent )
     {
-        dic.setFloat( "Ascent", ascent );
+        dic.setFloat( COSName.ASCENT, ascent );
     }
 
     /**
@@ -294,7 +302,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getDescent()
     {
-        return dic.getFloat( "Descent", 0 );
+        return dic.getFloat( COSName.DESCENT, 0 );
     }
 
     /**
@@ -304,7 +312,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setDescent( float descent )
     {
-        dic.setFloat( "Descent", descent );
+        dic.setFloat( COSName.DESCENT, descent );
     }
 
     /**
@@ -314,7 +322,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getLeading()
     {
-        return dic.getFloat( "Leading", 0 );
+        return dic.getFloat( COSName.LEADING, 0 );
     }
 
     /**
@@ -324,7 +332,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setLeading( float leading )
     {
-        dic.setFloat( "Leading", leading );
+        dic.setFloat( COSName.LEADING, leading );
     }
 
     /**
@@ -339,12 +347,11 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
              * the Scheherazade font. PDFBOX-429 was logged for this. 
              * We are not sure if returning the absolute value
              * is the correct fix, but it seems to work.  */
-            capHeight = java.lang.Math.abs(dic.getFloat( "CapHeight", 0 ));
+            capHeight = java.lang.Math.abs(dic.getFloat( COSName.CAP_HEIGHT, 0 ));
         }
         return capHeight;
     }
 
-    private float capHeight = Float.NEGATIVE_INFINITY;
     
     /**
      * This will set the cap height for the font.
@@ -353,7 +360,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setCapHeight( float capHeight )
     {
-        dic.setFloat( "CapHeight", capHeight );
+        dic.setFloat( COSName.CAP_HEIGHT, capHeight );
         this.capHeight = capHeight;
     }
 
@@ -369,13 +376,11 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
              * the Scheherazade font. PDFBOX-429 was logged for this. 
              * We are not sure if returning the absolute value
              * is the correct fix, but it seems to work.  */
-            xHeight = java.lang.Math.abs(dic.getFloat( "XHeight", 0 ));
+            xHeight = java.lang.Math.abs(dic.getFloat( COSName.XHEIGHT, 0 ));
         }
         return xHeight;
     }
 
-    private float xHeight = Float.NEGATIVE_INFINITY;
-    
     /**
      * This will set the x height for the font.
      *
@@ -383,7 +388,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setXHeight( float xHeight )
     {
-        dic.setFloat( "XHeight", xHeight );
+        dic.setFloat( COSName.XHEIGHT, xHeight );
         this.xHeight = xHeight;
     }
 
@@ -394,7 +399,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getStemV()
     {
-        return dic.getFloat( "StemV", 0 );
+        return dic.getFloat( COSName.STEM_V, 0 );
     }
 
     /**
@@ -404,7 +409,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setStemV( float stemV )
     {
-        dic.setFloat( "StemV", stemV );
+        dic.setFloat( COSName.STEM_V, stemV );
     }
 
     /**
@@ -414,7 +419,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getStemH()
     {
-        return dic.getFloat( "StemH", 0 );
+        return dic.getFloat( COSName.STEM_H, 0 );
     }
 
     /**
@@ -424,7 +429,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setStemH( float stemH )
     {
-        dic.setFloat( "StemH", stemH );
+        dic.setFloat( COSName.STEM_H, stemH );
     }
 
     /**
@@ -434,7 +439,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getAverageWidth()
     {
-        return dic.getFloat( "AvgWidth", 0 );
+        return dic.getFloat( COSName.AVG_WIDTH, 0 );
     }
 
     /**
@@ -444,7 +449,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setAverageWidth( float averageWidth )
     {
-        dic.setFloat( "AvgWidth", averageWidth );
+        dic.setFloat( COSName.AVG_WIDTH, averageWidth );
     }
 
     /**
@@ -454,7 +459,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getMaxWidth()
     {
-        return dic.getFloat( "MaxWidth", 0 );
+        return dic.getFloat( COSName.MAX_WIDTH, 0 );
     }
 
     /**
@@ -464,7 +469,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setMaxWidth( float maxWidth )
     {
-        dic.setFloat( "MaxWidth", maxWidth );
+        dic.setFloat( COSName.MAX_WIDTH, maxWidth );
     }
 
     /**
@@ -474,7 +479,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getMissingWidth()
     {
-        return dic.getFloat( "MissingWidth", 0 );
+        return dic.getFloat( COSName.MISSING_WIDTH, 0 );
     }
 
     /**
@@ -484,7 +489,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setMissingWidth( float missingWidth )
     {
-        dic.setFloat( "MissingWidth", missingWidth );
+        dic.setFloat( COSName.MISSING_WIDTH, missingWidth );
     }
 
     /**
@@ -526,7 +531,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public PDStream getFontFile()
     {
         PDStream retval = null;
-        COSStream stream = (COSStream)dic.getDictionaryObject( "FontFile" );
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE );
         if( stream != null )
         {
             retval = new PDStream( stream );
@@ -541,7 +546,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setFontFile( PDStream type1Stream )
     {
-        dic.setItem( "FontFile", type1Stream );
+        dic.setItem( COSName.FONT_FILE, type1Stream );
     }
 
     /**
@@ -552,7 +557,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public PDStream getFontFile2()
     {
         PDStream retval = null;
-        COSStream stream = (COSStream)dic.getDictionaryObject( "FontFile2" );
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE2 );
         if( stream != null )
         {
             retval = new PDStream( stream );
@@ -567,7 +572,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setFontFile2( PDStream ttfStream )
     {
-        dic.setItem( "FontFile2", ttfStream );
+        dic.setItem( COSName.FONT_FILE2, ttfStream );
     }
 
     /**
@@ -578,7 +583,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public PDStream getFontFile3()
     {
         PDStream retval = null;
-        COSStream stream = (COSStream)dic.getDictionaryObject( "FontFile3" );
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE3 );
         if( stream != null )
         {
             retval = new PDStream( stream );
@@ -593,6 +598,6 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public void setFontFile3( PDStream stream )
     {
-        dic.setItem( "FontFile3", stream );
+        dic.setItem( COSName.FONT_FILE3, stream );
     }
 }
