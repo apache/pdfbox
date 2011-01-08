@@ -40,31 +40,31 @@ public abstract class PDFontDescriptor
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_SYMBOLIC = 3;
+    private static final int FLAG_SYMBOLIC = 4;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_SCRIPT = 4;
+    private static final int FLAG_SCRIPT = 8;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_NON_SYMBOLIC = 6;
+    private static final int FLAG_NON_SYMBOLIC = 32;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_ITALIC = 7;
+    private static final int FLAG_ITALIC = 64;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_ALL_CAP = 17;
+    private static final int FLAG_ALL_CAP = 65536;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_SMALL_CAP = 18;
+    private static final int FLAG_SMALL_CAP = 131072;
     /**
      * A font descriptor flag.  See PDF Reference for description.
      */
-    private static final int FLAG_FORCE_BOLD = 19;
+    private static final int FLAG_FORCE_BOLD = 262144;
 
 
     /**
@@ -325,7 +325,7 @@ public abstract class PDFontDescriptor
 
     private boolean isFlagBitOn( int bit )
     {
-        return (getFlags() & (1 << (bit-1))) != 0;
+        return (getFlags() & bit) != 0;
     }
 
     private void setFlagBit( int bit, boolean value )
@@ -333,11 +333,11 @@ public abstract class PDFontDescriptor
         int flags = getFlags();
         if( value )
         {
-            flags = flags| (1 << (bit-1));
+            flags = flags | bit;
         }
         else
         {
-            flags = flags & (0xFFFFFFFF ^ (1 << (bit-1)));
+            flags = flags & (0xFFFFFFFF ^ bit);
         }
         setFlags( flags );
     }
@@ -513,4 +513,19 @@ public abstract class PDFontDescriptor
      * @param charSet The new character set for the font.
      */
     public abstract void setCharacterSet( String charSet );
+
+    /**
+     * This will get the missing width for the font.
+     *
+     * @return The missing width value.
+     */
+    public abstract float getMissingWidth();
+
+    /**
+     * This will set the missing width for the font.
+     *
+     * @param charSet The new missing width for the font.
+     */
+    public abstract void setMissingWidth( float missingWidth );
+
 }

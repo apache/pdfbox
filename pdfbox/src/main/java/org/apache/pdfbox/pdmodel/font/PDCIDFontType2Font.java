@@ -16,8 +16,15 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This is implementation of the CIDFontType2 Font.
@@ -27,6 +34,12 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDCIDFontType2Font extends PDCIDFont
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDCIDFontType2Font.class);
+
     /**
      * Constructor.
      */
@@ -45,4 +58,37 @@ public class PDCIDFontType2Font extends PDCIDFont
     {
         super( fontDictionary );
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Font getawtFont() throws IOException
+    {
+        Font awtFont = null;
+        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
+        PDStream ff2Stream = fd.getFontFile2();
+        if( ff2Stream != null )
+        {
+            try
+            {
+                // create a font with the embedded data
+                awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
+            }
+            catch( FontFormatException f )
+            {
+                log.info("Can't read the embedded font " + fd.getFontName() );
+            }
+            if (awtFont == null)
+            {
+                awtFont = FontManager.getAwtFont(fd.getFontName());
+                if (awtFont != null)
+                {
+                    log.info("Using font "+awtFont.getName()+ " instead");
+                }
+            }
+        }
+        // TODO FontFile3
+        return awtFont;
+    }
+
 }

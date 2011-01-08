@@ -33,14 +33,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This class contains implementation details of the simple pdf fonts.
@@ -97,8 +102,9 @@ public abstract class PDSimpleFont extends PDFont
         Font _awtFont = getawtFont();
 
         // mdavis - fix fontmanager.so/dll on sun.font.FileFont.getGlyphImage
-        // for font with bad cmaps? 
-        if (_awtFont.canDisplayUpTo(string) != -1) { 
+        // for font with bad cmaps?
+        // Type1 fonts are not affected as they don't have cmaps
+        if (!isType1Font() && _awtFont.canDisplayUpTo(string) != -1) { 
             log.warn("Changing font on <" + string + "> from <"
                     + _awtFont.getName() + "> to the default font");
             _awtFont = Font.decode(null); 
@@ -183,26 +189,10 @@ public abstract class PDSimpleFont extends PDFont
         Float fontWidth = mFontSizes.get(code);
         if (fontWidth == null)
         {
-            //hmm should this be in a subclass??
-            COSInteger firstChar = (COSInteger)font.getDictionaryObject( COSName.FIRST_CHAR );
-            COSInteger lastChar = (COSInteger)font.getDictionaryObject( COSName.LAST_CHAR );
-            if( firstChar != null && lastChar != null )
+            fontWidth = getFontWidth(code);
+            if (fontWidth == -1)
             {
-                long first = firstChar.intValue();
-                long last = lastChar.intValue();
-                if( code >= first && code <= last && font.getDictionaryObject( COSName.WIDTHS ) != null )
-                {
-                    COSArray widthArray = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
-                    COSNumber fontWidthObject = (COSNumber)widthArray.getObject( (int)(code - first) );
-                    fontWidth = fontWidthObject.floatValue();
-                }
-                else
-                {
-                    fontWidth = getFontWidthFromAFMFile( code );
-                }
-            }
-            else
-            {
+                //hmm should this be in PDType1Font??
                 fontWidth = getFontWidthFromAFMFile( code );
             }
             mFontSizes.put(code, fontWidth);
@@ -257,69 +247,7 @@ public abstract class PDSimpleFont extends PDFont
         return average;
     }
 
-    /**
-     * This will get the font descriptor for this font.
-     *
-     * @return The font descriptor for this font.
-     *
-     * @throws IOException If there is an error parsing an AFM file, or unable to
-     *      create a PDFontDescriptor object.
-     */
-    public PDFontDescriptor getFontDescriptor() throws IOException
-    {
-        if(fontDescriptor ==null){
-            COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
-            if( fd == null )
-            {
-                FontMetric afm = getAFM();
-                if( afm != null )
-                {
-                	fontDescriptor = new PDFontDescriptorAFM( afm );
-                }
-                else
-                {
-                    COSArray descendantFontArray =
-                        (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
-                    if (descendantFontArray != null) 
-                    {
-                        fd = (COSDictionary)descendantFontArray.getObject( 0 );
-                        if (fd != null)
-                        {
-                            fd = (COSDictionary)fd.getDictionaryObject( COSName.FONT_DESC );
-                            if (fd != null)
-                            {
-                                fontDescriptor = new PDFontDescriptorDictionary( fd );
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-            	fontDescriptor = new PDFontDescriptorDictionary( fd );
-            }
-        }
-        return fontDescriptor;
-    }
-
-    private PDFontDescriptor fontDescriptor = null;
     
-    /**
-     * This will set the font descriptor.
-     *
-     * @param fontDescriptor The font descriptor.
-     */
-    public void setFontDescriptor( PDFontDescriptorDictionary fontDescriptor )
-    {
-        COSDictionary dic = null;
-        if( fontDescriptor != null )
-        {
-            dic = fontDescriptor.getCOSDictionary();
-        }
-        font.setItem( COSName.FONT_DESC, dic );
-        this.fontDescriptor = fontDescriptor;
-    }
-
     /**
      * This will get the ToUnicode stream.
      *
@@ -398,4 +326,136 @@ public abstract class PDSimpleFont extends PDFont
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    protected void determineEncoding()
+    {
+        String cmapName = null;
+        COSName encodingName = null;
+        COSBase encoding = getEncodingObject(); 
+        Encoding fontEncoding = null;
+        if (encoding != null) 
+        {
+            if (encoding instanceof COSName) 
+            {
+                if (cmap == null)
+                {
+                    encodingName = (COSName)encoding;
+                    cmap = cmapObjects.get( encodingName.getName() );
+                    if (cmap == null) 
+                    {
+                        cmapName = encodingName.getName();
+                    }
+                }
+                if (cmap == null && cmapName != null)
+                {
+                    try 
+                    {
+                        fontEncoding =
+                            EncodingManager.INSTANCE.getEncoding(encodingName);
+                    }
+                    catch(IOException exception) 
+                    {
+                        log.debug("Debug: Could not find encoding for " + encodingName );
+                    }
+                }
+            }
+            else if (encoding instanceof COSDictionary) 
+            {
+                try 
+                {
+                    fontEncoding = new DictionaryEncoding((COSDictionary)encoding);
+                }
+                catch(IOException exception) 
+                {
+                    log.error("Error: Could not create the DictionaryEncoding" );
+                }
+            }
+            else if(encoding instanceof COSStream )
+            {
+                if (cmap == null)
+                {
+                    COSStream encodingStream = (COSStream)encoding;
+                    try 
+                    {
+                        parseCmap( null, encodingStream.getUnfilteredStream(), null );
+                    }
+                    catch(IOException exception) 
+                    {
+                        log.error("Error: Could not parse the embedded CMAP" );
+                    }
+                }
+            }
+        }
+        setEncoding(fontEncoding);
+        extractToUnicodeEncoding();
+
+        COSDictionary cidsysteminfo = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
+        if (cidsysteminfo != null) 
+        {
+            String ordering = cidsysteminfo.getString(COSName.ORDERING);
+            String registry = cidsysteminfo.getString(COSName.REGISTRY);
+            int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
+            cmapName = registry + "-" + ordering+ "-" + supplement;
+            cmapName = CMapSubstitution.substituteCMap( cmapName );
+            cmap = cmapObjects.get( cmapName );
+        }
+        if (cmap == null && cmapName != null) 
+        {
+            String resourceName = resourceRootCMAP + cmapName;
+            try {
+                parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), encodingName );
+                if( cmap == null && encodingName == null)
+                {
+                    log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                }
+            }
+            catch(IOException exception) 
+            {
+                log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+            }
+        }
+    }
+
+    private void extractToUnicodeEncoding()
+    {
+        COSName encodingName = null;
+        String cmapName = null;
+        COSBase toUnicode = font.getDictionaryObject( COSName.TO_UNICODE );
+        if( toUnicode != null )
+        {
+            if ( toUnicode instanceof COSStream )
+            {
+                try {
+                    parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream(), null);
+                }
+                catch(IOException exception) 
+                {
+                    log.error("Error: Could not load embedded CMAP" );
+                }
+            }
+            else if ( toUnicode instanceof COSName)
+            {
+                encodingName = (COSName)toUnicode;
+                cmap = cmapObjects.get( encodingName.getName() );
+                if (cmap == null) 
+                {
+                    cmapName = encodingName.getName();
+                    String resourceName = resourceRootCMAP + cmapName;
+                    try {
+                        parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), encodingName );
+                    }
+                    catch(IOException exception) 
+                    {
+                        log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+                    }
+                    if( cmap == null)
+                    {
+                        log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                    }
+                }
+            }
+        }
+    }
 }

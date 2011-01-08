@@ -16,6 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.Font;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -27,6 +32,11 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDCIDFontType0Font extends PDCIDFont
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDCIDFontType0Font.class);
+
     /**
      * Constructor.
      */
@@ -45,4 +55,29 @@ public class PDCIDFontType0Font extends PDCIDFont
     {
         super( fontDictionary );
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Font getawtFont() throws IOException
+    {
+        Font awtFont = null;
+        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
+        if( fd.getFontFile3() != null )
+        {
+            // create a font with the embedded data
+            PDType1CFont type1CFont = new PDType1CFont( super.font );
+            awtFont = type1CFont.getawtFont();
+            if (awtFont == null)
+            {
+                awtFont = FontManager.getAwtFont(fd.getFontName());
+                if (awtFont != null)
+                {
+                    log.info("Using font "+awtFont.getName()+ " instead");
+                }
+            }
+        }
+        return awtFont;
+    }
+
 }

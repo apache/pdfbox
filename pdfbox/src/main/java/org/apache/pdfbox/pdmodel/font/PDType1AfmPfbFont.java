@@ -56,11 +56,6 @@ public class PDType1AfmPfbFont extends PDType1Font
     private static final int BUFFERSIZE = 0xffff;
 
     /**
-     * The font descriptor.
-     */
-    private PDFontDescriptorDictionary fd;
-
-    /**
      * The font metric.
      */
     private FontMetric metric;
@@ -108,7 +103,7 @@ public class PDType1AfmPfbFont extends PDType1Font
             final InputStream pfb) throws IOException
     {
 
-        fd = new PDFontDescriptorDictionary();
+        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
         setFontDescriptor(fd);
 
         // read the pfb
@@ -246,16 +241,6 @@ public class PDType1AfmPfbFont extends PDType1Font
         dictionary.setItem(COSName.DIFFERENCES, array);
         dictionary.setItem(COSName.BASE_ENCODING, COSName.STANDARD_ENCODING);
         return new DictionaryEncoding(dictionary);
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public PDFontDescriptor getFontDescriptor() throws IOException
-    {
-        return fd;
     }
 
 }
