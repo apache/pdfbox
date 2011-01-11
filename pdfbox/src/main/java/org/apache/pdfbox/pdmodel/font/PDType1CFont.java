@@ -87,8 +87,6 @@ public class PDType1CFont extends PDSimpleFont
 
     private PDRectangle fontBBox = null;
 
-    private PDMatrix fontMatrix = null;
-
     private static final Log log = LogFactory.getLog(PDType1CFont.class);
 
     private static final byte[] SPACE_BYTES = {(byte)32};
@@ -259,7 +257,7 @@ public class PDType1CFont extends PDSimpleFont
      */
     public PDMatrix getFontMatrix()
     {
-        if( this.fontMatrix == null )
+        if( fontMatrix == null )
         {
             List<Number> numbers = (List<Number>)this.cffFont.getProperty("FontMatrix");
             if( numbers != null && numbers.size() == 6 )
@@ -269,15 +267,14 @@ public class PDType1CFont extends PDSimpleFont
                 {
                     array.add(new COSFloat(number.floatValue()));
                 }
-                this.fontMatrix = new PDMatrix(array);
+                fontMatrix = new PDMatrix(array);
             }
             else
             {
-                this.fontMatrix = super.getFontMatrix();
+                super.getFontMatrix();
             }
         }
-
-        return this.fontMatrix;
+        return fontMatrix;
     }
 
     /**
