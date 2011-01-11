@@ -75,6 +75,11 @@ public abstract class PDFont implements COSObjectable
     private PDFontDescriptor fontDescriptor = null;
 
     /**
+     *  The font matrix
+     */
+    protected PDMatrix fontMatrix = null;
+    
+    /**
      * This is only used if this is a font object and it has an encoding and it is
      * a type0 font with a cmap.
      */
@@ -689,21 +694,22 @@ public abstract class PDFont implements COSObjectable
      */
     public PDMatrix getFontMatrix()
     {
-        PDMatrix matrix = null;
-        COSArray array = (COSArray)font.getDictionaryObject( COSName.FONT_MATRIX );
-        if( array == null )
+        if (fontMatrix == null)
         {
-            array = new COSArray();
-            array.add( new COSFloat( 0.001f ) );
-            array.add( COSInteger.ZERO );
-            array.add( COSInteger.ZERO );
-            array.add( new COSFloat( 0.001f ) );
-            array.add( COSInteger.ZERO );
-            array.add( COSInteger.ZERO );
+            COSArray array = (COSArray)font.getDictionaryObject( COSName.FONT_MATRIX );
+            if( array == null )
+            {
+                array = new COSArray();
+                array.add( new COSFloat( 0.001f ) );
+                array.add( COSInteger.ZERO );
+                array.add( COSInteger.ZERO );
+                array.add( new COSFloat( 0.001f ) );
+                array.add( COSInteger.ZERO );
+                array.add( COSInteger.ZERO );
+            }
+            fontMatrix = new PDMatrix(array);
         }
-        matrix = new PDMatrix(array);
-
-        return matrix;
+        return fontMatrix;
     }
 
     /**

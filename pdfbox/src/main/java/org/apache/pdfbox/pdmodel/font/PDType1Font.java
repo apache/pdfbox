@@ -28,13 +28,16 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetric;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -269,10 +272,7 @@ public class PDType1Font extends PDSimpleFont
                 fontEncoding = new AFMEncoding( metric );
             }
         }
-        if (fontEncoding == null)
-        {
-            getEncodingFromFont();
-        }
+        getEncodingFromFont(getEncoding() == null);
         setEncoding(fontEncoding);
     }
     
@@ -280,7 +280,7 @@ public class PDType1Font extends PDSimpleFont
      * Tries to get the encoding for the type1 font.
      *
      */
-    private void getEncodingFromFont()
+    private void getEncodingFromFont(boolean extractEncoding)
     {
         // This whole section of code needs to be replaced with an actual type1 font parser!!
         // Get the font program from the embedded type font.
@@ -302,45 +302,73 @@ public class PDType1Font extends PDSimpleFont
                     Type1Encoding encoding = null;
                     while( (line = in.readLine()) != null)
                     {
-                        if (line.startsWith("currentdict end")) {
-                            if (encoding != null)
-                                setEncoding(encoding);
-                            break;
-                        }
-                        if (line.startsWith("/Encoding")) 
+                        if (extractEncoding) 
                         {
-                            if(line.contains("array")) 
-                            {
-                                StringTokenizer st = new StringTokenizer(line);
-                                // ignore the first token
-                                st.nextElement();
-                                int arraySize = Integer.parseInt(st.nextToken());
-                                encoding = new Type1Encoding(arraySize);
-                            }
-                            // if there is already an encoding, we don't need to
-                            // assign another one
-                            else if (getEncoding() == null)
-                            {
-                                StringTokenizer st = new StringTokenizer(line);
-                                // ignore the first token
-                                st.nextElement();
-                                String type1Encoding = st.nextToken();
-                                setEncoding(
-                                    EncodingManager.INSTANCE.getEncoding(
-                                            COSName.getPDFName(type1Encoding)));
+                            if (line.startsWith("currentdict end")) {
+                                if (encoding != null)
+                                    setEncoding(encoding);
                                 break;
                             }
+                            if (line.startsWith("/Encoding")) 
+                            {
+                                if(line.contains("array")) 
+                                {
+                                    StringTokenizer st = new StringTokenizer(line);
+                                    // ignore the first token
+                                    st.nextElement();
+                                    int arraySize = Integer.parseInt(st.nextToken());
+                                    encoding = new Type1Encoding(arraySize);
+                                }
+                                // if there is already an encoding, we don't need to
+                                // assign another one
+                                else if (getEncoding() == null)
+                                {
+                                    StringTokenizer st = new StringTokenizer(line);
+                                    // ignore the first token
+                                    st.nextElement();
+                                    String type1Encoding = st.nextToken();
+                                    setEncoding(
+                                        EncodingManager.INSTANCE.getEncoding(
+                                                COSName.getPDFName(type1Encoding)));
+                                    break;
+                                }
+                            }
+                            else if (line.startsWith("dup")) {
+                                StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
+                                // ignore the first token
+                                st.nextElement();
+                                int index = Integer.parseInt(st.nextToken());
+                                String name = st.nextToken();
+                                if(encoding == null)
+                                    log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
+                                else
+                                    encoding.addCharacterEncoding(index, name.replace("/", ""));
+                            }
                         }
-                        else if (line.startsWith("dup")) {
-                            StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
-                            // ignore the first token
-                            st.nextElement();
-                            int index = Integer.parseInt(st.nextToken());
-                            String name = st.nextToken();
-                            if(encoding == null)
-                                log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
-                            else
-                                encoding.addCharacterEncoding(index, name.replace("/", ""));
+                        // according to the pdf reference, all font matrices should be same, except for type 3 fonts.
+                        // but obviously there are some type1 fonts with different matrix values, see pdf sample
+                        // attached to PDFBOX-935
+                        if (line.startsWith("/FontMatrix"))
+                        {
+                            String matrixValues = line.substring(line.indexOf("[")+1,line.lastIndexOf("]"));
+                            StringTokenizer st = new StringTokenizer(matrixValues);
+                            COSArray array = new COSArray();
+                            if (st.countTokens() >= 6)
+                            {
+                                try 
+                                {
+                                    for (int i=0;i<6;i++)
+                                    {
+                                        COSFloat floatValue = new COSFloat(Float.parseFloat(st.nextToken()));
+                                        array.add(floatValue);
+                                    }
+                                    fontMatrix = new PDMatrix(array);
+                                }
+                                catch (NumberFormatException exception)
+                                {
+                                    log.error("Can't read the fontmatrix from embedded font file!");
+                                }
+                            }
                         }
                     }
                     in.close();
@@ -353,6 +381,9 @@ public class PDType1Font extends PDSimpleFont
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
@@ -363,6 +394,22 @@ public class PDType1Font extends PDSimpleFont
         else
         {
             return super.encode(c, offset, length);
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PDMatrix getFontMatrix()
+    {
+        if (type1CFont != null)
+        {
+            return type1CFont.getFontMatrix();
+        }
+        else
+        {
+            return super.getFontMatrix();
         }
     }
 }

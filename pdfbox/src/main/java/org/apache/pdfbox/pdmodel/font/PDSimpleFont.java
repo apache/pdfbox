@@ -44,7 +44,6 @@ import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
@@ -249,22 +248,21 @@ public abstract class PDSimpleFont extends PDFont
 
     
     /**
-     * This will get the ToUnicode stream.
+     * This will get the ToUnicode object.
      *
-     * @return The ToUnicode stream.
-     * @throws IOException If there is an error getting the stream.
+     * @return The ToUnicode object.
      */
-    public PDStream getToUnicode() throws IOException
+    public COSBase getToUnicode()
     {
-        return PDStream.createFromCOS( font.getDictionaryObject( COSName.TO_UNICODE ) );
+        return font.getDictionaryObject( COSName.TO_UNICODE );
     }
 
     /**
-     * This will set the ToUnicode stream.
+     * This will set the ToUnicode object.
      *
-     * @param unicode The unicode stream.
+     * @param unicode The unicode object.
      */
-    public void setToUnicode( PDStream unicode )
+    public void setToUnicode( COSBase unicode )
     {
         font.setItem( COSName.TO_UNICODE, unicode );
     }
@@ -422,7 +420,7 @@ public abstract class PDSimpleFont extends PDFont
     {
         COSName encodingName = null;
         String cmapName = null;
-        COSBase toUnicode = font.getDictionaryObject( COSName.TO_UNICODE );
+        COSBase toUnicode = getToUnicode();
         if( toUnicode != null )
         {
             if ( toUnicode instanceof COSStream )
