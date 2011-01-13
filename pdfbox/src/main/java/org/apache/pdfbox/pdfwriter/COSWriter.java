@@ -23,12 +23,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -165,26 +164,27 @@ public class COSWriter implements ICOSVisitor
     private long number = 0;
 
     // maps the object to the keys generated in the writer
-    // these are used for indirect refrences in other objects
+    // these are used for indirect references in other objects
     //A hashtable is used on purpose over a hashmap
     //so that null entries will not get added.
-    private Map objectKeys = new Hashtable();
+    private Map<COSBase,COSObjectKey> objectKeys = new Hashtable<COSBase,COSObjectKey>();
 
     // the list of x ref entries to be made so far
-    private List xRefEntries = new ArrayList();
+    private LinkedList xRefEntries = new LinkedList();
 
     //A list of objects to write.
-    private List objectsToWrite = new ArrayList();
+    private LinkedList<COSBase> objectsToWrite = new LinkedList<COSBase>();
+    private HashSet<COSBase> objectsToWriteSet = new HashSet<COSBase>();
 
     //a list of objects already written
-    private Set writtenObjects = new HashSet();
+    private Set<COSBase> writtenObjects = new HashSet<COSBase>();
     //An 'actual' is any COSBase that is not a COSObject.
     //need to keep a list of the actuals that are added
     //as well as the objects because there is a problem
     //when adding a COSObject and then later adding
     //the actual for that object, so we will track
     //actuals separately.
-    private Set actualsAdded = new HashSet();
+    private Set<COSBase> actualsAdded = new HashSet<COSBase>();
 
     private COSObjectKey currentObjectKey = null;
 
@@ -247,7 +247,7 @@ public class COSWriter implements ICOSVisitor
      *
      * @return A map of all object keys.
      */
-    public java.util.Map getObjectKeys()
+    public java.util.Map<COSBase,COSObjectKey> getObjectKeys()
     {
         return objectKeys;
     }
@@ -357,7 +357,8 @@ public class COSWriter implements ICOSVisitor
 
         while( objectsToWrite.size() > 0 )
         {
-            COSBase nextObject = (COSBase)objectsToWrite.remove( 0 );
+            COSBase nextObject = (COSBase)objectsToWrite.removeFirst();
+            objectsToWriteSet.remove(nextObject);
             doWriteObject( nextObject );
         }
 
@@ -371,17 +372,11 @@ public class COSWriter implements ICOSVisitor
 
         while( objectsToWrite.size() > 0 )
         {
-            COSBase nextObject = (COSBase)objectsToWrite.remove( 0 );
+            COSBase nextObject = (COSBase)objectsToWrite.removeFirst();
+            objectsToWriteSet.remove(nextObject);
             doWriteObject( nextObject );
         }
 
-        // write all objects
-        /**
-        for (Iterator i = doc.getObjects().iterator(); i.hasNext();)
-        {
-            COSObject obj = (COSObject) i.next();
-            doWriteObject(obj);
-        }**/
     }
 
     private void addObjectToWrite( COSBase object )
@@ -393,10 +388,11 @@ public class COSWriter implements ICOSVisitor
         }
 
         if( !writtenObjects.contains( object ) &&
-            !objectsToWrite.contains( object ) &&
+            !objectsToWriteSet.contains( object ) &&
             !actualsAdded.contains( actual ) )
         {
             objectsToWrite.add( object );
+            objectsToWriteSet.add( object );
             if( actual != null )
             {
                 actualsAdded.add( actual );
@@ -610,9 +606,9 @@ public class COSWriter implements ICOSVisitor
         {
             int count = 0;
             getStandardOutput().write(ARRAY_OPEN);
-            for (Iterator i = obj.iterator(); i.hasNext();)
+            for (Iterator<COSBase> i = obj.iterator(); i.hasNext();)
             {
-                COSBase current = (COSBase) i.next();
+                COSBase current = i.next();
                 if( current instanceof COSDictionary )
                 {
                     addObjectToWrite( current );
@@ -1041,14 +1037,14 @@ public class COSWriter implements ICOSVisitor
             try
             {
 
-                //algothim says to use time/path/size/values in doc to generate
+                //algorithm says to use time/path/size/values in doc to generate
                 //the id.  We don't have path or size, so do the best we can
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
                 md.update( Long.toString( System.currentTimeMillis()).getBytes() );
                 COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
                 if( info != null )
                 {
-                    Iterator values = info.getValues().iterator();
+                    Iterator<COSBase> values = info.getValues().iterator();
                     while( values.hasNext() )
                     {
                         md.update( values.next().toString().getBytes() );
@@ -1065,25 +1061,6 @@ public class COSWriter implements ICOSVisitor
                 throw new COSVisitorException( e );
             }
         }
-
-        /*
-        List objects = doc.getObjects();
-        Iterator iter = objects.iterator();
-        long maxNumber = 0;
-        while( iter.hasNext() )
-        {
-            COSObject object = (COSObject)iter.next();
-            if( object.getObjectNumber() != null &&
-                object.getGenerationNumber() != null )
-            {
-                COSObjectKey key = new COSObjectKey( object.getObjectNumber().longValue(),
-                                                     object.getGenerationNumber().longValue() );
-                objectKeys.put( object.getObject(), key );
-                objectKeys.put( object, key );
-                maxNumber = Math.max( key.getNumber(), maxNumber );
-                setNumber( maxNumber );
-            }
-        }*/
         cosDoc.accept(this);
     }
 }
