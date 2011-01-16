@@ -132,7 +132,7 @@ public abstract class PDSimpleFont extends PDFont
         FontMetric metric = getAFM();
         if( metric != null )
         {
-            Encoding encoding = getEncoding();
+            Encoding encoding = getFontEncoding();
             String characterName = encoding.getName( code );
             retval = metric.getCharacterHeight( characterName );
         }
@@ -331,7 +331,7 @@ public abstract class PDSimpleFont extends PDFont
     {
         String cmapName = null;
         COSName encodingName = null;
-        COSBase encoding = getEncodingObject(); 
+        COSBase encoding = getEncoding(); 
         Encoding fontEncoding = null;
         if (encoding != null) 
         {
@@ -386,19 +386,9 @@ public abstract class PDSimpleFont extends PDFont
                 }
             }
         }
-        setEncoding(fontEncoding);
+        setFontEncoding(fontEncoding);
         extractToUnicodeEncoding();
 
-        COSDictionary cidsysteminfo = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (cidsysteminfo != null) 
-        {
-            String ordering = cidsysteminfo.getString(COSName.ORDERING);
-            String registry = cidsysteminfo.getString(COSName.REGISTRY);
-            int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
-            cmapName = registry + "-" + ordering+ "-" + supplement;
-            cmapName = CMapSubstitution.substituteCMap( cmapName );
-            cmap = cmapObjects.get( cmapName );
-        }
         if (cmap == null && cmapName != null) 
         {
             String resourceName = resourceRootCMAP + cmapName;
@@ -423,6 +413,7 @@ public abstract class PDSimpleFont extends PDFont
         COSBase toUnicode = getToUnicode();
         if( toUnicode != null )
         {
+            setHasToUnicode(true);
             if ( toUnicode instanceof COSStream )
             {
                 try {

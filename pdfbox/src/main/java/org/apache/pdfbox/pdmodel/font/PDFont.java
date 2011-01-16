@@ -84,6 +84,8 @@ public abstract class PDFont implements COSObjectable
      * a type0 font with a cmap.
      */
     protected CMap cmap = null;
+    
+    private boolean hasToUnicode = false;
 
     protected static Map<String, CMap> cmapObjects =
         Collections.synchronizedMap( new HashMap<String, CMap>() );
@@ -342,7 +344,7 @@ public abstract class PDFont implements COSObjectable
         FontMetric metric = getAFM();
         if( metric != null )
         {
-            Encoding encoding = getEncoding();
+            Encoding encoding = getFontEncoding();
             String characterName = encoding.getName( code );
             retval = metric.getCharacterWidth( characterName );
         }
@@ -402,7 +404,7 @@ public abstract class PDFont implements COSObjectable
 
     private FontMetric afm = null;
     
-    private COSBase encodingObject = null;
+    private COSBase encoding = null;
     /**
      * cache the {@link COSName#ENCODING} object from
      * the font's dictionary since it is called so often.
@@ -413,11 +415,21 @@ public abstract class PDFont implements COSObjectable
      * </pre>
      * @return
      */
-    protected COSBase getEncodingObject(){
-    	if(encodingObject==null){
-    		encodingObject = font.getDictionaryObject( COSName.ENCODING );
+    protected COSBase getEncoding(){
+    	if(encoding==null)
+    	{
+    		encoding = font.getDictionaryObject( COSName.ENCODING );
     	}
-    	return encodingObject;
+    	return encoding;
+    }
+
+    /**
+     * Set the encoding object from the fonts dictionary.
+     * @param encoding the given encoding.
+     */
+    protected void setEncoding(COSBase encoding){
+        font.setItem( COSName.ENCODING, encoding );
+        this.encoding = encoding;
     }
     
     /**
@@ -449,7 +461,7 @@ public abstract class PDFont implements COSObjectable
         // there is no cmap but probably an encoding with a suitable mapping
         if( retval == null )
         {
-            Encoding encoding = getEncoding();
+            Encoding encoding = getFontEncoding();
             if( encoding != null )
             {
                 retval = encoding.getCharacter( getCodeFromArray( c, offset, length ) );
@@ -524,20 +536,17 @@ public abstract class PDFont implements COSObjectable
      *
      * @param enc The font encoding.
      */
-    public void setEncoding( Encoding enc )
+    public void setFontEncoding( Encoding enc )
     {
-        font.setItem( COSName.ENCODING, enc );
         fontEncoding = enc;
     }
 
     /**
      * This will get or create the encoder.
      *
-     * modified by Christophe Huault : DGBS Strasbourg huault@free.fr october 2004
-     *
      * @return The encoding to use.
      */
-    public Encoding getEncoding()
+    public Encoding getFontEncoding()
     {
         return fontEncoding;
     }
@@ -763,4 +772,21 @@ public abstract class PDFont implements COSObjectable
         return width;
     }
 
+    /**
+     * Determines if a font as a ToUnicode entry.
+     * @return true if the font has a ToUnicode entry
+     */
+    protected boolean hasToUnicode() 
+    {
+        return hasToUnicode;
+    }
+    
+    /**
+     * Sets hasToUnicode to the given value.
+     * @param hasToUnicode the given value for hasToUnicode
+     */
+    protected void setHasToUnicode(boolean hasToUnicode)
+    {
+        this.hasToUnicode = hasToUnicode;
+    }
 }

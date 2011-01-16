@@ -169,7 +169,8 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
         //only support winansi encoding right now, should really
         //just use Identity-H with unicode mapping
-        retval.setEncoding( new WinAnsiEncoding() );
+        retval.setFontEncoding( new WinAnsiEncoding() );
+        retval.setEncoding(COSName.WIN_ANSI_ENCODING);
         return retval;
     }
 
