@@ -21,12 +21,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This is implementation for the CIDFontType0/CIDFontType2 Fonts.
@@ -36,6 +40,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public abstract class PDCIDFont extends PDSimpleFont
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDCIDFont.class);
+
     private Map<Integer,Float> widthCache = null;
     private long defaultWidth = 0;
     
@@ -272,4 +281,77 @@ public abstract class PDCIDFont extends PDSimpleFont
         return width;
     }
 
+    /**
+     * Extract the CIDSystemInfo.
+     * @return the CIDSystemInfo as String
+     */
+    private String getCIDSystemInfo()
+    {
+        String cidSystemInfo = null; 
+        COSDictionary cidsysteminfo = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
+        if (cidsysteminfo != null) 
+        {
+            String ordering = cidsysteminfo.getString(COSName.ORDERING);
+            String registry = cidsysteminfo.getString(COSName.REGISTRY);
+            int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
+            cidSystemInfo = registry + "-" + ordering+ "-" + supplement;
+        }
+        return cidSystemInfo;
+    }
+    
+    @Override
+    protected void determineEncoding()
+    {
+        String cidSystemInfo = getCIDSystemInfo();
+        if (cidSystemInfo != null) 
+        {
+            cidSystemInfo = CMapSubstitution.substituteCMap( cidSystemInfo );
+            cmap = cmapObjects.get( cidSystemInfo );
+            if (cmap == null)
+            {
+                String resourceName = resourceRootCMAP + cidSystemInfo;
+                try {
+                    parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), null );
+                    if( cmap == null)
+                    {
+                        log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'" );
+                    }
+                }
+                catch(IOException exception) 
+                {
+                    log.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo + "'" );
+                }
+            }
+        }
+        else
+        {
+            super.determineEncoding();
+        }
+    }
+    
+    @Override
+    public String encode(byte[] c, int offset, int length) throws IOException
+    {
+        String result = null;
+        if (cmap != null)
+        {
+            if (length == 1 && cmap.hasOneByteMappings()) 
+            {
+                result = cmap.lookup(c, offset, length);
+            }
+            else if (length == 2 && cmap.hasTwoByteMappings())
+            {
+                result = cmap.lookup(c, offset, length);
+            }
+            if (result == null && cmap.hasCIDMappings())
+            {
+                result = cmap.lookupCID(getCodeFromArray(c, offset, length));
+            }
+        }
+        else
+        {
+            result = super.encode(c, offset, length);
+        }
+        return result;
+    }
 }

@@ -170,4 +170,17 @@ public class PDType0Font extends PDSimpleFont
         return descendentFont.getFontWidth(charCode);
     }
 
+    @Override
+    public String encode(byte[] c, int offset, int length) throws IOException
+    {
+        if (hasToUnicode())
+        {
+            return super.encode(c, offset, length);
+        }
+        else
+        {
+            // TODO additional mapping if not Identity
+            return descendentFont.encode(c, offset, length);
+        }
+    }
 }

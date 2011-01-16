@@ -125,7 +125,7 @@ public class PDType1AfmPfbFont extends PDType1Font
         AFMParser parser = new AFMParser(afm);
         parser.parse();
         metric = parser.getResult();
-        setEncoding(afmToDictionary(new AFMEncoding(metric)));
+        setFontEncoding(afmToDictionary(new AFMEncoding(metric)));
 
         // set the values
         setBaseFont(metric.getFontName());
@@ -147,7 +147,7 @@ public class PDType1AfmPfbFont extends PDType1Font
 
         // widths
         List<CharMetric> listmetric = metric.getCharMetrics();
-        Encoding encoding = getEncoding();
+        Encoding encoding = getFontEncoding();
         int maxWidths = 256;
         List<Number> widths = new ArrayList(maxWidths);
         Integer zero = new Integer(250);

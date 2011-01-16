@@ -176,7 +176,8 @@ public class PDType1Font extends PDSimpleFont
     {
         this();
         setBaseFont( baseFont );
-        setEncoding(new WinAnsiEncoding());
+        setFontEncoding(new WinAnsiEncoding());
+        setEncoding(COSName.WIN_ANSI_ENCODING);
     }
 
     /**
@@ -263,7 +264,7 @@ public class PDType1Font extends PDSimpleFont
     protected void determineEncoding()
     {
         super.determineEncoding();
-        Encoding fontEncoding = getEncoding();
+        Encoding fontEncoding = getFontEncoding();
         if(fontEncoding == null)
         {
             FontMetric metric = getAFM();
@@ -272,8 +273,8 @@ public class PDType1Font extends PDSimpleFont
                 fontEncoding = new AFMEncoding( metric );
             }
         }
-        getEncodingFromFont(getEncoding() == null);
-        setEncoding(fontEncoding);
+        getEncodingFromFont(getFontEncoding() == null);
+        setFontEncoding(fontEncoding);
     }
     
     /**
@@ -306,7 +307,7 @@ public class PDType1Font extends PDSimpleFont
                         {
                             if (line.startsWith("currentdict end")) {
                                 if (encoding != null)
-                                    setEncoding(encoding);
+                                    setFontEncoding(encoding);
                                 break;
                             }
                             if (line.startsWith("/Encoding")) 
@@ -321,13 +322,13 @@ public class PDType1Font extends PDSimpleFont
                                 }
                                 // if there is already an encoding, we don't need to
                                 // assign another one
-                                else if (getEncoding() == null)
+                                else if (getFontEncoding() == null)
                                 {
                                     StringTokenizer st = new StringTokenizer(line);
                                     // ignore the first token
                                     st.nextElement();
                                     String type1Encoding = st.nextToken();
-                                    setEncoding(
+                                    setFontEncoding(
                                         EncodingManager.INSTANCE.getEncoding(
                                                 COSName.getPDFName(type1Encoding)));
                                     break;
@@ -387,7 +388,7 @@ public class PDType1Font extends PDSimpleFont
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
-        if (type1CFont != null && getEncoding() == null)
+        if (type1CFont != null && getFontEncoding() == null)
         {
             return type1CFont.encode(c, offset, length);
         }
