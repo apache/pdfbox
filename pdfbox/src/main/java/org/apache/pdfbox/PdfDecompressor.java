@@ -80,7 +80,7 @@ public class PdfDecompressor {
      * Explains how to use the program.
      */
     private static void usage() {
-        System.err.println( "Usage: java -cp pdfbox.jar "
+        System.err.println( "Usage: java -cp /path/to/pdfbox.jar;/path/to/commons-logging-api.jar "
                 + "org.apache.pdfbox.PdfDecompressor <input PDF File> [<Output PDF File>]\n"
                 + "  <input PDF File>       The PDF document to decompress\n"
                 + "  <output PDF File>      The output filename (default is to replace .pdf with .unc.pdf)");
