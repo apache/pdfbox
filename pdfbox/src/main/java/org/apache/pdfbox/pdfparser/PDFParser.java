@@ -17,9 +17,8 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,11 +33,8 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
-
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -125,6 +121,18 @@ public class PDFParser extends BaseParser
     }
 
     /**
+     * Returns true if parsing should be continued. By default, forceParsing is returned. 
+     * This can be overridden to add application specific handling (for example to stop 
+     * parsing when the number of exceptions thrown exceed a certain number).
+     * 
+     * @param e The exception if vailable. Can be null if there is no exception available
+     */
+    protected boolean isContinueOnError(Exception e)
+    {
+        return forceParsing;
+    }
+    
+    /**
      * This will parse the stream and populate the COSDocument object.  This will close
      * the stream when it is done parsing.
      *
@@ -173,7 +181,7 @@ public class PDFParser extends BaseParser
                     }
                     catch(IOException e)
                     {
-                        if(forceParsing)
+                        if(isContinueOnError(e))
                         {
                             /*
                              * Warning is sent to the PDFBox.log and to the Console that
@@ -508,7 +516,11 @@ public class PDFParser extends BaseParser
                 //" genNumber=" + genNum + " key='" + objectKey + "'" );
                 if( !objectKey.equals( "obj" ) )
                 {
-                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
+                    if (!isContinueOnError(null) || !objectKey.equals("o")) {
+                        throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
+                    }
+                    //assume that "o" was meant to be "obj" (this is a workaround for 
+                    // PDFBOX-773 attached PDF Andersens_Fairy_Tales.pdf). 
                 }
             }
             else
@@ -577,38 +589,10 @@ public class PDFParser extends BaseParser
                 }
                 else if( !pdfSource.isEOF() )
                 {
-                    try
-                    {
-                        //It is possible that the endobj  is missing, there
-                        //are several PDFs out there that do that so skip it and move on.
-                        Float.parseFloat( endObjectKey );
-                        pdfSource.unread( SPACE_BYTE );
-                        pdfSource.unread( endObjectKey.getBytes() );
-                    }
-                    catch( NumberFormatException e )
-                    {
-                        //we will try again incase there was some garbage which
-                        //some writers will leave behind.
-                        String secondEndObjectKey = readString();
-                        if( !secondEndObjectKey.equals( "endobj" ) )
-                        {
-                            if( isClosing() )
-                            {
-                                //found a case with 17506.pdf object 41 that was like this
-                                //41 0 obj [/Pattern /DeviceGray] ] endobj
-                                //notice the second array close, here we are reading it
-                                //and ignoring and attempting to continue
-                                pdfSource.read();
-                            }
-                            skipSpaces();
-                            String thirdPossibleEndObj = readString();
-                            if( !thirdPossibleEndObj.equals( "endobj" ) )
-                            {
-                                throw new IOException("expected='endobj' firstReadAttempt='" + endObjectKey + "' " +
-                                    "secondReadAttempt='" + secondEndObjectKey + "' " + pdfSource);
-                            }
-                        }
-                    }
+                    //It is possible that the endobj is missing, there
+                    //are several PDFs out there that do that so. Unread
+                    //and assume that endobj was missing
+                    pdfSource.unread( endObjectKey.getBytes() );
                 }
             }
             skipSpaces();
