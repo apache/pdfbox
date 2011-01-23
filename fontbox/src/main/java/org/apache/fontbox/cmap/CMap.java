@@ -122,10 +122,6 @@ public class CMap
         {
             result = doubleByteMappings.get( code );
         }
-        if (result == null)
-        {
-            result = lookupCID(code);
-        }
         return result;
     }
     
