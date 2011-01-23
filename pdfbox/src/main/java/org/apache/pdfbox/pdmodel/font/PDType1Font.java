@@ -291,10 +291,10 @@ public class PDType1Font extends PDSimpleFont
             PDStream fontFile = ((PDFontDescriptorDictionary)fontDescriptor).getFontFile();
             if( fontFile != null )
             {
+                BufferedReader in = null;
                 try 
                 {
-                    BufferedReader in =
-                            new BufferedReader(new InputStreamReader(fontFile.createInputStream()));
+                    in = new BufferedReader(new InputStreamReader(fontFile.createInputStream()));
                     
                     // this section parses the font program stream searching for a /Encoding entry
                     // if it contains an array of values a Type1Encoding will be returned
@@ -372,11 +372,24 @@ public class PDType1Font extends PDSimpleFont
                             }
                         }
                     }
-                    in.close();
                 }
                 catch(IOException exception) 
                 {
                     log.error("Error: Could not extract the encoding from the embedded type1 font.");
+                }
+                finally
+                {
+                    if (in != null)
+                    {
+                        try
+                        {
+                            in.close();
+                        }
+                        catch(IOException exception) 
+                        {
+                            log.error("An error occurs while closing the stream used to read the embedded type1 font.");
+                        }
+                    }
                 }
             }
         }
