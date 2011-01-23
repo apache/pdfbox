@@ -179,8 +179,12 @@ public class PDType0Font extends PDSimpleFont
         }
         else
         {
-            // TODO additional mapping if not Identity
-            return descendentFont.encode(c, offset, length);
+            int result = cmap.lookupCID(c, offset, length);
+            if (result != -1) 
+            {
+                return descendentFont.cmapEncoding(result, 2, true);
+            }
+            return null;
         }
     }
 }

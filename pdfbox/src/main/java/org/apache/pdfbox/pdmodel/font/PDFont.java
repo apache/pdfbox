@@ -433,6 +433,28 @@ public abstract class PDFont implements COSObjectable
     }
     
     /**
+     * Encode the given value using the CMap of the font.
+     * 
+     * @param code the code to encode.
+     * @param length the byte length of the given code.
+     * @param isCIDFont indicates that the used font is a CID font.
+     * 
+     * @return The value of the encoded character.
+     */
+    protected String cmapEncoding( int code, int length, boolean isCIDFont ) throws IOException
+    {
+        String retval = null;
+        if (cmap != null)
+        {
+            retval = cmap.lookup(code, length);
+            if (retval == null && isCIDFont) 
+            {
+                retval = cmap.lookupCID(code);
+            }
+        }
+        return retval;
+    }
+    /**
      * This will perform the encoding of a character if needed.
      *
      * @param c The character to encode.
@@ -446,16 +468,10 @@ public abstract class PDFont implements COSObjectable
     public String encode( byte[] c, int offset, int length ) throws IOException
     {
         String retval = null;
+        int code = getCodeFromArray( c, offset, length );
         if( cmap != null )
         {
-            if (length == 1 && cmap.hasOneByteMappings()) 
-            {
-                retval = cmap.lookup( c, offset, length );
-            }
-            else if (length == 2 && cmap.hasTwoByteMappings())
-            {
-                retval = cmap.lookup( c, offset, length );
-            }
+            retval = cmapEncoding(code, length, false);
         }
         
         // there is no cmap but probably an encoding with a suitable mapping
@@ -464,7 +480,7 @@ public abstract class PDFont implements COSObjectable
             Encoding encoding = getFontEncoding();
             if( encoding != null )
             {
-                retval = encoding.getCharacter( getCodeFromArray( c, offset, length ) );
+                retval = encoding.getCharacter( code );
             }
             if( retval == null && (cmap == null || length == 2))
             {
