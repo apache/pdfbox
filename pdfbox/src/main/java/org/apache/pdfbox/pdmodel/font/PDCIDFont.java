@@ -305,7 +305,14 @@ public abstract class PDCIDFont extends PDSimpleFont
         String cidSystemInfo = getCIDSystemInfo();
         if (cidSystemInfo != null) 
         {
-            cidSystemInfo = CMapSubstitution.substituteCMap( cidSystemInfo );
+            if (cidSystemInfo.contains("Identity"))
+            {
+                cidSystemInfo = "Identity-H";
+            }
+            else
+            {
+                cidSystemInfo = cidSystemInfo.substring(0,cidSystemInfo.lastIndexOf("-"))+"-UCS2";
+            }
             cmap = cmapObjects.get( cidSystemInfo );
             if (cmap == null)
             {
@@ -335,18 +342,7 @@ public abstract class PDCIDFont extends PDSimpleFont
         String result = null;
         if (cmap != null)
         {
-            if (length == 1 && cmap.hasOneByteMappings()) 
-            {
-                result = cmap.lookup(c, offset, length);
-            }
-            else if (length == 2 && cmap.hasTwoByteMappings())
-            {
-                result = cmap.lookup(c, offset, length);
-            }
-            if (result == null && cmap.hasCIDMappings())
-            {
-                result = cmap.lookupCID(getCodeFromArray(c, offset, length));
-            }
+            result = cmapEncoding(getCodeFromArray( c, offset, length ), length, true);
         }
         else
         {
