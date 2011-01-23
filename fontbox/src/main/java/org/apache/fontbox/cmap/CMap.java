@@ -47,7 +47,8 @@ public class CMap
     private Map<Integer,String> singleByteMappings = new HashMap<Integer,String>();
     private Map<Integer,String> doubleByteMappings = new HashMap<Integer,String>();
 
-    private final Map<Integer,String> cidMappings = new HashMap<Integer,String>();
+    private final Map<Integer,String> cid2charMappings = new HashMap<Integer,String>();
+    private final Map<String,Integer> char2CIDMappings = new HashMap<String,Integer>();
     private final List<CIDRange> cidRanges = new LinkedList<CIDRange>();
 
     /**
@@ -85,7 +86,7 @@ public class CMap
      */
     public boolean hasCIDMappings()
     {
-        return !cidMappings.isEmpty() || !cidRanges.isEmpty();
+        return !char2CIDMappings.isEmpty() || !cidRanges.isEmpty();
     }
 
     /**
@@ -99,21 +100,54 @@ public class CMap
      */
     public String lookup( byte[] code, int offset, int length )
     {
+        return lookup(getCodeFromArray(code, offset, length), length);
+    }
+
+    /**
+     * This will perform a lookup into the map.
+     *
+     * @param code The code used to lookup.
+     * @param length The length of the data we are getting.
+     *
+     * @return The string that matches the lookup.
+     */
+    public String lookup( int code, int length )
+    {
         String result = null;
         if( length == 1 )
         {
-            int key = (code[offset]+256)%256;
-            result = singleByteMappings.get( key );
+            result = singleByteMappings.get( code );
         }
         else if( length == 2 )
         {
-            int intKey = (code[offset]+256)%256;
-            intKey <<= 8;
-            intKey += (code[offset+1]+256)%256;
-            result = doubleByteMappings.get( intKey );
+            result = doubleByteMappings.get( code );
         }
-
+        if (result == null)
+        {
+            result = lookupCID(code);
+        }
         return result;
+    }
+    
+    /**
+     * This will perform a lookup into the CID map.
+     *
+     * @param cid The CID used to lookup.
+     *
+     * @return The string that matches the lookup.
+     */
+    public String lookupCID(int cid) {
+        if (cid2charMappings.containsKey(cid)) {
+            return cid2charMappings.get(cid);
+        } else {
+            for (CIDRange range : cidRanges) {
+                int ch = range.unmap(cid);
+                if (ch != -1) {
+                    return Character.toString((char) ch);
+                }
+            }
+            return null;
+        }
     }
 
     /**
@@ -121,20 +155,42 @@ public class CMap
      *
      * @param code The code used to lookup.
      *
-     * @return The string that matches the lookup.
+     * @return The CID that matches the lookup.
      */
-    public String lookupCID(int code) {
-        if (cidMappings.containsKey(code)) {
-            return cidMappings.get(code);
-        } else {
-            for (CIDRange range : cidRanges) {
-                int ch = range.unmap(code);
-                if (ch != -1) {
-                    return Character.toString((char) ch);
+    public int lookupCID(byte[] code, int offset, int length) {
+        if (isInCodeSpaceRanges(code,offset,length)) {
+            int codeAsInt = getCodeFromArray(code, offset, length);
+            if (char2CIDMappings.containsKey(codeAsInt)) {
+                return char2CIDMappings.get(codeAsInt);
+            } else {
+                for (CIDRange range : cidRanges) {
+                    int ch = range.map((char)codeAsInt);
+                    if (ch != -1) {
+                        return ch;
+                    }
                 }
+                return -1;
             }
-            return null;
         }
+        return -1;
+    }
+    
+    /**
+     * Convert the given part of a byte array to an integer.
+     * @param data the byte array
+     * @param offset The offset into the byte array.
+     * @param length The length of the data we are getting.
+     * @return the resulting integer
+     */
+    private int getCodeFromArray( byte[] data, int offset, int length )
+    {
+        int code = 0;
+        for( int i=0; i<length; i++ )
+        {
+            code <<= 8;
+            code |= (data[offset+i]+256)%256;
+        }
+        return code;
     }
 
     /**
@@ -147,15 +203,15 @@ public class CMap
      */
     public void addMapping( byte[] src, String dest ) throws IOException
     {
-        if( src.length == 1 )
+        
+        int srcLength = src.length;
+        int intSrc = getCodeFromArray(src, 0, srcLength);
+        if( srcLength == 1 )
         {
-            singleByteMappings.put( (src[0]+256)%256 , dest );
+            singleByteMappings.put( intSrc, dest );
         }
-        else if( src.length == 2 )
+        else if( srcLength == 2 )
         {
-            int intSrc = (src[0]+256)%256;
-            intSrc <<= 8;
-            intSrc += (src[1]+256)%256;
             doubleByteMappings.put( intSrc , dest );
         }
         else
@@ -174,9 +230,17 @@ public class CMap
      */
     public void addCIDMapping( int src, String dest ) throws IOException
     {
-        cidMappings.put( src , dest );
+        cid2charMappings.put( src, dest );
+        char2CIDMappings.put( dest, src );
     }
 
+    /**
+     * This will add a CID Range.
+     *
+     * @param src The CID Range to be added.
+     * @param dest The starting cid.
+     *
+     */
     public void addCIDRange(char from, char to, int cid) {
         cidRanges.add(0, new CIDRange(from, to, cid));
     }
