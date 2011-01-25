@@ -126,10 +126,10 @@ public class DocumentEncryption
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
                 BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
                 md.update( time.toByteArray() );
-                md.update( ownerPassword.getBytes() );
-                md.update( userPassword.getBytes() );
+                md.update( ownerPassword.getBytes("ISO-8859-1") );
+                md.update( userPassword.getBytes("ISO-8859-1") );
                 md.update( document.toString().getBytes() );
-                byte[] id = md.digest( this.toString().getBytes() );
+                byte[] id = md.digest( this.toString().getBytes("ISO-8859-1") );
                 COSString idString = new COSString();
                 idString.append( id );
                 idArray.add( idString );
@@ -193,24 +193,24 @@ public class DocumentEncryption
         byte[] o = encParameters.getOwnerKey();
 
         boolean isUserPassword =
-            encryption.isUserPassword( password.getBytes(), u,
+            encryption.isUserPassword( password.getBytes("ISO-8859-1"), u,
                 o, permissions, id.getBytes(), revision, length );
         boolean isOwnerPassword =
-            encryption.isOwnerPassword( password.getBytes(), u,
+            encryption.isOwnerPassword( password.getBytes("ISO-8859-1"), u,
                 o, permissions, id.getBytes(), revision, length );
 
         if( isUserPassword )
         {
             encryptionKey =
                 encryption.computeEncryptedKey(
-                    password.getBytes(), o,
+                    password.getBytes("ISO-8859-1"), o,
                     permissions, id.getBytes(), revision, length );
         }
         else if( isOwnerPassword )
         {
             byte[] computedUserPassword =
                 encryption.getUserPassword(
-                    password.getBytes(),
+                    password.getBytes("ISO-8859-1"),
                     o,
                     revision,
                     length );

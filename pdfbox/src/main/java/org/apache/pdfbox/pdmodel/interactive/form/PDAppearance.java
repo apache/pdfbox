@@ -276,9 +276,9 @@ public class PDAppearance
                     ContentStreamWriter writer = new ContentStreamWriter( output );
                     writer.writeTokens( tokens );
 
-                    output.write( " /Tx BMC\n".getBytes() );
+                    output.write( " /Tx BMC\n".getBytes("ISO-8859-1") );
                     insertGeneratedAppearance( widget, output, pdFont, tokens, appearanceStream );
-                    output.write( " EMC".getBytes() );
+                    output.write( " EMC".getBytes("ISO-8859-1") );
                     writeToStream( output.toByteArray(), appearanceStream );
                 }
                 else
@@ -308,7 +308,7 @@ public class PDAppearance
                                 foundString = true;
                                 COSString drawnString =((COSString)tokens.get(i));
                                 drawnString.reset();
-                                drawnString.append( apValue.getBytes() );
+                                drawnString.append( apValue.getBytes("ISO-8859-1") );
                             }
                         }
                         int setFontIndex = tokens.indexOf( PDFOperator.getOperator( "Tf" ));
@@ -330,7 +330,7 @@ public class PDAppearance
                             {
                                 writer.writeTokens( tokens );
                             }
-                            output.write( "\n".getBytes() );
+                            output.write( "\n".getBytes("ISO-8859-1") );
                             insertGeneratedAppearance( widget, output,
                                 pdFont, tokens, appearanceStream );
                             if( emcIndex != -1 )
@@ -364,7 +364,7 @@ public class PDAppearance
         if( defaultAppearance != null )
         {
             String daString = defaultAppearance.getString();
-            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes() ), null );
+            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes("ISO-8859-1") ), null );
             daParser.parse();
             List daTokens = daParser.getTokens();
             fontSize = calculateFontSize( pdFont, boundingBox, tokens, daTokens );
@@ -424,7 +424,7 @@ public class PDAppearance
             {
                 String data = da.getString();
                 PDFStreamParser streamParser = new PDFStreamParser(
-                        new ByteArrayInputStream( data.getBytes() ), null );
+                        new ByteArrayInputStream( data.getBytes("ISO-8859-1") ), null );
                 streamParser.parse();
                 tokens = streamParser.getTokens();
             }

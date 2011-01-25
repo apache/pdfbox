@@ -507,7 +507,7 @@ public class PDDocument implements Pageable
                 COSString documentID = (COSString)document.getDocumentID().get(0);
                 PDStandardEncryption standard = (PDStandardEncryption)encryptionDictionary;
                 retval = encryptor.isUserPassword(
-                    password.getBytes(),
+                    password.getBytes("ISO-8859-1"),
                     standard.getUserKey(),
                     standard.getOwnerKey(),
                     standard.getPermissions(),
@@ -558,7 +558,7 @@ public class PDDocument implements Pageable
                 COSString documentID = (COSString)document.getDocumentID().get( 0 );
                 PDStandardEncryption standard = (PDStandardEncryption)encryptionDictionary;
                 retval = encryptor.isOwnerPassword(
-                    password.getBytes(),
+                    password.getBytes("ISO-8859-1"),
                     standard.getUserKey(),
                     standard.getOwnerKey(),
                     standard.getPermissions(),

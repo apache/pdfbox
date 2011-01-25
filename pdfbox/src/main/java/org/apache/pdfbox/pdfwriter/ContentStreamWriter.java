@@ -50,9 +50,9 @@ public class ContentStreamWriter
     public static final byte[] SPACE = new byte[] { 32 };
 
     /**
-     * standard line separator on this platform.
+     * standard line separator
      */
-    public static final byte[] EOL = System.getProperty("line.separator").getBytes();
+    public static final byte[] EOL = new byte[] { 0x0A };
 
     /**
      * This will create a new content stream writer.
@@ -140,7 +140,7 @@ public class ContentStreamWriter
             PDFOperator op = (PDFOperator)o;
             if( op.getOperation().equals( "BI" ) )
             {
-                output.write( "BI".getBytes() );
+                output.write( "BI".getBytes("ISO-8859-1") );
                 ImageParameters params = op.getImageParameters();
                 COSDictionary dic = params.getDictionary();
                 for( COSName key : dic.keySet() )
@@ -151,13 +151,13 @@ public class ContentStreamWriter
                     writeObject( value );
                     output.write( EOL );
                 }
-                output.write( "ID".getBytes() );
+                output.write( "ID".getBytes("ISO-8859-1") );
                 output.write( EOL );
                 output.write( op.getImageData() );
             }
             else
             {
-                output.write( op.getOperation().getBytes() );
+                output.write( op.getOperation().getBytes("ISO-8859-1") );
                 output.write( EOL );
             }
         }

@@ -298,7 +298,7 @@ public abstract class BaseParser
                     String potentialDEF = readString();
                     if( !potentialDEF.equals( DEF ) )
                     {
-                        pdfSource.unread( potentialDEF.getBytes() );
+                        pdfSource.unread( potentialDEF.getBytes("ISO-8859-1") );
                     }
                     else
                     {
@@ -410,7 +410,7 @@ public abstract class BaseParser
                  */
                 if (endStream.startsWith("endobj"))
                 {
-                    byte[] endobjarray = endStream.getBytes();
+                    byte[] endobjarray = endStream.getBytes("ISO-8859-1");
                     pdfSource.unread(endobjarray);
                 }
                 /*
@@ -423,7 +423,7 @@ public abstract class BaseParser
                 {
                     String extra = endStream.substring(9, endStream.length());
                     endStream = endStream.substring(0, 9);
-                    byte[] array = extra.getBytes();
+                    byte[] array = extra.getBytes("ISO-8859-1");
                     pdfSource.unread(array);
                 }
                 else
@@ -835,7 +835,7 @@ public abstract class BaseParser
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
-                pdfSource.unread(isThisTheEnd.getBytes());
+                pdfSource.unread(isThisTheEnd.getBytes("ISO-8859-1"));
                 if("endobj".equals(isThisTheEnd) || "endstream".equals(isThisTheEnd))
                     return po;
             }
@@ -944,7 +944,7 @@ public abstract class BaseParser
         char c = (char)pdfSource.peek();
         if( c == 't' )
         {
-            String trueString = new String( pdfSource.readFully( 4 ) );
+            String trueString = new String( pdfSource.readFully( 4 ), "ISO-8859-1" );
             if( !trueString.equals( "true" ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "'" );
@@ -956,7 +956,7 @@ public abstract class BaseParser
         }
         else if( c == 'f' )
         {
-            String falseString = new String( pdfSource.readFully( 5 ) );
+            String falseString = new String( pdfSource.readFully( 5 ), "ISO-8859-1" );
             if( !falseString.equals( "false" ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "'" );
@@ -1029,7 +1029,7 @@ public abstract class BaseParser
         }
         case 't':
         {
-            String trueString = new String( pdfSource.readFully(4) );
+            String trueString = new String( pdfSource.readFully(4), "ISO-8859-1" );
             if( trueString.equals( "true" ) )
             {
                 retval = COSBoolean.TRUE;
@@ -1042,7 +1042,7 @@ public abstract class BaseParser
         }
         case 'f':
         {
-            String falseString = new String( pdfSource.readFully(5) );
+            String falseString = new String( pdfSource.readFully(5), "ISO-8859-1" );
             if( falseString.equals( "false" ) )
             {
                 retval = COSBoolean.FALSE;
@@ -1101,7 +1101,7 @@ public abstract class BaseParser
                 
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if("endobj".equals(badString) || "endstream".equals(badString))
-                    pdfSource.unread(badString.getBytes());
+                    pdfSource.unread(badString.getBytes("ISO-8859-1"));
             }
         }
         }
@@ -1160,7 +1160,7 @@ public abstract class BaseParser
             }
             else
             {
-                pdfSource.unread(buffer.toString().getBytes());
+                pdfSource.unread(buffer.toString().getBytes("ISO-8859-1"));
                 throw new IOException( "Error: Expected to read '" + theString +
                         "' instead started reading '" +buffer.toString() + "'" );
             }
@@ -1380,7 +1380,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            pdfSource.unread(intBuffer.toString().getBytes());
+            pdfSource.unread(intBuffer.toString().getBytes("ISO-8859-1"));
             throw new IOException( "Error: Expected an integer type, actual='" + intBuffer + "'" );
         }
         return retval;

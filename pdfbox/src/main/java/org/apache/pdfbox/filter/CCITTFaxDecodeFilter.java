@@ -186,7 +186,7 @@ public class CCITTFaxDecodeFilter implements Filter
 
         // SOFTWARE 0x0131
         // minimum 4 chars
-        writeTagSoftware(result, "pdfbox".getBytes());
+        writeTagSoftware(result, "pdfbox".getBytes("ISO-8859-1"));
 
         // DATE AND TIME 0x0132
         writeTagDateTime(result, new Date());
@@ -721,7 +721,7 @@ public class CCITTFaxDecodeFilter implements Filter
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
         String datetime = sdf.format(date);
-        tailer.write(datetime.getBytes());
+        tailer.write(datetime.getBytes("ISO-8859-1"));
         tailer.write(0);
 
         tailingBytesCount += 20;

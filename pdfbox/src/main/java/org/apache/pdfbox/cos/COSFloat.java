@@ -164,6 +164,6 @@ public class COSFloat extends COSNumber
         DecimalFormatSymbols symbols = formatDecimal.getDecimalFormatSymbols();
         symbols.setDecimalSeparator( '.' );
         formatDecimal.setDecimalFormatSymbols( symbols );
-        output.write(formatDecimal.format( value ).getBytes());
+        output.write(formatDecimal.format( value ).getBytes("ISO-8859-1"));
     }
 }

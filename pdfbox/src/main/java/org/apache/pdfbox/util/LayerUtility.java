@@ -86,13 +86,13 @@ public class LayerUtility
         COSStream saveGraphicsStateStream = new COSStream(saveGraphicsStateDic,
                 getDocument().getDocument().getScratchFile());
         OutputStream saveStream = saveGraphicsStateStream.createUnfilteredStream();
-        saveStream.write("q\n".getBytes());
+        saveStream.write("q\n".getBytes("ISO-8859-1"));
         saveStream.flush();
 
         COSStream restoreGraphicsStateStream = new COSStream(saveGraphicsStateDic,
                 getDocument().getDocument().getScratchFile());
         OutputStream restoreStream = restoreGraphicsStateStream.createUnfilteredStream();
-        restoreStream.write("Q\n".getBytes());
+        restoreStream.write("Q\n".getBytes("ISO-8859-1"));
         restoreStream.flush();
 
         //Wrap the existing page's content in a save/restore pair (q/Q) to have a controlled

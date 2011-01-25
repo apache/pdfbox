@@ -335,7 +335,7 @@ public class PDFParser extends BaseParser
             {
                 String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, PDF_HEADER.length()+3);
-                pdfSource.unread(headerGarbage.getBytes());
+                pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
             }
         }
         else 
@@ -344,7 +344,7 @@ public class PDFParser extends BaseParser
             {
                 String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length()) + "\n";
                 header = header.substring(0, FDF_HEADER.length()+3);
-                pdfSource.unread(headerGarbage.getBytes());
+                pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
             }
         }
         document.setHeaderString(header);
@@ -474,7 +474,7 @@ public class PDFParser extends BaseParser
                     log.warn("expected='%%EOF' actual='" + eof + "'");
                     // if we're not at the end of a file, just put it back and move on
                     if(!pdfSource.isEOF())
-                        pdfSource.unread(eof.getBytes());
+                        pdfSource.unread(eof.getBytes("ISO-8859-1"));
                 }
                 isEndOfFile = true; 
             }
@@ -535,7 +535,7 @@ public class PDFParser extends BaseParser
             
             if( endObjectKey.equals( "stream" ) )
             {
-                pdfSource.unread( endObjectKey.getBytes() );
+                pdfSource.unread( endObjectKey.getBytes("ISO-8859-1") );
                 pdfSource.unread( ' ' );
                 if( pb instanceof COSDictionary )
                 {
@@ -576,7 +576,7 @@ public class PDFParser extends BaseParser
                      * and not part of the endobj keyword. Ex. Some files would have "endobj28"
                      * instead of "endobj"
                      */
-                    pdfSource.unread( endObjectKey.substring( 6 ).getBytes() );
+                    pdfSource.unread( endObjectKey.substring( 6 ).getBytes("ISO-8859-1") );
                 } 
                 else if(endObjectKey.trim().endsWith("endobj"))
                 {
@@ -592,7 +592,7 @@ public class PDFParser extends BaseParser
                     //It is possible that the endobj is missing, there
                     //are several PDFs out there that do that so. Unread
                     //and assume that endobj was missing
-                    pdfSource.unread( endObjectKey.getBytes() );
+                    pdfSource.unread( endObjectKey.getBytes("ISO-8859-1") );
                 }
             }
             skipSpaces();
@@ -744,7 +744,7 @@ public class PDFParser extends BaseParser
             // Acrobat reader can also deal with this.
             if (nextLine.startsWith("trailer")) 
             {
-                byte[] b = nextLine.getBytes();
+                byte[] b = nextLine.getBytes("ISO-8859-1");
                 int len = "trailer".length();
                 pdfSource.unread('\n');
                 pdfSource.unread(b, len, b.length-len);

@@ -113,7 +113,7 @@ public class PDNamedDestination extends PDDestination
         {
             COSString string = ((COSString)namedDestination);
             string.reset();
-            string.append( dest.getBytes() );
+            string.append( dest.getBytes("ISO-8859-1") );
         }
         else if( dest == null )
         {
