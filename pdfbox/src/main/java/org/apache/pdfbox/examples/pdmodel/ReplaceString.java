@@ -95,7 +95,7 @@ public class ReplaceString
                             String string = previous.getString();
                             string = string.replaceFirst( strToFind, message );
                             previous.reset();
-                            previous.append( string.getBytes() );
+                            previous.append( string.getBytes("ISO-8859-1") );
                         }
                         else if( op.getOperation().equals( "TJ" ) )
                         {
@@ -109,7 +109,7 @@ public class ReplaceString
                                     String string = cosString.getString();
                                     string = string.replaceFirst( strToFind, message );
                                     cosString.reset();
-                                    cosString.append( string.getBytes() );
+                                    cosString.append( string.getBytes("ISO-8859-1") );
                                 }
                             }
                         }
