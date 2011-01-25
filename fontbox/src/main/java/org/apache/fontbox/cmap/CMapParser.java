@@ -566,7 +566,7 @@ public class CMapParser
         String retval = null;
         if( bytes.length == 1 )
         {
-            retval = new String( bytes );
+            retval = new String( bytes, "ISO-8859-1" );
         }
         else
         {
