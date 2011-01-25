@@ -226,12 +226,12 @@ public class Overlay
         COSDictionary saveGraphicsStateDic = new COSDictionary();
         saveGraphicsStateStream = new COSStream( saveGraphicsStateDic, pdfDocument.getDocument().getScratchFile() );
         OutputStream saveStream = saveGraphicsStateStream.createUnfilteredStream();
-        saveStream.write( " q\n".getBytes() );
+        saveStream.write( " q\n".getBytes("ISO-8859-1") );
         saveStream.flush();
 
         restoreGraphicsStateStream = new COSStream( saveGraphicsStateDic, pdfDocument.getDocument().getScratchFile() );
         OutputStream restoreStream = restoreGraphicsStateStream.createUnfilteredStream();
-        restoreStream.write( " Q\n".getBytes() );
+        restoreStream.write( " Q\n".getBytes("ISO-8859-1") );
         restoreStream.flush();
 
 
@@ -329,7 +329,7 @@ public class Overlay
                         String objectName = sbObjectName.toString().substring(1);
                         String newObjectName = objectName + "overlay";
                         baos.write('/');
-                        baos.write(newObjectName.getBytes());
+                        baos.write(newObjectName.getBytes("ISO-8859-1"));
 
                         objectNameMap.put(objectName, COSName.getPDFName(newObjectName));
 

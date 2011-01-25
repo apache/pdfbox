@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdfwriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -50,6 +51,7 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.util.StringUtil;
 
 /**
  * this class acts on a in-memory representation of a pdf document.
@@ -67,24 +69,24 @@ public class COSWriter implements ICOSVisitor
     /**
      * The dictionary open token.
      */
-    public static final byte[] DICT_OPEN = "<<".getBytes();
+    public static final byte[] DICT_OPEN = StringUtil.getBytes("<<");
     /**
      * The dictionary close token.
      */
-    public static final byte[] DICT_CLOSE = ">>".getBytes();
+    public static final byte[] DICT_CLOSE = StringUtil.getBytes(">>");
     /**
      * space character.
      */
-    public static final byte[] SPACE = " ".getBytes();
+    public static final byte[] SPACE = StringUtil.getBytes(" ");
     /**
      * The start to a PDF comment.
      */
-    public static final byte[] COMMENT = "%".getBytes();
+    public static final byte[] COMMENT = StringUtil.getBytes("%");
 
     /**
      * The output version of the PDF.
      */
-    public static final byte[] VERSION = "PDF-1.4".getBytes();
+    public static final byte[] VERSION = StringUtil.getBytes("PDF-1.4");
     /**
      * Garbage bytes used to create the PDF header.
      */
@@ -92,57 +94,57 @@ public class COSWriter implements ICOSVisitor
     /**
      * The EOF constant.
      */
-    public static final byte[] EOF = "%%EOF".getBytes();
+    public static final byte[] EOF = StringUtil.getBytes("%%EOF");
     // pdf tokens
 
     /**
      * The reference token.
      */
-    public static final byte[] REFERENCE = "R".getBytes();
+    public static final byte[] REFERENCE = StringUtil.getBytes("R");
     /**
      * The XREF token.
      */
-    public static final byte[] XREF = "xref".getBytes();
+    public static final byte[] XREF = StringUtil.getBytes("xref");
     /**
      * The xref free token.
      */
-    public static final byte[] XREF_FREE = "f".getBytes();
+    public static final byte[] XREF_FREE = StringUtil.getBytes("f");
     /**
      * The xref used token.
      */
-    public static final byte[] XREF_USED = "n".getBytes();
+    public static final byte[] XREF_USED = StringUtil.getBytes("n");
     /**
      * The trailer token.
      */
-    public static final byte[] TRAILER = "trailer".getBytes();
+    public static final byte[] TRAILER = StringUtil.getBytes("trailer");
     /**
      * The start xref token.
      */
-    public static final byte[] STARTXREF = "startxref".getBytes();
+    public static final byte[] STARTXREF = StringUtil.getBytes("startxref");
     /**
      * The starting object token.
      */
-    public static final byte[] OBJ = "obj".getBytes();
+    public static final byte[] OBJ = StringUtil.getBytes("obj");
     /**
      * The end object token.
      */
-    public static final byte[] ENDOBJ = "endobj".getBytes();
+    public static final byte[] ENDOBJ = StringUtil.getBytes("endobj");
     /**
      * The array open token.
      */
-    public static final byte[] ARRAY_OPEN = "[".getBytes();
+    public static final byte[] ARRAY_OPEN = StringUtil.getBytes("[");
     /**
      * The array close token.
      */
-    public static final byte[] ARRAY_CLOSE = "]".getBytes();
+    public static final byte[] ARRAY_CLOSE = StringUtil.getBytes("]");
     /**
      * The open stream token.
      */
-    public static final byte[] STREAM = "stream".getBytes();
+    public static final byte[] STREAM = StringUtil.getBytes("stream");
     /**
      * The close stream token.
      */
-    public static final byte[] ENDSTREAM = "endstream".getBytes();
+    public static final byte[] ENDSTREAM = StringUtil.getBytes("endstream");
 
     private NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
     /**
@@ -417,9 +419,9 @@ public class COSWriter implements ICOSVisitor
             // add a x ref entry
             addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
             // write the object
-            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes());
+            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes());
+            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(OBJ);
             getStandardOutput().writeEOL();
@@ -443,7 +445,7 @@ public class COSWriter implements ICOSVisitor
      */
     protected void doWriteHeader(COSDocument doc) throws IOException
     {
-        getStandardOutput().write( doc.getHeaderString().getBytes() );
+        getStandardOutput().write( doc.getHeaderString().getBytes("ISO-8859-1") );
         getStandardOutput().writeEOL();
         getStandardOutput().write(COMMENT);
         getStandardOutput().write(GARBAGE);
@@ -481,7 +483,7 @@ public class COSWriter implements ICOSVisitor
 
         getStandardOutput().write(STARTXREF);
         getStandardOutput().writeEOL();
-        getStandardOutput().write(String.valueOf(getStartxref()).getBytes());
+        getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
         getStandardOutput().writeEOL();
         getStandardOutput().write(EOF);
     }
@@ -513,16 +515,16 @@ public class COSWriter implements ICOSVisitor
         getStandardOutput().writeEOL();
         // write start object number and object count for this x ref section
         // we assume starting from scratch
-        getStandardOutput().write(String.valueOf(0).getBytes());
+        getStandardOutput().write(String.valueOf(0).getBytes("ISO-8859-1"));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(lastEntry.getKey().getNumber() + 1).getBytes());
+        getStandardOutput().write(String.valueOf(lastEntry.getKey().getNumber() + 1).getBytes("ISO-8859-1"));
         getStandardOutput().writeEOL();
         // write initial start object with ref to first deleted object and magic generation number
         offset = formatXrefOffset.format(0);
         generation = formatXrefGeneration.format(65535);
-        getStandardOutput().write(offset.getBytes());
+        getStandardOutput().write(offset.getBytes("ISO-8859-1"));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(generation.getBytes());
+        getStandardOutput().write(generation.getBytes("ISO-8859-1"));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(XREF_FREE);
         getStandardOutput().writeCRLF();
@@ -535,9 +537,9 @@ public class COSWriter implements ICOSVisitor
             {
                 offset = formatXrefOffset.format(0);
                 generation = formatXrefGeneration.format(65535);
-                getStandardOutput().write(offset.getBytes());
+                getStandardOutput().write(offset.getBytes("ISO-8859-1"));
                 getStandardOutput().write(SPACE);
-                getStandardOutput().write(generation.getBytes());
+                getStandardOutput().write(generation.getBytes("ISO-8859-1"));
                 getStandardOutput().write(SPACE);
                 getStandardOutput().write(XREF_FREE);
                 getStandardOutput().writeCRLF();
@@ -546,9 +548,9 @@ public class COSWriter implements ICOSVisitor
             lastObjectNumber = entry.getKey().getNumber();
             offset = formatXrefOffset.format(entry.getOffset());
             generation = formatXrefGeneration.format(entry.getKey().getGeneration());
-            getStandardOutput().write(offset.getBytes());
+            getStandardOutput().write(offset.getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
-            getStandardOutput().write(generation.getBytes());
+            getStandardOutput().write(generation.getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(entry.isFree() ? XREF_FREE : XREF_USED);
             getStandardOutput().writeCRLF();
@@ -877,9 +879,9 @@ public class COSWriter implements ICOSVisitor
         try
         {
             COSObjectKey  key = getObjectKey(obj);
-            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes());
+            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes());
+            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes("ISO-8859-1"));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(REFERENCE);
         }
@@ -1040,14 +1042,14 @@ public class COSWriter implements ICOSVisitor
                 //algorithm says to use time/path/size/values in doc to generate
                 //the id.  We don't have path or size, so do the best we can
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
-                md.update( Long.toString( System.currentTimeMillis()).getBytes() );
+                md.update( Long.toString( System.currentTimeMillis()).getBytes("ISO-8859-1") );
                 COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
                 if( info != null )
                 {
                     Iterator<COSBase> values = info.getValues().iterator();
                     while( values.hasNext() )
                     {
-                        md.update( values.next().toString().getBytes() );
+                        md.update( values.next().toString().getBytes("ISO-8859-1") );
                     }
                 }
                 idArray = new COSArray();
@@ -1057,6 +1059,10 @@ public class COSWriter implements ICOSVisitor
                 trailer.setItem( COSName.ID, idArray );
             }
             catch( NoSuchAlgorithmException e )
+            {
+                throw new COSVisitorException( e );
+            }
+            catch( UnsupportedEncodingException e )
             {
                 throw new COSVisitorException( e );
             }

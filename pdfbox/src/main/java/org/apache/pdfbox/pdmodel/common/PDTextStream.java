@@ -137,7 +137,7 @@ public class PDTextStream implements COSObjectable
             {
                 out.write( buffer, 0, amountRead );
             }
-            retval = new String( out.toByteArray() );
+            retval = new String( out.toByteArray(), "ISO-8859-1" );
         }
         return retval;
     }

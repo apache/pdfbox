@@ -485,8 +485,7 @@ public class PDStream implements COSObjectable
      * A convenience method to get this stream as a string.  Uses
      * the default system encoding.
      *
-     * @return a String representation of this (input) stream, with the
-     * platform default encoding.
+     * @return a String representation of this (input) stream.
      *
      * @throws IOException if there is an error while converting the stream
      *                     to a string.
@@ -494,7 +493,7 @@ public class PDStream implements COSObjectable
     public String getInputStreamAsString() throws IOException
     {
         byte[] bStream = getByteArray();
-        return new String(bStream);
+        return new String(bStream, "ISO-8859-1");
     }
 
     /**

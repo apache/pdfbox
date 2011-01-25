@@ -188,7 +188,7 @@ public class StandardSecurityHandler extends SecurityHandler
 
         boolean isUserPassword =
             isUserPassword(
-                password.getBytes(),
+                password.getBytes("ISO-8859-1"),
                 u,
                 o,
                 dicPermissions,
@@ -198,7 +198,7 @@ public class StandardSecurityHandler extends SecurityHandler
                 encryptMetadata);
         boolean isOwnerPassword =
             isOwnerPassword(
-                password.getBytes(),
+                password.getBytes("ISO-8859-1"),
                 u,
                 o,
                 dicPermissions,
@@ -212,7 +212,7 @@ public class StandardSecurityHandler extends SecurityHandler
             currentAccessPermission = new AccessPermission( dicPermissions );
             encryptionKey =
                 computeEncryptedKey(
-                    password.getBytes(),
+                    password.getBytes("ISO-8859-1"),
                     o,
                     dicPermissions,
                     documentIDBytes,
@@ -223,7 +223,7 @@ public class StandardSecurityHandler extends SecurityHandler
         else if( isOwnerPassword )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
-            byte[] computedUserPassword = getUserPassword(password.getBytes(),o,dicRevision,dicLength );
+            byte[] computedUserPassword = getUserPassword(password.getBytes("ISO-8859-1"),o,dicRevision,dicLength );
             encryptionKey =
                 computeEncryptedKey(
                     computedUserPassword,
@@ -309,10 +309,10 @@ public class StandardSecurityHandler extends SecurityHandler
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
                 BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
                 md.update( time.toByteArray() );
-                md.update( ownerPassword.getBytes() );
-                md.update( userPassword.getBytes() );
+                md.update( ownerPassword.getBytes("ISO-8859-1") );
+                md.update( userPassword.getBytes("ISO-8859-1") );
                 md.update( document.getDocument().toString().getBytes() );
-                byte[] id = md.digest( this.toString().getBytes() );
+                byte[] id = md.digest( this.toString().getBytes("ISO-8859-1") );
                 COSString idString = new COSString();
                 idString.append( id );
                 idArray.add( idString );
@@ -835,7 +835,7 @@ public class StandardSecurityHandler extends SecurityHandler
             boolean encryptMetadata )
             throws CryptographyException, IOException
             {
-                return isUserPassword(password.getBytes(),
+                return isUserPassword(password.getBytes("ISO-8859-1"),
                         u,o,permissions, id, encRevision, length, encryptMetadata);
             }
 
@@ -866,7 +866,7 @@ public class StandardSecurityHandler extends SecurityHandler
             boolean encryptMetadata)
             throws CryptographyException, IOException
             {
-                return isOwnerPassword(password.getBytes(),
+                return isOwnerPassword(password.getBytes("ISO-8859-1"),
                         u,o,permissions, id, encRevision, length, encryptMetadata);
             }
 

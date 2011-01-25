@@ -496,7 +496,15 @@ public abstract class PDFont implements COSObjectable
     {
         for( int i=0; i<256; i++ )
         {
-            SINGLE_CHAR_STRING[i] = new String( new byte[] {(byte)i} );
+            try
+            {
+                SINGLE_CHAR_STRING[i] = new String( new byte[] {(byte)i}, "ISO-8859-1" );
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                // Nothing should happen here
+                e.printStackTrace();
+            }
             for( int j=0; j<256; j++ )
             {
                 try

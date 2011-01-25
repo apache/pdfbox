@@ -188,7 +188,7 @@ public class COSStreamArray extends COSStream
     public InputStream getUnfilteredStream() throws IOException
     {
         Vector<InputStream> inputStreams = new Vector<InputStream>();
-        byte[] inbetweenStreamBytes = "\n".getBytes();
+        byte[] inbetweenStreamBytes = "\n".getBytes("ISO-8859-1");
 
         for( int i=0;i<streams.size(); i++ )
         {

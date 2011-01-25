@@ -229,7 +229,7 @@ public class COSInteger extends COSNumber
      */
     public void writePDF( OutputStream output ) throws IOException
     {
-        output.write(String.valueOf(value).getBytes());
+        output.write(String.valueOf(value).getBytes("ISO-8859-1"));
     }
 
 }
