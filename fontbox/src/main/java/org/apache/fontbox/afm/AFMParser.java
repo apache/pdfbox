@@ -705,7 +705,7 @@ public class AFMParser
                 throw new IOException( "Error parsing AFM file:" + e );
             }
         }
-        return new String( data );
+        return new String( data, "ISO-8859-1" );
     }
 
     /**
