@@ -1812,7 +1812,7 @@ public class PDFTextStripper extends PDFStreamEngine
         int numberOfStrings = line.size();
         if (isRtlDominant) {
             for(int i=numberOfStrings-1; i>=0; i--){
-                if (i > 1)
+                if (i < numberOfStrings-1)
                     writeWordSeparator();
                 writeString(line.get(i));
             }
