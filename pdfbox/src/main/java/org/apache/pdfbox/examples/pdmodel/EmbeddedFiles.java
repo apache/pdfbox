@@ -90,7 +90,7 @@ public class EmbeddedFiles
             PDComplexFileSpecification fs = new PDComplexFileSpecification();
             fs.setFile( "Test.txt" );
             //create a dummy file stream, this would probably normally be a FileInputStream
-            byte[] data = "This is the contents of the embedded file".getBytes();
+            byte[] data = "This is the contents of the embedded file".getBytes("ISO-8859-1");
             ByteArrayInputStream fakeFile =
                 new ByteArrayInputStream( data );
             PDEmbeddedFile ef = new PDEmbeddedFile(doc, fakeFile );
