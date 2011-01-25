@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -421,7 +422,14 @@ public class XMLUtil
         StringWriter writer = new StringWriter();
         Result result = new StreamResult(writer);
         DOMSource source = new DOMSource(doc);
-        transformer.transform(source, result);               
-        return writer.getBuffer().toString().getBytes();
+        transformer.transform(source, result);
+        try
+        {               
+            return writer.getBuffer().toString().getBytes(encoding);
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new TransformerException("Unsupported Encoding", e);
+        }
     }
 }
