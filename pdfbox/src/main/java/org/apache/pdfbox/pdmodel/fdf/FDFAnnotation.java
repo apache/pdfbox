@@ -23,7 +23,6 @@ import java.util.Calendar;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 
@@ -304,7 +303,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isInvisible()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_INVISIBLE );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_INVISIBLE );
     }
 
     /**
@@ -314,7 +313,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setInvisible( boolean invisible )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_INVISIBLE, invisible );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_INVISIBLE, invisible );
     }
 
     /**
@@ -324,7 +323,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isHidden()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_HIDDEN );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_HIDDEN );
     }
 
     /**
@@ -334,7 +333,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setHidden( boolean hidden )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_HIDDEN, hidden );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_HIDDEN, hidden );
     }
 
     /**
@@ -344,7 +343,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isPrinted()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_PRINTED );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_PRINTED );
     }
 
     /**
@@ -354,7 +353,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setPrinted( boolean printed )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_PRINTED, printed );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_PRINTED, printed );
     }
 
     /**
@@ -364,7 +363,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoZoom()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_ZOOM );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_NO_ZOOM );
     }
 
     /**
@@ -374,7 +373,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoZoom( boolean noZoom )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_ZOOM, noZoom );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_NO_ZOOM, noZoom );
     }
 
     /**
@@ -384,7 +383,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoRotate()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_ROTATE );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_NO_ROTATE );
     }
 
     /**
@@ -394,7 +393,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoRotate( boolean noRotate )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_ROTATE, noRotate );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_NO_ROTATE, noRotate );
     }
 
     /**
@@ -404,7 +403,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoView()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_NO_VIEW );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_NO_VIEW );
     }
 
     /**
@@ -414,7 +413,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoView( boolean noView )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_NO_VIEW, noView );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_NO_VIEW, noView );
     }
 
     /**
@@ -424,7 +423,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isReadOnly()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_READ_ONLY );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_READ_ONLY );
     }
 
     /**
@@ -434,7 +433,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setReadOnly( boolean readOnly )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_READ_ONLY, readOnly );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_READ_ONLY, readOnly );
     }
 
     /**
@@ -444,7 +443,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isLocked()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_LOCKED );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_LOCKED );
     }
 
     /**
@@ -454,7 +453,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setLocked( boolean locked )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_LOCKED, locked );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_LOCKED, locked );
     }
 
     /**
@@ -464,7 +463,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isToggleNoView()
     {
-        return BitFlagHelper.getFlag( annot, "F", PDAnnotation.FLAG_TOGGLE_NO_VIEW );
+        return BitFlagHelper.getFlag( annot, COSName.F, PDAnnotation.FLAG_TOGGLE_NO_VIEW );
     }
 
     /**
@@ -474,7 +473,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setToggleNoView( boolean toggleNoView )
     {
-        BitFlagHelper.setFlag( annot, "F", PDAnnotation.FLAG_TOGGLE_NO_VIEW, toggleNoView );
+        BitFlagHelper.setFlag( annot, COSName.F, PDAnnotation.FLAG_TOGGLE_NO_VIEW, toggleNoView );
     }
 
     /**
@@ -484,7 +483,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setName( String name )
     {
-        annot.setString( "NM", name );
+        annot.setString( COSName.NM, name );
     }
 
     /**
@@ -494,7 +493,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public String getName()
     {
-        return annot.getString( "NM" );
+        return annot.getString( COSName.NM );
     }
 
     /**
@@ -504,7 +503,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setRectangle( PDRectangle rectangle )
     {
-        annot.setItem( "Rect", rectangle );
+        annot.setItem( COSName.RECT, rectangle );
     }
 
     /**
@@ -515,7 +514,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public PDRectangle getRectangle()
     {
         PDRectangle retval = null;
-        COSArray rectArray = (COSArray)annot.getDictionaryObject( "Rect" );
+        COSArray rectArray = (COSArray)annot.getDictionaryObject( COSName.RECT );
         if( rectArray != null )
         {
             retval = new PDRectangle( rectArray );
@@ -531,7 +530,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setTitle( String title )
     {
-        annot.setString( "T", title );
+        annot.setString( COSName.T, title );
     }
 
     /**
@@ -541,7 +540,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public String getTitle()
     {
-        return annot.getString( "T" );
+        return annot.getString( COSName.T );
     }
 
     /**
@@ -553,7 +552,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public Calendar getCreationDate() throws IOException
     {
-        return annot.getDate( "CreationDate" );
+        return annot.getDate( COSName.CREATION_DATE );
     }
 
     /**
@@ -563,7 +562,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setCreationDate( Calendar date )
     {
-        annot.setDate( "CreationDate", date );
+        annot.setDate( COSName.CREATION_DATE, date );
     }
 
     /**
@@ -573,7 +572,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setOpacity( float opacity )
     {
-        annot.setFloat( "CA", opacity );
+        annot.setFloat( COSName.CA, opacity );
     }
 
     /**
@@ -583,7 +582,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public float getOpacity()
     {
-        return annot.getFloat( "CA", 1f );
+        return annot.getFloat( COSName.CA, 1f );
 
     }
 
@@ -594,7 +593,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setSubject( String subject )
     {
-        annot.setString( "Subj", subject );
+        annot.setString( COSName.SUBJ, subject );
     }
 
     /**
@@ -604,6 +603,6 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public String getSubject()
     {
-        return annot.getString( "Subj" );
+        return annot.getString( COSName.SUBJ );
     }
 }

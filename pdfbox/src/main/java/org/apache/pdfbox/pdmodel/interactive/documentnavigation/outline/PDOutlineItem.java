@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.exceptions.OutlineNotLocalException;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -105,7 +106,7 @@ public class PDOutlineItem extends PDOutlineNode
     public PDOutlineItem getPreviousSibling()
     {
         PDOutlineItem last = null;
-        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( "Prev" );
+        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( COSName.PREV );
         if( lastDic != null )
         {
             last = new PDOutlineItem( lastDic );
@@ -120,7 +121,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     protected void setPreviousSibling( PDOutlineNode outlineNode )
     {
-        node.setItem( "Prev", outlineNode );
+        node.setItem( COSName.PREV, outlineNode );
     }
 
     /**
@@ -131,7 +132,7 @@ public class PDOutlineItem extends PDOutlineNode
     public PDOutlineItem getNextSibling()
     {
         PDOutlineItem last = null;
-        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( "Next" );
+        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( COSName.NEXT );
         if( lastDic != null )
         {
             last = new PDOutlineItem( lastDic );
@@ -146,7 +147,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     protected void setNextSibling( PDOutlineNode outlineNode )
     {
-        node.setItem( "Next", outlineNode );
+        node.setItem( COSName.NEXT, outlineNode );
     }
 
     /**
@@ -156,7 +157,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public String getTitle()
     {
-        return node.getString( "Title" );
+        return node.getString( COSName.TITLE );
     }
 
     /**
@@ -166,7 +167,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setTitle( String title )
     {
-        node.setString( "Title", title );
+        node.setString( COSName.TITLE, title );
     }
 
     /**
@@ -177,7 +178,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public PDDestination getDestination() throws IOException
     {
-        return PDDestination.create( node.getDictionaryObject( "Dest" ) );
+        return PDDestination.create( node.getDictionaryObject( COSName.DEST ) );
     }
 
     /**
@@ -187,7 +188,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setDestination( PDDestination dest )
     {
-        node.setItem( "Dest", dest );
+        node.setItem( COSName.DEST, dest );
     }
 
     /**
@@ -290,7 +291,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public PDAction getAction()
     {
-        return PDActionFactory.createAction( (COSDictionary)node.getDictionaryObject( "A" ) );
+        return PDActionFactory.createAction( (COSDictionary)node.getDictionaryObject( COSName.A ) );
     }
 
     /**
@@ -300,7 +301,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setAction( PDAction action )
     {
-        node.setItem( "A", action );
+        node.setItem( COSName.A, action );
     }
 
     /**
@@ -311,7 +312,7 @@ public class PDOutlineItem extends PDOutlineNode
     public PDStructureElement getStructureElement()
     {
         PDStructureElement se = null;
-        COSDictionary dic = (COSDictionary)node.getDictionaryObject( "SE" );
+        COSDictionary dic = (COSDictionary)node.getDictionaryObject( COSName.SE );
         if( dic != null )
         {
             se = new PDStructureElement( dic );
@@ -326,7 +327,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setStructuredElement( PDStructureElement structureElement )
     {
-        node.setItem( "SE", structureElement );
+        node.setItem( COSName.SE, structureElement );
     }
 
     /**
@@ -338,12 +339,12 @@ public class PDOutlineItem extends PDOutlineNode
     public PDColorState getTextColor()
     {
         PDColorState retval = null;
-        COSArray csValues = (COSArray)node.getDictionaryObject( "C" );
+        COSArray csValues = (COSArray)node.getDictionaryObject( COSName.C );
         if( csValues == null )
         {
             csValues = new COSArray();
             csValues.growToSize( 3, new COSFloat( 0 ) );
-            node.setItem( "C", csValues );
+            node.setItem( COSName.C, csValues );
         }
         retval = new PDColorState(csValues);
         retval.setColorSpace( PDDeviceRGB.INSTANCE );
@@ -357,7 +358,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setTextColor( PDColorState textColor )
     {
-        node.setItem( "C", textColor.getCOSColorSpaceValue() );
+        node.setItem( COSName.C, textColor.getCOSColorSpaceValue() );
     }
 
     /**
@@ -371,7 +372,7 @@ public class PDOutlineItem extends PDOutlineNode
         array.add( new COSFloat( textColor.getRed()/255f));
         array.add( new COSFloat( textColor.getGreen()/255f));
         array.add( new COSFloat( textColor.getBlue()/255f));
-        node.setItem( "C", array );
+        node.setItem( COSName.C, array );
     }
 
     /**
@@ -381,7 +382,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public boolean isItalic()
     {
-        return BitFlagHelper.getFlag( node, "F", ITALIC_FLAG );
+        return BitFlagHelper.getFlag( node, COSName.F, ITALIC_FLAG );
     }
 
     /**
@@ -391,7 +392,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setItalic( boolean italic )
     {
-        BitFlagHelper.setFlag( node, "F", ITALIC_FLAG, italic );
+        BitFlagHelper.setFlag( node, COSName.F, ITALIC_FLAG, italic );
     }
 
     /**
@@ -401,7 +402,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public boolean isBold()
     {
-        return BitFlagHelper.getFlag( node, "F", BOLD_FLAG );
+        return BitFlagHelper.getFlag( node, COSName.F, BOLD_FLAG );
     }
 
     /**
@@ -411,7 +412,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setBold( boolean bold )
     {
-        BitFlagHelper.setFlag( node, "F", BOLD_FLAG, bold );
+        BitFlagHelper.setFlag( node, COSName.F, BOLD_FLAG, bold );
     }
 
 }

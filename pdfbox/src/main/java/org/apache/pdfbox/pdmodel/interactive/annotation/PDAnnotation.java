@@ -166,7 +166,7 @@ public abstract class PDAnnotation implements COSObjectable
     public PDAnnotation()
     {
         dictionary = new COSDictionary();
-        dictionary.setItem( COSName.TYPE, COSName.getPDFName( "Annot" ) );
+        dictionary.setItem( COSName.TYPE, COSName.ANNOT );
     }
 
     /**
@@ -198,7 +198,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDRectangle getRectangle()
     {
-        COSArray rectArray = (COSArray)dictionary.getDictionaryObject( COSName.getPDFName( "Rect" ) );
+        COSArray rectArray = (COSArray)dictionary.getDictionaryObject( COSName.RECT );
         PDRectangle rectangle = null;
         if( rectArray != null )
         {
@@ -214,7 +214,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setRectangle( PDRectangle rectangle )
     {
-        dictionary.setItem( COSName.getPDFName( "Rect" ), rectangle.getCOSArray() );
+        dictionary.setItem( COSName.RECT, rectangle.getCOSArray() );
     }
 
    /**
@@ -224,7 +224,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public int getAnnotationFlags()
     {
-        return getDictionary().getInt( "F", 0 );
+        return getDictionary().getInt( COSName.F, 0 );
     }
 
     /**
@@ -234,7 +234,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setAnnotationFlags( int flags )
     {
-        getDictionary().setInt( "F", flags );
+        getDictionary().setInt( COSName.F, flags );
     }
 
     /**
@@ -255,7 +255,7 @@ public abstract class PDAnnotation implements COSObjectable
     public String getAppearanceStream()
     {
         String retval = null;
-        COSName name = (COSName)getDictionary().getDictionaryObject( COSName.getPDFName( "AS" ) );
+        COSName name = (COSName)getDictionary().getDictionaryObject( COSName.AS );
         if( name != null )
         {
             retval = name.getName();
@@ -272,11 +272,11 @@ public abstract class PDAnnotation implements COSObjectable
     {
         if( as == null )
         {
-            getDictionary().removeItem( COSName.getPDFName( "AS" ) );
+            getDictionary().removeItem( COSName.AS );
         }
         else
         {
-            getDictionary().setItem( COSName.getPDFName( "AS" ), COSName.getPDFName( as ) );
+            getDictionary().setItem( COSName.AS, COSName.getPDFName( as ) );
         }
     }
 
@@ -289,7 +289,7 @@ public abstract class PDAnnotation implements COSObjectable
     public PDAppearanceDictionary getAppearance()
     {
         PDAppearanceDictionary ap = null;
-        COSDictionary apDic = (COSDictionary)dictionary.getDictionaryObject( COSName.getPDFName( "AP" ) );
+        COSDictionary apDic = (COSDictionary)dictionary.getDictionaryObject( COSName.AP );
         if( apDic != null )
         {
             ap = new PDAppearanceDictionary( apDic );
@@ -309,7 +309,7 @@ public abstract class PDAnnotation implements COSObjectable
         {
             ap = appearance.getDictionary();
         }
-        dictionary.setItem( COSName.getPDFName( "AP" ), ap );
+        dictionary.setItem( COSName.AP, ap );
     }
 
     /**
@@ -319,7 +319,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isInvisible()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_INVISIBLE );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_INVISIBLE );
     }
 
     /**
@@ -329,7 +329,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setInvisible( boolean invisible )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_INVISIBLE, invisible );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_INVISIBLE, invisible );
     }
 
     /**
@@ -339,7 +339,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isHidden()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_HIDDEN );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_HIDDEN );
     }
 
     /**
@@ -349,7 +349,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setHidden( boolean hidden )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_HIDDEN, hidden );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_HIDDEN, hidden );
     }
 
     /**
@@ -359,7 +359,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isPrinted()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_PRINTED );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_PRINTED );
     }
 
     /**
@@ -369,7 +369,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setPrinted( boolean printed )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_PRINTED, printed );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_PRINTED, printed );
     }
 
     /**
@@ -379,7 +379,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoZoom()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_ZOOM );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_NO_ZOOM );
     }
 
     /**
@@ -389,7 +389,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoZoom( boolean noZoom )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_ZOOM, noZoom );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_NO_ZOOM, noZoom );
     }
 
     /**
@@ -399,7 +399,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoRotate()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_ROTATE );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_NO_ROTATE );
     }
 
     /**
@@ -409,7 +409,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoRotate( boolean noRotate )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_ROTATE, noRotate );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_NO_ROTATE, noRotate );
     }
 
     /**
@@ -419,7 +419,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoView()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_NO_VIEW );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_NO_VIEW );
     }
 
     /**
@@ -429,7 +429,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoView( boolean noView )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_NO_VIEW, noView );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_NO_VIEW, noView );
     }
 
     /**
@@ -439,7 +439,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isReadOnly()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_READ_ONLY );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_READ_ONLY );
     }
 
     /**
@@ -449,7 +449,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setReadOnly( boolean readOnly )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_READ_ONLY, readOnly );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_READ_ONLY, readOnly );
     }
 
     /**
@@ -459,7 +459,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isLocked()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_LOCKED );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_LOCKED );
     }
 
     /**
@@ -469,7 +469,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setLocked( boolean locked )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_LOCKED, locked );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_LOCKED, locked );
     }
 
     /**
@@ -479,7 +479,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isToggleNoView()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "F", FLAG_TOGGLE_NO_VIEW );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.F, FLAG_TOGGLE_NO_VIEW );
     }
 
     /**
@@ -489,7 +489,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setToggleNoView( boolean toggleNoView )
     {
-        BitFlagHelper.setFlag( getDictionary(), "F", FLAG_TOGGLE_NO_VIEW, toggleNoView );
+        BitFlagHelper.setFlag( getDictionary(), COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView );
     }
 
     /**
@@ -519,7 +519,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public String getModifiedDate()
     {
-        return getDictionary().getString( "M" );
+        return getDictionary().getString( COSName.M );
     }
 
     /**
@@ -530,7 +530,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setModifiedDate( String m )
     {
-        getDictionary().setString( "M", m );
+        getDictionary().setString( COSName.M, m );
     }
 
     /**
@@ -542,7 +542,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public String getAnnotationName()
     {
-        return getDictionary().getString( "NM" );
+        return getDictionary().getString( COSName.NM );
     }
 
     /**
@@ -554,7 +554,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setAnnotationName( String nm )
     {
-        getDictionary().setString( "NM", nm );
+        getDictionary().setString( COSName.NM, nm );
     }
 
     /**
@@ -571,7 +571,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setColour( PDGamma c )
     {
-        getDictionary().setItem( "C", c );
+        getDictionary().setItem( COSName.C, c );
     }
 
     /**
@@ -587,7 +587,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDGamma getColour()
     {
-        COSArray c = (COSArray) getDictionary().getItem(COSName.getPDFName( "C" ) );
+        COSArray c = (COSArray) getDictionary().getItem(COSName.C );
         if (c != null)
         {
             return new PDGamma( c );
