@@ -105,7 +105,7 @@ public abstract class PDVariableText extends PDField
     public PDVariableText( PDAcroForm theAcroForm, COSDictionary field)
     {
         super( theAcroForm, field);
-        da = (COSString) field.getDictionaryObject(COSName.getPDFName("DA"));
+        da = (COSString) field.getDictionaryObject(COSName.DA);
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class PDVariableText extends PDField
     public void setValue(String value) throws IOException
     {
         COSString fieldValue = new COSString(value);
-        getDictionary().setItem( COSName.getPDFName( "V" ), fieldValue );
+        getDictionary().setItem( COSName.V, fieldValue );
 
         //hmm, not sure what the case where the DV gets set to the field
         //value, for now leave blank until we can come up with a case
@@ -140,7 +140,7 @@ public abstract class PDVariableText extends PDField
      */
     public String getValue() throws IOException
     {
-        return getDictionary().getString( "V" );
+        return getDictionary().getString( COSName.V );
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean isMultiline()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_MULTILINE );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_MULTILINE );
     }
 
     /**
@@ -158,7 +158,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setMultiline( boolean multiline )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_MULTILINE, multiline );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_MULTILINE, multiline );
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean isPassword()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_PASSWORD );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_PASSWORD );
     }
 
     /**
@@ -176,7 +176,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setPassword( boolean password )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_PASSWORD, password );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_PASSWORD, password );
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean isFileSelect()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_FILE_SELECT );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_FILE_SELECT );
     }
 
     /**
@@ -194,7 +194,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setFileSelect( boolean fileSelect )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_FILE_SELECT, fileSelect );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_FILE_SELECT, fileSelect );
     }
 
     /**
@@ -202,7 +202,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean doNotSpellCheck()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_DO_NOT_SPELL_CHECK );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
     }
 
     /**
@@ -212,7 +212,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setDoNotSpellCheck( boolean doNotSpellCheck )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
     }
 
     /**
@@ -220,7 +220,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean doNotScroll()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_DO_NOT_SCROLL );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_DO_NOT_SCROLL );
     }
 
     /**
@@ -230,7 +230,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setDoNotScroll( boolean doNotScroll )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_DO_NOT_SCROLL, doNotScroll );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_DO_NOT_SCROLL, doNotScroll );
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean shouldComb()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_COMB );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_COMB );
     }
 
     /**
@@ -248,7 +248,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setComb( boolean comb )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_COMB, comb );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_COMB, comb );
     }
 
     /**
@@ -256,7 +256,7 @@ public abstract class PDVariableText extends PDField
      */
     public boolean isRichText()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_RICH_TEXT );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_RICH_TEXT );
     }
 
     /**
@@ -266,7 +266,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setRichText( boolean richText )
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_RICH_TEXT, richText );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_RICH_TEXT, richText );
     }
 
     /**
@@ -289,7 +289,7 @@ public abstract class PDVariableText extends PDField
     public int getQ()
     {
         int retval = 0;
-        COSNumber number = (COSNumber)getDictionary().getDictionaryObject( COSName.getPDFName( "Q" ) );
+        COSNumber number = (COSNumber)getDictionary().getDictionaryObject( COSName.Q );
         if( number != null )
         {
             retval = number.intValue();
@@ -304,7 +304,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setQ( int q )
     {
-        getDictionary().setInt( COSName.getPDFName( "Q" ), q );
+        getDictionary().setInt( COSName.Q, q );
     }
 
 }

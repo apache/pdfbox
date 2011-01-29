@@ -98,7 +98,7 @@ public abstract class PDField implements COSObjectable
      */
     public String getPartialName()
     {
-        return getDictionary().getString( "T" );
+        return getDictionary().getString( COSName.T );
     }
 
     /**
@@ -108,7 +108,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setPartialName( String name )
     {
-        getDictionary().setString( "T", name );
+        getDictionary().setString( COSName.T, name );
     }
 
     /**
@@ -142,7 +142,7 @@ public abstract class PDField implements COSObjectable
      */
     public String getAlternateFieldName()
     {
-        return this.getDictionary().getString("TU");
+        return this.getDictionary().getString(COSName.TU);
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setAlternateFieldName(String alternateFieldName)
     {
-        this.getDictionary().setString("TU", alternateFieldName);
+        this.getDictionary().setString(COSName.TU, alternateFieldName);
     }
 
     /**
@@ -167,7 +167,7 @@ public abstract class PDField implements COSObjectable
      */
     public String getFieldType()
     {
-        return getDictionary().getNameAsString( "FT" );
+        return getDictionary().getNameAsString( COSName.FT );
     }
 
     /**
@@ -186,10 +186,10 @@ public abstract class PDField implements COSObjectable
 
     private String findFieldType( COSDictionary dic )
     {
-        String retval = dic.getNameAsString( "FT" );
+        String retval = dic.getNameAsString( COSName.FT );
         if( retval == null )
         {
-            COSDictionary parent = (COSDictionary)dic.getDictionaryObject( "Parent", "P" );
+            COSDictionary parent = (COSDictionary)dic.getDictionaryObject( COSName.PARENT, COSName.P );
             if( parent != null )
             {
                 retval = findFieldType( parent );
@@ -225,7 +225,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setReadonly(boolean readonly)
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_READ_ONLY, readonly );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_READ_ONLY, readonly );
     }
 
     /**
@@ -234,7 +234,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isReadonly()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_READ_ONLY );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_READ_ONLY );
     }
 
     /**
@@ -244,7 +244,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setRequired(boolean required)
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_REQUIRED, required );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_REQUIRED, required );
     }
 
     /**
@@ -253,7 +253,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isRequired()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_REQUIRED );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_REQUIRED );
     }
 
     /**
@@ -263,7 +263,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setNoExport(boolean noExport)
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_NO_EXPORT, noExport );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_NO_EXPORT, noExport );
     }
 
     /**
@@ -272,7 +272,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isNoExport()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_NO_EXPORT );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_NO_EXPORT );
     }
 
     /**
@@ -283,7 +283,7 @@ public abstract class PDField implements COSObjectable
     public int getFieldFlags()
     {
         int retval = 0;
-        COSInteger ff = (COSInteger)getDictionary().getDictionaryObject( COSName.getPDFName( "Ff" ) );
+        COSInteger ff = (COSInteger)getDictionary().getDictionaryObject( COSName.FF );
         if( ff != null )
         {
             retval = ff.intValue();
@@ -298,7 +298,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setFieldFlags( int flags )
     {
-        getDictionary().setInt( COSName.getPDFName( "Ff" ), flags );
+        getDictionary().setInt( COSName.FF, flags );
     }
 
     /**
@@ -400,11 +400,11 @@ public abstract class PDField implements COSObjectable
                 }
             }
         }
-        List fdfKids = fdfField.getKids();
-        List pdKids = getKids();
+        List<FDFField> fdfKids = fdfField.getKids();
+        List<COSObjectable> pdKids = getKids();
         for( int i=0; fdfKids != null && i<fdfKids.size(); i++ )
         {
-            FDFField fdfChild = (FDFField)fdfKids.get( i );
+            FDFField fdfChild = fdfKids.get( i );
             String fdfName = fdfChild.getPartialFieldName();
             for( int j=0; j<pdKids.size(); j++ )
             {
@@ -434,7 +434,7 @@ public abstract class PDField implements COSObjectable
     public PDAnnotationWidget getWidget() throws IOException
     {
         PDAnnotationWidget retval = null;
-        List kids = getKids();
+        List<COSObjectable> kids = getKids();
         if( kids == null )
         {
             retval = new PDAnnotationWidget( getDictionary() );
@@ -468,7 +468,7 @@ public abstract class PDField implements COSObjectable
     public PDField getParent() throws IOException
     {
         PDField parent = null;
-        COSDictionary parentDic = (COSDictionary)getDictionary().getDictionaryObject( "Parent" );
+        COSDictionary parentDic = (COSDictionary)getDictionary().getDictionaryObject( COSName.PARENT, COSName.P );
         if( parentDic != null )
         {
             parent = PDFieldFactory.createField( getAcroForm(), parentDic );
@@ -527,23 +527,23 @@ public abstract class PDField implements COSObjectable
      * @return A list of either PDWidget or PDField objects.
      * @throws IOException If there is an error retrieving the kids.
      */
-    public List getKids() throws IOException
+    public List<COSObjectable> getKids() throws IOException
     {
-        List retval = null;
+        List<COSObjectable> retval = null;
         COSArray kids = (COSArray)getDictionary().getDictionaryObject(COSName.KIDS);
         if( kids != null )
         {
-            List kidsList = new ArrayList();
+            List<COSObjectable> kidsList = new ArrayList<COSObjectable>();
             for (int i = 0; i < kids.size(); i++)
             {
                 COSDictionary kidDictionary = (COSDictionary)kids.getObject(i);
-                COSDictionary parent = (COSDictionary)kidDictionary.getDictionaryObject( "Parent" );
-                if( kidDictionary.getDictionaryObject( "FT" ) != null ||
-                    (parent != null && parent.getDictionaryObject( "FT" ) != null ) )
+                COSDictionary parent = (COSDictionary)kidDictionary.getDictionaryObject( COSName.PARENT, COSName.P );
+                if( kidDictionary.getDictionaryObject( COSName.FT ) != null ||
+                    (parent != null && parent.getDictionaryObject( COSName.FT ) != null ) )
                 {
                     kidsList.add( PDFieldFactory.createField( acroForm, kidDictionary ));
                 }
-                else if( "Widget".equals( kidDictionary.getNameAsString( "Subtype" ) ) )
+                else if( "Widget".equals( kidDictionary.getNameAsString( COSName.SUBTYPE ) ) )
                 {
                     kidsList.add( new PDAnnotationWidget( kidDictionary ) );
                 }
@@ -563,7 +563,7 @@ public abstract class PDField implements COSObjectable
      *
      * @param kids The list of child widgets.
      */
-    public void setKids( List kids )
+    public void setKids( List<COSObjectable> kids )
     {
         COSArray kidsArray = COSArrayList.converterToCOSArray( kids );
         getDictionary().setItem( COSName.KIDS, kidsArray );
@@ -576,7 +576,7 @@ public abstract class PDField implements COSObjectable
      */
     public String toString()
     {
-        return "" + getDictionary().getDictionaryObject( COSName.getPDFName( "V" ) );
+        return "" + getDictionary().getDictionaryObject( COSName.V );
     }
 
     /**
@@ -627,7 +627,7 @@ public abstract class PDField implements COSObjectable
      */
     public PDFormFieldAdditionalActions getActions()
     {
-        COSDictionary aa = (COSDictionary)dictionary.getDictionaryObject( "AA" );
+        COSDictionary aa = (COSDictionary)dictionary.getDictionaryObject( COSName.AA );
         PDFormFieldAdditionalActions retval = null;
         if( aa != null )
         {
@@ -643,6 +643,6 @@ public abstract class PDField implements COSObjectable
      */
     public void setActions( PDFormFieldAdditionalActions actions )
     {
-        dictionary.setItem( "AA", actions );
+        dictionary.setItem( COSName.AA, actions );
     }
 }

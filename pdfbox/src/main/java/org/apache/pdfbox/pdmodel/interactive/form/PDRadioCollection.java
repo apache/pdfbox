@@ -65,7 +65,7 @@ public class PDRadioCollection extends PDChoiceButton
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        BitFlagHelper.setFlag( getDictionary(), "Ff", FLAG_RADIOS_IN_UNISON, radiosInUnison );
+        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison );
     }
 
     /**
@@ -74,7 +74,7 @@ public class PDRadioCollection extends PDChoiceButton
      */
     public boolean isRadiosInUnison()
     {
-        return BitFlagHelper.getFlag( getDictionary(), "Ff", FLAG_RADIOS_IN_UNISON );
+        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_RADIOS_IN_UNISON );
     }
 
     /**
@@ -88,7 +88,7 @@ public class PDRadioCollection extends PDChoiceButton
      */
     public void setValue(String value) throws IOException
     {
-        getDictionary().setString( "V", value );
+        getDictionary().setString( COSName.V, value );
         List kids = getKids();
         for (int i = 0; i < kids.size(); i++)
         {
@@ -133,7 +133,7 @@ public class PDRadioCollection extends PDChoiceButton
         }
         if( retval == null )
         {
-            retval = getDictionary().getNameAsString( "V" );
+            retval = getDictionary().getNameAsString( COSName.V );
         }
         return retval;
     }
