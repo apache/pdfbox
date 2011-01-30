@@ -28,10 +28,17 @@ import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.IIOException;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageOutputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -53,6 +60,8 @@ public class PDJpeg extends PDXObjectImage
 
     private static final List<String> DCT_FILTERS = new ArrayList<String>();
 
+    private final static float defaultCompressionLevel = 0.75f;
+    
     static
     {
         DCT_FILTERS.add( COSName.DCT_DECODE.getName() );
@@ -97,6 +106,7 @@ public class PDJpeg extends PDXObjectImage
 
     /**
      * Construct from a buffered image.
+     * The default compression level of 0.75 will be used. 
      *
      * @param doc The document to create the image as part of.
      * @param bi The image to convert to a jpeg
@@ -104,7 +114,26 @@ public class PDJpeg extends PDXObjectImage
      */
     public PDJpeg( PDDocument doc, BufferedImage bi ) throws IOException
     {
+        super( new PDStream( doc ) , "jpg");
+        createImageStream(doc, bi, defaultCompressionLevel);
+    }
+    
+    /**
+     * Construct from a buffered image.
+     *
+     * @param doc The document to create the image as part of.
+     * @param bi The image to convert to a jpeg
+     * @param compressionQuality The quality level which is used to compress the image
+     * @throws IOException If there is an error processing the jpeg data.
+     */
+    public PDJpeg( PDDocument doc, BufferedImage bi, float compressionQuality ) throws IOException
+    {
         super( new PDStream( doc ), "jpg" );
+        createImageStream(doc, bi, compressionQuality);
+    }
+    
+    private void createImageStream(PDDocument doc, BufferedImage bi, float compressionQuality) throws IOException
+    {
         BufferedImage alpha = null;
         if (bi.getColorModel().hasAlpha())
         {
@@ -137,8 +166,25 @@ public class PDJpeg extends PDXObjectImage
         java.io.OutputStream os = getCOSStream().createFilteredStream();
         try
         {
-            ImageIO.write(bi,"jpeg",os);
-
+            ImageWriter writer = null;
+            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpg");
+            if (iter.hasNext()) 
+            {
+                writer = iter.next();
+            }
+            ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+            writer.setOutput(ios);
+                
+            // Set the compression quality
+            JPEGImageWriteParam iwparam = new JPEGImageWriteParam(Locale.getDefault());
+            iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            iwparam.setCompressionQuality(compressionQuality);
+                
+            // Write the image
+            writer.write(null, new IIOImage(bi, null, null), iwparam);
+                
+            writer.dispose();
+            
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
             dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
@@ -146,7 +192,7 @@ public class PDJpeg extends PDXObjectImage
             PDXObjectImage alphaPdImage = null;
             if(alpha != null)
             {
-                alphaPdImage = new PDJpeg(doc, alpha);
+                alphaPdImage = new PDJpeg(doc, alpha, compressionQuality);
                 dic.setItem(COSName.SMASK, alphaPdImage);
             }
             setBitsPerComponent( 8 );
