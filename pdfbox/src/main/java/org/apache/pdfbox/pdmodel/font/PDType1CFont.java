@@ -282,6 +282,10 @@ public class PDType1CFont extends PDSimpleFont
      */    
     public Font getawtFont() throws IOException
     {
+        if (awtFont == null)
+        {
+            this.awtFont = prepareAwtFont(this.cffFont);
+        }
         return awtFont;
     }
     
@@ -375,7 +379,6 @@ public class PDType1CFont extends PDSimpleFont
         charStringsDict.clear();
         charStringsDict.putAll(pdfCharStringsDict);
         this.fontMetric = prepareFontMetric(this.cffFont);
-        this.awtFont = prepareAwtFont(this.cffFont);
         Number defaultWidthX = (Number)this.cffFont.getProperty("defaultWidthX");
         this.glyphWidths.put(null, Float.valueOf(defaultWidthX.floatValue()));
     }
