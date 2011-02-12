@@ -26,7 +26,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -155,7 +159,8 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected Vector<List<TextPosition>> charactersByArticle = new Vector<List<TextPosition>>();
 
-    private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
+    private Map<String, NavigableMap<Float, NavigableSet<Float>>> characterListMapping =
+        new HashMap<String, NavigableMap<Float, NavigableSet<Float>>>();
 
     /**
      * encoding that text will be written in (or null).
@@ -880,10 +885,10 @@ public class PDFTextStripper extends PDFStreamEngine
             String textCharacter = text.getCharacter();
             float textX = text.getX();
             float textY = text.getY();
-            List<TextPosition> sameTextCharacters = (List<TextPosition>)characterListMapping.get( textCharacter );
+            NavigableMap<Float, NavigableSet<Float>> sameTextCharacters = characterListMapping.get( textCharacter );
             if( sameTextCharacters == null )
             {
-                sameTextCharacters = new ArrayList<TextPosition>();
+                sameTextCharacters = new TreeMap<Float, NavigableSet<Float>>();
                 characterListMapping.put( textCharacter, sameTextCharacters );
             }
 
@@ -900,27 +905,29 @@ public class PDFTextStripper extends PDFStreamEngine
             //
             boolean suppressCharacter = false;
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
-            for( int i=0; i<sameTextCharacters.size() && textCharacter != null; i++ )
+            
+            NavigableMap<Float, NavigableSet<Float>> xMatches =
+                sameTextCharacters.subMap(textX - tolerance , false, textX + tolerance , false);
+            for (NavigableSet<Float> xMatch : xMatches.values()) 
             {
-                TextPosition character = sameTextCharacters.get( i );
-                String charCharacter = character.getCharacter();
-                float charX = character.getX();
-                float charY = character.getY();
-                //only want to suppress
-
-                if( charCharacter != null &&
-                        //charCharacter.equals( textCharacter ) &&
-                        within( charX, textX, tolerance ) &&
-                        within( charY,
-                                textY,
-                                tolerance ) )
+                NavigableSet<Float> yMatches =
+                    xMatch.subSet(textY - tolerance , false, textY + tolerance , false);
+                if (!yMatches.isEmpty()) 
                 {
                     suppressCharacter = true;
+                    break;
                 }
             }
+
             if( !suppressCharacter )
             {
-                sameTextCharacters.add( text );
+                NavigableSet<Float> ySet = sameTextCharacters.get(textX);
+                if (ySet == null) 
+                {
+                    ySet = new TreeSet<Float>();
+                    sameTextCharacters.put( textX,  ySet );
+                }
+                ySet.add( textY );
                 showCharacter = true;
             }
         }
