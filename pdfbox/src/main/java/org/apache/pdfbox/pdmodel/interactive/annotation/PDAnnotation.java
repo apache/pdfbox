@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -37,6 +39,11 @@ import org.apache.pdfbox.cos.COSBase;
  */
 public abstract class PDAnnotation implements COSObjectable
 {
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDAnnotation.class);
+
     /**
      * An annotation flag.
      */
@@ -85,7 +92,7 @@ public abstract class PDAnnotation implements COSObjectable
      * @return The correctly typed annotation object.
      * @throws IOException If there is an error while creating the annotation.
      */
-    // TODO not yet implemented: FreeText, Polygon, PolyLine, Caret, Ink, Sound, 
+    // TODO not yet implemented: 
     // Movie, Screen, PrinterMark, TrapNet, Watermark, 3D, Redact
     public static PDAnnotation createAnnotation( COSBase base ) throws IOException
     {
@@ -94,62 +101,63 @@ public abstract class PDAnnotation implements COSObjectable
         {
             COSDictionary annotDic = (COSDictionary)base;
             String subtype = annotDic.getNameAsString( COSName.SUBTYPE );
-            if( subtype.equals( PDAnnotationFileAttachment.SUB_TYPE ) )
+            if( PDAnnotationFileAttachment.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationFileAttachment( annotDic );
             }
-            else if( subtype.equals( PDAnnotationLine.SUB_TYPE ) )
+            else if( PDAnnotationLine.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationLine( annotDic );
             }
-            else if( subtype.equals( PDAnnotationLink.SUB_TYPE ) )
+            else if( PDAnnotationLink.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationLink(annotDic);
             }
-            else if( subtype.equals( PDAnnotationPopup.SUB_TYPE ) )
+            else if( PDAnnotationPopup.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationPopup(annotDic);
             }
-            else if( subtype.equals( PDAnnotationRubberStamp.SUB_TYPE ) )
+            else if( PDAnnotationRubberStamp.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationRubberStamp(annotDic);
             }
-            else if( subtype.equals( PDAnnotationSquareCircle.SUB_TYPE_SQUARE ) ||
-                    subtype.equals( PDAnnotationSquareCircle.SUB_TYPE_CIRCLE ) )
+            else if( PDAnnotationSquareCircle.SUB_TYPE_SQUARE.equals(subtype) ||
+                    PDAnnotationSquareCircle.SUB_TYPE_CIRCLE.equals(subtype) )
             {
                 annot = new PDAnnotationSquareCircle( annotDic );
             }
-            else if( subtype.equals( PDAnnotationText.SUB_TYPE ) )
+            else if( PDAnnotationText.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationText( annotDic);
             }
-            else if( subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT ) ||
-                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE ) ||
-                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY ) ||
-                    subtype.equals( PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT ))
+            else if( PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT.equals(subtype) ||
+                    PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE.equals(subtype) ||
+                    PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY.equals(subtype) ||
+                    PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT.equals(subtype) )
             {
                 annot = new PDAnnotationTextMarkup( annotDic );
             }
-            else if( subtype.equals( PDAnnotationLink.SUB_TYPE ) )
+            else if( PDAnnotationLink.SUB_TYPE.equals(subtype) )
             {
                 annot = new PDAnnotationLink( annotDic );
             }
-            else if( subtype.equals( PDAnnotationWidget.SUB_TYPE ) )
+            else if( PDAnnotationWidget.SUB_TYPE.equals(subtype) )
             {
                annot = new PDAnnotationWidget( annotDic );
             }
-            else if( subtype.equals( PDAnnotationMarkup.SUB_TYPE_FREETEXT ) ||
-                    subtype.equals( PDAnnotationMarkup.SUB_TYPE_POLYGON ) ||
-                    subtype.equals( PDAnnotationMarkup.SUB_TYPE_POLYLINE ) ||
-                    subtype.equals( PDAnnotationMarkup.SUB_TYPE_CARET ) ||
-                    subtype.equals( PDAnnotationMarkup.SUB_TYPE_INK ) ||
-                    subtype.equals( PDAnnotationMarkup.SUB_TYPE_SOUND ))
+            else if( PDAnnotationMarkup.SUB_TYPE_FREETEXT.equals(subtype) ||
+                    PDAnnotationMarkup.SUB_TYPE_POLYGON.equals(subtype) ||
+                    PDAnnotationMarkup.SUB_TYPE_POLYLINE.equals(subtype) ||
+                    PDAnnotationMarkup.SUB_TYPE_CARET.equals(subtype) ||
+                    PDAnnotationMarkup.SUB_TYPE_INK.equals(subtype) ||
+                    PDAnnotationMarkup.SUB_TYPE_SOUND.equals(subtype) )
             {
                 annot = new PDAnnotationMarkup( annotDic );
             }
             else
             {
                 annot = new PDAnnotationUnknown( annotDic );
+                log.debug("Unknown or unsupported annotation subtype "+subtype);
             }
         }
         else
