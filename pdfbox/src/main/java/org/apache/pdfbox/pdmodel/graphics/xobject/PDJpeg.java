@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,6 +58,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 public class PDJpeg extends PDXObjectImage
 {
 
+    private static final String JPG = "jpg";
+    
     private static final List<String> DCT_FILTERS = new ArrayList<String>();
 
     private final static float defaultCompressionLevel = 0.75f;
@@ -75,7 +77,7 @@ public class PDJpeg extends PDXObjectImage
      */
     public PDJpeg(PDStream jpeg)
     {
-        super(jpeg, "jpg");
+        super(jpeg, JPG);
     }
 
     /**
@@ -87,7 +89,7 @@ public class PDJpeg extends PDXObjectImage
      */
     public PDJpeg( PDDocument doc, InputStream is ) throws IOException
     {
-        super( new PDStream( doc, is, true ), "jpg" );
+        super( new PDStream( doc, is, true ), JPG);
         COSDictionary dic = getCOSStream();
         dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
         dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
@@ -114,7 +116,7 @@ public class PDJpeg extends PDXObjectImage
      */
     public PDJpeg( PDDocument doc, BufferedImage bi ) throws IOException
     {
-        super( new PDStream( doc ) , "jpg");
+        super( new PDStream( doc ) , JPG);
         createImageStream(doc, bi, defaultCompressionLevel);
     }
     
@@ -128,7 +130,7 @@ public class PDJpeg extends PDXObjectImage
      */
     public PDJpeg( PDDocument doc, BufferedImage bi, float compressionQuality ) throws IOException
     {
-        super( new PDStream( doc ), "jpg" );
+        super( new PDStream( doc ), JPG);
         createImageStream(doc, bi, compressionQuality);
     }
     
@@ -167,7 +169,7 @@ public class PDJpeg extends PDXObjectImage
         try
         {
             ImageWriter writer = null;
-            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("jpg");
+            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName(JPG);
             if (iter.hasNext()) 
             {
                 writer = iter.next();
@@ -226,18 +228,19 @@ public class PDJpeg extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {   //TODO PKOCH
-        File imgFile = null;
         BufferedImage bi = null;
         boolean readError = false;
         try 
         {
-            imgFile = File.createTempFile("pdjpeg", ".jpeg");
-            write2file(imgFile);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            write2OutputStream(os);
+            os.close();
+            byte[] img = os.toByteArray();
 
             // 1. try to read jpeg image
             try 
             {
-                bi = ImageIO.read(imgFile);
+                bi = ImageIO.read(new ByteArrayInputStream(img));
             } 
             catch (IIOException iioe) 
             {
@@ -253,32 +256,15 @@ public class PDJpeg extends PDXObjectImage
             // TODO : not sure if it works for all cases
             if (bi == null && readError) 
             {
-                byte[] newImage = replaceHeader(imgFile);
+                byte[] newImage = replaceHeader(img);
 
                 ByteArrayInputStream bai = new ByteArrayInputStream(newImage);
 
-                // persist file temporarely, because i was not able to manage
-                // to call the ImageIO.read(InputStream) successfully.
-                FileOutputStream o = new FileOutputStream(imgFile);
-                byte[] buffer = new byte[512];
-                int read;
-                while ((read=bai.read(buffer)) >0) 
-                {
-                   o.write(buffer, 0, read);
-                }
-
-                bai.close();
-                o.close();
-
-                bi = ImageIO.read(imgFile);
+                bi = ImageIO.read(bai);
             }
         } 
         finally 
         {
-            if (imgFile != null) 
-            {
-                imgFile.delete();
-            }
         }
         
         // If there is a 'soft mask' image then we use that as a transparency mask.
@@ -368,11 +354,8 @@ public class PDJpeg extends PDXObjectImage
         return 0;
     }
 
-    private byte[] replaceHeader(File jpegFile) throws IOException 
+    private byte[] replaceHeader(byte[] image)
     {
-        // read image into memory
-        byte[] image = getBytesFromFile(jpegFile);
-
         // get end position of wrong header respectively startposition of "real jpeg data"
         int pos = getHeaderEndPos(image);
 
@@ -389,3 +372,4 @@ public class PDJpeg extends PDXObjectImage
         return newImage;
     }
 }
+
