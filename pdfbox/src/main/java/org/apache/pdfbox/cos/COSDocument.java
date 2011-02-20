@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFXrefStreamParser;
@@ -119,13 +120,12 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * Constructor.  Uses the java.io.tmpdir value to create a file
-     * to store the streams.
+     * Constructor.  Uses memory to store stream.
      *
      *  @throws IOException If there is an error creating the tmp file.
      */
     public COSDocument() throws IOException {
-        this((File) null);
+        this(new RandomAccessBuffer(), false);
     }
 
     /**
