@@ -40,7 +40,7 @@ public class RandomAccessBuffer implements RandomAccess
     {
         buffer = new byte[EXTRA_SPACE];
         pointer = 0;
-        size = EXTRA_SPACE;
+        size = 0;
     }
 
     /**
