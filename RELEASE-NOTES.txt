@@ -1,4 +1,4 @@
-Release Notes -- Apache PDFBox -- Version 1.4.0
+Release Notes -- Apache PDFBox -- Version 1.5.0
 
 Introduction
 ------------
@@ -7,48 +7,42 @@ PDFBox is an open source Java library for working with PDF documents.
 
 This is an incremental feature release based on the earlier 1.x releases.
 This release contains many improvements and fixes especially related to
-text extraction, AES decryption and malformed PDFs.
+performance, resource usage and fault-tolerance.
+
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
-New Features
-
-  [PDFBOX-865] - Optional Content Groups (OCGs aka layers): initial support
-  [PDFBOX-913] - Add program which decompresses object streams
-
 Improvements
 
-  [PDFBOX-521] - Improved PDF Text Extraction that notes paragraph boundaries
-  [PDFBOX-885] - Add constructors from super class to PDFTextStripperByArea to support encoding
-  [PDFBOX-893] - Performance improvement in PDFStreamEngine and Matrix (patch included)
-  [PDFBOX-909] - Add support for a 6 element matrix
-  [PDFBOX-914] - Using TextToPDF to create a PDF from the empty string produces unreadble PDF file (patch included)
+  [PDFBOX-274] PDFDocument.save is really slow
+  [PDFBOX-917] Read non-conforming PDFs (attached) without throwing ...
+  [PDFBOX-928] added NPE protection which occurred when reading corrupt PDFs
+  [PDFBOX-947] Avoid using temporary files in PDJpeg
+  [PDFBOX-948] Don't use temporty files by default for all PDF sizes
 
 Bug Fixes
 
-  [PDFBOX-28] - Spliiting a PDF creates unnecessarily large chunks
-  [PDFBOX-671] - Cannot use PDFToImage to convert Chinese PDF pages into images.
-  [PDFBOX-751] - Text Extraction truncates last character when image page has sideways text
-  [PDFBOX-759] - Special characters not extracted
-  [PDFBOX-779] - All English characters and some Chinese words are separated by a space
-  [PDFBOX-806] - Failure to extract dc:description when the value is the node text
-  [PDFBOX-854] - PDPageContentStream.drawString() doesn't work with all PDFs
-  [PDFBOX-872] - ERROR org.apache.pdfbox.filter.FlateFilter - Stop reading corrupt stream
-  [PDFBOX-881] - Incorrect output when word spacing is achieved by matrix translation
-  [PDFBOX-883] - Special characters are not correctly handled anymore when printing or exporting to image
-  [PDFBOX-887] - CCITTFaxDecodeFilter doesn't use the abbreviated names for image parameters
-  [PDFBOX-888] - Decrypt doesn't allow more then 3 args
-  [PDFBOX-889] - Empty page causes NPE in importPage
-  [PDFBOX-896] - PDFViewer doesn't render landscape mode correctly
-  [PDFBOX-897] - NullPointerException PDFFont#getEncodingFromFont with a PDF book because Type1Encoding is null
-  [PDFBOX-898] - COSStreamArray NullPointerException. firstStream is null if COSArray contains no items
-  [PDFBOX-900] - ArrayIndexOutOfBoundsException with extracting labels from malformed document
-  [PDFBOX-902] - ClassCastException caused by unhandled Markup Annotations.
-  [PDFBOX-907] - Encrypted Key not correctly calculated when the meta data is not encrypted
-  [PDFBOX-910] - certain sequences (such as endstrea[^m] are eaten by BaseParser#readUntilEndStream
-  [PDFBOX-918] - Can't parse PDF
-  [PDFBOX-921] - NumberFormatException when parsing a type1 font
+  [PDFBOX-202] Error on text extraction: java.lang.IndexOutOfBoundsExceptio
+  [PDFBOX-328] PDFTextStripper not handling some Japanese
+  [PDFBOX-578] NPE NullPointerException in PDPageNode.getCount
+  [PDFBOX-706] CFFParser.readCharset java.lang.IllegalArgumentException
+  [PDFBOX-708] Failed to create Type1C font. Falling back to Type1 font
+  [PDFBOX-713] PDFont fails to close Font File.
+  [PDFBOX-797] NPE in PDPageNode
+  [PDFBOX-920] PDFStreamEngine.processEncodedText fails on UTF-16 text
+  [PDFBOX-925] ExtractText china pdf ,but pdfbox distinguish Korea,The ...
+  [PDFBOX-935] Text not extracted with PDFBox 1.4
+  [PDFBOX-938] Wrong extracted text using PDFBox 1.4
+  [PDFBOX-939] Lost whitespaces when extracting Arabic text
+  [PDFBOX-941] extracting Japanese characters gives garbage
+  [PDFBOX-942] Image quality improvements
+  [PDFBOX-945] PDFBOX may not depend on plattform encoding
+  [PDFBOX-946] RandomAccessBuffer shoud be created empty
+  [PDFBOX-949] ExtractText returns junk
+  [PDFBOX-952] getParent method of class PDField doesn't consider both ...
+  [PDFBOX-959] Text extraction slow and /tmp fills upwith AWT font files
+  [PDFBOX-960] Null Pointer Exception when Annotation is missing the Subtype
 
 Release Contents
 ----------------
