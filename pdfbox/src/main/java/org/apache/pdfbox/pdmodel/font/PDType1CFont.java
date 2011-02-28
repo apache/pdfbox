@@ -149,7 +149,7 @@ public class PDType1CFont extends PDSimpleFont
         Float width = (Float)this.glyphWidths.get(name);
         if( width == null )
         {
-            width = Float.valueOf(this.fontMetric.getCharacterWidth(name));
+            width = Float.valueOf(getFontMetric().getCharacterWidth(name));
             this.glyphWidths.put(name, width);
         }
 
@@ -172,7 +172,7 @@ public class PDType1CFont extends PDSimpleFont
         Float height = (Float)this.glyphHeights.get(name);
         if( height == null )
         {
-            height = Float.valueOf(this.fontMetric.getCharacterHeight(name));
+            height = Float.valueOf(getFontMetric().getCharacterHeight(name));
             this.glyphHeights.put(name, height);
         }
 
@@ -233,7 +233,7 @@ public class PDType1CFont extends PDSimpleFont
     {
         if( this.avgWidth == null )
         {
-            this.avgWidth = Float.valueOf(this.fontMetric.getAverageCharacterWidth());
+            this.avgWidth = Float.valueOf(getFontMetric().getAverageCharacterWidth());
         }
 
         return this.avgWidth.floatValue();
@@ -246,7 +246,7 @@ public class PDType1CFont extends PDSimpleFont
     {
         if( this.fontBBox == null )
         {
-            this.fontBBox = new PDRectangle(this.fontMetric.getFontBBox());
+            this.fontBBox = new PDRectangle(getFontMetric().getFontBBox());
         }
 
         return this.fontBBox;
@@ -289,6 +289,21 @@ public class PDType1CFont extends PDSimpleFont
         return awtFont;
     }
     
+    private FontMetric getFontMetric() 
+    {
+        if (fontMetric == null)
+        {
+            try
+            {
+                fontMetric = prepareFontMetric(cffFont);
+            }
+            catch (IOException exception)
+            {
+                log.error("An error occured while extracting the font metrics!", exception);
+            }
+        }
+        return fontMetric;
+    }
 
     private void load() throws IOException
     {
@@ -378,7 +393,6 @@ public class PDType1CFont extends PDSimpleFont
         this.cffFont.setCharset(pdfCharset);
         charStringsDict.clear();
         charStringsDict.putAll(pdfCharStringsDict);
-        this.fontMetric = prepareFontMetric(this.cffFont);
         Number defaultWidthX = (Number)this.cffFont.getProperty("defaultWidthX");
         this.glyphWidths.put(null, Float.valueOf(defaultWidthX.floatValue()));
     }
@@ -497,7 +511,7 @@ public class PDType1CFont extends PDSimpleFont
         return string;
     }
 
-    private static FontMetric prepareFontMetric( CFFFont font ) throws IOException
+    private FontMetric prepareFontMetric( CFFFont font ) throws IOException
     {
         byte[] afmBytes = AFMFormatter.format(font);
 
