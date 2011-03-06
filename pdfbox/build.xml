@@ -28,7 +28,7 @@
     <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
-    <property name="project.version" value="1.5.0-SNAPSHOT" />
+    <property name="project.version" value="1.6.0-SNAPSHOT" />
 
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
