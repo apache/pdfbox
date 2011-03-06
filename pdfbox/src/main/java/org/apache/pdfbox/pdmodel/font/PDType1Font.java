@@ -162,7 +162,10 @@ public class PDType1Font extends PDSimpleFont
                     type1CFont = new PDType1CFont( super.font );
                     awtFont = type1CFont.getawtFont();
                 }
-                catch (IOException exception) {}
+                catch (IOException exception) 
+                {
+                    log.info("Can't read the embedded type1C font " + fd.getFontName() );
+                }
             }
         }
     }
@@ -272,9 +275,9 @@ public class PDType1Font extends PDSimpleFont
             {
                 fontEncoding = new AFMEncoding( metric );
             }
+            setFontEncoding(fontEncoding);
         }
         getEncodingFromFont(getFontEncoding() == null);
-        setFontEncoding(fontEncoding);
     }
     
     /**
