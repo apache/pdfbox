@@ -37,6 +37,11 @@
     <release>
       <Version>
         <name>Apache PDFBox</name>
+        <created>2011-03-03</created>
+        <revision>1.5.0</revision>
+      </Version>
+      <Version>
+        <name>Apache PDFBox</name>
         <created>2010-12-20</created>
         <revision>1.4.0</revision>
       </Version>
