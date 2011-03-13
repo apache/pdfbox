@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 /**
  * This is the used for the FlateDecode filter.
@@ -55,7 +56,7 @@ public class FlateFilter implements Filter
     public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
     throws IOException
     {
-        COSBase baseObj = options.getDictionaryObject(new String[] {"DecodeParms","DP"});
+        COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         COSDictionary dict = null;
         if( baseObj instanceof COSDictionary )
         {
@@ -89,12 +90,12 @@ public class FlateFilter implements Filter
         ByteArrayOutputStream baos = null;
         if (dict!=null)
         {
-            predictor = dict.getInt("Predictor");
+            predictor = dict.getInt(COSName.PREDICTOR);
             if(predictor > 1)
             {
-                colors = dict.getInt("Colors");
-                bitsPerPixel = options.getInt("BitsPerComponent");
-                columns = dict.getInt("Columns");
+                colors = dict.getInt(COSName.COLORS);
+                bitsPerPixel = options.getInt(COSName.BITS_PER_COMPONENT);
+                columns = dict.getInt(COSName.COLUMNS);
             }
         }
 
@@ -204,7 +205,6 @@ public class FlateFilter implements Filter
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];
-
         if (predictor == 1 )
         {
             // No prediction
@@ -217,12 +217,12 @@ public class FlateFilter implements Filter
         else
         {
             // calculate sizes
-            int bpp = (colors * bitsPerComponent + 7) / 8;
-            int rowlength = (columns * colors * bitsPerComponent + 7) / 8 + bpp;
+            int bpp = colors * (bitsPerComponent % 8 +1);
+            int rowlength = columns * bpp;
             byte[] actline = new byte[rowlength];
-            byte[] lastline = new byte[rowlength];// Initialize lastline with
-                                                    // Zeros according to
-                                                    // PNG-specification
+            // Initialize lastline with Zeros according to PNG-specification
+            byte[] lastline = new byte[rowlength];
+
             boolean done = false;
             int linepredictor = predictor;
 
@@ -246,7 +246,7 @@ public class FlateFilter implements Filter
 
                 // read line
                 int i = 0;
-                int offset = bpp;
+                int offset = 0;
                 while (offset < rowlength && ((i = data.read(actline, offset, rowlength - offset)) != -1))
                 {
                     offset += i;
@@ -264,10 +264,10 @@ public class FlateFilter implements Filter
                     	  	throw new IOException("TIFF-Predictor with " + bitsPerComponent + " bits per component not supported");
                         }
                         // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
-                      	for (int p = bpp; p < rowlength; p++)
+                      	for (int p = 0; p < rowlength; p++)
 	                      {
 	                          int sub = actline[p] & 0xff;
-	                          int left = actline[p - bpp] & 0xff;
+	                          int left = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;
 	                          actline[p] = (byte) (sub + left);
 	                      }
 	                      break;
@@ -275,37 +275,37 @@ public class FlateFilter implements Filter
                     	// do nothing
                       break;
                     case 11:// PRED SUB
-                        for (int p = bpp; p < rowlength; p++)
+                        for (int p = 0; p < rowlength; p++)
                         {
-                            int sub = actline[p] & 0xff;
-                            int left = actline[p - bpp] & 0xff;
+                            int sub = actline[p];
+                            int left = p - bpp >= 0 ? actline[p - bpp]: 0;
                             actline[p] = (byte) (sub + left);
                         }
                         break;
                     case 12:// PRED UP
-                        for (int p = bpp; p < rowlength; p++)
+                        for (int p = 0; p < rowlength; p++)
                         {
                             int up = actline[p] & 0xff;
                             int prior = lastline[p] & 0xff;
-                            actline[p] = (byte) (up + prior);
+                            actline[p] = (byte) ((up + prior) & 0xff);
                         }
                         break;
                     case 13:// PRED AVG
-                        for (int p = bpp; p < rowlength; p++)
+                        for (int p = 0; p < rowlength; p++)
                         {
                             int avg = actline[p] & 0xff;
-                            int left = actline[p - bpp] & 0xff;
+                            int left = p - bpp >= 0 ? actline[p - bpp] & 0xff: 0;
                             int up = lastline[p] & 0xff;
-                            actline[p] = (byte) (avg + ((left + up) / 2));
+                            actline[p] = (byte) ((avg +  (int)Math.floor( (left + up)/2 ) ) & 0xff);
                         }
                         break;
                     case 14:// PRED PAETH
-                        for (int p = bpp; p < rowlength; p++)
+                        for (int p = 0; p < rowlength; p++)
                         {
                             int paeth = actline[p] & 0xff;
-                            int a = actline[p - bpp] & 0xff;// left
+                            int a = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;// left
                             int b = lastline[p] & 0xff;// upper
-                            int c = lastline[p - bpp] & 0xff;// upperleft
+                            int c = p - bpp >= 0 ? lastline[p - bpp] & 0xff : 0;// upperleft
                             int value = a + b - c;
                             int absa = Math.abs(value - a);
                             int absb = Math.abs(value - b);
@@ -313,27 +313,25 @@ public class FlateFilter implements Filter
 
                             if (absa <= absb && absa <= absc)
                             {
-                                actline[p] = (byte) (paeth + absa);
+                                actline[p] = (byte) ((paeth + a) & 0xff);
                             }
                             else if (absb <= absc)
                             {
-                                actline[p] += (byte) (paeth + absb);
+                                actline[p] = (byte) ((paeth + b) & 0xff);
                             }
                             else
                             {
-                                actline[p] += (byte) (paeth + absc);
+                                actline[p] = (byte) ((paeth + c) & 0xff);
                             }
                         }
                         break;
                     default:
                         break;
                 }
-
                 lastline = (byte[])actline.clone();
-                baos.write(actline, bpp, actline.length - bpp);
+                baos.write(actline, 0, actline.length);
             }
         }
-
         return baos.toByteArray();
     }
 
