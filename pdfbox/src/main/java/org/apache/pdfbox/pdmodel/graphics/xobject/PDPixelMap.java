@@ -25,7 +25,6 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -41,7 +40,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
-import org.apache.pdfbox.pdmodel.graphics.predictor.PredictorAlgorithm;
 
 
 
@@ -135,8 +133,6 @@ public class PDPixelMap extends PDXObjectImage
             int width = getWidth();
             int height = getHeight();
             int bpc = getBitsPerComponent();
-            int predictor = getPredictor();
-            List filters = getPDStream().getFilters();
             
             byte[] array = getPDStream().getByteArray();
     
@@ -247,27 +243,6 @@ public class PDPixelMap extends PDXObjectImage
             DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
         
-            /**
-             * PDF Spec 1.6 3.3.3 LZW and Flate predictor function
-             *
-             * Basically if predictor > 10 and LZW or Flate is being used then the
-             * predictor is not used.
-             *
-             * "For LZWDecode and FlateDecode, a Predictor value greater than or equal to 10
-             * merely indicates that a PNG predictor is in use; the specific predictor function
-             * used is explicitly encoded in the incoming data. The value of Predictor supplied
-             * by the decoding filter need not match the value used when the data was encoded
-             * if they are both greater than or equal to 10."
-             */
-            if( predictor < 10 ||
-                filters == null || !(filters.contains( COSName.LZW_DECODE.getName()) ||
-                         filters.contains( COSName.FLATE_DECODE.getName()) ) )
-            {
-                PredictorAlgorithm filter = PredictorAlgorithm.getFilter(predictor);
-                filter.setWidth(width);
-                filter.setHeight(height);
-                filter.setBpp((bpc * 3) / 8);
-            }
             System.arraycopy( array, 0,bufferData, 0, 
                     (array.length<bufferData.length?array.length: bufferData.length) );
             image = new BufferedImage(cm, raster, false, null);
