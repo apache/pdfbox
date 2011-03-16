@@ -466,15 +466,17 @@ public class PDFParser extends BaseParser
                     pdfSource.read(); // read (get rid of) all the whitespace
                 String eof = "";
                 if(!pdfSource.isEOF())
-                    readLine(); // if there's more data to read, get the EOF flag
+                    eof = readLine(); // if there's more data to read, get the EOF flag
                 
                 // verify that EOF exists
-                if("%%EOF".equals(eof)) {
+                if(!"%%EOF".equals(eof)) {
                     // PDF does not conform to spec, we should warn someone
                     log.warn("expected='%%EOF' actual='" + eof + "'");
                     // if we're not at the end of a file, just put it back and move on
-                    if(!pdfSource.isEOF())
+                    if(!pdfSource.isEOF()) {
                         pdfSource.unread(eof.getBytes("ISO-8859-1"));
+                        pdfSource.unread( SPACE_BYTE ); // we read a whole line; add space as newline replacement 
+                    }
                 }
                 isEndOfFile = true; 
             }
