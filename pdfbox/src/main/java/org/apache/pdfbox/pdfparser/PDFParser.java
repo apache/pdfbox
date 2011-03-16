@@ -594,6 +594,7 @@ public class PDFParser extends BaseParser
                     //It is possible that the endobj is missing, there
                     //are several PDFs out there that do that so. Unread
                     //and assume that endobj was missing
+                    pdfSource.unread( SPACE_BYTE ); // add a space first in place of the newline consumed by readline()
                     pdfSource.unread( endObjectKey.getBytes("ISO-8859-1") );
                 }
             }
