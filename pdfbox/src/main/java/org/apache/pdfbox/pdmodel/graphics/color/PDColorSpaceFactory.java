@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
  * This class represents a color space in a pdf document.
@@ -69,7 +70,7 @@ public final class PDColorSpaceFactory
      *
      * @throws IOException If the color space name is unknown.
      */
-    public static PDColorSpace createColorSpace( COSBase colorSpace, Map colorSpaces ) throws IOException
+    public static PDColorSpace createColorSpace( COSBase colorSpace, Map<String, PDColorSpace> colorSpaces ) throws IOException
     {
         PDColorSpace retval = null;
         if( colorSpace instanceof COSName )
@@ -79,51 +80,55 @@ public final class PDColorSpaceFactory
         else if( colorSpace instanceof COSArray )
         {
             COSArray array = (COSArray)colorSpace;
-            COSName type = (COSName)array.getObject( 0 );
-            if( type.getName().equals( PDCalGray.NAME ) )
+            String name = ((COSName)array.getObject( 0 )).getName();
+            if( name.equals( PDCalGray.NAME ) )
             {
                 retval = new PDCalGray( array );
             }
-            else if( type.getName().equals( PDDeviceRGB.NAME ) )
+            else if( name.equals( PDDeviceRGB.NAME ) )
             {
                 retval = PDDeviceRGB.INSTANCE;
             }
-            else if( type.getName().equals( PDDeviceCMYK.NAME ) )
+            else if( name.equals( PDDeviceGray.NAME ) )
+            {
+                retval = new PDDeviceGray();
+            }
+            else if( name.equals( PDDeviceCMYK.NAME ) )
             {
                 retval = PDDeviceCMYK.INSTANCE;
             }
-            else if( type.getName().equals( PDCalRGB.NAME ) )
+            else if( name.equals( PDCalRGB.NAME ) )
             {
                 retval = new PDCalRGB( array );
             }
-            else if( type.getName().equals( PDDeviceN.NAME ) )
+            else if( name.equals( PDDeviceN.NAME ) )
             {
                 retval = new PDDeviceN( array );
             }
-            else if( type.getName().equals( PDIndexed.NAME ) ||
-                   type.getName().equals( PDIndexed.ABBREVIATED_NAME ))
+            else if( name.equals( PDIndexed.NAME ) ||
+                   name.equals( PDIndexed.ABBREVIATED_NAME ))
             {
                 retval = new PDIndexed( array );
             }
-            else if( type.getName().equals( PDLab.NAME ) )
+            else if( name.equals( PDLab.NAME ) )
             {
                 retval = new PDLab( array );
             }
-            else if( type.getName().equals( PDSeparation.NAME ) )
+            else if( name.equals( PDSeparation.NAME ) )
             {
                 retval = new PDSeparation( array );
             }
-            else if( type.getName().equals( PDICCBased.NAME ) )
+            else if( name.equals( PDICCBased.NAME ) )
             {
                 retval = new PDICCBased( array );
             }
-            else if( type.getName().equals( PDPattern.NAME ) )
+            else if( name.equals( PDPattern.NAME ) )
             {
                 retval = new PDPattern( array );
             }
             else
             {
-                throw new IOException( "Unknown colorspace array type:" + type );
+                throw new IOException( "Unknown colorspace array type:" + name );
             }
         }
         else
@@ -157,7 +162,7 @@ public final class PDColorSpaceFactory
      *
      * @throws IOException If the color space name is unknown.
      */
-    public static PDColorSpace createColorSpace( String colorSpaceName, Map colorSpaces ) throws IOException
+    public static PDColorSpace createColorSpace( String colorSpaceName, Map<String, PDColorSpace> colorSpaces ) throws IOException
     {
         PDColorSpace cs = null;
         if( colorSpaceName.equals( PDDeviceCMYK.NAME ) ||
