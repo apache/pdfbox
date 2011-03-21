@@ -67,7 +67,7 @@ public class PDFText2HTML extends PDFTextStripper
         buf.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"" + "\n" 
                 + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
         buf.append("<html><head>");
-        buf.append("<title>" + getTitle() + "</title>\n");
+        buf.append("<title>" + escape(getTitle()) + "</title>\n");
         if(outputEncoding != null)
         {
             buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" 
@@ -188,6 +188,18 @@ public class PDFText2HTML extends PDFTextStripper
      */
     protected void writeString(String chars) throws IOException 
     {
+        super.writeString(escape(chars));
+    }
+    
+    /**
+     * Escape some HTML characters.
+     *
+     * @param chars String to be escaped
+     * @return returns escaped String.
+     */
+    private String escape(String chars)
+    {
+    	StringBuilder builder = new StringBuilder(chars.length());
         for (int i = 0; i < chars.length(); i++) 
         {
             char c = chars.charAt(i);
@@ -195,28 +207,29 @@ public class PDFText2HTML extends PDFTextStripper
             if ((c < 32) || (c > 126)) 
             {
                 int charAsInt = c;
-                super.writeString("&#" + charAsInt + ";");
+                builder.append("&#").append(charAsInt).append(";");
             } 
             else 
             {
                 switch (c) 
                 {
                 case 34:
-                    super.writeString("&quot;");
+                    builder.append("&quot;");
                     break;
                 case 38:
-                    super.writeString("&amp;");
+                    builder.append("&amp;");
                     break;
                 case 60:
-                    super.writeString("&lt;");
+                    builder.append("&lt;");
                     break;
                 case 62:
-                    super.writeString("&gt;");
+                    builder.append("&gt;");
                     break;
                 default:
-                    super.writeString(String.valueOf(c));
+                    builder.append(String.valueOf(c));
                 }
             }
         }
+        return builder.toString();
     }
 }
