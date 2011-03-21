@@ -273,6 +273,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void fillPath(int windingRule) throws IOException
     {
+        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         graphics.setColor( getGraphicsState().getNonStrokingColor().getJavaColor() );
         getLinePath().setWindingRule(windingRule);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
@@ -311,7 +312,8 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void strokePath() throws IOException
     {
-        graphics.setColor( getGraphicsState().getStrokingColor().getJavaColor() ); 
+        graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
+        graphics.setColor( getGraphicsState().getStrokingColor().getJavaColor() );
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
