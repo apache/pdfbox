@@ -43,6 +43,7 @@ public class ExtractImages
 
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
+    private static final String ADDKEY = "-addkey";
 
     private ExtractImages()
     {
@@ -72,6 +73,7 @@ public class ExtractImages
             String pdfFile = null;
             String password = "";
             String prefix = null;
+            boolean addKey = false;
             for( int i=0; i<args.length; i++ )
             {
                 if( args[i].equals( PASSWORD ) )
@@ -91,6 +93,10 @@ public class ExtractImages
                         usage();
                     }
                     prefix = args[i];
+                }
+                else if( args[i].equals( ADDKEY ) )
+                {
+                    addKey = true;
                 }
                 else
                 {
@@ -146,7 +152,15 @@ public class ExtractImages
                             {
                                 String key = (String)imageIter.next();
                                 PDXObjectImage image = (PDXObjectImage)images.get( key );
-                                String name = getUniqueFileName( key, image.getSuffix() );
+                                String name = null;
+                                if (addKey) 
+                                {
+                                    name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                                }
+                                else 
+                                {
+                                    name = getUniqueFileName( prefix, image.getSuffix() );
+                                }
                                 System.out.println( "Writing image:" + name );
                                 image.write2file( name );
                             }
@@ -185,6 +199,7 @@ public class ExtractImages
         System.err.println( "Usage: java org.apache.pdfbox.ExtractImages [OPTIONS] <PDF file>\n" +
             "  -password  <password>        Password to decrypt document\n" +
             "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
+            "  -addkey                      add the internal image key to the file name\n" +
             "  <PDF file>                   The PDF document to use\n"
             );
         System.exit( 1 );
