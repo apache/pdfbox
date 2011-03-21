@@ -468,14 +468,20 @@ public class PDFParser extends BaseParser
                 if(!pdfSource.isEOF())
                     eof = readLine(); // if there's more data to read, get the EOF flag
                 
-                // verify that EOF exists
+                // verify that EOF exists (see PDFBOX-979 for documentation on special cases)
                 if(!"%%EOF".equals(eof)) {
-                    // PDF does not conform to spec, we should warn someone
-                    log.warn("expected='%%EOF' actual='" + eof + "'");
-                    // if we're not at the end of a file, just put it back and move on
-                    if(!pdfSource.isEOF()) {
-                        pdfSource.unread(eof.getBytes("ISO-8859-1"));
-                        pdfSource.unread( SPACE_BYTE ); // we read a whole line; add space as newline replacement 
+                    if(eof.startsWith("%%EOF")) {
+                        // content after marker -> unread with first space byte for read newline
+                        pdfSource.unread(SPACE_BYTE); // we read a whole line; add space as newline replacement 
+                        pdfSource.unread(eof.substring(5).getBytes("ISO-8859-1"));
+                    } else {
+                        // PDF does not conform to spec, we should warn someone 
+                        log.warn("expected='%%EOF' actual='" + eof + "'"); 
+                        // if we're not at the end of a file, just put it back and move on 
+                        if(!pdfSource.isEOF()) { 
+                            pdfSource.unread( SPACE_BYTE ); // we read a whole line; add space as newline replacement 
+                            pdfSource.unread(eof.getBytes("ISO-8859-1")); 
+                        }
                     }
                 }
                 isEndOfFile = true; 
