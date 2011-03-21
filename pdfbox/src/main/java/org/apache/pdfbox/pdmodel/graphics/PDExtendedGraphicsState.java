@@ -136,10 +136,11 @@ public class PDExtendedGraphicsState implements COSObjectable
             else if( key.equals( COSName.CA ) )
             {
                 gs.setAlphaConstants( getStrokingAlpaConstant().floatValue() );
-            }/**
-            else if( key.equals( CA_NS ) )
+            }
+            else if( key.equals( COSName.CA_NS ) )
             {
-            }**/
+                gs.setNonStrokeAlphaConstants(getNonStrokingAlpaConstant().floatValue() );
+            }
             else if( key.equals( COSName.AIS ) )
             {
                 gs.setAlphaSource( getAlphaSourceFlag() );

@@ -16,8 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.GeneralPath;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -51,7 +50,8 @@ public class PDGraphicsState implements Cloneable
     private boolean strokeAdjustment = false;
     //blend mode
     //soft mask
-    private double alphaConstants = 0;
+    private double alphaConstants = 1.0;
+    private double nonStrokingAlphaConstants = 1.0;
     private boolean alphaSource = false;
 
     //DEVICE DEPENDENT parameters
@@ -209,9 +209,9 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Get the value of the alpha constants property.
+     * Get the value of the stroke alpha constants property.
      *
-     * @return The value of the alpha constants parameter.
+     * @return The value of the stroke alpha constants parameter.
      */
     public double getAlphaConstants()
     {
@@ -219,9 +219,9 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * set the value of the alpha constants property.
+     * set the value of the stroke alpha constants property.
      *
-     * @param value The value of the alpha constants parameter.
+     * @param value The value of the stroke alpha constants parameter.
      */
     public void setAlphaConstants(double value)
     {
@@ -229,9 +229,29 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * get the value of the alpha source property.
+     * Get the value of the non-stroke alpha constants property.
      *
-     * @return The value of the alpha source parameter.
+     * @return The value of the non-stroke alpha constants parameter.
+     */
+    public double getNonStrokeAlphaConstants()
+    {
+        return nonStrokingAlphaConstants;
+    }
+
+    /**
+     * set the value of the non-stroke alpha constants property.
+     *
+     * @param value The value of the non-stroke alpha constants parameter.
+     */
+    public void setNonStrokeAlphaConstants(double value)
+    {
+        nonStrokingAlphaConstants = value;
+    }
+
+    /**
+     * get the value of the stroke alpha source property.
+     *
+     * @return The value of the stroke alpha source parameter.
      */
     public boolean isAlphaSource()
     {
@@ -475,4 +495,13 @@ public class PDGraphicsState implements Cloneable
         return currentClippingPath;
     }
 
+    public Composite getStrokeJavaComposite() {
+
+        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alphaConstants);
+    }
+
+    public Composite getNonStrokeJavaComposite() {
+
+        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) nonStrokingAlphaConstants);
+    }
 }
