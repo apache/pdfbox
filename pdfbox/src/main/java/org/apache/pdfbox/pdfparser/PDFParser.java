@@ -584,6 +584,7 @@ public class PDFParser extends BaseParser
                      * and not part of the endobj keyword. Ex. Some files would have "endobj28"
                      * instead of "endobj"
                      */
+                    pdfSource.unread( SPACE_BYTE ); // add a space first in place of the newline consumed by readline()
                     pdfSource.unread( endObjectKey.substring( 6 ).getBytes("ISO-8859-1") );
                 } 
                 else if(endObjectKey.trim().endsWith("endobj"))
