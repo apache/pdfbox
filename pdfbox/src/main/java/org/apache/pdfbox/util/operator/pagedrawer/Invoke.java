@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
@@ -65,7 +65,11 @@ public class Invoke extends OperatorProcessor
         COSName objectName = (COSName)arguments.get( 0 );
         Map xobjects = drawer.getResources().getXObjects();
         PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
-        if( xobject instanceof PDXObjectImage )
+        if ( xobject == null )
+        {
+            log.warn("Can't find the XObject for '"+objectName.getName()+"'");
+        }
+        else if( xobject instanceof PDXObjectImage )
         {
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
@@ -124,6 +128,9 @@ public class Invoke extends OperatorProcessor
         }
         else if(xobject instanceof PDXObjectForm)
         {
+            // save the graphics state
+            context.getGraphicsStack().push( (PDGraphicsState)context.getGraphicsState().clone() );
+            
             PDXObjectForm form = (PDXObjectForm)xobject;
             COSStream invoke = (COSStream)form.getCOSObject();
             PDResources pdResources = form.getResources();
@@ -140,13 +147,9 @@ public class Invoke extends OperatorProcessor
                 context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
             }
             getContext().processSubStream( page, pdResources, invoke );
+            
+            // restore the graphics state
+            context.setGraphicsState( (PDGraphicsState)context.getGraphicsStack().pop() );
         }
-        else
-        {
-            //unknown xobject type
-        }
-
-
-        //invoke named object.
     }
 }

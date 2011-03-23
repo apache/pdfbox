@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -38,10 +40,16 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public abstract class PDXObject implements COSObjectable
 {
+    
+    /**
+     * Log instance.
+     */
+    private static final Log log = LogFactory.getLog(PDXObject.class);
+
     private PDStream xobject;
 
     /**
-     * Standard constuctor.
+     * Standard constructor.
      *
      * @param xobj The XObject dictionary.
      */
@@ -119,7 +127,7 @@ public abstract class PDXObject implements COSObjectable
         else if( xobject instanceof COSStream )
         {
             COSStream xstream = (COSStream)xobject;
-            String subtype = xstream.getNameAsString( "Subtype" );
+            String subtype = xstream.getNameAsString( COSName.SUBTYPE );
             if( subtype.equals( PDXObjectImage.SUB_TYPE ) )
             {
                 PDStream image = new PDStream( xstream );
@@ -142,18 +150,11 @@ public abstract class PDXObject implements COSObjectable
                     //text extraction then we don't want to throw an exception, so for now
                     //just return a PDPixelMap, which will break later on if it is
                     //actually used, but for text extraction it is not used.
-            
                     return new PDPixelMap( image );
-
                 }
-                /*else if( filters != null && filters.contains(COSName.FLATE_DECODE.getName()))
-                {
-            retval = new PDPixelMap(image);
-        }*/
                 else
                 {
                     retval = new PDPixelMap(image);
-            //throw new IOException ("Default branch: filters = " + filters.toString());
                 }
             }
             else if( subtype.equals( PDXObjectForm.SUB_TYPE ) )
@@ -162,14 +163,9 @@ public abstract class PDXObject implements COSObjectable
             }
             else
             {
-                throw new IOException( "Unknown xobject subtype '" + subtype + "'" );
+                log.warn( "Skipping unknown XObject subtype '" + subtype + "'" );
             }
         }
-        else
-        {
-            throw new IOException( "Unknown xobject type:" + xobject.getClass().getName() );
-        }
-
         return retval;
     }
 
@@ -182,7 +178,7 @@ public abstract class PDXObject implements COSObjectable
     public PDMetadata getMetadata()
     {
         PDMetadata retval = null;
-        COSStream mdStream = (COSStream)xobject.getStream().getDictionaryObject( "Metadata" );
+        COSStream mdStream = (COSStream)xobject.getStream().getDictionaryObject( COSName.METADATA );
         if( mdStream != null )
         {
             retval = new PDMetadata( mdStream );
@@ -197,6 +193,6 @@ public abstract class PDXObject implements COSObjectable
      */
     public void setMetadata( PDMetadata meta )
     {
-        xobject.getStream().setItem( "Metadata", meta );
+        xobject.getStream().setItem( COSName.METADATA, meta );
     }
 }
