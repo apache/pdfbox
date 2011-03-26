@@ -309,6 +309,10 @@ public abstract class PDCIDFont extends PDSimpleFont
             {
                 cidSystemInfo = "Identity-H";
             }
+            else if (cidSystemInfo.startsWith("Adobe-UCS-"))
+            {
+                cidSystemInfo = "Adobe-Identity-UCS";
+            }
             else
             {
                 cidSystemInfo = cidSystemInfo.substring(0,cidSystemInfo.lastIndexOf("-"))+"-UCS2";
@@ -318,7 +322,7 @@ public abstract class PDCIDFont extends PDSimpleFont
             {
                 String resourceName = resourceRootCMAP + cidSystemInfo;
                 try {
-                    parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), null );
+                    parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
                     if( cmap == null)
                     {
                         log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'" );
