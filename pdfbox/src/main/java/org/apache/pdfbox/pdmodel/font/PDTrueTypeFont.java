@@ -282,6 +282,7 @@ public class PDTrueTypeFont extends PDSimpleFont
 
             HeaderTable header = ttf.getHeader();
             PDRectangle rect = new PDRectangle();
+            float scaling = 1000f/header.getUnitsPerEm();
             rect.setLowerLeftX( header.getXMin() * 1000f/header.getUnitsPerEm() );
             rect.setLowerLeftY( header.getYMin() * 1000f/header.getUnitsPerEm() );
             rect.setUpperRightX( header.getXMax() * 1000f/header.getUnitsPerEm() );
@@ -338,8 +339,8 @@ public class PDTrueTypeFont extends PDSimpleFont
             int maxWidths = glyphToCCode.length;
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
-            List widths = new ArrayList(maxWidths);
-            Integer zero = new Integer( 250 );
+            List<Float> widths = new ArrayList<Float>(maxWidths);
+            float zero = 250;
             for( int i=0; i<maxWidths; i++ )
             {
                 widths.add( zero );
@@ -349,8 +350,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 
                         && widths.get( glyphToCCode[i]-firstChar) == zero )
                 {
-                    widths.set( glyphToCCode[i]-firstChar,
-                        new Integer( (int)(widthValues[i]* 1000f)/header.getUnitsPerEm() ) );
+                    widths.set( glyphToCCode[i]-firstChar, widthValues[i]*scaling );
                 }
             }
             setWidths( widths );

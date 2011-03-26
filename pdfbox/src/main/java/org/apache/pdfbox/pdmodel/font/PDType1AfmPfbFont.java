@@ -149,8 +149,8 @@ public class PDType1AfmPfbFont extends PDType1Font
         List<CharMetric> listmetric = metric.getCharMetrics();
         Encoding encoding = getFontEncoding();
         int maxWidths = 256;
-        List<Number> widths = new ArrayList(maxWidths);
-        Integer zero = new Integer(250);
+        List<Float> widths = new ArrayList<Float>(maxWidths);
+        float zero = 250;
         Iterator<CharMetric> iter = listmetric.iterator();
         for( int i=0; i<maxWidths; i++ )
         {

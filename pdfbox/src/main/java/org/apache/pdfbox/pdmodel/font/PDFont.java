@@ -691,7 +691,7 @@ public abstract class PDFont implements COSObjectable
      *
      * @return The widths of the characters.
      */
-    public List getWidths()
+    public List<Float> getWidths()
     {
         if (widths == null)
         {
@@ -709,7 +709,7 @@ public abstract class PDFont implements COSObjectable
      *
      * @param widths The widths of the character codes.
      */
-    public void setWidths( List widths )
+    public void setWidths( List<Float> widths )
     {
         this.widths = widths;
         font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( this.widths ) );
