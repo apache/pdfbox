@@ -377,7 +377,7 @@ public abstract class PDSimpleFont extends PDFont
                     COSStream encodingStream = (COSStream)encoding;
                     try 
                     {
-                        parseCmap( null, encodingStream.getUnfilteredStream(), null );
+                        parseCmap( null, encodingStream.getUnfilteredStream() );
                     }
                     catch(IOException exception) 
                     {
@@ -393,7 +393,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             String resourceName = resourceRootCMAP + cmapName;
             try {
-                parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), encodingName );
+                parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
                 if( cmap == null && encodingName == null)
                 {
                     log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
@@ -417,7 +417,7 @@ public abstract class PDSimpleFont extends PDFont
             if ( toUnicode instanceof COSStream )
             {
                 try {
-                    parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream(), null);
+                    parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream());
                 }
                 catch(IOException exception) 
                 {
@@ -433,7 +433,7 @@ public abstract class PDSimpleFont extends PDFont
                     cmapName = encodingName.getName();
                     String resourceName = resourceRootCMAP + cmapName;
                     try {
-                        parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ), encodingName );
+                        parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
                     }
                     catch(IOException exception) 
                     {

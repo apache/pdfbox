@@ -538,7 +538,7 @@ public abstract class PDFont implements COSObjectable
         return retval;
     }
 
-    protected void parseCmap( String cmapRoot, InputStream cmapStream, COSName encodingName )
+    protected void parseCmap( String cmapRoot, InputStream cmapStream)
     {
         if( cmapStream != null )
         {
@@ -546,10 +546,7 @@ public abstract class PDFont implements COSObjectable
             try 
             {
                 cmap = parser.parse( cmapRoot, cmapStream );
-                if( encodingName != null )
-                {
-                    cmapObjects.put( encodingName.getName(), cmap );
-                }
+                cmapObjects.put( cmap.getName(), cmap );
             }
             catch (IOException exception) {}
         }
