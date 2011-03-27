@@ -46,8 +46,14 @@ public class ExtractText
     private static final String END_PAGE = "-endPage";
     private static final String SORT = "-sort";
     private static final String IGNORE_BEADS = "-ignoreBeads";
+    private static final String DEBUG = "-debug";
     private static final String HTML = "-html";  // jjb - added simple HTML output
     private static final String FORCE = "-force"; //enables pdfbox to skip corrupt objects
+
+    /*
+     * debug flag
+     */
+    private boolean debug = false;
 
     /**
      * private constructor.
@@ -65,6 +71,12 @@ public class ExtractText
      * @throws Exception If there is an error parsing the document.
      */
     public static void main( String[] args ) throws Exception
+    {
+        ExtractText extractor = new ExtractText();
+        extractor.startExtraction(args);
+    }
+
+    public void startExtraction( String[] args ) throws Exception
     {
         boolean toConsole = false;
         boolean toHTML = false;
@@ -121,6 +133,10 @@ public class ExtractText
             {
                 separateBeads = false;
             }
+            else if( args[i].equals( DEBUG ) )
+            {
+                debug = true;
+            }
             else if( args[i].equals( END_PAGE ) )
             {
                 i++;
@@ -162,6 +178,7 @@ public class ExtractText
             PDDocument document = null;
             try
             {
+                long startTime = startProcessing("Loading PDF "+pdfFile);
                 try
                 {
                     //basically try to load it from a url first and if the URL
@@ -182,8 +199,8 @@ public class ExtractText
                         outputFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ext;
                     }
                 }
+                stopProcessing("Time for loading: ", startTime);
 
-                //document.print();
                 if( document.isEncrypted() )
                 {
                     StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
@@ -234,7 +251,10 @@ public class ExtractText
                 stripper.setShouldSeparateByBeads( separateBeads );
                 stripper.setStartPage( startPage );
                 stripper.setEndPage( endPage );
+
+                startTime = startProcessing("Starting text extraction");
                 stripper.writeText( document, output );
+                stopProcessing("Time for extraction: ", startTime);
             }
             finally
             {
@@ -247,6 +267,23 @@ public class ExtractText
                     document.close();
                 }
             }
+        }
+    }
+
+    private long startProcessing(String message) {
+        if (debug) 
+        {
+            System.err.println(message);
+        }
+        return System.currentTimeMillis();
+    }
+    
+    private void stopProcessing(String message, long startTime) {
+        if (debug)
+        {
+            long stopTime = System.currentTimeMillis();
+            float elapsedTime = ((float)(stopTime - startTime))/1000;
+            System.err.println(message + elapsedTime + " seconds");
         }
     }
 
@@ -263,6 +300,7 @@ public class ExtractText
             "  -sort                        Sort the text before writing\n" +
             "  -ignoreBeads                 Disables the separation by beads\n" +
             "  -force                       Enables pdfbox to ignore corrupt objects\n" +
+            "  -debug                       Enables debug output about the time consumption of every stage\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
             "  <PDF file>                   The PDF document to use\n" +
