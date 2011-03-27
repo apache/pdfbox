@@ -160,7 +160,6 @@ public class PDType1Font extends PDSimpleFont
                 try 
                 {
                     type1CFont = new PDType1CFont( super.font );
-                    awtFont = type1CFont.getawtFont();
                 }
                 catch (IOException exception) 
                 {
@@ -212,46 +211,47 @@ public class PDType1Font extends PDSimpleFont
     {
         if( awtFont == null )
         {
-            String baseFont = getBaseFont();
-            PDFontDescriptor fd = getFontDescriptor();
-            if (fd != null && fd instanceof PDFontDescriptorDictionary)
+            if (type1CFont != null)
             {
-                PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
-                if( fdDictionary.getFontFile() != null )
-                {
-                    try 
-                    {
-                        // create a type1 font with the embedded data
-                        awtFont = Font.createFont( Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream() );
-                    } 
-                    catch (FontFormatException e) 
-                    {
-                        log.info("Can't read the embedded type1 font " + fd.getFontName() );
-                    }
-                }
-                else if( fdDictionary.getFontFile3() != null)
-                {
-                    type1CFont = new PDType1CFont( super.font );
-                    awtFont = type1CFont.getawtFont();
-                }
-                
-                if (awtFont == null)
-                {
-                    // check if the font is part of our environment
-                    awtFont = FontManager.getAwtFont(fd.getFontName());
-                    if (awtFont == null)
-                    {
-                        log.info("Can't find the specified font " + fd.getFontName() );
-                    }
-                }
+                awtFont = type1CFont.getawtFont();
             }
             else
             {
-                // check if the font is part of our environment
-                awtFont = FontManager.getAwtFont(baseFont);
-                if (awtFont == null) 
+                String baseFont = getBaseFont();
+                PDFontDescriptor fd = getFontDescriptor();
+                if (fd != null && fd instanceof PDFontDescriptorDictionary)
                 {
-                    log.info("Can't find the specified basefont " + baseFont );
+                    PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
+                    if( fdDictionary.getFontFile() != null )
+                    {
+                        try 
+                        {
+                            // create a type1 font with the embedded data
+                            awtFont = Font.createFont( Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream() );
+                        } 
+                        catch (FontFormatException e) 
+                        {
+                            log.info("Can't read the embedded type1 font " + fd.getFontName() );
+                        }
+                    }
+                    if (awtFont == null)
+                    {
+                        // check if the font is part of our environment
+                        awtFont = FontManager.getAwtFont(fd.getFontName());
+                        if (awtFont == null)
+                        {
+                            log.info("Can't find the specified font " + fd.getFontName() );
+                        }
+                    }
+                }
+                else
+                {
+                    // check if the font is part of our environment
+                    awtFont = FontManager.getAwtFont(baseFont);
+                    if (awtFont == null) 
+                    {
+                        log.info("Can't find the specified basefont " + baseFont );
+                    }
                 }
             }
             if (awtFont == null)
