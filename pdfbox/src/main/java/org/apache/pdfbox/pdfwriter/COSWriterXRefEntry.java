@@ -27,29 +27,45 @@ import org.apache.pdfbox.cos.COSBase;
  * @author Michael Traut
  * @version $Revision: 1.7 $
  */
-public class COSWriterXRefEntry implements Comparable
+public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
 {
     private long offset;
     private COSBase object;
     private COSObjectKey key;
     private boolean free = false;
-
+    private static COSWriterXRefEntry nullEntry;
 
 
     /**
      * {@inheritDoc}
      */
-    public int compareTo(Object obj)
+    public int compareTo(COSWriterXRefEntry obj)
     {
         if (obj instanceof COSWriterXRefEntry)
         {
-            return (int)(getKey().getNumber() - ((COSWriterXRefEntry)obj).getKey().getNumber());
+            return (int)(getKey().getNumber() - obj.getKey().getNumber());
         }
         else
         {
             return -1;
         }
     }
+    
+    /**
+     * This will return a null entry: 0000000000 65535 f
+     * 
+     * @return null COSWriterXRefEntry
+     */
+    public static COSWriterXRefEntry getNullEntry()
+    {
+      if (nullEntry == null)
+      {
+        nullEntry = new COSWriterXRefEntry(0, null, new COSObjectKey(0, 65535));
+        nullEntry.setFree(true);
+      }
+      return nullEntry;
+    }
+    
     /**
      * This will get the Object key.
      *

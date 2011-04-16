@@ -31,6 +31,7 @@ import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFXrefStreamParser;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -67,6 +68,16 @@ public class COSDocument extends COSBase
      * Document trailer dictionary.
      */
     private COSDictionary trailer;
+    
+    /**
+     * Document signature dictionary
+     */
+    private COSDictionary signDictionary = null;
+    
+    /**
+     * Some doc
+     */
+    private SignatureInterface signatureInterface;
 
     /**
      * This file will store the streams in order to conserve memory.
@@ -78,7 +89,9 @@ public class COSDocument extends COSBase
     private String headerString = "%PDF-1.4";
 
     private boolean warnMissingClose = true;
-
+    
+    private int startXref;
+    
     private boolean closed = false;
 
     /**
@@ -313,9 +326,13 @@ public class COSDocument extends COSBase
         return (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
     }
 
+    public SignatureInterface getSignatureInterface() {
+        return signatureInterface;
+    }
+    
     /**
      * This will set the encryption dictionary, this should only be called when
-     * encypting the document.
+     * encrypting the document.
      *
      * @param encDictionary The encryption dictionary.
      */
@@ -324,6 +341,35 @@ public class COSDocument extends COSBase
         trailer.setItem( COSName.ENCRYPT, encDictionary );
     }
 
+    public COSDictionary getLastSignatureDictionary() throws IOException {
+      if (signDictionary == null)
+      {
+        COSObject documentCatalog = getCatalog();
+        if (documentCatalog != null)
+        {
+          COSDictionary acroForm = (COSDictionary)documentCatalog.getDictionaryObject(COSName.getPDFName("AcroForm"));
+          if (acroForm !=null)
+          {
+            COSArray fields = (COSArray)acroForm.getDictionaryObject("Fields");
+            for ( Object object : fields )
+            {
+              COSObject dict = (COSObject)object;
+              if(dict.getItem(COSName.getPDFName("FT")).equals(COSName.getPDFName("Sig")))
+              {
+                COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
+                
+                if (dictionaryObject != null) 
+                {
+                  signDictionary = (COSDictionary)dictionaryObject;
+                }
+              }
+            }
+          }
+        }
+      }
+      return signDictionary;
+    }
+    
     /**
      * This will get the document ID.
      *
@@ -342,6 +388,10 @@ public class COSDocument extends COSBase
     public void setDocumentID( COSArray id )
     {
         getTrailer().setItem(COSName.ID, id);
+    }
+    
+    public void setSignatureInterface(SignatureInterface signatureInterface) {
+      this.signatureInterface = signatureInterface;
     }
 
     /**
@@ -401,6 +451,7 @@ public class COSDocument extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws COSVisitorException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws COSVisitorException
     {
         return visitor.visitFromDocument( this );
@@ -428,6 +479,7 @@ public class COSDocument extends COSBase
      * idea for the user to close the PDF document at the earliest possible to conserve resources.
      * @throws IOException if an error occurs while closing the temporary files
      */
+    @Override
     protected void finalize() throws IOException
     {
         if (!closed) {
@@ -505,7 +557,7 @@ public class COSDocument extends COSBase
         COSObject obj = null;
         if( key != null )
         {
-            obj = (COSObject) objectPool.get(key);
+            obj = objectPool.get(key);
         }
         if (obj == null)
         {
@@ -573,5 +625,25 @@ public class COSDocument extends COSBase
         }
         setTrailer( trailerDict );
     }
+    
+    /**
+     * This method set the startxref value of the document. This will only 
+     * be needed for incremental updates.
+     * 
+     * @param readInt
+     */
+    public void setStartXref(int startXref)
+    {
+      this.startXref = startXref;
+    }
 
+    /**
+     * Return the startXref Position of the parsed document. This will only be needed for incremental updates.
+     * 
+     * @return a int with the old position of the startxref
+     */
+    public int getStartXref()
+    {
+      return startXref;
+    }
 }

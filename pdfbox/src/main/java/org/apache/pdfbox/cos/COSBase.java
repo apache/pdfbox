@@ -32,8 +32,14 @@ public abstract class COSBase implements COSObjectable
     /**
      * Constructor.
      */
+  
+    private boolean needToBeUpdate;
+    
+    private boolean direct;
+  
     public COSBase()
     {
+      needToBeUpdate = false;
     }
 
     /**
@@ -69,4 +75,36 @@ public abstract class COSBase implements COSObjectable
      * @throws COSVisitorException If an error occurs while visiting this object.
      */
     public abstract Object accept(ICOSVisitor visitor) throws COSVisitorException;
+    
+    public void setNeedToBeUpdate(boolean flag) 
+    {
+      needToBeUpdate = flag;
+    }
+    
+    /**
+     * If the state is set true, the dictionary will be written direct into the called object. 
+     * This means, no indirect object will be created.
+     * 
+     * @return the state
+     */
+    public boolean isDirect() 
+    {
+        return direct;
+    }
+    
+    /**
+     * Set the state true, if the dictionary should be written as a direct object and not indirect.
+     * 
+     * @param direct set it true, for writting direct object
+     */
+    public void setDirect(boolean direct)
+    {
+      this.direct = direct;
+    }
+    
+    public boolean isNeedToBeUpdate() 
+    {
+      return needToBeUpdate;
+    }
+
 }

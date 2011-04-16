@@ -1115,6 +1115,56 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final byte[] NAME_ESCAPE = new byte[] { 35  };  //The # character
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SUBFILTER = new COSName("SubFilter");
+    /**
+     * A signature filter value.
+     */
+    public static final COSName ADOBE_PPKLITE = new COSName("Adobe.PPKLite");
+    /**
+     * A signature filter value.
+     */
+    public static final COSName ENTRUST_PPKEF = new COSName("Entrust.PPKEF");
+    /**
+     * A signature filter value.
+     */
+    public static final COSName CICI_SIGNIT = new COSName("CICI.SignIt");
+    /**
+     * A signature filter value.
+     */
+    public static final COSName VERISIGN_PPKVS = new COSName("VeriSign.PPKVS");
+    /**
+     * A signature subfilter value.
+     */
+    public static final COSName ADBE_X509_RSA_SHA1 = new COSName("adbe.x509.rsa_sha1");
+    /**
+     * A signature subfilter value.
+     */
+    public static final COSName ADBE_PKCS7_DETACHED = new COSName("adbe.pkcs7.detached");
+    /**
+     * A signature subfilter value.www
+     */
+    public static final COSName ADBE_PKCS7_SHA1 = new COSName("adbe.pkcs7.sha1");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName LOCATION = new COSName("Location");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName REASON = new COSName("Reason");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName BYTERANGE = new COSName("ByteRange");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SIG = new COSName("Sig");
+
+    
     private String name;
     private int hashCode;
 

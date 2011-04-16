@@ -18,9 +18,14 @@ package org.apache.pdfbox.pdfwriter;
 
 
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 
 import org.apache.pdfbox.util.StringUtil;
 
@@ -53,7 +58,10 @@ public class COSStandardOutputStream extends FilterOutputStream
     private long pos = 0;
     // flag to prevent generating two newlines in sequence
     private boolean onNewLine = false;
-
+    private FileChannel fileChannel = null;
+    private FileDescriptor fileDescriptor = null;
+    private long mark = -1;
+    
     /**
      * COSOutputStream constructor comment.
      *
@@ -62,7 +70,17 @@ public class COSStandardOutputStream extends FilterOutputStream
     public COSStandardOutputStream(OutputStream out)
     {
         super(out);
+        if(out instanceof FileOutputStream) {
+            try {
+                fileChannel = ((FileOutputStream)out).getChannel();
+                fileDescriptor = ((FileOutputStream)out).getFD();
+                pos = fileChannel.position();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+    
     /**
      * This will get the current position in the stream.
      *
@@ -72,8 +90,24 @@ public class COSStandardOutputStream extends FilterOutputStream
     {
         return pos;
     }
+    
     /**
-     * This will tell if we are on a newling.
+     * This will get the current position in the stream.
+     *
+     * @return The current position in the stream.
+     * @throws IOException 
+     */
+    public void setPos(long pos) throws IOException
+    {
+        if(fileChannel!=null) {
+            checkPos();
+            this.pos=pos;
+            fileChannel.position(pos);
+        }
+    }
+    
+    /**
+     * This will tell if we are on a newline.
      *
      * @return true If we are on a newline.
      */
@@ -100,8 +134,10 @@ public class COSStandardOutputStream extends FilterOutputStream
      *
      * @throws IOException If the underlying stream throws an exception.
      */
+    @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
+        checkPos();
         setOnNewLine(false);
         out.write(b, off, len);
         pos += len;
@@ -114,13 +150,15 @@ public class COSStandardOutputStream extends FilterOutputStream
      *
      * @throws IOException If there is an error writing to the underlying stream.
      */
+    @Override
     public void write(int b) throws IOException
     {
+        checkPos();
         setOnNewLine(false);
         out.write(b);
         pos++;
     }
-
+    
     /**
      * This will write a CRLF to the stream.
      *
@@ -129,7 +167,6 @@ public class COSStandardOutputStream extends FilterOutputStream
     public void writeCRLF() throws IOException
     {
         write(CRLF);
-        // setOnNewLine(true);
     }
 
     /**
@@ -154,6 +191,34 @@ public class COSStandardOutputStream extends FilterOutputStream
     public void writeLF() throws IOException
     {
         write(LF);
-        // setOnNewLine(true);
+    }
+    
+    public void mark() throws IOException 
+    {
+        checkPos();
+        mark = getPos();
+    }
+    
+    public void reset() throws IOException 
+    {
+        if(mark<0)
+            return;
+        setPos(mark);
+    }
+    
+    private void checkPos() throws IOException 
+    {
+        if(fileChannel.position() != getPos())
+            throw new IOException("OutputStream has an invalid position");
+    }
+
+    public byte[] getFileInBytes(int[] byteRange) throws IOException 
+    {
+        return null;
+    }
+    
+    public InputStream getFilterInputStream(int[] byteRange) 
+    {
+        return new COSFilterInputStream(new FileInputStream(fileDescriptor), byteRange);
     }
 }

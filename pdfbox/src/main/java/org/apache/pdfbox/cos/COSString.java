@@ -21,9 +21,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.pdfbox.persistence.util.COSHEXTable;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
  * This represents a string object in a PDF document.
@@ -83,6 +82,10 @@ public class COSString extends COSBase
      */
     private boolean forceLiteralForm = false;
 
+    /**
+     * Forces the string to be serialized in hex form but not literal form.
+     */
+    private boolean forceHexForm = false;
 
     /**
      * Constructor.
@@ -165,6 +168,18 @@ public class COSString extends COSBase
         forceLiteralForm = v;
     }
 
+    /**
+     * Forces the string to be written in hexadecimal form instead of literal form.
+     * 
+     * @param v if v is true the string will be written in hexadecimal form otherwise it will be written in literal if
+     *          necessary.
+     */
+
+    public void setForceHexForm(boolean v)
+    {
+      forceHexForm = v;
+    }
+    
     /**
      * This will create a COS string from a string of hex characters.
      *
@@ -322,6 +337,7 @@ public class COSString extends COSBase
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "COSString{" + this.getString() + "}";
@@ -345,7 +361,7 @@ public class COSString extends COSBase
             //outside the ASCII range.
             outsideASCII = bytes[i] <0;
         }
-        if( !outsideASCII || forceLiteralForm )
+        if ((!outsideASCII || forceLiteralForm) && !forceHexForm)
         {
             output.write(STRING_OPEN);
             for( int i=0; i<length; i++ )
@@ -358,7 +374,7 @@ public class COSString extends COSBase
                     case '\\':
                     {
                         output.write(ESCAPE);
-                        output.write(b);
+                        output.write((byte)b);
                         break;
                     }
                     case 10: //LF
@@ -388,7 +404,7 @@ public class COSString extends COSBase
                     }
                     default:
                     {
-                        output.write( b );
+                        output.write( (byte)b );
                     }
                 }
             }
@@ -414,6 +430,7 @@ public class COSString extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws COSVisitorException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws COSVisitorException
     {
         return visitor.visitFromString( this );
@@ -422,6 +439,7 @@ public class COSString extends COSBase
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object obj)
     {
         if (obj instanceof COSString)
@@ -435,6 +453,7 @@ public class COSString extends COSBase
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode()
     {
         return getString().hashCode();
