@@ -97,7 +97,7 @@ public class PDFieldFactory
         }
         else if( isSignature( pdField ) )
         {
-            pdField = new PDSignature( acroForm, field );
+            pdField = new PDSignatureField( acroForm, field );
         }
         else
         {

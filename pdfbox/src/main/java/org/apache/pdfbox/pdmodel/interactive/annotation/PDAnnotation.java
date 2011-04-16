@@ -617,6 +617,16 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
+     * This will set the corresponding page for this annotation.
+     * 
+     * @param page is the corresponding page
+     */
+    public void setPage(PDPage page)
+    {
+        this.getDictionary().setItem(COSName.P, page);
+    }
+    
+    /**
      * This will retrieve the corresponding page of this annotation.
      * 
      * @return the corresponding page

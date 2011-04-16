@@ -207,7 +207,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      */
     public COSBase get( int index )
     {
-        return (COSBase)objects.get( index );
+        return objects.get( index );
     }
 
     /**
@@ -356,7 +356,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      */
     public COSBase remove( int i )
     {
-        return (COSBase)objects.remove( i );
+        return objects.remove( i );
     }
 
     /**
@@ -404,6 +404,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "COSArray{" + objects + "}";
@@ -503,6 +504,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      * @return any object, depending on the visitor implementation, or null
      * @throws COSVisitorException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws COSVisitorException
     {
         return visitor.visitFromArray(this);

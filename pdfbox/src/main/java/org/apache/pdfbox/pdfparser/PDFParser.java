@@ -218,7 +218,7 @@ public class PDFParser extends BaseParser
                 if( !wasLastParsedObjectEOF )
                 {
                     throw e;
-                } 
+                }
             }
         }
         catch( Throwable t )
@@ -647,9 +647,9 @@ public class PDFParser extends BaseParser
         }
         skipSpaces();
         /* This integer is the byte offset of the first object referenced by the xref or xref stream
-         * Not needed for PDFbox
+         * Needed for the incremental update (PREV)
          */
-        readInt();
+        getDocument().setStartXref(readInt());
         return true;
     }
 
@@ -806,6 +806,7 @@ public class PDFParser extends BaseParser
             this.objectKey = key;
             this.object = pdfObject;
         }
+        @Override
         public String toString()
         {
             return "Object(" + offset + ", " + objectKey + ")";
