@@ -28,7 +28,6 @@ import java.util.Arrays;
 public class RandomAccessBuffer implements RandomAccess
 {
 
-    private static final int EXTRA_SPACE = 16384; // 16kb
     private byte[] buffer;
     private long pointer;
     private long size;
@@ -38,7 +37,8 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public RandomAccessBuffer()
     {
-        buffer = new byte[EXTRA_SPACE];
+        // starting with a 16kb buffer
+        buffer = new byte[16384];
         pointer = 0;
         size = 0;
     }
@@ -103,7 +103,20 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void write(int b) throws IOException
     {
-        write(new byte[] {(byte) b}, 0, 1);
+        if (pointer >= buffer.length)
+        {
+            if (pointer >= Integer.MAX_VALUE) 
+            {
+                throw new IOException("RandomAccessBuffer overflow");
+            }
+            buffer = Arrays.copyOf(buffer, (int)Math.min(2L * buffer.length, Integer.MAX_VALUE));
+        }
+        buffer[(int)pointer] = (byte)b;
+        pointer++;
+        if (pointer > this.size)
+        {
+            this.size = pointer;
+        }
     }
 
     /**
@@ -111,13 +124,15 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void write(byte[] b, int offset, int length) throws IOException
     {
-        if (pointer+length >= buffer.length)
+        long newSize = pointer+length;
+        if (newSize >= buffer.length)
         {
-            // expand buffer
-            byte[] temp = new byte[buffer.length+length+EXTRA_SPACE];
-            Arrays.fill(temp, (byte)0);
-            System.arraycopy(buffer, 0, temp, 0, (int) this.size);
-            buffer = temp;
+            if (newSize > Integer.MAX_VALUE) 
+            {
+                throw new IOException("RandomAccessBuffer overflow");
+            }
+            newSize = Math.min(Math.max(2L * buffer.length, newSize), Integer.MAX_VALUE);
+            buffer = Arrays.copyOf(buffer, (int)newSize);
         }
         System.arraycopy(b, offset, buffer, (int)pointer, length);
         pointer += length;
