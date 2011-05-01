@@ -40,7 +40,7 @@ public class RandomAccessBuffer implements RandomAccess
         // starting with a 16kb buffer
         buffer = new byte[16384];
         pointer = 0;
-        size = 16384;
+        size = 0;
     }
 
     /**
@@ -70,8 +70,7 @@ public class RandomAccessBuffer implements RandomAccess
         {
             return -1;
         }
-        pointer++;
-        return buffer[(int)pointer] & 0xff;
+        return buffer[(int)pointer++] & 0xff;
     }
 
     /**
@@ -110,8 +109,7 @@ public class RandomAccessBuffer implements RandomAccess
             }
             buffer = Arrays.copyOf(buffer, (int)Math.min(2L * buffer.length, Integer.MAX_VALUE));
         }
-        buffer[(int)pointer] = (byte)b;
-        pointer++;
+        buffer[(int)pointer++] = (byte)b;
         if (pointer > this.size)
         {
             this.size = pointer;
