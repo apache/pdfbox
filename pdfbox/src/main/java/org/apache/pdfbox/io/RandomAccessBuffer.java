@@ -17,7 +17,6 @@
 package org.apache.pdfbox.io;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * An interface to allow PDF files to be stored completely in memory.
@@ -107,7 +106,7 @@ public class RandomAccessBuffer implements RandomAccess
             {
                 throw new IOException("RandomAccessBuffer overflow");
             }
-            buffer = Arrays.copyOf(buffer, (int)Math.min(2L * buffer.length, Integer.MAX_VALUE));
+            buffer = expandBuffer(buffer, (int)Math.min(2L * buffer.length, Integer.MAX_VALUE));
         }
         buffer[(int)pointer++] = (byte)b;
         if (pointer > this.size)
@@ -129,7 +128,7 @@ public class RandomAccessBuffer implements RandomAccess
                 throw new IOException("RandomAccessBuffer overflow");
             }
             newSize = Math.min(Math.max(2L * buffer.length, newSize), Integer.MAX_VALUE);
-            buffer = Arrays.copyOf(buffer, (int)newSize);
+            buffer = expandBuffer(buffer, (int)newSize);
         }
         System.arraycopy(b, offset, buffer, (int)pointer, length);
         pointer += length;
@@ -137,5 +136,20 @@ public class RandomAccessBuffer implements RandomAccess
         {
             this.size = pointer;
         }
+    }
+
+    /**
+     * expand the given buffer to the new size.
+     * 
+     * @param buffer the given buffer
+     * @param newSize the new size
+     * @return the expanded buffer
+     * 
+     */
+    private byte[] expandBuffer(byte[] buffer, int newSize) 
+    {
+        byte[] expandedBuffer = new byte[newSize];
+        System.arraycopy(buffer, 0, expandedBuffer, 0, newSize);
+        return expandedBuffer;
     }
 }
