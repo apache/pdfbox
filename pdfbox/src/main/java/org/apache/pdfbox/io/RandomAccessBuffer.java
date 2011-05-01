@@ -149,7 +149,7 @@ public class RandomAccessBuffer implements RandomAccess
     private byte[] expandBuffer(byte[] buffer, int newSize) 
     {
         byte[] expandedBuffer = new byte[newSize];
-        System.arraycopy(buffer, 0, expandedBuffer, 0, newSize);
+        System.arraycopy(buffer, 0, expandedBuffer, 0, buffer.length);
         return expandedBuffer;
     }
 }
