@@ -40,7 +40,7 @@ public class RandomAccessBuffer implements RandomAccess
         // starting with a 16kb buffer
         buffer = new byte[16384];
         pointer = 0;
-        size = 0;
+        size = 16384;
     }
 
     /**
@@ -70,9 +70,8 @@ public class RandomAccessBuffer implements RandomAccess
         {
             return -1;
         }
-        int result = buffer[(int)pointer];
         pointer++;
-        return result;
+        return buffer[(int)pointer] & 0xff;
     }
 
     /**
