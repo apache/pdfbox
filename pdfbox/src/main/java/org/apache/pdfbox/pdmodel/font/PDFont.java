@@ -546,7 +546,11 @@ public abstract class PDFont implements COSObjectable
             try 
             {
                 cmap = parser.parse( cmapRoot, cmapStream );
-                cmapObjects.put( cmap.getName(), cmap );
+                // limit the cache to external CMaps
+                if (cmapRoot != null)
+                {
+                    cmapObjects.put( cmap.getName(), cmap );
+                }
             }
             catch (IOException exception) {}
         }
@@ -810,4 +814,11 @@ public abstract class PDFont implements COSObjectable
     {
         this.hasToUnicode = hasToUnicode;
     }
+    
+    public COSString createString(String text) throws IOException
+    {
+        return new COSString(text);
+        
+    }
+
 }
