@@ -208,7 +208,7 @@ public class Encrypt
      */
     private static void usage()
     {
-        System.err.println( "usage: java org.apache.pdfbox.Encrypt [options] <inputfile> [outputfile]" );
+        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar Encrypt [options] <inputfile> [outputfile]" );
         System.err.println( "   -O <password>                            " +
                                             "Set the owner password(ignored if cert is set)" );
         System.err.println( "   -U <password>                            " +

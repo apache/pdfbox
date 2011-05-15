@@ -132,6 +132,6 @@ public class WriteDecodedDoc
      */
     private void usage()
     {
-        System.err.println( "usage: " + this.getClass().getName() + " <input-file> <output-file>" );
+        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc <input-file> <output-file>" );
     }
 }

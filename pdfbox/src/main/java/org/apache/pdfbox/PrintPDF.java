@@ -143,7 +143,7 @@ public class PrintPDF
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.PrintPDF [OPTIONS] <PDF file>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [OPTIONS] <PDF file>\n" +
             "  -password  <password>        Password to decrypt document\n" +
             "  -silentPrint                 Print without prompting for printer info\n"
             );

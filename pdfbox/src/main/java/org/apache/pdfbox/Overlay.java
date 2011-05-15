@@ -176,7 +176,7 @@ public class Overlay
 
     private static void usage()
     {
-        System.err.println( "usage: java " + Overlay.class.getName() + " <overlay.pdf> <document.pdf> <result.pdf>" );
+        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar Overlay <overlay.pdf> <document.pdf> <result.pdf>" );
     }
 
     /**
