@@ -73,10 +73,10 @@ public class PDFToImage
         int endPage = Integer.MAX_VALUE;
         String color = "rgb";
         int resolution;
-	float cropBoxLowerLeftX = 0;
-	float cropBoxLowerLeftY = 0;
-	float cropBoxUpperRightX = 0;
-	float cropBoxUpperRightY = 0;
+        float cropBoxLowerLeftX = 0;
+        float cropBoxLowerLeftY = 0;
+        float cropBoxUpperRightX = 0;
+	    float cropBoxUpperRightY = 0;
         try
         {
             resolution = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -256,7 +256,7 @@ public class PDFToImage
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.PDFToImage [OPTIONS] <PDF file>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [OPTIONS] <PDF file>\n" +
             "  -password  <password>          Password to decrypt document\n" +
             "  -imageType <image type>        (" + getImageFormats() + ")\n" +
             "  -outputPrefix <output prefix>  Filename prefix for image files\n" +

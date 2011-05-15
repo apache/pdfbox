@@ -209,7 +209,7 @@ public class PDFSplit
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.PDFSplit [OPTIONS] <PDF file>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFSplit [OPTIONS] <PDF file>\n" +
             "  -password  <password>        Password to decrypt document\n" +
             "  -split     <integer>         split after this many pages\n" +
             "  <PDF file>                   The PDF document to use\n"

@@ -292,7 +292,7 @@ public class ExtractText
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.ExtractText [OPTIONS] <PDF file> [Text File]\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [OPTIONS] <PDF file> [Text File]\n" +
             "  -password  <password>        Password to decrypt document\n" +
             "  -encoding  <output encoding> (ISO-8859-1,UTF-16BE,UTF-16LE,...)\n" +
             "  -console                     Send text to console instead of file\n" +

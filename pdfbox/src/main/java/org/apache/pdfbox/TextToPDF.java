@@ -226,7 +226,7 @@ public class TextToPDF
     private void usage()
     {
         String[] std14 = PDType1Font.getStandard14Names();
-        System.err.println( "usage: " + this.getClass().getName() + " [options] <output-file> <text-file>" );
+        System.err.println( "usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <output-file> <text-file>" );
         System.err.println( "    -standardFont <name>    default:" + PDType1Font.HELVETICA.getBaseFont() );
         for( int i=0; i<std14.length; i++ )
         {

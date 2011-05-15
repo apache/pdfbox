@@ -73,7 +73,7 @@ public class PDFMerger
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.PDFMerger <Source PDF File 2..n> <Destination PDF File>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger <Source PDF File 2..n> <Destination PDF File>\n" +
             "  <Source PDF File 2..n>       2 or more source PDF documents to merge\n" +
             "  <Destination PDF File>       The PDF document to save the merged documents to\n"
             );

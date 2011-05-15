@@ -178,7 +178,7 @@ public class Decrypt
      */
     private static void usage()
     {
-        System.err.println( "usage: java org.apache.pdfbox.Decrypt " +
+        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar Decrypt " +
                             "[options] <inputfile> [outputfile]" );
         System.err.println( "-alias      The alias of the key in the certificate file " +
                                          "(mandatory if several keys are available)");
