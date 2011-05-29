@@ -16,7 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,10 +30,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -47,13 +49,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 public class PDCcitt extends PDXObjectImage
 {
 
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDCcitt.class);
-
     private static final List<String> FAX_FILTERS = new ArrayList<String>();
-
+    
     static
     {
         FAX_FILTERS.add( COSName.CCITTFAX_DECODE.getName() );
@@ -110,28 +107,46 @@ public class PDCcitt extends PDXObjectImage
     public BufferedImage getRGBImage() throws IOException
     {
         BufferedImage retval = null;
+        InputStream stream = getCOSStream().getUnfilteredStream();
+        COSBase decodeP = getPDStream().getStream().getDictionaryObject(COSName.DECODE_PARMS);
+        COSDictionary decodeParms = null;
+        if (decodeP instanceof COSDictionary)
+            decodeParms = (COSDictionary)decodeP;
+        else if (decodeP instanceof COSArray)
+            decodeParms =  (COSDictionary)((COSArray)decodeP).get(0);
+        int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
+        int rows = decodeParms.getInt(COSName.ROWS, 0);
+        if (rows == 0)
+        {
+            rows = getPDStream().getStream().getInt(COSName.HEIGHT);
+        }
+        boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
+        
+        byte[] map;
+        if (blackIsOne)
+            map = new byte[] {(byte)0x00, (byte)0xff};
+        else
+            map = new byte[] {(byte)0xff};
+        ColorModel cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+        WritableRaster raster = cm.createCompatibleWritableRaster( cols, rows );
+        DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
+        byte[] bufferData = buffer.getData();
 
-        InputStream tiff = new TiffWrapper(
-                getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
-                getCOSStream());
-        try
-        {
-            retval = ImageIO.read(tiff);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int bytesRead;
+        byte[] data = new byte[16384];
+        while ((bytesRead = stream.read(data, 0, data.length)) != -1) {
+            baos.write(data, 0, bytesRead);
         }
-        catch (Exception e)
-        {
-            log.error(e, e);
-        }
-        finally
-        {
-            if (tiff != null)
-            {
-                tiff.close();
-            }
-        }
+        baos.flush();
+        byte[] decompressed = baos.toByteArray();
+        System.arraycopy( decompressed, 0,bufferData, 0, 
+                (decompressed.length<bufferData.length?decompressed.length: bufferData.length) );
+        retval = new BufferedImage(cm, raster, false, null);
+
         return retval;
     }
-
+    
     /**
      * This writes a tiff to out.
      *
@@ -139,6 +154,7 @@ public class PDCcitt extends PDXObjectImage
      */
     public void write2OutputStream(OutputStream out) throws IOException
     {
+        // We should use another format than TIFF to get rid of the TiffWrapper
         InputStream data = new TiffWrapper(getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),getCOSStream());
         byte[] buf = new byte[1024];
         int amountRead = -1;
