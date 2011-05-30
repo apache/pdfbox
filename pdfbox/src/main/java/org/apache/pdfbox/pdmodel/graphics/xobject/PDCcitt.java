@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -107,8 +108,8 @@ public class PDCcitt extends PDXObjectImage
     public BufferedImage getRGBImage() throws IOException
     {
         BufferedImage retval = null;
-        InputStream stream = getCOSStream().getUnfilteredStream();
-        COSBase decodeP = getPDStream().getStream().getDictionaryObject(COSName.DECODE_PARMS);
+        COSStream stream = getCOSStream();
+        COSBase decodeP = stream.getDictionaryObject(COSName.DECODE_PARMS);
         COSDictionary decodeParms = null;
         if (decodeP instanceof COSDictionary)
             decodeParms = (COSDictionary)decodeP;
@@ -116,9 +117,11 @@ public class PDCcitt extends PDXObjectImage
             decodeParms =  (COSDictionary)((COSArray)decodeP).get(0);
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        if (rows == 0)
+        int height = stream.getInt(COSName.HEIGHT);
+        if (rows > 0 && height > 0)
         {
-            rows = getPDStream().getStream().getInt(COSName.HEIGHT);
+            // ensure that rows doesn't contain implausible data, see PDFBOX-771
+            rows = Math.min(rows, height);
         }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
         
@@ -135,7 +138,8 @@ public class PDCcitt extends PDXObjectImage
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int bytesRead;
         byte[] data = new byte[16384];
-        while ((bytesRead = stream.read(data, 0, data.length)) != -1) {
+        InputStream unfilteredStream = stream.getUnfilteredStream();
+        while ((bytesRead = unfilteredStream.read(data, 0, data.length)) != -1) {
             baos.write(data, 0, bytesRead);
         }
         baos.flush();

@@ -71,9 +71,11 @@ public class CCITTFaxDecodeFilter implements Filter
         compressedData.read(compressed, 0, length);
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        if (rows == 0)
+        int height = options.getInt(COSName.HEIGHT, 0); 
+        if (rows > 0 && height > 0)
         {
-            rows = options.getInt(COSName.HEIGHT);
+            // ensure that rows doesn't contain implausible data, see PDFBOX-771
+            rows = Math.min(rows, height);
         }
         int k = decodeParms.getInt(COSName.K);
         int arraySize = (cols + 7) / 8 * rows;
