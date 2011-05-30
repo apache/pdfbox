@@ -148,6 +148,11 @@ public class PDPixelMap extends PDXObjectImage
             if (bpc == 1)
             {
                 byte[] map = null;
+                if (colorspace instanceof PDIndexed) 
+                {
+                    // extract the base colorspace
+                    colorspace = ((PDIndexed)colorspace).getBaseColorSpace(); 
+                }
                 if (colorspace instanceof PDDeviceGray)
                 {
                     COSArray decode = getDecode();
