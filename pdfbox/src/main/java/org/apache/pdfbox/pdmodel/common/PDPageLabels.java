@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -169,7 +170,7 @@ public class PDPageLabels implements COSObjectable
             arr.add(COSInteger.get(i.getKey()));
             arr.add(i.getValue());
         }
-        dict.setItem("Nums", arr);
+        dict.setItem(COSName.NUMS, arr);
         return dict;
     }
 
@@ -215,7 +216,10 @@ public class PDPageLabels implements COSObjectable
         {
             public void newLabel(int pageIndex, String label)
             {
-                map[pageIndex] = label;
+                if(pageIndex < doc.getNumberOfPages())
+                { 
+                    map[pageIndex] = label;
+                }
             }
         });
         return map;
