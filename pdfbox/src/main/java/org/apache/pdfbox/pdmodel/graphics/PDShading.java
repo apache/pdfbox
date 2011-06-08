@@ -20,6 +20,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
@@ -41,7 +42,11 @@ public class PDShading implements COSObjectable
 {
     private COSDictionary DictShading;
     private COSName shadingname;
-
+    private COSArray domain = null;
+    private COSArray extend = null;
+    private PDFunction function = null;
+    private PDColorSpace colorspace = null;
+    
     /**
      * The name of this object.
      */
@@ -105,7 +110,7 @@ public class PDShading implements COSObjectable
     */
     public int getShadingType()
     {
-        return DictShading.getInt("ShadingType");
+        return DictShading.getInt(COSName.SHADING_TYPE);
     }
     
     /**
@@ -116,7 +121,11 @@ public class PDShading implements COSObjectable
     */
     public PDColorSpace getColorSpace() throws IOException
     {
-        return PDColorSpaceFactory.createColorSpace(DictShading.getDictionaryObject("ColorSpace"));
+        if (colorspace == null)
+        {
+            colorspace = PDColorSpaceFactory.createColorSpace(DictShading.getDictionaryObject(COSName.COLORSPACE));
+        }
+        return colorspace;
     }
     
     /**
@@ -126,7 +135,7 @@ public class PDShading implements COSObjectable
     */
     public boolean getAntiAlias()
     {
-        return DictShading.getBoolean("AntiAlias",false);
+        return DictShading.getBoolean(COSName.ANTI_ALIAS,false);
     }
     
     /**
@@ -136,7 +145,7 @@ public class PDShading implements COSObjectable
     */
     public COSArray getCoords()
     {
-        return (COSArray)(DictShading.getDictionaryObject("Coords"));
+        return (COSArray)(DictShading.getDictionaryObject(COSName.COORDS));
     }
     
     /**
@@ -146,7 +155,11 @@ public class PDShading implements COSObjectable
     */
     public PDFunction getFunction() throws IOException
     {
-        return PDFunction.create(DictShading.getDictionaryObject("Function"));
+        if (function == null)
+        {
+            function = PDFunction.create(DictShading.getDictionaryObject(COSName.FUNCTION));
+        }
+        return function;
     }
     
     /**
@@ -156,7 +169,18 @@ public class PDShading implements COSObjectable
     */
     public COSArray getDomain()
     {
-        return (COSArray)(DictShading.getDictionaryObject("Domain"));
+        if (domain == null) 
+        {
+            domain = (COSArray)(DictShading.getDictionaryObject(COSName.DOMAIN));
+            // use default values
+            if (domain == null) 
+            {
+                domain = new COSArray();
+                domain.add(new COSFloat(0.0f));
+                domain.add(new COSFloat(1.0f));
+            }
+        }
+        return domain;
     }
     
     /**
@@ -167,15 +191,18 @@ public class PDShading implements COSObjectable
     */
     public COSArray getExtend()
     {
-        COSArray arExtend=(COSArray)(DictShading.getDictionaryObject("Extend"));
-        if (arExtend == null)
+        if (extend == null)
         {
-            arExtend = new COSArray();
-            arExtend.add(COSBoolean.FALSE);
-            arExtend.add(COSBoolean.FALSE);
+            extend = (COSArray)(DictShading.getDictionaryObject(COSName.EXTEND));
+            // use default values
+            if (extend == null)
+            {
+                extend = new COSArray();
+                extend.add(COSBoolean.FALSE);
+                extend.add(COSBoolean.FALSE);
+            }
         }
-        
-        return arExtend;
+        return extend;
     }
     
     /**
@@ -205,7 +232,7 @@ public class PDShading implements COSObjectable
             + "\tShadingType: " + getShadingType() + "\n"
             + "\tColorSpace: " + sColorSpace + "\n"
             + "\tAntiAlias: " + getAntiAlias() + "\n"
-            + "\tCoords: " + getCoords().toString() + "\n"
+            + "\tCoords: " + (getCoords() != null ? getCoords().toString() : "") + "\n"
             + "\tDomain: " + getDomain().toString() + "\n"
             + "\tFunction: " + sFunction + "\n"
             + "\tExtend: " + getExtend().toString() + "\n"
