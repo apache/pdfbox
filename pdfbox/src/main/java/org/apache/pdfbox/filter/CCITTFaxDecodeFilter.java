@@ -77,6 +77,11 @@ public class CCITTFaxDecodeFilter implements Filter
             // ensure that rows doesn't contain implausible data, see PDFBOX-771
             rows = Math.min(rows, height);
         }
+        else 
+        {
+            // at least one of the values has to have a valid value
+            rows = Math.max(rows, height);
+        }
         int k = decodeParms.getInt(COSName.K);
         int arraySize = (cols + 7) / 8 * rows;
         byte[] decompressed = new byte[arraySize];
