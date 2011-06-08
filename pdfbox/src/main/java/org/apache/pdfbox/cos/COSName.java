@@ -86,6 +86,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName ANTI_ALIAS = new COSName( "AntiAlias" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName AP_REF = new COSName( "APRef" );
     /**
      * "Artifact"
@@ -275,9 +279,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName COLUMNS = new COSName( "Columns" );
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
     public static final COSName CONTENTS = new COSName( "Contents" );
+     /**
+      * A common COSName value.
+      */
+    public static final COSName COORDS = new COSName( "Coords" );
     /**
     * A common COSName value.
     */
@@ -433,6 +441,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /** "ExtGState" */
     public static final COSName EXT_G_STATE = new COSName( "ExtGState" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName EXTEND = new COSName( "Extend" );
+
     /** "Extends" */
     public static final COSName EXTENDS = new COSName( "Extends" );
 
@@ -533,6 +546,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName FT = new COSName( "FT" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName FUNCTION = new COSName( "Function" );
     /**
      * A common COSName value.
      */
@@ -944,6 +961,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /** "Shading" */
     public static final COSName SHADING = new COSName( "Shading" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SHADING_TYPE = new COSName( "ShadingType" );
     /**
      * A common COSName value.
      */
