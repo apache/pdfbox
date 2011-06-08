@@ -107,29 +107,41 @@ public class PDCcitt extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {
-        BufferedImage retval = null;
         COSStream stream = getCOSStream();
         COSBase decodeP = stream.getDictionaryObject(COSName.DECODE_PARMS);
         COSDictionary decodeParms = null;
         if (decodeP instanceof COSDictionary)
+        {
             decodeParms = (COSDictionary)decodeP;
+        }
         else if (decodeP instanceof COSArray)
+        {
             decodeParms =  (COSDictionary)((COSArray)decodeP).get(0);
+        }
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        int height = stream.getInt(COSName.HEIGHT);
+        int height = stream.getInt(COSName.HEIGHT, 0);
         if (rows > 0 && height > 0)
         {
             // ensure that rows doesn't contain implausible data, see PDFBOX-771
             rows = Math.min(rows, height);
         }
+        else 
+        {
+            // at least one of the values has to have a valid value
+            rows = Math.max(rows, height);
+        }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
         
         byte[] map;
         if (blackIsOne)
+        {
             map = new byte[] {(byte)0x00, (byte)0xff};
+        }
         else
+        {
             map = new byte[] {(byte)0xff};
+        }
         ColorModel cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
         WritableRaster raster = cm.createCompatibleWritableRaster( cols, rows );
         DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
@@ -139,16 +151,14 @@ public class PDCcitt extends PDXObjectImage
         int bytesRead;
         byte[] data = new byte[16384];
         InputStream unfilteredStream = stream.getUnfilteredStream();
-        while ((bytesRead = unfilteredStream.read(data, 0, data.length)) != -1) {
+        while ((bytesRead = unfilteredStream.read(data, 0, data.length)) != -1) 
+        {
             baos.write(data, 0, bytesRead);
         }
         baos.flush();
-        byte[] decompressed = baos.toByteArray();
-        System.arraycopy( decompressed, 0,bufferData, 0, 
-                (decompressed.length<bufferData.length?decompressed.length: bufferData.length) );
-        retval = new BufferedImage(cm, raster, false, null);
-
-        return retval;
+        System.arraycopy( baos.toByteArray(), 0,bufferData, 0, 
+                (baos.size() < bufferData.length ? baos.size() : bufferData.length) );
+        return new BufferedImage(cm, raster, false, null);
     }
     
     /**
