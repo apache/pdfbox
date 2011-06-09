@@ -169,15 +169,9 @@ public class FlateFilter implements Filter
 
                     byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
                     bais.close();
-                    bais = new ByteArrayInputStream(decodedData);
-
-                    // write decoded data to result
-                    while ((amountRead = bais.read(buffer)) != -1)
-                    {
-                        result.write(buffer, 0, amountRead);
-                    }
-                    bais.close();
                     bais = null;
+
+                    result.write(decodedData);
                 }
             }
 
