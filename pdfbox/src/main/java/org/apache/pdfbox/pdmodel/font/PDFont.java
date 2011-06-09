@@ -377,7 +377,7 @@ public abstract class PDFont implements COSObjectable
      */
     protected FontMetric getAFM()
     {
-        if(afm==null){
+        if(isType1Font() && afm==null){
             COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
             String name = null;
             if( baseFont instanceof COSName )
