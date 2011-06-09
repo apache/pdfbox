@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 
 import org.apache.pdfbox.pdmodel.PDResources;
 
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -74,7 +75,7 @@ public class PDAppearance
     private COSString defaultAppearance;
 
     private PDAcroForm acroForm;
-    private List widgets = new ArrayList();
+    private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
 
 
     /**
@@ -92,7 +93,7 @@ public class PDAppearance
         widgets = field.getKids();
         if( widgets == null )
         {
-            widgets = new ArrayList();
+            widgets = new ArrayList<COSObjectable>();
             widgets.add( field.getWidget() );
         }
 
@@ -112,15 +113,15 @@ public class PDAppearance
         COSString dap = parent.getDefaultAppearance();
         if (dap == null)
         {
-            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( "Kids" );
+            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( COSName.KIDS );
             if( kids != null && kids.size() > 0 )
             {
                 COSDictionary firstKid = (COSDictionary)kids.getObject( 0 );
-                dap = (COSString)firstKid.getDictionaryObject( "DA" );
+                dap = (COSString)firstKid.getDictionaryObject( COSName.DA );
             }
             if( dap == null )
             {
-                dap = (COSString) acroForm.getDictionary().getDictionaryObject(COSName.getPDFName("DA"));
+                dap = (COSString) acroForm.getDictionary().getDictionaryObject(COSName.DA);
             }
         }
         return dap;
@@ -129,13 +130,13 @@ public class PDAppearance
     private int getQ()
     {
         int q = parent.getQ();
-        if( parent.getDictionary().getDictionaryObject( "Q" ) == null )
+        if( parent.getDictionary().getDictionaryObject( COSName.Q ) == null )
         {
-            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( "Kids" );
+            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( COSName.KIDS );
             if( kids != null && kids.size() > 0 )
             {
                 COSDictionary firstKid = (COSDictionary)kids.getObject( 0 );
-                COSNumber qNum = (COSNumber)firstKid.getDictionaryObject( "Q" );
+                COSNumber qNum = (COSNumber)firstKid.getDictionaryObject( COSName.Q );
                 if( qNum != null )
                 {
                     q = qNum.intValue();
@@ -215,10 +216,10 @@ public class PDAppearance
         }
 
         value = apValue;
-        Iterator widgetIter = widgets.iterator();
+        Iterator<COSObjectable> widgetIter = widgets.iterator();
         while( widgetIter.hasNext() )
         {
-            Object next = widgetIter.next();
+            COSObjectable next = widgetIter.next();
             PDField field = null;
             PDAnnotationWidget widget = null;
             if( next instanceof PDField )
@@ -237,7 +238,7 @@ public class PDAppearance
             }
             if( actions != null &&
                 actions.getF() != null &&
-                widget.getDictionary().getDictionaryObject( "AP" ) ==null)
+                widget.getDictionary().getDictionaryObject( COSName.AP ) ==null)
             {
                 //do nothing because the field will be formatted by acrobat
                 //when it is opened.  See FreedomExpressions.pdf for an example of this.
@@ -366,7 +367,7 @@ public class PDAppearance
             String daString = defaultAppearance.getString();
             PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes("ISO-8859-1") ), null );
             daParser.parse();
-            List daTokens = daParser.getTokens();
+            List<Object> daTokens = daParser.getTokens();
             fontSize = calculateFontSize( pdFont, boundingBox, tokens, daTokens );
             int fontIndex = daTokens.indexOf( PDFOperator.getOperator( "Tf" ) );
             if(fontIndex != -1 )
@@ -541,12 +542,15 @@ public class PDAppearance
                 fontSize = ((COSNumber)daTokens.get(fontIndex-1)).floatValue();
             }
         }
+        
+        float widthBasedFontSize = Float.MAX_VALUE;
+        
         if( parent.doNotScroll() )
         {
             //if we don't scroll then we will shrink the font to fit into the text area.
-            float widthAtFontSize1 = pdFont.getStringWidth( value );
-            float availableWidth = boundingBox.getWidth();
-            float perfectFitFontSize = availableWidth / widthAtFontSize1;
+            float widthAtFontSize1 = pdFont.getStringWidth( value )/1000.f;
+            float availableWidth = getAvailableWidth(boundingBox, getLineWidth(tokens));
+            widthBasedFontSize = availableWidth / widthAtFontSize1;
         }
         else if( fontSize == 0 )
         {
@@ -566,7 +570,7 @@ public class PDAppearance
             height = height/1000f;
 
             float availHeight = getAvailableHeight( boundingBox, lineWidth );
-            fontSize =(availHeight/height);
+            fontSize = Math.min((availHeight/height), widthBasedFontSize);
         }
         return fontSize;
     }
