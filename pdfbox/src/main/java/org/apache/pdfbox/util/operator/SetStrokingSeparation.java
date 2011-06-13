@@ -19,16 +19,10 @@ package org.apache.pdfbox.util.operator;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -41,12 +35,6 @@ public class SetStrokingSeparation extends OperatorProcessor
 {
 
     /**
-     * Log instance.
-     */
-    private static final Log log =
-        LogFactory.getLog(SetStrokingSeparation.class);
-
-    /**
      * scn Set color space for non stroking operations.
      * @param operator The operator that is being executed.
      * @param arguments List
@@ -54,53 +42,15 @@ public class SetStrokingSeparation extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        PDColorState color = context.getGraphicsState().getStrokingColor();
-        PDColorSpace colorSpace = color.getColorSpace();
+        PDColorState colorInstance = context.getGraphicsState().getStrokingColor();
+        PDColorSpace colorSpace = colorInstance.getColorSpace();
 
         if (colorSpace != null) 
         {
-            OperatorProcessor newOperator = null;
-            List<COSBase> argList = arguments;
-
-            if (colorSpace instanceof PDSeparation) 
-            {
-                PDSeparation sep = (PDSeparation) colorSpace;
-                colorSpace = sep.getAlternateColorSpace();
-                argList = sep.calculateColorValues(arguments.get(0)).toList();
-            }
-
-            if (colorSpace instanceof PDDeviceGray)
-            {
-                newOperator = new SetStrokingGrayColor();
-            }
-            else if (colorSpace instanceof PDDeviceRGB)
-            {
-                newOperator = new SetStrokingRGBColor();
-            }
-            else if (colorSpace instanceof PDDeviceCMYK)
-            {
-                newOperator = new SetStrokingCMYKColor();
-            }
-            else if (colorSpace instanceof PDICCBased)
-            {
-                newOperator = new SetStrokingICCBasedColor();
-            }
-            else if (colorSpace instanceof PDCalRGB)
-            {
-                newOperator = new SetStrokingCalRGBColor();
-            }
-
-            if (newOperator != null) 
-            {
-                color.setColorSpace(colorSpace);
-                newOperator.setContext(getContext());
-                newOperator.process(operator, argList);
-            }
-            else
-            {
-                log.warn("Not supported colorspace "+colorSpace.getName() 
-                        + " within operator "+operator.getOperation());
-            }
+            PDSeparation sep = (PDSeparation) colorSpace;
+            colorSpace = sep.getAlternateColorSpace();
+            COSArray values = sep.calculateColorValues(arguments.get(0));
+            colorInstance.setColorSpaceValue(values.toFloatArray());
         }
     }
 }
