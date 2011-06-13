@@ -95,13 +95,6 @@ public class DateConverter
         new SimpleDateFormat("yyyymmdd'-12''00'''"), // 
         new SimpleDateFormat("yyyymmdd"), // for 20090401+0200
     };
-//    static
-//    {
-//        for (int i = 0; i < POTENTIAL_FORMATS.length; i++)
-//        {
-//            POTENTIAL_FORMATS[i].setTimeZone(TimeZone.getTimeZone("UTC"));
-//        }
-//    }
 
     private DateConverter()
     {
@@ -251,6 +244,10 @@ public class DateConverter
                                 //parseInt cannot handle the + sign
                                 hours = Integer.parseInt( date.substring( 15, 17 ) );
                             }
+                            else if (sign == '-') 
+                            { 
+                                hours = -Integer.parseInt(date.substring(15,17)); 
+                            } 
                             else
                             {
                                 hours = -Integer.parseInt( date.substring( 14, 16 ) );
