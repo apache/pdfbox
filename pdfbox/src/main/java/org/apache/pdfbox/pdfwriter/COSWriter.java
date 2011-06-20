@@ -1174,6 +1174,8 @@ public class COSWriter implements ICOSVisitor
      */
     public Object visitFromStream(COSStream obj) throws COSVisitorException
     {
+        InputStream input = null;
+
         try
         {
             if(willEncrypt)
@@ -1184,7 +1186,7 @@ public class COSWriter implements ICOSVisitor
                     currentObjectKey.getGeneration());
             }
 
-            InputStream input = obj.getFilteredStream();
+            input = obj.getFilteredStream();
             // set the length of the stream and write stream dictionary
             COSObject lengthObject = new COSObject( null );
 
@@ -1211,6 +1213,20 @@ public class COSWriter implements ICOSVisitor
         catch( Exception e )
         {
             throw new COSVisitorException(e);
+        }
+        finally
+        {
+            if (input != null)
+            {
+                try
+                {
+                    input.close();
+                }
+                catch (IOException e)
+                {
+                    throw new COSVisitorException(e);
+                }
+            }
         }
     }
 
