@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class PDFunctionType3 extends PDFunction
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
         //See PDF Reference section 3.9.3.
         PDFunction function = null;
-        float x = ((COSFloat)input.get(0)).floatValue();
+        float x = ((COSNumber)input.get(0)).floatValue();
         PDRange domain = getDomainForInput(1);
         // clip input value to domain
         x = clipToRange(x, domain.getMin(), domain.getMax());
