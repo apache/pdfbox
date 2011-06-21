@@ -336,7 +336,7 @@ public class XMPSchemaBasic extends XMPSchema
      */
     public Thumbnail getThumbnail()
     {
-        return getThumbnailProperty( prefix + ":Thumnails", null );
+        return getThumbnailProperty( prefix + ":Thumbnails", null );
     }
     
     /**

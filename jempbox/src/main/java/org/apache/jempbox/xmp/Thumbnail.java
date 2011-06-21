@@ -45,7 +45,7 @@ public class Thumbnail
      */
     public Thumbnail( XMPMetadata metadata )
     {
-        this( metadata.xmpDocument.createElement( "rfd:li" ) );
+        this( metadata.xmpDocument.createElement( "rdf:li" ) );
     }
     
     /**
@@ -149,6 +149,6 @@ public class Thumbnail
      */
     public String getImage()
     {
-        return XMLUtil.getStringValue( parent, "xapGImg:format" );
+        return XMLUtil.getStringValue( parent, "xapGImg:image" );
     }
 }
