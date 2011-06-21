@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
 import java.lang.Math;
 
@@ -77,7 +78,7 @@ public class PDFunctionType2 extends PDFunction
         for (int j=0;j<c0Size;j++)
         {
             //y[j] = C0[j] + x^N*(C1[j] - C0[j])
-            float result = ((COSFloat)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSFloat)c1.get(j)).floatValue() - ((COSFloat)c0.get(j)).floatValue());
+            float result = ((COSNumber)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSNumber)c1.get(j)).floatValue() - ((COSNumber)c0.get(j)).floatValue());
             functionResult.add( new COSFloat( result));
         }
         // clip to range if available
