@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -38,36 +39,28 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public class PDFXrefStreamParser extends BaseParser 
 {
     private COSStream stream;
+    private XrefTrailerResolver xrefTrailerResolver;
 
     /**
      * Constructor.
      *
-     * @since Apache PDFBox 1.3.0
+     * @since 1.3.0
      * @param strm The stream to parse.
      * @param doc The document for the current parsing.
      * @param forceParcing flag to skip malformed or otherwise unparseable
      *                     input where possible
+	 * @param xrefTrailerResolver resolver to read the xref/trailer information
+	 * 
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFXrefStreamParser(
-            COSStream strm, COSDocument doc, boolean forceParsing)
+            COSStream strm, COSDocument doc, boolean forceParsing,
+            XrefTrailerResolver xrefTrailerResolver )
             throws IOException {
         super(strm.getUnfilteredStream(), forceParsing);
         setDocument(doc);
         stream = strm;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param strm The stream to parse.
-     * @param doc The document for the current parsing.
-     *
-     * @throws IOException If there is an error initializing the stream.
-     */
-    public PDFXrefStreamParser(COSStream strm, COSDocument doc)
-            throws IOException {
-        this(strm, doc, false);
+        this.xrefTrailerResolver = xrefTrailerResolver;
     }
 
     /**
@@ -90,12 +83,12 @@ public class PDFXrefStreamParser extends BaseParser
                 indexArray.add(stream.getDictionaryObject(COSName.SIZE));
             }
             
-            ArrayList objNums = new ArrayList();
+            ArrayList<Integer> objNums = new ArrayList<Integer>();
             
             /*
              * Populates objNums with all object numbers available
              */
-            Iterator indexIter = indexArray.iterator();
+            Iterator<COSBase> indexIter = indexArray.iterator();
             while(indexIter.hasNext())
             {
                 int objID = ((COSInteger)indexIter.next()).intValue();
@@ -105,7 +98,7 @@ public class PDFXrefStreamParser extends BaseParser
                     objNums.add(new Integer(objID + i));
                 }
             }
-            Iterator objIter = objNums.iterator();
+            Iterator<Integer> objIter = objNums.iterator();
             /*
              * Calculating the size of the line in bytes
              */
@@ -152,7 +145,7 @@ public class PDFXrefStreamParser extends BaseParser
                             genNum += (currLine[i + w0 + w1] & 0x00ff) << ((w2 - i - 1) * 8);
                         }
                         COSObjectKey objKey = new COSObjectKey(objID.intValue(), genNum);
-                        document.setXRef(objKey, offset);
+                        xrefTrailerResolver.setXRef(objKey, offset);
                         break;
                     case 2:
                         /*

@@ -30,7 +30,6 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
-import org.apache.pdfbox.pdfparser.PDFXrefStreamParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
@@ -147,7 +146,7 @@ public class COSDocument extends COSBase
      *
      * @param scratchDir The directory to store a scratch file.
      *
-     *  @throws IOException If there is an error creating the tmp file.
+     * @throws IOException If there is an error creating the tmp file.
      */
     public COSDocument(File scratchDir) throws IOException {
         this(scratchDir, false);
@@ -347,14 +346,14 @@ public class COSDocument extends COSBase
         COSObject documentCatalog = getCatalog();
         if (documentCatalog != null)
         {
-          COSDictionary acroForm = (COSDictionary)documentCatalog.getDictionaryObject(COSName.getPDFName("AcroForm"));
+          COSDictionary acroForm = (COSDictionary)documentCatalog.getDictionaryObject(COSName.ACRO_FORM);
           if (acroForm !=null)
           {
-            COSArray fields = (COSArray)acroForm.getDictionaryObject("Fields");
+            COSArray fields = (COSArray)acroForm.getDictionaryObject(COSName.FIELDS);
             for ( Object object : fields )
             {
               COSObject dict = (COSObject)object;
-              if(dict.getItem(COSName.getPDFName("FT")).equals(COSName.getPDFName("Sig")))
+              if(dict.getItem(COSName.FT).equals(COSName.SIG))
               {
                 COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
                 
@@ -525,7 +524,7 @@ public class COSDocument extends COSBase
      */
     public void dereferenceObjectStreams() throws IOException
     {
-        for( COSObject objStream : getObjectsByType( "ObjStm" ) )
+        for( COSObject objStream : getObjectsByType( COSName.OBJ_STM ) )
         {
             COSStream stream = (COSStream)objStream.getObject();
             PDFObjectStreamParser parser =
@@ -585,14 +584,13 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * Used to populate the XRef HashMap. Will add an Xreftable entry
-     * that maps ObjectKeys to byte offsets in the file.
-     * @param objKey The objkey, with id and gen numbers
-     * @param offset The byte offset in this file
+     * Populate XRef HashMap with given values.
+     * Each entry maps ObjectKeys to byte offsets in the file.
+     * @param _xrefTable  xref table entries to be added
      */
-    public void setXRef(COSObjectKey objKey, int offset)
+    public void addXRefTable( Map<COSObjectKey, Integer> xrefTable )
     {
-        xrefTable.put(objKey, offset);
+        this.xrefTable.putAll( xrefTable );
     }
 
     /**
@@ -605,27 +603,6 @@ public class COSDocument extends COSBase
         return xrefTable;
     }
 
-    /**
-     * This method will search the list of objects for types of XRef and
-     * uses the parsed data to populate the trailer information as well as
-     * the xref Map.
-     *
-     * @throws IOException if there is an error parsing the stream
-     */
-    public void parseXrefStreams() throws IOException
-    {
-        COSDictionary trailerDict = new COSDictionary();
-        for( COSObject xrefStream : getObjectsByType( "XRef" ) )
-        {
-            COSStream stream = (COSStream)xrefStream.getObject();
-            trailerDict.addAll(stream);
-            PDFXrefStreamParser parser =
-                new PDFXrefStreamParser(stream, this, forceParsing);
-            parser.parse();
-        }
-        setTrailer( trailerDict );
-    }
-    
     /**
      * This method set the startxref value of the document. This will only 
      * be needed for incremental updates.
