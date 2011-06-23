@@ -769,6 +769,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName OBJ = new COSName("Obj");
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OBJ_STM = new COSName( "ObjStm" );
+
     /** the COSName for the content group tag. */
     public static final COSName OC = new COSName("OC");
     /** the COSName for an optional content group. */
@@ -1127,6 +1132,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     /** "XObject" */
     public static final COSName XOBJECT = new COSName( "XObject" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName XREF = new COSName( "XRef" );
     /**
      * The prefix to a PDF name.
      */

@@ -30,7 +30,9 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -59,7 +61,11 @@ public class PDFParser extends BaseParser
      * A list of duplicate objects found when Parsing the PDF
      * File. 
      */
-    private List conflictList = new ArrayList();
+    private List<ConflictObj> conflictList = new ArrayList<ConflictObj>();
+    
+    /** Collects all Xref/trailer objects and resolves them into single
+     *  object using startxref reference */
+    private XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
    
     /**
      * Temp file directory.
@@ -167,59 +173,55 @@ public class PDFParser extends BaseParser
             skipToNextObj();
 
             boolean wasLastParsedObjectEOF = false;
-            try
+            while(true)
             {
-                while(true)
+                if(pdfSource.isEOF())
                 {
-                    if(pdfSource.isEOF())
+                    break;
+                }
+                try
+                {
+                    wasLastParsedObjectEOF = parseObject();
+                }
+                catch(IOException e)
+                {
+                    /*
+                     * PDF files may have random data after the EOF marker. Ignore errors if
+                     * last object processed is EOF. 
+                     */
+                    if( wasLastParsedObjectEOF ) 
                     {
                         break;
                     }
-                    try
+                    if(isContinueOnError(e))
                     {
-                        wasLastParsedObjectEOF = parseObject();
+                        /*
+                         * Warning is sent to the PDFBox.log and to the Console that
+                         * we skipped over an object
+                         */
+                        log.warn("Parsing Error, Skipping Object", e);
+                        skipToNextObj();
                     }
-                    catch(IOException e)
-                    {
-                        if(isContinueOnError(e))
-                        {
-                            /*
-                             * Warning is sent to the PDFBox.log and to the Console that
-                             * we skipped over an object
-                             */
-                            log.warn("Parsing Error, Skipping Object", e);
-                            skipToNextObj();
-                        }
-                        else
-                        { 
-                            throw e;
-                        }
+                    else
+                    { 
+                        throw e;
                     }
-                    skipSpaces();
                 }
-                //Test if we saw a trailer section. If not, look for an XRef Stream (Cross-Reference Stream) 
-                //to populate the trailer and xref information. For PDF 1.5 and above 
-                if( document.getTrailer() == null )
-                {
-                    document.parseXrefStreams();
-                }
-                if( !document.isEncrypted() )
-                {
-                    document.dereferenceObjectStreams();
-                }
-                ConflictObj.resolveConflicts(document, conflictList);     
+                skipSpaces();
             }
-            catch( IOException e )
+            
+            // set xref to start with 
+            xrefTrailerResolver.setStartxref( document.getStartXref() );
+            
+            // get resolved xref table + trailer
+            document.setTrailer( xrefTrailerResolver.getTrailer() );
+            document.addXRefTable( xrefTrailerResolver.getXrefTable() );
+            
+            if( !document.isEncrypted() )
             {
-                /*
-                 * PDF files may have random data after the EOF marker. Ignore errors if
-                 * last object processed is EOF. 
-                 */
-                if( !wasLastParsedObjectEOF )
-                {
-                    throw e;
-                }
+                document.dereferenceObjectStreams();
             }
+            ConflictObj.resolveConflicts(document, conflictList);     
         }
         catch( Throwable t )
         {
@@ -447,7 +449,7 @@ public class PDFParser extends BaseParser
         //xref table. Note: The contents of the Xref table are currently ignored
         else if( peekedChar == 'x') 
         {
-            parseXrefTable();
+            parseXrefTable( currentObjByteOffset );
         }
         // Note: startxref can occur in either a trailer section or by itself 
         else if (peekedChar == 't' || peekedChar == 's') 
@@ -548,6 +550,15 @@ public class PDFParser extends BaseParser
                 if( pb instanceof COSDictionary )
                 {
                     pb = parseCOSStream( (COSDictionary)pb, getDocument().getScratchFile() );
+                    
+                    // test for XRef type
+                    final COSStream strmObj = (COSStream) pb;
+                    final COSName objectType = (COSName)strmObj.getItem( COSName.TYPE );
+                    if( objectType != null && objectType.equals( COSName.XREF ) )
+                    {
+                        // XRef stream
+                    	parseXrefStream( strmObj, currentObjByteOffset );
+                    }
                 }
                 else
                 {
@@ -657,11 +668,11 @@ public class PDFParser extends BaseParser
     /**
      * This will parse the xref table from the stream and add it to the state
      * The XrefTable contents are ignored.
-     *            
+     * @param startByteOffset the offset to start at           
      * @return false on parsing error 
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseXrefTable() throws IOException
+    private boolean parseXrefTable( int startByteOffset ) throws IOException
     {
         if(pdfSource.peek() != 'x')
         {
@@ -672,6 +683,10 @@ public class PDFParser extends BaseParser
         {
             return false;
         }
+        
+        // signal start of new XRef
+        xrefTrailerResolver.nextXrefObj( startByteOffset );
+        
         /*
          * Xref tables can have multiple sections. 
          * Each starts with a starting object id and a count.
@@ -708,7 +723,7 @@ public class PDFParser extends BaseParser
                         int currOffset = Integer.parseInt(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
-                        document.setXRef(objKey, currOffset);
+                        xrefTrailerResolver.setXRef(objKey, currOffset);
                     }
                     catch(NumberFormatException e)
                     {
@@ -771,17 +786,26 @@ public class PDFParser extends BaseParser
         skipSpaces();
 
         COSDictionary parsedTrailer = parseCOSDictionary();
-        COSDictionary docTrailer = document.getTrailer();
-        if( docTrailer == null )
-        {
-            document.setTrailer( parsedTrailer );
-        }
-        else
-        {
-            docTrailer.addAll( parsedTrailer );
-        }
+        xrefTrailerResolver.setTrailer( parsedTrailer );
+        
         skipSpaces();
         return true;
+    }
+    
+    /**
+     * Fills XRefTrailerResolver with data of given stream.
+     * Stream must be of type XRef.
+     * @param stream the stream to be read
+     * @param objByteOffset the offset to start at
+     * @throws IOException if there is an error parsing the stream
+     */
+    public void parseXrefStream( COSStream stream, int objByteOffset ) throws IOException
+    {
+        xrefTrailerResolver.nextXrefObj( objByteOffset );
+    	xrefTrailerResolver.setTrailer( stream );
+    	PDFXrefStreamParser parser =
+            new PDFXrefStreamParser( stream, document, forceParsing, xrefTrailerResolver );
+        parser.parse();
     }
     
     /**
@@ -820,12 +844,12 @@ public class PDFParser extends BaseParser
          * table. 
          * @throws IOException
          */
-        private static void resolveConflicts(COSDocument document, List conflictList) throws IOException
+        private static void resolveConflicts(COSDocument document, List<ConflictObj> conflictList) throws IOException
         {
-            Iterator conflicts = conflictList.iterator();
+            Iterator<ConflictObj> conflicts = conflictList.iterator();
             while(conflicts.hasNext())
             {
-                ConflictObj o = (ConflictObj)conflicts.next();
+                ConflictObj o = conflicts.next();
                 Integer offset = new Integer(o.offset);
                 if(document.getXrefTable().containsValue(offset))
                 {
