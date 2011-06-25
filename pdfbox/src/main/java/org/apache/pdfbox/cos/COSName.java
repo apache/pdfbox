@@ -391,12 +391,16 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DP = new COSName( "DP" );
 
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
+    public static final COSName DR = new COSName( "DR" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName DV = new COSName( "DV" );
     /**
-    * A common COSName value.
-    */
+     * A common COSName value.
+     */
     public static final COSName DW = new COSName( "DW" );
 
     /**
@@ -537,6 +541,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
     * A common COSName value.
     */
+    public static final COSName FORM = new COSName( "Form" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName FORMTYPE = new COSName( "FormType" );
     /**
      * A common COSName value.
@@ -1193,6 +1201,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName SIG = new COSName("Sig");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName SIG_FLAGS = new COSName("SigFlags");
 
     
     private String name;

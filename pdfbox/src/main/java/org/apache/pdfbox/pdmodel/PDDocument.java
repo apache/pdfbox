@@ -82,18 +82,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDDocument implements Pageable
 {
-    private static final String COSDictionary = null;
 
     private COSDocument document;
-
-    // NOTE BGUILLON: this property must be removed because it is
-    // not the responsability of this class to know
-    //private boolean encryptOnSave = false;
-
-
-    // NOTE BGUILLON: these properties are not used anymore. See getCurrentAccessPermission() instead
-    //private String encryptUserPassword = null;
-    //private String encryptOwnerPassword = null;
 
     //cached values
     private PDDocumentInformation documentInformation;
@@ -103,13 +93,6 @@ public class PDDocument implements Pageable
     //the COSDocument will not have an "Encrypt" dictionary anymore and this object
     //must be used.
     private PDEncryptionDictionary encParameters = null;
-
-    /**
-     * This will tell if the document was decrypted with the master password.
-     * NOTE BGUILLON: this property is not used anymore. See getCurrentAccessPermission() instead
-     */
-   //private boolean decryptedWithOwnerPassword = false;
-
 
     /**
      * The security handler used to decrypt / encrypt the document.
@@ -166,8 +149,7 @@ public class PDDocument implements Pageable
         // or references to arrays which have references to pages
         // or references to arrays which have references to arrays which have references to pages
         // or ... (I think you get the idea...)
-				processListOfPageReferences(getDocumentCatalog().getPages().getKids());
-
+        processListOfPageReferences(getDocumentCatalog().getPages().getKids());
     }
     
     private void processListOfPageReferences(List<Object> pageNodes)
@@ -279,10 +261,9 @@ public class PDDocument implements Pageable
 
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException, SignatureException
     {
-      SignatureOptions defaultOptions = new SignatureOptions();
-      defaultOptions.setPage(1);
-      
-      addSignature(sigObject, signatureInterface,defaultOptions);
+        SignatureOptions defaultOptions = new SignatureOptions();
+        defaultOptions.setPage(1);
+        addSignature(sigObject, signatureInterface,defaultOptions);
     }
     
     /**
@@ -295,155 +276,175 @@ public class PDDocument implements Pageable
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options) throws IOException, SignatureException
     {
-      // Content reservieren
-      // Um auch grosse Zertifikatsketten unterbringen zu koennen, 
-      // wird ein sehr grosser Bereich reserviert
-      sigObject.setContents(new byte[0x2500 * 2 + 2]);
-
-      // ByteRange reservieren
-      sigObject.setByteRange(new int[] {0,1000000000,1000000000,1000000000});
-      
-      getDocument().setSignatureInterface(signatureInterface);
-      
-      // #########################################
-      // # SignatureForm fuer Signatur erstellen #
-      // # und mit an das Dokument haengen.      #
-      // #########################################
-      
-      // Erste Seite besorgen
-      PDDocumentCatalog root = getDocumentCatalog();
-      PDPageNode rootPages = root.getPages();
-      List<PDPage> kids = new ArrayList<PDPage>();
-      rootPages.getAllKids(kids);
-      
-      int size = (int)rootPages.getCount();
-      PDPage page = null;
-      if (size == 0)
-        throw new SignatureException(SignatureException.INVALID_PAGE_FOR_SIGNATURE, "The PDF file has no pages");
-      if (options.getPage()>size)
-        page = kids.get(size-1);
-      else if(options.getPage()<=0)
-        page = kids.get(0);
-      else
-        page = kids.get(options.getPage()-1);
-      
-
-      // AcroForm aus dem Root dict besorgen und Annotation einfügen
-      PDAcroForm acroForm = root.getAcroForm();
-      root.getCOSObject().setNeedToBeUpdate(true); 
-
-      if (acroForm==null) 
-      {
-        acroForm = new PDAcroForm(this);
-        root.setAcroForm(acroForm);
-      } else 
-        acroForm.getCOSObject().setNeedToBeUpdate(true);
-      
-      /*
-       *  For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. 
-       *  This annotation is usually attached to the viewed page when the signature is created. 
-       *  Despite not having an appearance, the annotation AP and N dictionaries may be present 
-       *  in some versions of Acrobat. If present, N references the DSBlankXObj (blank) XObject.
-       */
-
-      // Annotation / Field für die Signatur erzeugen
-      PDSignatureField signatureField = new PDSignatureField(acroForm);
-      signatureField.setSignature(sigObject);              // Signaturobjekt vermerken
-      signatureField.getWidget().setPage(page);            // Rückverkettung 
-      
-      // AcroForm Fields setzen
-      List acroFormFields = acroForm.getFields();
-      COSDictionary acroFormDict = acroForm.getDictionary();
-      acroFormDict.setDirect(true);
-      acroFormDict.setInt("SigFlags", 3);
-      acroFormFields.add(signatureField);
-
-      // Objekte aus der visuellen Signatur besorgen
-      COSDocument visualSignature = options.getVisualSignature();
-
-      // Fallunterscheidung zwischen sichtbarer und unsichtbarer Signatur vorbereiten
-      if (visualSignature == null) // unsichtbare Signatur
-      {
-        // Rectangle fuer unsichtbare Signatur auf 0 0 0 0 setzen
-        signatureField.getWidget().setRectangle(new PDRectangle());  // rectangle array [ 0 0 0 0 ]
-        // AcroForm leere DefaultRessource setzen
-        acroFormDict.setItem("DR", null);
-        // Leeres Appearance-Dictionary setzten
-        PDAppearanceDictionary ap = new PDAppearanceDictionary();
-        COSStream apsStream = new COSStream(getDocument().getScratchFile());
-        apsStream.createUnfilteredStream();
-        PDAppearanceStream aps = new PDAppearanceStream(apsStream);
-        COSDictionary cosObject = (COSDictionary)aps.getCOSObject();
-        cosObject.setItem(COSName.SUBTYPE, COSName.getPDFName("Form"));
-        cosObject.setItem(COSName.BBOX, new PDRectangle());
-        
-        ap.setNormalAppearance(aps);
-        ap.getDictionary().setDirect(true);
-        signatureField.getWidget().setAppearance(ap);
-      }
-      else // sichtbare Signatur
-      {
-        // Visuelle Objekte besorgen
-        List<COSObject> cosObjects = visualSignature.getObjects();
-
-        boolean annotNotFound = true;
-        boolean sigFieldNotFound = true;
-
-        for ( COSObject cosObject : cosObjects )
+        // Reserve content
+        // We need to reserve some space for the signature. Some signatures including
+        // big certificate chain and we need enough space to store it.
+        int preferedSignatureSize = options.getPreferedSignatureSize();
+        if (preferedSignatureSize > 0)
         {
-          COSBase base = cosObject.getObject();
-          if (base != null && base instanceof COSDictionary)
-          {
-            COSBase ft = ((COSDictionary)base).getItem(COSName.getPDFName("FT"));
-            COSBase type = ((COSDictionary)base).getItem(COSName.TYPE);
-            COSBase apDict = ((COSDictionary)base).getItem(COSName.AP);
-            
-            // Nach Signatur-Annotation suchen
-            if (annotNotFound && COSName.getPDFName("Annot").equals(type))
-            {
-              COSDictionary cosBaseDict = (COSDictionary)base;
-              
-              // Rectangle fuer visuelle Signatur auslesen und setzen
-              COSArray rectAry = (COSArray)cosBaseDict.getItem(COSName.getPDFName("Rect"));
-              PDRectangle rect = new PDRectangle(rectAry);
-              signatureField.getWidget().setRectangle(rect);
-              annotNotFound = false;
-            }
-            
-            // Nach Signatur-Field suchen
-            if (sigFieldNotFound && COSName.getPDFName("Sig").equals(ft) && apDict != null)
-            {
-              COSDictionary cosBaseDict = (COSDictionary)base;
-              
-              // Appearance Dictionary auslesen und setzen
-              PDAppearanceDictionary ap = new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
-              ap.getDictionary().setDirect(true);
-              signatureField.getWidget().setAppearance(ap);
-              
-              // AcroForm DefaultRessource auslesen und setzen
-              COSBase dr = cosBaseDict.getItem(COSName.getPDFName("DR"));
-              dr.setDirect(true);
-              dr.setNeedToBeUpdate(true);
-              acroFormDict.setItem("DR", dr);
-              sigFieldNotFound=false;
-            }
-          }
+            sigObject.setContents(new byte[preferedSignatureSize * 2 + 2]);
+        }
+        else
+        {
+            sigObject.setContents(new byte[0x2500 * 2 + 2]);
         }
         
-        if (annotNotFound || sigFieldNotFound )
-          throw new SignatureException(SignatureException.VISUAL_SIGNATURE_INVALID, "Could not read all needed objects from template");
-      }
+        // Reserve ByteRange
+        sigObject.setByteRange(new int[] {0,1000000000,1000000000,1000000000});
       
-      // Seite besorgen und Signatur-Annotation anbringen
-      List annotations = page.getAnnotations();
-      if (annotations== null) 
-      {
-        annotations = new COSArrayList();
-      }
-      annotations.add(signatureField.getWidget());
-      page.setAnnotations(annotations);
-      page.getCOSObject().setNeedToBeUpdate(true);
+        getDocument().setSignatureInterface(signatureInterface);
       
+        // #########################################
+        // # Create SignatureForm for signature    #
+        // # and appending it to the document      #
+        // #########################################
+
+        // Get the first page
+        PDDocumentCatalog root = getDocumentCatalog();
+        PDPageNode rootPages = root.getPages();
+        List<PDPage> kids = new ArrayList<PDPage>();
+        rootPages.getAllKids(kids);
+  
+        int size = (int)rootPages.getCount();
+        PDPage page = null;
+        if (size == 0)
+        {
+            throw new SignatureException(SignatureException.INVALID_PAGE_FOR_SIGNATURE, "The PDF file has no pages");
+        }
+        if (options.getPage()>size)
+        {
+            page = kids.get(size-1);
+        }
+        else if(options.getPage()<=0)
+        {
+            page = kids.get(0);
+        }
+        else
+        {
+            page = kids.get(options.getPage()-1);
+        }
+      
+
+        // Get the AcroForm from the Root-Dictionary and append the annotation
+        PDAcroForm acroForm = root.getAcroForm();
+        root.getCOSObject().setNeedToBeUpdate(true); 
+        
+        if (acroForm==null) 
+        {
+            acroForm = new PDAcroForm(this);
+            root.setAcroForm(acroForm);
+        } 
+        else 
+        {
+            acroForm.getCOSObject().setNeedToBeUpdate(true);
+        }
+      
+        /*
+         * For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. 
+         * This annotation is usually attached to the viewed page when the signature is created. 
+         * Despite not having an appearance, the annotation AP and N dictionaries may be present 
+         * in some versions of Acrobat. If present, N references the DSBlankXObj (blank) XObject.
+         */
+
+        // Create Annotation / Field for signature
+        PDSignatureField signatureField = new PDSignatureField(acroForm);
+        signatureField.setSignature(sigObject);              // append the signature object
+        signatureField.getWidget().setPage(page);            // backward linking
+      
+        // Set the AcroForm Fields
+        List acroFormFields = acroForm.getFields();
+        COSDictionary acroFormDict = acroForm.getDictionary();
+        acroFormDict.setDirect(true);
+        acroFormDict.setInt(COSName.SIG_FLAGS, 3);
+        acroFormFields.add(signatureField);
+
+        // Get the object from the visual signature
+        COSDocument visualSignature = options.getVisualSignature();
+
+        // Distinction of case for visual and non-visual signature
+        if (visualSignature == null) // non-visual signature
+        {
+            // Set rectangle for non-visual signature to 0 0 0 0
+            signatureField.getWidget().setRectangle(new PDRectangle());  // rectangle array [ 0 0 0 0 ]
+            // Clear AcroForm / Set DefaultRessource
+            acroFormDict.setItem(COSName.DR, null);
+            // Set empty Appearance-Dictionary
+            PDAppearanceDictionary ap = new PDAppearanceDictionary();
+            COSStream apsStream = new COSStream(getDocument().getScratchFile());
+            apsStream.createUnfilteredStream();
+            PDAppearanceStream aps = new PDAppearanceStream(apsStream);
+            COSDictionary cosObject = (COSDictionary)aps.getCOSObject();
+            cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
+            cosObject.setItem(COSName.BBOX, new PDRectangle());
+            
+            ap.setNormalAppearance(aps);
+            ap.getDictionary().setDirect(true);
+            signatureField.getWidget().setAppearance(ap);
+        }
+        else // visual signature
+        {
+            // Obtain visual signature object
+            List<COSObject> cosObjects = visualSignature.getObjects();
+    
+            boolean annotNotFound = true;
+            boolean sigFieldNotFound = true;
+
+            for ( COSObject cosObject : cosObjects )
+            {
+                COSBase base = cosObject.getObject();
+                if (base != null && base instanceof COSDictionary)
+                {
+                    COSBase ft = ((COSDictionary)base).getItem(COSName.FT);
+                    COSBase type = ((COSDictionary)base).getItem(COSName.TYPE);
+                    COSBase apDict = ((COSDictionary)base).getItem(COSName.AP);
+            
+                    // Search for signature annotation
+                    if (annotNotFound && COSName.ANNOT.equals(type))
+                    {
+                        COSDictionary cosBaseDict = (COSDictionary)base;
+              
+                        // Read and set the Rectangle for visual signature
+                        COSArray rectAry = (COSArray)cosBaseDict.getItem(COSName.RECT);
+                        PDRectangle rect = new PDRectangle(rectAry);
+                        signatureField.getWidget().setRectangle(rect);
+                        annotNotFound = false;
+                    }
+            
+                    // Search for Signature-Field
+                    if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
+                    {
+                        COSDictionary cosBaseDict = (COSDictionary)base;
+              
+                        // Appearance Dictionary auslesen und setzen
+                        PDAppearanceDictionary ap = new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
+                        ap.getDictionary().setDirect(true);
+                        signatureField.getWidget().setAppearance(ap);
+              
+                        // AcroForm DefaultRessource auslesen und setzen
+                        COSBase dr = cosBaseDict.getItem(COSName.DR);
+                        dr.setDirect(true);
+                        dr.setNeedToBeUpdate(true);
+                        acroFormDict.setItem(COSName.DR, dr);
+                        sigFieldNotFound=false;
+                    }
+                }
+            }
+        
+            if (annotNotFound || sigFieldNotFound )
+            {
+                throw new SignatureException(SignatureException.VISUAL_SIGNATURE_INVALID, "Could not read all needed objects from template");
+            }
+        }
+      
+        // Get the annotations of the page and append the signature-annotation to it
+        List annotations = page.getAnnotations();
+        if (annotations== null) 
+        {
+            annotations = new COSArrayList();
+        }
+        annotations.add(signatureField.getWidget());
+        page.setAnnotations(annotations);
+        page.getCOSObject().setNeedToBeUpdate(true);
     }
 
     /**

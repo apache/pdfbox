@@ -25,28 +25,77 @@ import org.apache.pdfbox.pdfparser.VisualSignatureParser;
 
 public class SignatureOptions
 {
-  private COSDocument visualSignature;
+    private COSDocument visualSignature;
 
-  private int pageNo;
+    private int preferedSignatureSize;
+    
+    private int pageNo;
   
-  public void setPage(int pageNo)
-  {
-    this.pageNo = pageNo;
-  }
+    /**
+     * Set the page number.
+     * 
+     * @param pageNo the page number
+     * 
+     */
+    public void setPage(int pageNo)
+    {
+        this.pageNo = pageNo;
+    }
   
-  public int getPage() {
-    return pageNo;
-  }
+    /**
+     * Get the page number.
+     * 
+     * @return the page number
+     */
+    public int getPage() 
+    {
+        return pageNo;
+    }
   
-  public void setVisualSignature(InputStream is) throws IOException
-  {
-    VisualSignatureParser visParser = new VisualSignatureParser(is);
-    visParser.parse();
-    visualSignature = visParser.getDocument();
-  }
+    /**
+     * Reads the visual signature from the given input stream.
+     *  
+     * @param is the input stream containing the visual signature
+     * 
+     * @throws IOException when something went wrong during parsing 
+     */
+    public void setVisualSignature(InputStream is) throws IOException
+    { 
+        VisualSignatureParser visParser = new VisualSignatureParser(is);
+        visParser.parse();
+        visualSignature = visParser.getDocument();
+    }
 
-  public COSDocument getVisualSignature()
-  {
-    return visualSignature;
-  }
+    /**
+     * Get the visual signature.
+     * 
+     * @return the visual signature
+     */
+    public COSDocument getVisualSignature()
+    {
+        return visualSignature;
+    }
+  
+    /**
+     * Get the preferred size of the signature.
+     * 
+     * @return the preferred size
+     */
+    public int getPreferedSignatureSize()
+    {
+      return preferedSignatureSize;
+    }
+  
+    /**
+     * Set the preferred size of the signature.
+     * 
+     * @param size the size of the signature
+     */
+    public void setPreferedSignatureSize(int size)
+    {
+        if (size > 0)
+        {
+            preferedSignatureSize = size;
+        }
+    } 
 }
