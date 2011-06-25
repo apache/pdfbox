@@ -784,7 +784,11 @@ public abstract class PDFont implements COSObjectable
         if (charCode >= firstChar && charCode <= lastChar)
         {
             List<Float> widths = getWidths();
-            width = widths.get(charCode-firstChar).floatValue();
+            // maybe the font doesn't provide any widths
+            if (widths != null)
+            {
+                width = widths.get(charCode-firstChar).floatValue();
+            }
         }
         else 
         {
