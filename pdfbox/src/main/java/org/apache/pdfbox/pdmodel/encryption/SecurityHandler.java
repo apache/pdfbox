@@ -101,9 +101,9 @@ public abstract class SecurityHandler
      */
     protected ARCFour rc4 = new ARCFour();
 
-    private Set objects = new HashSet();
+    private Set<COSBase> objects = new HashSet<COSBase>();
 
-    private Set potentialSignatures = new HashSet();
+    private Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
 
     /*
      * If true, AES will be used
@@ -159,28 +159,35 @@ public abstract class SecurityHandler
             for( int i=0; i<fields.size(); i++ )
             {
                 COSDictionary field = (COSDictionary)fields.getObject( i );
-                addDictionaryAndSubDictionary( potentialSignatures, field );
+                if (field!= null)
+                {
+                    addDictionaryAndSubDictionary( potentialSignatures, field );
+                }
+                else
+                {
+                    throw new IOException("Could not decypt document, object not found.");
+                }
             }
         }
 
-        List allObjects = document.getDocument().getObjects();
-        Iterator objectIter = allObjects.iterator();
+        List<COSObject> allObjects = document.getDocument().getObjects();
+        Iterator<COSObject> objectIter = allObjects.iterator();
         while( objectIter.hasNext() )
         {
-            decryptObject( (COSObject)objectIter.next() );
+            decryptObject( objectIter.next() );
         }
         document.setEncryptionDictionary( null );
     }
 
-    private void addDictionaryAndSubDictionary( Set set, COSDictionary dic )
+    private void addDictionaryAndSubDictionary( Set<COSDictionary> set, COSDictionary dic )
     {
         set.add( dic );
-        COSArray kids = (COSArray)dic.getDictionaryObject( "Kids" );
+        COSArray kids = (COSArray)dic.getDictionaryObject( COSName.KIDS );
         for( int i=0; kids != null && i<kids.size(); i++ )
         {
             addDictionaryAndSubDictionary( set, (COSDictionary)kids.getObject( i ) );
         }
-        COSBase value = dic.getDictionaryObject( "V" );
+        COSBase value = dic.getDictionaryObject( COSName.V );
         if( value instanceof COSDictionary )
         {
             addDictionaryAndSubDictionary( set, (COSDictionary)value );
@@ -340,7 +347,7 @@ public abstract class SecurityHandler
      * @throws CryptographyException If there is an error decrypting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decrypt( Object obj, long objNum, long genNum )
+    private void decrypt( COSBase obj, long objNum, long genNum )
         throws CryptographyException, IOException
     {
         if( !objects.contains( obj ) )
