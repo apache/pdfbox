@@ -787,11 +787,37 @@ public class PDFParser extends BaseParser
 
         COSDictionary parsedTrailer = parseCOSDictionary();
         xrefTrailerResolver.setTrailer( parsedTrailer );
-        
+
+        // The version can also be specified within the document /Catalog
+        readVersionInTrailer(parsedTrailer);
+
         skipSpaces();
         return true;
     }
     
+    /**
+     * The document catalog can also have a /Version parameter which overrides the version specified
+     * in the header if, and only if it is greater.
+     * 
+     * @param parsedTrailer the parsed catalog in the trailer
+     */
+    private void readVersionInTrailer(COSDictionary parsedTrailer) 
+    {
+        COSObject root = (COSObject) parsedTrailer.getItem(COSName.ROOT);
+        if (root != null)
+        {
+            COSName version =  (COSName) root.getItem(COSName.VERSION);
+            if (version != null) 
+            {
+                float trailerVersion = Float.valueOf(version.getName());
+                if (trailerVersion > document.getVersion()) 
+                {
+                    document.setVersion(trailerVersion);
+                }
+            }
+        }
+    }
+
     /**
      * Fills XRefTrailerResolver with data of given stream.
      * Stream must be of type XRef.
