@@ -1,4 +1,4 @@
-Release Notes -- Apache PDFBox -- Version 1.5.0
+Release Notes -- Apache PDFBox -- Version 1.6.0
 
 Introduction
 ------------
@@ -7,7 +7,8 @@ PDFBox is an open source Java library for working with PDF documents.
 
 This is an incremental feature release based on the earlier 1.x releases.
 This release contains many improvements and fixes especially related to
-performance, resource usage and fault-tolerance.
+performance, resource usage and fault-tolerance. The most significant 
+new feature is the new signing interface.
 
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
@@ -15,34 +16,55 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Improvements
 
-  [PDFBOX-274] PDFDocument.save is really slow
-  [PDFBOX-917] Read non-conforming PDFs (attached) without throwing ...
-  [PDFBOX-928] added NPE protection which occurred when reading corrupt PDFs
-  [PDFBOX-947] Avoid using temporary files in PDJpeg
-  [PDFBOX-948] Don't use temporty files by default for all PDF sizes
+[PDFBOX-912] - PDF signing interface and improvements
+[PDFBOX-955] - Can't extract b/w images from PDF
+[PDFBOX-967] - Create Type1C font metrics only when necessary
+[PDFBOX-987] - Skip PS XObjects instead of throwing an exception
+[PDFBOX-990] - Add optional debug output to ExtractText
+[PDFBOX-1005] - Unnecessary filling new array with zeros in RandomAccessBuffer::write(byte[], int, int)
+[PDFBOX-1006] - Unnecessary using intermediate ByteArrayInputStream to copy from given byte array to OutputStream in FlateFilter::decode
+[PDFBOX-1018] - Remove imageIO dependency (was: PDPage convertToImage bug creates white images from black and white pdf files.)
+[PDFBOX-1032] - Signing improvement (settable signature size)
+[PDFBOX-1043] - PDF Version not read in the document catalog
+[PDFBOX-1050] - Unit tests for PDFBox features
 
 Bug Fixes
 
-  [PDFBOX-202] Error on text extraction: java.lang.IndexOutOfBoundsExceptio
-  [PDFBOX-328] PDFTextStripper not handling some Japanese
-  [PDFBOX-578] NPE NullPointerException in PDPageNode.getCount
-  [PDFBOX-706] CFFParser.readCharset java.lang.IllegalArgumentException
-  [PDFBOX-708] Failed to create Type1C font. Falling back to Type1 font
-  [PDFBOX-713] PDFont fails to close Font File.
-  [PDFBOX-797] NPE in PDPageNode
-  [PDFBOX-920] PDFStreamEngine.processEncodedText fails on UTF-16 text
-  [PDFBOX-925] ExtractText china pdf ,but pdfbox distinguish Korea,The ...
-  [PDFBOX-935] Text not extracted with PDFBox 1.4
-  [PDFBOX-938] Wrong extracted text using PDFBox 1.4
-  [PDFBOX-939] Lost whitespaces when extracting Arabic text
-  [PDFBOX-941] extracting Japanese characters gives garbage
-  [PDFBOX-942] Image quality improvements
-  [PDFBOX-945] PDFBOX may not depend on plattform encoding
-  [PDFBOX-946] RandomAccessBuffer shoud be created empty
-  [PDFBOX-949] ExtractText returns junk
-  [PDFBOX-952] getParent method of class PDField doesn't consider both ...
-  [PDFBOX-959] Text extraction slow and /tmp fills upwith AWT font files
-  [PDFBOX-960] Null Pointer Exception when Annotation is missing the Subtype
+[PDFBOX-758] - Rotated images aren't placed and rendered correctly while converting PDF pages to images
+[PDFBOX-767] - CLONE -convertToImage seems to invert colors
+[PDFBOX-768] - Convert to image makes blank image
+[PDFBOX-771] - PDF 2 Tiff conversion is not happening properly
+[PDFBOX-821] - RandomAccessBuffer returns wrong values for single byte reads, patch attached
+[PDFBOX-958] - convertToImage mangles images which were in the PDF
+[PDFBOX-959] - Text extraction slow and /tmp fills upwith AWT font files
+[PDFBOX-963] - PDF Box Image Color Distortion
+[PDFBOX-966] - PDFText2HTML does not escape special characters in title
+[PDFBOX-971] - ExtractImages ignores -prefix
+[PDFBOX-975] - Shape transparency not respected when exporting to image
+[PDFBOX-976] - ClassCastException in PDFont.getFontWidth(int)
+[PDFBOX-978] - unreading of trailing content after 'endobj' is missing new line byte (fix included)
+[PDFBOX-979] - errors in %%EOF handling (fix included)
+[PDFBOX-981] - PDColorspaceFactory does not recognize colorspace DeviceGray (patch included herein)
+[PDFBOX-993] - Image transparency lost when drawing an image (during pdf to image conversion)
+[PDFBOX-1004] - Incorrect width calculation for form fields that do not scroll
+[PDFBOX-1008] - NPE warn during text extraction caused by character encoding not set
+[PDFBOX-1009] - Limit the CMap-cache to external CMaps
+[PDFBOX-1010] - Image printed with colors inverted
+[PDFBOX-1012] - Update the documentation of the command line tools
+[PDFBOX-1013] - NullPointerException in org.apache.pdfbox.pdmodel.graphics.PDShading.toString, when getDomain() returns null
+[PDFBOX-1016] - Specification conform xref/trailer parsing + Fix
+[PDFBOX-1023] - Getting image with black background when converting from PDF to Image!!
+[PDFBOX-1029] - Patch for ArrayIndexOutOfBound Exception
+[PDFBOX-1030] - COSWriter.visitFromStream() does not close InputStream.
+[PDFBOX-1033] - PDFToImage create blank pages: llegalArgumentException: Width (2480) and height (0) must be > 0
+[PDFBOX-1034] - Missing definition for some values within build.xml
+[PDFBOX-1035] - DateConverter badly handles date with minus sign in TimeZone
+[PDFBOX-1041] - While creating a signature, in some cases two same entries may ocure inside the AcroForm fields
+[PDFBOX-1044] - Handle function parameters more abstract
+[PDFBOX-1045] - Typos within the thumbnail datatype
+[PDFBOX-1046] - Decrypting malformed document with signature cause NPE
+[PDFBOX-1049] - NPE in PDFont.getFontWidth()
+[PDFBOX-1052] - XMPMetadata.getSchemas () delivery incorrect result if multiple namespaces are present
 
 Release Contents
 ----------------
