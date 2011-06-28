@@ -610,7 +610,7 @@ public class XMPMetadata
             Element schema = (Element) schemaList.item(i);
             boolean found = false;
             NamedNodeMap attributes = schema.getAttributes();
-            for (int j = 0; j < attributes.getLength() && !found; j++)
+            for (int j = 0; j < attributes.getLength(); j++)
             {
                 Node attribute = attributes.item(j);
                 String name = attribute.getNodeName();
