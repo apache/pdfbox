@@ -53,13 +53,32 @@ public class PDSimpleFontTest {
     }
 
     /**
-     * Test of getawtFont method, of class PDSimpleFont.
+     * Test of the error reported in PDFBox-998
      */
     @Test
     public void testPDFBox988() throws Exception {
         PDDocument doc = null;
         try {
            doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
+           List pages = doc.getDocumentCatalog().getAllPages();
+           PDPage page = (PDPage)pages.get(0);
+           BufferedImage image = page.convertToImage();
+           // The alligation is that convertToImage() will crash the JVM or hang
+        } finally {
+            if(doc != null) {
+                doc.close();
+            }
+        }
+    }
+
+    /**
+     * Test of the error reported in PDFBox-1019
+     */
+    @Test
+    public void testPDFBox1019() throws Exception {
+        PDDocument doc = null;
+        try {
+           doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("256.pdf"));
            List pages = doc.getDocumentCatalog().getAllPages();
            PDPage page = (PDPage)pages.get(0);
            BufferedImage image = page.convertToImage();
