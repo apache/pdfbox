@@ -208,7 +208,7 @@ public class COSStandardOutputStream extends FilterOutputStream
     
     private void checkPos() throws IOException 
     {
-        if(fileChannel.position() != getPos())
+        if(fileChannel!=null && fileChannel.position() != getPos())
             throw new IOException("OutputStream has an invalid position");
     }
 
