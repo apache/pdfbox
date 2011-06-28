@@ -78,12 +78,8 @@ public class COSString extends COSBase
     private String str = null;
 
     /**
-     * Forces the string to be serialized in literal form but not hexa form.
-     */
-    private boolean forceLiteralForm = false;
-
-    /**
-     * Forces the string to be serialized in hex form but not literal form.
+     * Forces the string to be serialized in hex form but not literal form, the default is to stream
+     * in literal form.
      */
     private boolean forceHexForm = false;
 
@@ -165,7 +161,7 @@ public class COSString extends COSBase
 
     public void setForceLiteralForm(boolean v)
     {
-        forceLiteralForm = v;
+        forceHexForm = !v;
     }
 
     /**
@@ -361,7 +357,7 @@ public class COSString extends COSBase
             //outside the ASCII range.
             outsideASCII = bytes[i] <0;
         }
-        if ((!outsideASCII || forceLiteralForm) && !forceHexForm)
+        if (!outsideASCII && !forceHexForm)
         {
             output.write(STRING_OPEN);
             for( int i=0; i<length; i++ )
@@ -444,8 +440,9 @@ public class COSString extends COSBase
     {
         if (obj instanceof COSString)
         {
-            obj = ((COSString) obj).getString();
-            return this.getString().equals(obj);
+            COSString strObj = (COSString) obj;
+            return this.getString().equals(strObj.getString()) 
+                && this.forceHexForm == strObj.forceHexForm;
         }
         return false;
     }
@@ -456,6 +453,7 @@ public class COSString extends COSBase
     @Override
     public int hashCode()
     {
-        return getString().hashCode();
+        int result = getString().hashCode();
+        return result += forceHexForm ? 17 : 0; 
     }
 }

@@ -20,6 +20,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.pdfbox.cos.TestCOSFloat;
+import org.apache.pdfbox.cos.TestCOSInteger;
 import org.apache.pdfbox.cos.TestCOSString;
 import org.apache.pdfbox.filter.TestFilters;
 import org.apache.pdfbox.pdmodel.TestFDF;
@@ -73,6 +75,8 @@ public class TestAll extends TestCase
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );
         suite.addTest( TestCOSString.suite() );
+        suite.addTest( TestCOSInteger.suite() );
+        suite.addTest( TestCOSFloat.suite() );
         suite.addTestSuite( TestPDDocumentCatalog.class );
         suite.addTestSuite( TestPDDocumentInformation.class );
         suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
