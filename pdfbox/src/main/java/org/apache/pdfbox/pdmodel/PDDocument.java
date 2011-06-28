@@ -1142,6 +1142,11 @@ public class PDDocument implements Pageable
         COSWriter writer = null;
         try
         {
+            // Sometimes the original file will be missing a newline at the end
+            // In order to avoid having %%EOF the first object on the same line
+            // as the %%EOF, we put a newline here.  If there's already one at
+            // the end of the file, an extra one won't hurt. PDFBOX-1051
+            output.write("\r\n".getBytes());
             writer = new COSWriter( output, input );
             writer.write( this );
             writer.close();
