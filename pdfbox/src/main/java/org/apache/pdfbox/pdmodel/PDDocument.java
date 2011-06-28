@@ -438,12 +438,18 @@ public class PDDocument implements Pageable
       
         // Get the annotations of the page and append the signature-annotation to it
         List annotations = page.getAnnotations();
-        if (annotations== null) 
+        if (annotations == null) 
         {
             annotations = new COSArrayList();
+            page.setAnnotations(annotations);
         }
-        annotations.add(signatureField.getWidget());
-        page.setAnnotations(annotations);
+        // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
+        if (!(annotations instanceof COSArrayList) 
+                || !(acroFormFields instanceof COSArrayList) 
+                || !((COSArrayList)annotations).toList().equals(((COSArrayList)acroFormFields).toList()))
+        {
+            annotations.add(signatureField.getWidget());
+        }
         page.getCOSObject().setNeedToBeUpdate(true);
     }
 
