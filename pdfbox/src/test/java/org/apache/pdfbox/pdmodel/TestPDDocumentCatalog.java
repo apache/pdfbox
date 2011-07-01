@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.File;
 import junit.framework.TestCase;
 
 public class TestPDDocumentCatalog extends TestCase {
@@ -62,10 +61,26 @@ public class TestPDDocumentCatalog extends TestCase {
             doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("page_label.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
-            String[] labels = cat.getPageLabels().getLabelsByPageIndices();
+            cat.getPageLabels().getLabelsByPageIndices();
         } catch(Exception e) {
-            e.printStackTrace();
             fail("Threw exception!");
+        } finally {
+            if(doc != null)
+                doc.close();
+        }
+    }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-911"
+     *   >PDFBOX-911</a> - Method PDDocument.getNumberOfPages() returns wrong
+     * number of pages
+     */
+    public void testGetNumberOfPages() throws Exception {
+        PDDocument doc = null;
+        try {
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResource("test.unc.pdf"));
+            assertEquals(4, doc.getNumberOfPages());
         } finally {
             if(doc != null)
                 doc.close();

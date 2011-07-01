@@ -110,6 +110,10 @@ public abstract class BaseParser
      */
     protected final boolean forceParsing;
 
+    public BaseParser() {
+        this.forceParsing = FORCE_PARSING;
+    }
+
     /**
      * Constructor.
      *
@@ -876,7 +880,7 @@ public abstract class BaseParser
             throw new IOException("expected='/' actual='" + (char)c + "'-" + c + " " + pdfSource );
         }
         // costruisce il nome
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         c = pdfSource.read();
         while( c != -1 )
         {
@@ -1063,7 +1067,7 @@ public abstract class BaseParser
         {
             if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
             {
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 int ic = pdfSource.read();
                 c = (char)ic;
                 while( Character.isDigit( c )||
@@ -1118,7 +1122,7 @@ public abstract class BaseParser
     protected String readString() throws IOException
     {
         skipSpaces();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         int c = pdfSource.read();
         while( !isEndOfName((char)c) && !isClosing(c) && c != -1 )
         {
@@ -1148,7 +1152,7 @@ public abstract class BaseParser
         {
             c = pdfSource.read();
         }
-        StringBuffer buffer = new StringBuffer( theString.length() );
+        StringBuilder buffer = new StringBuilder( theString.length() );
         int charsRead = 0;
         while( !isEOL(c) && c != -1 && charsRead < theString.length() )
         {
@@ -1194,7 +1198,7 @@ public abstract class BaseParser
 
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
-        StringBuffer buffer = new StringBuffer(length);
+        StringBuilder buffer = new StringBuilder(length);
         while( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length() < length &&
                 c != '[' &&
                 c != '<' &&
@@ -1250,7 +1254,7 @@ public abstract class BaseParser
             throw new IOException( "Error: End-of-File, expected line");
         }
 
-        StringBuffer buffer = new StringBuffer( 11 );
+        StringBuilder buffer = new StringBuilder( 11 );
        
         int c;
         while ((c = pdfSource.read()) != -1) 
@@ -1300,10 +1304,9 @@ public abstract class BaseParser
     }
 
     /**
-     * This will tell if the next byte is whitespace or not.
-     *
+     * This will tell if the next byte is whitespace or not.  These values are
+     * specified in table 1 (page 12) of ISO 32000-1:2008.
      * @param c The character to check against whitespace
-     *
      * @return true if the next byte in the stream is a whitespace character.
      */
     protected boolean isWhitespace( int c )
