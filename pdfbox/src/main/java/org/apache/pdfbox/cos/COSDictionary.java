@@ -43,7 +43,7 @@ public class COSDictionary extends COSBase
      * The name-value pairs of this dictionary. The pairs are kept in the
      * order they were added to the dictionary.
      */
-    private final Map<COSName, COSBase> items =
+    protected final Map<COSName, COSBase> items =
         new LinkedHashMap<COSName, COSBase>();
 
     /**
@@ -1410,12 +1410,18 @@ public class COSDictionary extends COSBase
     /**
      * {@inheritDoc}
      */
-    public String toString()
-    {
+    @Override
+    public String toString() {
         StringBuilder retVal = new StringBuilder("COSDictionary{");
-        for( COSName key : items.keySet() )
-        {
-            retVal.append("(" + key + ":" + getDictionaryObject(key).toString() + ") ");
+        for(COSName key : items.keySet()) {
+            retVal.append("(");
+            retVal.append(key);
+            retVal.append(":");
+            if(getDictionaryObject(key) != null)
+                retVal.append(getDictionaryObject(key).toString());
+            else
+                retVal.append("<null>");
+            retVal.append(") ");
         }
         retVal.append("}");
         return retVal.toString();
