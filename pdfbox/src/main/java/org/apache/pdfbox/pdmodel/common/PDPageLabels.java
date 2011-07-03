@@ -300,7 +300,14 @@ public class PDPageLabels implements COSObjectable
             StringBuilder buf = new StringBuilder();
             if (labelInfo.getPrefix() != null)
             {
-                buf.append(labelInfo.getPrefix().trim());
+                String label = labelInfo.getPrefix();
+                // there may be some labels with some null bytes at the end
+                // which will lead to an incomplete output, see PDFBOX-1047
+                while (label.lastIndexOf(0) != -1)
+                {
+                    label = label.substring(0, label.length()-1);
+                }
+                buf.append(label);
             }
             if (labelInfo.getStyle() != null)
             {
