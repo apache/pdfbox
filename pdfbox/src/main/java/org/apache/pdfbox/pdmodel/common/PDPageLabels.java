@@ -300,7 +300,7 @@ public class PDPageLabels implements COSObjectable
             StringBuilder buf = new StringBuilder();
             if (labelInfo.getPrefix() != null)
             {
-                buf.append(labelInfo.getPrefix());
+                buf.append(labelInfo.getPrefix().trim());
             }
             if (labelInfo.getStyle() != null)
             {
