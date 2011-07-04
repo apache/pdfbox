@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,7 +57,7 @@ public class CCITTFaxDecodeFilter implements Filter
     throws IOException
     {
         
-        COSBase decodeP = options.getDictionaryObject(COSName.DECODE_PARMS);
+        COSBase decodeP = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         COSDictionary decodeParms = null;
         if (decodeP instanceof COSDictionary)
         {
@@ -66,12 +67,31 @@ public class CCITTFaxDecodeFilter implements Filter
         {
             decodeParms =  (COSDictionary)((COSArray)decodeP).get(0);
         }
-        int length = options.getInt(COSName.LENGTH);
-        byte[] compressed = new byte[length];
-        compressedData.read(compressed, 0, length);
+        int length = options.getInt(COSName.LENGTH, -1);
+        byte[] compressed = null;
+        if (length != -1) 
+        {
+            compressed = new byte[length];
+            compressedData.read(compressed, 0, length);
+        }
+        else
+        {
+            // inline images don't provide the length of the stream so that
+            // we have to read until the end of the stream to find out the length
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // the streams inline images are stored in are mostly small ones 
+            int tempBufferlength = 512;
+            byte[] tempBuffer = new byte[tempBufferlength]; 
+            int bytesRead = 0;
+            while ( (bytesRead = compressedData.read(tempBuffer, 0, tempBufferlength)) != -1) 
+            {
+                baos.write(tempBuffer, 0, bytesRead);
+            }
+            compressed = baos.toByteArray();
+        }
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        int height = options.getInt(COSName.HEIGHT, 0); 
+        int height = options.getInt(COSName.HEIGHT, COSName.H, 0); 
         if (rows > 0 && height > 0)
         {
             // ensure that rows doesn't contain implausible data, see PDFBOX-771
