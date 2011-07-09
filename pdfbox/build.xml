@@ -28,7 +28,7 @@
     <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
-    <property name="project.version" value="1.6.0-SNAPSHOT" />
+    <property name="project.version" value="1.7.0-SNAPSHOT" />
 
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
@@ -496,7 +496,7 @@
 
     <target name="build.NET" depends="checkForIKVM,pdfbox.package" if="IKVMAvailable" description="Build PDFBox .NET DLL files">
         <echo>Building JUnit</echo>
-    <exec executable="${ikvmc}">
+		<exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
@@ -504,8 +504,6 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\junit.dll" />
@@ -517,11 +515,9 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
@@ -534,11 +530,9 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
@@ -546,19 +540,34 @@
             <arg value="-out:${bin.dir}\${bcmail.name}.dll" />
             <arg value="${bcmail.jar}" />
         </exec>
+        <echo>Building ICU4J</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:bin/junit.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:${bin.dir}\${icu4j.name}.dll" />
+            <arg value="${icu4j.jar}" />
+        </exec>
         <echo>Building FontBox</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
+            <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\${fontbox.release.name}.dll" />
             <arg value="${fontbox.jar}" />
         </exec>
@@ -568,13 +577,13 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
+            <arg value="-reference:bin/junit.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\${jempbox.release.name}.dll" />
             <arg value="${jempbox.jar}" />
         </exec>
@@ -609,10 +618,12 @@
             <arg value="-reference:bin/${jempbox.release.name}.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/${bcmail.name}.dll" />
+            <arg value="-reference:bin/${icu4j.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/commons-logging.dll" />
             <arg value="-target:library" />
             <arg value="-compressresources" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\${pdfbox.release.name}.dll" />
             <arg value="${pdfbox.target.dir}\${pdfbox.release.name}.jar" />
         </exec>
@@ -630,6 +641,7 @@
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\Decrypt.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Decrypt.class" />
         </exec>
@@ -647,6 +659,7 @@
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\Encrypt.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Encrypt.class" />
         </exec>
@@ -663,6 +676,7 @@
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ExportFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExportFDF.class" />
         </exec>
@@ -680,6 +694,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ExportXFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExportXFDF.class" />
         </exec>
@@ -697,6 +712,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ExtractImages.exe" />
             <arg value="${target.dir}\classes\org\apache\pdfbox\ExtractImages.class" />
         </exec>
@@ -714,6 +730,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ExtractText.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ExtractText.class" />
         </exec>
@@ -731,6 +748,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ImportFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
@@ -748,6 +766,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\ImportXFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
@@ -765,6 +784,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\Overlay.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Overlay.class" />
         </exec>
@@ -782,6 +802,7 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\PDFSplit.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
@@ -799,18 +820,28 @@
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\PDFReader.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFReader.class" />
         </exec>
-        <!--The Swing/AWT support in classpath is not quite good enough to make this
-            work, so for now we will just leave blank.-->
-        <!--<exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
+        <echo>Building PDFDebugger</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
+            <arg value="-reference:bin/junit.dll" />
+            <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
-            <arg value="-out:bin\PDFDebugger.exe" />
-            <arg value="classes\org\apache\pdfbox\PDFDebugger.class" />
-        </exec>-->
+            <arg value="-version:${project.version}.0" />
+            <arg value="-out:${bin.dir}\PDFDebugger.exe" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFDebugger.class" />
+        </exec>
     </target>
 
     <target name="javadoc" depends="pdfbox.compile" description="Create Javadocs">
