@@ -22,8 +22,10 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,8 +52,8 @@ public class JBIG2Filter implements Filter
     public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
         throws IOException
     {
-        BufferedImage bi = ImageIO.read( compressedData );
-        if ( bi != null )
+    	BufferedImage bi = ImageIO.read(compressedData);
+    	if ( bi != null )
         {
             DataBuffer dBuf = bi.getData().getDataBuffer();
             if ( dBuf.getDataType() == DataBuffer.TYPE_BYTE )
@@ -62,6 +64,18 @@ public class JBIG2Filter implements Filter
             {
                 log.error( "Image data buffer not of type byte but type " + dBuf.getDataType() );
             }
+        }
+        else
+        {
+        	Iterator<ImageReader> reader = ImageIO.getImageReadersByFormatName("JBIG2");
+        	if (!reader.hasNext())
+        	{
+        		log.error( "Can't find an ImageIO plugin to decode the JBIG2 encoded datastream.");
+        	}
+        	else 
+        	{
+        		log.error( "Something went wrong when decoding the JBIG2 encoded datastream.");
+        	}
         }
     }
 

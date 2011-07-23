@@ -135,7 +135,11 @@ public class PDPixelMap extends PDXObjectImage
             int bpc = getBitsPerComponent();
             
             byte[] array = getPDStream().getByteArray();
-    
+            if (array.length == 0) 
+            {
+                log.error("Something went wrong ... the pixelmap doesn't contain any data.");
+                return null;
+            }
             // Get the ColorModel right
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
