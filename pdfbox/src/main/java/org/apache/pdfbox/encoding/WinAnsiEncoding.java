@@ -132,11 +132,6 @@ public class WinAnsiEncoding extends Encoding
         addCharacterEncoding( 072, "colon" );;
         addCharacterEncoding( 054, "comma" );;
         addCharacterEncoding( 0251, "copyright" );;
-
-        /**
-         * Added because cweb.pdf uses circlecopyrt
-         */
-        addCharacterEncoding( 0251, "circlecopyrt" );;
         addCharacterEncoding( 0244, "currency" );;
         addCharacterEncoding( 0144, "d" );;
         addCharacterEncoding( 0206, "dagger" );;
