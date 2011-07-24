@@ -46,7 +46,9 @@
     <module>parent</module>
     <module>fontbox</module>
     <module>jempbox</module>
+    <module>xmpbox</module>
     <module>pdfbox</module>
+    <module>preflight</module>
     <module>lucene</module>
     <module>ant</module>
     <module>war</module>
