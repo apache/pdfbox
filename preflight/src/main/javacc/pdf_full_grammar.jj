@@ -1,0 +1,491 @@
+//-------------------------------------------------------------------------------
+//
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+// 
+//-------------------------------------------------------------------------------
+
+options {
+  JAVA_UNICODE_ESCAPE=false;
+  STATIC=false;
+  DEBUG_PARSER=false;
+  DEBUG_TOKEN_MANAGER=false;
+}
+
+PARSER_BEGIN(PDFParser)
+
+package org.apache.padaf.preflight.javacc;
+
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.padaf.preflight.HeaderParseException;
+import org.apache.padaf.preflight.BodyParseException;
+import org.apache.padaf.preflight.CrossRefParseException;
+import org.apache.padaf.preflight.TrailerParseException;
+import org.apache.padaf.preflight.PdfParseException;
+
+import static org.apache.padaf.preflight.ValidationConstants.*;
+
+public class PDFParser
+{
+
+	public static boolean parse (InputStream is) throws IOException,ParseException {
+		PDFParser parser = new PDFParser (is);
+		parser.PDF();
+		return true;
+	}
+
+    public static void main (String [] args) {
+        PDFParser parser;
+        String filename = null;
+        long initTime = 0;
+        long parseTime = 0;
+        long startTime = 0;
+        long stopTime = 0;
+        if (args.length == 0)
+        {
+            System.out.println("PDF Parser  . . .");
+            parser = new PDFParser(System.in);
+        } else if (args.length == 1)
+        {
+            filename = args[0];
+            System.out.println("PDF Parser :  Reading from file " + filename + " . . .");
+            try
+            {
+                startTime = System.currentTimeMillis();
+                parser = new PDFParser(new java.io.FileInputStream(filename));
+                stopTime = System.currentTimeMillis();
+                initTime = stopTime - startTime;
+            } catch (java.io.FileNotFoundException e)
+            {
+                System.out.println("PDF Parser :  File " + filename + " not found.");
+                return;
+            }
+        } else
+        {
+            System.out.println("PDF Parser :  Usage is one of:");
+            System.out.println("         java PDFParser < inputfile");
+            System.out.println("OR");
+            System.out.println("         java PDFParser inputfile");
+            return;
+        }
+        try
+        {
+            startTime = System.currentTimeMillis();
+
+			parser.PDF();
+
+            stopTime = System.currentTimeMillis();
+            parseTime = stopTime - startTime;
+            System.out.println("PDF Parser ");
+            System.out.print("   PDF Parser parsed " + filename + " successfully in " + (initTime + parseTime) + " ms.");
+            System.out.println(" Init. : " + initTime + " ms / parse time : " + parseTime + " ms");
+        } catch (ParseException e)
+        {
+            e.printStackTrace(System.out);
+            System.out.println("PDF Parser :  Encountered errors during parse.");
+        }
+    }
+}
+PARSER_END(PDFParser)
+
+// --------------------------------------------------
+// ---- COMMON TOKENS
+// ---- OTHER_WHITE_SPACE : "\u0000"|"\u0009"|"\u000C" == NULL, HORIZONTAL TAB, FORM FEED
+// --------------------------------------------------
+
+<DEFAULT, WithinTrailer, CrossRefTable> TOKEN :
+{
+	< SPACE : " " > |
+	< OTHER_WHITE_SPACE : "\u0000"|"\u0009"|"\u000C" > |
+	< EOL : "\n"|"\r"|"\r\n">
+}
+
+// --------------------------------------------------
+// ---- HEADER TOKENS
+// ---- Even if the "ISO190005 App Notes" says that only PDF-1.[1-4] should be alloewd,
+//		the "ISO 190005-1:2005" says : "The version number in the header of a PDF file nor 
+//		the value of the Version key in the document catalog dictionaryy shall be used in 
+//		determining whether a file is in accordance with this part of ISO 190005 " 
+// --------------------------------------------------
+
+TOKEN :
+{
+	< PERCENT: "%" > |
+	< PDFA_HEADER: "PDF-1."["1"-"6"] > |
+	< BINARY_TAG : (["\u0080"-"\uFFFF"]){4,} > 
+}
+
+
+// --------------------------------------------------
+// ---- BODY / OBJECT  TOKENS
+// --------------------------------------------------
+
+TOKEN :
+{
+	<HTML_OPEN: "<"(<UPPERLETTER>|<LOWERLETTER>)+">"> |
+	<HTML_CLOSE: "</"(<UPPERLETTER>|<LOWERLETTER>)+">"> |
+	<END_OBJECT: ( < EOL > )+"endobj"( < EOL > )> |
+	<STREAM: "stream"("\n"|"\r\n") > : WithinStream
+}
+
+TOKEN :
+{
+ <OBJ_BOOLEAN : ("true"|"false") > | 
+ <OBJ_NUMERIC : ("+"|"-")? ( ((<DIGITS>)+ ("."(<DIGITS>)*)? ) | ("."(<DIGITS>)+)) > |
+ <OBJ_STRING_HEX : "<"((<DIGITS>|["a"-"f"]|["A"-"F"]){2})+">"> |
+ <OBJ_STRING_LIT : "("(~[")","("])*> : WithinLIT |
+ <OBJ_ARRAY_START : "[" > |
+ <OBJ_ARRAY_END : "]" > |
+ <OBJ_NAME : "/"(~[" " , "(" , ")" , "[" , "]" , "{" , "}" , "/" , "<" , ">" , "%" , "\t" , "\n" , "\r"])+ > |
+ <OBJ_NULL: "null" > |
+ <OBJ_REF : ( ["1"-"9"](<DIGITS>)*(<SPACE>|<OTHER_WHITE_SPACE>)("0"|["1"-"9"](<DIGITS>)+)(<SPACE>|<OTHER_WHITE_SPACE>)"R" ) > |
+ <START_OBJECT: ["1"-"9"](<DIGITS>)*(<SPACE>|<OTHER_WHITE_SPACE>)("0"|["1"-"9"](<DIGITS>)+)((<SPACE>|<OTHER_WHITE_SPACE>)"obj")( < EOL > )> |
+ <#DIGITS : ["0"-"9"] > |
+ <#LOWERLETTER : ["a"-"z"] > |
+ <#UPPERLETTER : ["A"-"Z"] >  
+}
+
+<WithinLIT> MORE :
+{
+  <~["(", ")"]>
+}
+
+// -- Content of Stream isn't check by the JavaCC Parser
+// -- Will be done by the PDFBox API
+
+<WithinStream> MORE :
+{
+  <~[]>
+}
+
+// -- End of Stream, return to the OBJECT Lexical State
+<WithinStream> TOKEN :
+{
+	<END_STREAM: "endstream" > : DEFAULT
+}
+
+// --------------------------------------------------
+// ---- CROSS REFERENCE TABLE TOKENS
+// --------------------------------------------------
+
+TOKEN :
+{
+	< XREF_TAG : "xref" > : CrossRefTable 
+}
+
+<CrossRefTable> TOKEN :
+{
+	< FULL_LINE : (<DIGITS>){10} " " (<DIGITS>){5} " " ["f"-"u"] > |
+	< SUBSECTION_START : (<FIRST_OBJECT_NUMBER> <SPACE> <SUBSECTION_ENTRIES>) > |
+	< #SUBSECTION_ENTRIES : ["1"-"9"](<DIGITS>)* > |
+	< #FIRST_OBJECT_NUMBER : (<DIGITS>)+ > |
+	< TRAILER_TAG: "trailer" > : DEFAULT
+}
+
+// --------------------------------------------------
+// ---- TRAILER / Dictionary TOKENS
+// --------------------------------------------------
+
+TOKEN :
+{
+	< START_DICTONNARY : "<<" > |
+	< END_DICTONNARY : ">>" >
+}
+
+<WithinLIT> TOKEN :
+{
+	< END_LITERAL : ")" > |
+	< INNER_START_LIT : "("(~[")","("])*>
+}
+
+TOKEN :
+{
+	< STARTXREF_TAG : "startxref" > : WithinTrailer
+}
+
+<WithinTrailer> TOKEN : 
+{
+	< OBJ_NUMBER: (<DIGITS>)+ > |
+	< EOF_TRAILER_TAG : "%%EOF" > : DEFAULT
+}
+
+void indirect_object() :
+{}
+{
+	<START_OBJECT>
+		object_content()
+	<END_OBJECT> ( < EOL > )?
+}
+
+void object_content() :
+{}
+{
+	(<SPACE>|<OTHER_WHITE_SPACE>|<EOL>)*
+	(
+		( <OBJ_BOOLEAN> | <OBJ_NUMERIC> {checkNumericLength();} |
+	  		<OBJ_STRING_HEX> {checkStringHexLength();} | 
+	  		start_literal() | array_of_object() | 
+	  		<OBJ_NAME> {checkNameLength();} |
+	  		<OBJ_NULL> 
+		)(<SPACE>|<OTHER_WHITE_SPACE>)*
+		| 
+		(
+	  		dictionary_object() 
+	  		(<SPACE>|<OTHER_WHITE_SPACE>)* 
+	  		(   (<EOL>) *
+	  			<STREAM> <END_STREAM> 
+	  			{ 
+	  				int i = token.image.indexOf(tokenImage[END_STREAM].substring(1,tokenImage[END_STREAM].length()-1));  
+	  				if (!(token.image.charAt(i-1) == 0x0a || token.image.charAt(i-1) == 0x0d)) { 
+	  					throw new PdfParseException("Expected EOL before \"endstream\"", ERROR_SYNTAX_STREAM_DELIMITER); 
+	  				}
+	  			}
+	  			(<SPACE>|<OTHER_WHITE_SPACE>)* 
+	  		)?
+	  	)
+	 )
+}
+
+void array_of_object () :
+{int counter = 0;} 
+{
+	<OBJ_ARRAY_START>
+	(
+		<OBJ_BOOLEAN> {++counter;} | 
+		<OBJ_NUMERIC> {++counter; checkNumericLength();} | 
+		<OBJ_STRING_HEX> {++counter;checkStringHexLength();} |
+		array_of_object() {++counter;} | 
+		dictionary_object () {++counter;} |
+		<OBJ_NAME> {++counter; checkNameLength();} | 
+		<OBJ_NULL> {++counter;} | 
+		<OBJ_REF> {++counter;} |
+		start_literal ()  {++counter;} | 
+		<SPACE>|<OTHER_WHITE_SPACE>|<EOL>  {/* space isn't an element */ } ) *	
+	<OBJ_ARRAY_END>
+	{if(counter > MAX_ARRAY_ELEMENTS) throw new PdfParseException("Array too long : " + counter, ERROR_SYNTAX_ARRAY_TOO_LONG);}
+}
+
+void start_literal () :
+{}
+{
+	<OBJ_STRING_LIT> literal()
+}
+
+JAVACODE
+void literal() {
+	Token currentToken = null;
+	int nesting =  1;
+	int literalLength = 0;
+    while(true) {
+            currentToken = getToken(1);
+            if (currentToken.kind == 0 ){
+                    throw new ParseException("EOF reach before the end of the literal string.");
+            }
+            literalLength += currentToken.image.getBytes().length;
+            if ( currentToken.kind == OBJ_STRING_LIT ) {
+                    jj_consume_token(OBJ_STRING_LIT);
+                    ++nesting;
+            } else if ( currentToken.kind == INNER_START_LIT ) {
+                    jj_consume_token(INNER_START_LIT);
+                    ++nesting;            
+            } else if ( currentToken.kind == END_LITERAL ) {
+                    --nesting;
+                    jj_consume_token(END_LITERAL);
+                    if (nesting == 0) {
+                    	this.token_source.curLexState = PDFParserConstants.DEFAULT;
+                        break;
+                    }
+            } else {
+            	currentToken = getNextToken();
+            }
+    }
+    if (literalLength > MAX_STRING_LENGTH) {
+    	throw new PdfParseException("Literal String too long", ERROR_SYNTAX_LITERAL_TOO_LONG);
+    }
+}
+
+JAVACODE
+void checkNameLength() throws ParseException {
+	if (token != null && token.image.getBytes().length > MAX_NAME_SIZE) {
+		throw new PdfParseException("Object Name is toot long : " + token.image.getBytes().length, ERROR_SYNTAX_NAME_TOO_LONG);
+	} else {
+		// Nothing to do
+	}	
+}
+
+JAVACODE
+void checkStringHexLength() throws ParseException {
+	if (token != null && ((token.image.length()-2)/2) > MAX_STRING_LENGTH) {
+		throw new PdfParseException("Object String Hexa is toot long", ERROR_SYNTAX_HEXA_STRING_TOO_LONG);
+	} else {
+		// Nothing to do
+	}	
+}
+
+JAVACODE
+void checkNumericLength() throws ParseException {
+    if (token != null) {
+    	String num = token.image;
+    	try {
+    		long numAsLong = Long.parseLong(num);
+    		if (numAsLong > Integer.MAX_VALUE || numAsLong < Integer.MIN_VALUE) {
+    			throw new PdfParseException("Numeric is too long or too small: " + num, ERROR_SYNTAX_NUMERIC_RANGE);	
+    		}
+    	} catch (NumberFormatException e) {
+    		// may be a real, go to the next check
+    		try {
+	            Double real = Double.parseDouble(num);
+                if (real > MAX_POSITIVE_FLOAT || real < MAX_NEGATIVE_FLOAT) {
+     	           throw new PdfParseException("Float is too long or too small: " + num, ERROR_SYNTAX_NUMERIC_RANGE);                        	
+                }
+        	} catch (NumberFormatException e2) {
+        		// should never happen 
+        		throw new PdfParseException("Numeric has invalid format " + num, ERROR_SYNTAX_NUMERIC_RANGE);
+			}
+		}
+    } else {
+    	// Nothing to do
+    }
+}
+
+
+void dictionary_object () :
+{int tokenNumber = 0;} 
+{
+	<START_DICTONNARY>
+		( <SPACE>|<OTHER_WHITE_SPACE>|<EOL> )*
+		(
+			(	<OBJ_NAME> {++tokenNumber; checkNameLength();}
+				( <SPACE>|<OTHER_WHITE_SPACE>|<EOL> )*
+				( 
+					<OBJ_BOOLEAN> | <OBJ_NAME> {checkNameLength();} |
+					<OBJ_NUMERIC> {checkNumericLength();} | 
+					<OBJ_STRING_HEX> {checkStringHexLength();} | 
+					start_literal()  | array_of_object() | 
+					dictionary_object () | <OBJ_NULL> | 
+					<OBJ_REF> 
+				)
+				{++tokenNumber;}			
+			)
+			( <SPACE>|<OTHER_WHITE_SPACE>|<EOL> )*	
+		)*
+	<END_DICTONNARY>
+	{
+		int entries = (int)(tokenNumber / 2);
+		if (entries > MAX_DICT_ENTRIES) {
+			throw new PdfParseException("Too Many Entries In Dictionary : " + entries, ERROR_SYNTAX_TOO_MANY_ENTRIES);
+		}
+	}
+}
+
+
+void PDF_header() throws HeaderParseException :
+{}
+{
+	try {
+		<PERCENT> <PDFA_HEADER> ( < EOL > )
+		<PERCENT> <BINARY_TAG> ( < EOL > )
+	} catch (ParseException e) {
+		throw new HeaderParseException (e);
+	} catch (TokenMgrError e) {
+		throw new HeaderParseException (e.getMessage());
+	}
+	
+}
+
+void PDF_body() throws BodyParseException :
+{}
+{
+	try {
+		( (<SPACE>|<OTHER_WHITE_SPACE>)+ (<EOL>))?
+		( indirect_object() ) +
+		( (<SPACE>|<OTHER_WHITE_SPACE>)+ (<EOL>))?
+	} catch (ParseException e) {
+		throw new BodyParseException (e);
+	} catch (TokenMgrError e) {
+		throw new BodyParseException (e.getMessage());
+	}
+}
+
+void PDF_cross_ref_table() throws CrossRefParseException :
+{}
+{	
+	try {
+		<XREF_TAG> ( < EOL > )
+		(
+			<SUBSECTION_START> 
+			( < EOL > ) 
+			(	<FULL_LINE>  ( <SPACE> ) ? ( < EOL > ) ) +
+		)+
+	} catch (ParseException e) {
+		throw new CrossRefParseException (e);
+	} catch (TokenMgrError e) {
+		throw new CrossRefParseException (e.getMessage());
+	}
+}
+
+void PDF_trailer() throws TrailerParseException :
+{}
+{
+	try {
+		<TRAILER_TAG>
+		( <EOL> )
+		dictionary_object() (<SPACE>)*<EOL>
+		<STARTXREF_TAG> ( <EOL> )
+		<OBJ_NUMBER> ( <EOL> )
+		<EOF_TRAILER_TAG> ( <EOL> ) ?
+	} catch (ParseException e) {
+		throw new TrailerParseException (e);
+	} catch (TokenMgrError e) {
+		throw new TrailerParseException (e.getMessage());
+	}
+
+}
+
+void
+PDF_linearized_modified() throws PdfParseException  :
+{}
+{
+	try {
+		( <EOF> | 
+		(PDF_body()
+		PDF_cross_ref_table()
+		PDF_trailer())+
+		<EOF> )
+	} catch (PdfParseException e) { 
+		throw e;
+	} catch (ParseException e) {
+		throw new TrailerParseException (e);
+	} catch (TokenMgrError e) {
+		throw new TrailerParseException (e.getMessage());
+	}
+}
+
+// -------------------------------------------
+// ---- The PDF grammar productions start here
+// -------------------------------------------
+void
+PDF() throws PdfParseException :
+{}
+{
+	PDF_header()
+	PDF_body()
+	PDF_cross_ref_table()
+	PDF_trailer()
+	PDF_linearized_modified()
+} 
