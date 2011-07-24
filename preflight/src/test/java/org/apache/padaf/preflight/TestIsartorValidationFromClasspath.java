@@ -140,27 +140,32 @@ result.getErrorsList().get(0).getErrorCode());
      }
 
      @Parameters
-     public static Collection<Object[]> initializeParameters() throws 
-Exception {
+     public static Collection<Object[]> initializeParameters() throws Exception 
+     {
          // load expected errors
-         InputStream expected = IsartorTargetFileInformation.class
-         .getResourceAsStream("/expected_errors.txt");
+         InputStream expected = IsartorTargetFileInformation.class.getResourceAsStream("/expected_errors.txt");
          Properties props = new Properties();
          props.load(expected);
          IOUtils.closeQuietly(expected);
          // prepare config
          List<Object[]> data = new ArrayList<Object[]>();
          InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
-         BufferedReader reader = new BufferedReader(new 
-InputStreamReader(is));
-         String line = reader.readLine();
-         while (line!=null) {
-             String fn = new File(line).getName();
-              String error = new StringTokenizer(props.getProperty(fn), 
-"//").nextToken().trim();
-              Object[] tmp = new Object[] { "/"+line, error };
-             data.add(tmp);
-             line = reader.readLine();
+         if (is != null)
+         {
+	         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+	         String line = reader.readLine();
+	         while (line!=null) 
+	         {
+	        	 String fn = new File(line).getName();
+	        	 String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
+	        	 Object[] tmp = new Object[] { "/"+line, error };
+	             data.add(tmp);
+	             line = reader.readLine();
+	         }
+         }
+         else
+         {
+        	 System.out.println("TestIsartorValidationFromClasspath.initializeParameters(): No input files found");
          }
          return data;
      }
