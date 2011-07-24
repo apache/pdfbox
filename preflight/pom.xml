@@ -151,7 +151,7 @@
         <configuration>
           <excludes>
             <exclude>src/test/resources/org/apache/padaf/preflight/font/*.font</exclude>
-            <exclude>src/main/resources/project.version</exlude>
+            <exclude>src/main/resources/project.version</exclude>
             <exclude>release.properties</exclude>
           </excludes>
         </configuration>
