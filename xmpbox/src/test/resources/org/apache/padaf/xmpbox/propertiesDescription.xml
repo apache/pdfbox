@@ -1,0 +1,23 @@
+<!-- File generated with /net/awl/edoc/xmp/utils/XMLPropertiesDescriptionManager -->
+<PropertiesDescriptions>
+  <PropertyDescription>
+    <propName>firstname</propName>
+    <propDesc>Sample of firstname description</propDesc>
+  </PropertyDescription>
+  <PropertyDescription>
+    <propName>lastname</propName>
+    <propDesc>Sample of lastname description</propDesc>
+  </PropertyDescription>
+  <PropertyDescription>
+    <propName>birth-place</propName>
+    <propDesc>Sample of birth-place description</propDesc>
+  </PropertyDescription>
+  <PropertyDescription>
+    <propName>birth-date</propName>
+    <propDesc>Sample of birth-date description</propDesc>
+  </PropertyDescription>
+  <PropertyDescription>
+    <propName>birth-country</propName>
+    <propDesc>Sample of birth-country description</propDesc>
+  </PropertyDescription>
+</PropertiesDescriptions>

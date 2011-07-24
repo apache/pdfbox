@@ -1,0 +1,24 @@
+<!-- File generated with /net/awl/edoc/xmp/utils/XMLValueTypeDescriptionManager
+
+-->
+
+<ValueTypesDescriptions>
+  <ValueTypeDescription>
+    <type>mailaddress</type>
+    <namespaceURI>http://test.withfield.com/vt/</namespaceURI>
+    <prefix>madn</prefix>
+    <description>mailaddress value</description>
+    <fields>
+      <FieldDescription>
+        <name>name</name>
+        <valueType>Text</valueType>
+        <description>personal name</description>
+      </FieldDescription>
+      <FieldDescription>
+        <name>domain</name>
+        <valueType>Text</valueType>
+        <description>domain value</description>
+      </FieldDescription>
+    </fields>
+  </ValueTypeDescription>
+</ValueTypesDescriptions>
