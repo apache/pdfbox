@@ -145,6 +145,17 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/test/resources/org/apache/padaf/preflight/font/*.font</exclude>
+            <exclude>src/main/resources/project.version</exlude>
+            <exclude>release.properties</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
