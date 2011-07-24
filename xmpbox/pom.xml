@@ -32,12 +32,6 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <properties>
-    <compileSource>1.5</compileSource>
-    <javacPath>${user.javac6}</javacPath>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
   <dependencies>
     <dependency>
        <groupId>junit</groupId>
