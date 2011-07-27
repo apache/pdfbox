@@ -44,18 +44,18 @@ public class TestTextToPdf extends TestCase
     {
         super( name );
     }
-    
+
     /**
      * This test ensures that a PDF created from an empty String is still readable by Adobe Reader
      */
     public void testCreateEmptyPdf() throws Exception
     {
-    	TextToPDF pdfCreator = new TextToPDF();
-    	StringReader reader = new StringReader("");
-    	PDDocument pdfDoc = pdfCreator.createPDFFromText(reader);
-    	reader.close();
+        TextToPDF pdfCreator = new TextToPDF();
+        StringReader reader = new StringReader("");
+        PDDocument pdfDoc = pdfCreator.createPDFFromText(reader);
+        reader.close();
         pdfDoc.close();
-        
+
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.
         PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();

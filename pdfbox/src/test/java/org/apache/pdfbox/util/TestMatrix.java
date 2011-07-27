@@ -43,115 +43,115 @@ public class TestMatrix extends TestCase
 
     public void testConstructionAndCopy() throws Exception
     {
-    	Matrix m1 = new Matrix();
-    	assertMatrixIsPristine(m1);
-    	
-    	Matrix m2 = m1.copy();
-    	assertNotSame(m1, m2);
-    	assertMatrixIsPristine(m2);
+        Matrix m1 = new Matrix();
+        assertMatrixIsPristine(m1);
+
+        Matrix m2 = m1.copy();
+        assertNotSame(m1, m2);
+        assertMatrixIsPristine(m2);
     }
-    
+
     public void testMultiplication() throws Exception
     {
-    	// This matrix will not change - we use it to drive the various multiplications.
-    	final Matrix testMatrix = new Matrix();
-    	
-    	// Create matrix with values
-    	// [ 0, 1, 2
-    	//   1, 2, 3
-    	//   2, 3, 4]
-    	for (int x = 0; x < 3; x++)
-    	{
-    		for (int y = 0; y < 3; y++)
-    		{
-    			testMatrix.setValue(x, y, x + y);
-    		}
-    	}
-    	
-    	Matrix m1 = testMatrix.copy();
-    	Matrix m2 = testMatrix.copy();
+        // This matrix will not change - we use it to drive the various multiplications.
+        final Matrix testMatrix = new Matrix();
 
-    	// Multiply two matrices together producing a new result matrix.
-    	Matrix product = m1.multiply(m2);
-    	
-    	assertNotSame(m1, product);
-    	assertNotSame(m2, product);
+        // Create matrix with values
+        // [ 0, 1, 2
+        //   1, 2, 3
+        //   2, 3, 4]
+        for (int x = 0; x < 3; x++)
+        {
+            for (int y = 0; y < 3; y++)
+            {
+                testMatrix.setValue(x, y, x + y);
+            }
+        }
 
-    	// Operand 1 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+        Matrix m1 = testMatrix.copy();
+        Matrix m2 = testMatrix.copy();
+
+        // Multiply two matrices together producing a new result matrix.
+        Matrix product = m1.multiply(m2);
+
+        assertNotSame(m1, product);
+        assertNotSame(m2, product);
+
+        // Operand 1 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m1);
-    	// Operand 2 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+        // Operand 2 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m2);
-    	assertMatrixValuesEqualTo(new float[] {5,  8,  11,
+        assertMatrixValuesEqualTo(new float[] {5,  8,  11,
                                                8,  14, 20,
                                                11, 20, 29}, product);
-    	product.reset();
-    	assertMatrixIsPristine(product);
-    	
+        product.reset();
+        assertMatrixIsPristine(product);
 
-    	
-    	// Multiply two matrices together with the result being written to a third matrix
-    	// (Any existing values there will be overwritten).
-    	Matrix resultMatrix = new Matrix();
-    	
-    	Matrix retVal = m1.multiply(m2, resultMatrix);
-    	assertSame(retVal, resultMatrix);
-    	// Operand 1 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+
+
+        // Multiply two matrices together with the result being written to a third matrix
+        // (Any existing values there will be overwritten).
+        Matrix resultMatrix = new Matrix();
+
+        Matrix retVal = m1.multiply(m2, resultMatrix);
+        assertSame(retVal, resultMatrix);
+        // Operand 1 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m1);
-    	// Operand 2 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+        // Operand 2 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m2);
-    	assertMatrixValuesEqualTo(new float[] {5,  8,  11,
-			   				                   8,  14, 20,
-			   			                       11, 20, 29}, resultMatrix);
-    	
+        assertMatrixValuesEqualTo(new float[] {5,  8,  11,
+                                               8,  14, 20,
+                                               11, 20, 29}, resultMatrix);
 
-    	
-    	// Multiply two matrices together with the result being written into the other matrix
-    	retVal = m1.multiply(m2, m2);
-    	assertSame(retVal, m2);
-    	// Operand 1 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+
+
+        // Multiply two matrices together with the result being written into the other matrix
+        retVal = m1.multiply(m2, m2);
+        assertSame(retVal, m2);
+        // Operand 1 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m1);
-    	assertMatrixValuesEqualTo(new float[] {5,  8,  11,
-			   				                   8,  14, 20,
-			   			                       11, 20, 29}, retVal);
+        assertMatrixValuesEqualTo(new float[] {5,  8,  11,
+                                               8,  14, 20,
+                                               11, 20, 29}, retVal);
 
 
-    	
-    	// Multiply two matrices together with the result being written into 'this' matrix
-    	m1 = testMatrix.copy();
-    	m2 = testMatrix.copy();
-    	
-    	retVal = m1.multiply(m2, m1);
-    	assertSame(retVal, m1);
-    	// Operand 2 should not have changed
-    	assertMatrixValuesEqualTo(new float[] {0,  1,  2,
+
+        // Multiply two matrices together with the result being written into 'this' matrix
+        m1 = testMatrix.copy();
+        m2 = testMatrix.copy();
+
+        retVal = m1.multiply(m2, m1);
+        assertSame(retVal, m1);
+        // Operand 2 should not have changed
+        assertMatrixValuesEqualTo(new float[] {0,  1,  2,
                                                1,  2,  3,
                                                2,  3,  4}, m2);
-    	assertMatrixValuesEqualTo(new float[] {5,  8,  11,
-			   				                   8,  14, 20,
-			   			                       11, 20, 29}, retVal);
+        assertMatrixValuesEqualTo(new float[] {5,  8,  11,
+                                               8,  14, 20,
+                                               11, 20, 29}, retVal);
 
 
-    	
-    	// Multiply the same matrix with itself with the result being written into 'this' matrix
-    	m1 = testMatrix.copy();
 
-    	retVal = m1.multiply(m1, m1);
-    	assertSame(retVal, m1);
-    	assertMatrixValuesEqualTo(new float[] {5,  8,  11,
-			   				                   8,  14, 20,
-			   			                       11, 20, 29}, retVal);
+        // Multiply the same matrix with itself with the result being written into 'this' matrix
+        m1 = testMatrix.copy();
+
+        retVal = m1.multiply(m1, m1);
+        assertSame(retVal, m1);
+        assertMatrixValuesEqualTo(new float[] {5,  8,  11,
+                                               8,  14, 20,
+                                               11, 20, 29}, retVal);
     }
-    
+
     /**
      * This method asserts that the matrix values for the given {@link Matrix} object are equal
      * to the pristine, or original, values.
@@ -160,8 +160,8 @@ public class TestMatrix extends TestCase
     private void assertMatrixIsPristine(Matrix m)
     {
         assertMatrixValuesEqualTo(new float[] {1 ,0 ,0,
-        		                               0, 1, 0,
-        		                               0, 0, 1}, m);
+                                               0, 1, 0,
+                                               0, 0, 1}, m);
     }
 
     /**
@@ -170,20 +170,21 @@ public class TestMatrix extends TestCase
      * @param values the expected values
      * @param m the matrix to test
      */
-	private void assertMatrixValuesEqualTo(float[] values, Matrix m) {
-		float delta = 0.00001f;
-    	for (int i = 0; i < values.length; i++)
-    	{
-    		// Need to convert a (row, column) co-ordinate into a straight index.
-    		int row = (int)Math.floor(i / 3);
-			int column = i % 3;
-			StringBuilder failureMsg = new StringBuilder();
-			failureMsg.append("Incorrect value for matrix[")
-			          .append(row).append(",").append(column).append("]");
-			assertEquals(failureMsg.toString(), values[i], m.getValue(row, column), delta);
-    	}
-	}
-    
+    private void assertMatrixValuesEqualTo(float[] values, Matrix m)
+    {
+        float delta = 0.00001f;
+        for (int i = 0; i < values.length; i++)
+        {
+            // Need to convert a (row, column) co-ordinate into a straight index.
+            int row = (int)Math.floor(i / 3);
+            int column = i % 3;
+            StringBuilder failureMsg = new StringBuilder();
+            failureMsg.append("Incorrect value for matrix[")
+                    .append(row).append(",").append(column).append("]");
+            assertEquals(failureMsg.toString(), values[i], m.getValue(row, column), delta);
+        }
+    }
+
     /**
      * Set the tests in the suite for this test class.
      *

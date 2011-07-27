@@ -110,7 +110,8 @@ public abstract class BaseParser
      */
     protected final boolean forceParsing;
 
-    public BaseParser() {
+    public BaseParser()
+    {
         this.forceParsing = FORCE_PARSING;
     }
 
@@ -124,7 +125,8 @@ public abstract class BaseParser
      * @throws IOException If there is an error reading the input stream.
      */
     public BaseParser(InputStream input, boolean forceParsing)
-            throws IOException {
+            throws IOException
+    {
         this.pdfSource = new PushBackInputStream(
                 new BufferedInputStream(input, 16384),  4096);
         this.forceParsing = forceParsing;
@@ -232,17 +234,17 @@ public abstract class BaseParser
             if( c == '>')
             {
                 done = true;
-            } 
-            else 
-                if(c != '/') 
+            }
+            else
+                if(c != '/')
                 {
                     //an invalid dictionary, we are expecting
                     //the key, read until we can recover
-                    log.warn("Invalid dictionary, found: '" + (char)c + "' but expected: '/'");
+                    log.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
                     int read = pdfSource.read();
                     while(read != -1 && read != '/' && read != '>')
                     {
-                        // in addition to stopping when we find / or >, we also want 
+                        // in addition to stopping when we find / or >, we also want
                         // to stop when we find endstream or endobj.
                         if(read==E) {
                             read = pdfSource.read();
@@ -281,7 +283,7 @@ public abstract class BaseParser
                         }
                         read = pdfSource.read();
                     }
-                    if(read != -1) 
+                    if(read != -1)
                     {
                         pdfSource.unread(read);
                     }
@@ -403,14 +405,14 @@ public abstract class BaseParser
             String endStream = null;
             readUntilEndStream(out);
             skipSpaces();
-            endStream = readString(); 
+            endStream = readString();
 
             if (!endStream.equals("endstream"))
             {
                 /*
                  * Sometimes stream objects don't have an endstream tag so readUntilEndStream(out)
                  * also can stop on endobj tags. If that's the case we need to make sure to unread
-                 * the endobj so parseObject() can handle that case normally. 
+                 * the endobj so parseObject() can handle that case normally.
                  */
                 if (endStream.startsWith("endobj"))
                 {
@@ -418,7 +420,7 @@ public abstract class BaseParser
                     pdfSource.unread(endobjarray);
                 }
                 /*
-                 * Some PDF files don't contain a new line after endstream so we 
+                 * Some PDF files don't contain a new line after endstream so we
                  * need to make sure that the next object number is getting read separately
                  * and not part of the endstream keyword. Ex. Some files would have "endstream8"
                  * instead of "endstream"
@@ -461,9 +463,9 @@ public abstract class BaseParser
      * object. Some pdf files, however, forget to write some endstream tags
      * and just close off objects with an "endobj" tag so we have to handle
      * this case as well.
-     * @param out The stream we write out to. 
+     * @param out The stream we write out to.
      * @throws IOException
-     */    
+     */
     private void readUntilEndStream( OutputStream out ) throws IOException{
         int byteRead;
         do{ //use a fail fast test for end of stream markers
@@ -530,7 +532,10 @@ public abstract class BaseParser
                     out.write(E);
                 }
             }
-            if(byteRead!=-1)out.write(byteRead);
+            if(byteRead!=-1)
+            {
+                out.write(byteRead);
+            }
 
         }while(byteRead!=-1);
     }
@@ -541,59 +546,60 @@ public abstract class BaseParser
      * /Title ( (5)
      * /Creator which was patched in 1 place.
      * However it missed the case where the Close Paren was escaped
-     * 
-     * The second bug was in this format 
+     *
+     * The second bug was in this format
      * /Title (c:\)
-     * /Producer 
-     * 
+     * /Producer
+     *
      * This patch  moves this code out of the parseCOSString method, so it can be used twice.
-     * 
-     * 
+     *
+     *
      * @param bracesParameter the number of braces currently open.
-     * 
+     *
      * @return the corrected value of the brace counter
      * @throws IOException
      */
-	private int checkForMissingCloseParen(final int bracesParameter) throws IOException {
-		int braces=bracesParameter;
-	    byte[] nextThreeBytes = new byte[3];
-	    int amountRead = pdfSource.read(nextThreeBytes);
-	
-	    //lets handle the special case seen in Bull  River Rules and Regulations.pdf
-	    //The dictionary looks like this
-	    //    2 0 obj
-	    //    <<
-	    //        /Type /Info
-	    //        /Creator (PaperPort http://www.scansoft.com)
-	    //        /Producer (sspdflib 1.0 http://www.scansoft.com)
-	    //        /Title ( (5)
-	    //        /Author ()
-	    //        /Subject ()
-	    //
-	    // Notice the /Title, the braces are not even but they should
-	    // be.  So lets assume that if we encounter an this scenario
-	    //   <end_brace><new_line><opening_slash> then that
-	    // means that there is an error in the pdf and assume that
-	    // was the end of the document.
-	    //
-	    if( amountRead == 3 )
-	    {
-	        if(( nextThreeBytes[0] == 0x0d &&  // Look for a carriage return
-	             nextThreeBytes[1] == 0x0a &&  // Look for a new line
-	             nextThreeBytes[2] == 0x2f ) || // Look for a slash / 
-	                                           // Add a second case without a new line
-	            (nextThreeBytes[0] == 0x0d &&  // Look for a carriage return
-	             nextThreeBytes[1] == 0x2f ))  // Look for a slash /
-	        {
-	            braces = 0;
-	        }
-	    }
-	    if (amountRead > 0) 
+    private int checkForMissingCloseParen(final int bracesParameter) throws IOException
+    {
+        int braces = bracesParameter;
+        byte[] nextThreeBytes = new byte[3];
+        int amountRead = pdfSource.read(nextThreeBytes);
+
+        //lets handle the special case seen in Bull  River Rules and Regulations.pdf
+        //The dictionary looks like this
+        //    2 0 obj
+        //    <<
+        //        /Type /Info
+        //        /Creator (PaperPort http://www.scansoft.com)
+        //        /Producer (sspdflib 1.0 http://www.scansoft.com)
+        //        /Title ( (5)
+        //        /Author ()
+        //        /Subject ()
+        //
+        // Notice the /Title, the braces are not even but they should
+        // be.  So lets assume that if we encounter an this scenario
+        //   <end_brace><new_line><opening_slash> then that
+        // means that there is an error in the pdf and assume that
+        // was the end of the document.
+        //
+        if (amountRead == 3)
+        {
+            if (( nextThreeBytes[0] == 0x0d        // Look for a carriage return
+                    && nextThreeBytes[1] == 0x0a   // Look for a new line
+                    && nextThreeBytes[2] == 0x2f ) // Look for a slash /
+                                                   // Add a second case without a new line
+                    || (nextThreeBytes[0] == 0x0d  // Look for a carriage return
+                            && nextThreeBytes[1] == 0x2f ))  // Look for a slash /
+            {
+                braces = 0;
+            }
+        }
+        if (amountRead > 0)
         {
             pdfSource.unread( nextThreeBytes, 0, amountRead );
         }
-	    return braces;
-	}
+        return braces;
+    }
     /**
      * This will parse a PDF string.
      *
@@ -634,9 +640,9 @@ public abstract class BaseParser
 
             if(ch == closeBrace)
             {
-            	
-            	braces--;
-            	braces=checkForMissingCloseParen(braces);
+
+                braces--;
+                braces = checkForMissingCloseParen(braces);
                 if( braces != 0 )
                 {
                     retval.append( ch );
@@ -669,14 +675,15 @@ public abstract class BaseParser
                     retval.append( '\f' );
                     break;
                 case ')':
-                	// PDFBox 276 /Title (c:\)
-                	braces=checkForMissingCloseParen(braces);
+                    // PDFBox 276 /Title (c:\)
+                    braces = checkForMissingCloseParen(braces);
                     if( braces != 0 )
                     {
                         retval.append( next );
                     }
-                    else {
-                    	retval.append('\\');
+                    else
+                    {
+                        retval.append('\\');
                     }
                     break;
                 case '(':
@@ -806,23 +813,23 @@ public abstract class BaseParser
             pbo = parseDirObject();
             if( pbo instanceof COSObject )
             {
-                // We have to check if the expected values are there or not PDFBOX-385 
-                if (po.get(po.size()-1) instanceof COSInteger) 
+                // We have to check if the expected values are there or not PDFBOX-385
+                if (po.get(po.size()-1) instanceof COSInteger)
                 {
                     COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                    if (po.get(po.size()-1) instanceof COSInteger) 
+                    if (po.get(po.size()-1) instanceof COSInteger)
                     {
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
                         COSObjectKey key = new COSObjectKey(number.intValue(), genNumber.intValue());
                         pbo = document.getObjectFromPool(key);
                     }
-                    else 
+                    else
                     {
                         // the object reference is somehow wrong
                         pbo = null;
                     }
                 }
-                else 
+                else
                 {
                     pbo = null;
                 }
@@ -835,13 +842,15 @@ public abstract class BaseParser
             {
                 //it could be a bad object in the array which is just skipped
                 log.warn("Corrupt object reference" );
-                
+
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
                 pdfSource.unread(isThisTheEnd.getBytes("ISO-8859-1"));
                 if("endobj".equals(isThisTheEnd) || "endstream".equals(isThisTheEnd))
+                {
                     return po;
+                }
             }
             skipSpaces();
         }
@@ -1102,10 +1111,12 @@ public abstract class BaseParser
                     throw new IOException( "Unknown dir object c='" + c +
                             "' cInt=" + (int)c + " peek='" + (char)peek + "' peekInt=" + peek + " " + pdfSource );
                 }
-                
+
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if("endobj".equals(badString) || "endstream".equals(badString))
+                {
                     pdfSource.unread(badString.getBytes("ISO-8859-1"));
+                }
             }
         }
         }
@@ -1247,7 +1258,7 @@ public abstract class BaseParser
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected String readLine() throws IOException 
+    protected String readLine() throws IOException
     {
         if (pdfSource.isEOF())
         {
@@ -1255,11 +1266,11 @@ public abstract class BaseParser
         }
 
         StringBuilder buffer = new StringBuilder( 11 );
-       
+
         int c;
-        while ((c = pdfSource.read()) != -1) 
+        while ((c = pdfSource.read()) != -1)
         {
-            if (isEOL(c)) 
+            if (isEOL(c))
             {
                 break;
             }

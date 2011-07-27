@@ -33,21 +33,21 @@ import org.apache.pdfbox.cos.COSDictionary;
  * This is used for the JPXDecode filter.
  *
  * @author <a href="mailto:timo.boehme@ontochem.com">Timo Böhme</a>
- * 
+ *
  */
 public class JPXFilter implements Filter
 {
 
-	/** Log instance */
+    /** Log instance. */
     private static final Log log = LogFactory.getLog(JPXFilter.class);
-  
+
     /**
      * Decode JPEG2000 data using Java ImageIO library.
-     * 
+     *
      * {@inheritDoc}
-     * 
+     *
      */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex )
         throws IOException
     {
         BufferedImage bi = ImageIO.read( compressedData );
@@ -57,10 +57,10 @@ public class JPXFilter implements Filter
             if ( dBuf.getDataType() == DataBuffer.TYPE_BYTE )
             {
                 result.write( ( ( DataBufferByte ) dBuf ).getData() );
-	        }
+            }
             else
             {
-      			log.error( "Image data buffer not of type byte but type " + dBuf.getDataType() );
+                log.error( "Image data buffer not of type byte but type " + dBuf.getDataType() );
             }
         }
     }
@@ -68,7 +68,7 @@ public class JPXFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex )
         throws IOException
     {
         System.err.println( "Warning: JPXFilter.encode is not implemented yet, skipping this stream." );

@@ -30,13 +30,13 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
- * This will parse a PDF 1.5 (or better) Xref stream and 
+ * This will parse a PDF 1.5 (or better) Xref stream and
  * extract the xref information from the stream.
- * 
+ *
  *  @author <a href="mailto:justinl@basistech.com">Justin LeFebvre</a>
  *  @version $Revision: 1.0 $
  */
-public class PDFXrefStreamParser extends BaseParser 
+public class PDFXrefStreamParser extends BaseParser
 {
     private COSStream stream;
     private XrefTrailerResolver xrefTrailerResolver;
@@ -47,16 +47,17 @@ public class PDFXrefStreamParser extends BaseParser
      * @since 1.3.0
      * @param strm The stream to parse.
      * @param doc The document for the current parsing.
-     * @param forceParcing flag to skip malformed or otherwise unparseable
+     * @param forceParsing flag to skip malformed or otherwise unparseable
      *                     input where possible
-	 * @param xrefTrailerResolver resolver to read the xref/trailer information
-	 * 
+     * @param xrefTrailerResolver resolver to read the xref/trailer information
+     *
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFXrefStreamParser(
             COSStream strm, COSDocument doc, boolean forceParsing,
             XrefTrailerResolver xrefTrailerResolver )
-            throws IOException {
+            throws IOException
+    {
         super(strm.getUnfilteredStream(), forceParsing);
         setDocument(doc);
         stream = strm;
@@ -74,7 +75,7 @@ public class PDFXrefStreamParser extends BaseParser
             COSArray xrefFormat = (COSArray)stream.getDictionaryObject(COSName.W);
             COSArray indexArray = (COSArray)stream.getDictionaryObject(COSName.INDEX);
             /*
-             * If Index doesn't exist, we will use the default values. 
+             * If Index doesn't exist, we will use the default values.
              */
             if(indexArray == null)
             {
@@ -82,9 +83,9 @@ public class PDFXrefStreamParser extends BaseParser
                 indexArray.add(COSInteger.ZERO);
                 indexArray.add(stream.getDictionaryObject(COSName.SIZE));
             }
-            
+
             ArrayList<Integer> objNums = new ArrayList<Integer>();
-            
+
             /*
              * Populates objNums with all object numbers available
              */
@@ -106,7 +107,7 @@ public class PDFXrefStreamParser extends BaseParser
             int w1 = xrefFormat.getInt(1);
             int w2 = xrefFormat.getInt(2);
             int lineSize = w0 + w1 + w2;
-            
+
             while(pdfSource.available() > 0 && objIter.hasNext())
             {
                 byte[] currLine = new byte[lineSize];
@@ -114,7 +115,7 @@ public class PDFXrefStreamParser extends BaseParser
 
                 int type = 0;
                 /*
-                 * Grabs the number of bytes specified for the first column in 
+                 * Grabs the number of bytes specified for the first column in
                  * the W array and stores it.
                  */
                 for(int i = 0; i < w0; i++)
@@ -122,9 +123,9 @@ public class PDFXrefStreamParser extends BaseParser
                     type += (currLine[i] & 0x00ff) << ((w0 - i - 1)* 8);
                 }
                 //Need to remember the current objID
-                Integer objID = (Integer)objIter.next();
+                Integer objID = objIter.next();
                 /*
-                 * 3 different types of entries. 
+                 * 3 different types of entries.
                  */
                 switch(type)
                 {
@@ -133,7 +134,7 @@ public class PDFXrefStreamParser extends BaseParser
                          * Skipping free objects
                          */
                         break;
-                    case 1:                   
+                    case 1:
                         int offset = 0;
                         for(int i = 0; i < w1; i++)
                         {

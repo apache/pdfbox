@@ -78,18 +78,18 @@ public abstract class PDFont implements COSObjectable
      *  The font matrix
      */
     protected PDMatrix fontMatrix = null;
-    
+
     /**
      * This is only used if this is a font object and it has an encoding and it is
      * a type0 font with a cmap.
      */
     protected CMap cmap = null;
-    
+
     private boolean hasToUnicode = false;
 
     protected static Map<String, CMap> cmapObjects =
         Collections.synchronizedMap( new HashMap<String, CMap>() );
-    
+
     /**
      *  A list a floats representing the widths
      */
@@ -103,7 +103,8 @@ public abstract class PDFont implements COSObjectable
 
     // TODO move the Map to PDType1Font as these are the 14 Standard fonts
     // which are definitely Type 1 fonts
-    private static Map<String, FontMetric> getAdobeFontMetrics() {
+    private static Map<String, FontMetric> getAdobeFontMetrics()
+    {
         Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
         addAdobeFontMetric( metrics, "Courier-Bold" );
         addAdobeFontMetric( metrics, "Courier-BoldOblique" );
@@ -126,21 +127,28 @@ public abstract class PDFont implements COSObjectable
     private final static String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
 
     private static void addAdobeFontMetric(
-            Map<String, FontMetric> metrics, String name ) {
-        try {
+            Map<String, FontMetric> metrics, String name )
+    {
+        try
+        {
             String resource = resourceRootAFM + name + ".afm";
             InputStream afmStream = ResourceLoader.loadResource( resource );
             if( afmStream != null )
             {
-                try {
+                try
+                {
                     AFMParser parser = new AFMParser( afmStream );
                     parser.parse();
                     metrics.put( name, parser.getResult() );
-                } finally {
+                }
+                finally
+                {
                     afmStream.close();
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             // ignore
         }
     }
@@ -192,7 +200,7 @@ public abstract class PDFont implements COSObjectable
         if(fontDescriptor == null)
         {
             COSDictionary fd = (COSDictionary)font.getDictionaryObject( COSName.FONT_DESC );
-            if (fd != null) 
+            if (fd != null)
             {
                 fontDescriptor = new PDFontDescriptorDictionary( fd );
             }
@@ -207,7 +215,7 @@ public abstract class PDFont implements COSObjectable
         }
         return fontDescriptor;
     }
-    
+
     /**
      * This will set the font descriptor.
      *
@@ -223,14 +231,14 @@ public abstract class PDFont implements COSObjectable
         font.setItem( COSName.FONT_DESC, dic );
         this.fontDescriptor = fontDescriptor;
     }
-    
+
     /**
      * Determines the encoding for the font.
-     * This method as to be overwritten, as there are different 
+     * This method as to be overwritten, as there are different
      * possibilities to define a mapping.
      */
-   	protected abstract void determineEncoding();
-    
+    protected abstract void determineEncoding();
+
     /**
      * {@inheritDoc}
      */
@@ -377,7 +385,8 @@ public abstract class PDFont implements COSObjectable
      */
     protected FontMetric getAFM()
     {
-        if(isType1Font() && afm==null){
+        if (isType1Font() && afm == null)
+        {
             COSBase baseFont = font.getDictionaryObject( COSName.BASE_FONT );
             String name = null;
             if( baseFont instanceof COSName )
@@ -389,12 +398,12 @@ public abstract class PDFont implements COSObjectable
                 }
 
             }
-            else if( baseFont instanceof COSString )
+            else if ( baseFont instanceof COSString )
             {
                 COSString string = (COSString)baseFont;
                 name = string.getString();
             }
-            if( name != null )
+            if ( name != null )
             {
                 afm = afmObjects.get( name );
             }
@@ -403,7 +412,7 @@ public abstract class PDFont implements COSObjectable
     }
 
     private FontMetric afm = null;
-    
+
     private COSBase encoding = null;
     /**
      * cache the {@link COSName#ENCODING} object from
@@ -415,30 +424,32 @@ public abstract class PDFont implements COSObjectable
      * </pre>
      * @return
      */
-    protected COSBase getEncoding(){
-    	if(encoding==null)
-    	{
-    		encoding = font.getDictionaryObject( COSName.ENCODING );
-    	}
-    	return encoding;
+    protected COSBase getEncoding()
+    {
+        if (encoding == null)
+        {
+            encoding = font.getDictionaryObject( COSName.ENCODING );
+        }
+        return encoding;
     }
 
     /**
      * Set the encoding object from the fonts dictionary.
      * @param encoding the given encoding.
      */
-    protected void setEncoding(COSBase encoding){
+    protected void setEncoding(COSBase encoding)
+    {
         font.setItem( COSName.ENCODING, encoding );
         this.encoding = encoding;
     }
-    
+
     /**
      * Encode the given value using the CMap of the font.
-     * 
+     *
      * @param code the code to encode.
      * @param length the byte length of the given code.
      * @param isCIDFont indicates that the used font is a CID font.
-     * 
+     *
      * @return The value of the encoded character.
      */
     protected String cmapEncoding( int code, int length, boolean isCIDFont ) throws IOException
@@ -447,7 +458,7 @@ public abstract class PDFont implements COSObjectable
         if (cmap != null)
         {
             retval = cmap.lookup(code, length);
-            if (retval == null && isCIDFont) 
+            if (retval == null && isCIDFont)
             {
                 retval = cmap.lookupCID(code);
             }
@@ -473,7 +484,7 @@ public abstract class PDFont implements COSObjectable
         {
             retval = cmapEncoding(code, length, false);
         }
-        
+
         // there is no cmap but probably an encoding with a suitable mapping
         if( retval == null )
         {
@@ -543,7 +554,7 @@ public abstract class PDFont implements COSObjectable
         if( cmapStream != null )
         {
             CMapParser parser = new CMapParser();
-            try 
+            try
             {
                 cmap = parser.parse( cmapRoot, cmapStream );
                 // limit the cache to external CMaps
@@ -599,7 +610,8 @@ public abstract class PDFont implements COSObjectable
      */
     public String getSubType()
     {
-        if (subtype == null) {
+        if (subtype == null)
+        {
             subtype = font.getNameAsString( COSName.SUBTYPE );
             type1Font = "Type1".equals(subtype);
             trueTypeFont = "TrueType".equals(subtype);
@@ -612,17 +624,20 @@ public abstract class PDFont implements COSObjectable
      * Determines if the font is a type 1 font.
      * @return returns true if the font is a type 1 font
      */
-    protected boolean isType1Font() {
+    protected boolean isType1Font()
+    {
         getSubType();
         return type1Font;
     }
 
-    private boolean isTrueTypeFont() {
+    private boolean isTrueTypeFont()
+    {
         getSubType();
         return trueTypeFont;
     }
 
-    private boolean isTypeFont() {
+    private boolean isTypeFont()
+    {
         getSubType();
         return typeFont;
     }
@@ -773,7 +788,7 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * Determines the width of the given character.
-     * @param charCode the code of the given character 
+     * @param charCode the code of the given character
      * @return the width of the character
      */
     public float getFontWidth( int charCode )
@@ -790,7 +805,7 @@ public abstract class PDFont implements COSObjectable
                 width = widths.get(charCode-firstChar).floatValue();
             }
         }
-        else 
+        else
         {
             PDFontDescriptor fd = getFontDescriptor();
             if (fd instanceof PDFontDescriptorDictionary)
@@ -805,11 +820,11 @@ public abstract class PDFont implements COSObjectable
      * Determines if a font as a ToUnicode entry.
      * @return true if the font has a ToUnicode entry
      */
-    protected boolean hasToUnicode() 
+    protected boolean hasToUnicode()
     {
         return hasToUnicode;
     }
-    
+
     /**
      * Sets hasToUnicode to the given value.
      * @param hasToUnicode the given value for hasToUnicode
@@ -818,11 +833,11 @@ public abstract class PDFont implements COSObjectable
     {
         this.hasToUnicode = hasToUnicode;
     }
-    
+
     public COSString createString(String text) throws IOException
     {
         return new COSString(text);
-        
+
     }
 
 }

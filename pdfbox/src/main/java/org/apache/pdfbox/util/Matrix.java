@@ -26,7 +26,7 @@ import java.awt.geom.AffineTransform;
  */
 public class Matrix implements Cloneable
 {
-    static final float[] default_single =
+    static final float[] DEFAULT_SINGLE =
     {
         1,0,0,
         0,1,0,
@@ -40,17 +40,17 @@ public class Matrix implements Cloneable
      */
     public Matrix()
     {
-    	single = new float[default_single.length];
-    	reset();
+        single = new float[DEFAULT_SINGLE.length];
+        reset();
     }
-    
+
     /**
      * This method resets the numbers in this Matrix to the original values, which are
      * the values that a newly constructed Matrix would have.
      */
     public void reset()
     {
-    	System.arraycopy(default_single, 0, single, 0, default_single.length);
+        System.arraycopy(DEFAULT_SINGLE, 0, single, 0, DEFAULT_SINGLE.length);
     }
 
     /**
@@ -166,7 +166,7 @@ public class Matrix implements Cloneable
      * <p/>
      * It is allowed to have (other == this) or (result == this) or indeed (other == result) but if this is done,
      * the backing float[] matrix values may be copied in order to ensure a correct product.
-     * 
+     *
      * @param other the second operand Matrix in the multiplication
      * @param result the Matrix instance into which the result should be stored. If result is null, a new Matrix
      *               instance is created.
@@ -174,51 +174,69 @@ public class Matrix implements Cloneable
      */
     public Matrix multiply( Matrix other, Matrix result )
     {
-    	if (result == null)
-    	{
-    		result = new Matrix();
-    	}
-    	
-        if (other != null && other.single != null) 
+        if (result == null)
         {
-        	// the operands
-        	float[] thisOperand = this.single;
-        	float[] otherOperand = other.single;
-        	
-        	// We're multiplying 2 sets of floats together to produce a third, but we allow
-        	// any of these float[] instances to be the same objects.
-        	// There is the possibility then to overwrite one of the operands with result values
-        	// and therefore corrupt the result.
-        	
-        	// If either of these operands are the same float[] instance as the result, then
-        	// they need to be copied.
-        	
-        	if (this == result)
-        	{
-        		final float[] thisOrigVals = new float[this.single.length];
-        		System.arraycopy(this.single, 0, thisOrigVals, 0, this.single.length);
-        		
-        		thisOperand = thisOrigVals;
-        	}
-        	if (other == result)
-        	{
-        		final float[] otherOrigVals = new float[other.single.length];
-        		System.arraycopy(other.single, 0, otherOrigVals, 0, other.single.length);
-        		
-        		otherOperand = otherOrigVals;
-        	}
-        	
-            result.single[0] = thisOperand[0] * otherOperand[0] + thisOperand[1] * otherOperand[3] + thisOperand[2] * otherOperand[6];
-            result.single[1] = thisOperand[0] * otherOperand[1] + thisOperand[1] * otherOperand[4] + thisOperand[2] * otherOperand[7];
-            result.single[2] = thisOperand[0] * otherOperand[2] + thisOperand[1] * otherOperand[5] + thisOperand[2] * otherOperand[8];
-            result.single[3] = thisOperand[3] * otherOperand[0] + thisOperand[4] * otherOperand[3] + thisOperand[5] * otherOperand[6];
-            result.single[4] = thisOperand[3] * otherOperand[1] + thisOperand[4] * otherOperand[4] + thisOperand[5] * otherOperand[7];
-            result.single[5] = thisOperand[3] * otherOperand[2] + thisOperand[4] * otherOperand[5] + thisOperand[5] * otherOperand[8];
-            result.single[6] = thisOperand[6] * otherOperand[0] + thisOperand[7] * otherOperand[3] + thisOperand[8] * otherOperand[6];
-            result.single[7] = thisOperand[6] * otherOperand[1] + thisOperand[7] * otherOperand[4] + thisOperand[8] * otherOperand[7];
-            result.single[8] = thisOperand[6] * otherOperand[2] + thisOperand[7] * otherOperand[5] + thisOperand[8] * otherOperand[8];
+            result = new Matrix();
         }
-        
+
+        if (other != null && other.single != null)
+        {
+            // the operands
+            float[] thisOperand = this.single;
+            float[] otherOperand = other.single;
+
+            // We're multiplying 2 sets of floats together to produce a third, but we allow
+            // any of these float[] instances to be the same objects.
+            // There is the possibility then to overwrite one of the operands with result values
+            // and therefore corrupt the result.
+
+            // If either of these operands are the same float[] instance as the result, then
+            // they need to be copied.
+
+            if (this == result)
+            {
+                final float[] thisOrigVals = new float[this.single.length];
+                System.arraycopy(this.single, 0, thisOrigVals, 0, this.single.length);
+
+                thisOperand = thisOrigVals;
+            }
+            if (other == result)
+            {
+                final float[] otherOrigVals = new float[other.single.length];
+                System.arraycopy(other.single, 0, otherOrigVals, 0, other.single.length);
+
+                otherOperand = otherOrigVals;
+            }
+
+            result.single[0] = thisOperand[0] * otherOperand[0]
+                             + thisOperand[1] * otherOperand[3]
+                             + thisOperand[2] * otherOperand[6];
+            result.single[1] = thisOperand[0] * otherOperand[1]
+                             + thisOperand[1] * otherOperand[4]
+                             + thisOperand[2] * otherOperand[7];
+            result.single[2] = thisOperand[0] * otherOperand[2]
+                             + thisOperand[1] * otherOperand[5]
+                             + thisOperand[2] * otherOperand[8];
+            result.single[3] = thisOperand[3] * otherOperand[0]
+                             + thisOperand[4] * otherOperand[3]
+                             + thisOperand[5] * otherOperand[6];
+            result.single[4] = thisOperand[3] * otherOperand[1]
+                             + thisOperand[4] * otherOperand[4]
+                             + thisOperand[5] * otherOperand[7];
+            result.single[5] = thisOperand[3] * otherOperand[2]
+                             + thisOperand[4] * otherOperand[5]
+                             + thisOperand[5] * otherOperand[8];
+            result.single[6] = thisOperand[6] * otherOperand[0]
+                             + thisOperand[7] * otherOperand[3]
+                             + thisOperand[8] * otherOperand[6];
+            result.single[7] = thisOperand[6] * otherOperand[1]
+                             + thisOperand[7] * otherOperand[4]
+                             + thisOperand[8] * otherOperand[7];
+            result.single[8] = thisOperand[6] * otherOperand[2]
+                             + thisOperand[7] * otherOperand[5]
+                             + thisOperand[8] * otherOperand[8];
+        }
+
         return result;
     }
 

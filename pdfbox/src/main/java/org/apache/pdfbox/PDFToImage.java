@@ -19,10 +19,9 @@ package org.apache.pdfbox;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import javax.imageio.ImageIO;
-
-import java.util.List;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -76,7 +75,7 @@ public class PDFToImage
         float cropBoxLowerLeftX = 0;
         float cropBoxLowerLeftY = 0;
         float cropBoxUpperRightX = 0;
-	    float cropBoxUpperRightY = 0;
+        float cropBoxUpperRightY = 0;
         try
         {
             resolution = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -137,13 +136,13 @@ public class PDFToImage
             else if( args[i].equals( CROPBOX ) )
             {
                 i++;
-	        cropBoxLowerLeftX = Float.valueOf(args[i]).floatValue();
+                cropBoxLowerLeftX = Float.valueOf(args[i]).floatValue();
                 i++;
-	        cropBoxLowerLeftY = Float.valueOf(args[i]).floatValue();
+                cropBoxLowerLeftY = Float.valueOf(args[i]).floatValue();
                 i++;
-	        cropBoxUpperRightX = Float.valueOf(args[i]).floatValue();
+                cropBoxUpperRightX = Float.valueOf(args[i]).floatValue();
                 i++;
-	        cropBoxUpperRightY = Float.valueOf(args[i]).floatValue();
+                cropBoxUpperRightY = Float.valueOf(args[i]).floatValue();
             }
             else
             {
@@ -219,12 +218,15 @@ public class PDFToImage
                     System.exit( 2 );
                 }
 
-                //si une cropBox a ete specifier, appeler la methode de modification de cropbox
-		//changeCropBoxes(PDDocument document,float a, float b, float c,float d)
-		if ( cropBoxLowerLeftX!=0 || cropBoxLowerLeftY!=0 || cropBoxUpperRightX!=0 || cropBoxUpperRightY!=0 )
-		{
-		  changeCropBoxes(document,cropBoxLowerLeftX, cropBoxLowerLeftY, cropBoxUpperRightX, cropBoxUpperRightY);
-		}
+                //if a CropBox has been specified, update the CropBox:
+                //changeCropBoxes(PDDocument document,float a, float b, float c,float d)
+                if ( cropBoxLowerLeftX!=0 || cropBoxLowerLeftY!=0
+                        || cropBoxUpperRightX!=0 || cropBoxUpperRightY!=0 )
+                {
+                    changeCropBoxes(document,
+                            cropBoxLowerLeftX, cropBoxLowerLeftY,
+                            cropBoxUpperRightX, cropBoxUpperRightY);
+                }
 
                 //Make the call
                 PDFImageWriter imageWriter = new PDFImageWriter();
@@ -287,21 +289,20 @@ public class PDFToImage
 
     private static void changeCropBoxes(PDDocument document,float a, float b, float c,float d)
     {
-      List pages = document.getDocumentCatalog().getAllPages();
-      for( int i = 0; i < pages.size(); i++ )
-      {
+        List pages = document.getDocumentCatalog().getAllPages();
+        for( int i = 0; i < pages.size(); i++ )
+        {
               System.out.println("resizing page");
-	      PDPage page = (PDPage)pages.get( i );
-	      PDRectangle rectangle = new PDRectangle();
+              PDPage page = (PDPage)pages.get( i );
+              PDRectangle rectangle = new PDRectangle();
               rectangle.setLowerLeftX(a);
               rectangle.setLowerLeftY(b);
               rectangle.setUpperRightX(c);
               rectangle.setUpperRightY(d);
-	      page.setMediaBox(rectangle);
-	      page.setCropBox(rectangle);
+              page.setMediaBox(rectangle);
+              page.setCropBox(rectangle);
 
-      }
-
+        }
     }
 
 }

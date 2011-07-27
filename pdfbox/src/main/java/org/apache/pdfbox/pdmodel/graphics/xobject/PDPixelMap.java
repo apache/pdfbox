@@ -133,9 +133,9 @@ public class PDPixelMap extends PDXObjectImage
             int width = getWidth();
             int height = getHeight();
             int bpc = getBitsPerComponent();
-            
+
             byte[] array = getPDStream().getByteArray();
-            if (array.length == 0) 
+            if (array.length == 0)
             {
                 log.error("Something went wrong ... the pixelmap doesn't contain any data.");
                 return null;
@@ -147,7 +147,7 @@ public class PDPixelMap extends PDXObjectImage
                 log.error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
                 return null;
             }
-            
+
             ColorModel cm = null;
             if (colorspace instanceof PDIndexed)
             {
@@ -181,7 +181,8 @@ public class PDPixelMap extends PDXObjectImage
                 {
                     cm = new IndexColorModel(bpc, size+1, r, g, b, a);
                 }
-                else {
+                else
+                {
                     if (maskArray != null)
                     {
                         cm = new IndexColorModel(bpc, size+1, r, g, b, maskArray.getInt(0));
@@ -198,7 +199,7 @@ public class PDPixelMap extends PDXObjectImage
                 if (colorspace instanceof PDDeviceGray)
                 {
                     COSArray decode = getDecode();
-                    // we have to invert the b/w-values, 
+                    // we have to invert the b/w-values,
                     // if the Decode array exists and consists of (1,0)
                     if (decode != null && decode.getInt(0) == 1)
                     {
@@ -211,7 +212,7 @@ public class PDPixelMap extends PDXObjectImage
                 }
                 else if (colorspace instanceof PDICCBased)
                 {
-                    if ( ((PDICCBased)colorspace).getNumberOfComponents() == 1) 
+                    if ( ((PDICCBased)colorspace).getNumberOfComponents() == 1)
                     {
                         map = new byte[] {(byte)0xff};
                     }
@@ -228,48 +229,52 @@ public class PDPixelMap extends PDXObjectImage
             }
             else
             {
-                if (colorspace instanceof PDICCBased) 
+                if (colorspace instanceof PDICCBased)
                 {
-                    if (((PDICCBased)colorspace).getNumberOfComponents() == 1) 
+                    if (((PDICCBased)colorspace).getNumberOfComponents() == 1)
                     {
                         byte[] map = new byte[] {(byte)0xff};
                         cm = new IndexColorModel(bpc, 1, map, map, map, Transparency.OPAQUE);
                     }
                     else
+                    {
                         cm = colorspace.createColorModel( bpc );
+                    }
                 }
                 else
+                {
                     cm = colorspace.createColorModel( bpc );
+                }
             }
 
             log.debug("ColorModel: " + cm.toString());
             WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
             DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
-        
-            System.arraycopy( array, 0,bufferData, 0, 
+
+            System.arraycopy( array, 0,bufferData, 0,
                     (array.length<bufferData.length?array.length: bufferData.length) );
             image = new BufferedImage(cm, raster, false, null);
-            
-	        // If there is a 'soft mask' image then we use that as a transparency mask.
-	        PDXObjectImage smask = getSMaskImage();
-	        if (smask != null)
-	        {
+
+            // If there is a 'soft mask' image then we use that as a transparency mask.
+            PDXObjectImage smask = getSMaskImage();
+            if (smask != null)
+            {
                 BufferedImage smaskBI = smask.getRGBImage();
-                
-               	COSArray decodeArray = smask.getDecode();
-               	
-               	CompositeImage compositeImage = new CompositeImage(image, smaskBI);
-               	BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+
+                COSArray decodeArray = smask.getDecode();
+
+                CompositeImage compositeImage = new CompositeImage(image, smaskBI);
+                BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
 
                 return rgbImage;
-	        }
-	        else
-	        {
-	        	// But if there is no soft mask, use the unaltered image.
-	            return image;
-	        }
-        } 
+            }
+            else
+            {
+                // But if there is no soft mask, use the unaltered image.
+                return image;
+            }
+        }
         catch (Exception exception)
         {
             log.error(exception, exception);
@@ -287,7 +292,7 @@ public class PDPixelMap extends PDXObjectImage
     public void write2OutputStream(OutputStream out) throws IOException
     {
         getRGBImage();
-        if (image!=null)
+        if (image != null)
         {
             ImageIO.write(image, "png", out);
         }

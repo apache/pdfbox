@@ -149,66 +149,63 @@ public class PDFStreamParser extends BaseParser
     {
         return streamObjects;
     }
-    
+
     public void close() throws IOException
     {
-    	pdfSource.close();
+        pdfSource.close();
     }
 
     /**
      * This will get an iterator which can be used to parse the stream
      * one token after the other.
-     * 
+     *
      * @return an iterator to get one token after the other
      */
     public Iterator<Object> getTokenIterator()
     {
         return new Iterator<Object>()
         {
-			private Object	token;
-			
-			private void tryNext()
-			{
-				try {
-					if(token == null)
-					{
-						token = parseNextToken();
-					}
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
+            private Object token;
 
-		    /**
-		     * {@inheritDoc}
-		     */
-			public boolean hasNext() 
-			{
-				tryNext();
-				return token != null;
-			}
+            private void tryNext()
+            {
+                try
+                {
+                    if (token == null)
+                    {
+                        token = parseNextToken();
+                    }
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
 
-		    /**
-		     * {@inheritDoc}
-		     */
-			public Object next() {
-				tryNext();
-				Object tmp = token;
-				if(tmp == null)
-				{
-					throw new NoSuchElementException();
-				}
-				token = null;
-				return tmp;
-			}
+            /** {@inheritDoc} */
+            public boolean hasNext()
+            {
+                tryNext();
+                return token != null;
+            }
 
-		    /**
-		     * {@inheritDoc}
-		     */
-			public void remove() 
-			{
-				throw new UnsupportedOperationException();
-			}
+            /** {@inheritDoc} */
+            public Object next() {
+                tryNext();
+                Object tmp = token;
+                if (tmp == null)
+                {
+                    throw new NoSuchElementException();
+                }
+                token = null;
+                return tmp;
+            }
+
+            /** {@inheritDoc} */
+            public void remove()
+            {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 
@@ -461,25 +458,25 @@ public class PDFStreamParser extends BaseParser
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
         StringBuffer buffer = new StringBuffer(4);
-        int nextChar = (int)pdfSource.peek();
+        int nextChar = pdfSource.peek();
         while(
             nextChar != -1 && // EOF
             !isWhitespace(nextChar) &&
             !isClosing(nextChar) &&
-            nextChar != (int)'[' &&
-            nextChar != (int)'<' &&
-            nextChar != (int)'(' &&
-            nextChar != (int)'/' &&
-            (nextChar < (int)'0' ||
-             nextChar > (int)'9' ) )
+            nextChar != '[' &&
+            nextChar != '<' &&
+            nextChar != '(' &&
+            nextChar != '/' &&
+            (nextChar < '0' ||
+             nextChar > '9' ) )
         {
             char currentChar = (char)pdfSource.read();
-            nextChar = (int)pdfSource.peek();
+            nextChar = pdfSource.peek();
             buffer.append( currentChar );
-            // Type3 Glyph description has operators with a number in the name 
+            // Type3 Glyph description has operators with a number in the name
             if (currentChar == 'd' && (nextChar == '0' || nextChar == '1') ) {
                 buffer.append( (char)pdfSource.read() );
-                nextChar = (int)pdfSource.peek();
+                nextChar = pdfSource.peek();
             }
         }
         return buffer.toString();

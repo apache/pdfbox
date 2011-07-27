@@ -47,7 +47,7 @@ public class DateConverter
         new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a", Locale.ENGLISH),
         new SimpleDateFormat("MM/dd/yyyy hh:mm:ss", Locale.ENGLISH),
         new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH),
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH), 
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH),
         new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.ENGLISH),
         new SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.ENGLISH), // Acrobat Distiller 1.0.2 for Macintosh
         new SimpleDateFormat("EEEE MMM dd, yyyy HH:mm:ss", Locale.ENGLISH), // ECMP5
@@ -55,44 +55,44 @@ public class DateConverter
         new SimpleDateFormat("EEEE, MMM dd, yyyy 'at' hh:mma", Locale.ENGLISH), // Acrobat Net Distiller 1.0 for Windows
         new SimpleDateFormat("d/MM/yyyy hh:mm:ss", Locale.ENGLISH), // PDFBOX-164
         new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.ENGLISH), // PDFBOX-170
-        new SimpleDateFormat("EEEEEEEEEE, MMMMMMMMMMMM dd, yyyy", Locale.ENGLISH),  // PDFBOX-465 
-        new SimpleDateFormat("dd MMM yyyy hh:mm:ss", Locale.ENGLISH),  // for 26 May 2000 11:25:00          
+        new SimpleDateFormat("EEEEEEEEEE, MMMMMMMMMMMM dd, yyyy", Locale.ENGLISH),  // PDFBOX-465
+        new SimpleDateFormat("dd MMM yyyy hh:mm:ss", Locale.ENGLISH),  // for 26 May 2000 11:25:00
         new SimpleDateFormat("dd MMM yyyy hh:mm", Locale.ENGLISH),  // for 26 May 2000 11:25
-		new SimpleDateFormat("M/dd/yyyy hh:mm:ss", Locale.ENGLISH),		
-		new SimpleDateFormat("MM/d/yyyy hh:mm:ss", Locale.ENGLISH),
-		new SimpleDateFormat("M/dd/yyyy", Locale.ENGLISH),
-		new SimpleDateFormat("MM/d/yyyy", Locale.ENGLISH),
-		new SimpleDateFormat("M/d/yyyy hh:mm:ss", Locale.ENGLISH),
-		new SimpleDateFormat("M/d/yyyy", Locale.ENGLISH),
-		new SimpleDateFormat("M/d/yy hh:mm:ss", Locale.ENGLISH),
-		new SimpleDateFormat("M/d/yy", Locale.ENGLISH),
-        new SimpleDateFormat("yyyymmdd hh:mm:ss Z"), // 
-        new SimpleDateFormat("yyyymmdd hh:mm:ss"), 	 // 
-        new SimpleDateFormat("yyyymmdd'+00''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+01''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+02''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+03''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+04''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+05''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+06''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+07''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+08''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+09''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+10''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+11''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'+12''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-01''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-02''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-03''00'''"), // 
+        new SimpleDateFormat("M/dd/yyyy hh:mm:ss", Locale.ENGLISH),
+        new SimpleDateFormat("MM/d/yyyy hh:mm:ss", Locale.ENGLISH),
+        new SimpleDateFormat("M/dd/yyyy", Locale.ENGLISH),
+        new SimpleDateFormat("MM/d/yyyy", Locale.ENGLISH),
+        new SimpleDateFormat("M/d/yyyy hh:mm:ss", Locale.ENGLISH),
+        new SimpleDateFormat("M/d/yyyy", Locale.ENGLISH),
+        new SimpleDateFormat("M/d/yy hh:mm:ss", Locale.ENGLISH),
+        new SimpleDateFormat("M/d/yy", Locale.ENGLISH),
+        new SimpleDateFormat("yyyymmdd hh:mm:ss Z"), //
+        new SimpleDateFormat("yyyymmdd hh:mm:ss"),   //
+        new SimpleDateFormat("yyyymmdd'+00''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+01''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+02''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+03''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+04''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+05''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+06''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+07''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+08''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+09''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+10''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+11''00'''"), //
+        new SimpleDateFormat("yyyymmdd'+12''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-01''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-02''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-03''00'''"), //
         new SimpleDateFormat("yyyymmdd'-04''00'''"), //
-        new SimpleDateFormat("yyyymmdd'-05''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-06''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-07''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-08''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-09''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-10''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-11''00'''"), // 
-        new SimpleDateFormat("yyyymmdd'-12''00'''"), // 
+        new SimpleDateFormat("yyyymmdd'-05''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-06''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-07''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-08''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-09''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-10''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-11''00'''"), //
+        new SimpleDateFormat("yyyymmdd'-12''00'''"), //
         new SimpleDateFormat("yyyymmdd"), // for 20090401+0200
     };
 
@@ -244,10 +244,10 @@ public class DateConverter
                                 //parseInt cannot handle the + sign
                                 hours = Integer.parseInt( date.substring( 15, 17 ) );
                             }
-                            else if (sign == '-') 
-                            { 
-                                hours = -Integer.parseInt(date.substring(15,17)); 
-                            } 
+                            else if (sign == '-')
+                            {
+                                hours = -Integer.parseInt(date.substring(15,17));
+                            }
                             else
                             {
                                 hours = -Integer.parseInt( date.substring( 14, 16 ) );
