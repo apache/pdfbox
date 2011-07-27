@@ -342,9 +342,10 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getCapHeight()
     {
-        if(capHeight==Float.NEGATIVE_INFINITY){
-        	/* We observed a negative value being returned with
-             * the Scheherazade font. PDFBOX-429 was logged for this. 
+        if(capHeight==Float.NEGATIVE_INFINITY)
+        {
+            /* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this.
              * We are not sure if returning the absolute value
              * is the correct fix, but it seems to work.  */
             capHeight = java.lang.Math.abs(dic.getFloat( COSName.CAP_HEIGHT, 0 ));
@@ -352,7 +353,7 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
         return capHeight;
     }
 
-    
+
     /**
      * This will set the cap height for the font.
      *
@@ -371,9 +372,10 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
      */
     public float getXHeight()
     {
-        if(xHeight==Float.NEGATIVE_INFINITY){
-        	/* We observed a negative value being returned with
-             * the Scheherazade font. PDFBOX-429 was logged for this. 
+        if(xHeight==Float.NEGATIVE_INFINITY)
+        {
+            /* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this.
              * We are not sure if returning the absolute value
              * is the correct fix, but it seems to work.  */
             xHeight = java.lang.Math.abs(dic.getFloat( COSName.XHEIGHT, 0 ));

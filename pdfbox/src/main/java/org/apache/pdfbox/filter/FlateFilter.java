@@ -40,7 +40,7 @@ import org.apache.pdfbox.cos.COSName;
  * @author Marcel Kammer
  * @version $Revision: 1.12 $
  */
-public class FlateFilter implements Filter 
+public class FlateFilter implements Filter
 {
 
     /**
@@ -53,7 +53,7 @@ public class FlateFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex )
     throws IOException
     {
         COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
@@ -76,7 +76,7 @@ public class FlateFilter implements Filter
         }
         else
         {
-            throw new IOException( "Error: Expected COSArray or COSDictionary and not " 
+            throw new IOException( "Error: Expected COSArray or COSDictionary and not "
                     + baseObj.getClass().getName() );
         }
 
@@ -106,14 +106,14 @@ public class FlateFilter implements Filter
             int amountRead;
             int mayRead = compressedData.available();
 
-            if (mayRead > 0) 
+            if (mayRead > 0)
             {
                 byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
 
                 // Decode data using given predictor
                 if (predictor==-1 || predictor == 1 )
                 {
-                    try 
+                    try
                     {
                         // decoding not needed
                         while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
@@ -121,17 +121,17 @@ public class FlateFilter implements Filter
                             result.write(buffer, 0, amountRead);
                         }
                     }
-                    catch (OutOfMemoryError exception) 
+                    catch (OutOfMemoryError exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
                         log.error("Stop reading corrupt stream");
                     }
-                    catch (ZipException exception) 
+                    catch (ZipException exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
                         log.error("Stop reading corrupt stream");
                     }
-                    catch (EOFException exception) 
+                    catch (EOFException exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
                         log.error("Stop reading corrupt stream");
@@ -222,10 +222,10 @@ public class FlateFilter implements Filter
 
             while (!done && data.available() > 0)
             {
-            	  // test for PNG predictor; each value >= 10 (not only 15) indicates usage of PNG predictor
-              	if (predictor >= 10)
+                // test for PNG predictor; each value >= 10 (not only 15) indicates usage of PNG predictor
+                if (predictor >= 10)
                 {
-            		    // PNG predictor; each row starts with predictor type (0, 1, 2, 3, 4)
+                    // PNG predictor; each row starts with predictor type (0, 1, 2, 3, 4)
                     linepredictor = data.read();// read per line predictor
                     if (linepredictor == -1)
                     {
@@ -251,23 +251,25 @@ public class FlateFilter implements Filter
                 {
                     case 2:// PRED TIFF SUB
                         /**
-                         * @TODO decode tiff with bitsPerComponent != 8; e.g. for 4 bpc each nibble must be subtracted separately
+                         * @TODO decode tiff with bitsPerComponent != 8;
+                         * e.g. for 4 bpc each nibble must be subtracted separately
                          */
                         if ( bitsPerComponent != 8 )
                         {
-                    	  	throw new IOException("TIFF-Predictor with " + bitsPerComponent + " bits per component not supported");
+                            throw new IOException("TIFF-Predictor with " + bitsPerComponent
+                                    + " bits per component not supported");
                         }
                         // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
-                      	for (int p = 0; p < rowlength; p++)
-	                      {
-	                          int sub = actline[p] & 0xff;
-	                          int left = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;
-	                          actline[p] = (byte) (sub + left);
-	                      }
-	                      break;
+                        for (int p = 0; p < rowlength; p++)
+                        {
+                            int sub = actline[p] & 0xff;
+                            int left = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;
+                            actline[p] = (byte) (sub + left);
+                        }
+                        break;
                     case 10:// PRED NONE
-                    	// do nothing
-                      break;
+                        // do nothing
+                        break;
                     case 11:// PRED SUB
                         for (int p = 0; p < rowlength; p++)
                         {
@@ -322,7 +324,7 @@ public class FlateFilter implements Filter
                     default:
                         break;
                 }
-                lastline = (byte[])actline.clone();
+                lastline = actline.clone();
                 baos.write(actline, 0, actline.length);
             }
         }
@@ -332,13 +334,13 @@ public class FlateFilter implements Filter
     /**
      * {@inheritDoc}
      */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex )
     throws IOException
     {
         DeflaterOutputStream out = new DeflaterOutputStream(result);
         int amountRead = 0;
         int mayRead = rawData.available();
-        if (mayRead > 0) 
+        if (mayRead > 0)
         {
             byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
             while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)

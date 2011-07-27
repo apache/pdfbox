@@ -59,7 +59,7 @@ public abstract class PDXObjectImage extends PDXObject
      * This contains the suffix used when writing to file.
      */
     private String suffix;
-    
+
     private PDGraphicsState graphicsState;
 
     /**
@@ -101,22 +101,23 @@ public abstract class PDXObjectImage extends PDXObject
      * See section 11.5 of the pdf specification for details on Soft Masks.
      *
      * @return the PDXObjectImage of the SMask if there is one, else <code>null</code>.
+     * @throws IOException if an I/O error occurs creating an XObject
      */
     public PDXObjectImage getSMaskImage() throws IOException
     {
-    	COSStream cosStream = getPDStream().getStream();
-    	COSBase smask = cosStream.getDictionaryObject(COSName.SMASK);
-    	
-    	if (smask == null)
-    	{
-    		return null;
-    	}
-    	else
-    	{
-    		return (PDXObjectImage)PDXObject.createXObject(smask);
-    	}
+        COSStream cosStream = getPDStream().getStream();
+        COSBase smask = cosStream.getDictionaryObject(COSName.SMASK);
+
+        if (smask == null)
+        {
+            return null;
+        }
+        else
+        {
+            return (PDXObjectImage)PDXObject.createXObject(smask);
+        }
     }
-    
+
     /**
      * Writes the Image to out.
      * @param out the OutputStream that the Image is written to.
@@ -249,7 +250,7 @@ file.
         if( cs != null )
         {
             retval = PDColorSpaceFactory.createColorSpace( cs );
-            if (retval == null) 
+            if (retval == null)
                 {
                     log.info("About to return NULL from createColorSpace branch");
                 }
@@ -263,7 +264,7 @@ file.
                 COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-                if (retval == null) 
+                if (retval == null)
                     {
                         log.info("About to return NULL from CCITT branch");
                     }
@@ -271,7 +272,7 @@ file.
             else if( COSName.JBIG2_DECODE.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-                if (retval == null) 
+                if (retval == null)
                 {
                     log.info("About to return NULL from JBIG2 branch");
                 }
@@ -282,7 +283,7 @@ file.
                 retval = graphicsState.getNonStrokingColor().getColorSpace();
                 log.info("Stencil Mask branch returning " + retval.toString());
                 //throw new IOException("Trace the Stencil Mask!!!!");
-            
+
             }
             else
             {
@@ -317,7 +318,7 @@ file.
     {
         return suffix;
     }
-    
+
     /**
      * Get the ImageMask flag. Used in Stencil Masking.  Section 4.8.5 of the spec.
      *
@@ -327,9 +328,9 @@ file.
     {
         return getCOSStream().getBoolean( COSName.IMAGE_MASK, false );
     }
-    
+
     /**
-     * Allow the Invoke operator to set the graphics state so that, 
+     * Allow the Invoke operator to set the graphics state so that,
      * in the case of an Image Mask, we can get to the current nonstroking colorspace.
      * @param newGS The new graphicstate
      */
@@ -342,18 +343,19 @@ file.
      * Returns the Decode Array of an XObjectImage.
      * @return the decode array
      */
-    public COSArray getDecode() {
+    public COSArray getDecode()
+    {
         COSBase decode = getCOSStream().getDictionaryObject( COSName.DECODE );
-        if (decode != null && decode instanceof COSArray) 
+        if (decode != null && decode instanceof COSArray)
         {
             return (COSArray)decode;
         }
         return null;
     }
 
-    /** 
+    /**
      * Returns the optional mask of a XObjectImage if there is one.
-     * 
+     *
      * @return The mask as COSArray otherwise null.
      */
     public COSArray getMask()

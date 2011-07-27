@@ -30,39 +30,44 @@ package org.apache.pdfbox.util;
  * @author m.martinez@ll.mit.edu
  *
  */
-public class PositionWrapper{
-	
-	private boolean isLineStart = false;
-	private boolean isParagraphStart = false;
-	private boolean isPageBreak = false;
-	private boolean isHangingIndent = false;
-	private boolean isArticleStart = false;
-	
-	private TextPosition position = null;
-	
-	/**
-	 * returns the underlying TextPosition object
-	 * @return
-	 */
-	protected TextPosition getTextPosition(){
-		return position;
-	}
-	
+public class PositionWrapper
+{
 
-    public boolean isLineStart() {
+    private boolean isLineStart = false;
+    private boolean isParagraphStart = false;
+    private boolean isPageBreak = false;
+    private boolean isHangingIndent = false;
+    private boolean isArticleStart = false;
+
+    private TextPosition position = null;
+
+    /**
+     * Returns the underlying TextPosition object.
+     * @return the text position
+     */
+    protected TextPosition getTextPosition()
+    {
+        return position;
+    }
+
+
+    public boolean isLineStart()
+    {
         return isLineStart;
     }
 
 
     /**
-     * sets the isLineStart() flag to true
+     * Sets the isLineStart() flag to true.
      */
-    public void setLineStart() {
+    public void setLineStart()
+    {
         this.isLineStart = true;
     }
 
 
-    public boolean isParagraphStart() {
+    public boolean isParagraphStart()
+    {
         return isParagraphStart;
     }
 
@@ -70,55 +75,63 @@ public class PositionWrapper{
     /**
      * sets the isParagraphStart() flag to true.
      */
-    public void setParagraphStart() {
+    public void setParagraphStart()
+    {
         this.isParagraphStart = true;
     }
 
 
-	public boolean isArticleStart() {
-		return isArticleStart;
-	}
+    public boolean isArticleStart()
+    {
+        return isArticleStart;
+    }
 
 
-	/**
-	 * sets the isArticleStart() flag to true.
-	 */
-	public void setArticleStart() {
-		this.isArticleStart = true;
-	}
-
-
-	public boolean isPageBreak() {
-		return isPageBreak;
-	}
-
-    
     /**
-     * sets the isPageBreak() flag to true
+     * Sets the isArticleStart() flag to true.
      */
-    public void setPageBreak() {
+    public void setArticleStart()
+    {
+        this.isArticleStart = true;
+    }
+
+
+    public boolean isPageBreak()
+    {
+        return isPageBreak;
+    }
+
+
+    /**
+     * Sets the isPageBreak() flag to true.
+     */
+    public void setPageBreak()
+    {
         this.isPageBreak = true;
     }
 
 
-    public boolean isHangingIndent() {
+    public boolean isHangingIndent()
+    {
         return isHangingIndent;
     }
 
 
     /**
-     * sets the isHangingIndent() flag to true
+     * Sets the isHangingIndent() flag to true.
      */
-    public void setHangingIndent() {
+    public void setHangingIndent()
+    {
         this.isHangingIndent = true;
     }
 
 
     /**
-     * constructs a PositionWrapper around the specified TextPosition object.
-     * @param position
+     * Constructs a PositionWrapper around the specified TextPosition object.
+     * @param position the text position
      */
-    public PositionWrapper(TextPosition position){
+    public PositionWrapper(TextPosition position)
+    {
         this.position = position;
     }
 

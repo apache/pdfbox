@@ -71,14 +71,14 @@ public class PDPage implements COSObjectable, Printable
     private static final Log log = LogFactory.getLog(PDPage.class);
 
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
-    
+
     private static final float MM_TO_UNITS = 1/(10*2.54f)*DEFAULT_USER_SPACE_UNIT_DPI;
-    
+
     /**
      * Fully transparent that can fall back to white when image type has no alpha.
      */
-    private static final Color TRANSPARENT_WHITE = new Color( 255, 255, 255, 0 ); 
-    
+    private static final Color TRANSPARENT_WHITE = new Color( 255, 255, 255, 0 );
+
     private COSDictionary page;
 
     /**
@@ -126,7 +126,7 @@ public class PDPage implements COSObjectable, Printable
 
     /**
      * Creates a new instance of PDPage.
-	 *
+     *
      * @param size The MediaBox or the page.
      */
     public PDPage(PDRectangle size)
@@ -136,8 +136,8 @@ public class PDPage implements COSObjectable, Printable
         setMediaBox( size );
     }
 
-    
-    
+
+
     /**
      * Creates a new instance of PDPage.
      *
@@ -177,7 +177,8 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDPageNode getParent()
     {
-        if( parent == null){
+        if( parent == null)
+        {
             COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( "Parent", "P" );
             if( parentDic != null )
             {
@@ -188,7 +189,7 @@ public class PDPage implements COSObjectable, Printable
     }
 
     private PDPageNode parent = null;
-    
+
     /**
      * This will set the parent of this page.
      *
@@ -279,18 +280,19 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDRectangle getMediaBox()
     {
-        if( mediaBox == null){
+        if( mediaBox == null)
+        {
             COSArray array = (COSArray)page.getDictionaryObject( COSName.MEDIA_BOX );
             if( array != null )
             {
-            	mediaBox = new PDRectangle( array );
+                mediaBox = new PDRectangle( array );
             }
         }
         return mediaBox;
     }
 
     private PDRectangle mediaBox = null;
-    
+
     /**
      * This will find the MediaBox for this page by looking up the hierarchy until
      * it finds them.
@@ -306,7 +308,7 @@ public class PDPage implements COSObjectable, Printable
         }
         return retval;
     }
-    
+
     /**
      * This will set the mediaBox for this page.
      *
@@ -315,7 +317,7 @@ public class PDPage implements COSObjectable, Printable
     public void setMediaBox( PDRectangle mediaBox )
     {
         this.mediaBox = mediaBox;
-    	if( mediaBox == null )
+        if( mediaBox == null )
         {
             page.removeItem( COSName.MEDIA_BOX );
         }
@@ -692,7 +694,7 @@ public class PDPage implements COSObjectable, Printable
         //and let the client scale it down.
         return convertToImage(8, 2 * DEFAULT_USER_SPACE_UNIT_DPI);
     }
-    
+
     /**
      * Convert this page to an output image.
      *
@@ -712,7 +714,7 @@ public class PDPage implements COSObjectable, Printable
         int heightPx = Math.round(heightPt * scaling);
         //TODO The following reduces accuracy. It should really be a Dimension2D.Float.
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
-            
+
         BufferedImage retval = new BufferedImage( widthPx, heightPx, imageType );
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
         graphics.setBackground( TRANSPARENT_WHITE );
@@ -723,19 +725,19 @@ public class PDPage implements COSObjectable, Printable
 
         //TODO This could be done directly by manipulating the transformation matrix before painting.
         //That could result in a better image quality.
-        try 
+        try
         {
             int rotation = findRotation();
-            if (rotation == 90 || rotation == 270) 
+            if (rotation == 90 || rotation == 270)
             {
-                 int w = retval.getWidth();    
-                 int h = retval.getHeight();    
-                 BufferedImage rotatedImg = new BufferedImage(w, h, retval.getType());    
-                 Graphics2D g = rotatedImg.createGraphics();    
-                 g.rotate(Math.toRadians(rotation), w/2, h/2);    
-                 g.drawImage(retval, null, 0, 0);    
+                 int w = retval.getWidth();
+                 int h = retval.getHeight();
+                 BufferedImage rotatedImg = new BufferedImage(w, h, retval.getType());
+                 Graphics2D g = rotatedImg.createGraphics();
+                 g.rotate(Math.toRadians(rotation), w/2, h/2);
+                 g.drawImage(retval, null, 0, 0);
             }
-        } 
+        }
         catch (ImagingOpException e)
         {
                 log.warn("Unable to rotate page image", e);
