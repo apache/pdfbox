@@ -65,7 +65,7 @@ public class TestValidDirectory {
   	ValidationResult result = null;
   	try {
   		result = validator.validate(new FileDataSource(target));
-  		Assert.assertTrue(result.isValid());
+  		Assert.assertTrue("Validation of " + target ,result.isValid());
   	} finally {
   		if (result != null) {
   			result.closePdf();

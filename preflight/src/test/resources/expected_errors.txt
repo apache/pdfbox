@@ -19,8 +19,6 @@
 #-------------------------------------------------------------------------------
 # filename=param1,param2...
 
-#jira-od-pdfa-18.pdf=1.1
-
 isartor-6-1-2-t01-fail-a.pdf=1.1
 isartor-6-1-2-t02-fail-a.pdf=1.1
 isartor-6-1-3-t01-fail-a.pdf=1.4.1
@@ -213,7 +211,7 @@ isartor-6-7-8-t01-fail-a.pdf=7.3
 isartor-6-7-8-t02-fail-a.pdf=7.3 // 7.4.2 Impossible car NSPrefix utilisé pour identifier pdfschemaext. Ici il est vu comme un schema inconnu
 isartor-6-7-8-t02-fail-b.pdf=7.4.1 
 isartor-6-7-8-t02-fail-c.pdf=7.1 //traité comme probleme de format 
-isartor-6-7-8-t02-fail-d.pdf=7.1.1 // Property missing donc Property unknown (7.1.1)
+isartor-6-7-8-t02-fail-d.pdf=7.1.1 // Property missing so Property unknown (7.1.1)
 isartor-6-7-8-t02-fail-e.pdf=7.5
 isartor-6-7-8-t02-fail-f.pdf=7.5
 isartor-6-7-8-t02-fail-g.pdf=7.6 
