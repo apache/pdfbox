@@ -32,15 +32,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.padaf.preflight.DocumentHandler;
 import org.apache.padaf.preflight.ValidationConstants;
 import org.apache.padaf.preflight.ValidationException;
-import org.apache.padaf.preflight.ValidatorConfig;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
+import org.apache.padaf.preflight.ValidatorConfig;
 import org.apache.padaf.preflight.utils.COSUtils;
 import org.apache.padaf.preflight.xmp.PDFAIdentificationValidation;
 import org.apache.padaf.preflight.xmp.RDFAboutAttributeConcordanceValidation;
+import org.apache.padaf.preflight.xmp.RDFAboutAttributeConcordanceValidation.DifferentRDFAboutException;
 import org.apache.padaf.preflight.xmp.SynchronizedMetaDataValidation;
 import org.apache.padaf.preflight.xmp.XpacketParsingException;
 import org.apache.padaf.preflight.xmp.RDFAboutAttributeConcordanceValidation.DifferentRDFAboutException;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.PDFAExtentionSchemaPreprocessor;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XmpExpectedRdfAboutAttribute;
 import org.apache.padaf.xmpbox.parser.XmpParsingException;
@@ -113,6 +115,7 @@ public class MetadataValidationHelper extends AbstractValidationHelper {
       XMPDocumentBuilder builder;
 	  try {
 		builder = new XMPDocumentBuilder();
+		builder.addPreprocessor(new PDFAExtentionSchemaPreprocessor());
 	  } catch (XmpSchemaException e1) {
 	    throw new ValidationException(e1.getMessage(), e1);
 	  }

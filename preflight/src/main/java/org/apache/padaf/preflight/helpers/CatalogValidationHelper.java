@@ -53,10 +53,66 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * This helper validates the PDF file catalog
  */
 public class CatalogValidationHelper extends AbstractValidationHelper {
+	protected List<String> listICC = new ArrayList<String>();
 
 	public CatalogValidationHelper(ValidatorConfig cfg)
 	throws ValidationException {
 		super(cfg);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA43);
+		listICC.add(ICC_Characterization_Data_Registry_CGATS_TR_006);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA39);
+		listICC.add(ICC_Characterization_Data_Registry_JC200103);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA27);
+		listICC.add(ICC_Characterization_Data_Registry_EUROSB104);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA45);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA46);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA41);
+		listICC.add(ICC_Characterization_Data_Registry_CGATS_TR_001);
+		listICC.add(ICC_Characterization_Data_Registry_CGATS_TR_003);
+		listICC.add(ICC_Characterization_Data_Registry_CGATS_TR_005);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA28);
+		listICC.add(ICC_Characterization_Data_Registry_JCW2003);
+		listICC.add(ICC_Characterization_Data_Registry_EUROSB204);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA47);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA44);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA29);
+		listICC.add(ICC_Characterization_Data_Registry_JC200104);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA40);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA30);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA42);
+		listICC.add(ICC_Characterization_Data_Registry_IFRA26);
+		listICC.add(ICC_Characterization_Data_Registry_JCN2002);
+		listICC.add(ICC_Characterization_Data_Registry_CGATS_TR_002);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA33);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA37);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA31);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA35);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA32);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA34);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA36);
+		listICC.add(ICC_Characterization_Data_Registry_FOGRA38);
+		listICC.add(ICC_Characterization_Data_Registry_sRGB);
+		listICC.add(ICC_Characterization_Data_Registry_sRGB_IEC);
+		listICC.add(ICC_Characterization_Data_Registry_Adobe);
+		listICC.add(ICC_Characterization_Data_Registry_bg_sRGB);
+		listICC.add(ICC_Characterization_Data_Registry_sYCC);
+		listICC.add(ICC_Characterization_Data_Registry_scRGB);
+		listICC.add(ICC_Characterization_Data_Registry_scRGB_nl);
+		listICC.add(ICC_Characterization_Data_Registry_scYCC_nl);
+		listICC.add(ICC_Characterization_Data_Registry_ROMM);
+		listICC.add(ICC_Characterization_Data_Registry_RIMM);
+		listICC.add(ICC_Characterization_Data_Registry_ERIMM);
+		listICC.add(ICC_Characterization_Data_Registry_eciRGB);
+		listICC.add(ICC_Characterization_Data_Registry_opRGB);
+	}
+
+	protected boolean isStandardICCCharacterization(String name) {
+		for (String iccStandard : listICC) {
+			if (iccStandard.contains(name)) { // TODO check with an equal instead of contains?
+				return true;
+	}
+		}
+		return false;
 	}
 
 	/*
@@ -191,15 +247,13 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
     PDDocumentCatalog catalog = pdDocument.getDocumentCatalog();
     COSDocument cDoc = pdDocument.getDocument();
 
-    COSBase cBase = catalog.getCOSDictionary().getItem(
-        COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
+    COSBase cBase = catalog.getCOSDictionary().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
     COSArray outputIntents = COSUtils.getAsArray(cBase, cDoc);
 
     Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<COSObjectKey, Boolean>();
 
     for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i) {
-      COSDictionary dictionary = COSUtils.getAsDictionary(outputIntents.get(i),
-          cDoc);
+		COSDictionary dictionary = COSUtils.getAsDictionary(outputIntents.get(i), cDoc);
 
       if (dictionary == null) {
 
@@ -209,49 +263,39 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 
       } else {
         // ---- S entry is mandatory and must be equals to GTS_PDFA1
-        String sValue = dictionary.getNameAsString(COSName
-            .getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_S));
+			String sValue = dictionary.getNameAsString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_S));
         if (!OUTPUT_INTENT_DICTIONARY_VALUE_GTS_PDFA1.equals(sValue)) {
-          result.add(new ValidationError(
-              ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID,"The S entry of the OutputIntent isn't GTS_PDFA1"));
+				result.add(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID,
+				"The S entry of the OutputIntent isn't GTS_PDFA1"));
           continue;
         }
 
         // ---- OutputConditionIdentifier is a mandatory field
         String outputConditionIdentifier = dictionary
-            .getString(COSName
-                .getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_OUTPUT_CONDITION_IDENTIFIER));
-        if (outputConditionIdentifier == null
-            || "".equals(outputConditionIdentifier)) {
-          result.add(new ValidationError(
-              ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+			.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_OUTPUT_CONDITION_IDENTIFIER));
+			if (outputConditionIdentifier == null) {// empty string is autorized (it may be an application specific value)
+				result.add(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
               "The OutputIntentCondition is missing"));
           continue;
         }
 
-        // ---- If OutputConditionIdentifier is "Custom" :
+			// ---- If OutputConditionIdentifier is "Custom" or a non Standard ICC Characterization :
         // ---- DestOutputProfile and Info are mandatory
         // ---- DestOutputProfile must be a ICC Profile
 
-        // ---- Because of PDF/A conforming file needs to specify the color
-        // characteristics, the DestOutputProfile
-        // is checked even if the OutputConditionIdentifier isn't "Custom"
-        COSBase dop = dictionary.getItem(COSName
-            .getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE));
-        ValidationError valer = validateICCProfile(dop, cDoc,
-            tmpDestOutputProfile, handler);
+			// ---- Because of PDF/A conforming file needs to specify the color characteristics, the DestOutputProfile
+			// ---- is checked even if the OutputConditionIdentifier isn't "Custom"
+			COSBase dop = dictionary.getItem(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE));
+			ValidationError valer = validateICCProfile(dop, cDoc, tmpDestOutputProfile, handler);
         if (valer != null) {
           result.add(valer);
           continue;
         }
 
-        if (OUTPUT_INTENT_DICTIONARY_VALUE_OUTPUT_CONDITION_IDENTIFIER_CUSTOM
-            .equals(outputConditionIdentifier)) {
-          String info = dictionary.getString(COSName
-              .getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
+			if (!isStandardICCCharacterization(outputConditionIdentifier)) {
+				String info = dictionary.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
           if (info == null || "".equals(info)) {
-            result.add(new ValidationError(
-                ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+					result.add(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                 "The Info entry of a OutputIntent dictionary is missing"));
             continue;
           }

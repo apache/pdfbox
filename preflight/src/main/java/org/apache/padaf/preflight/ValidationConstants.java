@@ -265,6 +265,52 @@ public interface ValidationConstants {
   static final String RENDERING_INTENT_PERCEPTUAL = "Perceptual";
   static final String RENDERING_INTENT_SATURATION = "Saturation";
 
+  static final String ICC_Characterization_Data_Registry_FOGRA43 = "FOGRA43";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR_006 = "CGATS TR 006";
+  static final String ICC_Characterization_Data_Registry_FOGRA39 = "FOGRA39";
+  static final String ICC_Characterization_Data_Registry_JC200103 = "JC200103";
+  static final String ICC_Characterization_Data_Registry_FOGRA27 = "FOGRA27";
+  static final String ICC_Characterization_Data_Registry_EUROSB104 = "EUROSB104";
+  static final String ICC_Characterization_Data_Registry_FOGRA45 = "FOGRA45";
+  static final String ICC_Characterization_Data_Registry_FOGRA46 = "FOGRA46";
+  static final String ICC_Characterization_Data_Registry_FOGRA41 = "FOGRA41";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR_001 = "CGATS TR 001";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR_003 = "CGATS TR 003";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR_005 = "CGATS TR 005";
+  static final String ICC_Characterization_Data_Registry_FOGRA28 = "FOGRA28";
+  static final String ICC_Characterization_Data_Registry_JCW2003 = "JCW2003";
+  static final String ICC_Characterization_Data_Registry_EUROSB204 = "EUROSB204";
+  static final String ICC_Characterization_Data_Registry_FOGRA47 = "FOGRA47";
+  static final String ICC_Characterization_Data_Registry_FOGRA44 = "FOGRA44";
+  static final String ICC_Characterization_Data_Registry_FOGRA29 = "FOGRA29";
+  static final String ICC_Characterization_Data_Registry_JC200104 = "JC200104";
+  static final String ICC_Characterization_Data_Registry_FOGRA40 = "FOGRA40";
+  static final String ICC_Characterization_Data_Registry_FOGRA30 = "FOGRA30";
+  static final String ICC_Characterization_Data_Registry_FOGRA42 = "FOGRA42";
+  static final String ICC_Characterization_Data_Registry_IFRA26 = "IFRA26";
+  static final String ICC_Characterization_Data_Registry_JCN2002 = "JCN2002";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR_002 = "CGATS TR 002";
+  static final String ICC_Characterization_Data_Registry_FOGRA33 = "FOGRA33";
+  static final String ICC_Characterization_Data_Registry_FOGRA37 = "FOGRA37";
+  static final String ICC_Characterization_Data_Registry_FOGRA31 = "FOGRA31";
+  static final String ICC_Characterization_Data_Registry_FOGRA35 = "FOGRA35";
+  static final String ICC_Characterization_Data_Registry_FOGRA32 = "FOGRA32";
+  static final String ICC_Characterization_Data_Registry_FOGRA34 = "FOGRA34";
+  static final String ICC_Characterization_Data_Registry_FOGRA36 = "FOGRA36";
+  static final String ICC_Characterization_Data_Registry_FOGRA38 = "FOGRA38";
+  static final String ICC_Characterization_Data_Registry_sRGB = "sRGB";
+  static final String ICC_Characterization_Data_Registry_sRGB_IEC = "sRGB IEC61966-2.1";
+  static final String ICC_Characterization_Data_Registry_Adobe = "Adobe RGB (1998)";
+  static final String ICC_Characterization_Data_Registry_bg_sRGB = "bg-sRGB";
+  static final String ICC_Characterization_Data_Registry_sYCC = "sYCC";
+  static final String ICC_Characterization_Data_Registry_scRGB = "scRGB";
+  static final String ICC_Characterization_Data_Registry_scRGB_nl = "scRGB-nl";
+  static final String ICC_Characterization_Data_Registry_scYCC_nl = "scYCC-nl";
+  static final String ICC_Characterization_Data_Registry_ROMM = "ROMM RGB";
+  static final String ICC_Characterization_Data_Registry_RIMM = "RIMM RGB";
+  static final String ICC_Characterization_Data_Registry_ERIMM = "ERIMM RGB";
+  static final String ICC_Characterization_Data_Registry_eciRGB = "eciRGB";
+  static final String ICC_Characterization_Data_Registry_opRGB = "opRGB";
   /**
    * Error code uses by the Valdiator when there are an error without error
    * code.
