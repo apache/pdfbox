@@ -22,6 +22,7 @@
 package org.apache.padaf.xmpbox.parser;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
@@ -41,7 +42,9 @@ public class XMPSchemaFactory {
 	protected PropMapping propDef;
 	protected String nsName;
 	protected boolean isDeclarative;
-
+	
+	protected List<PropMapping> importedPropertyMapping = new ArrayList<PropMapping>();
+	
 	/**
 	 * Factory Constructor for basic known schemas
 	 * 
@@ -81,6 +84,15 @@ public class XMPSchemaFactory {
 		this.nsName = nsName;
 	}
 
+	public void importXMPSchemaFactory(XMPSchemaFactory externalFactory) 
+	throws XmpSchemaException {
+		if (!this.namespace.equals(externalFactory.namespace)) {
+			throw new XmpSchemaException("Unable to import a XMPSchemaFactory if the namespace is different." +
+					" - expected : " + this.namespace + " - import : " + externalFactory.namespace);
+		}
+		this.importedPropertyMapping.add(externalFactory.propDef);
+	}
+	
 	/**
 	 * Get namespace URI treated by this factory
 	 * 
@@ -98,7 +110,16 @@ public class XMPSchemaFactory {
 	 * @return null if propery name is unknown
 	 */
 	public String getPropertyType(String name) {
-		return propDef.getPropertyType(name);
+		String result = propDef.getPropertyType(name);
+		if (result == null) {
+			for (PropMapping mapping : importedPropertyMapping) {
+				result = mapping.getPropertyType(name);
+				if (result != null) {
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -109,7 +130,16 @@ public class XMPSchemaFactory {
 	 * @return List of all attributes defined for this property
 	 */
 	public List<String> getPropertyAttributes(String name) {
-		return propDef.getPropertyAttributes(name);
+		List<String> result = propDef.getPropertyAttributes(name);
+		if (result == null) {
+			for (PropMapping mapping : importedPropertyMapping) {
+				result = mapping.getPropertyAttributes(name);
+				if (result != null) {
+					break;
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
