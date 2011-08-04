@@ -22,6 +22,8 @@
 package org.apache.padaf.xmpbox.parser;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.padaf.xmpbox.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
@@ -64,6 +67,8 @@ public class XMPDocumentBuilder {
 	protected NSMapping nsMap;
 
 	protected ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
+	
+	protected List<XMPDocumentPreprocessor> preprocessors = new ArrayList<XMPDocumentPreprocessor>();
 
 	/**
 	 * Constructor of a XMPDocumentBuilder
@@ -104,7 +109,96 @@ public class XMPDocumentBuilder {
 			XmpSchemaException, XmpUnknownValueTypeException,
 			XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
 			BadFieldValueException {
-		return parse(new ByteArrayInputStream(xmp));
+
+		if (!(this instanceof XMPDocumentPreprocessor)) {
+			for (XMPDocumentPreprocessor processor : preprocessors) {
+				NSMapping additionalNSMapping = processor.process(xmp);
+				this.nsMap.importNSMapping(additionalNSMapping);				
+			}
+		}
+
+		ByteArrayInputStream is = new ByteArrayInputStream(xmp);
+		try {
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			reader.set(factory.createXMLStreamReader(is));
+
+			// expect xpacket processing instruction
+			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
+			"Did not find initial xpacket processing instruction");
+			XMPMetadata metadata = parseInitialXpacket(reader.get().getPIData());
+
+			// expect x:xmpmeta
+			expectNextTag(XMLStreamReader.START_ELEMENT,
+			"Did not find initial x:xmpmeta");
+			expectName("adobe:ns:meta/", "xmpmeta");
+
+			// expect rdf:RDF
+			expectNextTag(XMLStreamReader.START_ELEMENT,
+			"Did not find initial rdf:RDF");
+			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
+
+			nsMap.resetComplexBasicTypesDeclarationInEntireXMPLevel();
+			// add all namespaces which could declare nsURI of a basicValueType
+			// all others declarations are ignored
+			int nsCount = reader.get().getNamespaceCount();
+			for (int i = 0; i < nsCount; i++) {
+				if (nsMap.isComplexBasicTypes(reader.get().getNamespaceURI(i))) {
+					nsMap.setComplexBasicTypesDeclarationForLevelXMP(
+							reader.get().getNamespaceURI(i), 
+							reader.get().getNamespacePrefix(i));
+				}
+			}
+
+			// now work on each rdf:Description
+			int type = reader.get().nextTag();
+			while (type == XMLStreamReader.START_ELEMENT) {
+				parseDescription(metadata);
+				type = reader.get().nextTag();
+			}
+
+			// all description are finished
+			// expect end of rdf:RDF
+			expectType(XMLStreamReader.END_ELEMENT,
+			"Expected end of descriptions");
+			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
+
+			// expect ending xmpmeta
+			expectNextTag(XMLStreamReader.END_ELEMENT,
+			"Did not find initial x:xmpmeta");
+			expectName("adobe:ns:meta/", "xmpmeta");
+
+			// expect final processing instruction
+			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
+			"Did not find final xpacket processing instruction");
+			// treats xpacket end
+			if (!reader.get().getPITarget().equals("xpacket")) {
+				throw new XmpXpacketEndException("Excepted PI xpacket");
+			}
+			String xpackData = reader.get().getPIData();
+			// end attribute must be present and placed in first
+			// xmp spec says Other unrecognized attributes can follow, but
+			// should be ignored
+			if (xpackData.startsWith("end=")) {
+				// check value (5 for end='X')
+				if (xpackData.charAt(5)!='r' && xpackData.charAt(5)!='w') {
+					throw new XmpXpacketEndException(
+					"Excepted xpacket 'end' attribute with value 'r' or 'w' ");
+				}
+			} else {
+				// should find end='r/w'
+				throw new XmpXpacketEndException(
+				"Excepted xpacket 'end' attribute (must be present and placed in first)");
+			}
+
+			metadata.setEndXPacket(xpackData);
+			// return constructed object
+			return metadata;
+		} catch (XMLStreamException e) {
+			throw new XmpParsingException("An error has occured when processing the underlying XMP source", e);
+		} finally {
+			reader.remove();
+			IOUtils.closeQuietly(is);
+		}
 	}
 
 	/**
@@ -131,95 +225,30 @@ public class XMPDocumentBuilder {
 	 *             When treat a Schema associed to a schema Description in PDF/A
 	 *             Extension schema
 	 */
-	public XMPMetadata parse(InputStream is) throws XmpParsingException,
+	public XMPMetadata parse(InputStream input) throws XmpParsingException,
 			XmpSchemaException, XmpUnknownValueTypeException,
 			XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
 			BadFieldValueException {
+		
+		byte[] bos = getStreamAsByteArray(input);
+		return parse(bos);
+	}
 
+	private byte[] getStreamAsByteArray(InputStream input) throws XmpParsingException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
-			XMLInputFactory factory = XMLInputFactory.newInstance();
-			reader.set(factory.createXMLStreamReader(is));
-
-			// expect xpacket processing instruction
-			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
-					"Did not find initial xpacket processing instruction");
-			XMPMetadata metadata = parseInitialXpacket(reader.get().getPIData());
-
-			// expect x:xmpmeta
-			expectNextTag(XMLStreamReader.START_ELEMENT,
-					"Did not find initial x:xmpmeta");
-			expectName("adobe:ns:meta/", "xmpmeta");
-
-			// expect rdf:RDF
-			expectNextTag(XMLStreamReader.START_ELEMENT,
-					"Did not find initial rdf:RDF");
-			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
-
-			nsMap.resetComplexBasicTypesDeclarationInEntireXMPLevel();
-			// add all namespaces which could declare nsURI of a basicValueType
-			// all others declarations are ignored
-			int nsCount = reader.get().getNamespaceCount();
-			for (int i = 0; i < nsCount; i++) {
-				if (nsMap.isComplexBasicTypes(reader.get().getNamespaceURI(i))) {
-					System.out.println("in method parse: prefix:"
-							+ reader.get().getAttributeLocalName(i)
-							+ "; nsURI:" + reader.get().getAttributeValue(i));
-					nsMap.setComplexBasicTypesDeclarationForLevelXMP(reader
-							.get().getNamespaceURI(i), reader.get()
-							.getNamespacePrefix(i));
-				}
-			}
-			// now work on each rdf:Description
-			int type = reader.get().nextTag();
-			while (type == XMLStreamReader.START_ELEMENT) {
-				parseDescription(metadata);
-				type = reader.get().nextTag();
-			}
-
-			// all description are finished
-			// expect end of rdf:RDF
-			expectType(XMLStreamReader.END_ELEMENT,
-					"Expected end of descriptions");
-			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
-
-			// expect ending xmpmeta
-			expectNextTag(XMLStreamReader.END_ELEMENT,
-					"Did not find initial x:xmpmeta");
-			expectName("adobe:ns:meta/", "xmpmeta");
-
-			// expect final processing instruction
-			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
-					"Did not find final xpacket processing instruction");
-			// treats xpacket end
-			if (!reader.get().getPITarget().equals("xpacket")) {
-				throw new XmpXpacketEndException("Excepted PI xpacket");
-			}
-			String xpackData = reader.get().getPIData();
-			// end attribute must be present and placed in first
-			// xmp spec says Other unrecognized attributes can follow, but
-			// should be ignored
-			if (xpackData.startsWith("end=")) {
-			  // check value (5 for end='X')
-			  if (xpackData.charAt(5)!='r' && xpackData.charAt(5)!='w') {
-	              throw new XmpXpacketEndException(
-	              "Excepted xpacket 'end' attribute with value 'r' or 'w' ");
-			  }
-			} else {
-			  // should find end='r/w'
-              throw new XmpXpacketEndException(
-              "Excepted xpacket 'end' attribute (must be present and placed in first)");
-			}
-			    
-			metadata.setEndXPacket(xpackData);
-			// return constructed object
-			return metadata;
-		} catch (XMLStreamException e) {
-			throw new XmpParsingException(
-					"An error has occured when processing the underlying XMP source",
-					e);
+			IOUtils.copyLarge(input, bos);
+		} catch (IOException e) {
+			throw new XmpParsingException("An error has occured when processing the underlying XMP source", e);
 		} finally {
-			reader.remove();
+			IOUtils.closeQuietly(bos);
+			IOUtils.closeQuietly(input);
 		}
+		return bos.toByteArray();
+	}
+	
+	public void addPreprocessor(XMPDocumentPreprocessor processor) {
+		this.preprocessors.add(processor);
 	}
 
 	/**
@@ -390,7 +419,7 @@ public class XMPDocumentBuilder {
 	 * @throws XmpExpectedRdfAboutAttribute
 	 *             When rdf:Description not contains rdf:about attribute
 	 */
-	private void treatDescriptionAttributes(XMPMetadata metadata,
+	protected final void treatDescriptionAttributes(XMPMetadata metadata,
 			XMPSchema schema) throws XmpExpectedRdfAboutAttribute {
 		int cptAtt = reader.get().getAttributeCount();
 		if (cptAtt < 1) {
@@ -578,7 +607,7 @@ public class XMPDocumentBuilder {
 	 *             When one of a field property include to describe a property
 	 *             in Schema Description contain an incorrect value
 	 */
-	private void parseExtensionSchema(PDFAExtensionSchema schema,
+	protected final void parseExtensionSchema(PDFAExtensionSchema schema,
 			XMPMetadata metadata) throws XmpParsingException,
 			XMLStreamException, XmpUnknownValueTypeException,
 			BadFieldValueException {

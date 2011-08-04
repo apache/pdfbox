@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
@@ -97,6 +98,52 @@ public class NSMapping {
 		complexBasicTypesDeclarationPropertyLevel = new HashMap<String, String>();
 		init();
 
+	}
+
+
+	/**
+	 * Import an NSMapping content.
+	 * @param imp
+	 */
+	public void importNSMapping(NSMapping imp) throws XmpSchemaException {
+		mergeNSMap(imp.nsMaps);
+		mergeComplexBasicTypesDeclarationEntireXMPLevel(imp.complexBasicTypesDeclarationEntireXMPLevel);
+		mergeComplexBasicTypesDeclarationSchemaLevel(imp.complexBasicTypesDeclarationSchemaLevel);
+		mergeComplexBasicTypesDeclarationPropertyLevel(imp.complexBasicTypesDeclarationPropertyLevel);
+	}
+	
+	protected void mergeNSMap(Map<String, XMPSchemaFactory> map) throws XmpSchemaException {
+		for (Entry<String, XMPSchemaFactory> entry : map.entrySet() ) {
+			if (this.nsMaps.containsKey(entry.getKey())) {
+				this.nsMaps.get(entry.getKey()).importXMPSchemaFactory(entry.getValue());
+			} else {
+				this.nsMaps.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+	
+	private void mergeComplexBasicTypesDeclarationEntireXMPLevel(Map<String, String> external) {
+		for (Entry<String, String> entry : external.entrySet()) {
+			if(!complexBasicTypesDeclarationEntireXMPLevel.containsKey(entry.getKey())) {
+				complexBasicTypesDeclarationEntireXMPLevel.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+	
+	private void mergeComplexBasicTypesDeclarationSchemaLevel(Map<String, String> external) {
+		for (Entry<String, String> entry : external.entrySet()) {
+			if(!complexBasicTypesDeclarationSchemaLevel.containsKey(entry.getKey())) {
+				complexBasicTypesDeclarationSchemaLevel.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	private void mergeComplexBasicTypesDeclarationPropertyLevel(Map<String, String> external) {
+		for (Entry<String, String> entry : external.entrySet()) {
+			if(!complexBasicTypesDeclarationPropertyLevel.containsKey(entry.getKey())) {
+				complexBasicTypesDeclarationPropertyLevel.put(entry.getKey(), entry.getValue());
+			}
+		}
 	}
 
 	/**
