@@ -88,7 +88,8 @@ public class TestCOSFloat extends TestCOSNumber
             assertFalse(test2.equals(null));
             assertFalse(test3.equals(null));
             
-            COSFloat test4 = new COSFloat(num + 0.01f);
+            float nf = Float.intBitsToFloat(Float.floatToIntBits(num)+1);
+            COSFloat test4 = new COSFloat(nf);
             assertFalse(test4.equals(test1));
         }
     }
