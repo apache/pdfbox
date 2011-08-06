@@ -22,10 +22,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>preflight</artifactId>
 
-  <name>Apache preflight</name>
+  <name>Apache Preflight</name>
   <description>
-    pdfa-validation is a API used to ensure a declared PDF/A-1b document 
-    respect all points of the ISO-19005 specification.
+      Preflight is an open source Java library that implements a parser compliant wit
+      the ISO-19005 specification. Preflight is a subproject of Apache PDFBox.
   </description>
 
   <packaging>bundle</packaging>

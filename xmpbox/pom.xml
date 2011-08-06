@@ -21,9 +21,14 @@
 
   <artifactId>xmpbox</artifactId>
   <packaging>bundle</packaging>
-  <name>Apache xmpbox</name>
+  <name>Apache XmpBox</name>
 
-  <description>xmpbox is an API used to parse,validate and create objects based on XMP Contents.</description>
+  <description>
+    XmpBox is an open source Java library that implements Adobe's XMP(TM)
+    specification. It can be used to parse, validate and create xmp contents.
+    It is mainly used by subproject preflight of Apache PDFBox. 
+    XmpBox is a subproject of Apache PDFBox.
+  </description>
 
   <parent>
     <groupId>org.apache.pdfbox</groupId>
