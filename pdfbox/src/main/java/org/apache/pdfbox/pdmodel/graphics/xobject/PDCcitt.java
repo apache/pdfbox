@@ -16,13 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,6 +31,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -51,7 +48,7 @@ public class PDCcitt extends PDXObjectImage
 {
 
     private static final List<String> FAX_FILTERS = new ArrayList<String>();
-    
+
     static
     {
         FAX_FILTERS.add( COSName.CCITTFAX_DECODE.getName() );
@@ -126,41 +123,37 @@ public class PDCcitt extends PDXObjectImage
             // ensure that rows doesn't contain implausible data, see PDFBOX-771
             rows = Math.min(rows, height);
         }
-        else 
+        else
         {
             // at least one of the values has to have a valid value
             rows = Math.max(rows, height);
         }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
-        
-        byte[] map;
-        if (blackIsOne)
-        {
-            map = new byte[] {(byte)0x00, (byte)0xff};
-        }
-        else
-        {
-            map = new byte[] {(byte)0xff};
-        }
-        ColorModel cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
-        WritableRaster raster = cm.createCompatibleWritableRaster( cols, rows );
+
+        BufferedImage image = new BufferedImage(cols, rows, BufferedImage.TYPE_BYTE_BINARY);
+        WritableRaster raster = image.getRaster();
         DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
         byte[] bufferData = buffer.getData();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int bytesRead;
-        byte[] data = new byte[16384];
-        InputStream unfilteredStream = stream.getUnfilteredStream();
-        while ((bytesRead = unfilteredStream.read(data, 0, data.length)) != -1) 
+        IOUtils.populateBuffer(stream.getUnfilteredStream(), bufferData);
+        if (!blackIsOne)
         {
-            baos.write(data, 0, bytesRead);
+            //Inverting the bitmap
+            //Note the previous approach with starting from an IndexColorModel didn't work
+            //reliably. In some cases the image wouldn't be painted for some reason.
+            //So a safe but slower approach was taken.
+            invertBitmap(bufferData);
         }
-        baos.flush();
-        System.arraycopy( baos.toByteArray(), 0,bufferData, 0, 
-                (baos.size() < bufferData.length ? baos.size() : bufferData.length) );
-        return new BufferedImage(cm, raster, false, null);
+        return image;
     }
-    
+
+    private void invertBitmap(byte[] bufferData)
+    {
+        for (int i = 0, c = bufferData.length; i < c; i++)
+        {
+            bufferData[i] = (byte)(~bufferData[i] & 0xFF);
+        }
+    }
+
     /**
      * This writes a tiff to out.
      *
@@ -169,13 +162,10 @@ public class PDCcitt extends PDXObjectImage
     public void write2OutputStream(OutputStream out) throws IOException
     {
         // We should use another format than TIFF to get rid of the TiffWrapper
-        InputStream data = new TiffWrapper(getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),getCOSStream());
-        byte[] buf = new byte[1024];
-        int amountRead = -1;
-        while( (amountRead = data.read( buf )) != -1 )
-        {
-            out.write( buf, 0, amountRead );
-        }
+        InputStream data = new TiffWrapper(
+                getPDStream().getPartiallyFilteredStream( FAX_FILTERS ),
+                getCOSStream());
+        IOUtils.copy(data, out);
     }
 
     /**
@@ -671,10 +661,13 @@ public class PDCcitt extends PDXObjectImage
             tiffheader[offset+9]=(byte)((additionalOffset>>8) & 0xff);
             tiffheader[offset+10]=(byte)((additionalOffset>>16) & 0xff);
             tiffheader[offset+11]=(byte)((additionalOffset>>24) & 0xff);
-            try {
+            try
+            {
                 System.arraycopy(value.getBytes("US-ASCII"), 0,
                         tiffheader, additionalOffset, value.length());
-            } catch (UnsupportedEncodingException e) {
+            }
+            catch (UnsupportedEncodingException e)
+            {
                 throw new RuntimeException("Incompatible VM without US-ASCII encoding", e);
             }
             additionalOffset += len;

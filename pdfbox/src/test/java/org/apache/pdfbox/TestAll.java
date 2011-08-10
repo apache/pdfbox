@@ -24,6 +24,9 @@ import org.apache.pdfbox.cos.TestCOSFloat;
 import org.apache.pdfbox.cos.TestCOSInteger;
 import org.apache.pdfbox.cos.TestCOSString;
 import org.apache.pdfbox.filter.TestFilters;
+import org.apache.pdfbox.io.TestIOUtils;
+import org.apache.pdfbox.io.ccitt.TestCCITTFaxG31DDecodeInputStream;
+import org.apache.pdfbox.io.ccitt.TestPackedBitArray;
 import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
@@ -82,6 +85,11 @@ public class TestAll extends TestCase
         suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
         suite.addTestSuite( org.apache.pdfbox.TestTextToPdf.class );
+
+        suite.addTestSuite( TestIOUtils.class );
+        suite.addTestSuite( TestPackedBitArray.class );
+        suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
+
         return suite;
     }
 }
