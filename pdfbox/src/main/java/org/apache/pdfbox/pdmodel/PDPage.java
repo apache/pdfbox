@@ -40,7 +40,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImagingOpException;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -716,21 +715,21 @@ public class PDPage implements COSObjectable, Printable
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
         BufferedImage retval = null;
         float rotation = (float)Math.toRadians(findRotation());
-        if (rotation != 0) 
+        if (rotation != 0)
         {
-        	retval = new BufferedImage( heightPx, widthPx, imageType );
+            retval = new BufferedImage( heightPx, widthPx, imageType );
         }
         else
         {
-        	retval = new BufferedImage( widthPx, heightPx, imageType );
+            retval = new BufferedImage( widthPx, heightPx, imageType );
         }
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
         graphics.setBackground( TRANSPARENT_WHITE );
         graphics.clearRect( 0, 0, retval.getWidth(), retval.getHeight() );
         if (rotation != 0)
         {
-        	graphics.translate(retval.getWidth(), 0.0f);
-        	graphics.rotate(rotation);
+            graphics.translate(retval.getWidth(), 0.0f);
+            graphics.rotate(rotation);
         }
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
