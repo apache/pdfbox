@@ -714,34 +714,27 @@ public class PDPage implements COSObjectable, Printable
         int heightPx = Math.round(heightPt * scaling);
         //TODO The following reduces accuracy. It should really be a Dimension2D.Float.
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
-
-        BufferedImage retval = new BufferedImage( widthPx, heightPx, imageType );
+        BufferedImage retval = null;
+        float rotation = (float)Math.toRadians(findRotation());
+        if (rotation != 0) 
+        {
+        	retval = new BufferedImage( heightPx, widthPx, imageType );
+        }
+        else
+        {
+        	retval = new BufferedImage( widthPx, heightPx, imageType );
+        }
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
         graphics.setBackground( TRANSPARENT_WHITE );
         graphics.clearRect( 0, 0, retval.getWidth(), retval.getHeight() );
+        if (rotation != 0)
+        {
+        	graphics.translate(retval.getWidth(), 0.0f);
+        	graphics.rotate(rotation);
+        }
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
-
-        //TODO This could be done directly by manipulating the transformation matrix before painting.
-        //That could result in a better image quality.
-        try
-        {
-            int rotation = findRotation();
-            if (rotation == 90 || rotation == 270)
-            {
-                 int w = retval.getWidth();
-                 int h = retval.getHeight();
-                 BufferedImage rotatedImg = new BufferedImage(w, h, retval.getType());
-                 Graphics2D g = rotatedImg.createGraphics();
-                 g.rotate(Math.toRadians(rotation), w/2, h/2);
-                 g.drawImage(retval, null, 0, 0);
-            }
-        }
-        catch (ImagingOpException e)
-        {
-                log.warn("Unable to rotate page image", e);
-        }
 
         return retval;
     }
