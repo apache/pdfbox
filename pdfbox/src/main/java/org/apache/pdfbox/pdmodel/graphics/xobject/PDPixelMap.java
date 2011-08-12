@@ -153,7 +153,7 @@ public class PDPixelMap extends PDXObjectImage
             {
                 PDIndexed csIndexed = (PDIndexed)colorspace;
                 ColorModel baseColorModel = csIndexed.getBaseColorSpace().createColorModel(bpc);
-                int size = csIndexed.getHighValue();
+                int size = Math.min(csIndexed.getHighValue(), 1 << (bpc-1));  //suggested in PDFBOX-1075
                 byte[] index = csIndexed.getLookupData();
                 boolean hasAlpha = baseColorModel.hasAlpha();
                 COSArray maskArray = getMask();
