@@ -139,7 +139,7 @@ public class TestPDFToImage extends TestCase
                         !filesAreIdentical(outFiles[n], inFile))
                     {
                         this.bFail=true;
-                        log.info("Input and output not identical for file: " + inFile.getName());
+                        log.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
                     }
                 }
         }
