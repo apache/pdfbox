@@ -211,8 +211,9 @@ public class FlateFilter implements Filter
         else
         {
             // calculate sizes
-            int bpp = colors * (bitsPerComponent % 8 +1);
-            int rowlength = columns * bpp;
+            int bitsPerPixel = colors * bitsPerComponent;
+            int bytesPerPixel = (bitsPerPixel + 7 ) / 8;
+            int rowlength = (columns * bitsPerPixel + 7) / 8;
             byte[] actline = new byte[rowlength];
             // Initialize lastline with Zeros according to PNG-specification
             byte[] lastline = new byte[rowlength];
@@ -263,7 +264,7 @@ public class FlateFilter implements Filter
                         for (int p = 0; p < rowlength; p++)
                         {
                             int sub = actline[p] & 0xff;
-                            int left = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;
+                            int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;
                             actline[p] = (byte) (sub + left);
                         }
                         break;
@@ -274,7 +275,7 @@ public class FlateFilter implements Filter
                         for (int p = 0; p < rowlength; p++)
                         {
                             int sub = actline[p];
-                            int left = p - bpp >= 0 ? actline[p - bpp]: 0;
+                            int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel]: 0;
                             actline[p] = (byte) (sub + left);
                         }
                         break;
@@ -290,7 +291,7 @@ public class FlateFilter implements Filter
                         for (int p = 0; p < rowlength; p++)
                         {
                             int avg = actline[p] & 0xff;
-                            int left = p - bpp >= 0 ? actline[p - bpp] & 0xff: 0;
+                            int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff: 0;
                             int up = lastline[p] & 0xff;
                             actline[p] = (byte) ((avg +  (int)Math.floor( (left + up)/2 ) ) & 0xff);
                         }
@@ -299,9 +300,9 @@ public class FlateFilter implements Filter
                         for (int p = 0; p < rowlength; p++)
                         {
                             int paeth = actline[p] & 0xff;
-                            int a = p - bpp >= 0 ? actline[p - bpp] & 0xff : 0;// left
+                            int a = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;// left
                             int b = lastline[p] & 0xff;// upper
-                            int c = p - bpp >= 0 ? lastline[p - bpp] & 0xff : 0;// upperleft
+                            int c = p - bytesPerPixel >= 0 ? lastline[p - bytesPerPixel] & 0xff : 0;// upperleft
                             int value = a + b - c;
                             int absa = Math.abs(value - a);
                             int absb = Math.abs(value - b);
