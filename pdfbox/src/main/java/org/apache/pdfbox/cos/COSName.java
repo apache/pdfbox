@@ -850,6 +850,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
     * A common COSName value.
     */
+    public static final COSName PAINT_TYPE = new COSName( "PaintType" );
+    /**
+    * A common COSName value.
+    */
     public static final COSName PARENT = new COSName( "Parent" );
     /**
      * "ParentTreeNextKey"
@@ -859,6 +863,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName PATTERN = new COSName( "Pattern" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName PATTERN_TYPE = new COSName( "PatternType" );
     /**
     * A common COSName value.
     */
@@ -1049,6 +1057,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName TILING_TYPE = new COSName( "TilingType" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName TITLE = new COSName( "Title" );
     /**
      * A common COSName value.
@@ -1144,6 +1156,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName XREF = new COSName( "XRef" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName X_STEP = new COSName( "XStep" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName Y_STEP = new COSName( "YStep" );
     /**
      * The prefix to a PDF name.
      */
