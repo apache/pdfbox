@@ -107,8 +107,9 @@ public class TestCOSFloat extends TestCOSNumber
             COSFloat test2 = new COSFloat(num);
             assertEquals(test1.hashCode(), test2.hashCode());
             
-            COSFloat test3 = new COSFloat(num + 0.01f);
-            assertFalse(test3.equals(test1));
+            float nf = Float.intBitsToFloat(Float.floatToIntBits(num)+1);
+            COSFloat test3 = new COSFloat(nf);
+            assertFalse(test3.hashCode()==test1.hashCode());
         }
     }
 
