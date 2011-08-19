@@ -14,86 +14,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel;
+package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 
 import java.awt.geom.AffineTransform;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the resources for a pattern colorspace.
+ * This represents the resources for a tiling pattern.
  *
  * @version $Revision: 1.0 $
  */
-public class PDPatternResources implements COSObjectable
+public class PDTilingPatternResources extends PDPatternResources
 {
     private COSDictionary patternDictionary;
-
+    
     /**
      * Default constructor.
      */
-    public PDPatternResources()
+    public PDTilingPatternResources()
     {
-        patternDictionary = new COSDictionary();
+        super();
+        patternDictionary.setInt(COSName.PATTERN_TYPE, PDPatternResources.TILING_PATTERN);
     }
 
     /**
      * Prepopulated pattern resources.
      *
-     * @param resourceDictionary The cos dictionary for this pattern resource.
+     * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDPatternResources( COSDictionary resourceDictionary )
+    public PDTilingPatternResources( COSDictionary resourceDictionary )
     {
         patternDictionary = resourceDictionary;
     }
 
     /**
-     * This will get the underlying dictionary.
-     *
-     * @return The dictionary for these pattern resources.
+     * {@inheritDoc}
      */
-    public COSDictionary getCOSDictionary()
+    public int getPatternType()
     {
-        return patternDictionary;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
-    {
-        return patternDictionary;
-    }
-
-    /**
-     * Sets the filter entry of the encryption dictionary.
-     *
-     * @param filter The filter name.
-     */
-    public void setFilter(String filter)
-    {
-        patternDictionary.setItem( COSName.FILTER, COSName.getPDFName( filter ) );
-    }
-
-    /**
-     * Get the name of the filter.
-     *
-     * @return The filter name contained in this encryption dictionary.
-     */
-    public String getFilter()
-    {
-        return patternDictionary.getNameAsString( COSName.FILTER );
+        return PDPatternResources.TILING_PATTERN;
     }
 
     /**
@@ -136,26 +105,6 @@ public class PDPatternResources implements COSObjectable
         return patternDictionary.getInt( COSName.PAINT_TYPE, 0 );
     }
 
-    /**
-     * This will set the pattern type.
-     *
-     * @param patternType The new pattern type.
-     */
-    public void setPatternType(int patternType)
-    {
-        patternDictionary.setInt(COSName.PATTERN_TYPE, patternType);
-    }
-
-    /**
-     * This will return the pattern type.
-     *
-     * @return The pattern type
-     */
-    public int getPatternType()
-    {
-        return patternDictionary.getInt( COSName.PATTERN_TYPE, 0 );
-    }
-    
     /**
      * This will set the tiling type.
      *
@@ -240,7 +189,14 @@ public class PDPatternResources implements COSObjectable
      */
     public void setResources( PDResources resources )
     {
-        patternDictionary.setItem( COSName.RESOURCES, resources );
+        if (resources != null)
+        {
+            patternDictionary.setItem( COSName.RESOURCES, resources );
+        }
+        else
+        {
+            patternDictionary.removeItem( COSName.RESOURCES );
+        }
     }
 
     /**
