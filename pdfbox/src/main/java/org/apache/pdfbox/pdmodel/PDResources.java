@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
@@ -328,8 +329,10 @@ public class PDResources implements COSObjectable
      * name as a String and the values are PDPatternResources objects.
      *
      * @return The map of pattern resources objects.
+     * 
+     * @throws IOException If there is an error getting the pattern resources.
      */
-    public Map<String,PDPatternResources> getPatterns()
+    public Map<String,PDPatternResources> getPatterns() throws IOException
     {
         Map<String,PDPatternResources> retval = null;
         COSDictionary patterns = (COSDictionary)resources.getDictionaryObject( COSName.PATTERN );
@@ -341,7 +344,7 @@ public class PDResources implements COSObjectable
             for( COSName name : patterns.keySet() )
             {
                 COSDictionary dictionary = (COSDictionary)patterns.getDictionaryObject( name );
-                actuals.put( name.getName(), new PDPatternResources( dictionary ) );
+                actuals.put( name.getName(), PDPatternResources.create( dictionary ) );
             }
         }
         return retval;
