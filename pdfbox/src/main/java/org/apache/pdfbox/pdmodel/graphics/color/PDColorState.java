@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 
 /**
  * This class represents a color space and the color value for that colorspace.
@@ -72,6 +73,7 @@ public class PDColorState implements Cloneable
 
     private PDColorSpace colorSpace = new PDDeviceGray();
     private COSArray colorSpaceValue = new COSArray();
+    private PDPatternResources pattern = null;
 
     /**
      * Cached Java AWT color based on the current color space and value.
@@ -99,6 +101,7 @@ public class PDColorState implements Cloneable
         retval.colorSpace = this.colorSpace;
         retval.colorSpaceValue.clear();
         retval.colorSpaceValue.addAll( this.colorSpaceValue );
+        retval.setPattern(getPattern());
         return retval;
     }
 
@@ -109,7 +112,7 @@ public class PDColorState implements Cloneable
      * @throws IOException if the current color can not be created
      */
     public Color getJavaColor() throws IOException {
-        if (color == null) {
+        if (color == null && colorSpaceValue.size() > 0) {
             color = createColor();
         }
         return color;
@@ -250,8 +253,9 @@ public class PDColorState implements Cloneable
     public void setColorSpace(PDColorSpace value)
     {
         colorSpace = value;
-        // Clear color cache
+        // Clear color cache and current pattern
         color = null;
+        pattern = null;
     }
 
     /**
@@ -282,7 +286,32 @@ public class PDColorState implements Cloneable
     public void setColorSpaceValue(float[] value)
     {
         colorSpaceValue.setFloatArray( value );
-        // Clear color cache
+        // Clear color cache and current pattern
         color = null;
+        pattern = null;
     }
+
+    /**
+     * This will get the current pattern.
+     *
+     * @return The current pattern.
+     */
+    public PDPatternResources getPattern()
+    {
+        return pattern;
+    }
+
+    /**
+     * This will update the current pattern.
+     *
+     * @param pattern The new pattern.
+     */
+    public void setPattern(PDPatternResources pattern)
+    {
+        this.pattern = pattern;
+        // Clear color cache and colorSpaceValue
+        color = null;
+        colorSpaceValue.clear();
+    }
+    
 }

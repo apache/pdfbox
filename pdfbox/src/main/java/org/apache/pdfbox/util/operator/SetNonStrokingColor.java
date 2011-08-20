@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.PDFOperator;
 import java.io.IOException;
@@ -85,6 +86,10 @@ public class SetNonStrokingColor extends OperatorProcessor
             else if (colorSpace instanceof PDDeviceN)
             {
                 newOperator = new SetNonStrokingDeviceN();
+            }
+            else if (colorSpace instanceof PDPattern)
+            {
+                newOperator = new SetNonStrokingPattern();
             }
 
             if (newOperator != null) 
