@@ -278,7 +278,17 @@ public class PageDrawer extends PDFStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
-        graphics.setColor( getGraphicsState().getNonStrokingColor().getJavaColor() );
+        Color nonStrokingColor = getGraphicsState().getNonStrokingColor().getJavaColor();
+        if ( nonStrokingColor != null )
+        {
+            graphics.setColor( nonStrokingColor );
+        }
+        else 
+        {
+            log.info("ColorSpace "+getGraphicsState().getNonStrokingColor().getColorSpace().getName()
+                    +" doesn't provide a non-stroking color, using white instead!");
+            graphics.setColor( Color.WHITE );
+        }
         getLinePath().setWindingRule(windingRule);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
@@ -317,7 +327,17 @@ public class PageDrawer extends PDFStreamEngine
     public void strokePath() throws IOException
     {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
-        graphics.setColor( getGraphicsState().getStrokingColor().getJavaColor() );
+        Color strokingColor = getGraphicsState().getStrokingColor().getJavaColor();
+        if ( strokingColor != null )
+        {
+            graphics.setColor( strokingColor );
+        }
+        else 
+        {
+            log.info("ColorSpace "+getGraphicsState().getStrokingColor().getColorSpace().getName()
+                    +" doesn't provide a stroking color, using black instead!");
+            graphics.setColor( Color.BLACK );
+        }
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
