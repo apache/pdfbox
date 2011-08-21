@@ -35,7 +35,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDShadingPatternResources extends PDPatternResources
 {
-    private COSDictionary patternDictionary;
     private PDExtendedGraphicsState extendedGraphicsState;
     private COSArray matrix = null;
     
@@ -45,7 +44,7 @@ public class PDShadingPatternResources extends PDPatternResources
     public PDShadingPatternResources()
     {
         super();
-        patternDictionary.setInt(COSName.PATTERN_TYPE, PDPatternResources.SHADING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternResources.SHADING_PATTERN);
     }
 
     /**
@@ -55,7 +54,7 @@ public class PDShadingPatternResources extends PDPatternResources
      */
     public PDShadingPatternResources( COSDictionary resourceDictionary )
     {
-        patternDictionary = resourceDictionary;
+        super(resourceDictionary);
     }
 
     /**
@@ -76,7 +75,7 @@ public class PDShadingPatternResources extends PDPatternResources
         Matrix returnMatrix = null;
         if (matrix == null)
         {
-            matrix = (COSArray)patternDictionary.getDictionaryObject( COSName.MATRIX );
+            matrix = (COSArray)getCOSDictionary().getDictionaryObject( COSName.MATRIX );
         }
         if( matrix != null )
         {
@@ -104,7 +103,7 @@ public class PDShadingPatternResources extends PDPatternResources
         {
             matrix.add(new COSFloat((float)v));
         }
-        patternDictionary.setItem(COSName.MATRIX, matrix);
+        getCOSDictionary().setItem(COSName.MATRIX, matrix);
     }
 
     /**
@@ -116,7 +115,7 @@ public class PDShadingPatternResources extends PDPatternResources
     {
         if (extendedGraphicsState == null) 
         {
-            COSDictionary dictionary = (COSDictionary)patternDictionary.getDictionaryObject( COSName.EXT_G_STATE );
+            COSDictionary dictionary = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.EXT_G_STATE );
             if( dictionary != null )
             {
                 extendedGraphicsState = new PDExtendedGraphicsState( dictionary );
@@ -135,11 +134,11 @@ public class PDShadingPatternResources extends PDPatternResources
         this.extendedGraphicsState = extendedGraphicsState;
         if (extendedGraphicsState != null)
         {
-            patternDictionary.setItem( COSName.EXT_G_STATE, extendedGraphicsState );
+            getCOSDictionary().setItem( COSName.EXT_G_STATE, extendedGraphicsState );
         }
         else
         {
-            patternDictionary.removeItem(COSName.EXT_G_STATE);
+            getCOSDictionary().removeItem(COSName.EXT_G_STATE);
         }
     }
 
