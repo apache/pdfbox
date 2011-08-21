@@ -36,7 +36,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDTilingPatternResources extends PDPatternResources
 {
-    private COSDictionary patternDictionary;
     
     /**
      * Default constructor.
@@ -44,7 +43,7 @@ public class PDTilingPatternResources extends PDPatternResources
     public PDTilingPatternResources()
     {
         super();
-        patternDictionary.setInt(COSName.PATTERN_TYPE, PDPatternResources.TILING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternResources.TILING_PATTERN);
     }
 
     /**
@@ -54,7 +53,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public PDTilingPatternResources( COSDictionary resourceDictionary )
     {
-        patternDictionary = resourceDictionary;
+        super(resourceDictionary);
     }
 
     /**
@@ -72,7 +71,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public void setLength(int length)
     {
-        patternDictionary.setInt(COSName.LENGTH, length);
+        getCOSDictionary().setInt(COSName.LENGTH, length);
     }
 
     /**
@@ -82,7 +81,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public int getLength()
     {
-        return patternDictionary.getInt( COSName.LENGTH, 0 );
+        return getCOSDictionary().getInt( COSName.LENGTH, 0 );
     }
 
     /**
@@ -92,7 +91,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public void setPaintType(int paintType)
     {
-        patternDictionary.setInt(COSName.PAINT_TYPE, paintType);
+        getCOSDictionary().setInt(COSName.PAINT_TYPE, paintType);
     }
 
     /**
@@ -102,7 +101,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public int getPaintType()
     {
-        return patternDictionary.getInt( COSName.PAINT_TYPE, 0 );
+        return getCOSDictionary().getInt( COSName.PAINT_TYPE, 0 );
     }
 
     /**
@@ -112,7 +111,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public void setTilingType(int tilingType)
     {
-        patternDictionary.setInt(COSName.TILING_TYPE, tilingType);
+        getCOSDictionary().setInt(COSName.TILING_TYPE, tilingType);
     }
 
     /**
@@ -122,7 +121,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public int getTilingType()
     {
-        return patternDictionary.getInt( COSName.TILING_TYPE, 0 );
+        return getCOSDictionary().getInt( COSName.TILING_TYPE, 0 );
     }
 
     /**
@@ -132,7 +131,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public void setXStep(int xStep)
     {
-        patternDictionary.setInt(COSName.X_STEP, xStep);
+        getCOSDictionary().setInt(COSName.X_STEP, xStep);
     }
 
     /**
@@ -142,7 +141,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public int getXStep()
     {
-        return patternDictionary.getInt( COSName.X_STEP, 0 );
+        return getCOSDictionary().getInt( COSName.X_STEP, 0 );
     }
 
     /**
@@ -152,7 +151,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public void setYStep(int yStep)
     {
-        patternDictionary.setInt(COSName.Y_STEP, yStep);
+        getCOSDictionary().setInt(COSName.Y_STEP, yStep);
     }
 
     /**
@@ -162,7 +161,7 @@ public class PDTilingPatternResources extends PDPatternResources
      */
     public int getYStep()
     {
-        return patternDictionary.getInt( COSName.Y_STEP, 0 );
+        return getCOSDictionary().getInt( COSName.Y_STEP, 0 );
     }
 
     /**
@@ -174,7 +173,7 @@ public class PDTilingPatternResources extends PDPatternResources
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary)patternDictionary.getDictionaryObject( COSName.RESOURCES );
+        COSDictionary resources = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.RESOURCES );
         if( resources != null )
         {
             retval = new PDResources( resources );
@@ -191,11 +190,11 @@ public class PDTilingPatternResources extends PDPatternResources
     {
         if (resources != null)
         {
-            patternDictionary.setItem( COSName.RESOURCES, resources );
+            getCOSDictionary().setItem( COSName.RESOURCES, resources );
         }
         else
         {
-            patternDictionary.removeItem( COSName.RESOURCES );
+            getCOSDictionary().removeItem( COSName.RESOURCES );
         }
     }
 
@@ -209,7 +208,7 @@ public class PDTilingPatternResources extends PDPatternResources
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray)patternDictionary.getDictionaryObject( COSName.BBOX );
+        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject( COSName.BBOX );
         if( array != null )
         {
             retval = new PDRectangle( array );
@@ -226,11 +225,11 @@ public class PDTilingPatternResources extends PDPatternResources
     {
         if( bbox == null )
         {
-            patternDictionary.removeItem( COSName.BBOX );
+            getCOSDictionary().removeItem( COSName.BBOX );
         }
         else
         {
-            patternDictionary.setItem( COSName.BBOX, bbox.getCOSArray() );
+            getCOSDictionary().setItem( COSName.BBOX, bbox.getCOSArray() );
         }
     }
 
@@ -242,7 +241,7 @@ public class PDTilingPatternResources extends PDPatternResources
     public Matrix getMatrix()
     {
         Matrix retval = null;
-        COSArray array = (COSArray)patternDictionary.getDictionaryObject( COSName.MATRIX );
+        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject( COSName.MATRIX );
         if( array != null )
         {
             retval = new Matrix();
@@ -269,7 +268,7 @@ public class PDTilingPatternResources extends PDPatternResources
         {
             matrix.add(new COSFloat((float)v));
         }
-        patternDictionary.setItem(COSName.MATRIX, matrix);
+        getCOSDictionary().setItem(COSName.MATRIX, matrix);
     }
 
 }
