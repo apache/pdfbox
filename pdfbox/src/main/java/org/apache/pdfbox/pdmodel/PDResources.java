@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
@@ -362,10 +363,54 @@ public class PDResources implements COSObjectable
         while( iter.hasNext() )
         {
             String name = iter.next();
-            PDPatternResources state = patterns.get( name );
-            dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
+            PDPatternResources pattern = patterns.get( name );
+            dic.setItem( COSName.getPDFName( name ), pattern.getCOSObject() );
         }
         resources.setItem( COSName.PATTERN, dic );
     }
 
+    /**
+     * This will get the map of shadings.  This will return null if the underlying
+     * resources dictionary does not have a shading dictionary. The keys are the shading
+     * name as a String and the values are PDShadingResources objects.
+     *
+     * @return The map of shading resources objects.
+     * 
+     * @throws IOException If there is an error getting the shading resources.
+     */
+    public Map<String,PDShadingResources> getShadings() throws IOException
+    {
+        Map<String,PDShadingResources> retval = null;
+        COSDictionary shadings = (COSDictionary)resources.getDictionaryObject( COSName.SHADING );
+
+        if( shadings != null )
+        {
+            Map<String,PDShadingResources> actuals = new HashMap<String,PDShadingResources>();
+            retval = new COSDictionaryMap( actuals, shadings );
+            for( COSName name : shadings.keySet() )
+            {
+                COSDictionary dictionary = (COSDictionary)shadings.getDictionaryObject( name );
+                actuals.put( name.getName(), PDShadingResources.create( dictionary ) );
+            }
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the map of shadings.
+     *
+     * @param shadings The new map of shadings.
+     */
+    public void setShadings( Map<String,PDShadingResources> shadings )
+    {
+        Iterator<String> iter = shadings.keySet().iterator();
+        COSDictionary dic = new COSDictionary();
+        while( iter.hasNext() )
+        {
+            String name = iter.next();
+            PDShadingResources shading = shadings.get( name );
+            dic.setItem( COSName.getPDFName( name ), shading.getCOSObject() );
+        }
+        resources.setItem( COSName.SHADING, dic );
+    }
 }

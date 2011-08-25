@@ -60,7 +60,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName ACRO_FORM = new COSName( "AcroForm" );
     /**
-     * "ActualText"
+     * A common COSName value.
      */
     public static final COSName ACTUAL_TEXT = new COSName("ActualText");
     /**
@@ -68,11 +68,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName AIS = new COSName( "AIS" );
     /**
-     * "Alt"
+     * A common COSName value.
      */
     public static final COSName ALT = new COSName("Alt");
     /**
-     * "Alt"
+     * A common COSName value.
      */
     public static final COSName ALTERNATE = new COSName("Alternate");
     /**
@@ -92,7 +92,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName AP_REF = new COSName( "APRef" );
     /**
-     * "Artifact"
+     * A common COSName value.
      */
     public static final COSName ARTIFACT = new COSName("Artifact");
     /**
@@ -112,7 +112,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName ASCII85_DECODE_ABBREVIATION = new COSName( "A85" );
     /**
-     * "Attached"
+     * A common COSName value.
      */
     public static final COSName ATTACHED = new COSName("Attached");
     /**
@@ -128,7 +128,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName ASCII_HEX_DECODE_ABBREVIATION = new COSName( "AHx" );
 
-    /** "AP" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName AP = new COSName( "AP" );
 
     /**
@@ -145,6 +147,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName B = new COSName( "B" );
+    /**
+    * A common COSName value.
+    */
+    public static final COSName BACKGROUND = new COSName( "Background" );
     /**
     * A common COSName value.
     */
@@ -195,7 +201,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName CATALOG = new COSName( "Catalog" );
     /**
-     * "C"
+     * A common COSName value.
      */
     public static final COSName C = new COSName("C");
     /**
@@ -311,17 +317,17 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName CROP_BOX = new COSName(  "CropBox" );
     /**
-     * The Crypt filter.
+     * A common COSName value.
      */
     public static final COSName CRYPT = new COSName( "Crypt" );
     /**
      * A common COSName value.
      */
     public static final COSName CS = new COSName(  "CS" );
-
-    /** "D" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName D = new COSName( "D" );
-
     /**
      * A common COSName value.
      */
@@ -339,7 +345,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName DECODE = new COSName( "Decode" );
-    /** "DecodeParms" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName DECODE_PARMS = new COSName( "DecodeParms" );
 
     /**
@@ -355,7 +363,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DEST = new COSName(  "Dest" );
 
-    /** "Dests" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName DESTS = new COSName( "Dests" );
 
     /**
@@ -379,7 +389,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DIFFERENCES = new COSName( "Differences" );
 
-    /** "DL" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName DL = new COSName( "DL" );
 
     /**
@@ -387,7 +399,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DOMAIN = new COSName( "Domain" );
 
-     /** "DP" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName DP = new COSName( "DP" );
 
     /**
@@ -404,11 +418,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DW = new COSName( "DW" );
 
     /**
-     * "E"
+     * A common COSName value.
      */
     public static final COSName E = new COSName("E");
 
-    /** "EmbeddedFiles" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName EMBEDDED_FILES = new COSName( "EmbeddedFiles" );
 
     /**
@@ -436,13 +452,19 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName ENCODING_ETEN_B5_V = new COSName( "ETen?B5?V" );
 
-    /** "Encrypt" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName ENCRYPT = new COSName( "Encrypt" );
 
-    /** "EncryptMetaData" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName ENCRYPT_META_DATA = new COSName( "EncryptMetadata" );
     
-    /** "ExtGState" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName EXT_G_STATE = new COSName( "ExtGState" );
 
     /**
@@ -450,16 +472,24 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName EXTEND = new COSName( "Extend" );
 
-    /** "Extends" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName EXTENDS = new COSName( "Extends" );
 
-    /** "F" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName F = new COSName( "F" );
 
-    /** "FDecodeParms" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName F_DECODE_PARMS = new COSName( "FDecodeParms" );
 
-    /** "FFilter" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName F_FILTER = new COSName( "FFilter" );
 
     /**
@@ -583,10 +613,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName ICCBASED = new COSName( "ICCBased" );
 
-    /** "ID" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName ID = new COSName("ID");
 
-    /** "IDTree" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName ID_TREE = new COSName("IDTree");
 
     /**
@@ -606,7 +640,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName IMAGE_MASK = new COSName( "ImageMask" );
 
-    /** "Index" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName INDEX = new COSName( "Index" );
 
     /**
@@ -622,7 +658,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName ITALIC_ANGLE = new COSName( "ItalicAngle" );
 
-    /** "JavaScript" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName JAVA_SCRIPT = new COSName( "JavaScript" );
 
     /**
@@ -634,7 +672,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName JPX_DECODE = new COSName( "JPXDecode" );
 
-    /** "K" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName K = new COSName("K");
 
     /**
@@ -642,7 +682,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName KEYWORDS = new COSName( "Keywords" );
 
-    /** "Kids" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName KIDS = new COSName( "Kids" );
 
     /**
@@ -650,7 +692,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName LAB = new COSName( "Lab" );
 
-    /** "Lang" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName LANG = new COSName("Lang");
 
     /**
@@ -674,7 +718,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName LENGTH1 = new COSName( "Length1" );
 
-    /** "Limits" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName LIMITS = new COSName( "Limits" );
     /**
      * A common COSName value.
@@ -701,7 +747,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName MAC_ROMAN_ENCODING = new COSName( "MacRomanEncoding" );
 
-    /** "MarkInfo" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName MARK_INFO = new COSName("MarkInfo");
 
     /**
@@ -717,7 +765,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName MAX_WIDTH = new COSName( "MaxWidth" );
     /**
-     * "MCID"
+     * A common COSName value.
      */
     public static final COSName MCID = new COSName("MCID");
     /**
@@ -753,7 +801,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName NAME = new COSName( "Name" );
 
-    /** "Names" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName NAMES = new COSName( "Names" );
 
     /**
@@ -764,16 +814,17 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName NM = new COSName( "NM" );
-    /** "Nums" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName NUMS = new COSName( "Nums" );
 
     /**
-     * "O"
+     * A common COSName value.
      */
     public static final COSName O = new COSName("O");
-
     /**
-     * "Obj"
+     * A common COSName value.
      */
     public static final COSName OBJ = new COSName("Obj");
 
@@ -812,10 +863,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName OPT = new COSName( "Opt" );
-    /** "Outlines" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName OUTLINES = new COSName("Outlines");
 
-    /** "OpenAction" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName OPEN_ACTION = new COSName("OpenAction");
 
     /** A common COSName value. */
@@ -834,13 +889,19 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName PAGE = new COSName( "Page" );
 
-    /** "PageLabels" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName PAGE_LABELS = new COSName("PageLabels");
 
-    /** "PageLayout" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName PAGE_LAYOUT = new COSName("PageLayout");
 
-    /** "PageMode" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName PAGE_MODE = new COSName("PageMode");
 
     /**
@@ -856,7 +917,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName PARENT = new COSName( "Parent" );
     /**
-     * "ParentTreeNextKey"
+     * A common COSName value.
      */
     public static final COSName PARENT_TREE_NEXT_KEY = new COSName("ParentTreeNextKey");
     /**
@@ -872,7 +933,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName PDF_DOC_ENCODING = new COSName( "PDFDocEncoding" );
     /**
-     * "Pg"
+     * A common COSName value.
      */
     public static final COSName PG = new COSName("Pg");
     /**
@@ -924,7 +985,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName RESOURCES = new COSName( "Resources" );
     /**
-     * "RoleMap"
+     * A common COSName value.
      */
     public static final COSName RI = new COSName( "RI" );
     /**
@@ -956,7 +1017,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName RV = new COSName( "RV" );
     /**
-     * "S"
+     * A common COSName value.
      */
     public static final COSName S = new COSName("S");
     /**
@@ -980,7 +1041,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName SET_FF = new COSName( "SetFf" );
 
-    /** "Shading" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName SHADING = new COSName( "Shading" );
     /**
      * A common COSName value.
@@ -994,7 +1057,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName SMASK = new COSName( "SMask" );
-    /** "Size" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName SIZE = new COSName( "Size" );
 
     /**
@@ -1022,7 +1087,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName STR_F = new COSName( "StrF" );
 
-    /** "StructTreeRoot" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName STRUCT_TREE_ROOT = new COSName("StructTreeRoot");
 
     /**
@@ -1047,11 +1114,13 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SUBTYPE = new COSName( "Subtype" );
 
     /**
-     * "T"
+     * A common COSName value.
      */
     public static final COSName T = new COSName("T");
 
-    /** "Threads" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName THREADS = new COSName("Threads");
 
     /**
@@ -1109,7 +1178,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName U = new COSName( "U" );
     /** the COSName for the "Unchanged" value. */
     public static final COSName UNCHANGED = new COSName("Unchanged");
-    /** "URI" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName URI = new COSName("URI");
 
     /**
@@ -1121,7 +1192,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName VERSION = new COSName( "Version" );
 
-    /** "ViewerPreferences" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName VIEWER_PREFERENCES = new COSName("ViewerPreferences");
 
     /**
@@ -1150,7 +1223,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName XHEIGHT = new COSName( "XHeight" );
 
-    /** "XObject" */
+    /**
+     * A common COSName value.
+     */
     public static final COSName XOBJECT = new COSName( "XObject" );
     /**
      * A common COSName value.
@@ -1202,7 +1277,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName ADBE_PKCS7_DETACHED = new COSName("adbe.pkcs7.detached");
     /**
-     * A signature subfilter value.www
+     * A signature subfilter value.
      */
     public static final COSName ADBE_PKCS7_SHA1 = new COSName("adbe.pkcs7.sha1");
     /**
