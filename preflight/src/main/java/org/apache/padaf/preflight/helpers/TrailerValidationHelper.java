@@ -42,6 +42,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
  * @author eric
@@ -54,87 +55,143 @@ public class TrailerValidationHelper extends AbstractValidationHelper {
 	super(cfg);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.helpers.AbstractValidationHelper#validate(
-   * net.awl.edoc.pdfa.validation.DocumentHandler)
-   */
-  @Override
-  public List<ValidationError> innerValidate(DocumentHandler handler)
-      throws ValidationException {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.awl.edoc.pdfa.validation.helpers.AbstractValidationHelper#validate(
+	 * net.awl.edoc.pdfa.validation.DocumentHandler)
+	 */
+	@Override
+	public List<ValidationError> innerValidate(DocumentHandler handler)
+	throws ValidationException {
 
-    List<ValidationError> result = new ArrayList<ValidationError>(0);
-    PDDocument pdfDoc = handler.getDocument();
+		List<ValidationError> result = new ArrayList<ValidationError>(0);
+		PDDocument pdfDoc = handler.getDocument();
 
-    COSDictionary linearizedDict = isLinearizedPdf(pdfDoc);
-    if (linearizedDict != null) {
-      // it is a linearized PDF, check the linearized dictionary
-      checkLinearizedDictionnary(linearizedDict, result);
+		COSDictionary linearizedDict = isLinearizedPdf(pdfDoc);
+		if (linearizedDict != null) {
+			// it is a linearized PDF, check the linearized dictionary
+			checkLinearizedDictionnary(linearizedDict, result);
 
-      // if the pdf is a linearized pdf. the first trailer must be checked
-      // and it must have the same ID than the last trailer.
-      List<String> lTrailers = handler.getPdfExtractor().getAllTrailers();
-      String firstTrailer = lTrailers.get(0);
-      String lastTrailer = lTrailers.get(lTrailers.size() - 1);
+			// if the pdf is a linearized pdf. the first trailer must be checked
+			// and it must have the same ID than the last trailer.
+			// According to the PDF version, trailers are available by the trailer key word (pdf <= 1.4)
+			// or in the dictionary of the XRef stream ( PDF >= 1.5)
+			String pdfVersion = pdfDoc.getDocument().getHeaderString();
+			if ( pdfVersion != null && pdfVersion.matches("%PDF-1\\.[1-4]")) {
+				checkTrailersForLinearizedPDF14(handler, result);
+			} else {
+				checkTrailersForLinearizedPDF15(handler, result);
+			}
 
-      COSDictionary first = null;
-      COSDictionary last = null;
-      COSDocument cd = null;
-      try {
-        cd = new COSDocument();
-        PdfElementParser parser1 = new PdfElementParser(cd, firstTrailer
-            .getBytes());
-        first = parser1.parseAsDictionary();
-        PdfElementParser parser2 = new PdfElementParser(cd, lastTrailer
-            .getBytes());
-        last = parser2.parseAsDictionary();
+		} else {
+			// If the PDF isn't a linearized one, only the last trailer must be checked
+			checkMainTrailer(pdfDoc.getDocument(), pdfDoc.getDocument().getTrailer(), result);
 
-        checkMainTrailer(pdfDoc.getDocument(), first, result);
-        if (!compareIds(first, last, pdfDoc.getDocument())) {
-          result.add(new ValidationResult.ValidationError(
-              ValidationConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
-              "ID is different in the first and the last trailer"));
-        }
+		}
 
-      } catch (IOException e) {
-        result.add(new ValidationResult.ValidationError(
-            ValidationConstants.ERROR_SYNTAX_TRAILER,
-            "Unable to parse trailers of the linearized PDF"));
-      } finally {
-        COSUtils.closeDocumentQuietly(cd);
-      }
+		return result;
+	}
 
-    } else {
-      // If the PDF isn't a linearized one, only the last trailer must be
-      // checked
-      List<String> lTrailers = handler.getPdfExtractor().getAllTrailers();
-      String lastTrailer = lTrailers.get(lTrailers.size() - 1);
+	/**
+	 * Extracts and compares first and last trailers for PDF version between 1.1 and 1.4
+	 * @param handler
+	 * @param result
+	 */
+	protected void checkTrailersForLinearizedPDF14(DocumentHandler handler, List<ValidationError> result) {
+		PDDocument pdfDoc = handler.getDocument();
+		List<String> lTrailers = handler.getPdfExtractor().getAllTrailers();
 
-      COSDocument cd = null;
-      try {
-        cd = new COSDocument();
-        PdfElementParser parser = new PdfElementParser(cd, lastTrailer
-            .getBytes());
-        COSDictionary trailer = parser.parseAsDictionary();
-        checkMainTrailer(pdfDoc.getDocument(), trailer, result);
-      } catch (IOException e) {
-        result.add(new ValidationResult.ValidationError(
-            ValidationConstants.ERROR_SYNTAX_TRAILER,
-            "The trailer dictionary is missing"));
-      } finally {
-        try {
-          cd.close();
-        } catch (IOException e) {
-          COSUtils.closeDocumentQuietly(cd);
-        }
-      }
+		if (lTrailers.isEmpty()) {
+			result.add(new ValidationResult.ValidationError(
+					ValidationConstants.ERROR_SYNTAX_TRAILER,
+			"There are no trailer in the PDF file"));
+		} else {
+			String firstTrailer = lTrailers.get(0);
+			String lastTrailer = lTrailers.get(lTrailers.size() - 1);
 
-    }
-    return result;
-  }
+			COSDictionary first = null;
+			COSDictionary last = null;
+			COSDocument cd = null;
+			try {
+				cd = new COSDocument();
 
+				PdfElementParser parser1 = new PdfElementParser(cd, firstTrailer.getBytes());
+				first = parser1.parseAsDictionary();
+
+				PdfElementParser parser2 = new PdfElementParser(cd, lastTrailer.getBytes());
+				last = parser2.parseAsDictionary();
+
+				checkMainTrailer(pdfDoc.getDocument(), first, result);
+				if (!compareIds(first, last, pdfDoc.getDocument())) {
+					result.add(new ValidationResult.ValidationError(
+							ValidationConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
+					"ID is different in the first and the last trailer"));
+				}
+
+			} catch (IOException e) {
+				result.add(new ValidationResult.ValidationError(
+						ValidationConstants.ERROR_SYNTAX_TRAILER,
+				"Unable to parse trailers of the linearized PDF"));
+			} finally {
+				COSUtils.closeDocumentQuietly(cd);
+			}
+		}
+	}
+
+	/**
+	 * Accesses and compares First and Last trailers for a PDF version higher than 1.4.
+	 * 
+	 * @param handler
+	 * @param result
+	 */
+	protected void checkTrailersForLinearizedPDF15(DocumentHandler handler, List<ValidationError> result) {
+		PDDocument pdfDoc = handler.getDocument();
+		try {
+			COSDocument cosDocument = pdfDoc.getDocument();
+			List<COSObject> xrefs = cosDocument.getObjectsByType(COSName.XREF);
+
+			if (xrefs.isEmpty()) {
+				// no XRef CosObject, may by this pdf file used the PDF 1.4 syntaxe
+				checkTrailersForLinearizedPDF14(handler, result);
+
+			} else {
+
+				int min = Integer.MAX_VALUE;
+				int max = Integer.MIN_VALUE;
+				COSDictionary firstTrailer = null;
+				COSDictionary lastTrailer = null;
+
+				// Search First and Last trailers according to offset position.
+				for(COSObject co : xrefs) {
+					int offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
+					if (offset < min) {
+						min = offset;
+						firstTrailer = (COSDictionary)co.getObject();
+					}
+
+					if (offset > max) {
+						max = offset;
+						lastTrailer = (COSDictionary)co.getObject();
+					}
+
+				}
+
+				checkMainTrailer(pdfDoc.getDocument(), firstTrailer, result);
+				if (!compareIds(firstTrailer, lastTrailer, pdfDoc.getDocument())) {
+					result.add(new ValidationResult.ValidationError(
+							ValidationConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
+					"ID is different in the first and the last trailer"));
+				}
+			}
+		} catch (IOException e) {
+			result.add(new ValidationResult.ValidationError(
+					ValidationConstants.ERROR_SYNTAX_TRAILER,
+					"Unable to check PDF Trailers due to : " + e.getMessage()));
+		}
+	}
+	
   /**
    * Return true if the ID of the first dictionary is the same as the id of the
    * last dictionary Return false otherwise.
@@ -143,12 +200,10 @@ public class TrailerValidationHelper extends AbstractValidationHelper {
    * @param last
    * @return
    */
-  protected boolean compareIds(COSDictionary first, COSDictionary last,
-      COSDocument doc) {
-    COSBase idFirst = first.getItem(COSName
-        .getPDFName(TRAILER_DICTIONARY_KEY_ID));
-    COSBase idLast = last
-        .getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
+	protected boolean compareIds(COSDictionary first, COSDictionary last, COSDocument doc) {
+		COSBase idFirst = first.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
+		COSBase idLast = last.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
+
 
     if (idFirst == null || idLast == null) {
       return false;
@@ -170,9 +225,8 @@ public class TrailerValidationHelper extends AbstractValidationHelper {
       for (Object ol : al.toList()) {
         // ---- according to PDF Reference 1-4, ID is an array containing two
         // strings
-        if (!oneIsEquals)
-          oneIsEquals = ((COSString) ol).getString().equals(
-              ((COSString) of).getString());
+				if (!oneIsEquals)
+					oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
       }
       isEqual = isEqual && oneIsEquals;
     }
