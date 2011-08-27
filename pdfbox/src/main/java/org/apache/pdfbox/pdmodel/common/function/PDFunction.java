@@ -46,7 +46,8 @@ public abstract class PDFunction implements COSObjectable
     /**
      * Constructor.
      *
-     * @param functionStream The function stream.
+     * @param function The function stream.
+     * 
      */
     public PDFunction( COSBase function )
     {
@@ -130,7 +131,7 @@ public abstract class PDFunction implements COSObjectable
         PDFunction retval = null;
         if( function instanceof COSObject )
         {
-            function = ((COSObject)function).getCOSObject();
+            function = ((COSObject)function).getObject();
         }
         COSDictionary functionDictionary = (COSDictionary)function;
         int functionType =  functionDictionary.getInt( COSName.FUNCTION_TYPE );
@@ -191,7 +192,7 @@ public abstract class PDFunction implements COSObjectable
     /**
      * This will set the range values.
      *
-     * @param range The new range values.
+     * @param rangeValues The new range values.
      */
     public void setRangeValues(COSArray rangeValues)
     {
@@ -230,7 +231,7 @@ public abstract class PDFunction implements COSObjectable
     /**
      * This will set the domain values.
      *
-     * @param range The new domain values.
+     * @param domainValues The new domain values.
      */
     public void setDomainValues(COSArray domainValues)
     {
@@ -242,8 +243,13 @@ public abstract class PDFunction implements COSObjectable
      * Evaluates the function at the given input.
      * ReturnValue = f(input)
      *
-     * @param input The array of input values for the function. In many cases will be an array of a single value, but not always.
-     * @return The of outputs the function returns based on those inputs. In many cases will be an array of a single value, but not always.
+     * @param input The array of input values for the function. 
+     * In many cases will be an array of a single value, but not always.
+     * 
+     * @return The of outputs the function returns based on those inputs. 
+     * In many cases will be an array of a single value, but not always.
+     * 
+     * @throws IOException an IOExcpetion is thrown if something went wrong processing the function.  
      */
     public abstract COSArray eval(COSArray input) throws IOException;
     
@@ -292,7 +298,9 @@ public abstract class PDFunction implements COSObjectable
             result = new COSArray();
             int numberOfRanges = rangeValues.length/2;
             for (int i=0; i<numberOfRanges; i++)
+            {
                 result.add(new COSFloat( clipToRange(inputValues[i], rangeValues[2*i], rangeValues[2*i+1])));
+            }
         }
         else
         {
@@ -320,11 +328,11 @@ public abstract class PDFunction implements COSObjectable
      * on the line defined by the two points (xRangeMin , xRangeMax ) 
      * and (yRangeMin , yRangeMax ).
      * 
-     * @param x
-     * @param xRangeMin
-     * @param xRangeMax
-     * @param yRangeMin
-     * @param yRangeMax
+     * @param x the to be interpolated value.
+     * @param xRangeMin the min value of the x range
+     * @param xRangeMax the max value of the x range
+     * @param yRangeMin the min value of the y range
+     * @param yRangeMax the max value of the y range
      * @return the interpolated y value
      */
     protected float interpolate(float x, float xRangeMin, float xRangeMax, float yRangeMin, float yRangeMax) 

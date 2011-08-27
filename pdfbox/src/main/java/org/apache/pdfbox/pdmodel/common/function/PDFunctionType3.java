@@ -43,9 +43,9 @@ public class PDFunctionType3 extends PDFunction
      *
      * @param functionStream The function .
      */
-    public PDFunctionType3(COSBase function)
+    public PDFunctionType3(COSBase functionStream)
     {
-        super( function );
+        super( functionStream );
     }
 
     /**
@@ -62,49 +62,50 @@ public class PDFunctionType3 extends PDFunction
     public COSArray eval(COSArray input) throws IOException
     {
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
+        // All functions in the array are 1-value-input functions
         //See PDF Reference section 3.9.3.
         PDFunction function = null;
         float x = ((COSNumber)input.get(0)).floatValue();
-        PDRange domain = getDomainForInput(1);
+        PDRange domain = getDomainForInput(0);
         // clip input value to domain
         x = clipToRange(x, domain.getMin(), domain.getMax());
 
-        float[] boundsValues = getBounds().toFloatArray();
-        int boundsSize = boundsValues.length;
-        if (boundsSize == 0 || x < boundsValues[0])
+        COSArray functionsArray = getFunctions();
+        int numberOfFunctions = functionsArray.size();
+        // This doesn't make sense but it may happen ...
+        if (numberOfFunctions == 1) 
         {
-            function = PDFunction.create(getFunctions().get(0));
-            PDRange encode = getEncodeForParameter(0);
-            if (boundsSize == 0)
-            {
-                x = interpolate(x, domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
-            }
-            else
-            {
-                x = interpolate(x, domain.getMin(), boundsValues[0], encode.getMin(), encode.getMax());
-            }
+            function = PDFunction.create(functionsArray.get(0));
+            PDRange encRange = getEncodeForParameter(0);
+            x = interpolate(x, domain.getMin(), domain.getMax(), encRange.getMin(), encRange.getMax());
         }
-        else
+        else 
         {
-            for (int i=0; i<boundsSize-1; i++)
+            float[] boundsValues = getBounds().toFloatArray();
+            int boundsSize = boundsValues.length;
+            // create a combined array containing the domain and the bounds values
+            // domain.min, bounds[0], bounds[1], ...., bounds[boundsSize-1], domain.max
+            float[] partitionValues = new float[boundsSize+2];
+            int partitionValuesSize = partitionValues.length;
+            partitionValues[0] = domain.getMin();
+            partitionValues[partitionValuesSize-1] = domain.getMax();
+            System.arraycopy(boundsValues, 0, partitionValues, 1, boundsSize);
+            // find the partition 
+            for (int i=0; i < partitionValuesSize-1; i++)
             {
-                if ( x >= boundsValues[i] && x < boundsValues[i+1] )
+                if ( x >= partitionValues[i] && 
+                        (x < partitionValues[i+1] || (i == partitionValuesSize - 2 && x == partitionValues[i+1])))
                 {
-                    function = PDFunction.create(getFunctions().get(i+1));
-                    PDRange encode = getEncodeForParameter(i+1);
-                    x = interpolate(x, boundsValues[i], boundsValues[i+1], encode.getMin(), encode.getMax());
+                    function = PDFunction.create(functionsArray.get(i));
+                    PDRange encRange = getEncodeForParameter(i);
+                    x = interpolate(x, partitionValues[i], partitionValues[i+1], encRange.getMin(), encRange.getMax());
                     break;
                 }
-            }
-            if(function==null) //must be in last partition
-            {
-                function = PDFunction.create(getFunctions().get(boundsSize+1));
-                PDRange encode = getEncodeForParameter(boundsSize+1);
-                x = interpolate(x, boundsValues[boundsSize-1], domain.getMax(), encode.getMin(), encode.getMax());
             }
         }
         COSArray functionValues = new COSArray();
         functionValues.add(new COSFloat(x));
+        // calculate the output values using the chosen function
         COSArray functionResult = function.eval(functionValues);
         // clip to range if available
         return clipToRange(functionResult);
