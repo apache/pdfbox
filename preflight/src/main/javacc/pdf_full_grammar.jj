@@ -43,7 +43,9 @@ import static org.apache.padaf.preflight.ValidationConstants.*;
 public class PDFParser
 {
 
-	public static boolean parse (InputStream is) throws IOException,ParseException {
+   public String pdfHeader = "";
+
+   public static boolean parse (InputStream is) throws IOException,ParseException {
 		PDFParser parser = new PDFParser (is);
 		parser.PDF();
 		return true;
@@ -127,7 +129,7 @@ TOKEN :
 {
 	< PERCENT: "%" > |
 	< PDFA_HEADER: "PDF-1."["1"-"6"] > |
-	< BINARY_TAG : (["\u0080"-"\uFFFF"]){4,} > 
+	< BINARY_TAG : (["\u0080"-"\u00FF"]){2,} >  
 }
 
 
@@ -148,7 +150,7 @@ TOKEN :
  <OBJ_BOOLEAN : ("true"|"false") > | 
  <OBJ_NUMERIC : ("+"|"-")? ( ((<DIGITS>)+ ("."(<DIGITS>)*)? ) | ("."(<DIGITS>)+)) > |
  <OBJ_STRING_HEX : "<"((<DIGITS>|["a"-"f"]|["A"-"F"]){2})+">"> |
- <OBJ_STRING_LIT : "("(~[")","("])*> : WithinLIT |
+ <OBJ_STRING_LIT : "("(~["(",")"])*> : WithinLIT |
  <OBJ_ARRAY_START : "[" > |
  <OBJ_ARRAY_END : "]" > |
  <OBJ_NAME : "/"(~[" " , "(" , ")" , "[" , "]" , "{" , "}" , "/" , "<" , ">" , "%" , "\t" , "\n" , "\r"])+ > |
@@ -163,6 +165,19 @@ TOKEN :
 <WithinLIT> MORE :
 {
   <~["(", ")"]>
+}
+
+<WithinLIT> SKIP :
+{
+  <UNICODE : ["\u0080"-"\uFFFF"]> |
+  <UNBALANCED_LEFT_PARENTHESES : "\\("> |
+  <UNBALANCED_RIGHT_PARENTHESES : "\\)">  
+}
+
+<WithinLIT> TOKEN :
+{
+   < END_LITERAL : ")" > |
+   < INNER_START_LIT : "("(~[")","("])*>
 }
 
 // -- Content of Stream isn't check by the JavaCC Parser
@@ -207,12 +222,6 @@ TOKEN :
 	< END_DICTONNARY : ">>" >
 }
 
-<WithinLIT> TOKEN :
-{
-	< END_LITERAL : ")" > |
-	< INNER_START_LIT : "("(~[")","("])*>
-}
-
 TOKEN :
 {
 	< STARTXREF_TAG : "startxref" > : WithinTrailer
@@ -229,7 +238,7 @@ void indirect_object() :
 {
 	<START_OBJECT>
 		object_content()
-	<END_OBJECT> ( < EOL > )?
+	<END_OBJECT>
 }
 
 void object_content() :
@@ -288,35 +297,43 @@ void start_literal () :
 
 JAVACODE
 void literal() {
-	Token currentToken = null;
-	int nesting =  1;
-	int literalLength = 0;
-    while(true) {
+         Token currentToken = null;
+         int nesting =  1;
+         int literalLength = 0;
+
+         while(true) {
+            Token previous = getToken(0);
             currentToken = getToken(1);
             if (currentToken.kind == 0 ){
-                    throw new ParseException("EOF reach before the end of the literal string.");
+               throw new ParseException("EOF reach before the end of the literal string.");
             }
             literalLength += currentToken.image.getBytes().length;
             if ( currentToken.kind == OBJ_STRING_LIT ) {
-                    jj_consume_token(OBJ_STRING_LIT);
-                    ++nesting;
+               jj_consume_token(OBJ_STRING_LIT);
+               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+                  ++nesting;
+               }
             } else if ( currentToken.kind == INNER_START_LIT ) {
-                    jj_consume_token(INNER_START_LIT);
-                    ++nesting;            
+               jj_consume_token(INNER_START_LIT);
+               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+                  ++nesting;
+               }
             } else if ( currentToken.kind == END_LITERAL ) {
-                    --nesting;
-                    jj_consume_token(END_LITERAL);
-                    if (nesting == 0) {
-                    	this.token_source.curLexState = PDFParserConstants.DEFAULT;
-                        break;
-                    }
+               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+                  --nesting;
+               }
+               jj_consume_token(END_LITERAL);
+               if (nesting == 0) {
+                  this.token_source.curLexState = PDFParserConstants.DEFAULT;
+                  break;
+               }
             } else {
-            	currentToken = getNextToken();
+               currentToken = getNextToken();
             }
-    }
-    if (literalLength > MAX_STRING_LENGTH) {
-    	throw new PdfParseException("Literal String too long", ERROR_SYNTAX_LITERAL_TOO_LONG);
-    }
+         }
+         if (literalLength > MAX_STRING_LENGTH) {
+            throw new PdfParseException("Literal String too long", ERROR_SYNTAX_LITERAL_TOO_LONG);
+         }
 }
 
 JAVACODE
@@ -326,6 +343,15 @@ void checkNameLength() throws ParseException {
 	} else {
 		// Nothing to do
 	}	
+}
+
+JAVACODE
+void checkMagicNumberLength() throws ParseException {
+   if (token != null && token.image.getBytes().length < 4) {
+      throw new PdfParseException("Not enough bytes after the Header (at least 4 bytes should be present with a value bigger than 127) : " + token.image, ERROR_SYNTAX_HEADER);
+   } else {
+      // Nothing to do
+   }  
 }
 
 JAVACODE
@@ -398,8 +424,8 @@ void PDF_header() throws HeaderParseException :
 {}
 {
 	try {
-		<PERCENT> <PDFA_HEADER> ( < EOL > )
-		<PERCENT> <BINARY_TAG> ( < EOL > )
+		<PERCENT> <PDFA_HEADER> { pdfHeader = token.image;} ( < EOL > )
+		<PERCENT> <BINARY_TAG>  checkMagicNumberLength() ( < EOL > )
 	} catch (ParseException e) {
 		throw new HeaderParseException (e);
 	} catch (TokenMgrError e) {
@@ -412,9 +438,16 @@ void PDF_body() throws BodyParseException :
 {}
 {
 	try {
-		( (<SPACE>|<OTHER_WHITE_SPACE>)+ (<EOL>))?
-		( indirect_object() ) +
-		( (<SPACE>|<OTHER_WHITE_SPACE>)+ (<EOL>))?
+		( 
+   	  (<SPACE>|<OTHER_WHITE_SPACE>)+ 
+		  (<EOL>)
+		)?
+
+		(  indirect_object() 
+		     (<SPACE>|<OTHER_WHITE_SPACE>)* 
+		     (<EOL>)?
+		) +
+
 	} catch (ParseException e) {
 		throw new BodyParseException (e);
 	} catch (TokenMgrError e) {
@@ -429,8 +462,8 @@ void PDF_cross_ref_table() throws CrossRefParseException :
 		<XREF_TAG> ( < EOL > )
 		(
 			<SUBSECTION_START> 
-			( < EOL > ) 
-			(	<FULL_LINE>  ( <SPACE> ) ? ( < EOL > ) ) +
+			(( <SPACE> ) *  < EOL > ) 
+			(	<FULL_LINE>  ( <SPACE> ) * ( < EOL > ) ) +
 		)+
 	} catch (ParseException e) {
 		throw new CrossRefParseException (e);
@@ -439,16 +472,13 @@ void PDF_cross_ref_table() throws CrossRefParseException :
 	}
 }
 
-void PDF_trailer() throws TrailerParseException :
+void PDF_trailer_dictionnary() throws TrailerParseException :
 {}
 {
 	try {
 		<TRAILER_TAG>
 		( <EOL> )
 		dictionary_object() (<SPACE>)*<EOL>
-		<STARTXREF_TAG> ( <EOL> )
-		<OBJ_NUMBER> ( <EOL> )
-		<EOF_TRAILER_TAG> ( <EOL> ) ?
 	} catch (ParseException e) {
 		throw new TrailerParseException (e);
 	} catch (TokenMgrError e) {
@@ -457,16 +487,44 @@ void PDF_trailer() throws TrailerParseException :
 
 }
 
-void
-PDF_linearized_modified() throws PdfParseException  :
+void PDF_Trailer_XRefOffset()  throws TrailerParseException :
 {}
 {
+
+   try {
+      <STARTXREF_TAG> ( <EOL> )
+      <OBJ_NUMBER> ( <EOL> )
+      <EOF_TRAILER_TAG> ( <EOL> ) ?
+   } catch (ParseException e) {
+      throw new TrailerParseException (e);
+   } catch (TokenMgrError e) {
+      throw new TrailerParseException (e.getMessage());
+   }
+}
+
+void
+PDF_linearized_modified() throws PdfParseException  :
+{
+int foundXref=0;
+int foundTrailer=0;
+}
+{
 	try {
-		( <EOF> | 
-		(PDF_body()
-		PDF_cross_ref_table()
-		PDF_trailer())+
-		<EOF> )
+
+		( PDF_body()
+		  (
+		    PDF_cross_ref_table() {foundXref++;}
+		    PDF_trailer_dictionnary() {foundTrailer++;}
+		  )?
+		  PDF_Trailer_XRefOffset()
+      )+
+		<EOF> 
+      {
+         boolean expectedXRefAndTrailer = pdfHeader.matches("PDF-1\\.[1-4]");
+         if (expectedXRefAndTrailer && (foundXref <= 0 || foundTrailer <= 0)) {
+            throw new TrailerParseException ("Missing Xref table or Trailer keyword in the given PDF.");
+         }
+      }
 	} catch (PdfParseException e) { 
 		throw e;
 	} catch (ParseException e) {
@@ -484,8 +542,5 @@ PDF() throws PdfParseException :
 {}
 {
 	PDF_header()
-	PDF_body()
-	PDF_cross_ref_table()
-	PDF_trailer()
 	PDF_linearized_modified()
 } 
