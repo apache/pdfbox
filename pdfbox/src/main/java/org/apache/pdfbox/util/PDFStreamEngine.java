@@ -488,7 +488,7 @@ public class PDFStreamEngine
             }
             totalCharCnt++;
 
-            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * textMatrix.getYScale();
+            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * textXctm.getYScale();
 
             // process the decoded text
             processTextPosition(
