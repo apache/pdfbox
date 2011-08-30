@@ -269,7 +269,11 @@ public class CMapParser
                 else if (CMAP_VERSION.equals(literal.name)) 
                 {
                     Object next = parseNextToken(cmapStream);
-                    if (next instanceof String)
+                    if (next instanceof Number)
+                    {
+                        result.setVersion(((Number)next).toString());
+                    }
+                    else if (next instanceof String)
                     {
                         result.setVersion((String)next);
                     }
@@ -493,7 +497,7 @@ public class CMapParser
                 }
                 else
                 {
-                    retval = new Integer( buffer.toString() );
+                    retval = new Integer( value );
                 }
                 break;
             }
