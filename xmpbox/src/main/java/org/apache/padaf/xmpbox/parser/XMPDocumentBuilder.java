@@ -67,7 +67,7 @@ public class XMPDocumentBuilder {
 	protected NSMapping nsMap;
 
 	protected ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
-	
+
 	protected List<XMPDocumentPreprocessor> preprocessors = new ArrayList<XMPDocumentPreprocessor>();
 
 	/**
@@ -106,9 +106,9 @@ public class XMPDocumentBuilder {
 	 */
 
 	public XMPMetadata parse(byte[] xmp) throws XmpParsingException,
-			XmpSchemaException, XmpUnknownValueTypeException,
-			XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
-			BadFieldValueException {
+	XmpSchemaException, XmpUnknownValueTypeException,
+	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
+	BadFieldValueException {
 
 		if (!(this instanceof XMPDocumentPreprocessor)) {
 			for (XMPDocumentPreprocessor processor : preprocessors) {
@@ -124,17 +124,17 @@ public class XMPDocumentBuilder {
 
 			// expect xpacket processing instruction
 			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
-			"Did not find initial xpacket processing instruction");
+					"Did not find initial xpacket processing instruction");
 			XMPMetadata metadata = parseInitialXpacket(reader.get().getPIData());
 
 			// expect x:xmpmeta
 			expectNextTag(XMLStreamReader.START_ELEMENT,
-			"Did not find initial x:xmpmeta");
+					"Did not find initial x:xmpmeta");
 			expectName("adobe:ns:meta/", "xmpmeta");
 
 			// expect rdf:RDF
 			expectNextTag(XMLStreamReader.START_ELEMENT,
-			"Did not find initial rdf:RDF");
+					"Did not find initial rdf:RDF");
 			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
 
 			nsMap.resetComplexBasicTypesDeclarationInEntireXMPLevel();
@@ -159,17 +159,17 @@ public class XMPDocumentBuilder {
 			// all description are finished
 			// expect end of rdf:RDF
 			expectType(XMLStreamReader.END_ELEMENT,
-			"Expected end of descriptions");
+					"Expected end of descriptions");
 			expectName("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "RDF");
 
 			// expect ending xmpmeta
 			expectNextTag(XMLStreamReader.END_ELEMENT,
-			"Did not find initial x:xmpmeta");
+					"Did not find initial x:xmpmeta");
 			expectName("adobe:ns:meta/", "xmpmeta");
 
 			// expect final processing instruction
 			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
-			"Did not find final xpacket processing instruction");
+					"Did not find final xpacket processing instruction");
 			// treats xpacket end
 			if (!reader.get().getPITarget().equals("xpacket")) {
 				throw new XmpXpacketEndException("Excepted PI xpacket");
@@ -182,12 +182,12 @@ public class XMPDocumentBuilder {
 				// check value (5 for end='X')
 				if (xpackData.charAt(5)!='r' && xpackData.charAt(5)!='w') {
 					throw new XmpXpacketEndException(
-					"Excepted xpacket 'end' attribute with value 'r' or 'w' ");
+							"Excepted xpacket 'end' attribute with value 'r' or 'w' ");
 				}
 			} else {
 				// should find end='r/w'
 				throw new XmpXpacketEndException(
-				"Excepted xpacket 'end' attribute (must be present and placed in first)");
+						"Excepted xpacket 'end' attribute (must be present and placed in first)");
 			}
 
 			metadata.setEndXPacket(xpackData);
@@ -226,10 +226,10 @@ public class XMPDocumentBuilder {
 	 *             Extension schema
 	 */
 	public XMPMetadata parse(InputStream input) throws XmpParsingException,
-			XmpSchemaException, XmpUnknownValueTypeException,
-			XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
-			BadFieldValueException {
-		
+	XmpSchemaException, XmpUnknownValueTypeException,
+	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
+	BadFieldValueException {
+
 		byte[] bos = getStreamAsByteArray(input);
 		return parse(bos);
 	}
@@ -246,7 +246,7 @@ public class XMPDocumentBuilder {
 		}
 		return bos.toByteArray();
 	}
-	
+
 	public void addPreprocessor(XMPDocumentPreprocessor processor) {
 		this.preprocessors.add(processor);
 	}
@@ -418,9 +418,11 @@ public class XMPDocumentBuilder {
 	 *            Schema corresponding to the rdf:Description use
 	 * @throws XmpExpectedRdfAboutAttribute
 	 *             When rdf:Description not contains rdf:about attribute
+	 * @throws XmpUnexpectedTypeException if the attribute is known 
+	 * as an expected property but the property type isn't a Simple type.
 	 */
-	protected final void treatDescriptionAttributes(XMPMetadata metadata,
-			XMPSchema schema) throws XmpExpectedRdfAboutAttribute {
+	protected final void treatDescriptionAttributes(XMPMetadata metadata, XMPSchema schema) 
+	throws XmpExpectedRdfAboutAttribute, XmpUnexpectedTypeException {
 		int cptAtt = reader.get().getAttributeCount();
 		if (cptAtt < 1) {
 			System.out.println(reader.get().getLocalName());
@@ -448,10 +450,16 @@ public class XMPDocumentBuilder {
 					}
 					rdfAboutFound = true;
 				}
-				schema.setAttribute(new Attribute(null, reader.get()
+
+				Attribute attr = new Attribute(null, reader.get()
 						.getAttributePrefix(i), reader.get()
 						.getAttributeLocalName(i), reader.get()
-						.getAttributeValue(i)));
+						.getAttributeValue(i));
+
+				if (!addAttributeAsProperty(metadata, schema, attr)) {
+					// attribute isn't a property, so add the attribute
+					schema.setAttribute(attr);	
+				}
 
 				i++;
 			}
@@ -463,6 +471,46 @@ public class XMPDocumentBuilder {
 		}
 	}
 
+	/**
+	 * If the attribute has same the name as an expected property of the Schema, then the property is created using the attributes fields.
+	 * 
+	 * @param metadata Metadata to attach new elements
+	 * @param schema Schema corresponding to the rdf:Description use
+	 * @param attr the attribute used to create the property
+	 * @return true if the attribute has been converted into Property
+	 */
+	private boolean addAttributeAsProperty(XMPMetadata metadata, XMPSchema schema, Attribute attr) {
+		boolean added = false;
+		String schemaNamespace = schema.getNamespaceValue();
+		String prefix = attr.getPrefix() != null ? attr.getPrefix() : schema.getPrefix();
+		String type = this.nsMap.getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
+		if (type != null) {
+			if (type.equals("Text")) {
+				schema.getContent().addProperty(new TextType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("Integer")) {
+				schema.getContent().addProperty(new IntegerType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("Boolean")) {
+				schema.getContent().addProperty(new BooleanType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("Real")) {
+				schema.getContent().addProperty(new RealType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("Date")) {
+				schema.getContent().addProperty(new DateType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("URI")) {
+				schema.getContent().addProperty(new TextType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			} else if (type.equals("URL")) {
+				schema.getContent().addProperty(new TextType(metadata, prefix, attr.getLocalName(), attr.getValue()));
+				added = true;
+			}
+		}
+		return added;
+	}
+	
 	/**
 	 * Treat each rdf:Description (which must represent a schema), instanciate
 	 * class representation of this schema and add it to metadata
@@ -509,9 +557,9 @@ public class XMPDocumentBuilder {
 				if (namespaces
 						.containsValue(PDFAExtensionSchema.PDFAEXTENSIONURI)
 						&& namespaces
-								.containsValue(PDFAExtensionSchema.PDFAPROPERTYURI)
+						.containsValue(PDFAExtensionSchema.PDFAPROPERTYURI)
 						&& namespaces
-								.containsValue(PDFAExtensionSchema.PDFASCHEMAURI)) {
+						.containsValue(PDFAExtensionSchema.PDFASCHEMAURI)) {
 					PDFAExtensionSchema schema = metadata
 							.createAndAddPDFAExtensionSchemaWithNS(namespaces);
 					treatDescriptionAttributes(metadata, schema);
@@ -910,7 +958,7 @@ public class XMPDocumentBuilder {
 		if ((uns == null) || "".equals(uns)) {
 			throw new XmpUnknownPropertyException(
 					"Cannot find a description for '" + prop.getLocalPart()
-							+ "' property");
+					+ "' property");
 		} else {
 			throw new XmpUnknownSchemaException(
 					"Cannot find a definition for the namespace " + uns + " ");
@@ -941,8 +989,8 @@ public class XMPDocumentBuilder {
 	protected void parseXmpSimpleProperty(XMPMetadata metadata,
 			QName propertyName, XmpPropertyType stype,
 			ComplexPropertyContainer container)
-			throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,
-			XMLStreamException {
+					throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,
+					XMLStreamException {
 		try {
 			AbstractSimpleProperty prop = null;
 			ArrayList<Attribute> attributes = new ArrayList<Attribute>();
@@ -956,23 +1004,23 @@ public class XMPDocumentBuilder {
 			if (stype == XmpPropertyType.Text) {
 				prop = new TextType(metadata, propertyName.getPrefix(),
 						propertyName.getLocalPart(), reader.get()
-								.getElementText());
+						.getElementText());
 			} else if (stype == XmpPropertyType.Integer) {
 				prop = new IntegerType(metadata, propertyName.getPrefix(),
 						propertyName.getLocalPart(), reader.get()
-								.getElementText());
+						.getElementText());
 			} else if (stype == XmpPropertyType.Date) {
 				prop = new DateType(metadata, propertyName.getPrefix(),
 						propertyName.getLocalPart(), reader.get()
-								.getElementText());
+						.getElementText());
 			} else if (stype == XmpPropertyType.Boolean) {
 				prop = new BooleanType(metadata, propertyName.getPrefix(),
 						propertyName.getLocalPart(), reader.get()
-								.getElementText());
+						.getElementText());
 			} else if (stype == XmpPropertyType.Real) {
 				prop = new RealType(metadata, propertyName.getPrefix(),
 						propertyName.getLocalPart(), reader.get()
-								.getElementText());
+						.getElementText());
 			}
 			if (prop != null) {
 				container.addProperty(prop);
@@ -1017,9 +1065,9 @@ public class XMPDocumentBuilder {
 	 */
 	protected void parseBagProperty(XMPMetadata metadata, QName bagName,
 			XmpPropertyType stype, ComplexPropertyContainer container)
-			throws XmpUnexpectedTypeException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException,
-			XmpPropertyFormatException {
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
 		ComplexProperty bag = new ComplexProperty(metadata,
 				bagName.getPrefix(), bagName.getLocalPart(),
 				ComplexProperty.UNORDERED_ARRAY);
@@ -1067,9 +1115,9 @@ public class XMPDocumentBuilder {
 	 */
 	protected void parseSeqProperty(XMPMetadata metadata, QName seqName,
 			XmpPropertyType stype, ComplexPropertyContainer container)
-			throws XmpUnexpectedTypeException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException,
-			XmpPropertyFormatException {
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
 		ComplexProperty seq = new ComplexProperty(metadata,
 				seqName.getPrefix(), seqName.getLocalPart(),
 				ComplexProperty.ORDERED_ARRAY);
@@ -1117,9 +1165,9 @@ public class XMPDocumentBuilder {
 	 */
 	protected void parseAltProperty(XMPMetadata metadata, QName altName,
 			XmpPropertyType stype, ComplexPropertyContainer container)
-			throws XmpUnexpectedTypeException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException,
-			XmpPropertyFormatException {
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
 		ComplexProperty alt = new ComplexProperty(metadata,
 				altName.getPrefix(), altName.getLocalPart(),
 				ComplexProperty.ALTERNATIVE_ARRAY);
@@ -1165,9 +1213,9 @@ public class XMPDocumentBuilder {
 	 */
 	private boolean createAndAddPropertyToContainer(XMPMetadata metadata,
 			String type, ComplexPropertyContainer container)
-			throws XmpParsingException, XmpUnexpectedTypeException,
-			XmpUnknownPropertyTypeException, XmpPropertyFormatException,
-			XMLStreamException {
+					throws XmpParsingException, XmpUnexpectedTypeException,
+					XmpUnknownPropertyTypeException, XmpPropertyFormatException,
+					XMLStreamException {
 		if (type.equals("Text")) {
 			parseXmpSimpleProperty(metadata, reader.get().getName(),
 					XmpPropertyType.Text, container);
@@ -1315,7 +1363,7 @@ public class XMPDocumentBuilder {
 		}
 		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
 		if (type.equals("Unmanaged")) {
-		    // do not parse the property, no validation, no reserialization
+			// do not parse the property, no validation, no reserialization
 			boolean cont = true;
 			while (cont) {
 				int t = reader.get().next();
@@ -1326,8 +1374,9 @@ public class XMPDocumentBuilder {
 				}
 			}
 		} else if (type.equals("Text")) {
-			parseXmpSimpleProperty(metadata, propertyName,
+			parseXmpSimpleProperty(metadata, propertyName, 
 					XmpPropertyType.Text, schema.getContent());
+
 		} else if (type.equals("Integer")) {
 			parseXmpSimpleProperty(metadata, propertyName,
 					XmpPropertyType.Integer, schema.getContent());
@@ -1410,9 +1459,9 @@ public class XMPDocumentBuilder {
 	 */
 	private void parseAltThumbnailProperty(XMPMetadata metadata, QName altName,
 			ComplexPropertyContainer container)
-			throws XmpUnexpectedTypeException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException,
-			XmpPropertyFormatException {
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
 		ComplexProperty alt = new ComplexProperty(metadata,
 				altName.getPrefix(), altName.getLocalPart(),
 				ComplexProperty.ALTERNATIVE_ARRAY);
@@ -1456,9 +1505,9 @@ public class XMPDocumentBuilder {
 	 */
 	private void parseThumbnailProperty(XMPMetadata metadata, QName altName,
 			ComplexPropertyContainer container)
-			throws XmpUnexpectedTypeException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException,
-			XmpPropertyFormatException {
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
 		expectCurrentLocalName("li");
 		ThumbnailType thumbnail = new ThumbnailType(metadata, altName
 				.getPrefix(), altName.getLocalPart());
