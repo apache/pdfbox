@@ -48,6 +48,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.util.StringUtil;
 
 /**
  * This helper validates the PDF file catalog
@@ -179,7 +180,7 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
       PDDocumentCatalog catalog, List<ValidationError> result)
       throws ValidationException {
     String lang = catalog.getLanguage();
-    if (lang != null && !lang.matches("[A-Za-z]{1,8}(-[A-Za-z]{1,8})*")) {
+    if (lang != null && !"".equals(lang) && !lang.matches("[A-Za-z]{1,8}(-[A-Za-z]{1,8})*")) {
       result.add(new ValidationError(ERROR_SYNTAX_LANG_NOT_RFC1766));
     }
   }

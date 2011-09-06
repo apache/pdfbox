@@ -125,7 +125,7 @@ public abstract class AbstractFontValidator implements FontValidator,ValidationC
   }
 
   public static String getSubSetPatternDelimiter() {
-    return "+";
+    return "\\+";
   }
 
   /*
@@ -157,14 +157,12 @@ public abstract class AbstractFontValidator implements FontValidator,ValidationC
    * @return true if the meta data is valid, false otherwise
    * @throws ValidationException when checking fails
    */
-  protected boolean checkFontFileMetaData(PDFontDescriptor fontDesc,
-      PDStream fontFile) throws ValidationException {
+  protected boolean checkFontFileMetaData(PDFontDescriptor fontDesc, PDStream fontFile) throws ValidationException {
     PDMetadata metadata = fontFile.getMetadata();
     if (metadata != null) {
       // --- Filters are forbidden in a XMP stream
       if (metadata.getFilters() != null && !metadata.getFilters().isEmpty()) {
-        fontContainer.addError(new ValidationError(
-            ValidationConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
+        fontContainer.addError(new ValidationError(ValidationConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
         "Filter specified in font file metadata dictionnary"));
         return false;
       }
@@ -191,7 +189,7 @@ public abstract class AbstractFontValidator implements FontValidator,ValidationC
         FontMetaDataValidation fontMDval = new FontMetaDataValidation();
         List<ValidationError> ve = new ArrayList<ValidationError>();
         boolean isVal = fontMDval.analyseFontName(xmpMeta, fontDesc, ve);
-        isVal = isVal && fontMDval.analyseFontName(xmpMeta, fontDesc, ve);
+        isVal = isVal & fontMDval.analyseRights(xmpMeta, fontDesc, ve);
         for (ValidationError validationError : ve) {
           fontContainer.addError(validationError);
         }
