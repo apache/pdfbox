@@ -205,16 +205,30 @@ public class OS2WindowsMetricsTable extends TTFTable
     /**
      * @return Returns the familyClass.
      */
-    public short getFamilyClass()
+    public int getFamilyClass()
     {
         return familyClass;
     }
     /**
      * @param familyClassValue The familyClass to set.
      */
-    public void setFamilyClass(short familyClassValue)
+    public void setFamilyClass(int familyClassValue)
     {
         this.familyClass = familyClassValue;
+    }
+    /**
+     * @return Returns the familySubClass.
+     */
+    public int getFamilySubClass()
+    {
+        return familySubClass;
+    }
+    /**
+     * @param familySubClassValue The familySubClass to set.
+     */
+    public void setFamilySubClass(int familySubClassValue)
+    {
+        this.familySubClass = familySubClassValue;
     }
     /**
      * @return Returns the firstCharIndex.
@@ -609,7 +623,8 @@ public class OS2WindowsMetricsTable extends TTFTable
     private short superscriptYOffset;
     private short strikeoutSize;
     private short strikeoutPosition;
-    private short familyClass;
+    private int familyClass;
+    private int familySubClass;
     private byte[] panose = new byte[10];
     private long unicodeRange1;
     private long unicodeRange2;
@@ -656,7 +671,8 @@ public class OS2WindowsMetricsTable extends TTFTable
         superscriptYOffset = data.readSignedShort();
         strikeoutSize = data.readSignedShort();
         strikeoutPosition = data.readSignedShort();
-        familyClass = data.readSignedShort();
+        familyClass = data.read();
+        familySubClass = data.read();
         panose = data.read( 10 );
         unicodeRange1 = data.readUnsignedInt();
         unicodeRange2 = data.readUnsignedInt();
