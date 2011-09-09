@@ -107,6 +107,8 @@ public class PDTrueTypeFont extends PDSimpleFont
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * 
+     * @throws IOException exception if something went wrong when loading the font.
      */
     public PDTrueTypeFont( COSDictionary fontDictionary ) throws IOException
     {
@@ -219,12 +221,11 @@ public class PDTrueTypeFont extends PDSimpleFont
             }
 
             OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
-            fd.setNonSymbolic( true );
+            boolean isSymbolic = false;
             switch( os2.getFamilyClass() )
             {
                 case OS2WindowsMetricsTable.FAMILY_CLASS_SYMBOLIC:
-                    fd.setSymbolic( true );
-                    fd.setNonSymbolic( false );
+                    isSymbolic = true;
                     break;
                 case OS2WindowsMetricsTable.FAMILY_CLASS_SCRIPTS:
                     fd.setScript( true );
@@ -272,9 +273,10 @@ public class PDTrueTypeFont extends PDSimpleFont
                     //do nothing
             }
             fd.setFontWeight( os2.getWeightClass() );
+            fd.setSymbolic( isSymbolic );
+            fd.setNonSymbolic( !isSymbolic );
 
             //todo retval.setFixedPitch
-            //todo retval.setNonSymbolic
             //todo retval.setItalic
             //todo retval.setAllCap
             //todo retval.setSmallCap
@@ -329,13 +331,18 @@ public class PDTrueTypeFont extends PDSimpleFont
             int[] glyphToCCode = null;
             for( int i=0; i<cmaps.length; i++ )
             {
-                if( cmaps[i].getPlatformId() == CMAPTable.PLATFORM_WINDOWS &&
-                    cmaps[i].getPlatformEncodingId() == CMAPTable.ENCODING_UNICODE )
+                if( cmaps[i].getPlatformId() == CMAPTable.PLATFORM_WINDOWS) 
                 {
-                    glyphToCCode = cmaps[i].getGlyphIdToCharacterCode();
+                    int platformEncoding = cmaps[i].getPlatformEncodingId();
+                    if ( (isSymbolic && CMAPTable.ENCODING_SYMBOL == platformEncoding)
+                            ||CMAPTable.ENCODING_UNICODE == platformEncoding )
+                    {
+                        glyphToCCode = cmaps[i].getGlyphIdToCharacterCode();
+                        break;
+                    }
                 }
             }
-            int firstChar = 0;
+            int firstChar = os2.getFirstCharIndex();
             int maxWidths = glyphToCCode.length;
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
@@ -345,7 +352,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 widths.add( zero );
             }
-            for( int i=0; i<widthValues.length; i++ )
+            for( int i=0; i<maxWidths; i++ )
             {
                 if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 
                         && widths.get( glyphToCCode[i]-firstChar) == zero )
@@ -354,9 +361,8 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
             setWidths( widths );
-            setFirstChar( firstChar );
-            setLastChar( firstChar + widths.size()-1 );
-
+            setFirstChar( isSymbolic ? 0 : firstChar );
+            setLastChar( isSymbolic ? widths.size() : firstChar + widths.size()-1 );
         }
         finally
         {
