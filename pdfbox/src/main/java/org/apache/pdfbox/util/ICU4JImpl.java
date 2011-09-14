@@ -90,7 +90,8 @@ public class ICU4JImpl
             char c = str.charAt(q);
             if ((0xFB00 <= c && c <= 0xFDFF) || (0xFE70 <= c && c <= 0xFEFF))
             {
-                if (builder == null) {
+                if (builder == null) 
+                {
                     builder = new StringBuilder(strLength * 2);
                 }
                 builder.append(str.substring(p, q));
@@ -111,9 +112,12 @@ public class ICU4JImpl
                 p = q + 1;
             }
         }
-        if (builder == null) {
+        if (builder == null) 
+        {
             return str;
-        } else {
+        } 
+        else 
+        {
             builder.append(str.substring(p, q));
             return builder.toString();
         }
@@ -132,9 +136,10 @@ public class ICU4JImpl
         for (int i = 0; i < strLength; i++) 
         {
             char c = str.charAt(i);
-            if(Character.getType(c) == Character.NON_SPACING_MARK 
-                    || Character.getType(c) == Character.MODIFIER_SYMBOL
-                    || Character.getType(c) == Character.MODIFIER_LETTER)
+            int type = Character.getType(c);
+            if(type == Character.NON_SPACING_MARK 
+                    || type == Character.MODIFIER_SYMBOL
+                    || type == Character.MODIFIER_LETTER)
             {
                 /*
                  * Trim because some decompositions have an extra space, such as
