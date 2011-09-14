@@ -116,8 +116,8 @@ public class TextPosition
      * Constructor.
      *
      * @param pageRotation rotation of the page that the text is located in
-     * @param pageWidth rotation of the page that the text is located in
-     * @param pageHeight rotation of the page that the text is located in
+     * @param pageWidthValue rotation of the page that the text is located in
+     * @param pageHeightValue rotation of the page that the text is located in
      * @param textPositionSt TextMatrix for start of text (in display units)
      * @param textPositionEnd TextMatrix for end of text (in display units)
      * @param maxFontH Maximum height of text (in display units)
@@ -128,12 +128,13 @@ public class TextPosition
      * @param fontSizeValue The new font size.
      * @param fontSizeInPt The font size in pt units.
      *
-     * @deprecated Use {@link TextPosition(int, float, float, Matrix, float, float, float, float, float, String, PDFont, float, int)} instead.
+     * @deprecated Use {@link TextPosition(int, float, float, Matrix, float, float, float, float, float, 
+     * String, PDFont, float, int)} instead.
      */
     public TextPosition(
             int pageRotation,
-            float pageWidth,
-            float pageHeight,
+            float pageWidthValue,
+            float pageHeightValue,
             Matrix textPositionSt,
             Matrix textPositionEnd,
             float maxFontH,
@@ -145,7 +146,7 @@ public class TextPosition
             int fontSizeInPt
     )
     {
-        this(pageRotation, pageWidth, pageHeight, textPositionSt,
+        this(pageRotation, pageWidthValue, pageHeightValue, textPositionSt,
                 textPositionEnd.getXPosition(), textPositionEnd.getYPosition(),
                 maxFontH, individualWidth, spaceWidth, string, currentFont, fontSizeValue, fontSizeInPt);
     }
@@ -154,11 +155,11 @@ public class TextPosition
      * Constructor.
      *
      * @param pageRotation rotation of the page that the text is located in
-     * @param pageWidth rotation of the page that the text is located in
-     * @param pageHeight rotation of the page that the text is located in
+     * @param pageWidthValue rotation of the page that the text is located in
+     * @param pageHeightValue rotation of the page that the text is located in
      * @param textPositionSt TextMatrix for start of text (in display units)
-     * @param endX
-     * @param endY
+     * @param endXValue x coordinate of the end position
+     * @param endYValue y coordinate of the end position
      * @param maxFontH Maximum height of text (in display units)
      * @param individualWidth The width of the given character/string. (in ? units)
      * @param spaceWidth The width of the space character. (in display units)
@@ -169,11 +170,11 @@ public class TextPosition
      */
     public TextPosition(
             int pageRotation,
-            float pageWidth,
-            float pageHeight,
+            float pageWidthValue,
+            float pageHeightValue,
             Matrix textPositionSt,
-            float endX,
-            float endY,
+            float endXValue,
+            float endYValue,
             float maxFontH,
             float individualWidth,
             float spaceWidth,
@@ -185,8 +186,8 @@ public class TextPosition
     {
         this.textPos = textPositionSt;
 
-        this.endX = endX;
-        this.endY = endY;
+        this.endX = endXValue;
+        this.endY = endYValue;
 
         this.rot = pageRotation;
         // make sure it is 0 to 270 and no negative numbers
@@ -196,8 +197,8 @@ public class TextPosition
         }
 
         this.maxTextHeight = maxFontH;
-        this.pageHeight = pageHeight;
-        this.pageWidth = pageWidth;
+        this.pageHeight = pageHeightValue;
+        this.pageWidth = pageWidthValue;
 
         this.widths = new float[]{individualWidth};
         this.widthOfSpace = spaceWidth;
@@ -739,9 +740,14 @@ public class TextPosition
      */
     public boolean isDiacritic()
     {
-        String cText = this.getCharacter();
-        return (cText.length() == 1 &&  (Character.getType(cText.charAt(0)) == Character.NON_SPACING_MARK
-                || Character.getType(cText.charAt(0)) == Character.MODIFIER_SYMBOL
-                || Character.getType(cText.charAt(0)) == Character.MODIFIER_LETTER));
+        final String cText = this.getCharacter(); 
+        if (cText.length() != 1)
+        {
+            return false; 
+        }
+        final int type = Character.getType(cText.charAt(0)); 
+        return (type == Character.NON_SPACING_MARK 
+                || type == Character.MODIFIER_SYMBOL 
+                || type == Character.MODIFIER_LETTER); 
     }
 }
