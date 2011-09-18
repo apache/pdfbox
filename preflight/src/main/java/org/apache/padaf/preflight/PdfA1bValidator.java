@@ -52,16 +52,18 @@ public class PdfA1bValidator extends AbstractValidator {
 	throws ValidationException {
 		DocumentHandler handler = createDocumentHandler(source);
 		try {
+			ArrayList<ValidationError> allErrors = new ArrayList<ValidationError>();
+			
 			// syntax (javacc) validation
 			try {
 				PDFParser parser = new PDFParser(source.getInputStream());
-				parser.PDF();
 				handler.setParser(parser);
+				parser.PDF();
 			} catch (IOException e) {
 				throw new ValidationException("Failed to parse datasource due to : "
 						+ e.getMessage(), e);
 			} catch (ParseException e) {
-				return createErrorResult(e);
+				 allErrors.addAll(createErrorResult(e).getErrorsList());
 			}
 
 			// if here is reached, validate with helpers
@@ -85,8 +87,10 @@ public class PdfA1bValidator extends AbstractValidator {
 						"PDF ExtractorTokenMng failed to parse datasource", e);
 			}
 
-			// call all helpers
-			ArrayList<ValidationError> allErrors = new ArrayList<ValidationError>();
+			/* 
+			 * call all helpers
+			 */
+
 		
 			// Execute priority helpers.
 			for ( AbstractValidationHelper helper : priorHelpers ) {

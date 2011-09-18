@@ -52,8 +52,8 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public class StreamValidationHelper extends AbstractValidationHelper {
 
 	public StreamValidationHelper(ValidatorConfig cfg)
-	throws ValidationException {
-	  super(cfg);
+			throws ValidationException {
+		super(cfg);
 	}
 
 	/*
@@ -65,7 +65,7 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 	 */
 	@Override
 	public List<ValidationError> innerValidate(DocumentHandler handler)
-	throws ValidationException {
+			throws ValidationException {
 		List<ValidationError> result = new ArrayList<ValidationError>(0);
 		PDDocument pdfDoc = handler.getDocument();
 		COSDocument cDoc = pdfDoc.getDocument();
@@ -131,7 +131,7 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 			} else {
 				// ---- The filter type is invalid
 				result.add(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
-				"Filter should be a Name or an Array"));
+						"Filter should be a Name or an Array"));
 			}
 		} 
 		//  else Filter entry is optional
@@ -201,7 +201,7 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 				break;
 			default:
 				maybe = false;
-			break;
+				break;
 			}
 		} while (search);
 		return false;
@@ -216,86 +216,94 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 		try {
 			ra = handler.getSource().getInputStream();
 			Integer offset = (Integer) handler.getDocument().getDocument()
-			.getXrefTable().get(new COSObjectKey(cObj));
+					.getXrefTable().get(new COSObjectKey(cObj));
 
 			// ---- go to the beginning of the object
 			long skipped = 0;
-			while (skipped != offset) {
-				long curSkip = ra.skip(offset - skipped);
-				if (curSkip < 0) {
-					throw new ValidationException(
-							"Unable to skip bytes in the PDFFile to check stream length");
-				}
-				skipped += curSkip;
-			}
-
-			// ---- go to the stream key word
-			if (readUntilStream(ra)) {
-				int c = ra.read();
-				if (c == '\r') {
-					ra.read();
-				} // else c is '\n' no more character to read
-
-
-				// ---- Here is the true beginning of the Stream Content.
-				// ---- Read the given length of bytes and check the 10 next bytes
-				// ---- to see if there are endstream.
-				byte[] buffer = new byte[1024];
-				int nbBytesToRead = length;
-
-				do {
-					int cr = 0;
-					if (nbBytesToRead > 1024) {
-						cr = ra.read(buffer, 0, 1024);
-					} else {
-						cr = ra.read(buffer, 0, nbBytesToRead);
+			if (offset != null) {
+				while (skipped != offset) {
+					long curSkip = ra.skip(offset - skipped);
+					if (curSkip < 0) {
+						throw new ValidationException(
+								"Unable to skip bytes in the PDFFile to check stream length");
 					}
-					if (cr == -1) {
-						result.add(new ValidationResult.ValidationError(
-								ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-								"Stream length is invalide"));
-						return;
-					} else {
-						nbBytesToRead = nbBytesToRead - cr;
-					}
-				} while (nbBytesToRead > 0);
-
-				int len = "endstream".length() + 2;
-				byte[] buffer2 = new byte[len];
-				for (int i = 0; i < len; ++i) {
-					buffer2[i] = (byte) ra.read();
+					skipped += curSkip;
 				}
 
-				// ---- check the content of 10 last characters
-				String endStream = new String(buffer2);
-				if (buffer2[0] == '\r' && buffer2[1] == '\n') {
-					if (!endStream.contains("endstream")) {
+				// ---- go to the stream key word
+				if (readUntilStream(ra)) {
+					int c = ra.read();
+					if (c == '\r') {
+						ra.read();
+					} // else c is '\n' no more character to read
+
+
+					// ---- Here is the true beginning of the Stream Content.
+					// ---- Read the given length of bytes and check the 10 next bytes
+					// ---- to see if there are endstream.
+					byte[] buffer = new byte[1024];
+					int nbBytesToRead = length;
+
+					do {
+						int cr = 0;
+						if (nbBytesToRead > 1024) {
+							cr = ra.read(buffer, 0, 1024);
+						} else {
+							cr = ra.read(buffer, 0, nbBytesToRead);
+						}
+						if (cr == -1) {
+							result.add(new ValidationResult.ValidationError(
+									ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+									"Stream length is invalide"));
+							return;
+						} else {
+							nbBytesToRead = nbBytesToRead - cr;
+						}
+					} while (nbBytesToRead > 0);
+
+					int len = "endstream".length() + 2;
+					byte[] buffer2 = new byte[len];
+					for (int i = 0; i < len; ++i) {
+						buffer2[i] = (byte) ra.read();
+					}
+
+					// ---- check the content of 10 last characters
+					String endStream = new String(buffer2);
+					if (buffer2[0] == '\r' && buffer2[1] == '\n') {
+						if (!endStream.contains("endstream")) {
+							result.add(new ValidationResult.ValidationError(
+									ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+									"Stream length is invalide"));
+						}
+					} else if (buffer2[0] == '\r' && buffer2[1] == 'e') {
+						if (!endStream.contains("endstream")) {
+							result.add(new ValidationResult.ValidationError(
+									ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+									"Stream length is invalide"));
+						}
+					} else if (buffer2[0] == '\n' && buffer2[1] == 'e') {
+						if (!endStream.contains("endstream")) {
+							result.add(new ValidationResult.ValidationError(
+									ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+									"Stream length is invalide"));
+						}
+					} else {
 						result.add(new ValidationResult.ValidationError(
 								ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
 								"Stream length is invalide"));
 					}
-				} else if (buffer2[0] == '\r' && buffer2[1] == 'e') {
-					if (!endStream.contains("endstream")) {
-						result.add(new ValidationResult.ValidationError(
-								ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-								"Stream length is invalide"));
-					}
-				} else if (buffer2[0] == '\n' && buffer2[1] == 'e') {
-					if (!endStream.contains("endstream")) {
-						result.add(new ValidationResult.ValidationError(
-								ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-								"Stream length is invalide"));
-					}
+
 				} else {
 					result.add(new ValidationResult.ValidationError(
 							ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
 							"Stream length is invalide"));
 				}
-
 			} else {
-				result.add(new ValidationResult.ValidationError(
-						ValidationConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-						"Stream length is invalide"));
+				/*
+				 * 
+				 * Offset is null. The stream isn't used, check is useless.
+				 * 
+				 */
 			}
 		} catch (IOException e) {
 			throw new ValidationException(
