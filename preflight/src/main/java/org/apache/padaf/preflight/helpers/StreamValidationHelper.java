@@ -303,6 +303,7 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 				 * 
 				 * Offset is null. The stream isn't used, check is useless.
 				 * 
+				 * TODO : Is it the truth? 
 				 */
 			}
 		} catch (IOException e) {
