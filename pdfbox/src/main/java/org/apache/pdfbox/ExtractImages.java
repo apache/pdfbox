@@ -27,6 +27,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 
 /**
@@ -64,7 +66,7 @@ public class ExtractImages
 
     private void extractImages( String[] args ) throws Exception
     {
-        if( args.length < 1 || args.length > 3 )
+        if( args.length < 1 || args.length > 4 )
         {
             usage();
         }
@@ -144,27 +146,26 @@ public class ExtractImages
                     {
                         PDPage page = (PDPage)iter.next();
                         PDResources resources = page.getResources();
-                        Map images = resources.getImages();
-                        if( images != null )
+                        // extract all XObjectImages which are part of the page resources
+                        processResources(resources, prefix, addKey);
+                        Map<String, PDXObject> xObjects = resources.getXObjects();
+                        if( xObjects != null )
                         {
-                            Iterator imageIter = images.keySet().iterator();
-                            while( imageIter.hasNext() )
+                            Iterator<String> xObjectsIter = xObjects.keySet().iterator();
+                            while( xObjectsIter.hasNext() )
                             {
-                                String key = (String)imageIter.next();
-                                PDXObjectImage image = (PDXObjectImage)images.get( key );
-                                String name = null;
-                                if (addKey) 
+                                String key = xObjectsIter.next();
+                                PDXObject xObject = xObjects.get( key );
+                                // an XObjectForm may contain further XObjectImages
+                                if (xObject instanceof PDXObjectForm) 
                                 {
-                                    name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                                    PDXObjectForm xObjectForm = (PDXObjectForm)xObject;
+                                    PDResources formResources = xObjectForm.getResources();
+                                    processResources(formResources, prefix, addKey);
                                 }
-                                else 
-                                {
-                                    name = getUniqueFileName( prefix, image.getSuffix() );
-                                }
-                                System.out.println( "Writing image:" + name );
-                                image.write2file( name );
                             }
                         }
+
                     }
                 }
                 finally
@@ -174,6 +175,31 @@ public class ExtractImages
                         document.close();
                     }
                 }
+            }
+        }
+    }
+
+    private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
+    {
+        Map<String, PDXObjectImage> images = resources.getImages();
+        if( images != null )
+        {
+            Iterator<String> imageIter = images.keySet().iterator();
+            while( imageIter.hasNext() )
+            {
+                String key = imageIter.next();
+                PDXObjectImage image = images.get( key );
+                String name = null;
+                if (addKey) 
+                {
+                    name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                }
+                else 
+                {
+                    name = getUniqueFileName( prefix, image.getSuffix() );
+                }
+                System.out.println( "Writing image:" + name );
+                image.write2file( name );
             }
         }
     }
