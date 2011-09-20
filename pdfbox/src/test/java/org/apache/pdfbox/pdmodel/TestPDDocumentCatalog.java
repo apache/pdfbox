@@ -86,4 +86,22 @@ public class TestPDDocumentCatalog extends TestCase {
                 doc.close();
         }
     }
+
+    /**
+     * Test case for
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-1088"
+     *   >PDFBOX-1088</a> - Class PDDocument Method getPageMap returns a ClassCastException
+     */
+    public void testPageMap() throws Exception {
+        PDDocument doc = null;
+        try {
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResource("test.unc.pdf"));
+            assertEquals(4, doc.getPageMap().size());
+            int pageNum = doc.getPageMap().get("14,0");
+            assertEquals(1, pageNum);
+        } finally {
+            if(doc != null)
+                doc.close();
+        }
+    }
 }
