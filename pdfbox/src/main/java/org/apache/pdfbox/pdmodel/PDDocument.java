@@ -154,12 +154,13 @@ public class PDDocument implements Pageable
     
     private void processListOfPageReferences(List<Object> pageNodes)
     {
-        for(int i=0; i < pageNodes.size(); ++i) 
+        int numberOfNodes = pageNodes.size();
+        for(int i=0; i < numberOfNodes; ++i) 
         {
             Object pageOrArray = pageNodes.get(i);
             if(pageOrArray instanceof PDPage)
             {
-                List pageArray = ((((PDPage)pageOrArray).getParent()).getKids());
+                COSArray pageArray = ((COSArrayList)(((PDPage)pageOrArray).getParent()).getKids()).toList();
                 parseCatalogObject((COSObject)pageArray.get(i));
             }
             else if(pageOrArray instanceof PDPageNode)
