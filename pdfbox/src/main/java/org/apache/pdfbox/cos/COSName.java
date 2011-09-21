@@ -243,6 +243,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName CENTER_WINDOW = new COSName( "CenterWindow" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName CF = new COSName( "CF" );
     /**
      * A common COSName value.
@@ -388,6 +392,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName DIFFERENCES = new COSName( "Differences" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DIRECTION = new COSName( "Direction" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DISPLAY_DOC_TITLE = new COSName( "DisplayDocTitle" );
 
     /**
      * A common COSName value.
@@ -408,6 +420,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName DR = new COSName( "DR" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DUPLEX = new COSName( "Duplex" );
     /**
      * A common COSName value.
      */
@@ -509,6 +525,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     */
     public static final COSName FIRST_CHAR = new COSName( "FirstChar" );
     /**
+     * A common COSName value.
+     */
+    public static final COSName FIT_WINDOW = new COSName( "FitWindow" );
+    /**
     * A common COSName value.
     */
     public static final COSName FL = new COSName( "FL" );
@@ -608,6 +628,18 @@ public final class COSName extends COSBase implements Comparable<COSName>
     * A common COSName value.
     */
     public static final COSName HEIGHT = new COSName( "Height" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName HIDE_MENUBAR = new COSName( "HideMenubar" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName HIDE_TOOLBAR = new COSName( "HideToolbar" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName HIDE_WINDOWUI = new COSName( "HideWindowUI" );
     /**
     * A common COSName value.
     */
@@ -817,6 +849,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName NON_FULL_SCREEN_PAGE_MODE = new COSName( "NonFullScreenPageMode" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName NUMS = new COSName( "Nums" );
 
     /**
@@ -945,6 +981,19 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName PREV = new COSName( "Prev" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName PRINT_AREA = new COSName( "PrintArea" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName PRINT_CLIP = new COSName( "PrintClip" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName PRINT_SCALING = new COSName( "PrintScaling" );
+    
     /** The COSName value for "ProcSet". */
     public static final COSName PROC_SET = new COSName( "ProcSet" );
 
@@ -1192,6 +1241,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName VERSION = new COSName( "Version" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName VIEW_AREA = new COSName("ViewArea");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName VIEW_CLIP = new COSName("ViewClip");
     /**
      * A common COSName value.
      */

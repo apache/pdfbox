@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.viewerpreferences;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -29,53 +30,172 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDViewerPreferences implements COSObjectable
 {
+    
     /**
      * From PDF Reference: "Neither document outline nor thumbnail images visible".
+     * 
+     * @deprecated use {@link NON_FULL_SCREEN_PAGE_MODE} instead
      */
     public static final String NON_FULL_SCREEN_PAGE_MODE_USE_NONE = "UseNone";
     /**
      * From PDF Reference: "Document outline visible".
+     * 
+     * @deprecated use {@link NON_FULL_SCREEN_PAGE_MODE} instead
      */
     public static final String NON_FULL_SCREEN_PAGE_MODE_USE_OUTLINES = "UseOutlines";
     /**
      * From PDF Reference: "Thumbnail images visible".
+     * 
+     * @deprecated use {@link NON_FULL_SCREEN_PAGE_MODE} instead
      */
     public static final String NON_FULL_SCREEN_PAGE_MODE_USE_THUMBS = "UseThumbs";
     /**
      * From PDF Reference: "Optional content group panel visible".
+     * 
+     * @deprecated use {@link NON_FULL_SCREEN_PAGE_MODE} instead
      */
     public static final String NON_FULL_SCREEN_PAGE_MODE_USE_OPTIONAL_CONTENT = "UseOC";
 
     /**
+     * Enumeration containing all valid values for NonFullScreenPageMode.
+     */
+    public static enum NON_FULL_SCREEN_PAGE_MODE
+    {
+        /**
+         *  From PDF Reference: "Neither document outline nor thumbnail images visible".
+         */
+        UseNone,
+        /**
+         * From PDF Reference: "Document outline visible".
+         */
+        UseOutlines, 
+        /**
+         * From PDF Reference: "Thumbnail images visible".
+         */
+        UseThumbs, 
+        /**
+         * From PDF Reference: "Optional content group panel visible".
+         */
+        UseOC
+    }
+
+    /**
      * Reading direction.
+     * 
+     * @deprecated use {@link READING_DIRECTION} instead
      */
     public static final String READING_DIRECTION_L2R = "L2R";
     /**
      * Reading direction.
+     * 
+     * @deprecated use {@link READING_DIRECTION} instead
      */
     public static final String READING_DIRECTION_R2L = "R2L";
+    /**
+     * Enumeration containing all valid values for ReadingDirection.
+     */
+    public static enum READING_DIRECTION
+    {
+        /**
+         * left to right.
+         */
+        L2R,
+        /**
+         * right to left.
+         */
+        R2L
+    }
 
     /**
      * Boundary constant.
+     * 
+     * @deprecated use {@link BOUNDARY} instead
      */
     public static final String BOUNDARY_MEDIA_BOX = "MediaBox";
     /**
      * Boundary constant.
+     * 
+     * @deprecated use {@link BOUNDARY} instead
      */
     public static final String BOUNDARY_CROP_BOX = "CropBox";
     /**
      * Boundary constant.
+     * 
+     * @deprecated use {@link BOUNDARY} instead
      */
     public static final String BOUNDARY_BLEED_BOX = "BleedBox";
     /**
      * Boundary constant.
+     * 
+     * @deprecated use {@link BOUNDARY} instead
      */
     public static final String BOUNDARY_TRIM_BOX = "TrimBox";
     /**
      * Boundary constant.
+     * 
+     * @deprecated use {@link BOUNDARY} instead
      */
     public static final String BOUNDARY_ART_BOX = "ArtBox";
+    /**
+     * Enumeration containing all valid values for boundaries.
+     */
+    public static enum BOUNDARY
+    {
+        /**
+         * use media box as boundary.
+         */
+        MediaBox, 
+        /**
+         * use crop box as boundary.
+         */
+        CropBox, 
+        /**
+         * use bleed box as boundary.
+         */
+        BleedBox, 
+        /**
+         * use trim box as boundary.
+         */
+        TrimBox, 
+        /**
+         * use art box as boundary.
+         */
+        ArtBox
+    }
 
+    /**
+     * Enumeration containing all valid values for duplex.
+     */
+    public static enum DUPLEX
+    {
+        /**
+         * simplex printing.
+         */
+        Simplex,
+        /**
+         * duplex printing, flip at short edge.
+         */
+        DuplexFlipShortEdge, 
+        /**
+         * duplex printing, flip at long edge.
+         */
+        DuplexFlipLongEdge
+    }
+
+    /**
+     * Enumeration containing all valid values for printscaling.
+     */
+    public static enum PRINT_SCALING
+    {
+        /**
+         * no scaling.
+         */
+        None, 
+        /**
+         * use app default.
+         */
+        AppDefault
+    }
 
     private COSDictionary prefs;
 
@@ -116,7 +236,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean hideToolbar()
     {
-        return prefs.getBoolean( "HideToolbar", false );
+        return prefs.getBoolean( COSName.HIDE_TOOLBAR, false );
     }
 
     /**
@@ -126,7 +246,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setHideToolbar( boolean value )
     {
-        prefs.setBoolean( "HideToolbar", value );
+        prefs.setBoolean( COSName.HIDE_TOOLBAR, value );
     }
 
     /**
@@ -136,7 +256,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean hideMenubar()
     {
-        return prefs.getBoolean( "HideMenubar", false );
+        return prefs.getBoolean( COSName.HIDE_MENUBAR, false );
     }
 
     /**
@@ -146,7 +266,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setHideMenubar( boolean value )
     {
-        prefs.setBoolean( "HideMenubar", value );
+        prefs.setBoolean( COSName.HIDE_MENUBAR, value );
     }
 
     /**
@@ -156,7 +276,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean hideWindowUI()
     {
-        return prefs.getBoolean( "HideWindowUI", false );
+        return prefs.getBoolean( COSName.HIDE_WINDOWUI, false );
     }
 
     /**
@@ -166,7 +286,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setHideWindowUI( boolean value )
     {
-        prefs.setBoolean( "HideWindowUI", value );
+        prefs.setBoolean( COSName.HIDE_WINDOWUI, value );
     }
 
     /**
@@ -176,7 +296,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean fitWindow()
     {
-        return prefs.getBoolean( "FitWindow", false );
+        return prefs.getBoolean( COSName.FIT_WINDOW, false );
     }
 
     /**
@@ -186,7 +306,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setFitWindow( boolean value )
     {
-        prefs.setBoolean( "FitWindow", value );
+        prefs.setBoolean( COSName.FIT_WINDOW, value );
     }
 
     /**
@@ -196,7 +316,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean centerWindow()
     {
-        return prefs.getBoolean( "CenterWindow", false );
+        return prefs.getBoolean( COSName.CENTER_WINDOW, false );
     }
 
     /**
@@ -206,7 +326,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setCenterWindow( boolean value )
     {
-        prefs.setBoolean( "CenterWindow", value );
+        prefs.setBoolean( COSName.CENTER_WINDOW, value );
     }
 
     /**
@@ -216,7 +336,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public boolean displayDocTitle()
     {
-        return prefs.getBoolean( "DisplayDocTitle", false );
+        return prefs.getBoolean( COSName.DISPLAY_DOC_TITLE, false );
     }
 
     /**
@@ -226,7 +346,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setDisplayDocTitle( boolean value )
     {
-        prefs.setBoolean( "DisplayDocTitle", value );
+        prefs.setBoolean( COSName.DISPLAY_DOC_TITLE, value );
     }
 
     /**
@@ -236,7 +356,8 @@ public class PDViewerPreferences implements COSObjectable
      */
     public String getNonFullScreenPageMode()
     {
-        return prefs.getNameAsString( "NonFullScreenPageMode", NON_FULL_SCREEN_PAGE_MODE_USE_NONE);
+        return prefs.getNameAsString( COSName.NON_FULL_SCREEN_PAGE_MODE, 
+                NON_FULL_SCREEN_PAGE_MODE.UseNone.toString());
     }
 
     /**
@@ -244,9 +365,21 @@ public class PDViewerPreferences implements COSObjectable
      *
      * @param value Set the non full screen page mode preference.
      */
+    public void setNonFullScreenPageMode( NON_FULL_SCREEN_PAGE_MODE value )
+    {
+        prefs.setName( COSName.NON_FULL_SCREEN_PAGE_MODE, value.toString() );
+    }
+
+    /**
+     * Set the non full screen page mode preference.
+     *
+     * @param value Set the non full screen page mode preference.
+     * 
+     * @deprecated
+     */
     public void setNonFullScreenPageMode( String value )
     {
-        prefs.setName( "NonFullScreenPageMode", value );
+        prefs.setName( COSName.NON_FULL_SCREEN_PAGE_MODE, value );
     }
 
     /**
@@ -256,7 +389,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public String getReadingDirection()
     {
-        return prefs.getNameAsString( "Direction", READING_DIRECTION_L2R);
+        return prefs.getNameAsString( COSName.DIRECTION, READING_DIRECTION.L2R.toString());
     }
 
     /**
@@ -264,88 +397,188 @@ public class PDViewerPreferences implements COSObjectable
      *
      * @param value Set the reading direction preference.
      */
-    public void setReadingDirection( String value )
+    public void setReadingDirection( READING_DIRECTION value )
     {
-        prefs.setName( "Direction", value );
+        prefs.setName( COSName.DIRECTION, value.toString() );
     }
 
     /**
-     * Get the ViewArea preference.  See BOUNDARY_XXX constants.
+     * Set the reading direction preference.
+     *
+     * @param value Set the reading direction preference.
+     * 
+     * @deprecated
+     */
+    public void setReadingDirection( String value )
+    {
+        prefs.setName( COSName.DIRECTION, value.toString() );
+    }
+
+    /**
+     * Get the ViewArea preference.  See BOUNDARY enumeration.
      *
      * @return the ViewArea preference.
      */
     public String getViewArea()
     {
-        return prefs.getNameAsString( "ViewArea", BOUNDARY_CROP_BOX);
+        return prefs.getNameAsString( COSName.VIEW_AREA, BOUNDARY.CropBox.toString());
     }
 
     /**
      * Set the ViewArea preference.  See BOUNDARY_XXX constants.
      *
      * @param value Set the ViewArea preference.
+     * 
+     * @deprecated
      */
     public void setViewArea( String value )
     {
-        prefs.setName( "ViewArea", value );
+        prefs.setName( COSName.VIEW_AREA, value );
     }
 
     /**
-     * Get the ViewClip preference.  See BOUNDARY_XXX constants.
+     * Set the ViewArea preference.  See BOUNDARY enumeration.
+     *
+     * @param value Set the ViewArea preference.
+     */
+    public void setViewArea( BOUNDARY value )
+    {
+        prefs.setName( COSName.VIEW_AREA, value.toString() );
+    }
+
+    /**
+     * Get the ViewClip preference.  See BOUNDARY enumeration.
      *
      * @return the ViewClip preference.
      */
     public String getViewClip()
     {
-        return prefs.getNameAsString( "ViewClip", BOUNDARY_CROP_BOX);
+        return prefs.getNameAsString( COSName.VIEW_CLIP, BOUNDARY.CropBox.toString());
+    }
+
+    /**
+     * Set the ViewClip preference.  See BOUNDARY enumeration.
+     *
+     * @param value Set the ViewClip preference.
+     */
+    public void setViewClip( BOUNDARY value )
+    {
+        prefs.setName( COSName.VIEW_CLIP, value.toString() );
     }
 
     /**
      * Set the ViewClip preference.  See BOUNDARY_XXX constants.
      *
      * @param value Set the ViewClip preference.
+     * 
+     * @deprecated
      */
     public void setViewClip( String value )
     {
-        prefs.setName( "ViewClip", value );
+        prefs.setName( COSName.VIEW_CLIP, value );
     }
 
     /**
-     * Get the PrintArea preference.  See BOUNDARY_XXX constants.
+     * Get the PrintArea preference.  See BOUNDARY enumeration.
      *
      * @return the PrintArea preference.
      */
     public String getPrintArea()
     {
-        return prefs.getNameAsString( "PrintArea", BOUNDARY_CROP_BOX);
+        return prefs.getNameAsString( COSName.PRINT_AREA, BOUNDARY.CropBox.toString());
     }
 
     /**
      * Set the PrintArea preference.  See BOUNDARY_XXX constants.
      *
      * @param value Set the PrintArea preference.
+     * 
+     * @deprecated
      */
     public void setPrintArea( String value )
     {
-        prefs.setName( "PrintArea", value );
+        prefs.setName( COSName.PRINT_AREA, value );
     }
 
     /**
-     * Get the PrintClip preference.  See BOUNDARY_XXX constants.
+     * Set the PrintArea preference.  See BOUNDARY enumeration.
+     *
+     * @param value Set the PrintArea preference.
+     */
+    public void setPrintArea( BOUNDARY value )
+    {
+        prefs.setName( COSName.PRINT_AREA, value.toString() );
+    }
+
+    /**
+     * Get the PrintClip preference.  See BOUNDARY enumeration.
      *
      * @return the PrintClip preference.
      */
     public String getPrintClip()
     {
-        return prefs.getNameAsString( "PrintClip", BOUNDARY_CROP_BOX);
+        return prefs.getNameAsString( COSName.PRINT_CLIP, BOUNDARY.CropBox.toString());
     }
 
     /**
      * Set the PrintClip preference.  See BOUNDARY_XXX constants.
      *
      * @param value Set the PrintClip preference.
+     * 
+     * @deprecated
      */
     public void setPrintClip( String value )
     {
-        prefs.setName( "PrintClip", value );
+        prefs.setName( COSName.PRINT_CLIP, value );
+    }
+    
+    /**
+     * Set the PrintClip preference.  See BOUNDARY enumeration.
+     *
+     * @param value Set the PrintClip preference.
+     */
+    public void setPrintClip( BOUNDARY value )
+    {
+        prefs.setName( COSName.PRINT_CLIP, value.toString() );
+    }
+    
+    /**
+     * Get the Duplex preference.  See DUPLEX enumeration.
+     *
+     * @return the Duplex preference.
+     */
+    public String getDuplex()
+    {
+        return prefs.getNameAsString( COSName.DUPLEX );
+    }
+
+    /**
+     * Set the Duplex preference.  See DUPLEX enumeration.
+     *
+     * @param value Set the Duplex preference.
+     */
+    public void setDuplex( DUPLEX value )
+    {
+        prefs.setName( COSName.DUPLEX, value.toString() );
+    }
+    
+    /**
+     * Get the PrintScaling preference.  See PRINT_SCALING enumeration.
+     *
+     * @return the PrintScaling preference.
+     */
+    public String getPrintScaling()
+    {
+        return prefs.getNameAsString( COSName.PRINT_SCALING , PRINT_SCALING.AppDefault.toString());
+    }
+
+    /**
+     * Set the PrintScaling preference.  See PRINT_SCALING enumeration.
+     *
+     * @param value Set the PrintScaling preference.
+     */
+    public void setPrintScaling( PRINT_SCALING value )
+    {
+        prefs.setName( COSName.PRINT_SCALING, value.toString() );
     }
 }
