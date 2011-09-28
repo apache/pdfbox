@@ -33,13 +33,17 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 
 
 
@@ -54,7 +58,7 @@ public class PDPixelMap extends PDXObjectImage
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDPixelMap.class);
+    private static final Log LOG = LogFactory.getLog(PDPixelMap.class);
 
     private BufferedImage image = null;
 
@@ -137,14 +141,14 @@ public class PDPixelMap extends PDXObjectImage
             byte[] array = getPDStream().getByteArray();
             if (array.length == 0)
             {
-                log.error("Something went wrong ... the pixelmap doesn't contain any data.");
+                LOG.error("Something went wrong ... the pixelmap doesn't contain any data.");
                 return null;
             }
             // Get the ColorModel right
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
-                log.error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
+                LOG.error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
                 return null;
             }
 
@@ -192,6 +196,50 @@ public class PDPixelMap extends PDXObjectImage
                         cm = new IndexColorModel(bpc, size+1, r, g, b);
                     }
                 }
+            }
+            else if (colorspace instanceof PDSeparation)
+            {
+                PDSeparation csSeparation = (PDSeparation)colorspace;
+                int numberOfComponents = csSeparation.getAlternateColorSpace().getNumberOfComponents();
+                PDFunction tintTransformFunc = csSeparation.getTintTransform();
+                COSArray decode = getDecode();
+                // we have to invert the tint-values,
+                // if the Decode array exists and consists of (1,0)
+                boolean invert = decode != null && decode.getInt(0) == 1;
+                // TODO add interpolation for other decode values then 1,0
+                int maxValue = (int)Math.pow(2,bpc) - 1;
+                // destination array
+                byte[] mappedData = new byte[width*height*numberOfComponents];
+                int rowLength = width*numberOfComponents;
+                COSArray input = new COSArray();
+                input.add(COSInteger.ZERO);
+                for ( int i = 0; i < height; i++ )
+                {
+                    int rowOffset = i * rowLength; 
+                    for (int j = 0; j < width; j++)
+                    {
+                        // scale tint values to a range of 0...1
+                        int value = (array[ i * width + j ] + 256) % 256;
+                        if (invert)
+                        {
+                            input.set(0, 1-(value / maxValue) );
+                        }
+                        else
+                        {
+                            input.set(0, value / maxValue);
+                        }
+                        COSArray mappedColor = tintTransformFunc.eval(input);
+                        int columnOffset = j * numberOfComponents;
+                        for ( int k = 0; k < numberOfComponents; k++ ) 
+                        {
+                            // redo scaling for every single color value 
+                            float mappedValue = ((COSNumber)mappedColor.get(k)).floatValue();
+                            mappedData[ rowOffset + columnOffset + k] = (byte)(mappedValue * maxValue);
+                        }
+                    }
+                }
+                array = mappedData;
+                cm = colorspace.createColorModel( bpc );
             }
             else if (bpc == 1)
             {
@@ -247,7 +295,7 @@ public class PDPixelMap extends PDXObjectImage
                 }
             }
 
-            log.debug("ColorModel: " + cm.toString());
+            LOG.debug("ColorModel: " + cm.toString());
             WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
             DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
@@ -277,7 +325,7 @@ public class PDPixelMap extends PDXObjectImage
         }
         catch (Exception exception)
         {
-            log.error(exception, exception);
+            LOG.error(exception, exception);
             //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
             //Returning the NULL falls through to Phillip Koch's TODO section.
             return null;
