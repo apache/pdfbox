@@ -46,9 +46,9 @@ public class FlateFilter implements Filter
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(FlateFilter.class);
+    private static final Log LOG = LogFactory.getLog(FlateFilter.class);
 
-    private static final int    BUFFER_SIZE    = 2048;
+    private static final int BUFFER_SIZE = 16348;
 
     /**
      * {@inheritDoc}
@@ -70,11 +70,7 @@ public class FlateFilter implements Filter
                 dict = (COSDictionary)paramArray.getObject( filterIndex );
             }
         }
-        else if( baseObj == null )
-        {
-            //do nothing
-        }
-        else
+        else if( baseObj != null )
         {
             throw new IOException( "Error: Expected COSArray or COSDictionary and not "
                     + baseObj.getClass().getName() );
@@ -94,7 +90,7 @@ public class FlateFilter implements Filter
             if(predictor > 1)
             {
                 colors = dict.getInt(COSName.COLORS);
-                bitsPerPixel = options.getInt(COSName.BITS_PER_COMPONENT);
+                bitsPerPixel = dict.getInt(COSName.BITS_PER_COMPONENT);
                 columns = dict.getInt(COSName.COLUMNS);
             }
         }
@@ -124,17 +120,17 @@ public class FlateFilter implements Filter
                     catch (OutOfMemoryError exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        log.error("Stop reading corrupt stream");
+                        LOG.error("Stop reading corrupt stream");
                     }
                     catch (ZipException exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        log.error("Stop reading corrupt stream");
+                        LOG.error("Stop reading corrupt stream");
                     }
                     catch (EOFException exception)
                     {
                         // if the stream is corrupt an OutOfMemoryError may occur
-                        log.error("Stop reading corrupt stream");
+                        LOG.error("Stop reading corrupt stream");
                     }
                 }
                 else
