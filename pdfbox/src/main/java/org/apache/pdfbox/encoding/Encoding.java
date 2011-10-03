@@ -44,7 +44,7 @@ public abstract class Encoding implements COSObjectable
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(Encoding.class);
+    private static final Log LOG = LogFactory.getLog(Encoding.class);
 
     /** Identifies a non-mapped character. */
     public static final String NOTDEF = ".notdef";
@@ -125,29 +125,30 @@ public abstract class Encoding implements COSObjectable
                     int semicolonIndex = line.indexOf( ';' );
                     if( semicolonIndex >= 0 )
                     {
+                        String unicodeValue = null;
                         try
                         {
                             String characterName = line.substring( 0, semicolonIndex );
-                            String unicodeValue = line.substring( semicolonIndex+1, line.length() );
+                            unicodeValue = line.substring( semicolonIndex+1, line.length() );
                             StringTokenizer tokenizer = new StringTokenizer( unicodeValue, " ", false );
-                            String value = "";
+                            StringBuilder value = new StringBuilder();
                             while(tokenizer.hasMoreTokens())
                             {
                                 int characterCode = Integer.parseInt( tokenizer.nextToken(), 16 );
-                                value += (char)characterCode;
+                                value.append((char)characterCode);
                             }
                             if (NAME_TO_CHARACTER.containsKey(characterName))
                             {
-                                log.warn("duplicate value for characterName="+characterName+","+value);
+                                LOG.warn("duplicate value for characterName="+characterName+","+value);
                             }
                             else
                             {
-                                NAME_TO_CHARACTER.put( characterName, value );
+                                NAME_TO_CHARACTER.put( characterName, value.toString() );
                             }
                         }
                         catch( NumberFormatException nfe )
                         {
-                            nfe.printStackTrace();
+                            LOG.error("malformed unicode value "+ unicodeValue, nfe);
                         }
                     }
                 }
@@ -155,7 +156,7 @@ public abstract class Encoding implements COSObjectable
         }
         catch( IOException io )
         {
-            io.printStackTrace();
+            LOG.error("error while reading the glyph list.", io);
         }
         finally
         {
@@ -167,7 +168,7 @@ public abstract class Encoding implements COSObjectable
                 }
                 catch( IOException e )
                 {
-                    e.printStackTrace();
+                    LOG.error("error when closing the glyph list.", e);
                 }
 
             }
@@ -305,9 +306,9 @@ public abstract class Encoding implements COSObjectable
                     {
                         int characterCode = Integer.parseInt( name.substring( chPos, chPos + 4), 16 );
 
-                        if ( ( characterCode > 0xD7FF ) && ( characterCode < 0xE000 ) )
+                        if ( characterCode > 0xD7FF && characterCode < 0xE000 )
                         {
-                            log.warn( "Unicode character name with not allowed code area: " + name );
+                            LOG.warn( "Unicode character name with not allowed code area: " + name );
                         }
                         else
                         {
@@ -319,7 +320,29 @@ public abstract class Encoding implements COSObjectable
                 }
                 catch (NumberFormatException nfe)
                 {
-                    log.warn( "Not a number in Unicode character name: " + name );
+                    LOG.warn( "Not a number in Unicode character name: " + name );
+                    character = name;
+                }
+            }
+            // test for an alternate Unicode name representation 
+            else if ( name.startsWith( "u" ) )
+            {
+                try
+                {
+                    int characterCode = Integer.parseInt( name.substring( 1 ), 16 );
+                    if ( characterCode > 0xD7FF && characterCode < 0xE000 )
+                    {
+                        LOG.warn( "Unicode character name with not allowed code area: " + name );
+                    }
+                    else
+                    {
+                        character = String.valueOf((char)characterCode);
+                        NAME_TO_CHARACTER.put(name, character);
+                    }
+                }
+                catch (NumberFormatException nfe)
+                {
+                    LOG.warn( "Not a number in Unicode character name: " + name );
                     character = name;
                 }
             }
