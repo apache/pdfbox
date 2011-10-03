@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 
@@ -47,7 +47,15 @@ public class PDDeviceN extends PDColorSpace
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDDeviceN.class);
+    private static final Log LOG = LogFactory.getLog(PDDeviceN.class);
+
+    private static final int COLORANT_NAMES = 1;
+    
+    private static final int ALTERNATE_CS = 2;
+
+    private static final int TINT_TRANSFORM = 3;
+
+    private static final int DEVICEN_ATTRIBUTES = 4;
 
     /**
      * The name of this color space.
@@ -115,12 +123,12 @@ public class PDDeviceN extends PDColorSpace
         }
         catch (IOException ioexception)
         {
-            log.error(ioexception, ioexception);
+            LOG.error(ioexception, ioexception);
             throw ioexception;
         }
         catch (Exception exception)
         {
-            log.error(exception, exception);
+            LOG.error(exception, exception);
             throw new IOException("Failed to Create ColorSpace");
         }
     }
@@ -136,7 +144,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        log.info("About to create ColorModel for " + getAlternateColorSpace().toString());
+        LOG.info("About to create ColorModel for " + getAlternateColorSpace().toString());
         return getAlternateColorSpace().createColorModel(bpc);
     }
 
@@ -147,7 +155,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public List<COSBase> getColorantNames()
     {
-        COSArray names = (COSArray)array.getObject( 1 );
+        COSArray names = (COSArray)array.getObject( COLORANT_NAMES );
         return COSArrayList.convertCOSNameCOSArrayToList( names );
     }
 
@@ -159,7 +167,7 @@ public class PDDeviceN extends PDColorSpace
     public void setColorantNames( List<COSBase> names )
     {
         COSArray namesArray = COSArrayList.convertStringListToCOSNameCOSArray( names );
-        array.set( 1, namesArray );
+        array.set( COLORANT_NAMES, namesArray );
     }
 
     /**
@@ -171,7 +179,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDColorSpace getAlternateColorSpace() throws IOException
     {
-        COSBase alternate = array.getObject( 2 );
+        COSBase alternate = array.getObject( ALTERNATE_CS );
         return PDColorSpaceFactory.createColorSpace( alternate );
     }
 
@@ -187,7 +195,7 @@ public class PDDeviceN extends PDColorSpace
         {
             space = cs.getCOSObject();
         }
-        array.set( 2, space );
+        array.set( ALTERNATE_CS, space );
     }
 
     /**
@@ -199,7 +207,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDFunction getTintTransform() throws IOException
     {
-        return  PDFunction.create( array.getObject( 3 ) );
+        return  PDFunction.create( array.getObject( TINT_TRANSFORM ) );
     }
 
     /**
@@ -209,7 +217,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public void setTintTransform( PDFunction tint )
     {
-        array.set( 3, tint );
+        array.set( TINT_TRANSFORM, tint );
     }
 
     /**
@@ -221,7 +229,7 @@ public class PDDeviceN extends PDColorSpace
     public PDDeviceNAttributes getAttributes()
     {
         PDDeviceNAttributes retval = null;
-        if( array.size() <5)
+        if( array.size() <= DEVICEN_ATTRIBUTES )
         {
             retval = new PDDeviceNAttributes();
             setAttributes( retval );
@@ -239,21 +247,22 @@ public class PDDeviceN extends PDColorSpace
     {
         if( attributes == null )
         {
-            array.remove( 4 );
+            array.remove( DEVICEN_ATTRIBUTES );
         }
         else
         {
             //make sure array is large enough
-            while( array.size() < 5 )
+            while( array.size() <= DEVICEN_ATTRIBUTES )
             {
                 array.add( COSNull.NULL );
             }
-            array.set( 4, attributes.getCOSDictionary() );
+            array.set( DEVICEN_ATTRIBUTES, attributes.getCOSDictionary() );
         }
     }
     
     /**
      * Returns the components of the color in the alternate colorspace for the given tint value.
+     * @param tintValues a list containing the tint values
      * @return COSArray with the color components
      * @throws IOException If the tint function is not supported
      */
@@ -262,18 +271,21 @@ public class PDDeviceN extends PDColorSpace
         PDFunction tintTransform = getTintTransform();
         if(tintTransform instanceof PDFunctionType4)
         {
-            log.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
+            LOG.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
                     + " in "+getClass().getName()+".getColorValues()"
                     + " using color black instead.");
             int numberOfComponents = getAlternateColorSpace().getNumberOfComponents();
             // To get black as color:
-            // 0.0f is used for the single value(s) if the colorspace is gray or RGB based
-            // 1.0f is used for the single value if the colorspace is CMYK based
-            float colorValue = numberOfComponents == 4 ? 1.0f : 0.0f;
+            // 0 is used for the single value(s) if the colorspace is gray or RGB based
             COSArray retval = new COSArray();
-            for (int i=0;i<numberOfComponents;i++) 
+            for ( int i=0; i < numberOfComponents; i++ ) 
             {
-                retval.add(new COSFloat(colorValue));
+                retval.add(COSInteger.ZERO);
+            }
+            // 1 is used as forth value if the colorspace is CMYK based
+            if (numberOfComponents == PDDeviceCMYK.INSTANCE.getNumberOfComponents())
+            {
+                retval.set(3, COSInteger.ONE);
             }
             return retval;
         }
