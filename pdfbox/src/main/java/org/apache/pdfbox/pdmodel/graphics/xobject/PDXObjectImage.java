@@ -32,8 +32,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 
 /**
  * The prototype for all PDImages.
@@ -48,7 +48,7 @@ public abstract class PDXObjectImage extends PDXObject
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDXObjectImage.class);
+    private static final Log LOG = LogFactory.getLog(PDXObjectImage.class);
 
     /**
      * The XObject subtype.
@@ -60,10 +60,10 @@ public abstract class PDXObjectImage extends PDXObject
      */
     private String suffix;
 
-    private PDGraphicsState graphicsState;
-
+    private PDColorState stencilColor;
+    
     /**
-     * Standard constuctor.
+     * Standard constructor.
      *
      * @param imageStream The XObject is passed as a COSStream.
      * @param fileSuffix The file suffix, jpg/png.
@@ -149,13 +149,12 @@ public abstract class PDXObjectImage extends PDXObject
         }
     }
 
-        /**
+    /**
      * Writes the image to a file with the filename + an appropriate
-suffix, like "Image.jpg".
+     * suffix, like "Image.jpg".
      * The suffix is automatically set by the
      * @param file the file
-     * @throws IOException When somethings wrong with the corresponding
-file.
+     * @throws IOException When somethings wrong with the corresponding file.
      */
     public void write2file(File file) throws IOException
     {
@@ -223,7 +222,7 @@ file.
      */
     public int getBitsPerComponent()
     {
-        return getCOSStream().getInt( new String[] { "BPC", "BitsPerComponent"}, -1 );
+        return getCOSStream().getInt( COSName.BITS_PER_COMPONENT, COSName.BPC, -1 );
     }
 
     /**
@@ -233,7 +232,7 @@ file.
      */
     public void setBitsPerComponent( int bpc )
     {
-        getCOSStream().setInt( "BitsPerComponent", bpc );
+        getCOSStream().setInt( COSName.BITS_PER_COMPONENT, bpc );
     }
 
     /**
@@ -245,49 +244,38 @@ file.
      */
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cs = getCOSStream().getDictionaryObject( new String[]{ "CS", "ColorSpace" } );
+        COSBase cs = getCOSStream().getDictionaryObject( COSName.COLORSPACE, COSName.CS );
         PDColorSpace retval = null;
         if( cs != null )
         {
             retval = PDColorSpaceFactory.createColorSpace( cs );
             if (retval == null)
-                {
-                    log.info("About to return NULL from createColorSpace branch");
-                }
+            {
+                LOG.info("About to return NULL from createColorSpace branch");
+            }
         }
         else
         {
             //there are some cases where the 'required' CS value is not present
             //but we know that it will be grayscale for a CCITT filter.
-            COSBase filter = getCOSStream().getDictionaryObject( "Filter" );
+            COSBase filter = getCOSStream().getDictionaryObject( COSName.FILTER );
             if( COSName.CCITTFAX_DECODE.equals( filter ) ||
                 COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-                if (retval == null)
-                    {
-                        log.info("About to return NULL from CCITT branch");
-                    }
             }
             else if( COSName.JBIG2_DECODE.equals( filter ) )
             {
                 retval = new PDDeviceGray();
-                if (retval == null)
-                {
-                    log.info("About to return NULL from JBIG2 branch");
-                }
             }
             else if (getImageMask())
             {
-                //Stencil Mask branch.  Section 4.8.5 of the reference, page 350 in version 1.7.
-                retval = graphicsState.getNonStrokingColor().getColorSpace();
-                log.info("Stencil Mask branch returning " + retval.toString());
-                //throw new IOException("Trace the Stencil Mask!!!!");
-
+                // image is a stencil mask -> use DeviceGray
+                retval = new PDDeviceGray();
             }
             else
             {
-                log.info("About to return NULL from unhandled branch."
+                LOG.info("About to return NULL from unhandled branch."
                         + " filter = " + filter);
             }
         }
@@ -330,13 +318,23 @@ file.
     }
 
     /**
-     * Allow the Invoke operator to set the graphics state so that,
-     * in the case of an Image Mask, we can get to the current nonstroking colorspace.
-     * @param newGS The new graphicstate
+     * Set the current non stroking colorstate. It'll be used to create stencil masked images.
+     * 
+     * @param stencilColorValue The non stroking colorstate
      */
-    public void setGraphicsState(PDGraphicsState newGS)
+    public void setStencilColor(PDColorState stencilColorValue)
     {
-        graphicsState = newGS;
+        stencilColor = stencilColorValue;
+    }
+
+    /**
+     * Returns the non stroking colorstate to be used to create stencil makes images.
+     * 
+     * @return The current non stroking colorstate.
+     */
+    public PDColorState getStencilColor()
+    {
+        return stencilColor;
     }
 
     /**

@@ -50,7 +50,7 @@ public class Invoke extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(Invoke.class);
+    private static final Log LOG = LogFactory.getLog(Invoke.class);
 
     /**
      * process : Do : Paint the specified XObject (section 4.7).
@@ -63,35 +63,42 @@ public class Invoke extends OperatorProcessor
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();
         COSName objectName = (COSName)arguments.get( 0 );
-        Map xobjects = drawer.getResources().getXObjects();
+        Map<String, PDXObject> xobjects = drawer.getResources().getXObjects();
         PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
         if ( xobject == null )
         {
-            log.warn("Can't find the XObject for '"+objectName.getName()+"'");
+            LOG.warn("Can't find the XObject for '"+objectName.getName()+"'");
         }
         else if( xobject instanceof PDXObjectImage )
         {
             PDXObjectImage image = (PDXObjectImage)xobject;
             try
             {
-                image.setGraphicsState(drawer.getGraphicsState());
+                if (image.getImageMask())
+                {
+                    // set the current non stroking colorstate, so that it can
+                    // be used to create a stencil masked image
+                    image.setStencilColor(drawer.getGraphicsState().getNonStrokingColor());
+                }
                 BufferedImage awtImage = image.getRGBImage();
                 if (awtImage == null) 
                 {
-                    log.warn("getRGBImage returned NULL");
+                    LOG.warn("getRGBImage returned NULL");
                     return;//TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
                 double pageHeight = drawer.getPageSize().getHeight();
 
-                log.debug("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
+                LOG.debug("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
         
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
                 float yScaling = ctm.getYScale();
                 float angle = (float)Math.acos(ctm.getValue(0, 0)/ctm.getXScale());
                 if (ctm.getValue(0, 1) < 0 && ctm.getValue(1, 0) > 0)
+                {
                     angle = (-1)*angle;
+                }
                 ctm.setValue(2, 1, (float)(pageHeight - ctm.getYPosition() - Math.cos(angle)*yScaling));
                 ctm.setValue(2, 0, (float)(ctm.getXPosition() - Math.sin(angle)*yScaling));
                 // because of the moved 0,0-reference, we have to shear in the opposite direction
@@ -104,7 +111,7 @@ public class Invoke extends OperatorProcessor
             catch( Exception e )
             {
                 e.printStackTrace();
-                log.error(e, e);
+                LOG.error(e, e);
             }
         }
         else if(xobject instanceof PDXObjectForm)

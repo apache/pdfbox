@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -317,9 +319,21 @@ public class PDPixelMap extends PDXObjectImage
 
                 return rgbImage;
             }
+            else if (getImageMask())
+            {
+                BufferedImage stencilMask = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
+                graphics.setColor(getStencilColor().getJavaColor());
+                graphics.fillRect(0, 0, width, height);
+                // assume default values ([0,1]) for the DecodeArray
+                // TODO DecodeArray == [1,0]
+                graphics.setComposite(AlphaComposite.DstIn);
+                graphics.drawImage(image, null, 0, 0);
+                return stencilMask;
+            }
             else
             {
-                // But if there is no soft mask, use the unaltered image.
+                // if there is no mask, use the unaltered image.
                 return image;
             }
         }
