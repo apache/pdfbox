@@ -39,7 +39,7 @@ public class PDColorState implements Cloneable
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDColorState.class);
+    private static final Log LOG = LogFactory.getLog(PDColorState.class);
 
     /**
      * The default color that can be set to replace all colors in
@@ -67,7 +67,8 @@ public class PDColorState implements Cloneable
      * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-511">PDFBOX-511</a>
      * @since Apache PDFBox 0.8.1
      */
-    public static void setIccOverrideColor(Color color) {
+    public static void setIccOverrideColor(Color color) 
+    {
         iccOverrideColor = color;
     }
 
@@ -111,8 +112,10 @@ public class PDColorState implements Cloneable
      * @return current Java AWT color
      * @throws IOException if the current color can not be created
      */
-    public Color getJavaColor() throws IOException {
-        if (color == null && colorSpaceValue.size() > 0) {
+    public Color getJavaColor() throws IOException
+    {
+        if (color == null && colorSpaceValue.size() > 0) 
+        {
             color = createColor();
         }
         return color;
@@ -158,7 +161,7 @@ public class PDColorState implements Cloneable
                 ColorSpace cs = colorSpace.getJavaColorSpace();
                 if (cs instanceof ICC_ColorSpace && override != null)
                 {
-                    log.warn(
+                    LOG.warn(
                             "Using an ICC override color to avoid a potential"
                             + " JVM crash (see PDFBOX-511)");
                     return override;
@@ -193,18 +196,18 @@ public class PDColorState implements Cloneable
                     case 4: //CMYK
                         //do a rough conversion to RGB as I'm not getting the CMYK to work.
                         //http://www.codeproject.com/KB/applications/xcmyk.aspx
-                        float R, G, B, K;
-                        K = components[3];
+                        float r, g, b, k;
+                        k = components[3];
 
-                        R = components[0] * (1f - K) + K;
-                        G = components[1] * (1f - K) + K;
-                        B = components[2] * (1f - K) + K;
+                        r = components[0] * (1f - k) + k;
+                        g = components[1] * (1f - k) + k;
+                        b = components[2] * (1f - k) + k;
                     
-                        R = (1f - R);
-                        G = (1f - G);
-                        B = (1f - B);
+                        r = (1f - r);
+                        g = (1f - g);
+                        b = (1f - b);
                                 
-                        cGuess = new Color( R,G,B );
+                        cGuess = new Color( r,g,b );
                         sMsg += "\nInterpretating as CMYK";
                         break;
                     default:
@@ -219,7 +222,7 @@ public class PDColorState implements Cloneable
                 sMsg += e2.toString();
                 cGuess = Color.BLACK;
             }
-            log.warn(sMsg, e);
+            LOG.warn(sMsg, e);
             return cGuess;
         }
     }
@@ -304,14 +307,13 @@ public class PDColorState implements Cloneable
     /**
      * This will update the current pattern.
      *
-     * @param pattern The new pattern.
+     * @param patternValue The new pattern.
      */
-    public void setPattern(PDPatternResources pattern)
+    public void setPattern(PDPatternResources patternValue)
     {
-        this.pattern = pattern;
-        // Clear color cache and colorSpaceValue
+        this.pattern = patternValue;
+        // Clear color cache
         color = null;
-        colorSpaceValue.clear();
     }
     
 }
