@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
+import org.apache.pdfbox.tika.PDFParserTest;
 import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestMatrix;
 
@@ -89,6 +90,8 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestIOUtils.class );
         suite.addTestSuite( TestPackedBitArray.class );
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
+
+        suite.addTestSuite( PDFParserTest.class );
 
         return suite;
     }
