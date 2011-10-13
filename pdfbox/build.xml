@@ -84,6 +84,10 @@
     <property name="icu4j.url" value="${maven.repo1}/com/ibm/icu/icu4j/3.8/${icu4j.name}.jar" />
     <property name="icu4j.jar" value="${jar.dir}/${icu4j.name}.jar" />
 
+    <property name="tika.name" value="tika-core-0.10" />
+    <property name="tika.url" value="${maven.repo2}/org/apache/tika/tika-core/0.10/tika-core-0.10.jar" />
+    <property name="tika.jar" value="${jar.dir}/${tika.name}.jar" />
+
     <property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
     <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
     <property name="beanutils.url" value="${maven.repo2}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
@@ -408,6 +412,10 @@
             <param name="sourcefile" value="${icu4j.url}"/>
             <param name="destfile" value="${icu4j.jar}"/>
         </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${tika.url}"/>
+            <param name="destfile" value="${tika.jar}"/>
+        </antcall>
     </target>
 
     <target name="get.externallibs.fontbox">
@@ -418,6 +426,10 @@
         <antcall target="downloadfile">
             <param name="sourcefile" value="${logging.url}"/>
             <param name="destfile" value="${logging.jar}"/>
+        </antcall>
+        <antcall target="downloadfile">
+            <param name="sourcefile" value="${tika.url}"/>
+            <param name="destfile" value="${tika.jar}"/>
         </antcall>
     </target>
 
