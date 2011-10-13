@@ -41,7 +41,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
-import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
@@ -63,7 +62,7 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDSimpleFont.class);
+    private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
     
     /**
      * Constructor.
@@ -85,10 +84,13 @@ public abstract class PDSimpleFont extends PDFont
 
     /**
     * Looks up, creates, returns  the AWT Font.
+    * 
+    * @return returns the awt font to bes used for rendering 
+    * @throws IOException if something went wrong.
     */
     public Font getawtFont() throws IOException
     {
-        log.error("Not yet implemented:" + getClass().getName() );
+        LOG.error("Not yet implemented:" + getClass().getName() );
         return null;
     }
     
@@ -98,20 +100,21 @@ public abstract class PDSimpleFont extends PDFont
     public void drawString( String string, Graphics g, float fontSize, 
             AffineTransform at, float x, float y ) throws IOException
     {
-        Font _awtFont = getawtFont();
+        Font awtFont = getawtFont();
 
         // mdavis - fix fontmanager.so/dll on sun.font.FileFont.getGlyphImage
         // for font with bad cmaps?
         // Type1 fonts are not affected as they don't have cmaps
-        if (!isType1Font() && _awtFont.canDisplayUpTo(string) != -1) { 
-            log.warn("Changing font on <" + string + "> from <"
-                    + _awtFont.getName() + "> to the default font");
-            _awtFont = Font.decode(null); 
+        if (!isType1Font() && awtFont.canDisplayUpTo(string) != -1) 
+        { 
+            LOG.warn("Changing font on <" + string + "> from <"
+                    + awtFont.getName() + "> to the default font");
+            awtFont = Font.decode(null); 
         }
 
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        writeFont(g2d, at, _awtFont, x, y, string);
+        writeFont(g2d, at, awtFont, x, y, string);
     }
 
     /**
@@ -314,7 +317,7 @@ public abstract class PDSimpleFont extends PDFont
             }
             catch (NoninvertibleTransformException e) 
             {
-                log.error("Error in "+getClass().getName()+".writeFont",e);
+                LOG.error("Error in "+getClass().getName()+".writeFont",e);
             }
         }
         else 
@@ -355,19 +358,8 @@ public abstract class PDSimpleFont extends PDFont
                     }
                     catch(IOException exception) 
                     {
-                        log.debug("Debug: Could not find encoding for " + encodingName );
+                        LOG.debug("Debug: Could not find encoding for " + encodingName );
                     }
-                }
-            }
-            else if (encoding instanceof COSDictionary) 
-            {
-                try 
-                {
-                    fontEncoding = new DictionaryEncoding((COSDictionary)encoding);
-                }
-                catch(IOException exception) 
-                {
-                    log.error("Error: Could not create the DictionaryEncoding" );
                 }
             }
             else if(encoding instanceof COSStream )
@@ -381,8 +373,19 @@ public abstract class PDSimpleFont extends PDFont
                     }
                     catch(IOException exception) 
                     {
-                        log.error("Error: Could not parse the embedded CMAP" );
+                        LOG.error("Error: Could not parse the embedded CMAP" );
                     }
+                }
+            }
+            else if (encoding instanceof COSDictionary) 
+            {
+                try 
+                {
+                    fontEncoding = new DictionaryEncoding((COSDictionary)encoding);
+                }
+                catch(IOException exception) 
+                {
+                    LOG.error("Error: Could not create the DictionaryEncoding" );
                 }
             }
         }
@@ -392,16 +395,17 @@ public abstract class PDSimpleFont extends PDFont
         if (cmap == null && cmapName != null) 
         {
             String resourceName = resourceRootCMAP + cmapName;
-            try {
+            try 
+            {
                 parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
                 if( cmap == null && encodingName == null)
                 {
-                    log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                    LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
                 }
             }
             catch(IOException exception) 
             {
-                log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+                LOG.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
             }
         }
     }
@@ -416,12 +420,13 @@ public abstract class PDSimpleFont extends PDFont
             setHasToUnicode(true);
             if ( toUnicode instanceof COSStream )
             {
-                try {
+                try 
+                {
                     parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream());
                 }
                 catch(IOException exception) 
                 {
-                    log.error("Error: Could not load embedded CMAP" );
+                    LOG.error("Error: Could not load embedded CMAP" );
                 }
             }
             else if ( toUnicode instanceof COSName)
@@ -432,16 +437,17 @@ public abstract class PDSimpleFont extends PDFont
                 {
                     cmapName = encodingName.getName();
                     String resourceName = resourceRootCMAP + cmapName;
-                    try {
+                    try 
+                    {
                         parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
                     }
                     catch(IOException exception) 
                     {
-                        log.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+                        LOG.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
                     }
                     if( cmap == null)
                     {
-                        log.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                        LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
                     }
                 }
             }
