@@ -24,8 +24,9 @@
 
   <name>Apache Preflight</name>
   <description>
-      Preflight is an open source Java library that implements a parser compliant wit
-      the ISO-19005 specification. Preflight is a subproject of Apache PDFBox.
+      The Apache Preflight library is an open source Java tool that implements 
+      a parser compliant with the ISO-19005 specification. Preflight is a 
+      subproject of Apache PDFBox.
   </description>
 
   <packaging>bundle</packaging>
