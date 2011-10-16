@@ -30,7 +30,7 @@
 
   <name>Apache JempBox</name>
   <description>
-    JempBox is an open source Java library that implements Adobe's XMP(TM)
+    The Apache JempBox library is an open source Java tool that implements Adobe's XMP(TM)
     specification. JempBox is a subproject of Apache PDFBox.
   </description>
   <inceptionYear>2008</inceptionYear>
