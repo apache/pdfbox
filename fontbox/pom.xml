@@ -30,7 +30,7 @@
 
   <name>Apache FontBox</name>
   <description>
-    FontBox is a Java library used to obtain low level information
+    The Apache FontBox library is an open source Java tool to obtain low level information
     from font files. FontBox is a subproject of Apache PDFBox.
   </description>
 
