@@ -2,7 +2,8 @@
 Apache FontBox <http://pdfbox.apache.org/>
 ====================================================
 
-FontBox is an open source Java library for working with PDF fonts.
+The Apache FontBox library is an open source Java tool for working with
+PDF fonts.
 
 You need Java 5 (or higher) and Maven 2 <http://maven.apache.org/> to
 build FontBox. The recommended build command is:
