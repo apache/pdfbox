@@ -3,7 +3,7 @@ Release Notes -- Apache PDFBox -- Version 1.6.0
 Introduction
 ------------
 
-PDFBox is an open source Java library for working with PDF documents.
+The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
 This is an incremental feature release based on the earlier 1.x releases.
 This release contains many improvements and fixes especially related to
