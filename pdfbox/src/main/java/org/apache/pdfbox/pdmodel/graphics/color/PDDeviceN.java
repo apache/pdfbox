@@ -27,13 +27,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.common.function.PDFunctionType4;
 
 /**
  * This class represents a DeviceN color space.
@@ -43,14 +41,14 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunctionType4;
  */
 public class PDDeviceN extends PDColorSpace
 {
-   
+
     /**
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(PDDeviceN.class);
 
     private static final int COLORANT_NAMES = 1;
-    
+
     private static final int ALTERNATE_CS = 2;
 
     private static final int TINT_TRANSFORM = 3;
@@ -259,7 +257,7 @@ public class PDDeviceN extends PDColorSpace
             array.set( DEVICEN_ATTRIBUTES, attributes.getCOSDictionary() );
         }
     }
-    
+
     /**
      * Returns the components of the color in the alternate colorspace for the given tint value.
      * @param tintValues a list containing the tint values
@@ -269,32 +267,9 @@ public class PDDeviceN extends PDColorSpace
     public COSArray calculateColorValues(List<COSBase> tintValues) throws IOException
     {
         PDFunction tintTransform = getTintTransform();
-        if(tintTransform instanceof PDFunctionType4)
-        {
-            LOG.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
-                    + " in "+getClass().getName()+".getColorValues()"
-                    + " using color black instead.");
-            int numberOfComponents = getAlternateColorSpace().getNumberOfComponents();
-            // To get black as color:
-            // 0 is used for the single value(s) if the colorspace is gray or RGB based
-            COSArray retval = new COSArray();
-            for ( int i=0; i < numberOfComponents; i++ ) 
-            {
-                retval.add(COSInteger.ZERO);
-            }
-            // 1 is used as forth value if the colorspace is CMYK based
-            if (numberOfComponents == PDDeviceCMYK.INSTANCE.getNumberOfComponents())
-            {
-                retval.set(3, COSInteger.ONE);
-            }
-            return retval;
-        }
-        else
-        {
-            COSArray tint = new COSArray();
-            tint.addAll(tintValues);
-            return tintTransform.eval(tint);
-        }
+        COSArray tint = new COSArray();
+        tint.addAll(tintValues);
+        return tintTransform.eval(tint);
     }
 
 }

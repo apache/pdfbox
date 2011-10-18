@@ -18,26 +18,39 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdmodel.common.PDRange;
+import org.apache.pdfbox.pdmodel.common.function.type4.ExecutionContext;
+import org.apache.pdfbox.pdmodel.common.function.type4.InstructionSequence;
+import org.apache.pdfbox.pdmodel.common.function.type4.InstructionSequenceBuilder;
+import org.apache.pdfbox.pdmodel.common.function.type4.Operators;
 
 import java.io.IOException;
 
 /**
  * This class represents a type 4 function in a PDF document.
+ * <p>
+ * See section 3.9.4 of the PDF 1.4 Reference.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
 public class PDFunctionType4 extends PDFunction
 {
 
+    private static final Operators OPERATORS = new Operators();
+
+    private final InstructionSequence instructions;
+
     /**
      * Constructor.
      *
-     * @param functionStream The function .
+     * @param functionStream The function stream.
+     * @throws IOException if an I/O error occurs while reading the function
      */
-    public PDFunctionType4(COSBase function)
+    public PDFunctionType4(COSBase functionStream) throws IOException
     {
-        super( function );
+        super( functionStream );
+        this.instructions = InstructionSequenceBuilder.parse(
+                getPDStream().getInputStreamAsString());
     }
 
 
@@ -54,8 +67,41 @@ public class PDFunctionType4 extends PDFunction
     */
     public COSArray eval(COSArray input) throws IOException
     {
-        //Implementation here will require evaluation of PostScript functions.
-        //See section 3.9.4 of the PDF Reference.
-        throw new IOException("Not Implemented");
+        //Setup the input values
+        float[] inputValues = input.toFloatArray();
+        int numberOfInputValues = inputValues.length;
+        ExecutionContext context = new ExecutionContext(OPERATORS);
+        for (int i = numberOfInputValues - 1; i >= 0; i--)
+        {
+            PDRange domain = getDomainForInput(i);
+            float value = clipToRange(inputValues[i], domain.getMin(), domain.getMax());
+            context.getStack().push(value);
+        }
+
+        //Execute the type 4 function.
+        instructions.execute(context);
+
+        //Extract the output values
+        int numberOfOutputValues = getNumberOfOutputParameters();
+        int numberOfActualOutputValues = context.getStack().size();
+        if (numberOfActualOutputValues < numberOfOutputValues)
+        {
+            throw new IllegalStateException("The type 4 function returned "
+                    + numberOfActualOutputValues
+                    + " values but the Range entry indicates that "
+                    + numberOfOutputValues + " values be returned.");
+        }
+        float[] outputValues = new float[numberOfOutputValues];
+        for (int i = numberOfOutputValues - 1; i >= 0; i--)
+        {
+            PDRange range = getRangeForOutput(i);
+            outputValues[i] = context.popReal();
+            outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
+        }
+
+        //Return the resulting array
+        COSArray result = new COSArray();
+        result.setFloatArray(outputValues);
+        return result;
     }
 }
