@@ -25,10 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.common.function.PDFunctionType4;
 
 /**
  * This class represents a Separation color space.
@@ -205,37 +203,18 @@ public class PDSeparation extends PDColorSpace
     {
         array.set( 3, tint );
     }
-    
+
     /**
      * Returns the components of the color in the alternate colorspace for the given tint value.
+     * @param tintValue the tint value
      * @return COSArray with the color components
      * @throws IOException If the tint function is not supported
      */
     public COSArray calculateColorValues(COSBase tintValue) throws IOException
     {
         PDFunction tintTransform = getTintTransform();
-        if(tintTransform instanceof PDFunctionType4)
-        {
-            log.warn("Unsupported tint transformation type: "+tintTransform.getClass().getName() 
-                    + " in "+getClass().getName()+".getColorValues()"
-                    + " using color black instead.");
-            int numberOfComponents = getAlternateColorSpace().getNumberOfComponents();
-            // To get black as color:
-            // 0.0f is used for the single value(s) if the colorspace is gray or RGB based
-            // 1.0f is used for the single value if the colorspace is CMYK based
-            float colorValue = numberOfComponents == 4 ? 1.0f : 0.0f;
-            COSArray retval = new COSArray();
-            for (int i=0;i<numberOfComponents;i++) 
-            {
-                retval.add(new COSFloat(colorValue));
-            }
-            return retval;
-        }
-        else
-        {
-            COSArray tint = new COSArray();
-            tint.add(tintValue);
-            return tintTransform.eval(tint);
-        }
+        COSArray tint = new COSArray();
+        tint.add(tintValue);
+        return tintTransform.eval(tint);
     }
 }
