@@ -97,9 +97,9 @@
           <execution>
             <phase>generate-resources</phase>
             <configuration>
-              <tasks>
+              <target>
                 <ant antfile="build.xml" target="get.adobefiles" />
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>

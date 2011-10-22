@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>6</version>
+    <version>10</version>
     <relativePath />
   </parent>
 
@@ -137,6 +137,13 @@
         </roles>
     </developer>
     <developer>
+        <id>adam</id>
+        <name>Adam Nichols</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
         <id>blitchfield</id>
         <name>Ben Litchfield</name>
         <roles>
@@ -158,6 +165,20 @@
         </roles>
     </developer>
     <developer>
+        <id>leleueri</id>
+        <name>Eric Leleu</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>gbailleul</id>
+        <name>Guillaume Bailleul</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
         <id>jeremias</id>
         <name>Jeremias Maerki</name>
         <roles>
@@ -174,6 +195,13 @@
     <developer>
         <id>jukka</id>
         <name>Jukka Zitting</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>kjackson</id>
+        <name>Kevin Jackson</name>
         <roles>
           <role>PMC Member</role>
         </roles>
