@@ -18,7 +18,15 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,9 +43,11 @@ import java.util.Locale;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.IIOException;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -46,6 +56,8 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
@@ -230,41 +242,37 @@ public class PDJpeg extends PDXObjectImage
     {   //TODO PKOCH
         BufferedImage bi = null;
         boolean readError = false;
-        try
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        write2OutputStream(os);
+        os.close();
+        byte[] img = os.toByteArray();
+        
+        PDColorSpace cs = getColorSpace();
+        try 
         {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            write2OutputStream(os);
-            os.close();
-            byte[] img = os.toByteArray();
-
-            // 1. try to read jpeg image
-            try
+            if (cs instanceof PDDeviceCMYK)
             {
-                bi = ImageIO.read(new ByteArrayInputStream(img));
+                bi = readImage(img, cs);
             }
-            catch (IIOException iioe)
+            else 
             {
-                // cannot read jpeg
-                readError = true;
-            }
-            catch (Exception ignore)
-            {
-            }
-
-            // 2. try to read jpeg again. some jpegs have some strange header containing
-            //    "Adobe " at some place. so just replace the header with a valid jpeg header.
-            // TODO : not sure if it works for all cases
-            if (bi == null && readError)
-            {
-                byte[] newImage = replaceHeader(img);
-
-                ByteArrayInputStream bai = new ByteArrayInputStream(newImage);
-
+                ByteArrayInputStream bai = new ByteArrayInputStream(img);
                 bi = ImageIO.read(bai);
             }
+                
         }
-        finally
+        catch(IIOException exception) 
         {
+            readError = true;
+        }
+        // 2. try to read jpeg again. some jpegs have some strange header containing
+        //    "Adobe " at some place. so just replace the header with a valid jpeg header.
+        // TODO : not sure if it works for all cases
+        if (bi == null && readError)
+        {
+            byte[] newImage = replaceHeader(img);
+            ByteArrayInputStream bai = new ByteArrayInputStream(newImage);
+            bi = ImageIO.read(bai);
         }
 
         // If there is a 'soft mask' image then we use that as a transparency mask.
@@ -305,7 +313,7 @@ public class PDJpeg extends PDXObjectImage
      * Returns the given file as byte array.
      * @param file File to be read
      * @return given file as byte array
-     * @throws IOException if somethin went wrong during reading the file
+     * @throws IOException if something went wrong during reading the file
      */
     public static byte[] getBytesFromFile(File file) throws IOException
     {
@@ -371,5 +379,71 @@ public class PDJpeg extends PDXObjectImage
 
         return newImage;
     }
+
+    // CMYK jpegs are not supported by JAI, so that we have the conversion on our own
+    private BufferedImage readImage(byte[] bytes, PDColorSpace colorspace) throws IOException 
+    {
+        ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+        if (readers == null || !readers.hasNext()) 
+        {
+            throw new RuntimeException("No ImageReaders found");
+        }
+
+        // read the raster information only
+        // avoid to access the meta information
+        ImageReader reader = (ImageReader) readers.next();
+        reader.setInput(input);
+        Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
+        if (input != null) 
+        {
+            input.close();
+        }
+        reader.dispose();
+        int w = raster.getWidth();
+        int h = raster.getHeight();
+
+        // create a java color space to be used for conversion
+        ColorSpace cs = colorspace.getJavaColorSpace();
+        // target data array
+        byte[] rgb = new byte[w * h * 3];
+        int numberOfComponents = colorspace.getNumberOfComponents();
+        // pointer into the target array
+        int rgbIndex = 0;
+        for (int i = 0; i < h; i++) 
+        {
+            for (int j = 0; j < w; j++)
+            {
+                // get the source color values
+                float[] srcColorValues = raster.getPixel(j,i, (float[])null);
+                // convert values from 0..255 to 0..1
+                for (int k = 0; k < numberOfComponents; k++)
+                {
+                    srcColorValues[k] /= 255f; 
+                }
+                // convert CMYK to RGB
+                float[] rgbValues = cs.toRGB(srcColorValues);
+                // convert values from 0..1 to 0..255
+                for (int k = 0; k < 3; k++)
+                {
+                    rgb[rgbIndex+k] = (byte)(rgbValues[k] * 255); 
+                }
+                rgbIndex +=3;
+            }
+        }
+        // create a RGB color model
+        ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), 
+                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+        // create the target raster
+        WritableRaster writeableRaster = cm.createCompatibleWritableRaster(w, h);
+        // get the data buffer of the raster
+        DataBufferByte buffer = (DataBufferByte)writeableRaster.getDataBuffer();
+        byte[] bufferData = buffer.getData();
+        // copy all the converted data to the raster buffer
+        System.arraycopy( rgb, 0,bufferData, 0,rgb.length );
+        // create an image using the converted color values
+        return new BufferedImage(cm, writeableRaster, true, null);
+    }
+
 }
 
