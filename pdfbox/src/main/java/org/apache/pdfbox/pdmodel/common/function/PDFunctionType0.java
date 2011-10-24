@@ -290,25 +290,24 @@ public class PDFunctionType0 extends PDFunction
     /**
     * {@inheritDoc}
     */
-    public COSArray eval(COSArray input) throws IOException
+    public float[] eval(float[] input) throws IOException
     {
         //This involves linear interpolation based on a set of sample points.
         //Theoretically it's not that difficult ... see section 3.9.1 of the PDF Reference.
-        float[] inputValues = input.toFloatArray();
         float[] sizeValues = getSize().toFloatArray();
         int bitsPerSample = getBitsPerSample();
-        int numberOfInputValues = inputValues.length;
+        int numberOfInputValues = input.length;
         int numberOfOutputValues = getNumberOfOutputParameters();
         int[] intInputValuesPrevious = new int[numberOfInputValues];
         int[] intInputValuesNext = new int[numberOfInputValues];
         for (int i=0; i<numberOfInputValues; i++) {
             PDRange domain = getDomainForInput(i);
             PDRange encode = getEncodeForParameter(i);
-            inputValues[i] = clipToRange(inputValues[i], domain.getMin(), domain.getMax());
-            inputValues[i] = interpolate(inputValues[i], domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
-            inputValues[i] = clipToRange(inputValues[i], 0, sizeValues[i]-1);
-            intInputValuesPrevious[i] = (int)Math.floor(inputValues[i]);
-            intInputValuesNext[i] = (int)Math.ceil(inputValues[i]);
+            input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
+            input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
+            input[i] = clipToRange(input[i], 0, sizeValues[i]-1);
+            intInputValuesPrevious[i] = (int)Math.floor(input[i]);
+            intInputValuesNext[i] = (int)Math.ceil(input[i]);
         }
         float[] outputValuesPrevious = null;
         float[] outputValuesNext = null;
@@ -326,9 +325,7 @@ public class PDFunctionType0 extends PDFunction
             outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
         }
 
-        COSArray result = new COSArray();
-        result.setFloatArray(outputValues);
-        return result;
+        return outputValues;
     }
     
     /**
