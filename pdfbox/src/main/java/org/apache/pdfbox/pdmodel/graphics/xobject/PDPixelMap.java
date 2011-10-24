@@ -35,9 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
@@ -219,8 +217,7 @@ public class PDPixelMap extends PDXObjectImage
                 // destination array
                 byte[] mappedData = new byte[width*height*numberOfComponents];
                 int rowLength = width*numberOfComponents;
-                COSArray input = new COSArray();
-                input.add(COSInteger.ZERO);
+                float[] input = new float[1];
                 for ( int i = 0; i < height; i++ )
                 {
                     int rowOffset = i * rowLength; 
@@ -230,18 +227,18 @@ public class PDPixelMap extends PDXObjectImage
                         int value = (array[ i * width + j ] + 256) % 256;
                         if (invert)
                         {
-                            input.set(0, 1-(value / maxValue) );
+                            input[0] = 1-(value / maxValue) ;
                         }
                         else
                         {
-                            input.set(0, value / maxValue);
+                            input[0] =  value / maxValue;
                         }
-                        COSArray mappedColor = tintTransformFunc.eval(input);
+                        float[] mappedColor = tintTransformFunc.eval(input);
                         int columnOffset = j * numberOfComponents;
                         for ( int k = 0; k < numberOfComponents; k++ ) 
                         {
                             // redo scaling for every single color value 
-                            float mappedValue = ((COSNumber)mappedColor.get(k)).floatValue();
+                            float mappedValue = mappedColor[k];
                             mappedData[ rowOffset + columnOffset + k] = (byte)(mappedValue * maxValue);
                         }
                     }
