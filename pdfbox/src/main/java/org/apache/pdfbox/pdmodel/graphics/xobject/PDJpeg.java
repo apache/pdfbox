@@ -56,10 +56,12 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 
 /**
  * An image class for JPegs.
@@ -252,7 +254,14 @@ public class PDJpeg extends PDXObjectImage
         {
             if (cs instanceof PDDeviceCMYK)
             {
-                bi = readImage(img, cs);
+                // create BufferedImage based on the converted color values
+                bi = convertCMYK2RGB(readImage(img), cs);
+
+            }
+            else if (cs instanceof PDSeparation)
+            {
+                // create BufferedImage based on the converted color values
+                bi = processSeparation(readImage(img), cs);
             }
             else 
             {
@@ -380,8 +389,7 @@ public class PDJpeg extends PDXObjectImage
         return newImage;
     }
 
-    // CMYK jpegs are not supported by JAI, so that we have the conversion on our own
-    private BufferedImage readImage(byte[] bytes, PDColorSpace colorspace) throws IOException 
+    private Raster readImage(byte[] bytes) throws IOException 
     {
         ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
         Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
@@ -400,24 +408,26 @@ public class PDJpeg extends PDXObjectImage
             input.close();
         }
         reader.dispose();
-        int w = raster.getWidth();
-        int h = raster.getHeight();
+        return raster;
+    }
 
+    // CMYK jpegs are not supported by JAI, so that we have the conversion on our own
+    private BufferedImage convertCMYK2RGB(Raster raster, PDColorSpace colorspace) throws IOException 
+    {
         // create a java color space to be used for conversion
         ColorSpace cs = colorspace.getJavaColorSpace();
-        // target data array
-        byte[] rgb = new byte[w * h * 3];
-        int numberOfComponents = colorspace.getNumberOfComponents();
-        // pointer into the target array
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        byte[] rgb = new byte[width * height * 3]; 
         int rgbIndex = 0;
-        for (int i = 0; i < h; i++) 
+        for (int i = 0; i < height; i++) 
         {
-            for (int j = 0; j < w; j++)
+            for (int j = 0; j < width; j++)
             {
                 // get the source color values
                 float[] srcColorValues = raster.getPixel(j,i, (float[])null);
                 // convert values from 0..255 to 0..1
-                for (int k = 0; k < numberOfComponents; k++)
+                for (int k = 0; k < 4; k++)
                 {
                     srcColorValues[k] /= 255f; 
                 }
@@ -435,12 +445,58 @@ public class PDJpeg extends PDXObjectImage
         ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), 
                 false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
         // create the target raster
-        WritableRaster writeableRaster = cm.createCompatibleWritableRaster(w, h);
+        WritableRaster writeableRaster = cm.createCompatibleWritableRaster(width, height);
         // get the data buffer of the raster
         DataBufferByte buffer = (DataBufferByte)writeableRaster.getDataBuffer();
         byte[] bufferData = buffer.getData();
         // copy all the converted data to the raster buffer
         System.arraycopy( rgb, 0,bufferData, 0,rgb.length );
+        // create an image using the converted color values
+        return new BufferedImage(cm, writeableRaster, true, null);
+    }
+
+    // a separation colorspace uses a tint transform function to convert color values 
+    private BufferedImage processSeparation(Raster raster, PDColorSpace colorspace) throws IOException 
+    {
+        PDSeparation csSeparation = (PDSeparation)colorspace;
+        PDFunction function = csSeparation.getTintTransform();
+        int numberOfInputValues = function.getNumberOfInputParameters();
+        int numberOfOutputValues = function.getNumberOfInputParameters();
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        byte[] sourceBuffer = new byte[width * height * numberOfOutputValues]; 
+        int bufferIndex = 0;
+        for (int i = 0; i < height; i++) 
+        {
+            for (int j = 0; j < width; j++)
+            {
+                // get the source color values
+                float[] srcColorValues = raster.getPixel(j,i, (float[])null);
+                // convert values from 0..255 to 0..1
+                for (int k = 0; k < numberOfInputValues; k++)
+                {
+                    srcColorValues[k] /= 255f; 
+                }
+                // transform the color values using the tint function
+                float[] convertedValues = function.eval(srcColorValues);
+                // convert values from 0..1 to 0..255
+                for (int k = 0; k < numberOfOutputValues; k++)
+                {
+                    sourceBuffer[bufferIndex+k] = (byte)(convertedValues[k] * 255); 
+                }
+                bufferIndex +=numberOfOutputValues;
+            }
+        }
+        // create a target color model
+        ColorModel cm = new ComponentColorModel(colorspace.getJavaColorSpace(), 
+                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+        // create the target raster
+        WritableRaster writeableRaster = cm.createCompatibleWritableRaster(width, height);
+        // get the data buffer of the raster
+        DataBufferByte buffer = (DataBufferByte)writeableRaster.getDataBuffer();
+        byte[] bufferData = buffer.getData();
+        // copy all the converted data to the raster buffer
+        System.arraycopy( sourceBuffer, 0,bufferData, 0,sourceBuffer.length );
         // create an image using the converted color values
         return new BufferedImage(cm, writeableRaster, true, null);
     }
