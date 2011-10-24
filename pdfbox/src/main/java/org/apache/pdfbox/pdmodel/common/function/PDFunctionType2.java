@@ -63,23 +63,22 @@ public class PDFunctionType2 extends PDFunction
     /**
     * {@inheritDoc}
     */
-    public COSArray eval(COSArray input) throws IOException
+    public float[] eval(float[] input) throws IOException
     {
         //This function performs exponential interpolation.
         //It uses only a single value as its input, but may produce a multi-valued output.
         //See PDF Reference section 3.9.2.
                 
-        double inputValue = input.toFloatArray()[0];
+        double inputValue = input[0];
         double exponent = getN();
         COSArray c0 = getC0();
         COSArray c1 = getC1();
-        COSArray functionResult = new COSArray();
         int c0Size = c0.size();
+        float[] functionResult = new float[c0Size];
         for (int j=0;j<c0Size;j++)
         {
             //y[j] = C0[j] + x^N*(C1[j] - C0[j])
-            float result = ((COSNumber)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSNumber)c1.get(j)).floatValue() - ((COSNumber)c0.get(j)).floatValue());
-            functionResult.add( new COSFloat( result));
+            functionResult[j] = ((COSNumber)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSNumber)c1.get(j)).floatValue() - ((COSNumber)c0.get(j)).floatValue());
         }
         // clip to range if available
         return clipToRange(functionResult);

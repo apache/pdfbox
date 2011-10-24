@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSArray;
@@ -239,6 +238,29 @@ public abstract class PDFunction implements COSObjectable
         getDictionary().setItem(COSName.DOMAIN, domainValues);
     }
 
+
+    /**
+     * Evaluates the function at the given input.
+     * ReturnValue = f(input)
+     *
+     * @param input The COSArray of input values for the function. 
+     * In many cases will be an array of a single value, but not always.
+     * 
+     * @return The of outputs the function returns based on those inputs. 
+     * In many cases will be an COSArray of a single value, but not always.
+     * 
+     * @throws IOException an IOExcpetion is thrown if something went wrong processing the function.
+     * 
+     */
+    public COSArray eval(COSArray input) throws IOException
+    {
+        // TODO should we mark this method as deprecated? 
+        float[] outputValues = eval(input.toFloatArray());
+        COSArray array = new COSArray();
+        array.setFloatArray(outputValues);
+        return array;
+    }
+
     /**
      * Evaluates the function at the given input.
      * ReturnValue = f(input)
@@ -251,7 +273,7 @@ public abstract class PDFunction implements COSObjectable
      * 
      * @throws IOException an IOExcpetion is thrown if something went wrong processing the function.  
      */
-    public abstract COSArray eval(COSArray input) throws IOException;
+    public abstract float[] eval(float[] input) throws IOException;
     
     /**
      * Returns all ranges for the output values as COSArray .
@@ -287,24 +309,23 @@ public abstract class PDFunction implements COSObjectable
      * @param inputArray the input values
      * @return the clipped values
      */
-    protected COSArray clipToRange(COSArray inputArray) 
+    protected float[] clipToRange(float[] inputValues) 
     {
         COSArray rangesArray = getRangeValues();
-        COSArray result = null;
+        float[] result = null;
         if (rangesArray != null) 
         {
-            float[] inputValues = inputArray.toFloatArray();
             float[] rangeValues = rangesArray.toFloatArray();
-            result = new COSArray();
             int numberOfRanges = rangeValues.length/2;
+            result = new float[numberOfRanges];
             for (int i=0; i<numberOfRanges; i++)
             {
-                result.add(new COSFloat( clipToRange(inputValues[i], rangeValues[2*i], rangeValues[2*i+1])));
+                result[i] = clipToRange(inputValues[i], rangeValues[2*i], rangeValues[2*i+1]);
             }
         }
         else
         {
-            result = inputArray;
+            result = inputValues;
         }
         return result;
     }

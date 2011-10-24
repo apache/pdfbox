@@ -18,9 +18,7 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 
 import java.io.IOException;
@@ -59,13 +57,13 @@ public class PDFunctionType3 extends PDFunction
     /**
     * {@inheritDoc}
     */
-    public COSArray eval(COSArray input) throws IOException
+    public float[] eval(float[] input) throws IOException
     {
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
         // All functions in the array are 1-value-input functions
         //See PDF Reference section 3.9.3.
         PDFunction function = null;
-        float x = ((COSNumber)input.get(0)).floatValue();
+        float x = input[0];
         PDRange domain = getDomainForInput(0);
         // clip input value to domain
         x = clipToRange(x, domain.getMin(), domain.getMax());
@@ -103,10 +101,9 @@ public class PDFunctionType3 extends PDFunction
                 }
             }
         }
-        COSArray functionValues = new COSArray();
-        functionValues.add(new COSFloat(x));
+        float[] functionValues = new float[]{x};
         // calculate the output values using the chosen function
-        COSArray functionResult = function.eval(functionValues);
+        float[] functionResult = function.eval(functionValues);
         // clip to range if available
         return clipToRange(functionResult);
     }

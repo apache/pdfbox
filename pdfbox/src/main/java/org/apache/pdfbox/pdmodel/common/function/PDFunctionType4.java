@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.common.function;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.function.type4.ExecutionContext;
@@ -65,16 +64,15 @@ public class PDFunctionType4 extends PDFunction
     /**
     * {@inheritDoc}
     */
-    public COSArray eval(COSArray input) throws IOException
+    public float[] eval(float[] input) throws IOException
     {
         //Setup the input values
-        float[] inputValues = input.toFloatArray();
-        int numberOfInputValues = inputValues.length;
+        int numberOfInputValues = input.length;
         ExecutionContext context = new ExecutionContext(OPERATORS);
         for (int i = numberOfInputValues - 1; i >= 0; i--)
         {
             PDRange domain = getDomainForInput(i);
-            float value = clipToRange(inputValues[i], domain.getMin(), domain.getMax());
+            float value = clipToRange(input[i], domain.getMin(), domain.getMax());
             context.getStack().push(value);
         }
 
@@ -100,8 +98,6 @@ public class PDFunctionType4 extends PDFunction
         }
 
         //Return the resulting array
-        COSArray result = new COSArray();
-        result.setFloatArray(outputValues);
-        return result;
+        return outputValues;
     }
 }
