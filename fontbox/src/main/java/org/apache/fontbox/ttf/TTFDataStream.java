@@ -42,7 +42,7 @@ public abstract class TTFDataStream
     {
         float retval = 0;
         retval = readSignedShort();
-        retval += (readUnsignedShort()/65536);
+        retval += (readUnsignedShort()/65536.0);
         return retval;
     }
     
@@ -125,6 +125,7 @@ public abstract class TTFDataStream
     /**
      * Read an unsigned byte array.
      * 
+     * @param length the length of the array to be read
      * @return An unsigned byte array.
      * @throws IOException If there is an error reading the data.
      */
@@ -141,7 +142,6 @@ public abstract class TTFDataStream
     /**
      * Read an unsigned short array.
      * 
-     * @param length The length of the array to read.
      * @param length The length of the array to read.
      * @return An unsigned short array.
      * @throws IOException If there is an error reading the data.
@@ -208,12 +208,16 @@ public abstract class TTFDataStream
         int totalAmountRead = 0;
         //read at most numberOfBytes bytes from the stream.
         while (totalAmountRead < numberOfBytes
-                && (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1) {
+                && (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1) 
+        {
             totalAmountRead += amountRead;
         }
-        if (totalAmountRead == numberOfBytes) {
+        if (totalAmountRead == numberOfBytes) 
+        {
             return data;
-        } else {
+        } 
+        else 
+        {
             throw new IOException("Unexpected end of TTF stream reached");
         }
     }
@@ -229,10 +233,7 @@ public abstract class TTFDataStream
      * 
      * @throws IOException If there is an error reading from the stream.
      */
-    public abstract int read(byte[] b,
-            int off,
-            int len)
-     throws IOException;
+    public abstract int read(byte[] b, int off, int len) throws IOException;
     
     /**
      * Get the current position in the stream.
