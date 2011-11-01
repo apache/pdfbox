@@ -405,12 +405,16 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName DL = new COSName( "DL" );
+    
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DOC_CHECKSUM = new COSName( "DocChecksum" );
 
     /**
      * A common COSName value.
      */
     public static final COSName DOMAIN = new COSName( "Domain" );
-
     /**
      * A common COSName value.
      */
