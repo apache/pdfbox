@@ -30,8 +30,6 @@ import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -61,6 +59,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 
 /**
@@ -252,7 +251,8 @@ public class PDJpeg extends PDXObjectImage
         PDColorSpace cs = getColorSpace();
         try 
         {
-            if (cs instanceof PDDeviceCMYK)
+            if (cs instanceof PDDeviceCMYK 
+                    || (cs instanceof PDICCBased && cs.getNumberOfComponents() == 4))
             {
                 // create BufferedImage based on the converted color values
                 bi = convertCMYK2RGB(readImage(img), cs);
@@ -318,45 +318,6 @@ public class PDJpeg extends PDXObjectImage
         }
     }
 
-    /**
-     * Returns the given file as byte array.
-     * @param file File to be read
-     * @return given file as byte array
-     * @throws IOException if something went wrong during reading the file
-     */
-    public static byte[] getBytesFromFile(File file) throws IOException
-    {
-        InputStream is = new FileInputStream(file);
-        long length = file.length();
-
-        if (length > Integer.MAX_VALUE)
-        {
-            // File is too large
-            throw new IOException("File is tooo large");
-        }
-
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
-
-        // Read in the bytes
-        int offset = 0;
-        int numRead = 0;
-
-        while (offset < bytes.length
-                && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0)
-        {
-            offset += numRead;
-        }
-
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length)
-        {
-            throw new IOException("Could not completely read file "+file.getName());
-        }
-        is.close();
-        return bytes;
-    }
-
     private int getHeaderEndPos(byte[] image)
     {
         for (int i = 0; i < image.length; i++)
@@ -411,7 +372,7 @@ public class PDJpeg extends PDXObjectImage
         return raster;
     }
 
-    // CMYK jpegs are not supported by JAI, so that we have the conversion on our own
+    // CMYK jpegs are not supported by JAI, so that we have to do the conversion on our own
     private BufferedImage convertCMYK2RGB(Raster raster, PDColorSpace colorspace) throws IOException 
     {
         // create a java color space to be used for conversion
