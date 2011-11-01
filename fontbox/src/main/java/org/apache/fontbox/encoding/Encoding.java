@@ -30,6 +30,10 @@ import java.util.Map;
 public abstract class Encoding
 {
 
+    /**
+     * Identifies a non-mapped character. 
+     */
+    private static final String NOTDEF = ".notdef";
 
     /**
      * This is a mapping from a character code to a character name.
@@ -88,10 +92,7 @@ public abstract class Encoding
         String name = codeToName.get( code );
         if( name == null )
         {
-            //lets be forgiving for now
-            name = "space";
-            //throw new IOException( getClass().getName() +
-            //                       ": No name for character code '" + code + "'" );
+            name = NOTDEF;
         }
         return name;
     }
