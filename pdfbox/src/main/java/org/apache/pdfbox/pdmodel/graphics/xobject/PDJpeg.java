@@ -58,6 +58,7 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
@@ -261,7 +262,14 @@ public class PDJpeg extends PDXObjectImage
             else if (cs instanceof PDSeparation)
             {
                 // create BufferedImage based on the converted color values
-                bi = processSeparation(readImage(img), cs);
+                bi = processTintTransformation(readImage(img), 
+                        ((PDSeparation)cs).getTintTransform(), cs.getJavaColorSpace());
+            }
+            else if (cs instanceof PDDeviceN)
+            {
+                // create BufferedImage based on the converted color values
+                bi = processTintTransformation(readImage(img), 
+                        ((PDDeviceN)cs).getTintTransform(), cs.getJavaColorSpace());
             }
             else 
             {
@@ -416,13 +424,12 @@ public class PDJpeg extends PDXObjectImage
         return new BufferedImage(cm, writeableRaster, true, null);
     }
 
-    // a separation colorspace uses a tint transform function to convert color values 
-    private BufferedImage processSeparation(Raster raster, PDColorSpace colorspace) throws IOException 
+    // Separation and DeviceN colorspaces are using a tint transform function to convert color values 
+    private BufferedImage processTintTransformation(Raster raster, PDFunction function, ColorSpace colorspace) 
+    throws IOException 
     {
-        PDSeparation csSeparation = (PDSeparation)colorspace;
-        PDFunction function = csSeparation.getTintTransform();
         int numberOfInputValues = function.getNumberOfInputParameters();
-        int numberOfOutputValues = function.getNumberOfInputParameters();
+        int numberOfOutputValues = function.getNumberOfOutputParameters();
         int width = raster.getWidth();
         int height = raster.getHeight();
         byte[] sourceBuffer = new byte[width * height * numberOfOutputValues]; 
@@ -449,7 +456,7 @@ public class PDJpeg extends PDXObjectImage
             }
         }
         // create a target color model
-        ColorModel cm = new ComponentColorModel(colorspace.getJavaColorSpace(), 
+        ColorModel cm = new ComponentColorModel(colorspace, 
                 false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
         // create the target raster
         WritableRaster writeableRaster = cm.createCompatibleWritableRaster(width, height);
