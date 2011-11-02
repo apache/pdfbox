@@ -229,6 +229,7 @@ public class Parser
                 }
             }
             handler.newLine(buffer);
+            nextChar();
         }
 
         private void scanWhitespace()
@@ -303,6 +304,8 @@ public class Parser
                 case LF:
                 case FF:
                 case EOT:
+                case '{':
+                case '}':
                     break loop;
                 default:
                     buffer.append(ch);

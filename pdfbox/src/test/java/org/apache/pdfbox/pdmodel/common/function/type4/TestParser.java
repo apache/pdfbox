@@ -62,4 +62,19 @@ public class TestParser extends TestCase
 
         assertEquals(1.0E-5, InstructionSequenceBuilder.parseReal("1.0E-5"), 0.00001f);
     }
+
+    /**
+     * Tests problematic functions from PDFBOX-804.
+     * @throws Exception if an error occurs
+     */
+    public void testJira804() throws Exception
+    {
+        //This is an example of a tint to CMYK function
+        //Problems here were:
+        //1. no whitespace between "mul" and "}" (token was detected as "mul}")
+        //2. line breaks cause endless loops
+        Type4Tester.create("1 {dup dup .72 mul exch 0 exch .38 mul}\n")
+            .pop(0.38f).pop(0f).pop(0.72f).pop(1.0f).isEmpty();
+
+    }
 }
