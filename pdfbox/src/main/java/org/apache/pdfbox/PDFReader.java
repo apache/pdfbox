@@ -22,12 +22,14 @@ import org.apache.pdfbox.pdfviewer.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.util.ExtensionFileFilter;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,11 +47,9 @@ import java.util.List;
 public class PDFReader extends javax.swing.JFrame
 {
     private File currentDir=new File(".");
-    private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JMenuItem contentsMenuItem;
+    private javax.swing.JMenuItem saveAsImageMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem printMenuItem;
@@ -85,10 +85,8 @@ public class PDFReader extends javax.swing.JFrame
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        saveAsImageMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
-        helpMenu = new javax.swing.JMenu();
-        contentsMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
         printMenuItem = new javax.swing.JMenuItem();
         viewMenu = new javax.swing.JMenu();
         nextPageItem = new javax.swing.JMenuItem();
@@ -145,6 +143,19 @@ public class PDFReader extends javax.swing.JFrame
         });
         fileMenu.add( printMenuItem );
 
+        saveAsImageMenuItem.setText( "Save as image" );
+        saveAsImageMenuItem.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                if (document != null) 
+                {
+                    saveImage();
+                }
+            }
+        });
+        fileMenu.add( saveAsImageMenuItem );
+
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
@@ -157,15 +168,6 @@ public class PDFReader extends javax.swing.JFrame
         fileMenu.add(exitMenuItem);
 
         menuBar.add(fileMenu);
-
-        helpMenu.setText("Help");
-        contentsMenuItem.setText("Contents");
-        helpMenu.add(contentsMenuItem);
-
-        aboutMenuItem.setText("About");
-        helpMenu.add(aboutMenuItem);
-
-        //menuBar.add(helpMenu);
 
         viewMenu.setText("View");
         nextPageItem.setText("Next page");
@@ -200,7 +202,8 @@ public class PDFReader extends javax.swing.JFrame
     }
 
 
-    private void updateTitle() {
+    private void updateTitle() 
+    {
         setTitle( "PDFBox - " + currentFilename + " ("+(currentPage+1)+"/"+numberOfPages+")");
     }
     
@@ -310,6 +313,26 @@ public class PDFReader extends javax.swing.JFrame
             }
             documentPanel.add( wrapper.getPanel() );
             pack();
+        }
+        catch (IOException exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    private void saveImage()
+    {
+        try 
+        {
+            PDPage pageToSave = (PDPage)pages.get(currentPage);
+            BufferedImage pageAsImage = pageToSave.convertToImage();
+            String imageFilename = currentFilename;
+            if (imageFilename.toLowerCase().endsWith(".pdf"))
+            {
+                imageFilename = imageFilename.substring(0, imageFilename.length()-4);
+            }
+            imageFilename += "_" + (currentPage + 1); 
+            ImageIOUtil.writeImage(pageAsImage, "png", imageFilename,  BufferedImage.TYPE_USHORT_565_RGB, 300);
         }
         catch (IOException exception)
         {
