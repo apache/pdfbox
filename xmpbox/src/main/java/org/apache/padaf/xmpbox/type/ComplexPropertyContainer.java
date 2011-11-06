@@ -73,6 +73,30 @@ public class ComplexPropertyContainer extends AbstractField {
 		super(metadata, namespaceURI, prefix, propertyName);
 		properties = new ArrayList<AbstractField>();
 	}
+	
+	/**
+	 * Give the first property found in this container with type and localname
+	 * expected
+	 * 
+	 * @param localName
+	 *            the localname of property wanted
+	 * @param type
+	 *            the property type of property wanted
+	 * @return the property wanted
+	 */
+	protected AbstractField getFirstEquivalentProperty(String localName,
+			Class<? extends AbstractField> type) {
+		List<AbstractField> list = getPropertiesByLocalName(localName);
+		if (list != null) {
+			for (AbstractField abstractField : list) {
+				// System.out.println(abstractField.getQualifiedName());
+				if (abstractField.getClass().equals(type)) {
+					return abstractField;
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Add a property to the current structure
