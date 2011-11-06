@@ -38,6 +38,7 @@ import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.schema.PDFAPropertyDescription;
 import org.apache.padaf.xmpbox.schema.PDFAValueTypeDescription;
+import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
 import org.apache.padaf.xmpbox.schema.PropertyAttributesAnnotation;
 import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
@@ -61,6 +62,7 @@ public class NSMapping {
 	static {
 		BASIC_TYPES = new ArrayList<String>();
 		BASIC_TYPES.add("Text");
+		BASIC_TYPES.add("ProperName");
 		BASIC_TYPES.add("Integer");
 		BASIC_TYPES.add("Boolean");
 		BASIC_TYPES.add("Date");
@@ -78,6 +80,8 @@ public class NSMapping {
 		COMPLEX_BASIC_TYPES = new HashMap<String, String>();
 		COMPLEX_BASIC_TYPES.put("http://ns.adobe.com/xap/1.0/g/img/",
 				"Thumbnail");
+		COMPLEX_BASIC_TYPES.put(PhotoshopSchema.PHOTOSHOPURI,
+				"TextLayers");
 	}
 
 	protected Map<String, XMPSchemaFactory> nsMaps;
@@ -160,6 +164,7 @@ public class NSMapping {
 		addNameSpace("http://ns.adobe.com/pdf/1.3/", AdobePDFSchema.class);
 		addNameSpace("http://www.aiim.org/pdfa/ns/id/",	PDFAIdentificationSchema.class);
 		addNameSpace("http://ns.adobe.com/xap/1.0/rights/",	XMPRightsManagementSchema.class);
+		addNameSpace(PhotoshopSchema.PHOTOSHOPURI,	PhotoshopSchema.class);
 	}
 
 	/**

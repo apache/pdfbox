@@ -32,6 +32,7 @@ import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
@@ -382,6 +383,15 @@ public class XMPMetadata {
 	}
 
 	/**
+	 * Get the Photoshop schema This method return null if not found
+	 * 
+	 * @return The PhotoshopSchema schema or null if not declared
+	 */
+	public PhotoshopSchema getPhotoshopSchema() {
+		return (PhotoshopSchema) getSchema(PhotoshopSchema.PHOTOSHOPURI);
+	}
+	
+	/**
 	 * Create and add a XMP Basic schema to this metadata This method return the
 	 * created schema to enter information
 	 * 
@@ -415,7 +425,19 @@ public class XMPMetadata {
 		addSchema(xmpMM);
 		return xmpMM;
 	}
-
+	
+	/***
+	 * create and add Photoshop Schema to this metadata. This method return 
+	 * the created schema to enter information
+	 * @return
+	 */
+	public PhotoshopSchema createAndAddPhotoshopSchema() {
+		PhotoshopSchema photoshop = new PhotoshopSchema(this);
+		photoshop.setAboutAsSimple("");
+		addSchema(photoshop);
+		return photoshop;
+	}
+	
 	/**
 	 * Get the XMP Media Management schema This method return null if not found
 	 * 
