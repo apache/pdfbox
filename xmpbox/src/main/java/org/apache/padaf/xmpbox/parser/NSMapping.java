@@ -42,6 +42,7 @@ import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
 import org.apache.padaf.xmpbox.schema.PropertyAttributesAnnotation;
 import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
+import org.apache.padaf.xmpbox.schema.XMPBasicJobTicketSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
@@ -70,7 +71,6 @@ public class NSMapping {
 		BASIC_TYPES.add("URL");
 		BASIC_TYPES.add("bag Text");
 		BASIC_TYPES.add("bag ProperName");
-		BASIC_TYPES.add("bag Job");
 		BASIC_TYPES.add("bag Xpath");
 		BASIC_TYPES.add("seq Text");
 		BASIC_TYPES.add("seq Field");
@@ -82,6 +82,7 @@ public class NSMapping {
 				"Thumbnail");
 		COMPLEX_BASIC_TYPES.put(PhotoshopSchema.PHOTOSHOPURI,
 				"TextLayers");
+		COMPLEX_BASIC_TYPES.put(XMPBasicJobTicketSchema.JOB_TICKET_URI, "Job");
 	}
 
 	protected Map<String, XMPSchemaFactory> nsMaps;
@@ -165,6 +166,7 @@ public class NSMapping {
 		addNameSpace("http://www.aiim.org/pdfa/ns/id/",	PDFAIdentificationSchema.class);
 		addNameSpace("http://ns.adobe.com/xap/1.0/rights/",	XMPRightsManagementSchema.class);
 		addNameSpace(PhotoshopSchema.PHOTOSHOPURI,	PhotoshopSchema.class);
+		addNameSpace(XMPBasicJobTicketSchema.JOB_TICKET_URI,XMPBasicJobTicketSchema.class);
 	}
 
 	/**
