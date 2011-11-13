@@ -159,8 +159,10 @@ public abstract class AbstractFontContainer {
   }
 
   protected void checkWidthsConsistency(int cid, float widthProvidedByPdfDictionary, float widthInFontProgram) throws GlyphException {
-  	if(!(Math.floor(widthInFontProgram) == widthProvidedByPdfDictionary || Math.round(widthInFontProgram) == widthProvidedByPdfDictionary)) {
-  	  GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_METRICS, cid, 
+	  // a delta of 1/1000 unit is allowed
+	  float epsilon = widthInFontProgram/1000;
+	  if(!(Math.floor(widthInFontProgram-epsilon) <= widthProvidedByPdfDictionary && Math.round(widthInFontProgram+epsilon) >= widthProvidedByPdfDictionary)) {
+		  GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_METRICS, cid, 
 				  				"Width of the character \"" + cid 
 				  				+ "\" in the font program \""
 				  				+ this.font.getBaseFont() 
