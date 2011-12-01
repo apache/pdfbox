@@ -692,8 +692,7 @@ public abstract class BaseParser
         }
         else if( nextChar == '<' )
         {
-            openBrace = '<';
-            closeBrace = '>';
+            return parseCOSHexString();
         }
         else
         {
@@ -731,115 +730,105 @@ public abstract class BaseParser
                 char next = (char)pdfSource.read();
                 switch(next)
                 {
-                case 'n':
-                    retval.append( '\n' );
-                    break;
-                case 'r':
-                    retval.append( '\r' );
-                    break;
-                case 't':
-                    retval.append( '\t' );
-                    break;
-                case 'b':
-                    retval.append( '\b' );
-                    break;
-                case 'f':
-                    retval.append( '\f' );
-                    break;
-                case ')':
-                    // PDFBox 276 /Title (c:\)
-                    braces = checkForMissingCloseParen(braces);
-                    if( braces != 0 )
-                    {
+                    case 'n':
+                        retval.append( '\n' );
+                        break;
+                    case 'r':
+                        retval.append( '\r' );
+                        break;
+                    case 't':
+                        retval.append( '\t' );
+                        break;
+                    case 'b':
+                        retval.append( '\b' );
+                        break;
+                    case 'f':
+                        retval.append( '\f' );
+                        break;
+                    case ')':
+                        // PDFBox 276 /Title (c:\)
+                        braces = checkForMissingCloseParen(braces);
+                        if( braces != 0 )
+                        {
+                            retval.append( next );
+                        }
+                        else
+                        {
+                            retval.append('\\');
+                        }
+                        break;
+                    case '(':
+                    case '\\':
                         retval.append( next );
-                    }
-                    else
-                    {
-                        retval.append('\\');
-                    }
-                    break;
-                case '(':
-                case '\\':
-                    retval.append( next );
-                    break;
-                case 10:
-                case 13:
-                    //this is a break in the line so ignore it and the newline and continue
-                    c = pdfSource.read();
-                    while( isEOL(c) && c != -1)
-                    {
+                        break;
+                    case 10:
+                    case 13:
+                        //this is a break in the line so ignore it and the newline and continue
                         c = pdfSource.read();
-                    }
-                    nextc = c;
-                    break;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                {
-                    StringBuffer octal = new StringBuffer();
-                    octal.append( next );
-                    c = pdfSource.read();
-                    char digit = (char)c;
-                    if( digit >= '0' && digit <= '7' )
+                        while( isEOL(c) && c != -1)
+                        {
+                            c = pdfSource.read();
+                        }
+                        nextc = c;
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
                     {
-                        octal.append( digit );
+                        StringBuffer octal = new StringBuffer();
+                        octal.append( next );
                         c = pdfSource.read();
-                        digit = (char)c;
+                        char digit = (char)c;
                         if( digit >= '0' && digit <= '7' )
                         {
                             octal.append( digit );
+                            c = pdfSource.read();
+                            digit = (char)c;
+                            if( digit >= '0' && digit <= '7' )
+                            {
+                                octal.append( digit );
+                            }
+                            else
+                            {
+                                nextc = c;
+                            }
                         }
                         else
                         {
                             nextc = c;
                         }
+    
+                        int character = 0;
+                        try
+                        {
+                            character = Integer.parseInt( octal.toString(), 8 );
+                        }
+                        catch( NumberFormatException e )
+                        {
+                            throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
+                        }
+                        retval.append( character );
+                        break;
                     }
-                    else
+                    default:
                     {
-                        nextc = c;
+                        retval.append( '\\' );
+                        retval.append( next );
+                        //another problem with PDF's, sometimes the \ doesn't really
+                        //mean escape like the PDF spec says it does, sometimes is should be literal
+                        //which is what we will assume here.
+                        //throw new IOException( "Unexpected break sequence '" + next + "' " + pdfSource );
                     }
-
-                    int character = 0;
-                    try
-                    {
-                        character = Integer.parseInt( octal.toString(), 8 );
-                    }
-                    catch( NumberFormatException e )
-                    {
-                        throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
-                    }
-                    retval.append( character );
-                    break;
-                }
-                default:
-                {
-                    retval.append( '\\' );
-                    retval.append( next );
-                    //another ficken problem with PDF's, sometimes the \ doesn't really
-                    //mean escape like the PDF spec says it does, sometimes is should be literal
-                    //which is what we will assume here.
-                    //throw new IOException( "Unexpected break sequence '" + next + "' " + pdfSource );
-                }
                 }
             }
             else
             {
-                if( openBrace == '<' )
-                {
-                    if( isHexDigit(ch) )
-                    {
-                        retval.append( ch );
-                    }
-                }
-                else
-                {
-                    retval.append( ch );
-                }
+                retval.append( ch );
             }
             if (nextc != -2)
             {
@@ -854,14 +843,57 @@ public abstract class BaseParser
         {
             pdfSource.unread(c);
         }
-        if( openBrace == '<' )
-        {
-            retval = COSString.createFromHexString(
-                    retval.getString(), forceParsing);
-        }
         return retval;
     }
 
+    /**
+     * This will parse a PDF HEX string with fail fast semantic
+     * meaning that we stop if a not allowed character is found.
+     * This is necessary in order to detect malformed input and
+     * be able to skip to next object start.
+     *
+     * We assume starting '<' was already read.
+     * 
+     * @return The parsed PDF string.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    private final COSString parseCOSHexString() throws IOException
+    {
+    	
+        final StringBuilder sBuf = new StringBuilder();
+    	
+        while( true )
+        {
+            int c = pdfSource.read();
+      	 
+            if ( isHexDigit((char)c) )
+            {
+                sBuf.append( (char) c );
+            }
+            else if ( c == '>' )
+            {
+                break;
+            }
+            else if ( c < 0 ) 
+            {
+                throw new IOException( "Missing closing bracket for hex string. Reached EOS." );
+            }
+            else if ( ( c == ' ' ) || ( c == '\n' ) ||
+                    ( c == '\t' ) || ( c == '\r' ) ||
+                    ( c == '\b' ) || ( c == '\f' ) )
+            {
+                continue;
+            }
+            else
+            {
+                // character is neither a hex char nor end of string not EOS nor whitespace
+                throw new IOException( "Not allowed character in hex string; char code: " + c );
+            }
+        }
+        return COSString.createFromHexString( sBuf.toString(), forceParsing );
+    }
+    
     /**
      * This will parse a PDF array object.
      *
