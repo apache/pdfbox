@@ -71,6 +71,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
  */
 public class PDJpeg extends PDXObjectImage
 {
+    private BufferedImage image = null;
 
     private static final String JPG = "jpg";
 
@@ -241,11 +242,16 @@ public class PDJpeg extends PDXObjectImage
      * {@inheritDoc}
      */
     public BufferedImage getRGBImage() throws IOException
-    {   //TODO PKOCH
+    {   
+        if (image != null)
+        {
+            return image;
+        }
+        
         BufferedImage bi = null;
         boolean readError = false;
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        write2OutputStream(os);
+        removeAllFiltersButDCT(os);
         os.close();
         byte[] img = os.toByteArray();
         
@@ -302,13 +308,14 @@ public class PDJpeg extends PDXObjectImage
             CompositeImage compositeImage = new CompositeImage(bi, smaskBI);
             BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
 
-            return rgbImage;
+            image = rgbImage;
         }
         else
         {
             // But if there is no soft mask, use the unaltered image.
-            return bi;
+            image = bi;
         }
+        return image;
     }
 
     /**
@@ -316,6 +323,16 @@ public class PDJpeg extends PDXObjectImage
      * {@inheritDoc}
      */
     public void write2OutputStream(OutputStream out) throws IOException
+    {
+        getRGBImage();
+        if (image != null) 
+        {
+            ImageIO.write(image, JPG, out);
+        }
+
+    }
+
+    private void removeAllFiltersButDCT(OutputStream out) throws IOException
     {
         InputStream data = getPDStream().getPartiallyFilteredStream( DCT_FILTERS );
         byte[] buf = new byte[1024];
