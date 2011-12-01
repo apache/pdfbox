@@ -55,7 +55,7 @@ public abstract class BaseParser
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(BaseParser.class);
+    private static final Log LOG = LogFactory.getLog(BaseParser.class);
 
     private static final int E = 'e';
     private static final int N = 'n';
@@ -64,13 +64,15 @@ public abstract class BaseParser
     private static final int S = 's';
     private static final int T = 't';
     private static final int R = 'r';
-    //private static final int E = 'e';
     private static final int A = 'a';
     private static final int M = 'm';
 
     private static final int O = 'o';
     private static final int B = 'b';
     private static final int J = 'j';
+
+    private final int    strmBufLen = 2048;
+    private final byte[] strmBuf    = new byte[ strmBufLen ];
 
     /**
      * This is a byte array that will be used for comparisons.
@@ -85,9 +87,33 @@ public abstract class BaseParser
         new byte[] { E, N, D, O, B, J };
 
     /**
-     * This is a byte array that will be used for comparisons.
+     * This is a string constant that will be used for comparisons.
      */
     public static final String DEF = "def";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String ENDOBJ_STRING = "endobj";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String ENDSTREAM_STRING = "endstream";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String STREAM_STRING = "stream";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String TRUE = "true";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String FALSE = "false";
+    /**
+     * This is a string constant that will be used for comparisons.
+     */
+    private static final String NULL = "null";
 
     /**
      * Default value of the {@link #forceParsing} flag.
@@ -110,6 +136,9 @@ public abstract class BaseParser
      */
     protected final boolean forceParsing;
 
+    /**
+     * Default constructor.
+     */
     public BaseParser()
     {
         this.forceParsing = FORCE_PARSING;
@@ -120,16 +149,16 @@ public abstract class BaseParser
      *
      * @since Apache PDFBox 1.3.0
      * @param input The input stream to read the data from.
-     * @param forceParcing flag to skip malformed or otherwise unparseable
+     * @param forceParsingValue flag to skip malformed or otherwise unparseable
      *                     input where possible
      * @throws IOException If there is an error reading the input stream.
      */
-    public BaseParser(InputStream input, boolean forceParsing)
+    public BaseParser(InputStream input, boolean forceParsingValue)
             throws IOException
     {
         this.pdfSource = new PushBackInputStream(
                 new BufferedInputStream(input, 16384),  4096);
-        this.forceParsing = forceParsing;
+        this.forceParsing = forceParsingValue;
     }
 
     /**
@@ -138,7 +167,8 @@ public abstract class BaseParser
      * @param input The input stream to read the data from.
      * @throws IOException If there is an error reading the input stream.
      */
-    public BaseParser(InputStream input) throws IOException {
+    public BaseParser(InputStream input) throws IOException 
+    {
         this(input, FORCE_PARSING);
     }
 
@@ -148,7 +178,8 @@ public abstract class BaseParser
      * @param input The array to read the data from.
      * @throws IOException If there is an error reading the byte data.
      */
-    protected BaseParser(byte[] input) throws IOException {
+    protected BaseParser(byte[] input) throws IOException 
+    {
         this(new ByteArrayInputStream(input));
     }
 
@@ -240,40 +271,53 @@ public abstract class BaseParser
                 {
                     //an invalid dictionary, we are expecting
                     //the key, read until we can recover
-                    log.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
+                    LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
                     int read = pdfSource.read();
                     while(read != -1 && read != '/' && read != '>')
                     {
                         // in addition to stopping when we find / or >, we also want
                         // to stop when we find endstream or endobj.
-                        if(read==E) {
+                        if(read==E) 
+                        {
                             read = pdfSource.read();
-                            if(read==N) {
+                            if(read==N) 
+                            {
                                 read = pdfSource.read();
-                                if(read==D) {
+                                if(read==D)
+                                {
                                     read = pdfSource.read();
-                                    if(read==S) {
+                                    if(read==S) 
+                                    {
                                         read = pdfSource.read();
-                                        if(read==T) {
+                                        if(read==T) 
+                                        {
                                             read = pdfSource.read();
-                                            if(read==R) {
+                                            if(read==R) 
+                                            {
                                                 read = pdfSource.read();
-                                                if(read==E) {
+                                                if(read==E) 
+                                                {
                                                     read = pdfSource.read();
-                                                    if(read==A) {
+                                                    if(read==A) 
+                                                    {
                                                         read = pdfSource.read();
-                                                        if(read==M) {
+                                                        if(read==M) 
+                                                        {
                                                             return obj; // we're done reading this object!
                                                         }
                                                     }
                                                 }
                                             }
                                         }
-                                    } else if(read==O) {
+                                    } 
+                                    else if(read==O) 
+                                    {
                                         read = pdfSource.read();
-                                        if(read==B) {
+                                        if(read==B) 
+                                        {
                                             read = pdfSource.read();
-                                            if(read==J) {
+                                            if(read==J) 
+                                            {
                                                 return obj; // we're done reading this object!
                                             }
                                         }
@@ -314,7 +358,7 @@ public abstract class BaseParser
 
                 if( value == null )
                 {
-                    log.warn("Bad Dictionary Declaration " + pdfSource );
+                    LOG.warn("Bad Dictionary Declaration " + pdfSource );
                 }
                 else
                 {
@@ -354,7 +398,7 @@ public abstract class BaseParser
             String streamString = readString();
             //long streamLength;
 
-            if (!streamString.equals("stream"))
+            if (!streamString.equals(STREAM_STRING))
             {
                 throw new IOException("expected='stream' actual='" + streamString + "'");
             }
@@ -407,14 +451,14 @@ public abstract class BaseParser
             skipSpaces();
             endStream = readString();
 
-            if (!endStream.equals("endstream"))
+            if (!endStream.equals(ENDSTREAM_STRING))
             {
                 /*
                  * Sometimes stream objects don't have an endstream tag so readUntilEndStream(out)
                  * also can stop on endobj tags. If that's the case we need to make sure to unread
                  * the endobj so parseObject() can handle that case normally.
                  */
-                if (endStream.startsWith("endobj"))
+                if (endStream.startsWith(ENDOBJ_STRING))
                 {
                     byte[] endobjarray = endStream.getBytes("ISO-8859-1");
                     pdfSource.unread(endobjarray);
@@ -425,7 +469,7 @@ public abstract class BaseParser
                  * and not part of the endstream keyword. Ex. Some files would have "endstream8"
                  * instead of "endstream"
                  */
-                else if(endStream.startsWith("endstream"))
+                else if(endStream.startsWith(ENDSTREAM_STRING))
                 {
                     String extra = endStream.substring(9, endStream.length());
                     endStream = endStream.substring(0, 9);
@@ -440,7 +484,7 @@ public abstract class BaseParser
                      */
                     readUntilEndStream( out );
                     endStream = readString();
-                    if( !endStream.equals( "endstream" ) )
+                    if( !endStream.equals( ENDSTREAM_STRING ) )
                     {
                         throw new IOException("expected='endstream' actual='" + endStream + "' " + pdfSource);
                     }
@@ -463,83 +507,111 @@ public abstract class BaseParser
      * object. Some pdf files, however, forget to write some endstream tags
      * and just close off objects with an "endobj" tag so we have to handle
      * this case as well.
-     * @param out The stream we write out to.
+     * 
+     * This method is optimized using buffered IO and reduced number of
+     * byte compare operations.
+     * 
+     * @param out  stream we write out to.
+     * 
      * @throws IOException
      */
-    private void readUntilEndStream( OutputStream out ) throws IOException{
-        int byteRead;
-        do{ //use a fail fast test for end of stream markers
-            byteRead = pdfSource.read();
-            if(byteRead==E){//only branch if "e"
-                byteRead = pdfSource.read();
-                if(byteRead==N){ //only continue branch if "en"
-                    byteRead = pdfSource.read();
-                    if(byteRead==D){//up to "end" now
-                        byteRead = pdfSource.read();
-                        if(byteRead==S){
-                            byteRead = pdfSource.read();
-                            if(byteRead==T){
-                                byteRead = pdfSource.read();
-                                if(byteRead==R){
-                                    byteRead = pdfSource.read();
-                                    if(byteRead==E){
-                                        byteRead = pdfSource.read();
-                                        if(byteRead==A){
-                                            byteRead = pdfSource.read();
-                                            if(byteRead==M){
-                                                //found the whole marker
-                                                pdfSource.unread( ENDSTREAM );
-                                                return;
-                                            }else{
-                                                out.write(ENDSTREAM, 0, 8);
-                                            }
-                                        }else{
-                                            out.write(ENDSTREAM, 0, 7);
-                                        }
-                                    }else{
-                                        out.write(ENDSTREAM, 0, 6);
-                                    }
-                                }else{
-                                    out.write(ENDSTREAM, 0, 5);
-                                }
-                            }else{
-                                out.write(ENDSTREAM, 0, 4);
-                            }
-                        }else if(byteRead==O){
-                            byteRead = pdfSource.read();
-                            if(byteRead==B){
-                                byteRead = pdfSource.read();
-                                if(byteRead==J){
-                                    //found whole marker
-                                    pdfSource.unread( ENDOBJ );
-                                    return;
-                                }else{
-                                    out.write(ENDOBJ, 0, 5);
-                                }
-                            }else{
-                                out.write(ENDOBJ, 0, 4);
-                            }
-                        }else{
-                            out.write(E);
-                            out.write(N);
-                            out.write(D);
-                        }
-                    }else{
-                        out.write(E);
-                        out.write(N);
-                    }
-                }else{
-                    out.write(E);
-                }
-            }
-            if(byteRead!=-1)
+    private void readUntilEndStream( final OutputStream out ) throws IOException
+    {
+
+        int bufSize;
+        int charMatchCount = 0;
+        byte[] keyw = ENDSTREAM;
+        
+        final int quickTestOffset = 5;  // last character position of shortest keyword ('endobj')
+        
+        // read next chunk into buffer; already matched chars are added to beginning of buffer
+        while ( ( bufSize = pdfSource.read( strmBuf, charMatchCount, strmBufLen - charMatchCount ) ) > 0 ) 
+        {
+            bufSize += charMatchCount;
+            
+            int bIdx = charMatchCount;
+            int quickTestIdx;
+        
+            // iterate over buffer, trying to find keyword match
+            for ( int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ ) 
             {
-                out.write(byteRead);
+                // reduce compare operations by first test last character we would have to
+                // match if current one matches; if it is not a character from keywords
+                // we can move behind the test character;
+                // this shortcut is inspired by Boyer–Moore string search algorithm
+                // and can reduce parsing time by approx. 20%
+                if ( ( charMatchCount == 0 ) &&
+                         ( ( quickTestIdx = bIdx + quickTestOffset ) < maxQuicktestIdx ) ) 
+                {
+                    
+                    final byte ch = strmBuf[quickTestIdx];
+                    if ( ( ch > 't' ) || ( ch < 'a' ) ) 
+                    {
+                        // last character we would have to match if current character would match
+                        // is not a character from keywords -> jump behind and start over
+                        bIdx = quickTestIdx;
+                        continue;
+                    }
+                }
+                
+                final byte ch = strmBuf[bIdx];  // could be negative - but we only compare to ASCII
+            
+                if ( ch == keyw[ charMatchCount ] ) 
+                {
+                    if ( ++charMatchCount == keyw.length ) 
+                    {
+                        // match found
+                        bIdx++;
+                        break;
+                    }
+                } 
+                else 
+                {
+                    if ( ( charMatchCount == 3 ) && ( ch == ENDOBJ[ charMatchCount ] ) ) 
+                    {
+                        // maybe ENDSTREAM is missing but we could have ENDOBJ
+                        keyw = ENDOBJ;
+                        charMatchCount++;
+                        
+                    } 
+                    else 
+                    {
+                        // no match; incrementing match start by 1 would be dumb since we already know matched chars
+                        // depending on current char read we may already have beginning of a new match:
+                        // 'e': first char matched;
+                        // 'n': if we are at match position idx 7 we already read 'e' thus 2 chars matched
+                        // for each other char we have to start matching first keyword char beginning with next 
+                        // read position
+                        charMatchCount = ( ch == E ) ? 1 : ( ( ch == N ) && ( charMatchCount == 7 ) ) ? 2 : 0;
+                        // search again for 'endstream'
+                        keyw = ENDSTREAM;
+                    }
+                } 
+            }  // for
+            
+            int contentBytes = Math.max( 0, bIdx - charMatchCount );
+            
+            // write buffer content until first matched char to output stream
+            if ( contentBytes > 0 )
+            {
+                out.write( strmBuf, 0, contentBytes );
             }
-
-        }while(byteRead!=-1);
+            if ( charMatchCount == keyw.length ) 
+            {
+                // keyword matched; unread matched keyword (endstream/endobj) and following buffered content
+                pdfSource.unread( strmBuf, contentBytes, bufSize - contentBytes );
+                break;
+                
+            } 
+            else 
+            {
+                // copy matched chars at start of buffer
+                System.arraycopy( keyw, 0, strmBuf, 0, charMatchCount );
+            }
+            
+        }  // while
     }
-
+    
     /**
      * This is really a bug in the Document creators code, but it caused a crash
      * in PDFBox, the first bug was in this format:
@@ -841,13 +913,13 @@ public abstract class BaseParser
             else
             {
                 //it could be a bad object in the array which is just skipped
-                log.warn("Corrupt object reference" );
+                LOG.warn("Corrupt object reference" );
 
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
                 pdfSource.unread(isThisTheEnd.getBytes("ISO-8859-1"));
-                if("endobj".equals(isThisTheEnd) || "endstream".equals(isThisTheEnd))
+                if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
                 }
@@ -958,7 +1030,7 @@ public abstract class BaseParser
         if( c == 't' )
         {
             String trueString = new String( pdfSource.readFully( 4 ), "ISO-8859-1" );
-            if( !trueString.equals( "true" ) )
+            if( !trueString.equals( TRUE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "'" );
             }
@@ -970,7 +1042,7 @@ public abstract class BaseParser
         else if( c == 'f' )
         {
             String falseString = new String( pdfSource.readFully( 5 ), "ISO-8859-1" );
-            if( !falseString.equals( "false" ) )
+            if( !falseString.equals( FALSE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "'" );
             }
@@ -1033,7 +1105,7 @@ public abstract class BaseParser
         case 'n':   // null
         {
             String nullString = readString();
-            if( !nullString.equals( "null") )
+            if( !nullString.equals( NULL) )
             {
                 throw new IOException("Expected='null' actual='" + nullString + "'");
             }
@@ -1043,7 +1115,7 @@ public abstract class BaseParser
         case 't':
         {
             String trueString = new String( pdfSource.readFully(4), "ISO-8859-1" );
-            if( trueString.equals( "true" ) )
+            if( trueString.equals( TRUE ) )
             {
                 retval = COSBoolean.TRUE;
             }
@@ -1056,7 +1128,7 @@ public abstract class BaseParser
         case 'f':
         {
             String falseString = new String( pdfSource.readFully(5), "ISO-8859-1" );
-            if( falseString.equals( "false" ) )
+            if( falseString.equals( FALSE ) )
             {
                 retval = COSBoolean.FALSE;
             }
@@ -1113,7 +1185,7 @@ public abstract class BaseParser
                 }
 
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
-                if("endobj".equals(badString) || "endstream".equals(badString))
+                if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
                 {
                     pdfSource.unread(badString.getBytes("ISO-8859-1"));
                 }
