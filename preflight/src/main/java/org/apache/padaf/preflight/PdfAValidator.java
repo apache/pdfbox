@@ -43,5 +43,7 @@ public interface PdfAValidator {
    * Return the version qualified name of the product
    */
   String getFullName ();
+  
+  String getVersion ();
 
 }
