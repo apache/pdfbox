@@ -148,24 +148,6 @@ public class ExtractImages
                         PDResources resources = page.getResources();
                         // extract all XObjectImages which are part of the page resources
                         processResources(resources, prefix, addKey);
-                        Map<String, PDXObject> xObjects = resources.getXObjects();
-                        if( xObjects != null )
-                        {
-                            Iterator<String> xObjectsIter = xObjects.keySet().iterator();
-                            while( xObjectsIter.hasNext() )
-                            {
-                                String key = xObjectsIter.next();
-                                PDXObject xObject = xObjects.get( key );
-                                // an XObjectForm may contain further XObjectImages
-                                if (xObject instanceof PDXObjectForm) 
-                                {
-                                    PDXObjectForm xObjectForm = (PDXObjectForm)xObject;
-                                    PDResources formResources = xObjectForm.getResources();
-                                    processResources(formResources, prefix, addKey);
-                                }
-                            }
-                        }
-
                     }
                 }
                 finally
@@ -181,25 +163,37 @@ public class ExtractImages
 
     private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
     {
-        Map<String, PDXObjectImage> images = resources.getImages();
-        if( images != null )
+        Map<String, PDXObject> xobjects = resources.getXObjects();
+        if( xobjects != null )
         {
-            Iterator<String> imageIter = images.keySet().iterator();
-            while( imageIter.hasNext() )
+            Iterator<String> xobjectIter = xobjects.keySet().iterator();
+            while( xobjectIter.hasNext() )
             {
-                String key = imageIter.next();
-                PDXObjectImage image = images.get( key );
-                String name = null;
-                if (addKey) 
+                String key = xobjectIter.next();
+                PDXObject xobject = xobjects.get( key );
+                // write the images
+                if (xobject instanceof PDXObjectImage)
                 {
-                    name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                    PDXObjectImage image = (PDXObjectImage)xobject;
+                    String name = null;
+                    if (addKey) 
+                    {
+                        name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                    }
+                    else 
+                    {
+                        name = getUniqueFileName( prefix, image.getSuffix() );
+                    }
+                    System.out.println( "Writing image:" + name );
+                    image.write2file( name );
                 }
-                else 
+                // maybe there are more images embedded in a form object
+                else if (xobject instanceof PDXObjectForm)
                 {
-                    name = getUniqueFileName( prefix, image.getSuffix() );
+                    PDXObjectForm xObjectForm = (PDXObjectForm)xobject;
+                    PDResources formResources = xObjectForm.getResources();
+                    processResources(formResources, prefix, addKey);
                 }
-                System.out.println( "Writing image:" + name );
-                image.write2file( name );
             }
         }
     }
