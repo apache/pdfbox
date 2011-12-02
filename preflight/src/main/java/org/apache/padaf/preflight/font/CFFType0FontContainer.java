@@ -23,10 +23,7 @@ package org.apache.padaf.preflight.font;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFFont.Mapping;
@@ -34,13 +31,6 @@ import org.apache.padaf.preflight.ValidationConstants;
 
 
 public class CFFType0FontContainer extends AbstractFontContainer {
-	private Map<Integer, Integer> widthsArray = new LinkedHashMap<Integer, Integer>(0);
-	/**
-	 * Represent the missingWidth value of the FontDescriptor dictionary.
-	 * According to the PDF Reference, if this value is missing, the default 
-	 * one is 0.
-	 */
-	private float defaultGlyphWidth = 0;
 	/**
 	 * Object which contains the CFF data extracted by the
 	 * CFFParser object
@@ -58,7 +48,7 @@ public class CFFType0FontContainer extends AbstractFontContainer {
 	public void checkCID(int cid) throws GlyphException {
 	  if (isAlreadyComputedCid(cid)) {
 		  return;
-	  }
+	  } 
 
 		// ---- build the font container and keep it in the Handler.
 	  boolean cidFound = false;
@@ -81,13 +71,13 @@ public class CFFType0FontContainer extends AbstractFontContainer {
 			throw ge;
 		}
 
-
-		float widthProvidedByPdfDictionary = this.defaultGlyphWidth;
-		if (this.widthsArray.containsKey(cid)) {
-			widthProvidedByPdfDictionary = this.widthsArray.get(cid);
+		final float widthProvidedByPdfDictionary = this.font.getFontWidth(cid);
+		float defaultGlyphWidth = 0;
+		if (this.font.getFontDescriptor() != null) {
+			defaultGlyphWidth = this.font.getFontDescriptor().getMissingWidth();
 		}
+		
 		float widthInFontProgram = 0;
-
 		try {
 			// ---- Search the CID in all CFFFont in the FontProgram
 			for (CFFFont cff : fontObject) {
@@ -103,16 +93,8 @@ public class CFFType0FontContainer extends AbstractFontContainer {
 			throw ge;
 		}
 
-		checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
+	  checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
 	  addKnownCidElement(new GlyphDetail(cid));
-	}
-
-	void setWidthsArray(Map<Integer, Integer> widthsArray) {
-		this.widthsArray = widthsArray;
-	}
-
-	void setDefaultGlyphWidth(float defaultGlyphWidth) {
-		this.defaultGlyphWidth = defaultGlyphWidth;
 	}
 
 	void setFontObject(List<CFFFont> fontObject) {
