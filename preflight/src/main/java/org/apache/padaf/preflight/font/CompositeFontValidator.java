@@ -23,9 +23,7 @@ package org.apache.padaf.preflight.font;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-
 
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
@@ -666,8 +664,6 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 */
 	protected boolean checkTTFontMetrics(TrueTypeFont ttf)
 	throws ValidationException {
-		LinkedHashMap<Integer, Integer> widths = getWidthsArray();
-		int defaultWidth = this.cidFont.getInt("DW", 1000);
 		int unitsPerEm = ttf.getHeader().getUnitsPerEm();
 		int[] glyphWidths = ttf.getHorizontalMetrics().getAdvanceWidth();
 		/* In a Mono space font program, the length of the AdvanceWidth array must be one.
@@ -677,9 +673,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		 */
 		int numberOfLongHorMetrics = ttf.getHorizontalHeader().getNumberOfHMetrics();
 		CFFType2FontContainer type2FontContainer = ((CompositeFontContainer)this.fontContainer).getCFFType2();
-		type2FontContainer.setPdfWidths(widths);
 		type2FontContainer.setCmap(this.cidToGidMap);
-		type2FontContainer.setDefaultGlyphWidth(defaultWidth);
 		type2FontContainer.setFontObject(ttf);
 		type2FontContainer.setGlyphWidths(glyphWidths);
 		type2FontContainer.setNumberOfLongHorMetrics(numberOfLongHorMetrics);
@@ -698,13 +692,8 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	protected boolean checkCIDFontWidths(List<CFFFont> lCFonts)
 	throws ValidationException {
 		// ---- Extract Widths and default Width from the CIDFont dictionary
-		LinkedHashMap<Integer, Integer> widths = getWidthsArray();
-		int defaultWidth = this.cidFont.getInt("DW", 1000);
 		CFFType0FontContainer type0FontContainer = ((CompositeFontContainer)this.fontContainer).getCFFType0();
 		type0FontContainer.setFontObject(lCFonts);
-		type0FontContainer.setDefaultGlyphWidth(defaultWidth);
-		type0FontContainer.setWidthsArray(widths);
-
 		return true;
 	}
 
@@ -770,68 +759,6 @@ public class CompositeFontValidator extends AbstractFontValidator {
 				}
 
 				return checkTTFontMetrics(ttf) && checkFontFileMetaData(pfDescriptor, ff2);
-	}
-
-	/**
-	 * For a CIDFont the width array, there are two formats of width array :
-	 * <UL>
-	 * <li>C [W1...Wn] : C is an integer specifying a starting CID value and the
-	 * array of n numbers specify widths for n consecutive CIDs.
-	 * <li>Cf Cl W : Defines the same width W for the range Cf to Cl
-	 * </UL>
-	 * This method gets a linked hash map of width where the key is a CID and the
-	 * value is the Width.
-	 * 
-	 * @return
-	 * @throws ValidationException
-	 */
-	protected LinkedHashMap<Integer, Integer> getWidthsArray()
-	throws ValidationException {
-		LinkedHashMap<Integer, Integer> widthsMap = new LinkedHashMap<Integer, Integer>();
-		COSDocument cDoc = handler.getDocument().getDocument();
-		COSBase cBase = this.cidFont.getItem(COSName.getPDFName("W"));
-		COSArray wArr = COSUtils.getAsArray(cBase, cDoc);
-
-		for (int i = 0; i < wArr.size();) {
-
-			int firstCid = wArr.getInt(i);
-
-			if (i + 1 >= wArr.size()) {
-				throw new ValidationException("Invalid format of the W entry");
-			}
-
-			COSBase cb = wArr.getObject(i + 1);
-			if (COSUtils.isArray(cb, cDoc)) {
-
-				// ---- First Format
-				COSArray seqWidths = COSUtils.getAsArray(cb, cDoc);
-				widthsMap.put(firstCid, seqWidths.getInt(0));
-				for (int jw = 1; jw < seqWidths.size(); jw++) {
-					widthsMap.put((firstCid + jw), seqWidths.getInt(jw));
-				}
-
-				i = i + 2;
-
-			} else {
-
-				// ---- Second Format
-				if (i + 2 >= wArr.size()) {
-					throw new ValidationException("Invalid format of the W entry");
-				}
-
-				int lastCid = wArr.getInt(i + 1);
-				int commonWidth = wArr.getInt(i + 2);
-				for (int jw = firstCid; jw <= lastCid; ++jw) {
-					widthsMap.put((firstCid + jw), commonWidth);
-				}
-
-				i = i + 3;
-
-			}
-
-		}
-
-		return widthsMap;
 	}
 
 	/**

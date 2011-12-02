@@ -25,9 +25,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.fontbox.cff.CFFFont;
@@ -39,14 +37,11 @@ import org.apache.padaf.preflight.ValidationResult.ValidationError;
 import org.apache.padaf.preflight.font.type1.Type1;
 import org.apache.padaf.preflight.font.type1.Type1Parser;
 import org.apache.padaf.preflight.utils.COSUtils;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 public class Type1FontValidator extends SimpleFontValidator {
@@ -250,22 +245,6 @@ public class Type1FontValidator extends SimpleFontValidator {
 
 			((Type1FontContainer)this.fontContainer).setCFFFontObjects(lCFonts);
 
-
-			List<?> pdfWidths = this.pFont.getWidths();
-			int firstChar = pFont.getFirstChar();
-			float defaultGlyphWidth = pFontDesc.getMissingWidth();
-
-			COSArray widths = null;
-			if (pdfWidths instanceof COSArrayList) {
-				widths = ((COSArrayList) pdfWidths).toList();
-			} else {
-				widths = ((COSArray) pdfWidths);
-			}
-
-			((Type1FontContainer)this.fontContainer).setWidthsArray(widths.toList());
-			((Type1FontContainer)this.fontContainer).setFirstCharInWidthsArray(firstChar);
-			((Type1FontContainer)this.fontContainer).setDefaultGlyphWidth(defaultGlyphWidth);
-
 			return true;
 		} catch (IOException e) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
@@ -298,21 +277,6 @@ public class Type1FontValidator extends SimpleFontValidator {
 			Type1 parsedData = parserForMetrics.parse();
 
 			((Type1FontContainer)this.fontContainer).setFontObject(parsedData);
-
-			List<?> pdfWidths = this.pFont.getWidths();
-			int firstChar = pFont.getFirstChar();
-			float defaultGlyphWidth = pFontDesc.getMissingWidth();
-
-			COSArray widths = null;
-			if (pdfWidths instanceof COSArrayList) {
-				widths = ((COSArrayList) pdfWidths).toList();
-			} else {
-				widths = ((COSArray) pdfWidths);
-			}
-
-			((Type1FontContainer)this.fontContainer).setWidthsArray(widths.toList());
-			((Type1FontContainer)this.fontContainer).setFirstCharInWidthsArray(firstChar);
-			((Type1FontContainer)this.fontContainer).setDefaultGlyphWidth(defaultGlyphWidth);
 
 			return true;
 		} catch (IOException e) {

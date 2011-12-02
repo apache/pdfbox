@@ -23,8 +23,6 @@ package org.apache.padaf.preflight.font;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
@@ -36,7 +34,6 @@ import org.apache.padaf.preflight.ValidationConstants;
 import org.apache.padaf.preflight.ValidationException;
 import org.apache.padaf.preflight.ValidationResult;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -44,7 +41,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 public class TrueTypeFontValidator extends SimpleFontValidator {
@@ -53,7 +49,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 	 * @param obj
 	 */
 	public TrueTypeFontValidator(DocumentHandler handler, COSObject obj)
-	throws ValidationException {
+			throws ValidationException {
 		super(handler, obj);
 	}
 
@@ -126,8 +122,8 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 		PDStream ff2 = pFontDesc.getFontFile2();
 		PDStream ff3 = pFontDesc.getFontFile3();
 		boolean onlyOne = (ff1 != null && ff2 == null && ff3 == null)
-		|| (ff1 == null && ff2 != null && ff3 == null)
-		|| (ff1 == null && ff2 == null && ff3 != null);
+				|| (ff1 == null && ff2 != null && ff3 == null)
+				|| (ff1 == null && ff2 == null && ff3 != null);
 
 		if (ff2 == null || !onlyOne) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
@@ -157,32 +153,32 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 				}
 
 				// ---- check the encoding part.
-					if (pFontDesc.isNonSymbolic()) {
-						// ---- only MacRomanEncoding or WinAnsiEncoding are allowed for a non
-						// symbolic font
-						Encoding encodingValue = this.pFont.getFontEncoding();
-						if (encodingValue == null
-								|| !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding)) {
-							this.fontContainer.addError(new ValidationResult.ValidationError(
-									ValidationConstants.ERROR_FONTS_ENCODING,
-									"The Encoding is invalid for the NonSymbolic TTF"));
-							return false;
-						}
-					} else if (pFontDesc.isSymbolic()) {
-						// ---- For symbolic font, no encoding entry is allowed and only one
-						// encoding entry is expected into the FontFile CMap
-						if (((COSDictionary) this.fDictionary.getCOSObject()).getItem(COSName
-								.getPDFName(FONT_DICTIONARY_KEY_ENCODING)) != null) {
-							this.fontContainer.addError(new ValidationResult.ValidationError(
-									ValidationConstants.ERROR_FONTS_ENCODING,
-									"The Encoding should be missing for the Symbolic TTF"));
-							return false;
-						} // else check the content of the Font CMap (see below)
-
-					} else {
-						// ----- should never happen
-						return true;
+				if (pFontDesc.isNonSymbolic()) {
+					// ---- only MacRomanEncoding or WinAnsiEncoding are allowed for a non
+					// symbolic font
+					Encoding encodingValue = this.pFont.getFontEncoding();
+					if (encodingValue == null
+							|| !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding)) {
+						this.fontContainer.addError(new ValidationResult.ValidationError(
+								ValidationConstants.ERROR_FONTS_ENCODING,
+								"The Encoding is invalid for the NonSymbolic TTF"));
+						return false;
 					}
+				} else if (pFontDesc.isSymbolic()) {
+					// ---- For symbolic font, no encoding entry is allowed and only one
+					// encoding entry is expected into the FontFile CMap
+					if (((COSDictionary) this.fDictionary.getCOSObject()).getItem(COSName
+							.getPDFName(FONT_DICTIONARY_KEY_ENCODING)) != null) {
+						this.fontContainer.addError(new ValidationResult.ValidationError(
+								ValidationConstants.ERROR_FONTS_ENCODING,
+								"The Encoding should be missing for the Symbolic TTF"));
+						return false;
+					} // else check the content of the Font CMap (see below)
+
+				} else {
+					// ----- should never happen
+					return true;
+				}
 
 				/*
 				 * ---- try to load the font using the TTFParser object. If the font is
@@ -200,8 +196,11 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 								"The Encoding should be missing for the Symbolic TTF"));
 						return false;
 					}
-
-					return checkFontMetrics(ttf) && checkFontFileMetaData(pFontDesc, ff2);
+					
+					((TrueTypeFontContainer)this.fontContainer).setFontObjectAndInitializeInnerFields(ttf);
+					((TrueTypeFontContainer)this.fontContainer).setCMap(getCMapOfFontProgram(ttf));
+					
+					return checkFontFileMetaData(pFontDesc, ff2);
 				} catch (IOException e) {
 					this.fontContainer.addError(new ValidationResult.ValidationError(
 							ValidationConstants.ERROR_FONTS_TRUETYPE_DAMAGED,
@@ -212,38 +211,6 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 						IOUtils.closeQuietly(bis);
 					}
 				}
-	}
-
-	/**
-	 * This method checks the metric consistency. If the validation fails, the
-	 * FontContainer is updated. If the validation is a success, the
-	 * FontContainer.cidKnownByFont map is updated.
-	 * 
-	 * @param ttf
-	 * @return
-	 * @throws IOException
-	 */
-	protected boolean checkFontMetrics(TrueTypeFont ttf) throws IOException,
-	ValidationException {
-
-		int firstChar = pFont.getFirstChar();
-		float defaultGlyphWidth = this.pFontDesc.getMissingWidth();
-
-		List<?> pdfWidths = this.pFont.getWidths();
-		COSArray widths = null;
-		if (pdfWidths instanceof COSArrayList) {
-			widths = ((COSArrayList) pdfWidths).toList();
-		} else {
-			widths = ((COSArray) pdfWidths);
-		}
-
-		((TrueTypeFontContainer)this.fontContainer).setWidthsArray(widths.toList());
-		((TrueTypeFontContainer)this.fontContainer).setFirstCharInWidthsArray(firstChar);
-		((TrueTypeFontContainer)this.fontContainer).setDefaultGlyphWidth(defaultGlyphWidth);
-		((TrueTypeFontContainer)this.fontContainer).setFontObjectAndInitializeInnerFields(ttf);
-		((TrueTypeFontContainer)this.fontContainer).setCMap(getCMapOfFontProgram(ttf));
-
-		return true;
 	}
 
 	/**
@@ -267,28 +234,28 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 	 *           if the FontProgram doesn't have the expected CMap
 	 */
 	protected CMAPEncodingEntry getCMapOfFontProgram(TrueTypeFont ttf)
-	throws ValidationException {
+			throws ValidationException {
 		CMAPTable cmap = ttf.getCMAP();
 		if (this.pFontDesc.isSymbolic()) {
 			return cmap.getCmaps()[0];
 		} else {
-				if (this.pFont.getFontEncoding() instanceof WinAnsiEncoding) {
-					for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
-						// ---- Returns the WinAnsiEncoding CMap
-						if ((cmapEntry.getPlatformId() == 3)
-								&& (cmapEntry.getPlatformEncodingId() == 1)) {
-							return cmapEntry;
-						}
-					}
-				} else {
-					// ---- Returns the MacRomanEncoding CMap
-					for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
-						if ((cmapEntry.getPlatformId() == 1)
-								&& (cmapEntry.getPlatformEncodingId() == 0)) {
-							return cmapEntry;
-						}
+			if (this.pFont.getFontEncoding() instanceof WinAnsiEncoding) {
+				for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
+					// ---- Returns the WinAnsiEncoding CMap
+					if ((cmapEntry.getPlatformId() == 3)
+							&& (cmapEntry.getPlatformEncodingId() == 1)) {
+						return cmapEntry;
 					}
 				}
+			} else {
+				// ---- Returns the MacRomanEncoding CMap
+				for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
+					if ((cmapEntry.getPlatformId() == 1)
+							&& (cmapEntry.getPlatformEncodingId() == 0)) {
+						return cmapEntry;
+					}
+				}
+			}
 		}
 
 		throw new ValidationException("CMap not found in the TrueType FontProgam");

@@ -22,21 +22,15 @@
 package org.apache.padaf.preflight.font;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
 
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFFont.Mapping;
 import org.apache.padaf.preflight.ValidationConstants;
 import org.apache.padaf.preflight.font.type1.Type1;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
 public class Type1FontContainer extends AbstractFontContainer {
-
-	private List<?> widthsArray = new ArrayList(0);
-	private int firstCharInWidthsArray = 0;
 
 	/**
 	 * Represent the missingWidth value of the FontDescriptor dictionary.
@@ -56,18 +50,6 @@ public class Type1FontContainer extends AbstractFontContainer {
 		super(fd);
 	}
 
-	void setWidthsArray(List<?> widthsArray) {
-		this.widthsArray = widthsArray;
-	}
-
-	void setFirstCharInWidthsArray(int firstCharInWidthsArray) {
-		this.firstCharInWidthsArray = firstCharInWidthsArray;
-	}
-
-	void setDefaultGlyphWidth(float defaultGlyphWidth) {
-		this.defaultGlyphWidth = defaultGlyphWidth;
-	}
-
 	void setFontObject(Type1 fontObject) {
 		this.fontObject = fontObject;
 	}
@@ -82,8 +64,7 @@ public class Type1FontContainer extends AbstractFontContainer {
 			return;
 		}
 
-		int indexOfWidth = (cid - firstCharInWidthsArray);
-		float widthProvidedByPdfDictionary = this.defaultGlyphWidth;
+		final float widthProvidedByPdfDictionary = this.font.getFontWidth(cid);
 
 		int widthInFontProgram =0;
 		try {
@@ -115,11 +96,6 @@ public class Type1FontContainer extends AbstractFontContainer {
 					"Unable to get width of the CID/SID : " + cid);
 			addKnownCidElement(new GlyphDetail(cid, ge));
 			throw ge;
-		}
-
-		if (indexOfWidth >= 0 && indexOfWidth < this.widthsArray.size()) {
-			COSInteger w = (COSInteger)this.widthsArray.get(indexOfWidth);
-			widthProvidedByPdfDictionary = w.intValue(); 
 		}
 
 		checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);

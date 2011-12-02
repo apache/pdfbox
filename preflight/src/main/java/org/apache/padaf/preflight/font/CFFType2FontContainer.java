@@ -21,31 +21,19 @@
 
 package org.apache.padaf.preflight.font;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.padaf.preflight.ValidationConstants;
 
 
 public class CFFType2FontContainer extends AbstractFontContainer {
-	private Map<Integer, Integer> widthsArray = new LinkedHashMap<Integer, Integer>(0);
-	/**
-	 * Represent the missingWidth value of the FontDescriptor dictionary.
-	 * According to the PDF Reference, if this value is missing, the default 
-	 * one is 0.
-	 */
-	private float defaultGlyphWidth = 0;
 	/**
 	 * Object which contains the TrueType font data (used in the CFFType2 font) 
 	 * extracted by the TrueTypeParser object
 	 */
 	private TrueTypeFont fontObject = null;
 	private CMap cidToGidMap = null;
-	
+
 	private int numberOfLongHorMetrics;
 	private int unitsPerEm;
 	private int[] glyphWidths;
@@ -59,25 +47,21 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 
 	@Override
 	public void checkCID(int cid) throws GlyphException {
-	  if (isAlreadyComputedCid(cid)) {
-		  return;
-	  }
-
-		float widthProvidedByPdfDictionary = this.defaultGlyphWidth;
-		if (this.widthsArray.containsKey(cid)) {
-			Integer i = this.widthsArray.get(cid);
-			widthProvidedByPdfDictionary = i.floatValue();
+		if (isAlreadyComputedCid(cid)) {
+			return;
 		}
 
-		int glyphIndex = getGlyphIndex(cid);
-		
+		final float widthProvidedByPdfDictionary = this.font.getFontWidth(cid);
+
+		final int glyphIndex = getGlyphIndex(cid);
+
 		if(this.fontObject.getGlyph().getGlyphs().length <= glyphIndex) {
 			GlyphException ge = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, cid, 
 					"CID " + cid + " is missing from font \"" + this.font.getBaseFont() + "\"");
-		  addKnownCidElement(new GlyphDetail(cid, ge));
+			addKnownCidElement(new GlyphDetail(cid, ge));
 			throw ge;
 		}
-			
+
 		// glyph exists we can check the width
 		float glypdWidth = glyphWidths[numberOfLongHorMetrics - 1];
 		if (glyphIndex < numberOfLongHorMetrics) {
@@ -85,8 +69,8 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 		}
 		float widthInFontProgram = ((glypdWidth * 1000) / unitsPerEm);
 
-	  checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
-	  addKnownCidElement(new GlyphDetail(cid));
+		checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
+		addKnownCidElement(new GlyphDetail(cid));
 	}
 
 	/**
@@ -119,19 +103,11 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 			} catch (NumberFormatException e) {
 				GlyphException ge = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, cid, 
 						"CID " + cid + " isn't linked with a GlyphIndex >> " + glyphIdAsString);
-			  addKnownCidElement(new GlyphDetail(cid, ge));
+				addKnownCidElement(new GlyphDetail(cid, ge));
 				throw ge;
 			}
 		}
 		return glyphIndex;
-	}
-
-	void setPdfWidths(Map<Integer, Integer> widthsArray) {
-		this.widthsArray = widthsArray;
-	}
-
-	void setDefaultGlyphWidth(float defaultGlyphWidth) {
-		this.defaultGlyphWidth = defaultGlyphWidth;
 	}
 
 	void setFontObject(TrueTypeFont fontObject) {
