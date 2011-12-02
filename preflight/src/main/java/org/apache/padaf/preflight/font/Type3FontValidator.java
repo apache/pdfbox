@@ -67,7 +67,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 	protected Encoding type3Encoding = null;
 
 	public Type3FontValidator(DocumentHandler handler, COSObject obj)
-	throws ValidationException {
+			throws ValidationException {
 		super(handler, obj);
 		this.pdType3 = (PDType3Font) this.pFont;
 	}
@@ -257,7 +257,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 						// ---- Error, the Differences array is invalid
 						this.fontContainer
 						.addError(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
-						"Differences Array should contain COSInt or COSName, no other type"));
+								"Differences Array should contain COSInt or COSName, no other type"));
 						return false;
 					}
 				}
@@ -321,7 +321,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_DICTIONARY_INVALID,
 					"The length of Witdhs array is invalid. Expected : \""
-					+ expectedLength + "\" Current : \"" + wArr.size() + "\""));
+							+ expectedLength + "\" Current : \"" + wArr.size() + "\""));
 			return false;
 		}
 
@@ -342,10 +342,13 @@ public class Type3FontValidator extends AbstractFontValidator {
 
 				COSBase item = charProcsDictionary.getItem(COSName.getPDFName(charName));
 				COSStream charStream = COSUtils.getAsStream(item, cDoc);
-				if (charStream == null && width != 0) {
+				if (charStream == null) {
+					/* There are no character description, we declare the Glyph as Invalid.
+					 * If the character is used in a Stream, the GlyphDetail will throw an exception.
+					 */
 					GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, cid, 
 							"The CharProcs \"" + charName
-							+ "\" doesn't exist but the width is " + width);
+							+ "\" doesn't exist, the width defines in the Font Dictionary is " + width);
 					GlyphDetail glyphDetail = new GlyphDetail(cid, glyphEx);
 					this.fontContainer.addKnownCidElement(glyphDetail);
 				} else {
@@ -423,7 +426,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 		COSBase cbImg = dictionary.getItem(COSName
 				.getPDFName(DICTIONARY_KEY_XOBJECT));
 		COSBase cbFont = dictionary
-		.getItem(COSName.getPDFName(DICTIONARY_KEY_FONT));
+				.getItem(COSName.getPDFName(DICTIONARY_KEY_FONT));
 
 		if (cbImg == null && cbFont == null) {
 			this.fontContainer.addError(new ValidationError(
@@ -520,7 +523,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 		boolean res = true;
 		if (dictionary != null) {
 			COSDictionary shadings = (COSDictionary) dictionary
-			.getDictionaryObject(PATTERN_KEY_SHADING);
+					.getDictionaryObject(PATTERN_KEY_SHADING);
 			if (shadings != null) {
 				for (COSName key : shadings.keySet()) {
 					COSDictionary aShading = (COSDictionary) shadings.getDictionaryObject(key);
