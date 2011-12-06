@@ -53,6 +53,7 @@
     <module>ant</module>
     <module>war</module>
     <module>app</module>
+    <module>examples</module>
   </modules>
 
   <build>
