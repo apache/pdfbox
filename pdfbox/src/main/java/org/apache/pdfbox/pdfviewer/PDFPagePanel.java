@@ -37,6 +37,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public class PDFPagePanel extends JPanel
 {
 
+    private static final long serialVersionUID = -4629033339560890669L;
+    
     private PDPage page;
     private PageDrawer drawer = null;
     private Dimension pageDimension = null;
@@ -60,8 +62,8 @@ public class PDFPagePanel extends JPanel
     public void setPage( PDPage pdfPage )
     {
         page = pdfPage;
-        PDRectangle pageSize = page.findMediaBox();
-        drawDimension = pageSize.createDimension();
+        PDRectangle cropBox = page.findCropBox();
+        drawDimension = cropBox.createDimension();
         int rotation = page.findRotation();
         if (rotation == 90 || rotation == 270)
         {
