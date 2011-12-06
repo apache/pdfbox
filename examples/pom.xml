@@ -30,7 +30,7 @@
   <artifactId>pdfbox-examples</artifactId>
 
   <packaging>jar</packaging>
-  <name>Apache PDFBox</name>
+  <name>Apache PDFBox examples</name>
   <description>
     The Apache PDFBox library is an open source Java tool for working with PDF documents. 
     This artefact contains examples on how the library can be used.
