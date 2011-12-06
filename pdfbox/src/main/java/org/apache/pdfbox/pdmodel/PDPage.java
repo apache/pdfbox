@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -64,11 +62,6 @@ import java.util.List;
 public class PDPage implements COSObjectable, Printable
 {
 
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDPage.class);
-
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
 
     private static final float MM_TO_UNITS = 1/(10*2.54f)*DEFAULT_USER_SPACE_UNIT_DPI;
@@ -83,7 +76,8 @@ public class PDPage implements COSObjectable, Printable
     /**
      * A page size of LETTER or 8.5x11.
      */
-    public static final PDRectangle PAGE_SIZE_LETTER = new PDRectangle( 8.5f*DEFAULT_USER_SPACE_UNIT_DPI, 11f*DEFAULT_USER_SPACE_UNIT_DPI );
+    public static final PDRectangle PAGE_SIZE_LETTER = 
+        new PDRectangle( 8.5f*DEFAULT_USER_SPACE_UNIT_DPI, 11f*DEFAULT_USER_SPACE_UNIT_DPI );
     /**
      * A page size of A0 Paper.
      */
@@ -178,7 +172,7 @@ public class PDPage implements COSObjectable, Printable
     {
         if( parent == null)
         {
-            COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( "Parent", "P" );
+            COSDictionary parentDic = (COSDictionary)page.getDictionaryObject( COSName.PARENT, COSName.P );
             if( parentDic != null )
             {
                 parent = new PDPageNode( parentDic );
@@ -192,11 +186,11 @@ public class PDPage implements COSObjectable, Printable
     /**
      * This will set the parent of this page.
      *
-     * @param parent The parent to this page node.
+     * @param parentNode The parent to this page node.
      */
-    public void setParent( PDPageNode parent )
+    public void setParent( PDPageNode parentNode )
     {
-        this.parent = parent;
+        parent = parentNode;
         page.setItem( COSName.PARENT, parent.getDictionary() );
     }
 
@@ -205,7 +199,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public void updateLastModified()
     {
-        page.setDate( "LastModified", new GregorianCalendar() );
+        page.setDate( COSName.LAST_MODIFIED, new GregorianCalendar() );
     }
 
     /**
@@ -218,7 +212,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public Calendar getLastModified() throws IOException
     {
-        return page.getDate( "LastModified" );
+        return page.getDate( COSName.LAST_MODIFIED );
     }
 
     /**
@@ -248,10 +242,10 @@ public class PDPage implements COSObjectable, Printable
     public PDResources findResources()
     {
         PDResources retval = getResources();
-        PDPageNode parent = getParent();
+        PDPageNode parentNode = getParent();
         if( retval == null && parent != null )
         {
-            retval = parent.findResources();
+            retval = parentNode.findResources();
         }
         return retval;
     }
@@ -311,18 +305,18 @@ public class PDPage implements COSObjectable, Printable
     /**
      * This will set the mediaBox for this page.
      *
-     * @param mediaBox The new mediaBox for this page.
+     * @param mediaBoxValue The new mediaBox for this page.
      */
-    public void setMediaBox( PDRectangle mediaBox )
+    public void setMediaBox( PDRectangle mediaBoxValue )
     {
-        this.mediaBox = mediaBox;
-        if( mediaBox == null )
+        this.mediaBox = mediaBoxValue;
+        if( mediaBoxValue == null )
         {
             page.removeItem( COSName.MEDIA_BOX );
         }
         else
         {
-            page.setItem( COSName.MEDIA_BOX, mediaBox.getCOSArray() );
+            page.setItem( COSName.MEDIA_BOX, mediaBoxValue.getCOSArray() );
         }
     }
 
@@ -359,10 +353,10 @@ public class PDPage implements COSObjectable, Printable
     public PDRectangle findCropBox()
     {
         PDRectangle retval = getCropBox();
-        PDPageNode parent = getParent();
-        if( retval == null && parent != null )
+        PDPageNode parentNode = getParent();
+        if( retval == null && parentNode != null )
         {
-            retval = findParentCropBox( parent );
+            retval = findParentCropBox( parentNode );
         }
 
         //default value for cropbox is the media box
@@ -382,10 +376,10 @@ public class PDPage implements COSObjectable, Printable
     private PDRectangle findParentCropBox( PDPageNode node )
     {
         PDRectangle rect = node.getCropBox();
-        PDPageNode parent = node.getParent();
-        if( rect == null && parent != null )
+        PDPageNode parentNode = node.getParent();
+        if( rect == null && parentNode != null )
         {
-            rect = findParentCropBox( parent );
+            rect = findParentCropBox( parentNode );
         }
         return rect;
     }
@@ -567,10 +561,10 @@ public class PDPage implements COSObjectable, Printable
         }
         else
         {
-            PDPageNode parent = getParent();
-            if( parent != null )
+            PDPageNode parentNode = getParent();
+            if( parentNode != null )
             {
-                retval = parent.findRotation();
+                retval = parentNode.findRotation();
             }
         }
 
@@ -624,7 +618,7 @@ public class PDPage implements COSObjectable, Printable
         {
             beads = new COSArray();
         }
-        List pdObjects = new ArrayList();
+        List<PDThreadBead> pdObjects = new ArrayList<PDThreadBead>();
         for( int i=0; i<beads.size(); i++)
         {
             COSDictionary beadDic = (COSDictionary)beads.getObject( i );
@@ -645,7 +639,7 @@ public class PDPage implements COSObjectable, Printable
      *
      * @param beads A list of PDThreadBead objects or null.
      */
-    public void setThreadBeads( List beads )
+    public void setThreadBeads( List<PDThreadBead> beads )
     {
         page.setItem( COSName.B, COSArrayList.converterToCOSArray( beads ) );
     }
@@ -705,9 +699,9 @@ public class PDPage implements COSObjectable, Printable
      */
     public BufferedImage convertToImage(int imageType, int resolution) throws IOException
     {
-        PDRectangle mBox = findMediaBox();
-        float widthPt = mBox.getWidth();
-        float heightPt = mBox.getHeight();
+        PDRectangle cropBox = findCropBox();
+        float widthPt = cropBox.getWidth();
+        float heightPt = cropBox.getHeight();
         float scaling = resolution / (float)DEFAULT_USER_SPACE_UNIT_DPI;
         int widthPx = Math.round(widthPt * scaling);
         int heightPx = Math.round(heightPt * scaling);
@@ -783,7 +777,7 @@ public class PDPage implements COSObjectable, Printable
         }
         else
         {
-            List actuals = new ArrayList();
+            List<PDAnnotation> actuals = new ArrayList<PDAnnotation>();
 
             for (int i=0; i < annots.size(); i++)
             {
@@ -800,7 +794,7 @@ public class PDPage implements COSObjectable, Printable
      *
      * @param annots The new list of annotations.
      */
-    public void setAnnotations( List annots )
+    public void setAnnotations( List<PDAnnotation> annots )
     {
         page.setItem( COSName.ANNOTS, COSArrayList.converterToCOSArray( annots ) );
     }
