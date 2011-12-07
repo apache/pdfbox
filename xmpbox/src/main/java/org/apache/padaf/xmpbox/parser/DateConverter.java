@@ -172,7 +172,7 @@ public class DateConverter {
                 }
                 if (retval == null) {
                     // we didn't find a valid date format so throw an exception
-                    throw new IOException("Error converting date:" + date,e);
+                    throw new IOException("Error converting date:" + date);
                 }
             }
         }
