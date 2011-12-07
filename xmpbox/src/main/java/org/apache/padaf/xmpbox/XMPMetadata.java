@@ -22,10 +22,9 @@ package org.apache.padaf.xmpbox;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
@@ -80,7 +79,7 @@ public class XMPMetadata {
             schemas = new SchemasContainer();
         } catch (IOException e) {
             throw new CreateXMPMetadataException(
-            "Failed to create Dom Document");
+            "Failed to create Dom Document",e);
         }
 
     }
@@ -112,7 +111,7 @@ public class XMPMetadata {
             schemas = new SchemasContainer();
         } catch (IOException e) {
             throw new CreateXMPMetadataException(
-            "Failed to create Dom Document");
+            "Failed to create Dom Document",e);
         }
     }
 
@@ -314,7 +313,7 @@ public class XMPMetadata {
      *             If namespaces list not contains PDF/A Extension namespace URI
      */
     public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithNS(
-            HashMap<String, String> namespaces) throws XmpSchemaException {
+           Map<String, String> namespaces) throws XmpSchemaException {
         PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this, namespaces);
         pdfAExt.setAboutAsSimple("");
         addSchema(pdfAExt);

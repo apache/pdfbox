@@ -120,7 +120,7 @@ public class BuildPDFExtensionSchemaHelper {
 								classSchem.getName(),
 								field.getName(),
 								"Couldn't read content, please check accessibility and declaration of field associated",
-								e.getCause());
+								e);
 					}
 					propExtDefAnnot = field
 							.getAnnotation(PropertyExtensionDefinition.class);
@@ -150,7 +150,7 @@ public class BuildPDFExtensionSchemaHelper {
 					} catch (BadFieldValueException e) {
 						throw propertyDescriptionError(classSchem.getName(),
 								propName, "Wrong value for property Category",
-								e.getCause());
+								e);
 					}
 				}
 			}

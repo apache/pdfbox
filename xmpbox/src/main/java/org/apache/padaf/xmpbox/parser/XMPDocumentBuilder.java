@@ -64,12 +64,21 @@ import org.apache.padaf.xmpbox.type.ThumbnailType;
  * 
  */
 public class XMPDocumentBuilder {
+    
     protected NSMapping nsMap;
 
     protected ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
 
     protected List<XMPDocumentPreprocessor> preprocessors = new ArrayList<XMPDocumentPreprocessor>();
+    
+    public static final String BAG_NAME = "Bag";
+    
+    public static final String SEQ_NAME = "Seq";
 
+    public static final String ALT_NAME = "Alt";
+
+    public static final String VALUE_TYPE_NAME = "valueType";
+    
     /**
      * Constructor of a XMPDocumentBuilder
      * 
@@ -660,7 +669,7 @@ public class XMPDocumentBuilder {
         expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "schemas",
         "Cannot find container declaration of schemas descriptions ");
         // <rdf:Bag>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Bag",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, BAG_NAME,
         "Cannot find bag declaration for container of schemas descriptions");
         // now work on each rdf:li corresponding to each schema description
         int type = reader.get().nextTag();
@@ -716,7 +725,7 @@ public class XMPDocumentBuilder {
                 }
             } else if (reader.get().getLocalName().equals("property")) {
                 parsePropertyDefinition(desc);
-            } else if (reader.get().getLocalName().equals("valueType")) {
+            } else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
                 parseValueTypeDefinition(desc, metadata);
 
             } else {
@@ -746,7 +755,7 @@ public class XMPDocumentBuilder {
             XMPMetadata metadata) throws XmpParsingException,
             XMLStreamException {
         // <rdf:Seq>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Seq",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, SEQ_NAME,
         "Expected Seq Declaration");
         int elmtType = reader.get().nextTag();
         String type, namespaceURI, prefix, description;
@@ -787,7 +796,7 @@ public class XMPDocumentBuilder {
             }
             elmtType = reader.get().nextTag();
         }
-        expectNextSpecificTag(XMLStreamReader.END_ELEMENT, "valueType",
+        expectNextSpecificTag(XMLStreamReader.END_ELEMENT, VALUE_TYPE_NAME,
         "Expected End of ValueType Declaration");
 
     }
@@ -808,7 +817,7 @@ public class XMPDocumentBuilder {
             XMLStreamException {
         List<PDFAFieldDescription> fields = new ArrayList<PDFAFieldDescription>();
         // <rdf:Seq>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Seq",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, SEQ_NAME,
         "Expected Seq Declaration");
         int elmtType = reader.get().nextTag();
         String name, type, description;
@@ -822,7 +831,7 @@ public class XMPDocumentBuilder {
             while (elmtType == XMLStreamReader.START_ELEMENT) {
                 if (reader.get().getLocalName().equals("name")) {
                     name = reader.get().getElementText();
-                } else if (reader.get().getLocalName().equals("valueType")) {
+                } else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
                     type = reader.get().getElementText();
                 } else if (reader.get().getLocalName().equals("description")) {
                     description = reader.get().getElementText();
@@ -869,7 +878,7 @@ public class XMPDocumentBuilder {
     throws XmpParsingException, XMLStreamException,
     BadFieldValueException {
         // <rdf:Seq>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Seq",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, SEQ_NAME,
         "Expected Seq Declaration");
         // Each property definition
         int elmtType = reader.get().nextTag();
@@ -885,7 +894,7 @@ public class XMPDocumentBuilder {
             while (elmtType == XMLStreamReader.START_ELEMENT) {
                 if (reader.get().getLocalName().equals("name")) {
                     name = reader.get().getElementText();
-                } else if (reader.get().getLocalName().equals("valueType")) {
+                } else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
                     type = reader.get().getElementText();
                 } else if (reader.get().getLocalName().equals("category")) {
                     category = reader.get().getElementText();
@@ -1070,12 +1079,12 @@ public class XMPDocumentBuilder {
                 ComplexProperty.UNORDERED_ARRAY);
         container.addProperty(bag);
         // <rdf:Bag>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Bag",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, BAG_NAME,
         "Expected Bag Declaration");
         // Each property definition
         int elmtType = reader.get().nextTag();
         while ((elmtType != XMLStreamReader.END_ELEMENT)
-                && !reader.get().getName().getLocalPart().equals("Bag")) {
+                && !reader.get().getName().getLocalPart().equals(BAG_NAME)) {
             parseXmpSimpleProperty(metadata, reader.get().getName(), stype, bag
                     .getContainer());
             elmtType = reader.get().nextTag();
@@ -1096,12 +1105,12 @@ public class XMPDocumentBuilder {
                 ComplexProperty.UNORDERED_ARRAY);
         container.addProperty(bag);
         // <rdf:Bag>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Bag",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, BAG_NAME,
         "Expected Bag Declaration");
         // Each property definition
         int elmtType = reader.get().nextTag();
         while ((elmtType != XMLStreamReader.END_ELEMENT)
-                && !reader.get().getName().getLocalPart().equals("Bag")) {
+                && !reader.get().getName().getLocalPart().equals(BAG_NAME)) {
             complexParser.parse(metadata, reader.get().getName(), bag.getContainer());
             elmtType = reader.get().nextTag();
 
@@ -1146,12 +1155,12 @@ public class XMPDocumentBuilder {
                 ComplexProperty.ORDERED_ARRAY);
         container.addProperty(seq);
         // <rdf:Bag>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Seq",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, SEQ_NAME,
         "Expected Seq Declaration");
         // Each property definition
         int elmtType = reader.get().nextTag();
         while ((elmtType != XMLStreamReader.END_ELEMENT)
-                && !reader.get().getName().getLocalPart().equals("Seq")) {
+                && !reader.get().getName().getLocalPart().equals(SEQ_NAME)) {
             parseXmpSimpleProperty(metadata, reader.get().getName(), stype, seq
                     .getContainer());
             elmtType = reader.get().nextTag();
@@ -1196,11 +1205,11 @@ public class XMPDocumentBuilder {
                 ComplexProperty.ALTERNATIVE_ARRAY);
         container.addProperty(alt);
         // <rdf:Alt>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Alt",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ALT_NAME,
         "Expected Alt Declaration");
         int elmtType = reader.get().nextTag();
         while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.get()
-                .getName().getLocalPart().equals("Alt"))) {
+                .getName().getLocalPart().equals(ALT_NAME))) {
             parseXmpSimpleProperty(metadata, reader.get().getName(), stype, alt
                     .getContainer());
             elmtType = reader.get().nextTag();
@@ -1326,7 +1335,7 @@ public class XMPDocumentBuilder {
         String type;
         int elmtType = reader.get().nextTag();
         while ((elmtType != XMLStreamReader.END_ELEMENT)
-                && !reader.get().getName().getLocalPart().equals("Seq")) {
+                && !reader.get().getName().getLocalPart().equals(SEQ_NAME)) {
 
             type = getPropertyDeclarationInNamespaces(schema, reader.get()
                     .getName());
@@ -1450,8 +1459,6 @@ public class XMPDocumentBuilder {
             parseAltThumbnailProperty(metadata, propertyName, schema
                     .getContent());
         } else {
-            System.out.println(reader.get().getName().getLocalPart()
-                    + " de type " + type);
             throw new XmpUnknownPropertyTypeException("Unknown type : " + type);
         }
 
@@ -1488,11 +1495,11 @@ public class XMPDocumentBuilder {
                 ComplexProperty.ALTERNATIVE_ARRAY);
         container.addProperty(alt);
         // <rdf:Alt>
-        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "Alt",
+        expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ALT_NAME,
         "Expected Alt Declaration");
         int elmtType = reader.get().nextTag();
         while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.get()
-                .getName().getLocalPart().equals("Alt"))) {
+                .getName().getLocalPart().equals(ALT_NAME))) {
             parseThumbnailProperty(metadata, reader.get().getName(), alt
                     .getContainer());
             elmtType = reader.get().nextTag();
