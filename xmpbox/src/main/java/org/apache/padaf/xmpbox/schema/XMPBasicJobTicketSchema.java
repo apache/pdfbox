@@ -30,13 +30,12 @@ import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.ComplexProperty;
 import org.apache.padaf.xmpbox.type.JobType;
-import org.apache.padaf.xmpbox.type.LayerType;
 
 public class XMPBasicJobTicketSchema extends XMPSchema {
 
-    public static String PREFERED_JOB_TICKET_PREFIX = "xmpBJ";
+    public static final String PREFERED_JOB_TICKET_PREFIX = "xmpBJ";
 
-    public static String JOB_TICKET_URI = "http://ns.adobe.com/xap/1.0/bj/"; 
+    public static final String JOB_TICKET_URI = "http://ns.adobe.com/xap/1.0/bj/"; 
 
     @PropertyType(propertyType = "bag Job")
     public static final String JOB_REF = "JobRef";

@@ -124,7 +124,7 @@ public class SaveMetadataHelper {
 		try {
 			XMLUtil.save(doc, os, "UTF-8");
 		} catch (TransformerException e) {
-			throw new TransformException("Failed to parse defined XMP");
+			throw new TransformException("Failed to parse defined XMP",e);
 		}
 
 	}
@@ -183,11 +183,11 @@ public class SaveMetadataHelper {
 			rdf.appendChild(schemContent);
 			XMLUtil.save(rdf, os, "UTF-8");
 		} catch (TransformerException e) {
-			throw new TransformException("Failed to parse defined XMP");
+			throw new TransformException("Failed to parse defined XMP",e);
 		} catch (IOException e) {
 			throw new TransformException(
 					"Failed to create Document to contain Schema representation ",
-					e.getCause());
+					e);
 		}
 
 	}

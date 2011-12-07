@@ -21,8 +21,6 @@
 
 package org.apache.padaf.xmpbox.schema;
 
-import java.util.List;
-
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
@@ -190,7 +188,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 		} else {
 			for (Attribute attribute : getAllAttributes()) {
 				if (attribute.getQualifiedName().equals(IDPREFIXSEP + PART)) {
-					return new Integer(attribute.getValue());
+					return Integer.valueOf(attribute.getValue());
 				}
 			}
 			return null;

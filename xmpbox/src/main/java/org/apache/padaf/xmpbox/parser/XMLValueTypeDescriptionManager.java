@@ -170,7 +170,6 @@ public class XMLValueTypeDescriptionManager {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new BuildPDFAExtensionSchemaDescriptionException(
 					"Failed to get correct valuetypes descriptions from specified XML stream",
 					e.getCause());
@@ -179,66 +178,5 @@ public class XMLValueTypeDescriptionManager {
 		}
 	}
 
-	/**
-	 * Sample of using to write/read information
-	 * 
-	 * @param args
-	 *            not used
-	 * @throws BuildPDFAExtensionSchemaDescriptionException
-	 *             When errors during building/reading xml file
-	 */
-	public static void main(String[] args)
-			throws BuildPDFAExtensionSchemaDescriptionException {
-		XMLValueTypeDescriptionManager vtMaker = new XMLValueTypeDescriptionManager();
-
-		// add Descriptions
-		for (int i = 0; i < 3; i++) {
-			vtMaker.addValueTypeDescription("testType" + i, "nsURI" + i,
-					"prefix" + i, "description" + i);
-
-		}
-		List<FieldDescription> fieldSample = new ArrayList<FieldDescription>();
-		for (int i = 0; i < 2; i++) {
-			fieldSample.add(new FieldDescription("fieldName" + i, "valueType"
-					+ i, "description" + i));
-		}
-		vtMaker.addValueTypeDescription("testTypeField",
-				"http://test.withfield.com/vt/", "prefTest",
-				" value type description", fieldSample);
-
-		// Display XML conversion
-		System.out.println("Display XML Result:");
-		vtMaker.toXML(System.out);
-
-		// Sample to show how to build object from XML file
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		vtMaker.toXML(bos);
-		IOUtils.closeQuietly(bos);
-
-		// emulate a new reading
-		InputStream is = new ByteArrayInputStream(bos.toByteArray());
-		vtMaker = new XMLValueTypeDescriptionManager();
-		vtMaker.loadListFromXML(is);
-		List<ValueTypeDescription> result = vtMaker
-				.getValueTypesDescriptionList();
-		System.out.println();
-		System.out.println();
-		System.out.println("Result of XML Loading :");
-		for (ValueTypeDescription propertyDescription : result) {
-			System.out.println(propertyDescription.getType() + " :"
-					+ propertyDescription.getDescription());
-			if (propertyDescription.getFields() != null) {
-				Iterator<FieldDescription> fit = propertyDescription
-						.getFields().iterator();
-				FieldDescription field;
-				while (fit.hasNext()) {
-					field = fit.next();
-					System.out.println("Field " + field.getName() + " :"
-							+ field.getValueType());
-				}
-			}
-		}
-
-	}
 
 }
