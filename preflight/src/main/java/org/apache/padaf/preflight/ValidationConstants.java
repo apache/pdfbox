@@ -267,6 +267,7 @@ public interface ValidationConstants {
 
   static final String ICC_Characterization_Data_Registry_FOGRA43 = "FOGRA43";
   static final String ICC_Characterization_Data_Registry_CGATS_TR_006 = "CGATS TR 006";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR006 = "CGATS TR006";
   static final String ICC_Characterization_Data_Registry_FOGRA39 = "FOGRA39";
   static final String ICC_Characterization_Data_Registry_JC200103 = "JC200103";
   static final String ICC_Characterization_Data_Registry_FOGRA27 = "FOGRA27";
@@ -275,8 +276,11 @@ public interface ValidationConstants {
   static final String ICC_Characterization_Data_Registry_FOGRA46 = "FOGRA46";
   static final String ICC_Characterization_Data_Registry_FOGRA41 = "FOGRA41";
   static final String ICC_Characterization_Data_Registry_CGATS_TR_001 = "CGATS TR 001";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR001 = "CGATS TR001";
   static final String ICC_Characterization_Data_Registry_CGATS_TR_003 = "CGATS TR 003";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR003 = "CGATS TR003";
   static final String ICC_Characterization_Data_Registry_CGATS_TR_005 = "CGATS TR 005";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR005 = "CGATS TR005";
   static final String ICC_Characterization_Data_Registry_FOGRA28 = "FOGRA28";
   static final String ICC_Characterization_Data_Registry_JCW2003 = "JCW2003";
   static final String ICC_Characterization_Data_Registry_EUROSB204 = "EUROSB204";
@@ -290,6 +294,7 @@ public interface ValidationConstants {
   static final String ICC_Characterization_Data_Registry_IFRA26 = "IFRA26";
   static final String ICC_Characterization_Data_Registry_JCN2002 = "JCN2002";
   static final String ICC_Characterization_Data_Registry_CGATS_TR_002 = "CGATS TR 002";
+  static final String ICC_Characterization_Data_Registry_CGATS_TR002 = "CGATS TR002";
   static final String ICC_Characterization_Data_Registry_FOGRA33 = "FOGRA33";
   static final String ICC_Characterization_Data_Registry_FOGRA37 = "FOGRA37";
   static final String ICC_Characterization_Data_Registry_FOGRA31 = "FOGRA31";
@@ -405,10 +410,6 @@ public interface ValidationConstants {
    */
   static final String ERROR_SYNTAX_STREAM_INVALID_FILTER = "1.2.7";
   /**
-   * The stream uses a filter which isn't defined in the PDF Reference document. 
-   */
-  static final String ERROR_SYNTAX_STREAM_UNDEFINED_FILTER = "1.2.12";
-  /**
    * The content stream has some syntax errors
    */
   static final String ERROR_SYNTAX_CONTENT_STREAM_INVALID = "1.2.8";
@@ -423,7 +424,11 @@ public interface ValidationConstants {
   /**
    * The content stream contains an invalid argument for the operator
    */
-  static final String ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT = "1.2.11";
+  static final String ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT = "1.2.11"; 
+  /**
+   * The stream uses a filter which isn't defined in the PDF Reference document. 
+   */
+  static final String ERROR_SYNTAX_STREAM_UNDEFINED_FILTER = "1.2.12";
   /**
    * Common error about the cross ref table
    */
