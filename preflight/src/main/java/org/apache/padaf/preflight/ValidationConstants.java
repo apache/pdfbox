@@ -845,7 +845,10 @@ public interface ValidationConstants {
    * Invalid xmp metadata format
    */
   static final String ERROR_METADATA_PROPERTY_FORMAT = "7.1.2";
-
+  /**
+   * Unexpected type of a Metadata entry 
+   */
+  static final String ERROR_METADATA_FORMAT_UNKOWN = "7.1.3";
   /**
    * Metadata mismatch between PDF Dictionnary and xmp
    */

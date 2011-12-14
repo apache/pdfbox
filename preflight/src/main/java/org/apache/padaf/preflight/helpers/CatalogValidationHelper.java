@@ -367,15 +367,19 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 			ICC_Profile iccp = ICC_Profile.getInstance(stream.getByteArray());
 			// check the ICC Profile version (6.2.2)
 			if (iccp.getMajorVersion() == 2) {
-				if (iccp.getMinorVersion() > 0x20) {
+				if (iccp.getMinorVersion() > 0x40) {
 					// TODO on lazy mode this error should be a warning?
-					// in PDF 1.4, max version is 02h.20h (meaning V 3.5)
+					// in PDF 1.4, max version is 02h.40h (meaning V 3.5)
+					// see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 : 
+					// The current profile version number is "2.4.0" (encoded as 02400000h"
 					return new ValidationError(
 							ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT, "Invalid version of the ICCProfile");
 				} // else OK
 			} else if (iccp.getMajorVersion() > 2) {
 				// TODO on lazy mode this error should be a warning?
-				// in PDF 1.4, max version is 02h.20h (meaning V 3.5)
+				// in PDF 1.4, max version is 02h.40h (meaning V 3.5)
+				// see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 : 
+				// The current profile version number is "2.4.0" (encoded as 02400000h"
 				return new ValidationError(
 						ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT, "Invalid version of the ICCProfile");
 			} // else seems less than 2, so correct

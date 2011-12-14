@@ -158,7 +158,14 @@ public abstract class AbstractFontValidator implements FontValidator,ValidationC
    * @throws ValidationException when checking fails
    */
   protected boolean checkFontFileMetaData(PDFontDescriptor fontDesc, PDStream fontFile) throws ValidationException {
-    PDMetadata metadata = fontFile.getMetadata();
+    PDMetadata metadata = null;
+    try {
+    	metadata = fontFile.getMetadata();
+    } catch (IllegalStateException e) {
+        fontContainer.addError(new ValidationError(ValidationConstants.ERROR_METADATA_FORMAT_UNKOWN,
+        "The Metadata entry doesn't reference a stream object"));
+        return false;
+    }
     if (metadata != null) {
       // --- Filters are forbidden in a XMP stream
       if (metadata.getFilters() != null && !metadata.getFilters().isEmpty()) {
