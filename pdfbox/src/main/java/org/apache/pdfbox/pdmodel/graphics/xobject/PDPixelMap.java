@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.DataBuffer;
@@ -227,7 +228,7 @@ public class PDPixelMap extends PDXObjectImage
                         int value = (array[ i * width + j ] + 256) % 256;
                         if (invert)
                         {
-                            input[0] = 1-(value / maxValue) ;
+                            input[0] = 1-(value / maxValue);
                         }
                         else
                         {
@@ -326,7 +327,17 @@ public class PDPixelMap extends PDXObjectImage
             {
                 BufferedImage stencilMask = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
-                graphics.setColor(getStencilColor().getJavaColor());
+                if (getStencilColor() != null)
+                {
+                    graphics.setColor(getStencilColor().getJavaColor());
+                }
+                else
+                {
+                    // this might happen when using ExractImages, see PDFBOX-1145
+                    LOG.debug("no stencil color for PixelMap found, using Color.BLACK instead.");
+                    graphics.setColor(Color.BLACK);
+                }
+                
                 graphics.fillRect(0, 0, width, height);
                 // assume default values ([0,1]) for the DecodeArray
                 // TODO DecodeArray == [1,0]
