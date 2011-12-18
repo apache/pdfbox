@@ -83,6 +83,11 @@ public class ImageIOUtil
                     if( writerParams.canWriteCompressed() )
                     {
                         writerParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                        // reset the compression type if overwritten by setCompressionMode
+                        if (writerParams.getCompressionType() == null)
+                        {
+                            writerParams.setCompressionType(writerParams.getCompressionTypes()[0]);
+                        }
                         writerParams.setCompressionQuality(1.0f);
                     }
                     IIOMetadata meta = createMetadata( image, imageWriter, writerParams, resolution);
@@ -138,10 +143,15 @@ public class ImageIOUtil
 
     private static boolean addResolution(IIOMetadata meta, int resolution)
     {
-        if (meta.isStandardMetadataFormatSupported())
+        if (!meta.isReadOnly() && meta.isStandardMetadataFormatSupported())
         {
             IIOMetadataNode root = (IIOMetadataNode)meta.getAsTree(STANDARD_METADATA_FORMAT);
             IIOMetadataNode dim = getChildNode(root, "Dimension");
+            if (dim == null)
+            {
+                dim = new IIOMetadataNode("Dimension");
+                root.appendChild(dim);
+            }
             IIOMetadataNode child;
             child = getChildNode(dim, "HorizontalPixelSize");
             if (child == null)
