@@ -51,7 +51,7 @@ public class PDFParser extends BaseParser
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDFParser.class);
+    private static final Log LOG = LogFactory.getLog(PDFParser.class);
 
     private static final int SPACE_BYTE = 32;
 
@@ -64,7 +64,8 @@ public class PDFParser extends BaseParser
     private List<ConflictObj> conflictList = new ArrayList<ConflictObj>();
 
     /** Collects all Xref/trailer objects and resolves them into single
-     *  object using startxref reference */
+     *  object using startxref reference. 
+     */
     private XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
     /**
@@ -81,7 +82,8 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser( InputStream input ) throws IOException {
+    public PDFParser( InputStream input ) throws IOException 
+    {
         this(input, null, FORCE_PARSING);
     }
 
@@ -92,8 +94,8 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser(InputStream input, RandomAccess rafi)
-        throws IOException {
+    public PDFParser(InputStream input, RandomAccess rafi) throws IOException 
+    {
         this(input, rafi, FORCE_PARSING);
     }
 
@@ -107,8 +109,8 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser(InputStream input, RandomAccess rafi, boolean force)
-        throws IOException {
+    public PDFParser(InputStream input, RandomAccess rafi, boolean force) throws IOException 
+    {
         super(input, force);
         this.raf = rafi;
     }
@@ -132,6 +134,7 @@ public class PDFParser extends BaseParser
      * parsing when the number of exceptions thrown exceed a certain number).
      *
      * @param e The exception if vailable. Can be null if there is no exception available
+     * @return true if parsing could be continued, otherwise false
      */
     protected boolean isContinueOnError(Exception e)
     {
@@ -199,7 +202,7 @@ public class PDFParser extends BaseParser
                          * Warning is sent to the PDFBox.log and to the Console that
                          * we skipped over an object
                          */
-                        log.warn("Parsing Error, Skipping Object", e);
+                        LOG.warn("Parsing Error, Skipping Object", e);
                         skipToNextObj();
                     }
                     else
@@ -439,6 +442,7 @@ public class PDFParser extends BaseParser
             //just read them and move on.
             readString();
             skipSpaces();
+            currentObjByteOffset = pdfSource.getOffset();
             peekedChar = (char)pdfSource.peek();
         }
         if( pdfSource.isEOF())
@@ -475,16 +479,21 @@ public class PDFParser extends BaseParser
                 }
 
                 // verify that EOF exists (see PDFBOX-979 for documentation on special cases)
-                if(!"%%EOF".equals(eof)) {
-                    if(eof.startsWith("%%EOF")) {
+                if(!"%%EOF".equals(eof)) 
+                {
+                    if(eof.startsWith("%%EOF")) 
+                    {
                         // content after marker -> unread with first space byte for read newline
                         pdfSource.unread(SPACE_BYTE); // we read a whole line; add space as newline replacement
                         pdfSource.unread(eof.substring(5).getBytes("ISO-8859-1"));
-                    } else {
+                    } 
+                    else 
+                    {
                         // PDF does not conform to spec, we should warn someone
-                        log.warn("expected='%%EOF' actual='" + eof + "'");
+                        LOG.warn("expected='%%EOF' actual='" + eof + "'");
                         // if we're not at the end of a file, just put it back and move on
-                        if(!pdfSource.isEOF()) {
+                        if(!pdfSource.isEOF()) 
+                        {
                             pdfSource.unread( SPACE_BYTE ); // we read a whole line; add space as newline replacement
                             pdfSource.unread(eof.getBytes("ISO-8859-1"));
                         }
@@ -530,7 +539,8 @@ public class PDFParser extends BaseParser
                 //" genNumber=" + genNum + " key='" + objectKey + "'" );
                 if( !objectKey.equals( "obj" ) )
                 {
-                    if (!isContinueOnError(null) || !objectKey.equals("o")) {
+                    if (!isContinueOnError(null) || !objectKey.equals("o")) 
+                    {
                         throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
                     }
                     //assume that "o" was meant to be "obj" (this is a workaround for
@@ -609,7 +619,7 @@ public class PDFParser extends BaseParser
                      * I found which was created by Exstream Dialogue Version 5.0.039)
                      * in which case we ignore the data before endobj and just move on
                      */
-                    log.warn("expected='endobj' actual='" + endObjectKey + "' ");
+                    LOG.warn("expected='endobj' actual='" + endObjectKey + "' ");
                 }
                 else if( !pdfSource.isEOF() )
                 {
@@ -715,7 +725,7 @@ public class PDFParser extends BaseParser
                 String[] splitString = currentLine.split(" ");
                 if (splitString.length < 3)
                 {
-                    log.warn("invalid xref line: " + currentLine);
+                    LOG.warn("invalid xref line: " + currentLine);
                     break;
                 }
                 /* This supports the corrupt table as reported in
