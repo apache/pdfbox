@@ -66,7 +66,7 @@ public class PDPageContentStream
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDPageContentStream.class);
+    private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
     private PDPage page;
     private OutputStream output;
@@ -74,8 +74,8 @@ public class PDPageContentStream
     private Map<PDFont,String> fontMappings;
     private Map<PDXObject,String> xobjectMappings;
     private PDResources resources;
-    private Map fonts;
-    private Map xobjects;
+    private Map<String,PDFont> fonts;
+    private Map<String,PDXObject> xobjects;
 
     private PDColorSpace currentStrokingColorSpace = new PDDeviceGray();
     private PDColorSpace currentNonStrokingColorSpace = new PDDeviceGray();
@@ -110,6 +110,9 @@ public class PDPageContentStream
     private static final String CLOSE_STROKE = "s\n";
     private static final String STROKE = "S\n";
     private static final String LINE_WIDTH = "w\n";
+    private static final String LINE_JOIN_STYLE = "j\n";
+    private static final String LINE_CAP_STYLE = "J\n";
+    private static final String LINE_DASH_PATTERN = "d\n";
     private static final String CLOSE_SUBPATH = "h\n";
     private static final String CLIP_PATH_NON_ZERO = "W\n";
     private static final String CLIP_PATH_EVEN_ODD = "W*\n";
@@ -118,8 +121,6 @@ public class PDPageContentStream
     private static final String BEZIER_32 = "v\n";
     private static final String BEZIER_313 = "y\n";
 
-    private static final String MP = "MP\n";
-    private static final String DP = "DP\n";
     private static final String BMC = "BMC\n";
     private static final String BDC = "BDC\n";
     private static final String EMC = "EMC\n";
@@ -173,7 +174,8 @@ public class PDPageContentStream
      * @param resetContext Tell if the graphic context should be reseted.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress, boolean resetContext )
+    public PDPageContentStream( PDDocument document, PDPage sourcePage, boolean appendContent, 
+            boolean compress, boolean resetContext )
             throws IOException
     {
         
@@ -260,7 +262,7 @@ public class PDPageContentStream
         {
             if (hasContent)
             {
-                log.warn("You are overwriting an existing content, you should use the append mode");
+                LOG.warn("You are overwriting an existing content, you should use the append mode");
             }
             contents = new PDStream( document );
             if( compress )
@@ -1157,6 +1159,8 @@ public class PDPageContentStream
 
     /**
      * Stroke the path.
+     * 
+     * @throws IOException If there is an error while stroking the path.
      */
     public void stroke() throws IOException
     {
@@ -1165,6 +1169,8 @@ public class PDPageContentStream
 
     /**
      * Close and stroke the path.
+     * 
+     * @throws IOException If there is an error while closing and stroking the path.
      */
     public void closeAndStroke() throws IOException
     {
@@ -1173,6 +1179,8 @@ public class PDPageContentStream
 
     /**
      * Fill the path.
+     * 
+     * @throws IOException If there is an error while filling the path.
      */
     public void fill(int windingRule) throws IOException
     {
@@ -1193,6 +1201,8 @@ public class PDPageContentStream
 
     /**
      * Close subpath.
+     * 
+     * @throws IOException If there is an error while closing the subpath.
      */
     public void closeSubPath() throws IOException
     {
@@ -1201,6 +1211,8 @@ public class PDPageContentStream
 
     /**
      * Clip path.
+     * 
+     * @throws IOException If there is an error while clipping the path.
      */
     public void clipPath(int windingRule) throws IOException
     {
@@ -1231,6 +1243,65 @@ public class PDPageContentStream
         appendRawCommands( formatDecimal.format( lineWidth ) );
         appendRawCommands( SPACE );
         appendRawCommands( LINE_WIDTH );
+    }
+    
+    /**
+     * Set the line join style.
+     * @param lineJoinStyle 0 for miter join, 1 for round join, and 2 for bevel join.
+     * @throws IOException If there is an error while writing to the stream.
+     */
+    public void setLineJoinStyle(int lineJoinStyle) throws IOException
+    {
+        if (lineJoinStyle >= 0 && lineJoinStyle <= 2)
+        {
+            appendRawCommands( Integer.toString( lineJoinStyle ) );
+            appendRawCommands( SPACE );
+            appendRawCommands( LINE_JOIN_STYLE );
+        }
+        else
+        {
+            throw new IOException( "Error: unknown value for line join style" );
+        }
+    }
+    
+    
+    /**
+     * Set the line cap style.
+     * @param lineCapStyle 0 for butt cap, 1 for round cap, and 2 for projecting square cap.
+     * @throws IOException If there is an error while writing to the stream.
+     */
+    public void setLineCapStyle(int lineCapStyle) throws IOException
+    {
+        if (lineCapStyle >= 0 && lineCapStyle <= 2)
+        {
+            appendRawCommands( Integer.toString( lineCapStyle ) );
+            appendRawCommands( SPACE );
+            appendRawCommands( LINE_CAP_STYLE );
+        }
+        else
+        {
+            throw new IOException( "Error: unknown value for line cap style" );
+        }
+    }
+    
+    /**
+     * Set the line dash pattern.
+     * @param pattern The pattern array
+     * @param phase The phase of the pattern
+     * @throws IOException If there is an error while writing to the stream.
+     */
+    public void setLineDashPattern(float[] pattern, float phase) throws IOException
+    {
+        appendRawCommands( "[" );
+        for (float value : pattern)
+        {
+            appendRawCommands( formatDecimal.format( value ) );
+            appendRawCommands( SPACE );
+        }
+        appendRawCommands( "] ");
+        appendRawCommands( formatDecimal.format(phase) );
+        appendRawCommands( SPACE );
+        appendRawCommands( LINE_DASH_PATTERN );
     }
 
     /**
