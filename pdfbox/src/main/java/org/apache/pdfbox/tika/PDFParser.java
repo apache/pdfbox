@@ -56,6 +56,20 @@ public class PDFParser extends AbstractParser {
     /** Serial version UID */
     private static final long serialVersionUID = -752276948656079347L;
 
+    // True if we let PDFBox "guess" where spaces should go:
+    private boolean enableAutoSpace = true;
+
+    // True if we let PDFBox remove duplicate overlapping text:
+    private boolean suppressDuplicateOverlappingText;
+
+    // True if we extract annotation text ourselves
+    // (workaround for PDFBOX-1143):
+    private boolean extractAnnotationText = true;
+
+    // True if we should sort text tokens by position
+    // (necessary for some PDFs, but messes up other PDFs):
+    private boolean sortByPosition = false;
+
     /**
      * Metadata key for giving the document password to the parser.
      */
@@ -99,7 +113,9 @@ public class PDFParser extends AbstractParser {
             }
             metadata.set(Metadata.CONTENT_TYPE, "application/pdf");
             extractMetadata(pdfDocument, metadata);
-            PDF2XHTML.process(pdfDocument, handler, metadata);
+            PDF2XHTML.process(pdfDocument, handler, metadata,
+                    extractAnnotationText, enableAutoSpace,
+                    suppressDuplicateOverlappingText, sortByPosition);
         } finally {
             pdfDocument.close();
         }
@@ -178,4 +194,70 @@ public class PDFParser extends AbstractParser {
             addMetadata(metadata, name, value.toString());
         }
     }
+
+    /**
+     *  If true (the default), the parser should estimate
+     *  where spaces should be inserted between words.  For
+     *  many PDFs this is necessary as they do not include
+     *  explicit whitespace characters.
+     */
+    public void setEnableAutoSpace(boolean v) {
+        enableAutoSpace = v;
+    }
+
+    /** @see #setEnableAutoSpace. */
+    public boolean getEnableAutoSpace() {
+        return enableAutoSpace;
+    }
+
+    /**
+     * If true (the default), text in annotations will be
+     * extracted.
+     */
+    public void setExtractAnnotationText(boolean v) {
+        extractAnnotationText = v;
+    }
+
+    /**
+     * If true, text in annotations will be extracted.
+     */
+    public boolean getExtractAnnotationText() {
+        return extractAnnotationText;
+    }
+
+    /**
+     *  If true, the parser should try to remove duplicated
+     *  text over the same region.  This is needed for some
+     *  PDFs that achieve bolding by re-writing the same
+     *  text in the same area.  Note that this can
+     *  slow down extraction substantially (PDFBOX-956) and
+     *  sometimes remove characters that were not in fact
+     *  duplicated (PDFBOX-1155).  By default this is disabled.
+     */
+    public void setSuppressDuplicateOverlappingText(boolean v) {
+        suppressDuplicateOverlappingText = v;
+    }
+
+    /** @see #setSuppressDuplicateOverlappingText. */
+    public boolean getSuppressDuplicateOverlappingText() {
+        return suppressDuplicateOverlappingText;
+    }
+
+    /**
+     *  If true, sort text tokens by their x/y position
+     *  before extracting text.  This may be necessary for
+     *  some PDFs (if the text tokens are not rendered "in
+     *  order"), while for other PDFs it can produce the
+     *  wrong result (for example if there are 2 columns,
+     *  the text will be interleaved).  Default is false.
+     */
+    public void setSortByPosition(boolean v) {
+        sortByPosition = v;
+    }
+
+    /** @see #setSortByPosition. */
+    public boolean getSortByPosition() {
+        return sortByPosition;
+    }
+
 }
