@@ -46,7 +46,7 @@ public class COSDocument extends COSBase
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(COSDocument.class);
+    private static final Log LOG = LogFactory.getLog(COSDocument.class);
 
     private float version;
 
@@ -58,7 +58,7 @@ public class COSDocument extends COSBase
         new HashMap<COSObjectKey, COSObject>();
 
     /**
-     * Maps object and generation ids to object byte offsets.
+     * Maps object and generation id to object byte offsets.
      */
     private final Map<COSObjectKey, Integer> xrefTable =
         new HashMap<COSObjectKey, Integer>();
@@ -69,12 +69,12 @@ public class COSDocument extends COSBase
     private COSDictionary trailer;
     
     /**
-     * Document signature dictionary
+     * Document signature dictionary.
      */
     private COSDictionary signDictionary = null;
     
     /**
-     * Some doc
+     * Signature interface.
      */
     private SignatureInterface signatureInterface;
 
@@ -104,14 +104,15 @@ public class COSDocument extends COSBase
      * deleting the storage if necessary that this file will write to. The
      * close method will close the file though.
      *
-     * @param scratchFile the random access file to use for storage
-     * @param forceParsing flag to skip malformed or otherwise unparseable
+     * @param scratchFileValue the random access file to use for storage
+     * @param forceParsingValue flag to skip malformed or otherwise unparseable
      *                     document content where possible
      */
-    public COSDocument(RandomAccess scratchFile, boolean forceParsing) {
-        this.scratchFile = scratchFile;
-        this.tmpFile = null;
-        this.forceParsing = forceParsing;
+    public COSDocument(RandomAccess scratchFileValue, boolean forceParsingValue) 
+    {
+        scratchFile = scratchFileValue;
+        tmpFile = null;
+        forceParsing = forceParsingValue;
     }
 
     /**
@@ -121,14 +122,15 @@ public class COSDocument extends COSBase
      *
      * @param scratchDir directory for the temporary file,
      *                   or <code>null</code> to use the system default
-     * @param forceParsing flag to skip malformed or otherwise unparseable
+     * @param forceParsingValue flag to skip malformed or otherwise unparseable
      *                     document content where possible
+     * @throws IOException if something went wrong
      */
-    public COSDocument(File scratchDir, boolean forceParsing)
-            throws IOException {
-        this.tmpFile = File.createTempFile("pdfbox-", ".tmp", scratchDir);
-        this.scratchFile = new RandomAccessFile(tmpFile, "rw");
-        this.forceParsing = forceParsing;
+    public COSDocument(File scratchDir, boolean forceParsingValue) throws IOException 
+    {
+        tmpFile = File.createTempFile("pdfbox-", ".tmp", scratchDir);
+        scratchFile = new RandomAccessFile(tmpFile, "rw");
+        forceParsing = forceParsingValue;
     }
 
     /**
@@ -136,7 +138,8 @@ public class COSDocument extends COSBase
      *
      *  @throws IOException If there is an error creating the tmp file.
      */
-    public COSDocument() throws IOException {
+    public COSDocument() throws IOException 
+    {
         this(new RandomAccessBuffer(), false);
     }
 
@@ -148,7 +151,8 @@ public class COSDocument extends COSBase
      *
      * @throws IOException If there is an error creating the tmp file.
      */
-    public COSDocument(File scratchDir) throws IOException {
+    public COSDocument(File scratchDir) throws IOException 
+    {
         this(scratchDir, false);
     }
 
@@ -160,7 +164,8 @@ public class COSDocument extends COSBase
      *
      * @param file The random access file to use for storage.
      */
-    public COSDocument(RandomAccess file) {
+    public COSDocument(RandomAccess file) 
+    {
         this(file, false);
     }
 
@@ -214,7 +219,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    log.warn(e, e);
+                    LOG.warn(e, e);
                 }
             }
         }
@@ -261,7 +266,7 @@ public class COSDocument extends COSBase
                 }
                 catch (ClassCastException e)
                 {
-                    log.warn(e, e);
+                    LOG.warn(e, e);
                 }
             }
         }
@@ -286,6 +291,11 @@ public class COSDocument extends COSBase
      */
     public void setVersion( float versionValue )
     {
+        // update header string
+        if (versionValue != version) 
+        {
+            headerString = headerString.replaceFirst(String.valueOf(version), String.valueOf(versionValue));
+        }
         version = versionValue;
     }
 
@@ -325,7 +335,12 @@ public class COSDocument extends COSBase
         return (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
     }
 
-    public SignatureInterface getSignatureInterface() {
+    /**
+     * This will return the signature interface.
+     * @return the signature interface 
+     */
+    public SignatureInterface getSignatureInterface() 
+    {
         return signatureInterface;
     }
     
@@ -340,7 +355,14 @@ public class COSDocument extends COSBase
         trailer.setItem( COSName.ENCRYPT, encDictionary );
     }
 
-    public COSDictionary getLastSignatureDictionary() throws IOException {
+    /**
+     * This will return the last signature dictionary.
+     * @return the last signature dictionary 
+     * 
+     * @throws IOException if something went wrong
+     */
+    public COSDictionary getLastSignatureDictionary() throws IOException 
+    {
       if (signDictionary == null)
       {
         COSObject documentCatalog = getCatalog();
@@ -389,8 +411,13 @@ public class COSDocument extends COSBase
         getTrailer().setItem(COSName.ID, id);
     }
     
-    public void setSignatureInterface(SignatureInterface signatureInterface) {
-      this.signatureInterface = signatureInterface;
+    /**
+     * Set the signature interface to the given value.
+     * @param sigInterface the signature interface
+     */
+    public void setSignatureInterface(SignatureInterface sigInterface) 
+    {
+        signatureInterface = sigInterface;
     }
 
     /**
@@ -463,9 +490,11 @@ public class COSDocument extends COSBase
      */
     public void close() throws IOException
     {
-        if (!closed) {
+        if (!closed) 
+        {
             scratchFile.close();
-            if (tmpFile != null) {
+            if (tmpFile != null) 
+            {
                 tmpFile.delete();
             }
             closed = true;
@@ -481,9 +510,11 @@ public class COSDocument extends COSBase
     @Override
     protected void finalize() throws IOException
     {
-        if (!closed) {
-            if (warnMissingClose) {
-                log.warn( "Warning: You did not close a PDF Document" );
+        if (!closed) 
+        {
+            if (warnMissingClose) 
+            {
+                LOG.warn( "Warning: You did not close a PDF Document" );
             }
             close();
         }
@@ -579,18 +610,17 @@ public class COSDocument extends COSBase
      */
     public COSObject removeObject(COSObjectKey key)
     {
-        COSObject obj = objectPool.remove(key);
-        return obj;
+        return objectPool.remove(key);
     }
 
     /**
      * Populate XRef HashMap with given values.
      * Each entry maps ObjectKeys to byte offsets in the file.
-     * @param _xrefTable  xref table entries to be added
+     * @param xrefTableValues  xref table entries to be added
      */
-    public void addXRefTable( Map<COSObjectKey, Integer> xrefTable )
+    public void addXRefTable( Map<COSObjectKey, Integer> xrefTableValues )
     {
-        this.xrefTable.putAll( xrefTable );
+        xrefTable.putAll( xrefTableValues );
     }
 
     /**
@@ -607,11 +637,11 @@ public class COSDocument extends COSBase
      * This method set the startxref value of the document. This will only 
      * be needed for incremental updates.
      * 
-     * @param readInt
+     * @param startXrefValue the value for startXref
      */
-    public void setStartXref(int startXref)
+    public void setStartXref(int startXrefValue)
     {
-      this.startXref = startXref;
+        startXref = startXrefValue;
     }
 
     /**

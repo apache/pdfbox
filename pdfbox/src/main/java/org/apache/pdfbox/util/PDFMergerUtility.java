@@ -98,12 +98,11 @@ public class PDFMergerUtility
 
     /**
      * Set the destination OutputStream.
-     * @param destination
-     *            The destination to set.
+     * @param destStream The destination to set.
      */
-    public void setDestinationStream(OutputStream destinationStream)
+    public void setDestinationStream(OutputStream destStream)
     {
-        this.destinationStream = destinationStream;
+        destinationStream = destStream;
     }
 
     /**
@@ -153,9 +152,9 @@ public class PDFMergerUtility
     /**
      * Add a list of sources to the list of documents to merge.
      *
-     * @param source List of InputStream objects representing source documents
+     * @param sourcesList List of InputStream objects representing source documents
      */
-    public void addSources(List<InputStream> sources)
+    public void addSources(List<InputStream> sourcesList)
     {
         this.sources.addAll(sources);
     }
@@ -237,11 +236,37 @@ public class PDFMergerUtility
         PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
         PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
 
+        // use the highest version number for the resulting pdf
+        float destVersion = destination.getDocument().getVersion(); 
+        float srcVersion = source.getDocument().getVersion(); 
+
+        if (destVersion < srcVersion)
+        {
+            destination.getDocument().setVersion(srcVersion);
+        }
+            
         if( destCatalog.getOpenAction() == null )
         {
             destCatalog.setOpenAction( srcCatalog.getOpenAction() );
         }
 
+        // maybe there are some shared resources for all pages 
+        COSDictionary srcPages = (COSDictionary)srcCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGES );
+        COSDictionary srcResources = (COSDictionary)srcPages.getDictionaryObject( COSName.RESOURCES );
+        COSDictionary destPages = (COSDictionary)destCatalog.getCOSDictionary().getDictionaryObject( COSName.PAGES );
+        COSDictionary destResources = (COSDictionary)destPages.getDictionaryObject( COSName.RESOURCES );
+        if (srcResources != null) 
+        {
+            if (destResources != null)
+            {
+                destResources.mergeInto(srcResources);
+            }
+            else
+            {
+                destPages.setItem(COSName.RESOURCES, srcResources);
+            }
+        }
+        
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
 
         try
@@ -371,7 +396,7 @@ public class PDFMergerUtility
         }
 
         //finally append the pages
-        List<PDPage> pages = source.getDocumentCatalog().getAllPages();
+        List<PDPage> pages = srcCatalog.getAllPages();
         Iterator<PDPage> pageIter = pages.iterator();
         while( pageIter.hasNext() )
         {
