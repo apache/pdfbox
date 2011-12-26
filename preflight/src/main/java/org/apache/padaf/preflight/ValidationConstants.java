@@ -167,6 +167,7 @@ public interface ValidationConstants {
   static String FONT_DICTIONARY_KEY_CMAP_WMODE = "WMode";
   static String FONT_DICTIONARY_KEY_CMAP_USECMAP = "UseCMap";
   static String FONT_DICTIONARY_KEY_CIDSET = "CIDSet";
+  static int FONT_DICTIONARY_DEFAULT_CMAP_WMODE= 0;
 
   static String STREAM_DICTIONARY_KEY_LENGHT = "Length";
   static String STREAM_DICTIONARY_KEY_FILTER = "Filter";

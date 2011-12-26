@@ -55,12 +55,12 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	protected COSStream cmap;
 	protected COSBase toUnicode;
 
-	protected CMap cidToGidMap = null;
+	protected CIDToGIDMap cidToGidMap = null;
 
 	protected boolean isIdentityCMap = false;
 
 	public CompositeFontValidator(DocumentHandler handler, COSObject obj)
-	throws ValidationException {
+			throws ValidationException {
 		super(handler, obj);
 	}
 
@@ -83,7 +83,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 				|| (subtype == null || "".equals(subtype))) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_DICTIONARY_INVALID,
-			"Type and/or Subtype keys are missing"));
+					"Type and/or Subtype keys are missing"));
 			return false;
 		}
 
@@ -101,7 +101,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			// rule
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_DICTIONARY_INVALID,
-			"BaseFont, Encoding or DescendantFonts keys are missing"));
+					"BaseFont, Encoding or DescendantFonts keys are missing"));
 			return false;
 		}
 
@@ -133,7 +133,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (array == null) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_CIDKEYED_INVALID,
-			"CIDFont is missing from the DescendantFonts array"));
+					"CIDFont is missing from the DescendantFonts array"));
 			return false;
 		}
 		// ---- in PDF 1.4, this array must contain only one element,
@@ -143,7 +143,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (array.size() != 1) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_CIDKEYED_INVALID,
-			"The DescendantFonts array should have one element."));
+					"The DescendantFonts array should have one element."));
 			return false;
 		}
 
@@ -151,7 +151,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (this.cidFont == null) {
 			this.fontContainer
 			.addError(new ValidationError(ERROR_FONTS_CIDKEYED_INVALID,
-			"The DescendantFonts array should have one element with is a dictionary."));
+					"The DescendantFonts array should have one element with is a dictionary."));
 			return false;
 		}
 
@@ -164,7 +164,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 				|| (subtype == null || "".equals(subtype))) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_DICTIONARY_INVALID,
-			"Type and/or Subtype keys are missing"));
+					"Type and/or Subtype keys are missing"));
 			return false;
 		}
 
@@ -174,7 +174,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (!FONT_DICTIONARY_VALUE_FONT.equals(type) || !(isT0 || isT2)) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_DICTIONARY_INVALID,
-			"Type and/or Subtype keys are missing"));
+					"Type and/or Subtype keys are missing"));
 			return false;
 		}
 
@@ -273,8 +273,8 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		} else if (COSUtils.isStream(ctog, cDoc)) {
 			try {
 				COSStream ctogMap = COSUtils.getAsStream(ctog, cDoc);
-				this.cidToGidMap = new CMapParser().parse(null, ctogMap
-						.getUnfilteredStream());
+				this.cidToGidMap = new CIDToGIDMap();
+				this.cidToGidMap.parseStream(ctogMap);
 			} catch (IOException e) {
 				// ---- map can be invalid, return a Validation Error
 				this.fontContainer.addError(new ValidationError(
@@ -308,7 +308,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 					.equals(str))) {
 				this.fontContainer.addError(new ValidationError(
 						ERROR_FONTS_CIDKEYED_INVALID,
-				"The CMap is a string but it isn't an Identity-H/V"));
+						"The CMap is a string but it isn't an Identity-H/V"));
 				return false;
 			}
 			isIdentityCMap = true;
@@ -321,7 +321,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			// ---- CMap type is invalid
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-			"The CMap type is invalid"));
+					"The CMap type is invalid"));
 			return false;
 		}
 		return true;
@@ -340,22 +340,24 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	private boolean processCMapAsStream(COSStream aCMap) {
 		COSDocument cDoc = handler.getDocument().getDocument();
 
-		String type = aCMap
-		.getNameAsString(COSName.getPDFName(DICTIONARY_KEY_TYPE));
-		String cmapName = aCMap.getNameAsString(COSName
-				.getPDFName(FONT_DICTIONARY_KEY_CMAP_NAME));
-		COSBase sysinfo = aCMap.getItem(COSName
-				.getPDFName(FONT_DICTIONARY_KEY_CID_SYSINFO));
-		int wmode = aCMap
-		.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_WMODE));
-		COSBase cmapUsed = aCMap.getItem(COSName
-				.getPDFName(FONT_DICTIONARY_KEY_CMAP_USECMAP));
+		String type = aCMap.getNameAsString(COSName.getPDFName(DICTIONARY_KEY_TYPE));
+		String cmapName = aCMap.getNameAsString(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_NAME));
+		COSBase sysinfo = aCMap.getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CID_SYSINFO));
+		int wmode = aCMap.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_WMODE));
+		if (wmode == -1) {
+			/*
+			 * According to the getInt javadoc, -1 is returned if there are no result.
+			 * In the PDF Reference v1.7 p449, we can read that Default value is 0.
+			 */
+			wmode = FONT_DICTIONARY_DEFAULT_CMAP_WMODE;
+		}
+		COSBase cmapUsed = aCMap.getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_USECMAP));
 
 		if (!FONT_DICTIONARY_VALUE_TYPE_CMAP.equals(type)) {
 			// ---- CMap type is invalid
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-			"The CMap type is invalid"));
+					"The CMap type is invalid"));
 			return false;
 		}
 
@@ -367,23 +369,22 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (cmapName == null || "".equals(cmapName) || wmode > 1) {
 			this.fontContainer.addError(new ValidationError(
 					ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-			"Some elements in the CMap dictionary are missing or invalid"));
+					"Some elements in the CMap dictionary are missing or invalid"));
 			return false;
 		}
 
 		try {
 
-			CMap fontboxCMap = new CMapParser().parse(null, aCMap
-					.getUnfilteredStream());
+			CMap fontboxCMap = new CMapParser().parse(null, aCMap.getUnfilteredStream());
 			int wmValue = fontboxCMap.getWMode();
-			String cmnValue = fontboxCMap.getName(); //getCmapEntry("CMapName");
+			String cmnValue = fontboxCMap.getName();
 
 
 			if (wmValue != wmode) {
 
 				this.fontContainer.addError(new ValidationError(
 						ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-				"WMode is inconsistent"));
+						"WMode is inconsistent"));
 				return false;
 			}
 
@@ -391,7 +392,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 
 				this.fontContainer.addError(new ValidationError(
 						ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-				"CMapName is inconsistent"));
+						"CMapName is inconsistent"));
 				return false;
 			}
 
@@ -480,7 +481,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			if (!(key instanceof COSName)) {
 				this.fontContainer.addError(new ValidationResult.ValidationError(
 						ValidationConstants.ERROR_SYNTAX_DICTIONARY_KEY_INVALID,
-				"Invalid key in The font descriptor"));
+						"Invalid key in The font descriptor"));
 				return false;
 			}
 
@@ -530,12 +531,12 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 * @throws ValidationException
 	 */
 	protected boolean processCIDFontType0(COSBase fontDesc)
-	throws ValidationException {
+			throws ValidationException {
 		COSDictionary fontDescDic = COSUtils.getAsDictionary(fontDesc, handler
 				.getDocument().getDocument());
 		if (fontDescDic == null) {
 			throw new ValidationException(
-			"Unable to process CIDFontType0 because of the font descriptor is invalid.");
+					"Unable to process CIDFontType0 because of the font descriptor is invalid.");
 		}
 		PDFontDescriptorDictionary pfDescriptor = new PDFontDescriptorDictionary(
 				fontDescDic);
@@ -569,7 +570,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		if (fontName == null) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
 					ERROR_FONTS_DESCRIPTOR_INVALID,
-			"The FontName in font descriptor is missing"));
+					"The FontName in font descriptor is missing"));
 			return false;
 		}
 
@@ -579,7 +580,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			this.fontContainer
 			.addError(new ValidationResult.ValidationError(
 					ERROR_FONTS_DESCRIPTOR_INVALID,
-			"The FontName in font descriptor isn't the same as the BaseFont in the Font dictionary"));
+					"The FontName in font descriptor isn't the same as the BaseFont in the Font dictionary"));
 			return false;
 		}
 		return true;
@@ -601,8 +602,8 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		PDStream ff3 = pfDescriptor.getFontFile3();
 
 		boolean onlyOne = (ff1 != null && ff2 == null && ff3 == null)
-		|| (ff1 == null && ff2 != null && ff3 == null)
-		|| (ff1 == null && ff2 == null && ff3 != null);
+				|| (ff1 == null && ff2 != null && ff3 == null)
+				|| (ff1 == null && ff2 == null && ff3 != null);
 
 		if ((ff3 == null) || !onlyOne) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
@@ -628,7 +629,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 				.equals(st))) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
 					ERROR_FONTS_FONT_FILEX_INVALID,
-			"The FontFile3 stream doesn't have the right Subtype"));
+					"The FontFile3 stream doesn't have the right Subtype"));
 			return false;
 		}
 
@@ -645,7 +646,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			}
 
 			return checkCIDFontWidths(lCFonts)
-			&& checkFontFileMetaData(pfDescriptor, ff3);
+					&& checkFontFileMetaData(pfDescriptor, ff3);
 		} catch (IOException e) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
 					ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
@@ -663,7 +664,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 * @throws ValidationException
 	 */
 	protected boolean checkTTFontMetrics(TrueTypeFont ttf)
-	throws ValidationException {
+			throws ValidationException {
 		int unitsPerEm = ttf.getHeader().getUnitsPerEm();
 		int[] glyphWidths = ttf.getHorizontalMetrics().getAdvanceWidth();
 		/* In a Mono space font program, the length of the AdvanceWidth array must be one.
@@ -690,7 +691,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 * @throws ValidationException
 	 */
 	protected boolean checkCIDFontWidths(List<CFFFont> lCFonts)
-	throws ValidationException {
+			throws ValidationException {
 		// ---- Extract Widths and default Width from the CIDFont dictionary
 		CFFType0FontContainer type0FontContainer = ((CompositeFontContainer)this.fontContainer).getCFFType0();
 		type0FontContainer.setFontObject(lCFonts);
@@ -713,8 +714,8 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		PDStream ff3 = pfDescriptor.getFontFile3();
 
 		boolean onlyOne = (ff1 != null && ff2 == null && ff3 == null)
-		|| (ff1 == null && ff2 != null && ff3 == null)
-		|| (ff1 == null && ff2 == null && ff3 != null);
+				|| (ff1 == null && ff2 != null && ff3 == null)
+				|| (ff1 == null && ff2 == null && ff3 != null);
 
 		if ((ff2 == null) || !onlyOne) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
@@ -732,33 +733,24 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			return false;
 		}
 
-		boolean hasLength1 = stream.getInt(COSName
-				.getPDFName(FONT_DICTIONARY_KEY_LENGTH1)) > 0;
-				if (!hasLength1) {
-					this.fontContainer.addError(new ValidationResult.ValidationError(
-							ValidationConstants.ERROR_FONTS_FONT_FILEX_INVALID,
-					"The FontFile is invalid"));
-					return false;
-				}
+		// ---- try to load the font using the java.awt.font object.
+		// ---- if the font is invalid, an exception will be thrown
+		TrueTypeFont ttf = null;
+		try {
+			// ---- According to PDF Reference, CIDFontType2 is a TrueType font.
+			// ---- Remark : Java.awt.Font throws exception when a CIDFontType2 is
+			// parsed even if it is valid.
+			ttf = new CIDFontType2Parser(true).parseTTF(new ByteArrayInputStream(ff2
+					.getByteArray()));
+		} catch (Exception e) {
+			// ---- Exceptionally, Exception is catched Here because of damaged font
+			// can throw NullPointer Exception...
+			this.fontContainer.addError(new ValidationResult.ValidationError(
+					ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
+			return false;
+		}
 
-				// ---- try to load the font using the java.awt.font object.
-				// ---- if the font is invalid, an exception will be thrown
-				TrueTypeFont ttf = null;
-				try {
-					// ---- According to PDF Reference, CIDFontType2 is a TrueType font.
-					// ---- Remark : Java.awt.Font throws exception when a CIDFontType2 is
-					// parsed even if it is valid.
-					ttf = new CIDFontType2Parser(true).parseTTF(new ByteArrayInputStream(ff2
-							.getByteArray()));
-				} catch (Exception e) {
-					// ---- Exceptionally, Exception is catched Here because of damaged font
-					// can throw NullPointer Exception...
-					this.fontContainer.addError(new ValidationResult.ValidationError(
-							ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
-					return false;
-				}
-
-				return checkTTFontMetrics(ttf) && checkFontFileMetaData(pfDescriptor, ff2);
+		return checkTTFontMetrics(ttf) && checkFontFileMetaData(pfDescriptor, ff2);
 	}
 
 	/**
@@ -778,7 +770,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 							.getDocument())) {
 				this.fontContainer.addError(new ValidationResult.ValidationError(
 						ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET,
-				"The CIDSet entry is missing for the Composite Subset"));
+						"The CIDSet entry is missing for the Composite Subset"));
 				return false;
 			}
 		}
@@ -792,12 +784,12 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 * @throws ValidationException
 	 */
 	protected boolean processCIDFontType2(COSBase fontDesc)
-	throws ValidationException {
+			throws ValidationException {
 		COSDictionary fontDescDic = COSUtils.getAsDictionary(fontDesc, handler
 				.getDocument().getDocument());
 		if (fontDescDic == null) {
 			throw new ValidationException(
-			"Unable to process CIDFontType2 because of the font descriptor is invalid.");
+					"Unable to process CIDFontType2 because of the font descriptor is invalid.");
 		}
 		PDFontDescriptorDictionary pfDescriptor = new PDFontDescriptorDictionary(
 				fontDescDic);

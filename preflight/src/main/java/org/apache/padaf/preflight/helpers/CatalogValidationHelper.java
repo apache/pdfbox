@@ -387,7 +387,7 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 			if (handler.getIccProfileWrapper() == null) {
 				handler.setIccProfileWrapper(new ICCProfileWrapper(iccp));
 			}
-
+			
 			// ---- keep reference to avoid multiple profile definition
 			mapDestOutputProfile.put(new COSObjectKey((COSObject) destOutputProfile),
 					true);
