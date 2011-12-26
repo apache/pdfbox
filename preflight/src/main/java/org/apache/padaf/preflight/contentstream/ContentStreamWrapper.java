@@ -32,13 +32,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.padaf.preflight.DocumentHandler;
 import org.apache.padaf.preflight.ValidationException;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
 import org.apache.padaf.preflight.font.AbstractFontContainer;
-import org.apache.padaf.preflight.font.GlyphException;
 import org.apache.padaf.preflight.font.AbstractFontContainer.State;
+import org.apache.padaf.preflight.font.GlyphException;
 import org.apache.padaf.preflight.utils.ContentStreamEngine;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;

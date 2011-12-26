@@ -21,7 +21,6 @@
 
 package org.apache.padaf.preflight.font;
 
-import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.padaf.preflight.ValidationConstants;
 
@@ -32,7 +31,7 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 	 * extracted by the TrueTypeParser object
 	 */
 	private TrueTypeFont fontObject = null;
-	private CMap cidToGidMap = null;
+	private CIDToGIDMap cidToGidMap = null;
 
 	private int numberOfLongHorMetrics;
 	private int unitsPerEm;
@@ -84,25 +83,10 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 		int glyphIndex = cid;
 
 		if (this.cidToGidMap != null) {
-			byte[] cidAsByteArray = null;
-			if (cid < 256) {
-				cidAsByteArray = new byte[1];
-				cidAsByteArray[0] = (byte) (cid & 0xFF);
-			} else {
-				cidAsByteArray = new byte[1];
-				cidAsByteArray[0] = (byte) ((cid >> 8) & 0xFF);
-				cidAsByteArray[1] = (byte) (cid & 0xFF);
-			}
-
-			String glyphIdAsString = this.cidToGidMap.lookup(cidAsByteArray, 0,	cidAsByteArray.length);
-			// ---- glyphIdAsString should be a Integer
-			// TODO OD-PDFA-4 : A vérifier avec un PDF qui contient une stream pour
-			// CidToGid...
-			try {
-				glyphIndex = Integer.parseInt(glyphIdAsString);
-			} catch (NumberFormatException e) {
+			glyphIndex = cidToGidMap.getGID(cid);
+			if (glyphIndex==cidToGidMap.NOTDEF_GLYPH_INDEX) {
 				GlyphException ge = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, cid, 
-						"CID " + cid + " isn't linked with a GlyphIndex >> " + glyphIdAsString);
+						"CID " + cid + " can't be found in the cidToGid map");
 				addKnownCidElement(new GlyphDetail(cid, ge));
 				throw ge;
 			}
@@ -114,7 +98,7 @@ public class CFFType2FontContainer extends AbstractFontContainer {
 		this.fontObject = fontObject;
 	}
 
-	void setCmap(CMap cmap) {
+	void setCmap(CIDToGIDMap cmap) {
 		this.cidToGidMap = cmap;
 	}
 
