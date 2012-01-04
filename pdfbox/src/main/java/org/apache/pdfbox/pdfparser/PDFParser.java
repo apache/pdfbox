@@ -429,7 +429,7 @@ public class PDFParser extends BaseParser
      */
     private boolean parseObject() throws IOException
     {
-        int currentObjByteOffset = pdfSource.getOffset();
+        long currentObjByteOffset = pdfSource.getOffset();
         boolean isEndOfFile = false;
         skipSpaces();
         //peek at the next character to determine the type of object we are parsing
@@ -642,7 +642,7 @@ public class PDFParser extends BaseParser
     * @param pb The COSBase of this conflictObj
     * @throws IOException
     */
-    private void addObjectToConflicts(int offset, COSObjectKey key, COSBase pb) throws IOException
+    private void addObjectToConflicts(long offset, COSObjectKey key, COSBase pb) throws IOException
     {
         COSObject obj = new COSObject(null);
         obj.setObjectNumber( COSInteger.get( key.getNumber() ) );
@@ -686,7 +686,7 @@ public class PDFParser extends BaseParser
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseXrefTable( int startByteOffset ) throws IOException
+    private boolean parseXrefTable( long startByteOffset ) throws IOException
     {
         if(pdfSource.peek() != 'x')
         {
@@ -734,7 +734,7 @@ public class PDFParser extends BaseParser
                 {
                     try
                     {
-                        int currOffset = Integer.parseInt(splitString[0]);
+                        long currOffset = Long.parseLong(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         xrefTrailerResolver.setXRef(objKey, currOffset);
@@ -839,7 +839,7 @@ public class PDFParser extends BaseParser
      * @param objByteOffset the offset to start at
      * @throws IOException if there is an error parsing the stream
      */
-    public void parseXrefStream( COSStream stream, int objByteOffset ) throws IOException
+    public void parseXrefStream( COSStream stream, long objByteOffset ) throws IOException
     {
         xrefTrailerResolver.nextXrefObj( objByteOffset );
         xrefTrailerResolver.setTrailer( stream );
@@ -860,11 +860,11 @@ public class PDFParser extends BaseParser
     private static class ConflictObj
     {
 
-        private int offset;
+        private long offset;
         private COSObjectKey objectKey;
         private COSObject object;
 
-        public ConflictObj(int offsetValue, COSObjectKey key, COSObject pdfObject)
+        public ConflictObj(long offsetValue, COSObjectKey key, COSObject pdfObject)
         {
             this.offset = offsetValue;
             this.objectKey = key;
@@ -890,7 +890,7 @@ public class PDFParser extends BaseParser
             while(conflicts.hasNext())
             {
                 ConflictObj o = conflicts.next();
-                Integer offset = new Integer(o.offset);
+                Long offset = new Long(o.offset);
                 if(document.getXrefTable().containsValue(offset))
                 {
                     COSObject pdfObject = document.getObjectFromPool(o.objectKey);

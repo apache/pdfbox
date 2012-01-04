@@ -31,7 +31,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /*
      * The current position in the file. 
      */
-    private int offset = 0;
+    private long offset = 0;
     
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
      * Returns the current byte offset in the file.
      * @return the int byte offset
      */
-    public int getOffset()
+    public long getOffset()
     {
         return offset;
     }

@@ -60,8 +60,8 @@ public class COSDocument extends COSBase
     /**
      * Maps object and generation id to object byte offsets.
      */
-    private final Map<COSObjectKey, Integer> xrefTable =
-        new HashMap<COSObjectKey, Integer>();
+    private final Map<COSObjectKey, Long> xrefTable =
+        new HashMap<COSObjectKey, Long>();
 
     /**
      * Document trailer dictionary.
@@ -89,7 +89,7 @@ public class COSDocument extends COSBase
 
     private boolean warnMissingClose = true;
     
-    private int startXref;
+    private long startXref;
     
     private boolean closed = false;
 
@@ -618,7 +618,7 @@ public class COSDocument extends COSBase
      * Each entry maps ObjectKeys to byte offsets in the file.
      * @param xrefTableValues  xref table entries to be added
      */
-    public void addXRefTable( Map<COSObjectKey, Integer> xrefTableValues )
+    public void addXRefTable( Map<COSObjectKey, Long> xrefTableValues )
     {
         xrefTable.putAll( xrefTableValues );
     }
@@ -628,7 +628,7 @@ public class COSDocument extends COSBase
      * to byte offsets in the file.
      * @return mapping of ObjectsKeys to byte offsets
      */
-    public Map<COSObjectKey, Integer> getXrefTable()
+    public Map<COSObjectKey, Long> getXrefTable()
     {
         return xrefTable;
     }
@@ -639,7 +639,7 @@ public class COSDocument extends COSBase
      * 
      * @param startXrefValue the value for startXref
      */
-    public void setStartXref(int startXrefValue)
+    public void setStartXref(long startXrefValue)
     {
         startXref = startXrefValue;
     }
@@ -647,9 +647,9 @@ public class COSDocument extends COSBase
     /**
      * Return the startXref Position of the parsed document. This will only be needed for incremental updates.
      * 
-     * @return a int with the old position of the startxref
+     * @return a long with the old position of the startxref
      */
-    public int getStartXref()
+    public long getStartXref()
     {
       return startXref;
     }
