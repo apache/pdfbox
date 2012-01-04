@@ -249,7 +249,7 @@ public class COSWriter implements ICOSVisitor
         {
           COSDocument cosDoc = doc.getDocument();
           
-          Map<COSObjectKey, Integer> xrefTable = cosDoc.getXrefTable();
+          Map<COSObjectKey, Long> xrefTable = cosDoc.getXrefTable();
           Set<COSObjectKey> keySet = xrefTable.keySet();
           long highestNumber=0;
           for ( COSObjectKey cosObjectKey : keySet ) 
@@ -758,17 +758,17 @@ public class COSWriter implements ICOSVisitor
      * that represent a cluster of the size 3. 5 is follow by three other
      * related numbers and create a cluster of size 4. etc.
      * 
-     * @param xRefEntries list with the xRef entries that was written
+     * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
-    protected Integer[] getXRefRanges(List<COSWriterXRefEntry> xRefEntries)
+    protected Integer[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
     {
         int nr = 0;
         int last = -2;
         int count = 1;
 
         ArrayList<Integer> list = new ArrayList<Integer>();
-        for( Object object : xRefEntries )
+        for( Object object : xRefEntriesList )
         {
             nr = (int)((COSWriterXRefEntry)object).getKey().getNumber();
             if (nr == last + 1)
@@ -789,7 +789,7 @@ public class COSWriter implements ICOSVisitor
             }
         }
         // If no new entry is found, we need to write out the last result
-        if(xRefEntries.size() > 0)
+        if(xRefEntriesList.size() > 0)
         {
             list.add(last - count + 1);
             list.add(count);

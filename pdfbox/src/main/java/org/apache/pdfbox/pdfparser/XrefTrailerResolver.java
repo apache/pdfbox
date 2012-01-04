@@ -54,25 +54,32 @@ public class XrefTrailerResolver
     /**
      * A class which represents a xref/trailer object.
      */
-    class XrefTrailerObj
+    private class XrefTrailerObj
     {
         private COSDictionary trailer = null;
-        private final Map<COSObjectKey, Integer> xrefTable = new HashMap<COSObjectKey, Integer>();
+        private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
+        
+        /**
+         *  Default cosntructor.
+         */
+        private XrefTrailerObj()
+        {
+        }
     }
 
-    private final Map<Integer, XrefTrailerObj> bytePosToXrefMap = new HashMap<Integer, XrefTrailerObj>();
+    private final Map<Long, XrefTrailerObj> bytePosToXrefMap = new HashMap<Long, XrefTrailerObj>();
     private XrefTrailerObj curXrefTrailerObj   = null;
     private XrefTrailerObj resolvedXrefTrailer = null;
 
     /** Log instance. */
-    private static final Log log = LogFactory.getLog( XrefTrailerResolver.class );
+    private static final Log LOG = LogFactory.getLog( XrefTrailerResolver.class );
 
     /**
      * Signals that a new XRef object (table or stream) starts.
      * @param startBytePos the offset to start at
      *
      */
-    public void nextXrefObj( final int startBytePos )
+    public void nextXrefObj( final long startBytePos )
     {
         bytePosToXrefMap.put( startBytePos, curXrefTrailerObj = new XrefTrailerObj() );
     }
@@ -83,12 +90,12 @@ public class XrefTrailerResolver
      * @param objKey The objkey, with id and gen numbers
      * @param offset The byte offset in this file
      */
-    public void setXRef( COSObjectKey objKey, int offset )
+    public void setXRef( COSObjectKey objKey, long offset )
     {
         if ( curXrefTrailerObj == null )
         {
             // should not happen...
-            log.warn( "Cannot add XRef entry for '" + objKey.getNumber() + "' because XRef start was not signalled." );
+            LOG.warn( "Cannot add XRef entry for '" + objKey.getNumber() + "' because XRef start was not signalled." );
             return;
         }
         curXrefTrailerObj.xrefTable.put( objKey, offset );
@@ -104,7 +111,7 @@ public class XrefTrailerResolver
         if ( curXrefTrailerObj == null )
         {
             // should not happen...
-            log.warn( "Cannot add trailer because XRef start was not signalled." );
+            LOG.warn( "Cannot add trailer because XRef start was not signalled." );
             return;
         }
         curXrefTrailerObj.trailer = trailer;
@@ -121,24 +128,24 @@ public class XrefTrailerResolver
      * Thus for incomplete PDF documents with missing
      * startxref one could call this method with parameter value -1.
      */
-    public void setStartxref( int startxrefBytePos )
+    public void setStartxref( long startxrefBytePosValue )
     {
         if ( resolvedXrefTrailer != null )
         {
-            log.warn( "Method must be called only ones with last startxref value." );
+            LOG.warn( "Method must be called only ones with last startxref value." );
             return;
         }
 
         resolvedXrefTrailer = new XrefTrailerObj();
         resolvedXrefTrailer.trailer = new COSDictionary();
 
-        XrefTrailerObj curObj = bytePosToXrefMap.get( startxrefBytePos );
-        List<Integer>  xrefSeqBytePos = new ArrayList<Integer>();
+        XrefTrailerObj curObj = bytePosToXrefMap.get( startxrefBytePosValue );
+        List<Long>  xrefSeqBytePos = new ArrayList<Long>();
 
         if ( curObj == null )
         {
             // no XRef at given position
-            log.warn( "Did not found XRef object at specified startxref position " + startxrefBytePos );
+            LOG.warn( "Did not found XRef object at specified startxref position " + startxrefBytePosValue );
 
             // use all objects in byte position order (last entries overwrite previous ones)
             xrefSeqBytePos.addAll( bytePosToXrefMap.keySet() );
@@ -148,10 +155,10 @@ public class XrefTrailerResolver
         {
             // found starting Xref object
             // add this and follow chain defined by 'Prev' keys
-            xrefSeqBytePos.add( startxrefBytePos );
+            xrefSeqBytePos.add( startxrefBytePosValue );
             while ( curObj.trailer != null )
             {
-                int prevBytePos = curObj.trailer.getInt( COSName.PREV, -1 );
+                long prevBytePos = curObj.trailer.getLong( COSName.PREV, -1L );
                 if ( prevBytePos == -1 )
                 {
                     break;
@@ -160,7 +167,7 @@ public class XrefTrailerResolver
                 curObj = bytePosToXrefMap.get( prevBytePos );
                 if ( curObj == null )
                 {
-                    log.warn( "Did not found XRef object pointed to by 'Prev' key at position " + prevBytePos );
+                    LOG.warn( "Did not found XRef object pointed to by 'Prev' key at position " + prevBytePos );
                     break;
                 }
                 xrefSeqBytePos.add( prevBytePos );
@@ -176,7 +183,7 @@ public class XrefTrailerResolver
         }
 
         // merge used and sorted XRef/trailer
-        for ( Integer bPos : xrefSeqBytePos )
+        for ( Long bPos : xrefSeqBytePos )
         {
             curObj = bytePosToXrefMap.get( bPos );
             if ( curObj.trailer != null )
@@ -192,6 +199,7 @@ public class XrefTrailerResolver
      * Gets the resolved trailer. Might return <code>null</code> in case
      * {@link #setStartxref(int)} was not called before.
      *
+     * @return the trailer if available
      */
     public COSDictionary getTrailer()
     {
@@ -202,8 +210,9 @@ public class XrefTrailerResolver
      * Gets the resolved xref table. Might return <code>null</code> in case
      *  {@link #setStartxref(int)} was not called before.
      *
+     * @return the xrefTable if available
      */
-    public Map<COSObjectKey, Integer> getXrefTable()
+    public Map<COSObjectKey, Long> getXrefTable()
     {
         return ( resolvedXrefTrailer == null ) ? null : resolvedXrefTrailer.xrefTable;
     }
