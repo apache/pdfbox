@@ -158,14 +158,14 @@ public class TrailerValidationHelper extends AbstractValidationHelper {
 
 			} else {
 
-				int min = Integer.MAX_VALUE;
-				int max = Integer.MIN_VALUE;
+				long min = Long.MAX_VALUE;
+				long max = Long.MIN_VALUE;
 				COSDictionary firstTrailer = null;
 				COSDictionary lastTrailer = null;
 
 				// Search First and Last trailers according to offset position.
 				for(COSObject co : xrefs) {
-					int offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
+					long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
 					if (offset < min) {
 						min = offset;
 						firstTrailer = (COSDictionary)co.getObject();
