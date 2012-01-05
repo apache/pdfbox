@@ -50,7 +50,7 @@ public class TestCOSUtils {
   public void testIsInteger() {
     try {
       COSObject co = new COSObject(new COSInteger(10));
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isInteger(co, new IOCOSDocument()));
@@ -68,7 +68,7 @@ public class TestCOSUtils {
   public void testIsFloat() {
     try {
       COSObject co = new COSObject(new COSFloat(10.0f));
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isFloat(co, new IOCOSDocument()));
@@ -86,7 +86,7 @@ public class TestCOSUtils {
   public void testIsString() {
     try {
       COSObject co = new COSObject(new COSString(""));
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isString(co, new IOCOSDocument()));
@@ -104,7 +104,7 @@ public class TestCOSUtils {
   public void testIsStream() {
     try {
       COSObject co = new COSObject(new COSStream(null));
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isStream(co, new IOCOSDocument()));
@@ -122,7 +122,7 @@ public class TestCOSUtils {
   public void testIsDictionary() {
     try {
       COSObject co = new COSObject(new COSDictionary());
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isDictionary(co, new IOCOSDocument()));
@@ -140,7 +140,7 @@ public class TestCOSUtils {
   public void testIsArray() {
     try {
       COSObject co = new COSObject(new COSArray());
-      co.setGenerationNumber(new COSInteger(0));
+      co.setGenerationNumber(COSInteger.ZERO);
       co.setObjectNumber(new COSInteger(10));
 
       assertFalse(COSUtils.isArray(co, new IOCOSDocument()));
@@ -173,8 +173,8 @@ public class TestCOSUtils {
     }
   }
 
-  protected void addToXref( COSDocument doc, COSObjectKey key, int value) {
-    Map<COSObjectKey, Integer>  xrefTable = new HashMap<COSObjectKey, Integer>(1);
+  protected void addToXref( COSDocument doc, COSObjectKey key, long value) {
+    Map<COSObjectKey, Long>  xrefTable = new HashMap<COSObjectKey, Long>(1);
     xrefTable.put(key, value);
     doc.addXRefTable(xrefTable);
   }

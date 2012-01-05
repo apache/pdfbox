@@ -215,7 +215,7 @@ public class StreamValidationHelper extends AbstractValidationHelper {
 		InputStream ra = null;
 		try {
 			ra = handler.getSource().getInputStream();
-			Integer offset = (Integer) handler.getDocument().getDocument()
+			Long offset = handler.getDocument().getDocument()
 					.getXrefTable().get(new COSObjectKey(cObj));
 
 			// ---- go to the beginning of the object
