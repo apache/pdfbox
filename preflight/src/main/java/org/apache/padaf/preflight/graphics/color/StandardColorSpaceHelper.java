@@ -24,6 +24,7 @@ package org.apache.padaf.preflight.graphics.color;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
@@ -32,10 +33,11 @@ import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVAL
 import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
 import static org.apache.padaf.preflight.ValidationConstants.MAX_DEVICE_N_LIMIT;
 
+import java.awt.color.ICC_Profile;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.padaf.preflight.DocumentHandler;
 import org.apache.padaf.preflight.ValidationException;
@@ -268,12 +270,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 			List<ValidationError> result) {
 		PDICCBased iccBased = (PDICCBased) pdcs;
 		try {
-			if (iccpw == null) {
-				result.add(new ValidationError(
-						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING, "DestOutputProfile is missing"));
+			ICC_Profile iccp = ICC_Profile.getInstance(iccBased.getPDStream().getByteArray());
+			if (iccp == null) {
+				result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED, "Unable to read ICCBase color space "));
 				return false;
 			}
-
 			List<PDColorSpace> altCs = iccBased.getAlternateColorSpaces();
 			for (PDColorSpace altpdcs : altCs) {
 				if (altpdcs != null) {
@@ -285,8 +286,18 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 						return false;
 					}
 
-					if (!processAllColorSpace(altpdcs, result)) {
-						return false;
+					List<ValidationError> warning = new ArrayList<ValidationError>();
+					if (!processAllColorSpace(altpdcs, warning)) {
+						// TODO manage in lazy mode
+						boolean strict = true;
+						// can be an error in strict mode according to the version of the ICC Profile
+						if (strict && 
+								((iccp.getMajorVersion() == 2 && iccp.getMinorVersion() > 0x40) 
+										|| (iccp.getMajorVersion() > 2))) {
+							result.addAll(warning);
+							return false;
+						}
+						return true;
 					}
 				}
 			}

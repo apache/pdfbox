@@ -298,14 +298,15 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 					continue;
 				}
 
-				if (!isStandardICCCharacterization(outputConditionIdentifier)) {
-					String info = dictionary.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
-					if (info == null || "".equals(info)) {
-						result.add(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-								"The Info entry of a OutputIntent dictionary is missing"));
-						continue;
-					}
-				}
+				// TODO When Lazy mode will be added, this block should be uncommented to set result as warning.
+//				if (!isStandardICCCharacterization(outputConditionIdentifier)) {
+//					String info = dictionary.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
+//					if (info == null || "".equals(info)) {
+//						result.add(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+//								"The Info entry of a OutputIntent dictionary is missing"));
+//						continue;
+//					}
+//				}
 			}
 		}
 		return result;
@@ -338,8 +339,8 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 			DocumentHandler handler) throws ValidationException {
 		try {
 			if (destOutputProfile == null) {
-				return new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-						"OutputIntent object uses a NULL Object");
+//				return new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,	"OutputIntent object uses a NULL Object");
+				return null;
 			}
 
 			// ---- destOutputProfile should be an instance of COSObject because of
