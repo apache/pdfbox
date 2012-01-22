@@ -21,10 +21,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -37,6 +38,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
+import org.apache.pdfbox.util.MapUtil;
 
 /**
  * This represents a set of resources available at the page/pages/stream level.
@@ -47,6 +49,20 @@ import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 public class PDResources implements COSObjectable
 {
     private COSDictionary resources;
+    private Map<String,PDFont> fonts = null;
+    private Map<PDFont, String> fontMappings = null;
+    private Map<String,PDColorSpace> colorspaces = null;
+    private Map<String,PDXObject> xobjects = null;
+    private Map<PDXObject,String> xobjectMappings = null;
+    private HashMap<String,PDXObjectImage> images = null;
+    private Map<String,PDExtendedGraphicsState> graphicsStates = null;
+    private Map<String,PDPatternResources> patterns = null;
+    private Map<String,PDShadingResources> shadings = null;
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDResources.class);
 
     /**
      * Default constructor.
@@ -87,6 +103,42 @@ public class PDResources implements COSObjectable
     }
 
     /**
+     * Calling this will release all cached information.
+     * 
+     */
+    public void clear() 
+    {
+        if (fonts != null)
+        {
+            fonts.clear();
+        }
+        if (colorspaces != null)
+        {
+            colorspaces.clear();
+        }
+        if (xobjects != null)
+        {
+            xobjects.clear();
+        }
+        if (images != null)
+        {
+            images.clear();
+        }
+        if (graphicsStates != null)
+        {
+            graphicsStates.clear();
+        }
+        if (patterns != null)
+        {
+            patterns.clear();
+        }
+        if (shadings != null)
+        {
+            shadings.clear();
+        }
+        resources = null;
+    }
+    /**
      * This will get the map of fonts.  This will never return null.  The keys are string
      * and the values are PDFont objects.
      *
@@ -94,77 +146,102 @@ public class PDResources implements COSObjectable
      * @return The map of fonts.
      *
      * @throws IOException If there is an error getting the fonts.
+     * 
+     * @deprecated due to some side effects font caching is no longer supported, use {@link #getFonts()} instead
      */
     public Map<String,PDFont> getFonts( Map<String,PDFont> fontCache ) throws IOException
     {
-        Map<String,PDFont> retval = null;
-        COSDictionary fonts = (COSDictionary)resources.getDictionaryObject( COSName.FONT );
-
-        if( fonts == null )
-        {
-            fonts = new COSDictionary();
-            resources.setItem( COSName.FONT, fonts );
-        }
-
-        Map<String,PDFont> actuals = new HashMap<String,PDFont>();
-        retval = new COSDictionaryMap( actuals, fonts );
-        for( COSName fontName : fonts.keySet() )
-        {
-            COSBase font = fonts.getDictionaryObject( fontName );
-            //data-000174.pdf contains a font that is a COSArray, looks to be an error in the
-            //PDF, we will just ignore entries that are not dictionaries.
-            if( font instanceof COSDictionary )
-            {
-                COSDictionary fontDictionary = (COSDictionary)font;
-                actuals.put( fontName.getName(), PDFontFactory.createFont( fontDictionary, fontCache ));
-            }
-        }
-        return retval;
+        return getFonts();
     }
 
     /**
-     * This will get the map of fonts.  This will never return null.  The keys are string
-     * and the values are PDFont objects.
+     * This will get the map of fonts. This will never return null.
      *
      * @return The map of fonts.
-     *
-     * @throws IOException If there is an error getting the fonts.
      */
-    public Map<String,PDFont> getFonts() throws IOException
+    public Map<String,PDFont> getFonts()
     {
-        return getFonts( null );
+        if (fonts == null)
+        {
+            // at least an empty map will be returned
+            // TODO we should return null instead of an empty map
+            fonts = new HashMap<String,PDFont>();
+            COSDictionary fontsDictionary = (COSDictionary)resources.getDictionaryObject( COSName.FONT );
+            if( fontsDictionary == null )
+            {
+                fontsDictionary = new COSDictionary();
+                resources.setItem( COSName.FONT, fontsDictionary );
+            }
+            else
+            {
+                for( COSName fontName : fontsDictionary.keySet() )
+                {
+                    COSBase font = fontsDictionary.getDictionaryObject( fontName );
+                    //data-000174.pdf contains a font that is a COSArray, looks to be an error in the
+                    //PDF, we will just ignore entries that are not dictionaries.
+                    if( font instanceof COSDictionary )
+                    {
+                        PDFont newFont = null;
+                        try
+                        {
+                            newFont = PDFontFactory.createFont( (COSDictionary)font );
+                        }
+                        catch (IOException exception)
+                        {
+                            LOG.error("error while creating a font", exception);
+                        }
+                        if (newFont != null)
+                        {
+                            fonts.put( fontName.getName(), newFont);
+                        }
+                    }
+                }
+            }
+        }
+        return fonts;
     }
 
     /**
      * This will get the map of PDXObjects that are in the resource dictionary.
+     * This will never return null.
      *
      * @return The map of xobjects.
-     *
-     * @throws IOException If there is an error creating the xobjects.
      */
-    public Map<String,PDXObject> getXObjects() throws IOException
+    public Map<String,PDXObject> getXObjects()
     {
-        Map<String,PDXObject> retval = null;
-        COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
-
-        if( xobjects == null )
+        if (xobjects == null)
         {
-            xobjects = new COSDictionary();
-            resources.setItem( COSName.XOBJECT, xobjects );
-        }
-
-        Map<String,PDXObject> actuals = new HashMap<String,PDXObject>();
-        retval = new COSDictionaryMap( actuals, xobjects );
-        for( COSName objName : xobjects.keySet() )
-        {
-            COSBase cosObject = xobjects.getDictionaryObject(objName);
-            PDXObject xobject = PDXObject.createXObject( cosObject );
-            if( xobject !=null )
+            // at least an empty map will be returned
+            // TODO we should return null instead of an empty map
+            xobjects = new HashMap<String,PDXObject>();
+            COSDictionary xobjectsDictionary = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
+            if( xobjectsDictionary == null )
             {
-                actuals.put( objName.getName(), xobject);
+                xobjectsDictionary = new COSDictionary();
+                resources.setItem( COSName.XOBJECT, xobjectsDictionary );
+            }
+            else
+            {
+                xobjects = new HashMap<String,PDXObject>();
+                for( COSName objName : xobjectsDictionary.keySet() )
+                {
+                    PDXObject xobject = null;
+                    try
+                    {
+                        xobject = PDXObject.createXObject( xobjectsDictionary.getDictionaryObject(objName) );
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error while creating a xobject", exception);
+                    }
+                    if( xobject != null )
+                    {
+                        xobjects.put( objName.getName(), xobject);
+                    }
+                }
             }
         }
-        return retval;
+        return xobjects;
     }
 
     /**
@@ -179,42 +256,42 @@ public class PDResources implements COSObjectable
      */
     public Map<String,PDXObjectImage> getImages() throws IOException
     {
-        Map<String,PDXObjectImage> retval = null;
-        COSDictionary images = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
-
-        if( images == null )
+        if (images == null) 
         {
-            images = new COSDictionary();
-            resources.setItem( COSName.XOBJECT, images );
-        }
-
-        Map<String,PDXObjectImage> actuals = new HashMap<String,PDXObjectImage>();
-        retval = new COSDictionaryMap( actuals, images );
-        for( COSName imageName : images.keySet() )
-        {
-            COSStream image = (COSStream)(images.getDictionaryObject(imageName));
-
-            COSName subType =(COSName)image.getDictionaryObject(COSName.SUBTYPE);
-            if( subType.equals(COSName.IMAGE) )
+            Map<String,PDXObject> allXObjects = getXObjects();
+            images = new HashMap<String,PDXObjectImage>();
+            for( String imageName : allXObjects.keySet() )
             {
-                PDXObjectImage ximage = (PDXObjectImage)PDXObject.createXObject( image );
-                if( ximage !=null )
+                PDXObject xobject = images.get(imageName);
+                if( xobject instanceof PDXObjectImage )
                 {
-                    actuals.put( imageName.getName(), ximage);
+                    images.put( imageName, (PDXObjectImage)xobject);
                 }
             }
         }
-        return retval;
+        return images;
     }
 
     /**
      * This will set the map of fonts.
      *
-     * @param fonts The new map of fonts.
+     * @param fontsValue The new map of fonts.
      */
-    public void setFonts( Map<String,PDFont> fonts )
+    public void setFonts( Map<String,PDFont> fontsValue )
     {
-        resources.setItem( COSName.FONT, COSDictionaryMap.convert( fonts ) );
+        fonts = fontsValue;
+        resources.setItem( COSName.FONT, COSDictionaryMap.convert( fontsValue ) );
+    }
+
+    /**
+     * This will set the map of xobjects.
+     *
+     * @param xobjectsValue The new map of xobjects.
+     */
+    public void setXObjects( Map<String,PDXObject> xobjectsValue )
+    {
+        xobjects = xobjectsValue;
+        resources.setItem( COSName.XOBJECT, COSDictionaryMap.convert( xobjectsValue ) );
     }
 
     /**
@@ -223,35 +300,46 @@ public class PDResources implements COSObjectable
      * and the values are PDColorSpace objects.
      *
      * @return The map of colorspaces.
-     *
-     * @throws IOException If there is an error getting the colorspaces.
      */
-    public Map<String,PDColorSpace> getColorSpaces() throws IOException
+    public Map<String,PDColorSpace> getColorSpaces()
     {
-        Map<String,PDColorSpace> retval = null;
-        COSDictionary colorspaces = (COSDictionary)resources.getDictionaryObject( COSName.COLORSPACE );
-
-        if( colorspaces != null )
+        if (colorspaces == null) 
         {
-            Map<String,PDColorSpace> actuals = new HashMap<String,PDColorSpace>();
-            retval = new COSDictionaryMap( actuals, colorspaces );
-            for( COSName csName : colorspaces.keySet() )
+            COSDictionary csDictionary = (COSDictionary)resources.getDictionaryObject( COSName.COLORSPACE );
+            if( csDictionary != null )
             {
-                COSBase cs = colorspaces.getDictionaryObject( csName );
-                actuals.put( csName.getName(), PDColorSpaceFactory.createColorSpace( cs ) );
+                colorspaces = new HashMap<String,PDColorSpace>();
+                for( COSName csName : csDictionary.keySet() )
+                {
+                    COSBase cs = csDictionary.getDictionaryObject( csName );
+                    PDColorSpace colorspace = null;
+                    try 
+                    {
+                        colorspace = PDColorSpaceFactory.createColorSpace( cs );
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error while creating a colorspace", exception);
+                    }
+                    if (colorspace != null)
+                    {
+                        colorspaces.put( csName.getName(), colorspace );
+                    }
+                }
             }
         }
-        return retval;
+        return colorspaces;
     }
 
     /**
      * This will set the map of colorspaces.
      *
-     * @param colorspaces The new map of colorspaces.
+     * @param csValue The new map of colorspaces.
      */
-    public void setColorSpaces( Map<String,PDColorSpace> colorspaces )
+    public void setColorSpaces( Map<String,PDColorSpace> csValue )
     {
-        resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( colorspaces ) );
+        colorspaces = csValue;
+        resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( csValue ) );
     }
 
     /**
@@ -263,20 +351,20 @@ public class PDResources implements COSObjectable
      */
     public Map<String,PDExtendedGraphicsState> getGraphicsStates()
     {
-        Map<String,PDExtendedGraphicsState> retval = null;
-        COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.EXT_G_STATE );
-
-        if( states != null )
+        if (graphicsStates == null)
         {
-            Map<String,PDExtendedGraphicsState> actuals = new HashMap<String,PDExtendedGraphicsState>();
-            retval = new COSDictionaryMap( actuals, states );
-            for( COSName name : states.keySet() )
+            COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.EXT_G_STATE );
+            if( states != null )
             {
-                COSDictionary dictionary = (COSDictionary)states.getDictionaryObject( name );
-                actuals.put( name.getName(), new PDExtendedGraphicsState( dictionary ) );
+                graphicsStates = new HashMap<String,PDExtendedGraphicsState>();
+                for( COSName name : states.keySet() )
+                {
+                    COSDictionary dictionary = (COSDictionary)states.getDictionaryObject( name );
+                    graphicsStates.put( name.getName(), new PDExtendedGraphicsState( dictionary ) );
+                }
             }
         }
-        return retval;
+        return graphicsStates;
     }
 
     /**
@@ -286,6 +374,7 @@ public class PDResources implements COSObjectable
      */
     public void setGraphicsStates( Map<String,PDExtendedGraphicsState> states )
     {
+        graphicsStates = states;
         Iterator<String> iter = states.keySet().iterator();
         COSDictionary dic = new COSDictionary();
         while( iter.hasNext() )
@@ -335,35 +424,36 @@ public class PDResources implements COSObjectable
      */
     public Map<String,PDPatternResources> getPatterns() throws IOException
     {
-        Map<String,PDPatternResources> retval = null;
-        COSDictionary patterns = (COSDictionary)resources.getDictionaryObject( COSName.PATTERN );
-
-        if( patterns != null )
+        if (patterns == null)
         {
-            Map<String,PDPatternResources> actuals = new HashMap<String,PDPatternResources>();
-            retval = new COSDictionaryMap( actuals, patterns );
-            for( COSName name : patterns.keySet() )
+            COSDictionary patternsDictionary = (COSDictionary)resources.getDictionaryObject( COSName.PATTERN );
+            if( patternsDictionary != null )
             {
-                COSDictionary dictionary = (COSDictionary)patterns.getDictionaryObject( name );
-                actuals.put( name.getName(), PDPatternResources.create( dictionary ) );
+                patterns = new HashMap<String,PDPatternResources>();
+                for( COSName name : patternsDictionary.keySet() )
+                {
+                    COSDictionary dictionary = (COSDictionary)patternsDictionary.getDictionaryObject( name );
+                    patterns.put( name.getName(), PDPatternResources.create( dictionary ) );
+                }
             }
         }
-        return retval;
+        return patterns;
     }
 
     /**
      * This will set the map of patterns.
      *
-     * @param patterns The new map of patterns.
+     * @param patternsValue The new map of patterns.
      */
-    public void setPatterns( Map<String,PDPatternResources> patterns )
+    public void setPatterns( Map<String,PDPatternResources> patternsValue )
     {
-        Iterator<String> iter = patterns.keySet().iterator();
+        patterns = patternsValue;
+        Iterator<String> iter = patternsValue.keySet().iterator();
         COSDictionary dic = new COSDictionary();
         while( iter.hasNext() )
         {
             String name = iter.next();
-            PDPatternResources pattern = patterns.get( name );
+            PDPatternResources pattern = patternsValue.get( name );
             dic.setItem( COSName.getPDFName( name ), pattern.getCOSObject() );
         }
         resources.setItem( COSName.PATTERN, dic );
@@ -380,37 +470,113 @@ public class PDResources implements COSObjectable
      */
     public Map<String,PDShadingResources> getShadings() throws IOException
     {
-        Map<String,PDShadingResources> retval = null;
-        COSDictionary shadings = (COSDictionary)resources.getDictionaryObject( COSName.SHADING );
-
-        if( shadings != null )
+        if (shadings == null)
         {
-            Map<String,PDShadingResources> actuals = new HashMap<String,PDShadingResources>();
-            retval = new COSDictionaryMap( actuals, shadings );
-            for( COSName name : shadings.keySet() )
+            COSDictionary shadingsDictionary = (COSDictionary)resources.getDictionaryObject( COSName.SHADING );
+            if( shadingsDictionary != null )
             {
-                COSDictionary dictionary = (COSDictionary)shadings.getDictionaryObject( name );
-                actuals.put( name.getName(), PDShadingResources.create( dictionary ) );
+                shadings = new HashMap<String,PDShadingResources>();
+                for( COSName name : shadingsDictionary.keySet() )
+                {
+                    COSDictionary dictionary = (COSDictionary)shadingsDictionary.getDictionaryObject( name );
+                    shadings.put( name.getName(), PDShadingResources.create( dictionary ) );
+                }
             }
         }
-        return retval;
+        return shadings;
     }
 
     /**
      * This will set the map of shadings.
      *
-     * @param shadings The new map of shadings.
+     * @param shadingsValue The new map of shadings.
      */
-    public void setShadings( Map<String,PDShadingResources> shadings )
+    public void setShadings( Map<String,PDShadingResources> shadingsValue )
     {
-        Iterator<String> iter = shadings.keySet().iterator();
+        shadings = shadingsValue;
+        Iterator<String> iter = shadingsValue.keySet().iterator();
         COSDictionary dic = new COSDictionary();
         while( iter.hasNext() )
         {
             String name = iter.next();
-            PDShadingResources shading = shadings.get( name );
+            PDShadingResources shading = shadingsValue.get( name );
             dic.setItem( COSName.getPDFName( name ), shading.getCOSObject() );
         }
         resources.setItem( COSName.SHADING, dic );
     }
+
+    /**
+     * Adds the given font to the resources of the current the page.
+     * 
+     * @param font the font to be added
+     * @return the font name to be used within the content stream.
+     */
+    public String addFont(PDFont font) 
+    {
+        if (fonts == null) 
+        {
+            fonts = new HashMap<String,PDFont>();
+            fontMappings = reverseMap(fonts, PDFont.class);
+            setFonts(fonts);
+        }
+        String fontMapping = fontMappings.get( font );
+        if( fontMapping == null )
+        {
+            fontMapping = MapUtil.getNextUniqueKey( fonts, "F" );
+            fontMappings.put( font, fontMapping );
+            fonts.put( fontMapping, font );
+            addFontToDictionary(font, fontMapping);
+        }
+        return fontMapping;
+    }
+
+    private void addFontToDictionary(PDFont font, String fontName)
+    {
+        COSDictionary fontsDictionary = (COSDictionary)resources.getDictionaryObject(COSName.FONT);
+        fontsDictionary.setItem(fontName, font);
+    }
+    /**
+     * Adds the given XObject to the resources of the current the page.
+     * 
+     * @param xobject the XObject to be added
+     * @param prefix the prefix to be used for the name
+     * 
+     * @return the XObject name to be used within the content stream.
+     */
+    public String addXObject(PDXObject xobject, String prefix) 
+    {
+        if (xobjects == null) 
+        {
+            xobjects = new HashMap<String,PDXObject>();
+            xobjectMappings = reverseMap(xobjects, PDXObject.class);
+            setXObjects(xobjects);
+        }
+        String objMapping = xobjectMappings.get( xobject );
+        if( objMapping == null )
+        {
+            objMapping = MapUtil.getNextUniqueKey( xobjects, prefix );
+            xobjectMappings.put( xobject, objMapping );
+            xobjects.put( objMapping, xobject );
+            addXObjectToDictionary(xobject, objMapping);
+        }
+        return objMapping;
+    }
+
+    private void addXObjectToDictionary(PDXObject xobject, String xobjectName)
+    {
+        COSDictionary fontsDictionary = (COSDictionary)resources.getDictionaryObject(COSName.XOBJECT);
+        fontsDictionary.setItem(xobjectName, xobject);
+    }
+
+    private <T> Map<T, String> reverseMap(Map<String, T> map, Class<T> keyClass)
+    {
+        Map<T, String> reversed = new java.util.HashMap<T, String>();
+        for (Map.Entry<String, T> entry : map.entrySet())
+        {
+            reversed.put(keyClass.cast(entry.getValue()), (String)entry.getKey());
+        }
+        return reversed;
+    }
+
+
 }

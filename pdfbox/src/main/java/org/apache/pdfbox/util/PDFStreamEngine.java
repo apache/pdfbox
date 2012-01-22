@@ -66,7 +66,7 @@ public class PDFStreamEngine
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDFStreamEngine.class);
+    private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
     /**
      * The PDF operators that are ignored by this engine.
@@ -83,12 +83,10 @@ public class PDFStreamEngine
 
     private Map<String,OperatorProcessor> operators = new HashMap<String,OperatorProcessor>();
 
-    private Stack<StreamResources> streamResourcesStack = new Stack<StreamResources>();
+    private Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
 
     private PDPage page;
 
-    private Map<String,PDFont> documentFontCache = new HashMap<String,PDFont>();
-    
     private int validCharCnt;
     private int totalCharCnt;
 
@@ -96,22 +94,6 @@ public class PDFStreamEngine
      * Flag to skip malformed or otherwise unparseable input where possible.
      */
     private boolean forceParsing = false;
-
-    /**
-     * This is a simple internal class used by the Stream engine to handle the
-     * resources stack.
-     */
-    private static class StreamResources
-    {
-        private Map<String,PDFont> fonts;
-        private Map<String,PDColorSpace> colorSpaces;
-        private Map<String,PDXObject> xobjects;
-        private Map<String,PDExtendedGraphicsState> graphicsStates;
-        private PDResources resources;
-        
-        private StreamResources()
-        {};
-    }
 
     /**
      * Constructor.
@@ -170,12 +152,24 @@ public class PDFStreamEngine
         totalCharCnt = 0;
     }
 
-    public boolean isForceParsing() {
+    /**
+     * Indicates if force parsing is activated.
+     * 
+     * @return true if force parsing is active
+     */
+    public boolean isForceParsing() 
+    {
         return forceParsing;
     }
 
-    public void setForceParsing(boolean forceParsing) {
-        this.forceParsing = forceParsing;
+    /**
+     * Enable/Disable force parsing.
+     * 
+     * @param forceParsingValue true activates force parsing
+     */
+    public void setForceParsing(boolean forceParsingValue) 
+    {
+        forceParsing = forceParsingValue;
     }
 
     /**
@@ -199,7 +193,6 @@ public class PDFStreamEngine
      */
     public void resetEngine()
     {
-        documentFontCache.clear();
         validCharCnt = 0;
         totalCharCnt = 0;
     }
@@ -221,7 +214,6 @@ public class PDFStreamEngine
         textLineMatrix = null;
         graphicsStack.clear();
         streamResourcesStack.clear();
-
         processSubStream( aPage, resources, cosStream );
     }
 
@@ -234,50 +226,58 @@ public class PDFStreamEngine
      *
      * @throws IOException If there is an exception while processing the stream.
      */
-    public void processSubStream(
-            PDPage aPage, PDResources resources, COSStream cosStream)
-            throws IOException {
+    public void processSubStream(PDPage aPage, PDResources resources, COSStream cosStream) throws IOException 
+    {
         page = aPage;
-        if (resources != null) {
-            StreamResources sr = new StreamResources();
-            sr.fonts = resources.getFonts( documentFontCache );
-            sr.colorSpaces = resources.getColorSpaces();
-            sr.xobjects = resources.getXObjects();
-            sr.graphicsStates = resources.getGraphicsStates();
-            sr.resources = resources;
-
-            streamResourcesStack.push(sr);
-            try {
+        if (resources != null)
+        {
+            streamResourcesStack.push(resources);
+            try
+            {
                 processSubStream(cosStream);
-            } finally {
-                streamResourcesStack.pop();
             }
-        } else {
+            finally
+            {
+                streamResourcesStack.pop().clear();
+            }
+        }
+        else
+        {
             processSubStream(cosStream);
         }
     }
 
-    private void processSubStream(COSStream cosStream) throws IOException {
+    private void processSubStream(COSStream cosStream) throws IOException 
+    {
         List<COSBase> arguments = new ArrayList<COSBase>();
         PDFStreamParser parser = new PDFStreamParser(cosStream, forceParsing);
-        try {
+        try 
+        {
             Iterator<Object> iter = parser.getTokenIterator();
-
-            while (iter.hasNext()) {
+            while (iter.hasNext()) 
+            {
                 Object next = iter.next();
-                if (log.isDebugEnabled()) {
-                    log.debug("processing substream token: " + next);
+                if (LOG.isDebugEnabled()) 
+                {
+                    LOG.debug("processing substream token: " + next);
                 }
-                if (next instanceof COSObject) {
+                if (next instanceof COSObject) 
+                {
                     arguments.add(((COSObject) next).getObject());
-                } else if (next instanceof PDFOperator) {
+                }
+                else if (next instanceof PDFOperator) 
+                {
                     processOperator((PDFOperator) next, arguments);
                     arguments = new ArrayList<COSBase>();
-                } else {
+                }
+                else
+                {
                     arguments.add((COSBase) next);
                 }
             }
-        } finally {
+        }
+        finally
+        {
             parser.close();
         }
     }
@@ -358,7 +358,7 @@ public class PDFStreamEngine
         }
         catch (Throwable exception)
         {
-            log.warn( exception, exception);
+            LOG.warn( exception, exception);
         }
         
         if( spaceWidthText == 0 )
@@ -400,7 +400,8 @@ public class PDFStreamEngine
             }
 
             // the space width has to be transformed into display units
-            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText * textMatrix.getValue(0, 0) * ctm.getValue(0, 0);
+            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText 
+                                    * textMatrix.getValue(0, 0) * ctm.getValue(0, 0);
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
@@ -464,7 +465,8 @@ public class PDFStreamEngine
             final float endYPosition = textMatrixEnd.getYPosition();
 
             // add some spacing to the text matrix (see comment above)
-            tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)*horizontalScalingText;
+            tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)
+                    *horizontalScalingText;
             td.setValue( 2, 0, tx );
             textMatrix = td.multiply(textMatrix, textMatrix );
             
@@ -527,7 +529,7 @@ public class PDFStreamEngine
         }
         catch (IOException e)
         {
-            log.warn(e, e);
+            LOG.warn(e, e);
         }
     }
 
@@ -554,14 +556,14 @@ public class PDFStreamEngine
             {
                 if (!unsupportedOperators.contains(operation)) 
                 {
-                    log.info("unsupported/disabled operation: " + operation);
+                    LOG.info("unsupported/disabled operation: " + operation);
                     unsupportedOperators.add(operation);
                 }
             }
         }
         catch (Exception e)
         {
-            log.warn(e, e);
+            LOG.warn(e, e);
         }
     }
 
@@ -570,7 +572,7 @@ public class PDFStreamEngine
      */
     public Map<String,PDColorSpace> getColorSpaces()
     {
-        return streamResourcesStack.peek().colorSpaces;
+        return streamResourcesStack.peek().getColorSpaces();
     }
 
     /**
@@ -578,7 +580,7 @@ public class PDFStreamEngine
      */
     public Map<String,PDXObject> getXObjects()
     {
-        return streamResourcesStack.peek().xobjects;
+        return streamResourcesStack.peek().getXObjects();
     }
 
     /**
@@ -586,21 +588,21 @@ public class PDFStreamEngine
      */
     public void setColorSpaces(Map<String,PDColorSpace> value)
     {
-        streamResourcesStack.peek().colorSpaces = value;
+        streamResourcesStack.peek().setColorSpaces(value);
     }
     /**
      * @return Returns the fonts.
      */
     public Map<String,PDFont> getFonts()
     {
-        return streamResourcesStack.peek().fonts;
+        return streamResourcesStack.peek().getFonts();
     }
     /**
      * @param value The fonts to set.
      */
     public void setFonts(Map<String,PDFont> value)
     {
-        streamResourcesStack.peek().fonts = value;
+        streamResourcesStack.peek().setFonts(value);
     }
     /**
      * @return Returns the graphicsStack.
@@ -635,14 +637,14 @@ public class PDFStreamEngine
      */
     public Map<String,PDExtendedGraphicsState> getGraphicsStates()
     {
-        return streamResourcesStack.peek().graphicsStates;
+        return streamResourcesStack.peek().getGraphicsStates();
     }
     /**
      * @param value The graphicsStates to set.
      */
     public void setGraphicsStates(Map<String,PDExtendedGraphicsState> value)
     {
-        ((StreamResources) streamResourcesStack.peek()).graphicsStates = value;
+        streamResourcesStack.peek().setGraphicsStates(value);
     }
     /**
      * @return Returns the textLineMatrix.
@@ -677,7 +679,7 @@ public class PDFStreamEngine
      */
     public PDResources getResources()
     {
-        return streamResourcesStack.peek().resources;
+        return streamResourcesStack.peek();
     }
 
     /**
