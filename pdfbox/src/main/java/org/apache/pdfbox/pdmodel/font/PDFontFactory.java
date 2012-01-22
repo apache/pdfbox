@@ -42,7 +42,7 @@ public class PDFontFactory
     /**
      * Logger instance.
      */
-    private static final Log log = LogFactory.getLog(PDFontFactory.class);
+    private static final Log LOG = LogFactory.getLog(PDFontFactory.class);
     
     /**
      * This will create the correct font based on information in the dictionary.
@@ -54,33 +54,13 @@ public class PDFontFactory
      * @return The corrent implementation for the font.
      *
      * @throws IOException If the dictionary is not valid.
+     * 
+     * @deprecated due to some side effects font caching is no longer supported, 
+     * use {@link #createFont(COSDictionary)} instead
      */
     public static PDFont createFont(COSDictionary dic, Map fontCache) throws IOException
     {
-        PDFont retval = null;
-        if (fontCache != null) 
-        {
-            String fontKey = dic.getNameAsString(COSName.BASE_FONT) + dic.getNameAsString(COSName.NAME)
-                                + dic.getNameAsString(COSName.SUBTYPE);
-            if (dic.getItem(COSName.ENCODING) != null)
-            {
-                fontKey += dic.getItem(COSName.ENCODING).toString();
-            }
-            if (fontCache.containsKey(fontKey))
-            {
-                retval = (PDFont)fontCache.get(fontKey);
-            }
-            else 
-            {
-                retval = PDFontFactory.createFont( dic );
-                fontCache.put(fontKey, retval);
-            }
-        }
-        else
-        {
-            retval = PDFontFactory.createFont( dic );
-        }
-        return retval;
+        return createFont(dic);
     }
 
     /**
@@ -133,8 +113,8 @@ public class PDFontFactory
         }
         else
         {
-            log.warn("Substituting TrueType for unknown font subtype=" + dic.getDictionaryObject( COSName.SUBTYPE ).toString());
-            //throw new IOException( "Unknown font subtype=" + subType );
+            LOG.warn("Substituting TrueType for unknown font subtype=" + 
+                    dic.getDictionaryObject( COSName.SUBTYPE ).toString());
             retval = new PDTrueTypeFont( dic );
         }
         return retval;

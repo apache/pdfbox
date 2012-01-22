@@ -27,7 +27,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,11 +50,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-import org.apache.pdfbox.util.MapUtil;
 
 
 /**
- * This class will is a convenience for creating page content streams.  You MUST
+ * This class is a convenience for creating page content streams.  You MUST
  * call close() when you are finished with this object.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -71,11 +69,7 @@ public class PDPageContentStream
     private PDPage page;
     private OutputStream output;
     private boolean inTextMode = false;
-    private Map<PDFont,String> fontMappings;
-    private Map<PDXObject,String> xobjectMappings;
     private PDResources resources;
-    private Map<String,PDFont> fonts;
-    private Map<String,PDXObject> xobjects;
 
     private PDColorSpace currentStrokingColorSpace = new PDDeviceGray();
     private PDColorSpace currentNonStrokingColorSpace = new PDDeviceGray();
@@ -187,14 +181,6 @@ public class PDPageContentStream
             page.setResources( resources );
         }
 
-        //Fonts including reverse lookup
-        fonts = resources.getFonts();
-        fontMappings = reverseMap(fonts, PDFont.class);
-
-        //XObjects including reverse lookup
-        xobjects = resources.getXObjects();
-        xobjectMappings = reverseMap(xobjects, PDXObject.class);
-
         // Get the pdstream from the source page instead of creating a new one
         PDStream contents = sourcePage.getContents();
         boolean hasContent = contents != null;
@@ -278,17 +264,6 @@ public class PDPageContentStream
         formatDecimal.setGroupingUsed( false );
     }
 
-    private <T> Map<T, String> reverseMap(Map map, Class<T> keyClass)
-    {
-        Map<T, String> reversed = new java.util.HashMap<T, String>();
-        for (Object o : map.entrySet())
-        {
-            Map.Entry entry = (Map.Entry)o;
-            reversed.put(keyClass.cast(entry.getValue()), (String)entry.getKey());
-        }
-        return reversed;
-    }
-
     /**
      * Begin some text operations.
      *
@@ -330,13 +305,7 @@ public class PDPageContentStream
      */
     public void setFont( PDFont font, float fontSize ) throws IOException
     {
-        String fontMapping = fontMappings.get( font );
-        if( fontMapping == null )
-        {
-            fontMapping = MapUtil.getNextUniqueKey( fonts, "F" );
-            fontMappings.put( font, fontMapping );
-            fonts.put( fontMapping, font );
-        }
+        String fontMapping = resources.addFont(font);
         appendRawCommands( "/");
         appendRawCommands( fontMapping );
         appendRawCommands( SPACE );
@@ -395,14 +364,7 @@ public class PDPageContentStream
         {
             xObjectPrefix = "Form";
         }
-
-        String objMapping = xobjectMappings.get( xobject );
-        if( objMapping == null )
-        {
-            objMapping = MapUtil.getNextUniqueKey( xobjects, xObjectPrefix );
-            xobjectMappings.put( xobject, objMapping );
-            xobjects.put( objMapping, xobject );
-        }
+        String objMapping = resources.addXObject(xobject, xObjectPrefix);
         saveGraphicsState();
         appendRawCommands( SPACE );
         concatenate2CTM(transform);
@@ -1180,6 +1142,8 @@ public class PDPageContentStream
     /**
      * Fill the path.
      * 
+     * @param windingRule the winding rule to be used for filling 
+     * 
      * @throws IOException If there is an error while filling the path.
      */
     public void fill(int windingRule) throws IOException
@@ -1212,6 +1176,8 @@ public class PDPageContentStream
     /**
      * Clip path.
      * 
+     * @param windingRule the winding rule to be used for clipping
+     *  
      * @throws IOException If there is an error while clipping the path.
      */
     public void clipPath(int windingRule) throws IOException
