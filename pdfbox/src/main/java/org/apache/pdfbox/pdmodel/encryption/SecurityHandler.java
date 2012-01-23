@@ -181,17 +181,20 @@ public abstract class SecurityHandler
 
     private void addDictionaryAndSubDictionary( Set<COSDictionary> set, COSDictionary dic )
     {
-        set.add( dic );
-        COSArray kids = (COSArray)dic.getDictionaryObject( COSName.KIDS );
-        for( int i=0; kids != null && i<kids.size(); i++ )
-        {
-            addDictionaryAndSubDictionary( set, (COSDictionary)kids.getObject( i ) );
-        }
-        COSBase value = dic.getDictionaryObject( COSName.V );
-        if( value instanceof COSDictionary )
-        {
-            addDictionaryAndSubDictionary( set, (COSDictionary)value );
-        }
+    		if ( dic != null )	// in case dictionary is part of object stream we have null value here
+    		{
+		        set.add( dic );
+		        COSArray kids = (COSArray)dic.getDictionaryObject( COSName.KIDS );
+		        for( int i=0; kids != null && i<kids.size(); i++ )
+		        {
+		            addDictionaryAndSubDictionary( set, (COSDictionary)kids.getObject( i ) );
+		        }
+		        COSBase value = dic.getDictionaryObject( COSName.V );
+		        if( value instanceof COSDictionary )
+		        {
+		            addDictionaryAndSubDictionary( set, (COSDictionary)value );
+		        }
+    		}
     }
 
     /**
