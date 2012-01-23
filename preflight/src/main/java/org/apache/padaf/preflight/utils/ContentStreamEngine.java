@@ -21,12 +21,25 @@
 
 package org.apache.padaf.preflight.utils;
 
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
+import static org.apache.padaf.preflight.ValidationConstants.ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
+import static org.apache.padaf.preflight.ValidationConstants.MAX_GRAPHIC_STATES;
+import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_KEY_COLOR_SPACE;
+import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_KEY_F;
+import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_KEY_FILTER;
+
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import org.apache.padaf.preflight.DocumentHandler;
 import org.apache.padaf.preflight.ValidationException;
@@ -36,14 +49,19 @@ import org.apache.padaf.preflight.contentstream.StubOperator;
 import org.apache.padaf.preflight.graphics.ICCProfileWrapper;
 import org.apache.padaf.preflight.graphics.color.ColorSpaceHelper;
 import org.apache.padaf.preflight.graphics.color.ColorSpaceHelperFactory;
-import org.apache.padaf.preflight.graphics.color.ColorSpaces;
 import org.apache.padaf.preflight.graphics.color.ColorSpaceHelperFactory.ColorSpaceRestriction;
+import org.apache.padaf.preflight.graphics.color.ColorSpaces;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.graphics.color.PDCalGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
+import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.operator.BeginText;
@@ -76,13 +94,17 @@ import org.apache.pdfbox.util.operator.SetTextLeading;
 import org.apache.pdfbox.util.operator.SetTextRenderingMode;
 import org.apache.pdfbox.util.operator.SetTextRise;
 import org.apache.pdfbox.util.operator.SetWordSpacing;
-
-import static org.apache.padaf.preflight.ValidationConstants.*;
 /**
  * This class inherits from org.apache.pdfbox.util.PDFStreamEngine to allow the
  * validation of specific rules in ContentStream.
  */
 public abstract class ContentStreamEngine extends PDFStreamEngine {
+
+	private enum ColorSpaceType {
+		RGB,
+		CMYK,
+		ALL;
+	}
 
 	protected DocumentHandler documentHandler = null;
 
@@ -205,7 +227,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 *           ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
 	 */
 	protected void validRenderingIntent(PDFOperator operator, List arguments)
-	throws ContentStreamException {
+			throws ContentStreamException {
 		if ("ri".equals(operator.getOperation())) {
 			if (!RenderingIntents.contains(arguments.get(0))) {
 				throwContentStreamException("Unexpected value '" + arguments.get(0)
@@ -236,7 +258,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @throws ContentStreamException
 	 */
 	protected void validImageFilter(PDFOperator operator)
-	throws ContentStreamException {
+			throws ContentStreamException {
 		COSDictionary dict = operator.getImageParameters().getDictionary();
 		// ---- Search a Filter declaration in the InlinedImage dictionary.
 		// ---- The LZWDecode Filter is forbidden.
@@ -265,7 +287,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @throws ContentStreamException
 	 */
 	protected void validImageColorSpace(PDFOperator operator)
-	throws ContentStreamException, IOException {
+			throws ContentStreamException, IOException {
 		COSDictionary dict = operator.getImageParameters().getDictionary();
 
 		COSDocument doc = this.documentHandler.getDocument().getDocument();
@@ -328,10 +350,11 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @throws ContentStreamException
 	 */
 	protected void checkColorOperators(String operation)
-	throws ContentStreamException {
+			throws ContentStreamException {
+		PDColorState cs = getColorState(operation);
+
 		if ("rg".equals(operation) || "RG".equals(operation)) {
-			ICCProfileWrapper iccpw = documentHandler.getIccProfileWrapper();
-			if (iccpw == null || !iccpw.isRGBColorSpace()) {
+			if (!validColorSpace(cs, ColorSpaceType.RGB)) {
 				throwContentStreamException("The operator \"" + operation
 						+ "\" can't be used with CMYK Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
@@ -339,8 +362,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		}
 
 		if ("k".equals(operation) || "K".equals(operation)) {
-			ICCProfileWrapper iccpw = documentHandler.getIccProfileWrapper();
-			if (iccpw == null || !iccpw.isCMYKColorSpace()) {
+			if (!validColorSpace(cs, ColorSpaceType.CMYK)) {
 				throwContentStreamException("The operator \"" + operation
 						+ "\" can't be used with RGB Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
@@ -348,9 +370,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		}
 
 		if ("g".equals(operation) || "G".equals(operation)) {
-			ICCProfileWrapper iccpw = documentHandler.getIccProfileWrapper();
-			if (iccpw == null) {
-				// ---- Gray is possible with RGB and CMYK color space
+			if (!validColorSpace(cs, ColorSpaceType.ALL)) {
 				throwContentStreamException("The operator \"" + operation
 						+ "\" can't be used without Color Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
@@ -361,14 +381,106 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 				|| "f*".equals(operation) || "B".equals(operation)
 				|| "B*".equals(operation) || "b".equals(operation)
 				|| "b*".equals(operation)) {
-			ICCProfileWrapper iccpw = documentHandler.getIccProfileWrapper();
-			if (iccpw == null) {
+			if (!validColorSpace(cs, ColorSpaceType.ALL)) {
 				// ---- The default fill color needs an OutputIntent
 				throwContentStreamException("The operator \"" + operation
 						+ "\" can't be used without Color Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
 			}
 		}
+	}
+
+	private boolean validColorSpace(PDColorState colorState, ColorSpaceType expectedType) {
+		boolean result = true;
+		if (colorState == null) {
+			result = validColorSpaceDestOutputProfile(expectedType);
+		} else {
+			PDColorSpace cs = colorState.getColorSpace();
+			if (isDeviceIndependent(cs, expectedType)) {
+				result = true;
+			} else {
+				result = validColorSpaceDestOutputProfile(expectedType);
+			}
+		}		
+		return result;
+	}
+
+	/**
+	 * Check if the ColorProfile provided by the DestOutputProfile entry isn't null and 
+	 * if the ColorSpace represented by the Profile has the right type (RGB or CMYK)
+	 * 
+	 * @param expectedType
+	 * @return
+	 */
+	private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType) {
+		boolean result = false;
+		ICCProfileWrapper profileWrapper = documentHandler.getIccProfileWrapper();
+		if (profileWrapper != null) {
+			switch (expectedType) {
+			case RGB:
+				result = profileWrapper.isRGBColorSpace();
+				break;
+			case CMYK:
+				result = profileWrapper.isCMYKColorSpace();
+				break;
+			default:
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Return true if the given ColorSpace is an independent device ColorSpace.
+	 * If the color space is an ICCBased, check the embedded profile color (RGB or CMYK)
+	 * @param cs
+	 * @return
+	 */
+	private boolean isDeviceIndependent(PDColorSpace cs, ColorSpaceType expectedType) {
+		boolean result =  (cs instanceof PDCalGray || cs instanceof PDCalRGB || cs instanceof PDLab);
+		if (cs instanceof PDICCBased) {
+			PDICCBased iccBased = (PDICCBased)cs;
+			try {
+				ColorSpace iccColorSpace = iccBased.getJavaColorSpace();
+				switch (expectedType) {
+				case RGB:
+					result = (iccColorSpace.getType() == ICC_ColorSpace.TYPE_RGB);
+					break;
+				case CMYK:
+					result = (iccColorSpace.getType() == ICC_ColorSpace.TYPE_CMYK);
+					break;
+				default:
+					result = true;
+					break;
+				}
+			} catch (IOException e) {
+				result = false;
+			}			
+		}
+		return result;
+	}
+
+	/**
+	 * Return the current color state used by the operation
+	 * @param operation
+	 * @return
+	 */
+	private PDColorState getColorState(String operation) {
+		if (getGraphicsState() == null) {
+			return null;
+		}
+
+		PDColorState colorState;
+		if (operation.equals("rg") || operation.equals("g") || operation.equals("k") 
+				|| operation.equals("f") || operation.equals("F") || operation.equals("f*")) {
+			// non stroking operator
+			colorState = getGraphicsState().getNonStrokingColor();
+		} else {
+			// stroking operator
+			colorState = getGraphicsState().getStrokingColor();
+		}
+		return colorState;
 	}
 
 	/**
@@ -448,7 +560,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @throws ContentStreamException
 	 */
 	protected void throwContentStreamException(String msg, String errorCode)
-	throws ContentStreamException {
+			throws ContentStreamException {
 		ContentStreamException cex = new ContentStreamException(msg);
 		cex.setValidationError(errorCode);
 		throw cex;
