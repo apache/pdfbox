@@ -428,12 +428,7 @@ public class Type3FontValidator extends AbstractFontValidator {
 		COSBase cbFont = dictionary
 				.getItem(COSName.getPDFName(DICTIONARY_KEY_FONT));
 
-		if (cbImg == null && cbFont == null) {
-			this.fontContainer.addError(new ValidationError(
-					ERROR_FONTS_TYPE3_DAMAGED,
-					"The Resources element doesn't have Glyph information"));
-			return false;
-		}
+
 
 		if (cbImg != null) {
 			// ---- the referenced objects must be present in the PDF file
