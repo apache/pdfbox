@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.List;
 
@@ -41,10 +40,10 @@ public class SHFill extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(SHFill.class);
+    private static final Log LOG = LogFactory.getLog(SHFill.class);
 
     /**
-     * process : sh : shade fill the path or clipping area.
+     * process : sh : shade fill the clipping area.
      * @param operator The operator that is being executed.
      * @param arguments List
      *
@@ -55,12 +54,11 @@ public class SHFill extends OperatorProcessor
         try 
         {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.SHFill((COSName)(arguments.get(0)));
-            
+            drawer.shFill((COSName)(arguments.get(0)));
         } 
         catch (Exception e) 
         {
-            log.warn(e, e);
+            LOG.warn(e, e);
         }
     }
 }
