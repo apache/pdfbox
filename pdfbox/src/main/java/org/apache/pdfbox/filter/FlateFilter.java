@@ -117,13 +117,6 @@ public class FlateFilter implements Filter
                             result.write(buffer, 0, amountRead);
                         }
                     }
-                    catch (OutOfMemoryError exception)
-                    {
-                        // if the stream is corrupt an OutOfMemoryError may occur
-                        LOG.error("FlateFilter: stop reading corrupt stream due to an OutOfMemoryError");
-                        // re-throw the exception, caller has to handle it
-                        throw exception;
-                    }
                     catch (ZipException exception)
                     {
                         // if the stream is corrupt an ZipException may occur
