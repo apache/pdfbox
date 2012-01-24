@@ -77,8 +77,15 @@ public class PDShadingType2 extends PDShadingResources
      */
     public void setExtend(COSArray newExtend)
     {
-        this.extend = domain;
-        getCOSDictionary().setItem(COSName.EXTEND, newExtend);
+        extend = newExtend;
+        if (newExtend == null)
+        {
+            getCOSDictionary().removeItem(COSName.EXTEND);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.EXTEND, newExtend);
+        }
     }
 
     /**
@@ -102,8 +109,15 @@ public class PDShadingType2 extends PDShadingResources
      */
     public void setDomain(COSArray newDomain)
     {
-        this.domain = newDomain;
-        getCOSDictionary().setItem(COSName.DOMAIN, newDomain);
+        domain = newDomain;
+        if (newDomain == null)
+        {
+            getCOSDictionary().removeItem(COSName.DOMAIN);
+        }
+        else 
+        {
+            getCOSDictionary().setItem(COSName.DOMAIN, newDomain);
+        }
     }
 
     /**
@@ -127,8 +141,15 @@ public class PDShadingType2 extends PDShadingResources
      */
     public void setCoords(COSArray newCoords)
     {
-        this.coords = newCoords;
-        getCOSDictionary().setItem(COSName.COORDS, newCoords);
+        coords = newCoords;
+        if (newCoords == null)
+        {
+            getCOSDictionary().removeItem(COSName.COORDS);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.COORDS, newCoords);
+        }
     }
     
     /**
@@ -138,8 +159,15 @@ public class PDShadingType2 extends PDShadingResources
      */
     public void setFunction(PDFunction newFunction)
     {
-        this.function = newFunction;
-        getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
+        function = newFunction;
+        if (newFunction == null)
+        {
+            getCOSDictionary().removeItem(COSName.FUNCTION);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
+        }
     }
 
     /**

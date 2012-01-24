@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.geom.Area;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -40,6 +41,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -49,7 +53,6 @@ import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 import org.apache.pdfbox.util.TextPosition;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSDictionary;
 
 
 /**
@@ -64,10 +67,16 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PageDrawer.class);
+    private static final Log LOG = LogFactory.getLog(PageDrawer.class);
 
     private Graphics2D graphics;
+    /**
+     * Size of the page.
+     */
     protected Dimension pageSize;
+    /**
+     * Current page to be rendered.
+     */
     protected PDPage page;
 
     private GeneralPath linePath = new GeneralPath();
@@ -120,7 +129,8 @@ public class PageDrawer extends PDFStreamEngine
                     appearanceName = "default";
                 }
                 Map appearanceMap = appearDictionary.getNormalAppearance();
-                if (appearanceMap != null) { 
+                if (appearanceMap != null) 
+                { 
                     PDAppearanceStream appearance = 
                         (PDAppearanceStream)appearanceMap.get( appearanceName ); 
                     if( appearance != null ) 
@@ -145,7 +155,8 @@ public class PageDrawer extends PDFStreamEngine
     {
         try
         {
-            switch(this.getGraphicsState().getTextState().getRenderingMode()) {
+            switch(this.getGraphicsState().getTextState().getRenderingMode()) 
+            {
                 case PDTextState.RENDERING_MODE_FILL_TEXT:
                     graphics.setComposite( this.getGraphicsState().getNonStrokeJavaComposite() );
                     graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
@@ -164,7 +175,7 @@ public class PageDrawer extends PDFStreamEngine
                     break;
                 default:
                     // TODO : need to implement....
-                    log.debug("Unsupported RenderingMode "
+                    LOG.debug("Unsupported RenderingMode "
                             + this.getGraphicsState().getTextState().getRenderingMode()
                             + " in PageDrawer.processTextPosition()."
                             + " Using RenderingMode "
@@ -286,7 +297,7 @@ public class PageDrawer extends PDFStreamEngine
         }
         else 
         {
-            log.info("ColorSpace "+getGraphicsState().getNonStrokingColor().getColorSpace().getName()
+            LOG.info("ColorSpace "+getGraphicsState().getNonStrokingColor().getColorSpace().getName()
                     +" doesn't provide a non-stroking color, using white instead!");
             graphics.setColor( Color.WHITE );
         }
@@ -335,9 +346,9 @@ public class PageDrawer extends PDFStreamEngine
         }
         else 
         {
-            log.info("ColorSpace "+getGraphicsState().getStrokingColor().getColorSpace().getName()
-                    +" doesn't provide a stroking color, using black instead!");
-            graphics.setColor( Color.BLACK );
+            LOG.info("ColorSpace "+getGraphicsState().getStrokingColor().getColorSpace().getName()
+                    +" doesn't provide a stroking color, using white instead!");
+            graphics.setColor( Color.WHITE );
         }
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
@@ -407,7 +418,8 @@ public class PageDrawer extends PDFStreamEngine
      * @param at The transformation to use when drawing.
      * 
      */
-    public void drawImage(Image awtImage, AffineTransform at){
+    public void drawImage(Image awtImage, AffineTransform at)
+    {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         graphics.drawImage( awtImage, at, null );
@@ -419,61 +431,56 @@ public class PageDrawer extends PDFStreamEngine
      * @param ShadingName  The name of the Shading Dictionary to use for this fill instruction.
      *
      * @throws IOException If there is an IO error while shade-filling the path/clipping area.
+     * 
+     * @deprecated use {@link #shFill(COSName)) instead.
      */
     public void SHFill(COSName ShadingName) throws IOException
     {
-        PDShading Shading =FindShadingDictionary(ShadingName);
-        log.info("Shading = " + Shading.toString());
-        
-        switch (Shading.getShadingType()){
-            case 1:
-                SHFill_Function(Shading);
-            break;
-            case 2:
-                SHFill_Axial(Shading);
-                break;
-            case 3:
-                SHFill_Radial(Shading);
-                break;
-            case 4:
-                SHFill_FreeGourad(Shading);
-                break;
-            case 5:
-                SHFill_LatticeGourad(Shading);
-                break;
-            case 6:
-                SHFill_CoonsPatch(Shading);
-                break;
-            case 7:
-                SHFill_TensorPatch(Shading);
-                break;
-            
-            default:
-                throw new IOException("Invalid ShadingType " + Shading.getShadingType() + " for Shading " + ShadingName);
-        }
+        shFill(ShadingName);
     }
     
     /**
-     * Find the appropriate Shading Dictionary. This is its own private function as it is really not appropriate to override when deriving from PageDrawer.
+     * Fill with Shading.  Called by SHFill operator.
      *
-     * @param ShadingName  The name of the Shading Dictionary to use for this fill instruction.
+     * @param shadingName  The name of the Shading Dictionary to use for this fill instruction.
      *
-     * @returns The PDShading object
-     * @throws IOException If there is an IO error while attempting to find the appropriate PDShading object.
+     * @throws IOException If there is an IO error while shade-filling the clipping area.
      */
-    private PDShading FindShadingDictionary(COSName ShadingName) throws IOException
+    public void shFill(COSName shadingName) throws IOException
     {
-        
-        PDResources resources = (PDResources)page.getResources();
-                
-        COSDictionary AllShadings = (COSDictionary)(resources.getCOSDictionary().getDictionaryObject(COSName.SHADING));
-        
-        PDShading Shading = new PDShading(ShadingName, (COSDictionary)(AllShadings.getDictionaryObject(ShadingName)));
-        
-        return Shading;
-        
+        PDShadingResources shading = getResources().getShadings().get(shadingName.getName());
+        LOG.debug("Shading = " + shading.toString());
+        int shadingType = shading.getShadingType();
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        Paint paint = null;
+        switch (shadingType)
+        {
+            case 1:
+                // TODO
+                LOG.debug("Function based shading not yet supported");
+            break;
+            case 2:
+                paint = new AxialShadingPaint((PDShadingType2)shading, ctm, pageSize);
+                break;
+            case 3:
+                // TODO
+                LOG.debug("Radial shading not yet supported");
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                // TODO
+                LOG.debug("Shading type "+shadingType+" not yet supported");
+                break;
+            default:
+                throw new IOException("Invalid ShadingType " + shadingType + " for Shading " + shadingName);
+        }
+        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        graphics.setPaint(paint);
+        graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        graphics.fill( getGraphicsState().getCurrentClippingPath() );
     }
-    
     /**
      * Fill with a Function-based gradient / shading.  
      * If extending the class, override this and its siblings, not the public SHFill method.
