@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Dimension;
 import java.awt.PaintContext;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -44,16 +43,15 @@ public class AxialShadingContext implements PaintContext
 
     private ColorModel colorModel;
     private PDFunction function;
-    private Point2D startingPoint;
-    private Point2D endingPoint;
 
+    private float[] coords;
     private float[] domain;
     private boolean[] extend;
     private double x1x0; 
     private double y1y0;
     private float d1d0;
     private double denom;
-
+    
     /**
      * Log instance.
      */
@@ -72,6 +70,7 @@ public class AxialShadingContext implements PaintContext
     public AxialShadingContext(PDShadingType2 shadingType2, ColorModel colorModelValue, 
             AffineTransform xform, Matrix ctm, Dimension pageSize) 
     {
+        int pageHeight = pageSize.height;
         // colorModel
         if (colorModelValue != null)
         {
@@ -99,27 +98,16 @@ public class AxialShadingContext implements PaintContext
             LOG.error("error while creating a function", exception);
         }
         
-        float yScaling = ctm.getYScale();
-        float angle = (float)Math.acos(ctm.getValue(0, 0)/ctm.getXScale());
-        if (ctm.getValue(0, 1) < 0 && ctm.getValue(1, 0) > 0)
-        {
-            angle = (-1)*angle;
-        }
-        ctm.setValue(2, 1, (float)(pageSize.height - ctm.getYPosition() - Math.cos(angle)*yScaling));
-        ctm.setValue(2, 0, (float)(ctm.getXPosition() - Math.sin(angle)*yScaling));
-        // because of the moved 0,0-reference, we have to shear in the opposite direction
-        ctm.setValue(0, 1, (-1)*ctm.getValue(0, 1));
-        ctm.setValue(1, 0, (-1)*ctm.getValue(1, 0));
+        coords = shadingType2.getCoords().toFloatArray();
+        float[] coordsTemp = new float[coords.length]; 
+        // transform the coords from shading to user space
+        ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 2);
+        // move the 0,0-reference
+        coordsTemp[1] = pageHeight - coordsTemp[1];
+        coordsTemp[3] = pageHeight - coordsTemp[3];
+        // transform the coords from user to device space
+        xform.transform(coordsTemp, 0, coords, 0, 2);
 
-        // create startingPoint
-        float[] coords = shadingType2.getCoords().toFloatArray();
-        startingPoint = new Point2D.Float(coords[0], coords[1]);
-        startingPoint = ctm.createAffineTransform().transform(startingPoint, null);
-        startingPoint = xform.transform(startingPoint, null);
-        // create endingPoint
-        endingPoint = new Point2D.Float(coords[2], coords[3]);
-        endingPoint = ctm.createAffineTransform().transform(endingPoint, null);
-        endingPoint = xform.transform(endingPoint, null);
         // domain values
         if (shadingType2.getDomain() != null)
         {
@@ -144,8 +132,8 @@ public class AxialShadingContext implements PaintContext
             extend = new boolean[]{false,false};
         }
         // calculate some constants to be used in getRaster
-        x1x0 = endingPoint.getX() - startingPoint.getX(); 
-        y1y0 = endingPoint.getY() - startingPoint.getY();
+        x1x0 = coords[2] - coords[0]; 
+        y1y0 = coords[3] - coords[1];
         d1d0 = domain[1]-domain[0];
         denom = Math.pow(x1x0,2) + Math.pow(y1y0, 2);
         // TODO take a possible Background value into account
@@ -158,8 +146,6 @@ public class AxialShadingContext implements PaintContext
     {
         colorModel = null;
         function = null;
-        startingPoint = null;
-        endingPoint = null;
     }
 
     /**
@@ -177,15 +163,14 @@ public class AxialShadingContext implements PaintContext
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        
         float[] input = new float[1];
         int[] data = new int[w * h * 3];
         for (int j = 0; j < h; j++) 
         {
             for (int i = 0; i < w; i++) 
             {
-                double inputValue = x1x0 * (x + i - startingPoint.getX()); 
-                inputValue += y1y0 * (y + j - startingPoint.getY());
+                double inputValue = x1x0 * (x + i - coords[0]); 
+                inputValue += y1y0 * (y + j - coords[1]);
                 inputValue /= denom;
                 // input value is out of range
                 if (inputValue < domain[0])
