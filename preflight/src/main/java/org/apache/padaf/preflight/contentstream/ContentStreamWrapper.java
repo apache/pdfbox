@@ -70,7 +70,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws ValidationException.
 	 */
 	public List<ValidationError> validPageContentStream(PDPage page)
-	throws ValidationException {
+			throws ValidationException {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		try {
@@ -97,7 +97,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws ValidationException
 	 */
 	public List<ValidationError> validXObjContentStream(PDXObjectForm xobj)
-	throws ValidationException {
+			throws ValidationException {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		try {
@@ -122,12 +122,12 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws ValidationException
 	 */
 	public List<ValidationError> validPatternContentStream(COSStream pattern)
-	throws ValidationException {
+			throws ValidationException {
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 
 		try {
 			COSDictionary res = (COSDictionary) pattern
-			.getDictionaryObject(DICTIONARY_KEY_RESOURCES);
+					.getDictionaryObject(DICTIONARY_KEY_RESOURCES);
 			resetEnginContext();
 			processSubStream(null, new PDResources(res), pattern);
 		} catch (ContentStreamException e) {
@@ -156,7 +156,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * .util.PDFOperator, java.util.List)
 	 */
 	protected void processOperator(PDFOperator operator, List arguments)
-	throws IOException {
+			throws IOException {
 
 		// ---- Here is a copy of the super method because the else block is
 		// different. (If the operator is unknown, throw an exception)
@@ -195,7 +195,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws IOException
 	 */
 	protected void checkShowTextOperators(PDFOperator operator, List<?> arguments)
-	throws ContentStreamException, IOException {
+			throws ContentStreamException, IOException {
 		String op = operator.getOperation();
 		if ("Tj".equals(op)
 				|| "'".equals(op)
@@ -221,7 +221,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws IOException
 	 */
 	private void validStringDefinition(PDFOperator operator, List<?> arguments)
-	throws ContentStreamException, IOException {
+			throws ContentStreamException, IOException {
 		// ---- For a Text operator, the arguments list should contain only one
 		// COSString object
 		if ("\"".equals(operator.getOperation())) {
@@ -272,7 +272,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws IOException
 	 */
 	private void validStringArray(PDFOperator operator, List<?> arguments)
-	throws ContentStreamException, IOException {
+			throws ContentStreamException, IOException {
 		for (Object object : arguments) {
 			if (object instanceof COSArray) {
 				validStringArray(operator, ((COSArray) object).toList());
@@ -357,7 +357,9 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			try {
 				fontContainer.checkCID(cid);
 			} catch (GlyphException e) {
-				throwContentStreamException(e.getMessage(), e.getErrorCode());  
+				if (renderingMode != 3) {
+					throwContentStreamException(e.getMessage(), e.getErrorCode());
+				}
 			}
 		}
 	}
