@@ -192,7 +192,7 @@ public abstract class PDSimpleFont extends PDFont
         if (fontWidth == null)
         {
             fontWidth = getFontWidth(code);
-            if (fontWidth == -1)
+            if (fontWidth <= 0)
             {
                 //hmm should this be in PDType1Font??
                 fontWidth = getFontWidthFromAFMFile( code );
