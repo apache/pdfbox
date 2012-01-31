@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 
+import java.awt.Paint;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -180,5 +181,14 @@ public abstract class PDPatternResources implements COSObjectable
         }
         return pattern;
     }
+    
+    /**
+     * This will return the paint of the pattern.
+     * 
+     * @param the height of the current page
+     * 
+     * @return the paint of the pattern
+     */
+    public abstract Paint getPaint(int pageHeight) throws IOException;
     
 }

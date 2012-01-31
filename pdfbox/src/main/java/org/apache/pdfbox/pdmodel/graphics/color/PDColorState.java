@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
@@ -83,6 +84,7 @@ public class PDColorState implements Cloneable
      * @see #getJavaColor()
      */
     private Color color = null;
+    private Paint paint = null;
 
     /**
      * Default constructor.
@@ -119,6 +121,23 @@ public class PDColorState implements Cloneable
             color = createColor();
         }
         return color;
+    }
+
+    /**
+     * Returns the Java AWT paint based on the current pattern.
+     *
+     * @param pageHeight the height of the current page
+     * @return current Java AWT paint
+     * 
+     * @throws IOException if the current color can not be created
+     */
+    public Paint getPaint(int pageHeight) throws IOException
+    {
+        if (paint == null && pattern != null) 
+        {
+            paint = pattern.getPaint(pageHeight);
+        }
+        return paint;
     }
 
     /**
@@ -311,7 +330,7 @@ public class PDColorState implements Cloneable
      */
     public void setPattern(PDPatternResources patternValue)
     {
-        this.pattern = patternValue;
+        pattern = patternValue;
         // Clear color cache
         color = null;
     }

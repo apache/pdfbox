@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
@@ -39,7 +38,7 @@ public class AxialShadingPaint implements Paint
 
     private PDShadingType2 shading;
     private Matrix currentTransformationMatrix;
-    private Dimension pageSize;
+    private int pageHeight;
     
     /**
      * Constructor.
@@ -48,13 +47,12 @@ public class AxialShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageSizeValue size of the current page
      */
-    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, Dimension pageSizeValue) 
+    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeightValue) 
     {
         shading = shadingType2;
         currentTransformationMatrix = ctm;
-        pageSize = pageSizeValue;
+        pageHeight = pageHeightValue;
     }
-    
     /**
      * {@inheritDoc}
      */
@@ -69,7 +67,7 @@ public class AxialShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
     {
-        return new AxialShadingContext(shading, cm, xform, currentTransformationMatrix, pageSize);
+        return new AxialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
     }
 
 }

@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
@@ -70,7 +71,25 @@ public final class PDColorSpaceFactory
      *
      * @throws IOException If the color space name is unknown.
      */
-    public static PDColorSpace createColorSpace( COSBase colorSpace, Map<String, PDColorSpace> colorSpaces ) throws IOException
+    public static PDColorSpace createColorSpace( COSBase colorSpace, Map<String, PDColorSpace> colorSpaces ) 
+    throws IOException 
+    {
+        return createColorSpace( colorSpace, colorSpaces, null );
+    }
+
+    /**
+     * This will create the correct color space given the name.
+     *
+     * @param colorSpace The color space object.
+     * @param colorSpaces The ColorSpace dictionary from the current resources, if any.
+     * @param patterns The patterns dictionary from the current resources, if any
+     * @return The color space.
+     *
+     * @throws IOException If the color space name is unknown.
+     */
+    public static PDColorSpace createColorSpace( COSBase colorSpace, Map<String, PDColorSpace> colorSpaces, 
+            Map<String,PDPatternResources> patterns) 
+    throws IOException
     {
         PDColorSpace retval = null;
         if( colorSpace instanceof COSName )
@@ -162,7 +181,8 @@ public final class PDColorSpaceFactory
      *
      * @throws IOException If the color space name is unknown.
      */
-    public static PDColorSpace createColorSpace( String colorSpaceName, Map<String, PDColorSpace> colorSpaces ) throws IOException
+    public static PDColorSpace createColorSpace( String colorSpaceName, Map<String, PDColorSpace> colorSpaces ) 
+    throws IOException
     {
         PDColorSpace cs = null;
         if( colorSpaceName.equals( PDDeviceCMYK.NAME ) ||
