@@ -17,7 +17,9 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 
+import java.awt.Paint;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -269,6 +271,16 @@ public class PDTilingPatternResources extends PDPatternResources
             matrix.add(new COSFloat((float)v));
         }
         getCOSDictionary().setItem(COSName.MATRIX, matrix);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Paint getPaint(int pageHeight) throws IOException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

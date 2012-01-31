@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.Dimension;
 import java.awt.PaintContext;
+import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -29,6 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -43,6 +45,7 @@ public class AxialShadingContext implements PaintContext
 
     private ColorModel colorModel;
     private PDFunction function;
+    private ColorSpace shadingColorSpace;
 
     private float[] coords;
     private float[] domain;
@@ -58,19 +61,54 @@ public class AxialShadingContext implements PaintContext
     private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
 
     /**
-     * Constructor.
+     * Constructor creates an instance to be used for fill operations.
      * 
      * @param shadingType2 the shading type to be used
      * @param colorModelValue the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageSize size of the current page
+     * @param pageHeight height of the current page
      * 
      */
     public AxialShadingContext(PDShadingType2 shadingType2, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, Dimension pageSize) 
+            AffineTransform xform, Matrix ctm, int pageHeight) 
     {
-        int pageHeight = pageSize.height;
+        coords = shadingType2.getCoords().toFloatArray();
+        if (ctm != null)
+        {
+            // the shading is used in combination with the sh-operator
+            float[] coordsTemp = new float[coords.length]; 
+            // transform the coords from shading to user space
+            ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 2);
+            // move the 0,0-reference
+            coordsTemp[1] = pageHeight - coordsTemp[1];
+            coordsTemp[3] = pageHeight - coordsTemp[3];
+            // transform the coords from user to device space
+            xform.transform(coordsTemp, 0, coords, 0, 2);
+        }
+        else
+        {
+            // the shading is used as pattern colorspace in combination
+            // with a fill-, stroke- or showText-operator
+            float translateY = (float)xform.getTranslateY();
+            // move the 0,0-reference including the y-translation from user to device space
+            coords[1] = pageHeight + translateY - coords[1];
+            coords[3] = pageHeight + translateY - coords[3];
+        }
+        // colorSpace 
+        try 
+        {
+            PDColorSpace cs = shadingType2.getColorSpace();
+            if (!(cs instanceof PDDeviceRGB))
+            {
+                // we have to create an instance of the shading colorspace if it isn't RGB
+                shadingColorSpace = cs.getJavaColorSpace();
+            }
+        } 
+        catch (IOException exception) 
+        {
+            LOG.error("error while creating colorSpace", exception);
+        }
         // colorModel
         if (colorModelValue != null)
         {
@@ -97,17 +135,6 @@ public class AxialShadingContext implements PaintContext
         {
             LOG.error("error while creating a function", exception);
         }
-        
-        coords = shadingType2.getCoords().toFloatArray();
-        float[] coordsTemp = new float[coords.length]; 
-        // transform the coords from shading to user space
-        ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 2);
-        // move the 0,0-reference
-        coordsTemp[1] = pageHeight - coordsTemp[1];
-        coordsTemp[3] = pageHeight - coordsTemp[3];
-        // transform the coords from user to device space
-        xform.transform(coordsTemp, 0, coords, 0, 2);
-
         // domain values
         if (shadingType2.getDomain() != null)
         {
@@ -137,8 +164,8 @@ public class AxialShadingContext implements PaintContext
         d1d0 = domain[1]-domain[0];
         denom = Math.pow(x1x0,2) + Math.pow(y1y0, 2);
         // TODO take a possible Background value into account
+        
     }
-    
     /**
      * {@inheritDoc}
      */
@@ -209,6 +236,11 @@ public class AxialShadingContext implements PaintContext
                     LOG.error("error while processing a function", exception);
                 }
                 int index = (j * w + i) * 3;
+                // convert color values from shading colorspace to RGB 
+                if (shadingColorSpace != null)
+                {
+                    values = shadingColorSpace.toRGB(values);
+                }
                 data[index] = (int)(values[0]*255);
                 data[index+1] = (int)(values[1]*255);
                 data[index+2] = (int)(values[2]*255);

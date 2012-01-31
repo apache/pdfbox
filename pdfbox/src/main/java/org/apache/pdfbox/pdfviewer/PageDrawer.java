@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfviewer;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -155,23 +156,33 @@ public class PageDrawer extends PDFStreamEngine
     {
         try
         {
-            switch(this.getGraphicsState().getTextState().getRenderingMode()) 
+            PDGraphicsState graphicsState = getGraphicsState();
+            Composite composite;
+            Paint paint;
+            switch(graphicsState.getTextState().getRenderingMode()) 
             {
                 case PDTextState.RENDERING_MODE_FILL_TEXT:
-                    graphics.setComposite( this.getGraphicsState().getNonStrokeJavaComposite() );
-                    graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
+                    composite = graphicsState.getNonStrokeJavaComposite();
+                    paint = graphicsState.getNonStrokingColor().getJavaColor();
+                    if (paint == null)
+                    {
+                        paint = graphicsState.getNonStrokingColor().getPaint(pageSize.height);
+                    }
                     break;
                 case PDTextState.RENDERING_MODE_STROKE_TEXT:
-                    graphics.setComposite( this.getGraphicsState().getStrokeJavaComposite() );
-                    graphics.setColor( this.getGraphicsState().getStrokingColor().getJavaColor() );
+                    composite = graphicsState.getStrokeJavaComposite();
+                    paint = graphicsState.getStrokingColor().getJavaColor();
+                    if (paint == null)
+                    {
+                        paint = graphicsState.getStrokingColor().getPaint(pageSize.height);
+                    }
                     break;
                 case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
                     //basic support for text rendering mode "invisible"
-                    Color nsc = this.getGraphicsState().getStrokingColor().getJavaColor();
+                    Color nsc = graphicsState.getStrokingColor().getJavaColor();
                     float[] components = {Color.black.getRed(),Color.black.getGreen(),Color.black.getBlue()};
-                    Color  c = new Color(nsc.getColorSpace(),components,0f);
-                    graphics.setComposite( this.getGraphicsState().getStrokeJavaComposite() );
-                    graphics.setColor(c);
+                    paint = new Color(nsc.getColorSpace(),components,0f);
+                    composite = graphicsState.getStrokeJavaComposite();
                     break;
                 default:
                     // TODO : need to implement....
@@ -181,10 +192,12 @@ public class PageDrawer extends PDFStreamEngine
                             + " Using RenderingMode "
                             + PDTextState.RENDERING_MODE_FILL_TEXT
                             + " instead");
-                    graphics.setComposite( this.getGraphicsState().getNonStrokeJavaComposite() );
-                    graphics.setColor( this.getGraphicsState().getNonStrokingColor().getJavaColor() );
+                    composite = graphicsState.getNonStrokeJavaComposite();
+                    paint = graphicsState.getNonStrokingColor().getJavaColor();
             }
-
+            graphics.setComposite(composite);
+            graphics.setPaint(paint);
+            
             PDFont font = text.getFont();
             Matrix textPos = text.getTextPos().copy();
             float x = textPos.getXPosition();
@@ -200,7 +213,7 @@ public class PageDrawer extends PDFStreamEngine
             PDMatrix fontMatrix = font.getFontMatrix();
             at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 1) * 1000f);
             //TODO setClip() is a massive performance hot spot. Investigate optimization possibilities
-            graphics.setClip(getGraphicsState().getCurrentClippingPath());
+            graphics.setClip(graphicsState.getCurrentClippingPath());
             // the fontSize is no longer needed as it is already part of the transformation
             // we should remove it from the parameter list in the long run
             font.drawString( text.getCharacter(), graphics, 1, at, x, y );
@@ -290,17 +303,18 @@ public class PageDrawer extends PDFStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
-        Color nonStrokingColor = getGraphicsState().getNonStrokingColor().getJavaColor();
-        if ( nonStrokingColor != null )
+        Paint nonStrokingPaint = getGraphicsState().getNonStrokingColor().getJavaColor();
+        if ( nonStrokingPaint == null )
         {
-            graphics.setColor( nonStrokingColor );
+            nonStrokingPaint = getGraphicsState().getNonStrokingColor().getPaint(pageSize.height);
         }
-        else 
+        if ( nonStrokingPaint == null )
         {
             LOG.info("ColorSpace "+getGraphicsState().getNonStrokingColor().getColorSpace().getName()
                     +" doesn't provide a non-stroking color, using white instead!");
-            graphics.setColor( Color.WHITE );
+            nonStrokingPaint = Color.WHITE;
         }
+        graphics.setPaint( nonStrokingPaint );
         getLinePath().setWindingRule(windingRule);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
@@ -339,17 +353,18 @@ public class PageDrawer extends PDFStreamEngine
     public void strokePath() throws IOException
     {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
-        Color strokingColor = getGraphicsState().getStrokingColor().getJavaColor();
-        if ( strokingColor != null )
+        Paint strokingPaint = getGraphicsState().getStrokingColor().getJavaColor();
+        if ( strokingPaint == null )
         {
-            graphics.setColor( strokingColor );
+            strokingPaint = getGraphicsState().getStrokingColor().getPaint(pageSize.height);
         }
-        else 
+        if ( strokingPaint == null )
         {
             LOG.info("ColorSpace "+getGraphicsState().getStrokingColor().getColorSpace().getName()
                     +" doesn't provide a stroking color, using white instead!");
-            graphics.setColor( Color.WHITE );
+            strokingPaint = Color.WHITE;
         }
+        graphics.setPaint(strokingPaint);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
@@ -460,7 +475,7 @@ public class PageDrawer extends PDFStreamEngine
                 LOG.debug("Function based shading not yet supported");
             break;
             case 2:
-                paint = new AxialShadingPaint((PDShadingType2)shading, ctm, pageSize);
+                paint = new AxialShadingPaint((PDShadingType2)shading, ctm, pageSize.height);
                 break;
             case 3:
                 // TODO
