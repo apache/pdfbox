@@ -167,8 +167,11 @@ public class PDJpeg extends PDXObjectImage
             {
                 for(int x = 0; x < alphaWidth; x++)
                 {
-                    Color color = new Color(alpha.getRGB(x, y));
-                    if(color.getRed() != 0 && color.getGreen() != 0 && color.getBlue() != 0)
+                    int colorValues = alpha.getRGB(x, y);
+                    // TODO check condition PDFBOX-626
+                    if( ((colorValues >> 16) & 0xFF) != 0 
+                            && ((colorValues >> 8) & 0xFF) != 0 
+                            && ((colorValues >> 0) & 0xFF) != 0 )
                     {
                         alpha.setRGB(x, y, whiteRGB);
                     }
