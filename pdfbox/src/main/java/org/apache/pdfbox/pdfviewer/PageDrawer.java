@@ -45,6 +45,8 @@ import org.apache.pdfbox.pdmodel.graphics.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
+import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -478,8 +480,7 @@ public class PageDrawer extends PDFStreamEngine
                 paint = new AxialShadingPaint((PDShadingType2)shading, ctm, pageSize.height);
                 break;
             case 3:
-                // TODO
-                LOG.debug("Radial shading not yet supported");
+                paint = new RadialShadingPaint((PDShadingType3)shading, ctm, pageSize.height);
                 break;
             case 4:
             case 5:
