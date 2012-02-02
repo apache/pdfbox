@@ -187,6 +187,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName BITS_PER_COORDINATE = new COSName("BitsPerCoordinate" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName BITS_PER_FLAG = new COSName("BitsPerFlag" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName BITS_PER_SAMPLE = new COSName("BitsPerSample" );
     /**
      * A common COSName value.
@@ -1248,6 +1256,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName VERSION = new COSName( "Version" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName VERTICES_PER_ROW = new COSName( "VerticesPerRow" );
 
     /**
      * A common COSName value.
