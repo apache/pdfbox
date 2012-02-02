@@ -20,8 +20,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -72,11 +70,6 @@ public abstract class PDShadingResources implements COSObjectable
      */
     public static final int SHADING_TYPE7 = 7;
     
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDShadingResources.class);
-
     /**
      * Default constructor.
      */
@@ -285,10 +278,16 @@ public abstract class PDShadingResources implements COSObjectable
                 shading = new PDShadingType3(resourceDictionary);
                 break;
             case SHADING_TYPE4:
+                shading = new PDShadingType4(resourceDictionary);
+                break;
             case SHADING_TYPE5:
+                shading = new PDShadingType5(resourceDictionary);
+                break;
             case SHADING_TYPE6:
+                shading = new PDShadingType6(resourceDictionary);
+                break;
             case SHADING_TYPE7:
-                log.debug( "Error: Unsupported shading type " + shadingType );
+                shading = new PDShadingType7(resourceDictionary);
                 break;
             default:
                 throw new IOException( "Error: Unknown shading type " + shadingType );
