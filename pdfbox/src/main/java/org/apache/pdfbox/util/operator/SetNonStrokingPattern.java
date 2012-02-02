@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
@@ -40,7 +41,24 @@ public class SetNonStrokingPattern extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSName selectedPattern = (COSName)arguments.get(0);
+        COSName selectedPattern;
+        int numberOfArguments = arguments.size();
+        COSArray colorValues;
+        if (numberOfArguments == 1)
+        {
+            selectedPattern = (COSName)arguments.get(0);
+        }
+        else 
+        {
+            // uncolored tiling patterns shall have some additional color values
+            // TODO: pass these values to the colorstate
+            colorValues = new COSArray();
+            for (int i=0;i<numberOfArguments-1;i++)
+            {
+                colorValues.add(arguments.get(i));
+            }
+            selectedPattern = (COSName)arguments.get(numberOfArguments-1);
+        }
         Map<String,PDPatternResources> patterns = getContext().getResources().getPatterns();
         PDPatternResources pattern = patterns.get(selectedPattern.getName()); 
         getContext().getGraphicsState().getNonStrokingColor().setPattern(pattern);
