@@ -45,7 +45,9 @@ public class Splitter
      */
     protected PDDocument currentDocument = null;
 
-    private int splitAtPage=1;
+    private int splitAtPage = 1;
+    private int startPage = Integer.MIN_VALUE;
+    private int endPage = Integer.MAX_VALUE;
     private List<PDDocument> newDocuments = null;
 
     /**
@@ -101,6 +103,53 @@ public class Splitter
     }
 
     /**
+     * This will set the start page.
+     * 
+     * @param start the start page
+     */
+    public void setStartPage( int start )
+    {
+        if( start <= 0 )
+        {
+            throw new RuntimeException( "Error split must be at least one page." );
+        }
+        startPage = start;
+    }
+    /**
+     * This will return the start page.
+     *
+     * @return The start page.
+     */
+    public int getStartPage()
+    {
+        return startPage;
+    }
+
+    /**
+     * This will set the end page.
+     * 
+     * @param end the end page
+     */
+    public void setEndPage( int end )
+    {
+        if( end <= 0 )
+        {
+            throw new RuntimeException( "Error split must be at least one page." );
+        }
+        endPage = end;
+    }
+    
+    /**
+     * This will return the end page.
+     *
+     * @return The end page.
+     */
+    public int getEndPage()
+    {
+        return endPage;
+    }
+
+    /**
      * Interface method to handle the start of the page processing.
      *
      * @param pages The list of pages from the source document.
@@ -113,7 +162,21 @@ public class Splitter
         while( iter.hasNext() )
         {
             PDPage page = (PDPage)iter.next();
-            processNextPage( page );
+            if (pageNumber+1 >= startPage && pageNumber+1 <= endPage)
+            {
+                processNextPage( page );
+            }
+            else
+            {
+                if (pageNumber > endPage)
+                {
+                    break;
+                }
+                else
+                {
+                    pageNumber++;
+                }
+            }
         }
     }
 
