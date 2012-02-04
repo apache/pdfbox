@@ -45,6 +45,8 @@ public class PDFSplit
 {
     private static final String PASSWORD = "-password";
     private static final String SPLIT = "-split";
+    private static final String START_PAGE = "-startPage";
+    private static final String END_PAGE = "-endPage";
 
     private PDFSplit()
     {
@@ -65,8 +67,10 @@ public class PDFSplit
     private void split( String[] args ) throws Exception
     {
         String password = "";
-        String split = "1";
-
+        String split = null;
+        String startPage = null;
+        String endPage = null;
+        
         Splitter splitter = new Splitter();
         String pdfFile = null;
         for( int i=0; i<args.length; i++ )
@@ -89,6 +93,24 @@ public class PDFSplit
                 }
                 split = args[i];
             }
+            else if( args[i].equals( START_PAGE ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                startPage = args[i];
+            }
+            else if( args[i].equals( END_PAGE ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                endPage = args[i];
+            }
             else
             {
                 if( pdfFile == null )
@@ -107,7 +129,7 @@ public class PDFSplit
 
             InputStream input = null;
             PDDocument document = null;
-            List documents = null;
+            List<PDDocument> documents = null;
             try
             {
                 input = new FileInputStream( pdfFile );
@@ -128,18 +150,47 @@ public class PDFSplit
                         }
                         else
                         {
-                            //they didn't suppply a password and the default of "" was wrong.
+                            //they didn't supply a password and the default of "" was wrong.
                             System.err.println( "Error: The document is encrypted." );
                             usage();
                         }
                     }
                 }
 
-                splitter.setSplitAtPage( Integer.parseInt( split ) );
+                int numberOfPages = document.getNumberOfPages();
+                boolean startEndPageSet = false;
+                if (startPage != null)
+                {
+                    splitter.setStartPage(Integer.parseInt( startPage ));
+                    if (split == null)
+                    {
+                        splitter.setSplitAtPage(numberOfPages);
+                    }
+                }
+                if (endPage != null)
+                {
+                    splitter.setEndPage(Integer.parseInt( endPage ));
+                    if (split == null)
+                    {
+                        splitter.setSplitAtPage(Integer.parseInt( endPage ));
+                    }
+                }
+                if (split != null)
+                {
+                    splitter.setSplitAtPage( Integer.parseInt( split ) );
+                }
+                else 
+                {
+                    if (!startEndPageSet)
+                    {
+                        splitter.setSplitAtPage(1);
+                    }
+                }
+                    
                 documents = splitter.split( document );
                 for( int i=0; i<documents.size(); i++ )
                 {
-                    PDDocument doc = (PDDocument)documents.get( i );
+                    PDDocument doc = documents.get( i );
                     String fileName = pdfFile.substring(0, pdfFile.length()-4 ) + "-" + i + ".pdf";
                     writeDocument( doc, fileName );
                     doc.close();
@@ -210,9 +261,11 @@ public class PDFSplit
     private static void usage()
     {
         System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFSplit [OPTIONS] <PDF file>\n" +
-            "  -password  <password>        Password to decrypt document\n" +
-            "  -split     <integer>         split after this many pages\n" +
-            "  <PDF file>                   The PDF document to use\n"
+            "  -password  <password>  Password to decrypt document\n" +
+            "  -split     <integer>   split after this many pages (default 1, if startPage and endPage are unset)\n"+
+            "  -startPage <integer>   start page\n" +
+            "  -endPage   <integer>   end page\n" +
+            "  <PDF file>             The PDF document to use\n"
             );
         System.exit( 1 );
     }
