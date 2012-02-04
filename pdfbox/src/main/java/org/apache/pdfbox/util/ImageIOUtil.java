@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 import javax.imageio.IIOException;
@@ -45,13 +46,16 @@ import org.w3c.dom.NodeList;
  */
 public class ImageIOUtil
 {   
+    
+    private static final int DEFAULT_SCREEN_RESOLUTION = 72;
+    
     private ImageIOUtil()
     {
         // Default constructor
     }
 
     /**
-     * Converts a given page range of a PDF document to bitmap images.
+     * Writes a buffered image to a file using the given image format.
      * @param image the image to be written
      * @param imageFormat the target format (ex. "png")
      * @param filename used to construct the filename for the individual images
@@ -64,13 +68,34 @@ public class ImageIOUtil
             int imageType, int resolution)
     throws IOException
     {
+        String fileName = filename + "." + imageFormat;
+        File file = new File( fileName );
+        return writeImage(image, imageFormat, file, resolution);
+    }
+
+    /**
+     * Writes a buffered image to a file using the given image format.
+     * @param image the image to be written
+     * @param imageFormat the target format (ex. "png")
+     * @param outputStream the output stream to be used for writing
+     * @return true if the images were produced, false if there was an error
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String imageFormat, OutputStream outputStream) 
+    throws IOException
+    {
+        return writeImage(image, imageFormat, outputStream, DEFAULT_SCREEN_RESOLUTION);
+    }
+
+    private static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream, int resolution)
+    throws IOException
+    {
         boolean bSuccess = true;
         ImageOutputStream output = null;
         ImageWriter imageWriter = null;
         try
         {
-            String fileName = filename + "." + imageFormat;
-            output = ImageIO.createImageOutputStream( new File( fileName ) );
+            output = ImageIO.createImageOutputStream( outputStream );
     
             boolean foundWriter = false;
             Iterator<ImageWriter> writerIter = ImageIO.getImageWritersByFormatName( imageFormat );

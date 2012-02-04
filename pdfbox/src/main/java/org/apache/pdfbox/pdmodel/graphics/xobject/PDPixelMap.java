@@ -29,8 +29,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -45,6 +43,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 
 
@@ -63,13 +62,15 @@ public class PDPixelMap extends PDXObjectImage
 
     private BufferedImage image = null;
 
+    private static final String PNG = "png";
+
     /**
      * Standard constructor. Basically does nothing.
      * @param pdStream The stream that holds the pixel map.
      */
     public PDPixelMap(PDStream pdStream)
     {
-        super(pdStream, "png");
+        super(pdStream, PNG);
     }
 
     /**
@@ -366,7 +367,7 @@ public class PDPixelMap extends PDXObjectImage
         getRGBImage();
         if (image != null)
         {
-            ImageIO.write(image, "png", out);
+            ImageIOUtil.writeImage(image, PNG, out);
         }
     }
 

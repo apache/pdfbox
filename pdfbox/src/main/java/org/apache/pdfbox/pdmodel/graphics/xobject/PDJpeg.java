@@ -62,6 +62,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * An image class for JPegs.
@@ -110,7 +111,7 @@ public class PDJpeg extends PDXObjectImage
         dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
         dic.setItem( COSName.TYPE, COSName.XOBJECT );
 
-        BufferedImage image = getRGBImage();
+        getRGBImage();
         if (image != null)
         {
             setBitsPerComponent( 8 );
@@ -177,7 +178,7 @@ public class PDJpeg extends PDXObjectImage
                     }
                 }
             }
-            BufferedImage image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_USHORT_565_RGB);
+            image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_USHORT_565_RGB);
             g = image.createGraphics();
             g.drawImage(bi, 0, 0, null);
             bi = image;
@@ -330,7 +331,7 @@ public class PDJpeg extends PDXObjectImage
         getRGBImage();
         if (image != null) 
         {
-            ImageIO.write(image, JPG, out);
+            ImageIOUtil.writeImage(image, JPG, out);
         }
 
     }
@@ -346,11 +347,11 @@ public class PDJpeg extends PDXObjectImage
         }
     }
 
-    private int getHeaderEndPos(byte[] image)
+    private int getHeaderEndPos(byte[] imageAsBytes)
     {
-        for (int i = 0; i < image.length; i++)
+        for (int i = 0; i < imageAsBytes.length; i++)
         {
-            byte b = image[i];
+            byte b = imageAsBytes[i];
             if (b == (byte) 0xDB)
             {
                 // TODO : check for ff db
@@ -360,10 +361,10 @@ public class PDJpeg extends PDXObjectImage
         return 0;
     }
 
-    private byte[] replaceHeader(byte[] image)
+    private byte[] replaceHeader(byte[] imageAsBytes)
     {
         // get end position of wrong header respectively startposition of "real jpeg data"
-        int pos = getHeaderEndPos(image);
+        int pos = getHeaderEndPos(imageAsBytes);
 
         // simple correct header
         byte[] header = new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0, (byte) 0x00,
@@ -371,9 +372,9 @@ public class PDJpeg extends PDXObjectImage
                 (byte) 0x01, (byte) 0x01, (byte) 0x00, (byte) 0x60, (byte) 0x00, (byte) 0x60, (byte) 0x00, (byte) 0x00};
 
         // concat
-        byte[] newImage = new byte[image.length - pos + header.length - 1];
+        byte[] newImage = new byte[imageAsBytes.length - pos + header.length - 1];
         System.arraycopy(header, 0, newImage, 0, header.length);
-        System.arraycopy(image, pos + 1, newImage, header.length, image.length - pos - 1);
+        System.arraycopy(imageAsBytes, pos + 1, newImage, header.length, imageAsBytes.length - pos - 1);
 
         return newImage;
     }
