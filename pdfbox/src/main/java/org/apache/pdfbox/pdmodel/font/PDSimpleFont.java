@@ -57,7 +57,7 @@ public abstract class PDSimpleFont extends PDFont
         new HashMap<Integer, Float>(128);
 
     private float avgFontWidth = 0.0f;
-
+    private float avgFontHeight = 0.0f;
     
     /**
      * Log instance.
@@ -106,7 +106,7 @@ public abstract class PDSimpleFont extends PDFont
         // for font with bad cmaps?
         // Type1 fonts are not affected as they don't have cmaps
         if (!isType1Font() && awtFont.canDisplayUpTo(string) != -1) 
-        { 
+        {
             LOG.warn("Changing font on <" + string + "> from <"
                     + awtFont.getName() + "> to the default font");
             awtFont = Font.decode(null); 
@@ -130,11 +130,16 @@ public abstract class PDSimpleFont extends PDFont
      */
     public float getFontHeight( byte[] c, int offset, int length ) throws IOException
     {
+        // maybe there is already a precalculated value
+        if (avgFontHeight > 0)
+        {
+            return avgFontHeight;
+        }
         float retval = 0;
-        int code = getCodeFromArray( c, offset, length );
         FontMetric metric = getAFM();
         if( metric != null )
         {
+            int code = getCodeFromArray( c, offset, length );
             Encoding encoding = getFontEncoding();
             String characterName = encoding.getName( code );
             retval = metric.getCharacterHeight( characterName );
@@ -144,31 +149,32 @@ public abstract class PDSimpleFont extends PDFont
             PDFontDescriptor desc = getFontDescriptor();
             if( desc != null )
             {
-                float xHeight = desc.getXHeight();
-                float capHeight = desc.getCapHeight();
-                if( xHeight != 0f && capHeight != 0 )
+                // the following values are all more or less accurate
+                // at least all are average values. Maybe we'll find
+                // another way to get those value for every single glyph
+                // in the future if needed
+                PDRectangle fontBBox = desc.getFontBoundingBox();
+                if (fontBBox != null)
                 {
-                    //do an average of these two.  Can we do better???
-                    retval = (xHeight + capHeight)/2f;
+                    retval = fontBBox.getHeight() / 2;
                 }
-                else if( xHeight != 0 )
+                if( retval == 0 )
                 {
-                    retval = xHeight;
+                    retval = desc.getCapHeight();
                 }
-                else if( capHeight != 0 )
-                {
-                    retval = capHeight;
-                }
-                else
-                {
-                    retval = 0;
-                }
-                //hmm, not sure if this is 100% correct
-                //but gives a height, Should we add Descent as well??
                 if( retval == 0 )
                 {
                     retval = desc.getAscent();
                 }
+                if( retval == 0 )
+                {
+                    retval = desc.getXHeight();
+                    if (retval > 0)
+                    {
+                        retval -= desc.getDescent();
+                    }
+                }
+                avgFontHeight = retval;
             }
         }
         return retval;
