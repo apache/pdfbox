@@ -64,6 +64,10 @@ public abstract class TestCOSNumber extends TestCOSBase
             assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
             assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
             assertEquals(new COSFloat(-100.001f), COSNumber.get("-100.001"));
+            // according to the specs the exponential shall not be used
+            // but obviously there some
+            assertNotNull(COSNumber.get("-2e-006"));
+            assertNotNull(COSNumber.get("-8e+05"));
             try
             {
                 assertEquals("Null Value...", COSNumber.get(null));
