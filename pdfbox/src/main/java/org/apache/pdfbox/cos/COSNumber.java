@@ -76,17 +76,25 @@ public abstract class COSNumber extends COSBase
      */
     public static COSNumber get( String number ) throws IOException
     {
-        if (number.length() == 1) {
+        if (number.length() == 1) 
+        {
             char digit = number.charAt(0);
-            if ('0' <= digit && digit <= '9') {
+            if ('0' <= digit && digit <= '9') 
+            {
                 return COSInteger.get(digit - '0');
-            } else if (digit == '-' || digit == '.') {
+            } 
+            else if (digit == '-' || digit == '.') 
+            {
                 // See https://issues.apache.org/jira/browse/PDFBOX-592
                 return COSInteger.ZERO;
-            } else {
+            } 
+            else 
+            {
                 throw new IOException("Not a number: " + number);
             }
-        } else if (number.indexOf('.') == -1) {
+        } 
+        else if (number.indexOf('.') == -1 && (number.toLowerCase().indexOf('e') == -1)) 
+        {
             try
             {
                 return COSInteger.get( Long.parseLong( number ) );
@@ -95,7 +103,9 @@ public abstract class COSNumber extends COSBase
             {
                 throw new IOException( "Value is not an integer: " + number );
             }
-        } else {
+        } 
+        else 
+        {
             return new COSFloat(number);
         }
     }
