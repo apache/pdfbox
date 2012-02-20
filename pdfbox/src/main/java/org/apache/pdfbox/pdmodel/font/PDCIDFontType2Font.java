@@ -22,8 +22,11 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -38,8 +41,11 @@ public class PDCIDFontType2Font extends PDCIDFont
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDCIDFontType2Font.class);
+    private static final Log LOG = LogFactory.getLog(PDCIDFontType2Font.class);
 
+    private Boolean hasCIDToGIDMap = null;
+    private int[] cid2gid = null;
+    
     /**
      * Constructor.
      */
@@ -76,14 +82,14 @@ public class PDCIDFontType2Font extends PDCIDFont
             }
             catch( FontFormatException f )
             {
-                log.info("Can't read the embedded font " + fd.getFontName() );
+                LOG.info("Can't read the embedded font " + fd.getFontName() );
             }
             if (awtFont == null)
             {
                 awtFont = FontManager.getAwtFont(fd.getFontName());
                 if (awtFont != null)
                 {
-                    log.info("Using font "+awtFont.getName()+ " instead");
+                    LOG.info("Using font "+awtFont.getName()+ " instead");
                 }
             }
         }
@@ -91,4 +97,79 @@ public class PDCIDFontType2Font extends PDCIDFont
         return awtFont;
     }
 
+    /**
+     * read the CIDToGID map.
+     */
+    private void readCIDToGIDMapping()
+    {
+        COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+        if (map instanceof COSStream) 
+        {
+            COSStream stream = (COSStream)map;
+            try 
+            {
+                byte[] mapAsBytes = IOUtils.toByteArray(stream.getUnfilteredStream());
+                int numberOfInts = mapAsBytes.length / 2;
+                cid2gid = new int[numberOfInts];
+                int index = 0;
+                for(int offset = 0;offset < numberOfInts;offset++)
+                {
+                    cid2gid[index] = getCodeFromArray(mapAsBytes, offset, 2);
+                }
+            }
+            catch(IOException exception)
+            {
+                LOG.error("Can't read the CIDToGIDMap", exception);
+            }
+        }
+    }
+    
+    /**
+     * Indicates if this font has a CIDToGIDMap.
+     * 
+     * @return returns true if the font has a CIDToGIDMap.
+     */
+    public boolean hasCIDToGIDMap()
+    {
+        if (hasCIDToGIDMap == null)
+        {
+            COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+            if (map != null && map instanceof COSStream)
+            {
+                hasCIDToGIDMap = Boolean.TRUE;
+            }
+            else
+            {
+                hasCIDToGIDMap = Boolean.FALSE;
+            }
+        }
+        return hasCIDToGIDMap.booleanValue();
+    }
+    
+    /**
+     * Maps the given CID to the correspondent GID.
+     * 
+     * @param cid the given CID
+     * @return the mapped GID, or -1 if something went wrong.
+     */
+    public int mapCIDToGID(int cid) 
+    {
+        if (hasCIDToGIDMap()) 
+        {
+            if (cid2gid == null)
+            {
+                readCIDToGIDMapping();
+            }
+            if (cid2gid != null && cid < cid2gid.length)
+            {
+                return cid2gid[cid];
+            }
+            return -1;
+        }
+        else
+        {
+            // identity is the default value
+            return cid;
+        }
+    }
 }

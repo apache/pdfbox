@@ -283,6 +283,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName CID_TO_GID_MAP = new COSName( "CIDToGIDMap" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName COLORANTS = new COSName( "Colorants" );
     /**
      * A common COSName value.
