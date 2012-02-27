@@ -175,7 +175,9 @@ public class PDPixelMap extends PDXObjectImage
                 {
                     throw new IOException( "Not implemented" );
                 }
-                int numberOfComponents = baseColorModel.getNumComponents() + (hasAlpha ? 1 : 0);
+                // the IndexColorModel uses RGB-based color values
+                // which leads to 3 color components and a optional alpha channel
+                int numberOfComponents = 3 + (hasAlpha ? 1 : 0);
                 int buffersize = (size+1) * numberOfComponents;
                 byte[] colorValues = new byte[buffersize];
                 byte[] inData = new byte[baseColorModel.getNumComponents()];
@@ -183,6 +185,7 @@ public class PDPixelMap extends PDXObjectImage
                 for( int i = 0; i <= size; i++ )
                 {
                     System.arraycopy(index, i * inData.length, inData, 0, inData.length);
+                    // convert the indexed color values to RGB 
                     colorValues[bufferIndex] = (byte)baseColorModel.getRed(inData);
                     colorValues[bufferIndex+1] = (byte)baseColorModel.getGreen(inData);
                     colorValues[bufferIndex+2] = (byte)baseColorModel.getBlue(inData);
