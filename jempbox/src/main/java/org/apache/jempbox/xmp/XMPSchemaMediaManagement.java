@@ -218,7 +218,7 @@ public class XMPSchemaMediaManagement extends XMPSchema
      */
     public void setManagedFrom( ResourceRef resource )
     {
-        XMLUtil.setElementableValue( schema, prefix + ":DerivedFrom", resource );
+        XMLUtil.setElementableValue( schema, prefix + ":ManagedFrom", resource );
     }
     
     /**
