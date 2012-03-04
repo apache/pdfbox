@@ -70,12 +70,12 @@ public abstract class PDFont implements COSObjectable
     private Encoding fontEncoding = null;
 
     /**
-     *  The descriptor of the font
+     *  The descriptor of the font.
      */
     private PDFontDescriptor fontDescriptor = null;
 
     /**
-     *  The font matrix
+     *  The font matrix.
      */
     protected PDMatrix fontMatrix = null;
 
@@ -91,7 +91,7 @@ public abstract class PDFont implements COSObjectable
         Collections.synchronizedMap( new HashMap<String, CMap>() );
 
     /**
-     *  A list a floats representing the widths
+     *  A list a floats representing the widths.
      */
     private List<Float> widths = null;
 
@@ -206,7 +206,7 @@ public abstract class PDFont implements COSObjectable
             }
             else
             {
-                FontMetric afm = getAFM();
+                getAFM();
                 if( afm != null )
                 {
                     fontDescriptor = new PDFontDescriptorAFM( afm );
@@ -219,17 +219,17 @@ public abstract class PDFont implements COSObjectable
     /**
      * This will set the font descriptor.
      *
-     * @param fontDescriptor The font descriptor.
+     * @param fdDictionary The font descriptor.
      */
-    public void setFontDescriptor( PDFontDescriptorDictionary fontDescriptor )
+    public void setFontDescriptor( PDFontDescriptorDictionary fdDictionary )
     {
         COSDictionary dic = null;
-        if( fontDescriptor != null )
+        if( fdDictionary != null )
         {
-            dic = fontDescriptor.getCOSDictionary();
+            dic = fdDictionary.getCOSDictionary();
         }
         font.setItem( COSName.FONT_DESC, dic );
-        this.fontDescriptor = fontDescriptor;
+        fontDescriptor = fdDictionary;
     }
 
     /**
@@ -308,15 +308,35 @@ public abstract class PDFont implements COSObjectable
      * @param string The string to draw.
      * @param g The graphics to draw onto.
      * @param fontSize The size of the font to draw.
-     * @param at The transformation matrix with all infos for scaling and shearing of the font.
+     * @param at The transformation matrix with all information for scaling and shearing of the font.
+     * @param x The x coordinate to draw at.
+     * @param y The y coordinate to draw at.
+     *
+     * @throws IOException If there is an error drawing the specific string.
+     * @deprecated use {@link PDFont#drawString(String, int[], Graphics, float, AffineTransform, float, float)} instead
+     */
+    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
+    throws IOException
+    {
+        drawString(string, null, g, fontSize, at, x, y);
+    }
+
+    /**
+     * This will draw a string on a canvas using the font.
+     *
+     * @param string The string to draw.
+     * @param codePoints The codePoints of the given string.
+     * @param g The graphics to draw onto.
+     * @param fontSize The size of the font to draw.
+     * @param at The transformation matrix with all information for scaling and shearing of the font.
      * @param x The x coordinate to draw at.
      * @param y The y coordinate to draw at.
      *
      * @throws IOException If there is an error drawing the specific string.
      */
-    public abstract void drawString( String string, Graphics g, float fontSize,
+    public abstract void drawString( String string, int[] codePoints, Graphics g, float fontSize,
         AffineTransform at, float x, float y ) throws IOException;
-
+    
     /**
      * Used for multibyte encodings.
      *
@@ -326,7 +346,7 @@ public abstract class PDFont implements COSObjectable
      *
      * @return The int value of data from the array.
      */
-    protected int getCodeFromArray( byte[] data, int offset, int length )
+    public int getCodeFromArray( byte[] data, int offset, int length )
     {
         int code = 0;
         for( int i=0; i<length; i++ )
@@ -352,8 +372,7 @@ public abstract class PDFont implements COSObjectable
         FontMetric metric = getAFM();
         if( metric != null )
         {
-            Encoding encoding = getFontEncoding();
-            String characterName = encoding.getName( code );
+            String characterName = fontEncoding.getName( code );
             retval = metric.getCharacterWidth( characterName );
         }
         return retval;
@@ -422,7 +441,7 @@ public abstract class PDFont implements COSObjectable
      * <pre>
      *   font.getDictionaryObject(COSName.ENCODING);
      * </pre>
-     * @return
+     * @return the encoding
      */
     protected COSBase getEncoding()
     {
@@ -437,10 +456,10 @@ public abstract class PDFont implements COSObjectable
      * Set the encoding object from the fonts dictionary.
      * @param encoding the given encoding.
      */
-    protected void setEncoding(COSBase encoding)
+    protected void setEncoding(COSBase encodingValue)
     {
-        font.setItem( COSName.ENCODING, encoding );
-        this.encoding = encoding;
+        font.setItem( COSName.ENCODING, encodingValue );
+        encoding = encodingValue;
     }
 
     /**
@@ -451,6 +470,7 @@ public abstract class PDFont implements COSObjectable
      * @param isCIDFont indicates that the used font is a CID font.
      *
      * @return The value of the encoded character.
+     * @throws IOException if something went wrong
      */
     protected String cmapEncoding( int code, int length, boolean isCIDFont ) throws IOException
     {
@@ -488,10 +508,9 @@ public abstract class PDFont implements COSObjectable
         // there is no cmap but probably an encoding with a suitable mapping
         if( retval == null )
         {
-            Encoding encoding = getFontEncoding();
-            if( encoding != null )
+            if( fontEncoding != null )
             {
-                retval = encoding.getCharacter( code );
+                retval = fontEncoding.getCharacter( code );
             }
             if( retval == null && (cmap == null || length == 2))
             {
@@ -602,6 +621,7 @@ public abstract class PDFont implements COSObjectable
     private boolean type1Font;
     private boolean trueTypeFont;
     private boolean typeFont;
+    private boolean type0Font;
 
     /**
      * This will get the subtype of font, Type1, Type3, ...
@@ -615,6 +635,7 @@ public abstract class PDFont implements COSObjectable
             subtype = font.getNameAsString( COSName.SUBTYPE );
             type1Font = "Type1".equals(subtype);
             trueTypeFont = "TrueType".equals(subtype);
+            type0Font = "Type0".equals(subtype);
             typeFont = type1Font || "Type0".equals(subtype) || trueTypeFont;
         }
         return subtype;
@@ -628,6 +649,16 @@ public abstract class PDFont implements COSObjectable
     {
         getSubType();
         return type1Font;
+    }
+
+    /**
+     * Determines if the font is a type 0 font.
+     * @return returns true if the font is a type 0 font
+     */
+    protected boolean isType0Font()
+    {
+        getSubType();
+        return type0Font;
     }
 
     private boolean isTrueTypeFont()
@@ -725,10 +756,10 @@ public abstract class PDFont implements COSObjectable
      *
      * @param widths The widths of the character codes.
      */
-    public void setWidths( List<Float> widths )
+    public void setWidths( List<Float> widthsList )
     {
-        this.widths = widths;
-        font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( this.widths ) );
+        widths = widthsList;
+        font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( widths ) );
     }
 
     /**
@@ -798,8 +829,8 @@ public abstract class PDFont implements COSObjectable
         int lastChar = getLastChar();
         if (charCode >= firstChar && charCode <= lastChar)
         {
-            List<Float> widths = getWidths();
             // maybe the font doesn't provide any widths
+            getWidths();
             if (widths != null)
             {
                 width = widths.get(charCode-firstChar).floatValue();
@@ -829,15 +860,9 @@ public abstract class PDFont implements COSObjectable
      * Sets hasToUnicode to the given value.
      * @param hasToUnicode the given value for hasToUnicode
      */
-    protected void setHasToUnicode(boolean hasToUnicode)
+    protected void setHasToUnicode(boolean hasToUnicodeValue)
     {
-        this.hasToUnicode = hasToUnicode;
-    }
-
-    public COSString createString(String text) throws IOException
-    {
-        return new COSString(text);
-
+        hasToUnicode = hasToUnicodeValue;
     }
 
 }

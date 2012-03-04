@@ -218,7 +218,7 @@ public class PageDrawer extends PDFStreamEngine
             graphics.setClip(graphicsState.getCurrentClippingPath());
             // the fontSize is no longer needed as it is already part of the transformation
             // we should remove it from the parameter list in the long run
-            font.drawString( text.getCharacter(), graphics, 1, at, x, y );
+            font.drawString( text.getCharacter(), text.getCodePoints(), graphics, 1, at, x, y );
         }
         catch( IOException io )
         {

@@ -91,6 +91,7 @@ public class PDCIDFontType2Font extends PDCIDFont
                 {
                     LOG.info("Using font "+awtFont.getName()+ " instead");
                 }
+                setIsFontSubstituted(true);
             }
         }
         // TODO FontFile3

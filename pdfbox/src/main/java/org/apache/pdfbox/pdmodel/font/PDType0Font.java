@@ -40,10 +40,10 @@ public class PDType0Font extends PDSimpleFont
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDType0Font.class);
+    private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
     private COSArray descendantFontArray;
-    private PDFont descendentFont;
+    private PDFont descendantFont;
     private COSDictionary descendantFontDictionary;
     private Font awtFont;
     /**
@@ -68,11 +68,11 @@ public class PDType0Font extends PDSimpleFont
         {
             try 
             {
-                descendentFont = PDFontFactory.createFont( descendantFontDictionary );
+                descendantFont = PDFontFactory.createFont( descendantFontDictionary );
             }
             catch (IOException exception)
             {
-                log.error("Error while creating the descendant font!");
+                LOG.error("Error while creating the descendant font!");
             }
         }
     }
@@ -84,14 +84,16 @@ public class PDType0Font extends PDSimpleFont
     {
         if (awtFont == null)
         {
-            if (descendentFont != null) 
+            if (descendantFont != null) 
             {
-                awtFont = ((PDSimpleFont)descendentFont).getawtFont();
+                awtFont = ((PDSimpleFont)descendantFont).getawtFont();
             }
             if (awtFont == null)
             {
                 awtFont = FontManager.getStandardFont();
-                log.info("Using font "+awtFont.getName()+ " instead of "+descendentFont.getFontDescriptor().getFontName());
+                LOG.info("Using font "+awtFont.getName()
+                        + " instead of "+descendantFont.getFontDescriptor().getFontName());
+                setIsFontSubstituted(true);
             }
         }
         return awtFont;
@@ -122,7 +124,7 @@ public class PDType0Font extends PDSimpleFont
      */
     public float getFontWidth( byte[] c, int offset, int length ) throws IOException
     {
-        return descendentFont.getFontWidth( c, offset, length );
+        return descendantFont.getFontWidth( c, offset, length );
     }
 
     /**
@@ -138,7 +140,7 @@ public class PDType0Font extends PDSimpleFont
      */
     public float getFontHeight( byte[] c, int offset, int length ) throws IOException
     {
-        return descendentFont.getFontHeight( c, offset, length );
+        return descendantFont.getFontHeight( c, offset, length );
     }
 
     /**
@@ -150,7 +152,7 @@ public class PDType0Font extends PDSimpleFont
      */
     public float getAverageFontWidth() throws IOException
     {
-        return descendentFont.getAverageFontWidth();
+        return descendantFont.getAverageFontWidth();
     }
  
     private COSArray getDescendantFonts()
@@ -167,7 +169,7 @@ public class PDType0Font extends PDSimpleFont
      */
     public float getFontWidth( int charCode ) 
     {
-        return descendentFont.getFontWidth(charCode);
+        return descendantFont.getFontWidth(charCode);
     }
 
     @Override
@@ -182,9 +184,20 @@ public class PDType0Font extends PDSimpleFont
             int result = cmap.lookupCID(c, offset, length);
             if (result != -1) 
             {
-                return descendentFont.cmapEncoding(result, 2, true);
+                return descendantFont.cmapEncoding(result, 2, true);
             }
             return null;
         }
+    }
+    
+    /**
+     * 
+     * Provides the descendant font.
+     * @return the descendant font.
+     * 
+     */
+    protected PDFont getDescendantFont() 
+    {
+        return descendantFont;
     }
 }

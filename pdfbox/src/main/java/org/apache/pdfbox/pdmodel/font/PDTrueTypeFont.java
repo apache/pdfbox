@@ -400,6 +400,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                     {
                         log.info("Using font "+awtFont.getName()+ " instead");
                     }
+                    setIsFontSubstituted(true);
                 }
             }
             else
@@ -429,6 +430,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 // we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
                 log.info("Using font "+awtFont.getName()+ " instead");
+                setIsFontSubstituted(true);
             }
         }
         return awtFont;
