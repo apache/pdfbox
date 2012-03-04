@@ -44,6 +44,7 @@ public class TextPosition
     private float[] widths;
     private float widthOfSpace; // width of a space, in display units
     private String str;
+    private int[] unicodeCP;
     private PDFont font;
     private float fontSize;
     private int fontSizePt;
@@ -148,7 +149,7 @@ public class TextPosition
     {
         this(pageRotation, pageWidthValue, pageHeightValue, textPositionSt,
                 textPositionEnd.getXPosition(), textPositionEnd.getYPosition(),
-                maxFontH, individualWidth, spaceWidth, string, currentFont, fontSizeValue, fontSizeInPt);
+                maxFontH, individualWidth, spaceWidth, string, null, currentFont, fontSizeValue, fontSizeInPt);
     }
 
     /**
@@ -167,6 +168,9 @@ public class TextPosition
      * @param currentFont The current for for this text position.
      * @param fontSizeValue The new font size.
      * @param fontSizeInPt The font size in pt units.
+     * 
+     * @deprecated use {@link #TextPosition(int, float, float, Matrix, float, float, float, float, float, 
+     * String, int[], PDFont, float, int)} insetad
      */
     public TextPosition(
             int pageRotation,
@@ -179,6 +183,44 @@ public class TextPosition
             float individualWidth,
             float spaceWidth,
             String string,
+            PDFont currentFont,
+            float fontSizeValue,
+            int fontSizeInPt
+    )
+    {
+        this(pageRotation, pageWidthValue, pageHeightValue, textPositionSt, endXValue, endYValue,
+                maxFontH, individualWidth, spaceWidth, string, null, currentFont, fontSizeValue, fontSizeInPt);
+    }
+    /**
+     * Constructor.
+     *
+     * @param pageRotation rotation of the page that the text is located in
+     * @param pageWidthValue rotation of the page that the text is located in
+     * @param pageHeightValue rotation of the page that the text is located in
+     * @param textPositionSt TextMatrix for start of text (in display units)
+     * @param endXValue x coordinate of the end position
+     * @param endYValue y coordinate of the end position
+     * @param maxFontH Maximum height of text (in display units)
+     * @param individualWidth The width of the given character/string. (in ? units)
+     * @param spaceWidth The width of the space character. (in display units)
+     * @param string The character to be displayed.
+     * @param codePoints An array containing the codepoints of the given string.
+     * @param currentFont The current font for this text position.
+     * @param fontSizeValue The new font size.
+     * @param fontSizeInPt The font size in pt units.
+     */
+    public TextPosition(
+            int pageRotation,
+            float pageWidthValue,
+            float pageHeightValue,
+            Matrix textPositionSt,
+            float endXValue,
+            float endYValue,
+            float maxFontH,
+            float individualWidth,
+            float spaceWidth,
+            String string,
+            int[] codePoints,
             PDFont currentFont,
             float fontSizeValue,
             int fontSizeInPt
@@ -203,6 +245,7 @@ public class TextPosition
         this.widths = new float[]{individualWidth};
         this.widthOfSpace = spaceWidth;
         this.str = string;
+        this.unicodeCP = codePoints;
         this.font = currentFont;
         this.fontSize = fontSizeValue;
         this.fontSizePt = fontSizeInPt;
@@ -216,6 +259,16 @@ public class TextPosition
     public String getCharacter()
     {
         return str;
+    }
+
+    /**
+     * Return the codepoints of the characters stored in this object.
+     *
+     * @return an array containing all codepoints.
+     */
+    public int[] getCodePoints()
+    {
+        return unicodeCP;
     }
 
     /**

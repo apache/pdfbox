@@ -392,11 +392,13 @@ public class PDFStreamEngine
             // Decode the value to a Unicode character
             codeLength = 1;
             String c = font.encode( string, i, codeLength );
+            int[] codePoints = null;
             if( c == null && i+1<string.length)
             {
                 //maybe a multibyte encoding
                 codeLength++;
                 c = font.encode( string, i, codeLength );
+                codePoints = new int[] {font.getCodeFromArray(string, i, codeLength)};
             }
 
             // the space width has to be transformed into display units
@@ -505,6 +507,7 @@ public class PDFStreamEngine
                             widthText,
                             spaceWidthDisp,
                             c,
+                            codePoints,
                             font,
                             fontSizeText,
                             (int)(fontSizeText * textMatrix.getXScale())

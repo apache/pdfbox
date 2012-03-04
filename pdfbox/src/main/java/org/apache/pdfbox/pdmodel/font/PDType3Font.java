@@ -39,7 +39,7 @@ import java.util.Map;
 public class PDType3Font extends PDSimpleFont
 {
     //A map of character code to java.awt.Image for the glyph
-    private Map images = new HashMap();
+    private Map<Character, Image> images = new HashMap<Character, Image>();
 
     /**
      * Constructor.
@@ -92,26 +92,23 @@ public class PDType3Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
+    public void drawString( String string, int[] codePoints, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
         throws IOException
     {
-        //if( string.equals( "V" )|| string.equals( "o" ) )
+        for(int i=0; i<string.length(); i++)
         {
-            for(int i=0; i<string.length(); i++)
+            //todo need to use image observers and such
+            char c = string.charAt( i );
+            Image image = createImageIfNecessary( c );
+            if( image != null )
             {
-                //todo need to use image observers and such
-                char c = string.charAt( i );
-                Image image = createImageIfNecessary( c );
-                if( image != null )
+                int newWidth = (int)(.12*image.getWidth(null));
+                int newHeight = (int)(.12*image.getHeight(null));
+                if( newWidth > 0 && newHeight > 0 )
                 {
-                    int newWidth = (int)(.12*image.getWidth(null));
-                    int newHeight = (int)(.12*image.getHeight(null));
-                    if( newWidth > 0 && newHeight > 0 )
-                    {
-                        image = image.getScaledInstance( newWidth, newHeight, Image.SCALE_SMOOTH );
-                        g.drawImage( image, (int)x, (int)y, null );
-                        x+=newWidth;
-                    }
+                    image = image.getScaledInstance( newWidth, newHeight, Image.SCALE_SMOOTH );
+                    g.drawImage( image, (int)x, (int)y, null );
+                    x+=newWidth;
                 }
             }
         }
@@ -124,6 +121,6 @@ public class PDType3Font extends PDSimpleFont
      */
     public void setFontMatrix( PDMatrix matrix )
     {
-        font.setItem( "FontMatrix", matrix );
+        font.setItem( COSName.FONT_MATRIX, matrix );
     }
 }
