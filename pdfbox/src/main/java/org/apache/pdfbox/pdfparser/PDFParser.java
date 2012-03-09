@@ -66,7 +66,7 @@ public class PDFParser extends BaseParser
     /** Collects all Xref/trailer objects and resolves them into single
      *  object using startxref reference. 
      */
-    private XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
+    protected XrefTrailerResolver xrefTrailerResolver = new XrefTrailerResolver();
 
     /**
      * Temp file directory.
@@ -659,7 +659,7 @@ public class PDFParser extends BaseParser
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseStartXref() throws IOException
+    protected boolean parseStartXref() throws IOException
     {
         if(pdfSource.peek() != 's')
         {
@@ -686,7 +686,7 @@ public class PDFParser extends BaseParser
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseXrefTable( long startByteOffset ) throws IOException
+    protected boolean parseXrefTable( long startByteOffset ) throws IOException
     {
         if(pdfSource.peek() != 'x')
         {
@@ -767,7 +767,7 @@ public class PDFParser extends BaseParser
      * @return false on parsing error
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseTrailer() throws IOException
+    protected boolean parseTrailer() throws IOException
     {
         if(pdfSource.peek() != 't')
         {
