@@ -19,31 +19,27 @@ package org.apache.pdfbox.io;
 import java.io.IOException;
 
 /**
- * An interface to allow PDF files to be stored completely in memory or
- * to use a scratch file on the disk.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * An interface allowing random access read operations.
  */
-public interface RandomAccess extends RandomAccessRead
+public interface RandomAccessRead extends SequentialRead
 {
 
     /**
-     * Write a byte to the stream.
+     * Seek to a position in the data.
      *
-     * @param b The byte to write.
-     * @throws IOException If there is an IO error while writing.
+     * @param position The position to seek to.
+     * @throws IOException If there is an error while seeking.
      */
-    public void write(int b) throws IOException;
+    public void seek(long position) throws IOException;
 
     /**
-     * Write a buffer of data to the stream.
+     * The total number of bytes that are available.
      *
-     * @param b The buffer to get the data from.
-     * @param offset An offset into the buffer to get the data from.
-     * @param length The length of data to write.
-     * @throws IOException If there is an error while writing the data.
+     * @return The number of bytes available.
+     *
+     * @throws IOException If there is an IO error while determining the
+     * length of the data stream.
      */
-    public void write(byte[] b, int offset, int length) throws IOException;
+    public long length() throws IOException;
 
 }

@@ -19,31 +19,36 @@ package org.apache.pdfbox.io;
 import java.io.IOException;
 
 /**
- * An interface to allow PDF files to be stored completely in memory or
- * to use a scratch file on the disk.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * An interface allowing sequential read operations.
  */
-public interface RandomAccess extends RandomAccessRead
+public interface SequentialRead
 {
 
     /**
-     * Write a byte to the stream.
+     * Release resources that are being held.
      *
-     * @param b The byte to write.
-     * @throws IOException If there is an IO error while writing.
+     * @throws IOException If there is an error closing this resource.
      */
-    public void write(int b) throws IOException;
+    public void close() throws IOException;
 
     /**
-     * Write a buffer of data to the stream.
+     * Read a single byte of data.
      *
-     * @param b The buffer to get the data from.
-     * @param offset An offset into the buffer to get the data from.
-     * @param length The length of data to write.
-     * @throws IOException If there is an error while writing the data.
+     * @return The byte of data that is being read.
+     *
+     * @throws IOException If there is an error while reading the data.
      */
-    public void write(byte[] b, int offset, int length) throws IOException;
+    public int read() throws IOException;
+
+    /**
+     * Read a buffer of data.
+     *
+     * @param b The buffer to write the data to.
+     * @param offset Offset into the buffer to start writing.
+     * @param length The amount of data to attempt to read.
+     * @return The number of bytes that were actually read.
+     * @throws IOException If there was an error while reading the data.
+     */
+    public int read(byte[] b, int offset, int length) throws IOException;
 
 }
