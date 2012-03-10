@@ -31,7 +31,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.tika.io.IOExceptionWithCause;
 
 /**
  * This is the used for the FlateDecode filter.
@@ -136,7 +135,9 @@ public class FlateFilter implements Filter
             // if the stream is corrupt a DataFormatException may occur
             LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
             // re-throw the exception, caller has to handle it
-            throw new IOExceptionWithCause(exception);
+            IOException io = new IOException();
+            io.initCause(exception);
+            throw io;
         }
         finally
         {
