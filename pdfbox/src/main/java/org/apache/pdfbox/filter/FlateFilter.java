@@ -21,10 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.EOFException;
+import java.util.zip.DataFormatException;
 import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.ZipException;
+import java.util.zip.Inflater;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +31,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.tika.io.IOExceptionWithCause;
 
 /**
  * This is the used for the FlateDecode filter.
@@ -81,7 +81,6 @@ public class FlateFilter implements Filter
         int colors = -1;
         int bitsPerPixel = -1;
         int columns = -1;
-        InflaterInputStream decompressor = null;
         ByteArrayInputStream bais = null;
         ByteArrayOutputStream baos = null;
         if (dict!=null)
@@ -97,87 +96,50 @@ public class FlateFilter implements Filter
 
         try
         {
-            // Decompress data to temporary ByteArrayOutputStream
-            decompressor = new InflaterInputStream(compressedData);
-            int amountRead;
-            int mayRead = compressedData.available();
-
-            if (mayRead > 0)
+            baos = decompress(compressedData);
+            // Decode data using given predictor
+            if (predictor==-1 || predictor == 1 )
             {
-                byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
-
-                // Decode data using given predictor
-                if (predictor==-1 || predictor == 1 )
-                {
-                    try
-                    {
-                        // decoding not needed
-                        while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
-                        {
-                            result.write(buffer, 0, amountRead);
-                        }
-                    }
-                    catch (ZipException exception)
-                    {
-                        // if the stream is corrupt an ZipException may occur
-                        LOG.error("FlateFilter: stop reading corrupt stream due to a ZipException");
-                        // re-throw the exception, caller has to handle it
-                        throw exception;
-                    }
-                    catch (EOFException exception)
-                    {
-                        // if the stream is corrupt an EOFException may occur
-                        LOG.error("FlateFilter: stop reading corrupt stream due to an EOFException");
-                        // re-throw the exception, caller has to handle it
-                        throw exception;
-                    }
-                }
-                else
-                {
-                    /*
-                     * Reverting back to default values
-                     */
-                    if( colors == -1 )
-                    {
-                        colors = 1;
-                    }
-                    if( bitsPerPixel == -1 )
-                    {
-                        bitsPerPixel = 8;
-                    }
-                    if( columns == -1 )
-                    {
-                        columns = 1;
-                    }
-
-                    baos = new ByteArrayOutputStream();
-                    while ((amountRead = decompressor.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
-                    {
-                        baos.write(buffer, 0, amountRead);
-                    }
-                    baos.flush();
-
-                    // Copy data to ByteArrayInputStream for reading
-                    bais = new ByteArrayInputStream(baos.toByteArray());
-                    baos.close();
-                    baos = null;
-
-                    byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
-                    bais.close();
-                    bais = null;
-
-                    result.write(decodedData);
-                }
+                result.write(baos.toByteArray()); 
             }
+            else
+            {
+                /*
+                 * Reverting back to default values
+                 */
+                if( colors == -1 )
+                {
+                    colors = 1;
+                }
+                if( bitsPerPixel == -1 )
+                {
+                    bitsPerPixel = 8;
+                }
+                if( columns == -1 )
+                {
+                    columns = 1;
+                }
 
+                // Copy data to ByteArrayInputStream for reading
+                bais = new ByteArrayInputStream(baos.toByteArray());
+
+                byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
+                bais.close();
+                bais = null;
+
+                result.write(decodedData);
+            }
             result.flush();
+        } 
+        catch (DataFormatException exception) 
+        {
+            // if the stream is corrupt a DataFormatException may occur
+            LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
+            // re-throw the exception, caller has to handle it
+            throw new IOExceptionWithCause(exception);
         }
         finally
         {
-            if (decompressor != null)
-            {
-                decompressor.close();
-            }
             if (bais != null)
             {
                 bais.close();
@@ -189,6 +151,38 @@ public class FlateFilter implements Filter
         }
     }
 
+    // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably 
+    // missing Z_STREAM_END, see PDFBOX-1232 for details
+    private ByteArrayOutputStream decompress(InputStream in) throws IOException, DataFormatException 
+    { 
+        ByteArrayOutputStream out = new ByteArrayOutputStream(); 
+        byte[] buf = new byte[2048]; 
+        int read = in.read(buf); 
+        if(read > 0) 
+        { 
+            Inflater inflater = new Inflater(); 
+            inflater.setInput(buf,0,read); 
+            byte[] res = new byte[2048]; 
+            while(true) 
+            { 
+                int resRead = inflater.inflate(res); 
+                if(resRead != 0) 
+                { 
+                    out.write(res,0,resRead); 
+                    continue; 
+                } 
+                if(inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
+                {
+                    break;
+                } 
+                read = in.read(buf); 
+                inflater.setInput(buf,0,read); 
+            }
+        }
+        out.close();
+        return out;
+    } 
+    
     private byte[] decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream data)
         throws IOException
     {
