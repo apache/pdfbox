@@ -225,8 +225,8 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
         buildUpTerminating(BLACK_TERMINATING, BLACK_LOOKUP_TREE_ROOT, false);
         buildUpMakeUp(WHITE_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
         buildUpMakeUp(BLACK_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
-        buildUpMakeUp(LONG_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
-        buildUpMakeUp(LONG_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
+        buildUpMakeUpLong(LONG_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
+        buildUpMakeUpLong(LONG_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
         LookupTreeNode eolNode = new EndOfLineTreeNode();
         addLookupTreeNode(EOL_STARTER, WHITE_LOOKUP_TREE_ROOT, eolNode);
         addLookupTreeNode(EOL_STARTER, BLACK_LOOKUP_TREE_ROOT, eolNode);
@@ -246,6 +246,15 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
         for (int len = 0, c = codes.length; len < c; len++)
         {
             LookupTreeNode leaf = new MakeUpTreeNode((len + 1) * 64);
+            addLookupTreeNode(codes[len], root, leaf);
+        }
+    }
+
+    private static void buildUpMakeUpLong(short[] codes, NonLeafLookupTreeNode root)
+    {
+        for (int len = 0, c = codes.length; len < c; len++)
+        {
+            LookupTreeNode leaf = new MakeUpTreeNode((len + 28) * 64);
             addLookupTreeNode(codes[len], root, leaf);
         }
     }
