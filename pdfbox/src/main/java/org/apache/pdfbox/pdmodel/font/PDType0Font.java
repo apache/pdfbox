@@ -184,7 +184,7 @@ public class PDType0Font extends PDSimpleFont
             int result = cmap.lookupCID(c, offset, length);
             if (result != -1) 
             {
-                return descendantFont.cmapEncoding(result, 2, true);
+                return descendantFont.cmapEncoding(result, 2, true, cmap);
             }
             return null;
         }

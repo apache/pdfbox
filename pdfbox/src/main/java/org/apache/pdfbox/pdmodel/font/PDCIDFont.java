@@ -322,7 +322,7 @@ public abstract class PDCIDFont extends PDSimpleFont
             {
                 String resourceName = resourceRootCMAP + cidSystemInfo;
                 try {
-                    parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
+                    cmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
                     if( cmap == null)
                     {
                         log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'" );
@@ -346,7 +346,7 @@ public abstract class PDCIDFont extends PDSimpleFont
         String result = null;
         if (cmap != null)
         {
-            result = cmapEncoding(getCodeFromArray( c, offset, length ), length, true);
+            result = cmapEncoding(getCodeFromArray( c, offset, length ), length, true, cmap);
         }
         else
         {
