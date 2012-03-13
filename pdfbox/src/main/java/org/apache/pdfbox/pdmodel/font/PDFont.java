@@ -85,6 +85,11 @@ public abstract class PDFont implements COSObjectable
      */
     protected CMap cmap = null;
 
+    /**
+     * The CMap holding the ToUnicode mapping 
+     */
+    protected CMap toUnicodeCmap = null;
+    
     private boolean hasToUnicode = false;
 
     protected static Map<String, CMap> cmapObjects =
@@ -472,15 +477,15 @@ public abstract class PDFont implements COSObjectable
      * @return The value of the encoded character.
      * @throws IOException if something went wrong
      */
-    protected String cmapEncoding( int code, int length, boolean isCIDFont ) throws IOException
+    protected String cmapEncoding( int code, int length, boolean isCIDFont, CMap sourceCmap ) throws IOException
     {
         String retval = null;
-        if (cmap != null)
+        if (sourceCmap != null)
         {
-            retval = cmap.lookup(code, length);
+            retval = sourceCmap.lookup(code, length);
             if (retval == null && isCIDFont)
             {
-                retval = cmap.lookupCID(code);
+                retval = sourceCmap.lookupCID(code);
             }
         }
         return retval;
@@ -500,9 +505,13 @@ public abstract class PDFont implements COSObjectable
     {
         String retval = null;
         int code = getCodeFromArray( c, offset, length );
-        if( cmap != null )
+        if( toUnicodeCmap != null )
         {
-            retval = cmapEncoding(code, length, false);
+            retval = cmapEncoding(code, length, false, toUnicodeCmap);
+        }
+        if( retval == null && cmap != null )
+        {
+            retval = cmapEncoding(code, length, false, cmap);
         }
 
         // there is no cmap but probably an encoding with a suitable mapping
@@ -568,22 +577,24 @@ public abstract class PDFont implements COSObjectable
         return retval;
     }
 
-    protected void parseCmap( String cmapRoot, InputStream cmapStream)
+    protected CMap parseCmap( String cmapRoot, InputStream cmapStream)
     {
+        CMap targetCmap = null;
         if( cmapStream != null )
         {
             CMapParser parser = new CMapParser();
             try
             {
-                cmap = parser.parse( cmapRoot, cmapStream );
+                targetCmap = parser.parse( cmapRoot, cmapStream );
                 // limit the cache to external CMaps
                 if (cmapRoot != null)
                 {
-                    cmapObjects.put( cmap.getName(), cmap );
+                    cmapObjects.put( targetCmap.getName(), targetCmap );
                 }
             }
             catch (IOException exception) {}
         }
+        return targetCmap;
     }
 
     /**

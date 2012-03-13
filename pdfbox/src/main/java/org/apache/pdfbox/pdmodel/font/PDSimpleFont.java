@@ -398,7 +398,7 @@ public abstract class PDSimpleFont extends PDFont
                     COSStream encodingStream = (COSStream)encoding;
                     try 
                     {
-                        parseCmap( null, encodingStream.getUnfilteredStream() );
+                        cmap = parseCmap( null, encodingStream.getUnfilteredStream() );
                     }
                     catch(IOException exception) 
                     {
@@ -426,7 +426,7 @@ public abstract class PDSimpleFont extends PDFont
             String resourceName = resourceRootCMAP + cmapName;
             try 
             {
-                parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
+                cmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
                 if( cmap == null && encodingName == null)
                 {
                     LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
@@ -451,32 +451,32 @@ public abstract class PDSimpleFont extends PDFont
             {
                 try 
                 {
-                    parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream());
+                    toUnicodeCmap = parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream());
                 }
                 catch(IOException exception) 
                 {
-                    LOG.error("Error: Could not load embedded CMAP" );
+                    LOG.error("Error: Could not load embedded ToUnicode CMap" );
                 }
             }
             else if ( toUnicode instanceof COSName)
             {
                 encodingName = (COSName)toUnicode;
-                cmap = cmapObjects.get( encodingName.getName() );
-                if (cmap == null) 
+                toUnicodeCmap = cmapObjects.get( encodingName.getName() );
+                if (toUnicodeCmap == null) 
                 {
                     cmapName = encodingName.getName();
                     String resourceName = resourceRootCMAP + cmapName;
                     try 
                     {
-                        parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
+                        toUnicodeCmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
                     }
                     catch(IOException exception) 
                     {
-                        LOG.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+                        LOG.error("Error: Could not find predefined ToUnicode CMap file for '" + cmapName + "'" );
                     }
-                    if( cmap == null)
+                    if( toUnicodeCmap == null)
                     {
-                        LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                        LOG.error("Error: Could not parse predefined ToUnicode CMap file for '" + cmapName + "'" );
                     }
                 }
             }
