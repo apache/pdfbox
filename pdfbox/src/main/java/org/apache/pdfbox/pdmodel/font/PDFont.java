@@ -529,6 +529,15 @@ public abstract class PDFont implements COSObjectable
         return retval;
     }
 
+    public int encodeToCID( byte[] c, int offset, int length ) throws IOException
+    {
+        int code = -1;
+        if (encode(c, offset, length) != null) {
+        	code = getCodeFromArray( c, offset, length );
+        }
+        return code;
+    }
+    
     private static final String[] SINGLE_CHAR_STRING = new String[256];
     private static final String[][] DOUBLE_CHAR_STRING = new String[256][256];
     static

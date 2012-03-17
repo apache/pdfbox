@@ -118,17 +118,26 @@ public class PDType1CFont extends PDSimpleFont
 
         return character;
     }
-
+    
+    public int encodeToCID( byte[] bytes, int offset, int length )
+    {
+      if (length > 2)
+      {
+          return -1;
+      }
+      int code = bytes[offset] & 0xff;
+      if (length == 2)
+      {
+          code = code * 256 + bytes[offset+1] & 0xff;
+      }
+      return code;
+    }
+    
     private String getCharacter( byte[] bytes, int offset, int length )
     {
-        if (length > 2)
-        {
-            return null;
-        }
-        int code = bytes[offset] & 0xff;
-        if (length == 2)
-        {
-            code = code * 256 + bytes[offset+1] & 0xff;
+        int code = encodeToCID(bytes, offset, length);
+        if (code == -1) {
+        	return null;
         }
         return (String)this.codeToCharacter.get(code);
     }
