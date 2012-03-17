@@ -133,13 +133,9 @@ public class Type1FontValidator extends SimpleFontValidator {
 	 */
 	boolean checkFontName() {
 		String fontName = this.pFontDesc.getFontName();
-		String baseName = this.pFont.getBaseFont();
-
-		// For a Type1 Font, the FontName is the same as the BaseName.
-		if (fontName == null || (!fontName.equals(baseName))) {
+		if (fontName == null) {
 			this.fontContainer
-			.addError(new ValidationResult.ValidationError(
-					ERROR_FONTS_DESCRIPTOR_INVALID,
+			.addError(new ValidationResult.ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
 			"The FontName in font descriptor isn't the same as the BaseFont in the Font dictionary"));
 			return false;
 		}

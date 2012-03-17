@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -101,8 +102,7 @@ public class ComplexPropertyContainer extends AbstractField {
 	/**
 	 * Add a property to the current structure
 	 * 
-	 * @param obj
-	 *            the property to add
+	 * @param obj the property to add
 	 */
 	public void addProperty(AbstractField obj) {
 		if (containsProperty(obj)) {
@@ -196,7 +196,17 @@ public class ComplexPropertyContainer extends AbstractField {
 	public void removeProperty(AbstractField property) {
 		if (containsProperty(property)) {
 			properties.remove(property);
-			element.removeChild(property.getElement());
+			if (element.hasChildNodes()) {
+				NodeList nodes = element.getChildNodes();
+				boolean canRemove = false;
+				for (int i = 0; i < nodes.getLength(); ++i) {
+					if (nodes.item(i).equals(property.getElement())) {
+						canRemove = true;
+					}
+				}
+				// remove out of the loop to avoid concurrent exception
+				if (canRemove)element.removeChild(property.getElement());
+			}
 		}
 	}
 

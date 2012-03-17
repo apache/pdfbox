@@ -541,7 +541,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		PDFontDescriptorDictionary pfDescriptor = new PDFontDescriptorDictionary(
 				fontDescDic);
 		boolean isValid = checkFontDescriptorMandatoryFields(pfDescriptor);
-		isValid = isValid && checkCIDKeyedFontName(pfDescriptor, true);
+		isValid = isValid && checkCIDKeyedFontName(pfDescriptor);
 		isValid = isValid && checkFontFileElement_CIDFontType0(pfDescriptor);
 		isValid = isValid && checkCIDSet(pfDescriptor);
 		return isValid;
@@ -557,30 +557,14 @@ public class CompositeFontValidator extends AbstractFontValidator {
 	 * 
 	 * @param pfDescriptor
 	 *          The FontDescriptor dictionary which contains the FontName to check
-	 * @param checkConsistency
-	 *          true if the font name must be consistent with the BaseName of the
-	 *          Font dictionary
 	 * @return
 	 */
-	protected boolean checkCIDKeyedFontName(
-			PDFontDescriptorDictionary pfDescriptor, boolean checkConsistency) {
+	protected boolean checkCIDKeyedFontName(PDFontDescriptorDictionary pfDescriptor) {
 		String fontName = pfDescriptor.getFontName();
-		String baseName = this.pFont.getBaseFont();
-
 		if (fontName == null) {
 			this.fontContainer.addError(new ValidationResult.ValidationError(
 					ERROR_FONTS_DESCRIPTOR_INVALID,
 					"The FontName in font descriptor is missing"));
-			return false;
-		}
-
-		if (checkConsistency
-				&& !(fontName.equals(baseName) || fontName.contains(baseName) || baseName
-						.contains(fontName))) {
-			this.fontContainer
-			.addError(new ValidationResult.ValidationError(
-					ERROR_FONTS_DESCRIPTOR_INVALID,
-					"The FontName in font descriptor isn't the same as the BaseFont in the Font dictionary"));
 			return false;
 		}
 		return true;
@@ -794,7 +778,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 		PDFontDescriptorDictionary pfDescriptor = new PDFontDescriptorDictionary(
 				fontDescDic);
 		boolean isValid = checkFontDescriptorMandatoryFields(pfDescriptor);
-		isValid = isValid && checkCIDKeyedFontName(pfDescriptor, false);
+		isValid = isValid && checkCIDKeyedFontName(pfDescriptor);
 		isValid = isValid && checkFontFileElement_CIDFontType2(pfDescriptor);
 		isValid = isValid && checkCIDSet(pfDescriptor);
 		return isValid;
