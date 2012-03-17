@@ -229,7 +229,14 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	protected void validRenderingIntent(PDFOperator operator, List arguments)
 			throws ContentStreamException {
 		if ("ri".equals(operator.getOperation())) {
-			if (!RenderingIntents.contains(arguments.get(0))) {
+			String riArgument0 = "";
+			if (arguments.get(0) instanceof COSName) {
+				riArgument0 = ((COSName)arguments.get(0)).getName();
+			} else if (arguments.get(0) instanceof String) {
+				riArgument0 = (String)arguments.get(0);
+			}
+
+			if (!RenderingIntents.contains(riArgument0)) {
 				throwContentStreamException("Unexpected value '" + arguments.get(0)
 						+ "' for ri operand. ", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
 			}

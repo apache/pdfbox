@@ -332,26 +332,17 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 
 		int codeLength = 1;
 		for (int i = 0; i < string.length; i += codeLength) {
-			// Decode the value to a Unicode character
+			int cid = -1; 
 			codeLength = 1;
-			String c = null;
 			try {
-				c = font.encode(string, i, codeLength);
-				if (c == null && i + 1 < string.length) {
+				cid = font.encodeToCID(string, i, codeLength);
+				if (cid == -1 && i + 1 < string.length) {
 					// maybe a multibyte encoding
 					codeLength++;
-					c = font.encode(string, i, codeLength);
+					cid = font.encodeToCID(string, i, codeLength);
 				}
 			} catch (IOException e) {
 				throwContentStreamException("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR);
-			}
-
-			// ---- According to the length of the character encoding,
-			// convert the character to CID
-			int cid = 0;
-			for (int j = 0; j < codeLength; j++) {
-				cid <<= 8;
-				cid += ((string[i + j] + 256) % 256);
 			}
 
 			try {

@@ -22,12 +22,9 @@
 package org.apache.padaf.xmpbox.type;
 
 
+import org.apache.padaf.xmpbox.SaveMetadataHelper;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
-import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
-import org.apache.padaf.xmpbox.type.TextType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,7 +122,7 @@ public class ComplexMetadataPropertyTest {
 		Assert.assertFalse(complexLi.containsProperty(li1));
 
 		tmpSchem.addProperty(complexLi);
-		// SaveMetadataHelper.serialize(metadata, true, System.out);
+//		SaveMetadataHelper.serialize(metadata, true, System.out);
 	}
 
 	/**
