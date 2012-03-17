@@ -376,12 +376,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 			List<ValidationError> result) {
 		PDIndexed indexed = (PDIndexed) pdcs;
 		try {
-			if (iccpw == null) {
-				result.add(new ValidationError(
-						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING, "DestOutputProfile is missing"));
-				return false;
-			}
-
 			PDColorSpace based = indexed.getBaseColorSpace();
 			ColorSpaces cs = ColorSpaces.valueOf(based.getName());
 			if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT) {

@@ -59,28 +59,7 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper {
         .add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, "Pattern ColorSpace is forbidden"));
     return false;
   }
-
-  /**
-   * This method updates the given list with a ValidationError
-   * (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN) and returns false.
-   */
-  protected boolean processCalibratedColorSpace(List<ValidationError> result) {
-    result
-        .add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, "Calibrated ColorSpace is forbidden"));
-    return false;
-  }
-
-  /**
-   * This method updates the given list with a ValidationError
-   * (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN) and returns false.
-   */
-  protected boolean processICCBasedColorSpace(PDColorSpace pdcs,
-      List<ValidationError> result) {
-    result
-        .add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, "ICCBased ColorSpace is forbidden"));
-    return false;
-  }
-
+  
   /**
    * This method updates the given list with a ValidationError
    * (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN) and returns false.
@@ -102,42 +81,22 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper {
       List<ValidationError> result) {
     PDIndexed indexed = (PDIndexed) pdcs;
     try {
-      if (iccpw == null) {
-        result.add(new ValidationError(
-            ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING, "DestOutputProfile is missing"));
-        return false;
-      }
-
       PDColorSpace based = indexed.getBaseColorSpace();
       ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-      switch (cs) {
-      case DeviceCMYK:
-      case DeviceCMYK_SHORT:
-      case DeviceRGB:
-      case DeviceRGB_SHORT:
-      case DeviceGray:
-      case DeviceGray_SHORT:
-        return processAllColorSpace(based, result);
-      default:
-        result.add(new ValidationError(
-            ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, cs.getLabel() + " ColorSpace is forbidden"));
+      switch (cs) {      
+      case Indexed:
+    	case Indexed_SHORT:
+    	case Pattern:
+    		result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, cs.getLabel() + " ColorSpace is forbidden"));
         return false;
+        
+    	default:
+        return processAllColorSpace(based, result);
       }
 
     } catch (IOException e) {
       result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE, "Unable to read Indexed Color Space : " + e.getMessage()));
       return false;
     }
-  }
-
-  /**
-   * This method updates the given list with a ValidationError
-   * (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN) and returns false.
-   */
-  protected boolean processSeparationColorSpace(PDColorSpace pdcs,
-      List<ValidationError> result) {
-    result
-        .add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, "Separation ColorSpace is forbidden"));
-    return false;
   }
 }
