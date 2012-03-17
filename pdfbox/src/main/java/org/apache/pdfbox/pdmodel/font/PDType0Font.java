@@ -175,21 +175,23 @@ public class PDType0Font extends PDSimpleFont
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
+    	String retval = null;
         if (hasToUnicode())
         {
-            return super.encode(c, offset, length);
+            retval = super.encode(c, offset, length);
         }
-        else
+        
+        if (retval == null)
         {
             int result = cmap.lookupCID(c, offset, length);
             if (result != -1) 
             {
-                return descendantFont.cmapEncoding(result, 2, true, cmap);
+                retval = descendantFont.cmapEncoding(result, 2, true, cmap);
             }
-            return null;
         }
+        return retval;
     }
-    
+
     /**
      * 
      * Provides the descendant font.

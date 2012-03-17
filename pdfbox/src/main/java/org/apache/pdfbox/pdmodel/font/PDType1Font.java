@@ -414,6 +414,16 @@ public class PDType1Font extends PDSimpleFont
         }
     }
     
+    public int encodeToCID( byte[] c, int offset, int length ) throws IOException {
+      if (type1CFont != null && getFontEncoding() == null)
+      {
+          return type1CFont.encodeToCID(c, offset, length);
+      }
+      else
+      {
+          return super.encodeToCID(c, offset, length);
+      }
+    }
     /**
      * {@inheritDoc}
      */
