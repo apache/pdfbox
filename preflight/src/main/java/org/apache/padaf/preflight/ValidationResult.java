@@ -235,9 +235,11 @@ public class ValidationResult {
 		 */
 		public ValidationError(String errorCode, String details) {
 			this(errorCode);
-			StringBuilder sb = new StringBuilder(this.details.length()+details.length()+2);
-			sb.append(this.details).append(", ").append(details);
-			this.details = sb.toString();
+			if (details != null) {
+				StringBuilder sb = new StringBuilder(this.details.length()+details.length()+2);
+				sb.append(this.details).append(", ").append(details);
+				this.details = sb.toString(); 
+			} 
 		}
 
 		/**
