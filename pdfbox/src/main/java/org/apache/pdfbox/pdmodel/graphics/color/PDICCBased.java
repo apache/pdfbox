@@ -16,18 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.operator.pagedrawer.Invoke;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -51,6 +52,13 @@ import java.util.List;
  */
 public class PDICCBased extends PDColorSpace
 {
+   
+    
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDICCBased.class);
+
     /**
      * The name of this color space.
      */
@@ -59,6 +67,11 @@ public class PDICCBased extends PDColorSpace
     //private COSArray array;
     private PDStream stream;
 
+    /**
+     *  Number of color components.
+     */
+    private int numberOfComponents = -1;
+    
     /**
      * Default constructor, creates empty stream.
      *
@@ -129,6 +142,24 @@ public class PDICCBased extends PDColorSpace
             ICC_Profile iccProfile = ICC_Profile.getInstance( profile );
             cSpace = new ICC_ColorSpace( iccProfile );
         }
+        catch(IllegalArgumentException excpetion)
+        {
+            LOG.debug("Can't read ICC-profile, using alterbnate colorspace instead");
+            List colorspacesList = getAlternateColorSpaces();
+            if (colorspacesList != null && colorspacesList.size() > 0) 
+            {
+                Object[] colorspaces = colorspacesList.toArray();
+                int numOfComponents = getNumberOfComponents();
+                for (int i=0;i<colorspaces.length;i++)
+                {
+                    if (numberOfComponents == ((PDColorSpace)colorspaces[i]).getNumberOfComponents())
+                    {
+                        cSpace = ((PDColorSpace)colorspaces[i]).createColorSpace();
+                        break;
+                    }
+                }
+            }
+        }
         finally
         {
             if( profile != null )
@@ -151,7 +182,25 @@ public class PDICCBased extends PDColorSpace
     public ColorModel createColorModel( int bpc ) throws IOException
     {
 
-            int[] nbBits = { bpc, bpc, bpc, bpc }; //added 4th bpc to handle CMYK
+            int[] nbBits;
+            int numOfComponents = getNumberOfComponents();
+            switch (numOfComponents) 
+            {
+                case 1:
+                    // DeviceGray
+                    nbBits = new int[]{ bpc };
+                    break;
+                case 3:
+                    // DeviceRGB
+                    nbBits = new int[]{ bpc, bpc, bpc };
+                    break;
+                case 4:
+                    // DeviceCMYK
+                    nbBits = new int[]{ bpc, bpc, bpc, bpc };
+                    break;
+                default:
+                    throw new IOException( "Unknown colorspace number of components:" + numOfComponents );
+            }
             ComponentColorModel componentColorModel =
                     new ComponentColorModel( getJavaColorSpace(),
                                              nbBits,
@@ -159,7 +208,6 @@ public class PDICCBased extends PDColorSpace
                                              false,
                                              Transparency.OPAQUE,
                                              DataBuffer.TYPE_BYTE );
-
             return componentColorModel;
         
     }
@@ -174,8 +222,11 @@ public class PDICCBased extends PDColorSpace
      */
     public int getNumberOfComponents() throws IOException
     {
-        COSNumber n = (COSNumber)stream.getStream().getDictionaryObject( COSName.N );
-        return n.intValue();
+        if (numberOfComponents < 0)
+        {
+            numberOfComponents = stream.getStream().getInt(COSName.N);
+        }
+        return numberOfComponents;
     }
 
     /**
@@ -185,6 +236,7 @@ public class PDICCBased extends PDColorSpace
      */
     public void setNumberOfComponents( int n )
     {
+        numberOfComponents = n;
         stream.getStream().setInt( COSName.N, n );
     }
 
