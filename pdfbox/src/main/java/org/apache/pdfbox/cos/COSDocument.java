@@ -398,7 +398,7 @@ public class COSDocument extends COSBase
      */
     public COSArray getDocumentID()
     {
-        return (COSArray) getTrailer().getItem(COSName.ID);
+        return (COSArray) getTrailer().getDictionaryObject(COSName.ID);
     }
 
     /**
