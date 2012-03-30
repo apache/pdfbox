@@ -48,6 +48,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceNAttributes;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
@@ -337,17 +338,19 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 				res = processAllColorSpace(altColor, result);
 			}
 
-			Map colorants = deviceN.getAttributes().getColorants();
 			int numberOfColorants = 0;
-			if (colorants != null) {
-				numberOfColorants = colorants.size();
-				for (Object col : colorants.values()) {
-					if (col != null) {
-						res = res && processAllColorSpace((PDColorSpace) col, result);
+			PDDeviceNAttributes attr = deviceN.getAttributes();
+			if (attr != null) {
+				Map colorants = attr.getColorants();
+				if (colorants != null) {
+					numberOfColorants = colorants.size();
+					for (Object col : colorants.values()) {
+						if (col != null) {
+							res = res && processAllColorSpace((PDColorSpace) col, result);
+						}
 					}
 				}
 			}
-
 			int numberOfComponents = deviceN.getNumberOfComponents();
 			if (numberOfColorants > MAX_DEVICE_N_LIMIT || numberOfComponents > MAX_DEVICE_N_LIMIT ) {
 				result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_TOO_MANY_COMPONENTS_DEVICEN, "DeviceN has too many tint components or colorants"));  

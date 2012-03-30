@@ -90,13 +90,11 @@ public class ShadingPattern implements XObjectValidator {
    * @return the ShadingPattern dictionary
    */
   protected COSDictionary getShadingDictionary(List<ValidationError> errors) {
-    if (!"Shading".equals(pattern.getNameAsString(COSName
-        .getPDFName(DICTIONARY_KEY_TYPE)))) {
-      COSBase shading = pattern
-          .getItem(COSName.getPDFName(PATTERN_KEY_SHADING));
+    if (pattern.getItem(COSName.getPDFName(PATTERN_KEY_SHADING_TYPE)) == null 
+    		&& !"Shading".equals(pattern.getNameAsString(COSName.getPDFName(DICTIONARY_KEY_TYPE)))) {
+      COSBase shading = pattern.getItem(COSName.getPDFName(PATTERN_KEY_SHADING));
       if (shading == null) {
-        errors
-            .add(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION));
+        errors.add(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION));
         return null;
       }
       return COSUtils.getAsDictionary(shading, cosDoc);

@@ -298,7 +298,7 @@ public class CatalogValidationHelper extends AbstractValidationHelper {
 					continue;
 				}
 
-				// TODO When Lazy mode will be added, this block should be uncommented to set result as warning.
+				// TODO [LAZY] When Lazy mode will be added, this block should be uncommented to set result as warning.
 //				if (!isStandardICCCharacterization(outputConditionIdentifier)) {
 //					String info = dictionary.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
 //					if (info == null || "".equals(info)) {
