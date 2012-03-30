@@ -141,21 +141,21 @@ public class CFFFontROS extends CFFFont {
 	/**
 	 * Returns the Width value of the given Glyph identifier
 	 * 
-	 * @param SID
+	 * @param CID
 	 * @return -1 if the SID is missing from the Font.
 	 * @throws IOException
 	 */
-	public int getWidth(int SID) throws IOException {
+	public int getWidth(int CID) throws IOException {
 		// ---- search the right FDArray index in the FDSelect according to the Character identifier
 		// 		this index will be used to access the private dictionary which contains useful values 
 		//		to compute width.
-		int fdArrayIndex = this.fdSelect.getFd(SID);
-		if (fdArrayIndex == -1 && SID == 0 ) { // --- notdef char
-			return super.getWidth(SID);
+		int fdArrayIndex = this.fdSelect.getFd(CID);
+		if (fdArrayIndex == -1 && CID == 0 ) { // --- notdef char
+			return super.getWidth(CID);
 		} else if (fdArrayIndex == -1) {
 			return 1000;
 		}
-
+		
 		Map<String, Object> fontDict = this.fontDictionaries.get(fdArrayIndex);
 		Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
 
@@ -163,7 +163,7 @@ public class CFFFontROS extends CFFFont {
 		int defaultWidth = privDict.containsKey("defaultWidthX") ? ((Number)privDict.get("defaultWidthX")).intValue() : 1000 ;
 
 		for (Mapping m : getMappings() ){
-			if (m.getSID() == SID) {
+			if (m.getSID() == CID) {
 
 				CharStringRenderer csr = null;
 				Number charStringType = (Number)getProperty("CharstringType");
@@ -183,7 +183,7 @@ public class CFFFontROS extends CFFFont {
 			}
 		}
 
-		// ---- Width not found, return the default width
-		return defaultWidth;
+		// ---- CID Width not found, return the notdef width
+		return getNotDefWidth(defaultWidth, nominalWidth);
 	}
 }
