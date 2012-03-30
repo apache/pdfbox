@@ -63,7 +63,9 @@ public class CFFType0FontContainer extends AbstractFontContainer {
 			}
 		}
 
-		if (!cidFound) {
+		if (!cidFound && cid != 0) { 
+			// Cid 0 is commonly used as the NotDef Glyph. this glyph can be used as Space.
+			// IN PDF/A-1 the Notdef glyph can be used as space. Not in PDF/A-2 
 			GlyphException ge = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, cid, 
 																							"CID " + cid + " is missing from the Composite Font format \"" 
 																							+ this.font.getBaseFont()+"\""	);
