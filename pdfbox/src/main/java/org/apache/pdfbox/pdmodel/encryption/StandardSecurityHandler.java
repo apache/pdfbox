@@ -149,6 +149,30 @@ public class StandardSecurityHandler extends SecurityHandler
         document = doc;
 
         PDEncryptionDictionary dictionary = document.getEncryptionDictionary();
+        COSArray documentIDArray = document.getDocument().getDocumentID();
+        
+        prepareForDecryption(dictionary, documentIDArray, decryptionMaterial);
+        
+        this.proceedDecryption();
+    }
+
+    /**
+     * Prepares everything to decrypt the document.
+     *
+     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
+     * called from there. Only if decryption of single objects is needed this should be called instead.
+     *
+     * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
+     * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()}
+     * @param decryptionMaterial Information used to decrypt the document.
+     *
+     * @throws IOException If there is an error accessing data.
+     * @throws CryptographyException If there is an error with decryption.
+     */
+    public void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
+    																 DecryptionMaterial decryptionMaterial)
+        throws CryptographyException, IOException
+    {
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
         {
             throw new CryptographyException("Provided decryption material is not compatible with the document");
@@ -162,13 +186,12 @@ public class StandardSecurityHandler extends SecurityHandler
             password = "";
         }
 
-        int dicPermissions = dictionary.getPermissions();
-        int dicRevision = dictionary.getRevision();
-        int dicLength = dictionary.getLength()/8;
+        int dicPermissions = encDictionary.getPermissions();
+        int dicRevision = encDictionary.getRevision();
+        int dicLength = encDictionary.getLength()/8;
 
         //some documents may have not document id, see
         //test\encryption\encrypted_doc_no_id.pdf
-        COSArray documentIDArray = document.getDocument().getDocumentID();
         byte[] documentIDBytes = null;
         if( documentIDArray != null && documentIDArray.size() >= 1 )
         {
@@ -181,10 +204,10 @@ public class StandardSecurityHandler extends SecurityHandler
         }
 
         // we need to know whether the meta data was encrypted for password calculation
-        boolean encryptMetadata = dictionary.isEncryptMetaData();
+        boolean encryptMetadata = encDictionary.isEncryptMetaData();
         
-        byte[] u = dictionary.getUserKey();
-        byte[] o = dictionary.getOwnerKey();
+        byte[] u = encDictionary.getUserKey();
+        byte[] o = encDictionary.getOwnerKey();
 
         boolean isUserPassword =
             isUserPassword(
@@ -242,8 +265,7 @@ public class StandardSecurityHandler extends SecurityHandler
 
         // detect whether AES encryption is used. This assumes that the encryption algo is 
         // stored in the PDCryptFilterDictionary
-        PDCryptFilterDictionary stdCryptFilterDictionary =  doc.getEncryptionDictionary().
-                getStdCryptFilterDictionary();
+        PDCryptFilterDictionary stdCryptFilterDictionary =  encDictionary.getStdCryptFilterDictionary();
 
         if (stdCryptFilterDictionary != null)
         {
@@ -253,10 +275,8 @@ public class StandardSecurityHandler extends SecurityHandler
                 setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()));
             }
         }
-        
-        this.proceedDecryption();
     }
-
+    
     /**
      * Prepare document for encryption.
      *
