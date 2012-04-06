@@ -42,6 +42,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -127,6 +128,23 @@ public abstract class SecurityHandler
      */
     public abstract void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException;
 
+    /**
+     * Prepares everything to decrypt the document.
+     * 
+     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
+     * called from there. Only if decryption of single objects is needed this should be called instead.
+     *
+     * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
+     * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()}
+     * @param decryptionMaterial Information used to decrypt the document.
+     *
+     * @throws IOException If there is an error accessing data.
+     * @throws CryptographyException If there is an error with decryption.
+     */
+    public abstract void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
+    																 					DecryptionMaterial decryptionMaterial)
+    throws CryptographyException, IOException;
+    
     /**
      * Prepare the document for decryption.
      *
