@@ -33,6 +33,10 @@ public class PushBackInputStream extends java.io.PushbackInputStream
      */
     private long offset = 0;
     
+    /** In case provided input stream implements {@link RandomAccessRead} we hold
+     *  a typed reference to it in order to support seek operations. */
+    private final RandomAccessRead raInput;
+    
     /**
      * Constructor.
      *
@@ -48,6 +52,9 @@ public class PushBackInputStream extends java.io.PushbackInputStream
         {
             throw new IOException( "Error: input was null" );
         }
+        
+        raInput = ( input instanceof RandomAccessRead ) ?
+										(RandomAccessRead) input : null;
     }
 
     /**
@@ -196,6 +203,35 @@ public class PushBackInputStream extends java.io.PushbackInputStream
             pos += amountRead;
         }
         return data;
+    }
+
+    /** Allows to seek to another position within stream in case the underlying
+     *  stream implements {@link RandomAccessRead}. Otherwise an {@link IOException}
+     *  is thrown.
+     *  
+     *  Pushback buffer is cleared before seek operation by skipping over all bytes
+     *  of buffer.
+     *  
+     *  @param newOffset  new position within stream from which to read next
+     *  
+     *  @throws IOException if underlying stream does not implement {@link RandomAccessRead}
+     *                      or seek operation on underlying stream was not successful
+     */
+    public void seek( long newOffset ) throws IOException
+    {
+    	if ( raInput == null )
+    			throw new IOException( "Provided stream of type " + in.getClass().getSimpleName() +
+    													 	 " is not seekable." );
+    	
+    	// clear unread buffer by skipping over all bytes of buffer
+    	int unreadLength = buf.length - pos;
+    	if ( unreadLength > 0 )
+    	{
+    			skip( unreadLength );
+    	}
+    	
+    	raInput.seek( newOffset );
+    	offset = newOffset;
     }
 
 }
