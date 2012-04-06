@@ -211,7 +211,6 @@ public class RandomAccessBufferedFileInputStream extends InputStream implements 
 	}
 	
 	// ------------------------------------------------------------------------
-	@Override
 	public long length() throws IOException 
 	{
 			return fileLength;
