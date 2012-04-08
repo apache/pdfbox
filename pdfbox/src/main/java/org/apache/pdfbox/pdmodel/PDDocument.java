@@ -47,6 +47,7 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -1090,6 +1091,24 @@ public class PDDocument implements Pageable
         return parser.getPDDocument();
     }
 
+
+    /**
+     * Parses PDF with non sequential parser.
+     *  
+     * @param file  file to be loaded
+     * @param scratchFile  location to store temp PDFBox data for this document
+     *
+     * @return loaded document
+     *
+     * @throws IOException  in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq( File file, RandomAccess scratchFile ) throws IOException
+    {
+    	  NonSequentialPDFParser parser = new NonSequentialPDFParser( file, scratchFile );
+        parser.parse();
+        return parser.getPDDocument();
+    }
+    
     /**
      * This will save this document to the filesystem.
      *
