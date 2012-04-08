@@ -19,8 +19,11 @@ package org.apache.pdfbox.pdfparser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -115,6 +118,13 @@ public class XrefTrailerResolver
             return;
         }
         curXrefTrailerObj.trailer = trailer;
+    }
+
+    /**
+     * Returns the trailer last set by {@link #setTrailer(COSDictionary)}.
+     */
+    public COSDictionary getCurrentTrailer() {
+    		return curXrefTrailerObj.trailer;
     }
 
     /**
@@ -215,5 +225,34 @@ public class XrefTrailerResolver
     public Map<COSObjectKey, Long> getXrefTable()
     {
         return ( resolvedXrefTrailer == null ) ? null : resolvedXrefTrailer.xrefTable;
+    }
+    
+    /** Returns object numbers which are referenced as contained
+     *  in object stream with specified object number.
+     *  
+     *  This will scan resolved xref table for all entries having negated
+     *  stream object number as value.
+     *
+     *  @param objstmObjNr  object number of object stream for which contained object numbers
+     *                      should be returned
+     *                       
+     *  @return set of object numbers referenced for given object stream
+     *          or <code>null</code> if {@link #setStartxref(long)} was not
+     *          called before so that no resolved xref table exists
+     */
+    public Set<Long> getContainedObjectNumbers( final int objstmObjNr ) 
+    {
+    		if ( resolvedXrefTrailer == null )
+    			return null;
+    		
+    		final Set<Long> refObjNrs = new HashSet<Long>();
+    		final int       cmpVal    = - objstmObjNr;
+    		
+    		for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) {
+						if ( xrefEntry.getValue() == cmpVal )
+							refObjNrs.add( xrefEntry.getKey().getNumber() );
+				}
+    		
+    		return refObjNrs;
     }
 }
