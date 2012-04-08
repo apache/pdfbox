@@ -150,9 +150,26 @@ public class PDFXrefStreamParser extends BaseParser
                         break;
                     case 2:
                         /*
+                         * object stored in object stream; 2nd argument is object number of object stream;
+                         * 3rd argument index of object within object stream
+                         * 
+                         * For sequential PDFParser we do not need this information
+                         * because
                          * These objects are handled by the dereferenceObjects() method
                          * since they're only pointing to object numbers
+                         * 
+                         * However for XRef aware parsers we have to know which objects contain
+                         * object streams. We will store this information in normal xref mapping
+                         * table but add object stream number with minus sign in order to
+                         * distinguish from file offsets
                          */
+	                      int objstmObjNr = 0;
+	                      for(int i = 0; i < w1; i++)
+	                      {
+	                      		objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+	                      }
+                        objKey = new COSObjectKey( objID.intValue(), 0 );
+                        xrefTrailerResolver.setXRef( objKey, -objstmObjNr );
                         break;
                     default:
                         break;
