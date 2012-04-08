@@ -89,6 +89,9 @@ public class COSDocument extends COSBase
 
     private boolean warnMissingClose = true;
     
+    /** signal that document is already decrypted, e.g. with {@link NonSequentialPDFParser} */
+    private boolean isDecrypted = false;
+    
     private long startXref;
     
     private boolean closed = false;
@@ -309,6 +312,13 @@ public class COSDocument extends COSBase
         return version;
     }
 
+    /** Signals that the document is decrypted completely.
+     *  Needed e.g. by {@link NonSequentialPDFParser} to circumvent
+     *  additional decryption later on. */
+    public void setDecrypted() {
+    		isDecrypted = true;
+    }
+    
     /**
      * This will tell if this is an encrypted document.
      *
@@ -316,6 +326,9 @@ public class COSDocument extends COSBase
      */
     public boolean isEncrypted()
     {
+	  	  if ( isDecrypted )
+	  	  		return false;
+  	  
         boolean encrypted = false;
         if( trailer != null )
         {
