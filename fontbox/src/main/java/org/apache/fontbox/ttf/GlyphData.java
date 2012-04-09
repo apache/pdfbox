@@ -28,19 +28,13 @@ import org.apache.fontbox.util.BoundingBox;
  */
 public class GlyphData
 {
-    private static final int FLAG_ON_CURVE = 1;
-    private static final int FLAG_SHORT_X = 1<<1;
-    private static final int FLAG_SHORT_Y = 1<<2;
-    private static final int FLAG_X_MAGIC = 1<<3;
-    private static final int FLAG_Y_MAGIC = 1<<4;
-   
-    private BoundingBox boundingBox = new BoundingBox();
+    private short xMin;
+    private short yMin;
+    private short xMax;
+    private short yMax;
+    private BoundingBox boundingBox = null;
     private short numberOfContours;
-    private int[] endPointsOfContours;
-    private byte[] instructions;
-    private int[] flags;
-    private short[] xCoordinates;
-    private short[] yCoordinates;
+    private GlyfDescript glyphDescription = null;
     
     /**
      * This will read the required data from the stream.
@@ -52,32 +46,22 @@ public class GlyphData
     public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
     {
         numberOfContours = data.readSignedShort();
-        boundingBox.setLowerLeftX( data.readSignedShort() );
-        boundingBox.setLowerLeftY( data.readSignedShort() );
-        boundingBox.setUpperRightX( data.readSignedShort() );
-        boundingBox.setUpperRightY( data.readSignedShort() );
-        /**if( numberOfContours > 0 )
+        xMin = data.readSignedShort();
+        yMin = data.readSignedShort();
+        xMax = data.readSignedShort();
+        yMax = data.readSignedShort();
+        boundingBox = new BoundingBox(xMin, yMin, xMax, yMax);
+
+        if (numberOfContours >= 0) 
         {
-            endPointsOfContours = new int[ numberOfContours ];
-            for( int i=0; i<numberOfContours; i++ )
-            {
-                endPointsOfContours[i] = data.readUnsignedShort();
-            }
-            int instructionLength = data.readUnsignedShort();
-            instructions = data.read( instructionLength );
-            
-            //BJL It is possible to read some more information here but PDFBox
-            //does not need it at this time so just ignore it.
-            
-            //not sure if the length of the flags is the number of contours??
-            //flags = new int[numberOfContours];
-            //first read the flags, and just so the TTF can save a couples bytes
-            //we need to check some bit masks to see if there are more bytes or not.
-            //int currentFlagIndex = 0;
-            //int currentFlag = 
-            
-            
-        }*/
+            // create a simple glyph
+            glyphDescription = new GlyfSimpleDescript(numberOfContours, data);
+        }
+        else 
+        {
+            // create a composite glyph
+            glyphDescription = new GlyfCompositeDescript(data, ttf.getGlyph());
+        }
     }
     
     /**
@@ -108,4 +92,50 @@ public class GlyphData
     {
         this.numberOfContours = numberOfContoursValue;
     }
+   
+    /**
+     * Returns the description of the glyph.
+     * @return the glyph description
+     */
+    public GlyphDescription getDescription()
+    {
+        return glyphDescription;
+    }
+    
+    /**
+     * Returns the xMax value.
+     * @return the XMax value
+     */
+    public short getXMaximum() 
+    {
+        return xMax;
+    }
+
+    /**
+     * Returns the xMin value.
+     * @return the xMin value
+     */
+    public short getXMinimum() 
+    {
+        return xMin;
+    }
+
+    /**
+     * Returns the yMax value.
+     * @return the yMax value
+     */
+    public short getYMaximum() 
+    {
+        return yMax;
+    }
+
+    /**
+     * Returns the yMin value.
+     * @return the yMin value
+     */
+    public short getYMinimum() 
+    {
+        return yMin;
+    }
+
 }
