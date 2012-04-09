@@ -260,7 +260,7 @@ public class NonSequentialPDFParser extends PDFParser {
 			    	{
 				    		throw new IOException( "Error (" + e.getClass().getSimpleName() + 
 				    				                   ") while creating security handler for decryption: " +
-				    				                   e.getMessage(), e );
+				    				                   e.getMessage() /*, e // TODO: remove remark with Java 1.6 */);
 			    	}
 		    }
 	
@@ -900,7 +900,8 @@ public class NonSequentialPDFParser extends PDFParser {
 								        		{
 						        						securityHandler.decryptStream(stream, objNr, objGenNr );
 								        		} catch ( CryptographyException ce ) {
-								        				throw new IOException( "Error decrypting stream object " + objNr + ": " + ce.getMessage(), ce );
+								        				throw new IOException( "Error decrypting stream object " + objNr + ": " + ce.getMessage()
+								        						                   /*, ce // TODO: remove remark with Java 1.6 */ );
 								        		}
 						        		}
 						        		pb = stream;
@@ -1012,7 +1013,7 @@ public class NonSequentialPDFParser extends PDFParser {
 		    }
 		  	catch ( CryptographyException ce )
 		    {
-		  			throw new IOException( "Error decrypting string: " + ce.getMessage(), ce );
+		  			throw new IOException( "Error decrypting string: " + ce.getMessage()/*, ce // TODO: remove remark with Java 1.6 */ );
 		  	}
 	  }
   
