@@ -54,7 +54,17 @@ public class GlyphTable extends TTFTable
             glyph.initData( ttf, data );
             glyphs[i] = glyph;
         }
+        for( int i=0; i<numGlyphs-1; i++ )
+        {
+            GlyphData glyph = glyphs[i];
+            // resolve composite glyphs
+            if (glyph != null && glyph.getDescription().isComposite())
+            {
+                glyph.getDescription().resolve();
+            }
+        }
     }
+    
     /**
      * @return Returns the glyphs.
      */
@@ -62,11 +72,12 @@ public class GlyphTable extends TTFTable
     {
         return glyphs;
     }
+    
     /**
      * @param glyphsValue The glyphs to set.
      */
     public void setGlyphs(GlyphData[] glyphsValue)
     {
-        this.glyphs = glyphsValue;
+        glyphs = glyphsValue;
     }
 }
