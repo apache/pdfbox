@@ -33,6 +33,28 @@ public class BoundingBox
     private float upperRightY;
 
     /**
+     * Default constructor.
+     */
+    public BoundingBox() 
+    {
+    }
+    
+    /**
+     * Constructor.
+     * 
+     * @param minX lower left x value
+     * @param minY lower left y value
+     * @param maxX upper right x value
+     * @param maxY upper right y value
+     */
+    public BoundingBox(float minX, float minY, float maxX, float maxY) 
+    {
+        lowerLeftX = minX;
+        lowerLeftY = minY;
+        upperRightX = maxX;
+        upperRightY = maxY;
+    }
+    /**
      * Getter for property lowerLeftX.
      *
      * @return Value of property lowerLeftX.
