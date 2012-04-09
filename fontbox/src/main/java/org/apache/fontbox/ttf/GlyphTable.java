@@ -47,14 +47,14 @@ public class GlyphTable extends TTFTable
         long[] offsets = loc.getOffsets();
         int numGlyphs = maxp.getNumGlyphs();
         glyphs = new GlyphData[numGlyphs];
-        for( int i=0; i<numGlyphs-1; i++ )
+        for( int i=0; i<numGlyphs; i++ )
         {
             GlyphData glyph = new GlyphData();
             data.seek( getOffset() + offsets[i] );
             glyph.initData( ttf, data );
             glyphs[i] = glyph;
         }
-        for( int i=0; i<numGlyphs-1; i++ )
+        for( int i=0; i<numGlyphs; i++ )
         {
             GlyphData glyph = glyphs[i];
             // resolve composite glyphs
