@@ -159,16 +159,15 @@ public abstract class AbstractFontContainer {
   }
 
   protected void checkWidthsConsistency(int cid, float widthProvidedByPdfDictionary, float widthInFontProgram) throws GlyphException {
-	  // a delta of 1/1000 unit is allowed
-	  final float epsilon = widthInFontProgram/1000;
-	  	  if(!(Math.floor(widthInFontProgram-epsilon) <= widthProvidedByPdfDictionary && Math.round(widthInFontProgram+epsilon) >= widthProvidedByPdfDictionary)) {
-		  GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_METRICS, cid, 
-				  				"Width of the character \"" + cid 
-				  				+ "\" in the font program \""
-				  				+ this.font.getBaseFont() 
-				  				+ "\"is inconsistent with the width in the PDF dictionary.");
-		  addKnownCidElement(new GlyphDetail(cid, e));
-		  throw e;
-	  }
+  	// consistent is defined to be a difference of no more than 1/1000 unit.
+  	if(Math.abs(widthInFontProgram-widthProvidedByPdfDictionary) > 1) {	
+  	GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_METRICS, cid, 
+  				"Width of the character \"" + cid 
+  				+ "\" in the font program \""
+  				+ this.font.getBaseFont() 
+  				+ "\"is inconsistent with the width in the PDF dictionary.");
+  		addKnownCidElement(new GlyphDetail(cid, e));
+  		throw e;
+  	}
   }
 }
