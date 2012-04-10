@@ -724,8 +724,7 @@ public class CompositeFontValidator extends AbstractFontValidator {
 			// ---- According to PDF Reference, CIDFontType2 is a TrueType font.
 			// ---- Remark : Java.awt.Font throws exception when a CIDFontType2 is
 			// parsed even if it is valid.
-			ttf = new CIDFontType2Parser(true).parseTTF(new ByteArrayInputStream(ff2
-					.getByteArray()));
+			ttf = new CIDFontType2Parser(true).parseTTF(new ByteArrayInputStream(ff2.getByteArray()));
 		} catch (Exception e) {
 			// ---- Exceptionally, Exception is catched Here because of damaged font
 			// can throw NullPointer Exception...
