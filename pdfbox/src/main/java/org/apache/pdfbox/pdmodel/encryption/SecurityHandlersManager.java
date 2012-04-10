@@ -143,9 +143,8 @@ public class SecurityHandlersManager
         if(instance == null)
         {
             instance = new SecurityHandlersManager();
+            Security.addProvider(new BouncyCastleProvider());
         }
-        Security.addProvider(new BouncyCastleProvider());
-
         return instance;
     }
 
