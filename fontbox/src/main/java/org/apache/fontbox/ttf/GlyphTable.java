@@ -44,15 +44,31 @@ public class GlyphTable extends TTFTable
     {
         MaximumProfileTable maxp = ttf.getMaximumProfile();
         IndexToLocationTable loc = ttf.getIndexToLocation();
+        // the glyph offsets
         long[] offsets = loc.getOffsets();
+        // number of glyphs
         int numGlyphs = maxp.getNumGlyphs();
+        // the end of the glyph table
+        long endOfGlyphs = offsets[numGlyphs];
+        long currentOffset = -1;
+        long offset = getOffset();
         glyphs = new GlyphData[numGlyphs];
         for( int i=0; i<numGlyphs; i++ )
         {
-            GlyphData glyph = new GlyphData();
-            data.seek( getOffset() + offsets[i] );
-            glyph.initData( ttf, data );
-            glyphs[i] = glyph;
+            // end of glyphs reached?
+            if (endOfGlyphs == offsets[i])
+            {
+                break;
+            }
+            // don't repeat glyphs
+            if (currentOffset == offsets[i])
+            {
+                continue;
+            }
+            currentOffset = offsets[i];
+            glyphs[i] = new GlyphData();
+            data.seek( offset + offsets[i] );
+            glyphs[i].initData( ttf, data );
         }
         for( int i=0; i<numGlyphs; i++ )
         {

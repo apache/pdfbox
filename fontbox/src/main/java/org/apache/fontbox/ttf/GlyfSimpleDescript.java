@@ -44,20 +44,29 @@ public class GlyfSimpleDescript extends GlyfDescript
     {
         super(numberOfContours, bais);
         
-        // Simple glyph description
-        endPtsOfContours = new int[numberOfContours];
-        for (int i = 0; i < numberOfContours; i++) 
+        /* https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html
+         * "If a glyph has zero contours, it need not have any glyph data."
+         * set the pointCount to zero to initialize attributes and avoid nullpointer but 
+         * maybe there shouldn't have GlyphDescript in the GlyphData?
+         */
+        if (numberOfContours == 0) 
         {
-            endPtsOfContours[i] = bais.readSignedShort();
+            pointCount = 0;
+            return;
         }
 
+        // Simple glyph description
+        endPtsOfContours = new int[numberOfContours];
+        endPtsOfContours = bais.readUnsignedShortArray(numberOfContours);
+
         // The last end point index reveals the total number of points
-        pointCount = endPtsOfContours[numberOfContours-1] + 1;
+        pointCount = endPtsOfContours[numberOfContours -1] + 1;   
+        
         flags = new byte[pointCount];
         xCoordinates = new short[pointCount];
         yCoordinates = new short[pointCount];
 
-        int instructionCount = bais.readSignedShort();
+        int instructionCount = bais.readUnsignedShort();
         readInstructions(bais, instructionCount);
         readFlags(pointCount, bais);
         readCoords(pointCount, bais);
