@@ -462,6 +462,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName EMBEDDED_FDFS = new COSName( "EmbeddedFDFs" );
+    
+    /**
+     * A common COSName value.
+     */
     public static final COSName ENCODE = new COSName( "Encode" );
     /**
      * A common COSName value.
@@ -1138,6 +1143,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName STATUS = new COSName( "Status" );
+    /**
+     * A common COSName value.
+     */
     public static final COSName STD_CF = new COSName( "StdCF" );
     /**
      * A common COSName value.
@@ -1186,6 +1195,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName T = new COSName("T");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName TARGET = new COSName("Target");
 
     /**
      * A common COSName value.
