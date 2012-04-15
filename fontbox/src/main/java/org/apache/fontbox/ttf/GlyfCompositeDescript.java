@@ -247,6 +247,10 @@ public class GlyfCompositeDescript extends GlyfDescript
     
     private GlyphDescription getGlypDescription(int index)
     {
-        return glyphs[index].getDescription();
+        if (glyphs != null && index < glyphs.length) 
+        {
+            return glyphs[index].getDescription();
+        }
+        return null;
     }
 }

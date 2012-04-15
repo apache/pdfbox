@@ -65,7 +65,7 @@ public abstract class GlyfDescript implements GlyphDescription
      */
     public static final byte Y_DUAL = 0x20;
 
-    private short[] instructions;
+    private int[] instructions;
     private int contourCount;
 
     /**
@@ -99,7 +99,7 @@ public abstract class GlyfDescript implements GlyphDescription
      * Returns the hinting instructions.
      * @return an array containing the hinting instructions.
      */
-    public short[] getInstructions() 
+    public int[] getInstructions() 
     {
         return instructions;
     }
@@ -112,11 +112,8 @@ public abstract class GlyfDescript implements GlyphDescription
      */
     protected void readInstructions(TTFDataStream bais, int count) throws IOException
     {
-        instructions = new short[count];
-        for (int i = 0; i < count; i++) 
-        {
-            instructions[i] = (short) bais.read();
-        }
+        instructions = new int[count];
+        instructions = bais.readUnsignedByteArray(count);
     }
 
 }
