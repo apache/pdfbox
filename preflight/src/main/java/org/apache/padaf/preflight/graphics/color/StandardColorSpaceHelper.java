@@ -132,6 +132,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 	protected final boolean processAllColorSpace(PDColorSpace pdcs,
 			List<ValidationError> result) {
 		ColorSpaces cs = ColorSpaces.valueOf(pdcs.getName());
+		
 		switch (cs) {
 		case DeviceRGB:
 		case DeviceRGB_SHORT:
@@ -183,8 +184,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 	 */
 	protected boolean processRGBColorSpace(List<ValidationError> result) {
 		// ---- ICCProfile must contain a RGB Color Space
-		if (iccpw == null || !iccpw.isRGBColorSpace()) {
-			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB, "DestOutputProfile is missing"));
+		if (iccpw == null) {
+			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING, "DestOutputProfile is missing"));
+			return false;			
+		} if (!iccpw.isRGBColorSpace()) {
+			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB, "DestOutputProfile isn't RGB ColorSpace"));
 			return false;
 		}
 		return true;
@@ -200,8 +204,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 	 */
 	protected boolean processCYMKColorSpace(List<ValidationError> result) {
 		// ---- ICCProfile must contain a CYMK Color Space
-		if (iccpw == null || !iccpw.isCMYKColorSpace()) {
-			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK, "DestOutputProfile is missing"));
+		if (iccpw == null) {
+			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING, "DestOutputProfile is missing"));
+			return false;			
+		} if (!iccpw.isCMYKColorSpace()) {
+			result.add(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK, "DestOutputProfile isn't CMYK ColorSpace"));
 			return false;
 		}
 		return true;
@@ -286,20 +293,16 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 								ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN, "Pattern is forbidden as AlternateColorSpace of a ICCBased"));
 						return false;
 					}
-
-					List<ValidationError> warning = new ArrayList<ValidationError>();
-					if (!processAllColorSpace(altpdcs, warning)) {
-						// TODO manage in lazy mode
-						boolean strict = true;
-						// can be an error in strict mode according to the version of the ICC Profile
-						if (strict && 
-								((iccp.getMajorVersion() == 2 && iccp.getMinorVersion() > 0x40) 
-										|| (iccp.getMajorVersion() > 2))) {
-							result.addAll(warning);
-							return false;
-						}
-						return true;
-					}
+ 
+					/*
+					 * According to the ISO-19005-1:2005
+					 * 
+					 * A conforming reader shall render ICCBased colour spaces as specified 
+					 * by the ICC specification, and shall not use the Alternate colour space 
+					 * specified in an ICC profile stream dictionary
+					 * 
+					 * We don't check the alternate ColorSpaces
+					 */
 				}
 			}
 		} catch (IOException e) {
@@ -415,11 +418,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 			List<ValidationError> result) {
 		PDSeparation separation = (PDSeparation) pdcs;
 		try {
-			if (iccpw == null) {
-				result.add(new ValidationError(
-						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING,"DestOutputProfile is missing"));
-				return false;
-			}
 
 			PDColorSpace altCol = separation.getAlternateColorSpace();
 			if (altCol != null) {
