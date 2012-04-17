@@ -91,7 +91,7 @@ public class GlyfCompositeComp
     protected GlyfCompositeComp(TTFDataStream bais) throws IOException 
     {
         flags = bais.readSignedShort();
-        glyphIndex = bais.readSignedShort();
+        glyphIndex = bais.readUnsignedShort();// number of glyph in a font is uint16
 
         // Get the arguments as just their raw values
         if ((flags & ARG_1_AND_2_ARE_WORDS) != 0) 
