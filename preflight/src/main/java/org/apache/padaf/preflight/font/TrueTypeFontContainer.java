@@ -35,7 +35,7 @@ public class TrueTypeFontContainer extends AbstractFontContainer {
 	 * TrueTypeParser object
 	 */
 	private TrueTypeFont fontObject = null;
-	private CMAPEncodingEntry cmap = null;
+	private CMAPEncodingEntry[] cmaps = null;
 
 	private int numberOfLongHorMetrics;
 	private int unitsPerEm;
@@ -56,88 +56,79 @@ public class TrueTypeFontContainer extends AbstractFontContainer {
 		this.numberOfLongHorMetrics = this.fontObject.getHorizontalHeader().getNumberOfHMetrics();
 	}
 
-	void setCMap(CMAPEncodingEntry cmap) {
-		this.cmap = cmap;
+	void setCMap(CMAPEncodingEntry[] cmaps) {
+		this.cmaps = cmaps;
 	}
 
-	@Override
-	public void checkCID(int cid) throws GlyphException {
-		if (isAlreadyComputedCid(cid)) {
-			return;
-		}
+  @Override
+  public void checkCID(int cid) throws GlyphException {
+      if (isAlreadyComputedCid(cid)) {
+          return;
+      }
+      for (CMAPEncodingEntry entry : cmaps) {
+          if (checkCID(cid,entry)) {
+              return;
+          }
+      }
+      GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, 
+      		cid, 
+      		"The character \"" + cid 
+      		+ "\" in the font program \""
+      		+ this.font.getBaseFont() 
+      		+ "\"is missing from the Charater Encoding.");
+      addKnownCidElement(new GlyphDetail(cid, e));
+      throw e;	
+  }
 
-		final float widthProvidedByPdfDictionary = this.font.getFontWidth(cid);
-		float widthInFontProgram ;
+  public boolean checkCID(int cid, CMAPEncodingEntry cmap) throws GlyphException {
 
-		int innerFontCid = cid;
-		if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3) {
-			try {
-				Encoding fontEncoding = this.font.getFontEncoding();
-				String character = fontEncoding.getCharacter(cid);
-				if (character == null) {
-					GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, 
-							cid, 
-							"The character \"" + cid 
-							+ "\" in the font program \""
-							+ this.font.getBaseFont() 
-							+ "\"is missing from the Charater Encoding.");
-					addKnownCidElement(new GlyphDetail(cid, e));
-					throw e;	
-				}
+      final float widthProvidedByPdfDictionary = this.font.getFontWidth(cid);
+      float widthInFontProgram ;
 
-				char[] characterArray = character.toCharArray();
-				if (characterArray.length == 1 ) {
-					innerFontCid = (int)characterArray[0];
-				} else {
-					// TODO OD-PDFA-87 A faire?
-					innerFontCid = (int)characterArray[0];
-					for (int i = 1; i < characterArray.length; ++i) {
-						if (cmap.getGlyphId((int)characterArray[i]) == 0) {
-							GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, 
-									cid, 
-									"A glyph for the character \"" + cid 
-									+ "\" in the font program \""
-									+ this.font.getBaseFont() 
-									+ "\"is missing. There are " + characterArray.length + " glyph used by this character...");
-							addKnownCidElement(new GlyphDetail(cid, e));
-							throw e;	
-						}
-					}
-				}
-			} catch (IOException ioe) {
-				GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_ENCODING_IO, 
-						cid, 
-						"Unable to get the encoding object from the PDFont object during the validation of cid \"" + cid 
-						+ "\" in the font program \""
-						+ this.font.getBaseFont() 
-						+ "\".");
-				addKnownCidElement(new GlyphDetail(cid, e));
-				throw e;	
-			}
-		}
+      int innerFontCid = cid;
 
-		// search glyph
-		int glyphId = cmap.getGlyphId(innerFontCid);
-		if (glyphId == 0) {
-			GlyphException e = new GlyphException(ValidationConstants.ERROR_FONTS_GLYPH_MISSING, 
-					cid, 
-					"Glyph for the character \"" + cid 
-					+ "\" in the font program \""
-					+ this.font.getBaseFont() 
-					+ "\"is missing.");
-			addKnownCidElement(new GlyphDetail(cid, e));
-			throw e;	
-		}
 
-		// compute glyph width
-		float glypdWidth = glyphWidths[numberOfLongHorMetrics - 1];
-		if (glyphId < numberOfLongHorMetrics) {
-			glypdWidth = glyphWidths[glyphId];
-		}
-		widthInFontProgram = ((glypdWidth * 1000) / unitsPerEm);
+      if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3) {
+          try {
+              Encoding fontEncoding = this.font.getFontEncoding();
+              String character = fontEncoding.getCharacter(cid);
+              if (character == null) {
+                  return false;
+              }
 
-		checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
-		addKnownCidElement(new GlyphDetail(cid));
-	}
+              char[] characterArray = character.toCharArray();
+              if (characterArray.length == 1 ) {
+                  innerFontCid = (int)characterArray[0];
+              } else {
+                  // TODO OD-PDFA-87 A faire?
+                  innerFontCid = (int)characterArray[0];
+                  for (int i = 1; i < characterArray.length; ++i) {
+                      if (cmap.getGlyphId((int)characterArray[i]) == 0) {
+                          return false;
+                      }
+                  }
+              }
+          } catch (IOException ioe) {
+              return false;
+          }
+      }
+
+      // search glyph
+      int glyphId = cmap.getGlyphId(innerFontCid);
+      if (glyphId == 0) {
+          return false;
+      }
+
+      // compute glyph width
+      float glypdWidth = glyphWidths[numberOfLongHorMetrics - 1];
+      if (glyphId < numberOfLongHorMetrics) {
+          glypdWidth = glyphWidths[glyphId];
+      }
+
+      widthInFontProgram = ((glypdWidth * 1000) / unitsPerEm);
+      checkWidthsConsistency(cid, widthProvidedByPdfDictionary, widthInFontProgram);
+      addKnownCidElement(new GlyphDetail(cid));
+      return true;
+  }
 
 }

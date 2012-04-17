@@ -23,6 +23,8 @@ package org.apache.padaf.preflight.font;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
@@ -233,31 +235,30 @@ public class TrueTypeFontValidator extends SimpleFontValidator {
 	 * @throws ValidationException
 	 *           if the FontProgram doesn't have the expected CMap
 	 */
-	protected CMAPEncodingEntry getCMapOfFontProgram(TrueTypeFont ttf)
+	protected CMAPEncodingEntry[] getCMapOfFontProgram(TrueTypeFont ttf)
 			throws ValidationException {
 		CMAPTable cmap = ttf.getCMAP();
 		if (this.pFontDesc.isSymbolic()) {
-			return cmap.getCmaps()[0];
+			return cmap.getCmaps();
 		} else {
-			if (this.pFont.getFontEncoding() instanceof WinAnsiEncoding) {
-				for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
-					// ---- Returns the WinAnsiEncoding CMap
-					if ((cmapEntry.getPlatformId() == 3)
-							&& (cmapEntry.getPlatformEncodingId() == 1)) {
-						return cmapEntry;
+			List<CMAPEncodingEntry> res = new ArrayList<CMAPEncodingEntry>();
+			boolean firstIs31 = false;
+			for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
+				// ---- Returns the WinAnsiEncoding CMap
+				if ((cmapEntry.getPlatformId() == 3) && (cmapEntry.getPlatformEncodingId() == 1)) {
+					res.add(0,cmapEntry);
+					firstIs31 = true;
+				} else if ((cmapEntry.getPlatformId() == 1)&& (cmapEntry.getPlatformEncodingId() == 0)) {
+					if (firstIs31) {
+						res.add(1, cmapEntry);
+					} else {
+						res.add(0, cmapEntry);
 					}
-				}
-			} else {
-				// ---- Returns the MacRomanEncoding CMap
-				for (CMAPEncodingEntry cmapEntry : cmap.getCmaps()) {
-					if ((cmapEntry.getPlatformId() == 1)
-							&& (cmapEntry.getPlatformEncodingId() == 0)) {
-						return cmapEntry;
-					}
+				} else {
+					res.add(cmapEntry);
 				}
 			}
+			return res.toArray(new CMAPEncodingEntry[res.size()]);
 		}
-
-		throw new ValidationException("CMap not found in the TrueType FontProgam");
 	}
 }
