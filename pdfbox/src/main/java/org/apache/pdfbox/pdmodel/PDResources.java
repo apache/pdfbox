@@ -515,7 +515,7 @@ public class PDResources implements COSObjectable
     {
         if (fonts == null) 
         {
-            fonts = new HashMap<String,PDFont>();
+            fonts = getFonts();
             fontMappings = reverseMap(fonts, PDFont.class);
             setFonts(fonts);
         }
