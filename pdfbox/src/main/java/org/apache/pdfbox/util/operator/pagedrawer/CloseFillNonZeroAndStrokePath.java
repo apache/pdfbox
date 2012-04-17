@@ -41,10 +41,9 @@ public class CloseFillNonZeroAndStrokePath extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
+        // execute ClosePath
         context.processOperator( "h", arguments );
-
-        context.processOperator( "f", arguments );
-
-        context.processOperator( "S", arguments );
+        // execute FillNonZeroAndStroke
+        context.processOperator( "B", arguments );
     }
 }
