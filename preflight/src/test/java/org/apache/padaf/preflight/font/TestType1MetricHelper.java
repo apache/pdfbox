@@ -85,7 +85,8 @@ public class TestType1MetricHelper {
     fail();
   }
 
-  @Test
+  @SuppressWarnings("deprecation")
+@Test
   /**
    * A Missing character code shouldn't cause Exception but return a Width of 0.
    */
@@ -106,17 +107,18 @@ public class TestType1MetricHelper {
     InputStream font = this.getClass().getResourceAsStream(
         "subset_type1_valid.font");
 
-    Type1MetricHelper helper = new Type1MetricHelper(font, length1, length2,
+	Type1MetricHelper helper = new Type1MetricHelper(font, length1, length2,
         FONT_DICTIONARY_VALUE_ENCODING_WIN);
     helper.parse();
 
     for (int i = 0; i < (last - first + 1); ++i) {
       if (widths[i] != 0) {
+    	System.out.println(widths[i] + " " + helper.getWidth(first + i));
         assertTrue(widths[i] == helper.getWidth(first + i));
       }
     }
 
-    // ---- Missing Glyph returns 0
-    assertTrue(helper.getWidth(200) == 0);
+    // ---- Missing Glyph returns notdef width 278 in the tested font
+    assertTrue(helper.getWidth(200) == 278);
   }
 }

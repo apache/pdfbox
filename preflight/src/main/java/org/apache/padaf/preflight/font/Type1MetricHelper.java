@@ -1019,6 +1019,11 @@ public class Type1MetricHelper {
 		Type1GlyphDescription glyph = this.labelToMetric.get(label);
 		if (glyph != null) {
 			return glyph.getWidth();
+		} else {
+			glyph = this.labelToMetric.get(NOTDEF);
+			if (glyph != null) {
+				return glyph.getWidth();
+			} 	
 		}
 
 		return 0;

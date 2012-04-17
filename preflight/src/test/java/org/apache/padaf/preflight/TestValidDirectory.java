@@ -64,6 +64,7 @@ public class TestValidDirectory {
   public void validate () throws Exception {
   	ValidationResult result = null;
   	try {
+  		System.out.println(target);
   		result = validator.validate(new FileDataSource(target));
   		Assert.assertTrue("Validation of " + target ,result.isValid());
   	} finally {
