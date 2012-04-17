@@ -40,10 +40,9 @@ public class CloseFillEvenOddAndStrokePath extends org.apache.pdfbox.util.operat
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
+        // execute ClosePath
         context.processOperator( "h", arguments );
-
-        context.processOperator( "f*", arguments );
-
-        context.processOperator( "S", arguments );
+        // execute FillEvenOddAndStroke
+        context.processOperator( "B*", arguments );
     }
 }
