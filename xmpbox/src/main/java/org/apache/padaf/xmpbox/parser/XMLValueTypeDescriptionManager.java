@@ -21,20 +21,16 @@
 
 package org.apache.padaf.xmpbox.parser;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-
-import org.apache.commons.io.IOUtils;
 import org.apache.padaf.xmpbox.BuildPDFAExtensionSchemaDescriptionException;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.FieldDescription;
 import org.apache.padaf.xmpbox.type.ValueTypeDescription;
+import org.apache.pdfbox.io.IOUtils;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

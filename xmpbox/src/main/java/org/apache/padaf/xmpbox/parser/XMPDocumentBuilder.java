@@ -37,7 +37,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.padaf.xmpbox.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
@@ -55,6 +54,7 @@ import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.RealType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
+import org.apache.pdfbox.io.IOUtils;
 
 
 /**
@@ -246,7 +246,7 @@ public class XMPDocumentBuilder {
 	private byte[] getStreamAsByteArray(InputStream input) throws XmpParsingException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
-			IOUtils.copyLarge(input, bos);
+			IOUtils.copy(input, bos);
 		} catch (IOException e) {
 			throw new XmpParsingException("An error has occured when processing the underlying XMP source", e);
 		} finally {

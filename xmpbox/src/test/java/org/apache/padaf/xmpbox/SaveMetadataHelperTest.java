@@ -21,10 +21,8 @@
 
 package org.apache.padaf.xmpbox;
 
+import java.io.ByteArrayOutputStream;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.padaf.xmpbox.SaveMetadataHelper;
-import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.junit.Assert;
