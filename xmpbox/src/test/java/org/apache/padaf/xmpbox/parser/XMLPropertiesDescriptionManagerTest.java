@@ -29,9 +29,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.padaf.xmpbox.parser.XMLPropertiesDescriptionManager;
 import org.apache.padaf.xmpbox.type.PropertyDescription;
+import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 
 public class XMLPropertiesDescriptionManagerTest {

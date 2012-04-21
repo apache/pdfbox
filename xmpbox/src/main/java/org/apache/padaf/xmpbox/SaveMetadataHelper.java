@@ -21,16 +21,15 @@
 
 package org.apache.padaf.xmpbox;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.transform.TransformerException;
 
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.padaf.xmpbox.parser.XMLUtil;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.pdfbox.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

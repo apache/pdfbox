@@ -29,10 +29,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.padaf.xmpbox.parser.XMLValueTypeDescriptionManager;
 import org.apache.padaf.xmpbox.type.FieldDescription;
 import org.apache.padaf.xmpbox.type.ValueTypeDescription;
+import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 
 public class XMLValueTypeDescriptionManagerTest {
