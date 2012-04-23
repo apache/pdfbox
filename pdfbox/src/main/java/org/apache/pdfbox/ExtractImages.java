@@ -163,6 +163,10 @@ public class ExtractImages
 
     private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
     {
+        if (resources == null)
+        {
+            return;
+        }
         Map<String, PDXObject> xobjects = resources.getXObjects();
         if( xobjects != null )
         {
