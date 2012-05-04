@@ -78,7 +78,7 @@ public class RandomAccessBufferedFileInputStream extends InputStream implements 
 	
 		// ------------------------------------------------------------------------
 		/** Returns offset in file at which next byte would be read. */
-		public final long getFilePointer()
+		public long getFilePointer()
 		{
 				return fileOffset;
 		}
@@ -86,7 +86,7 @@ public class RandomAccessBufferedFileInputStream extends InputStream implements 
 		// ------------------------------------------------------------------------
 		/** Seeks to new position. If new position is outside of current page
 		 *  the new page is either taken from cache or read from file and added to cache. */
-		public final void seek( final long newOffset ) throws IOException
+		public void seek( final long newOffset ) throws IOException
 		{
 				final long newPageOffset = newOffset & pageOffsetMask;
 				if ( newPageOffset != curPageOffset )
