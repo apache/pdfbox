@@ -37,6 +37,7 @@ import org.apache.padaf.preflight.BodyParseException;
 import org.apache.padaf.preflight.CrossRefParseException;
 import org.apache.padaf.preflight.TrailerParseException;
 import org.apache.padaf.preflight.PdfParseException;
+import org.apache.padaf.preflight.AbstractValidator;
 
 import static org.apache.padaf.preflight.ValidationConstants.*;
 
@@ -307,19 +308,19 @@ void literal() {
             if (currentToken.kind == 0 ){
                throw new ParseException("EOF reach before the end of the literal string.");
             }
-            literalLength += currentToken.image.getBytes().length;
+            literalLength += currentToken.image.getBytes(AbstractValidator.encoding).length;
             if ( currentToken.kind == OBJ_STRING_LIT ) {
                jj_consume_token(OBJ_STRING_LIT);
-               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+               if (previous != null && previous.image.getBytes(AbstractValidator.encoding)[previous.image.getBytes(AbstractValidator.encoding).length-1]!='\\') {
                   ++nesting;
                }
             } else if ( currentToken.kind == INNER_START_LIT ) {
                jj_consume_token(INNER_START_LIT);
-               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+               if (previous != null && previous.image.getBytes(AbstractValidator.encoding)[previous.image.getBytes(AbstractValidator.encoding).length-1]!='\\') {
                   ++nesting;
                }
             } else if ( currentToken.kind == END_LITERAL ) {
-               if (previous != null && previous.image.getBytes()[previous.image.getBytes().length-1]!='\\') {
+               if (previous != null && previous.image.getBytes(AbstractValidator.encoding)[previous.image.getBytes(AbstractValidator.encoding).length-1]!='\\') {
                   --nesting;
                }
                jj_consume_token(END_LITERAL);
@@ -338,8 +339,8 @@ void literal() {
 
 JAVACODE
 void checkNameLength() throws ParseException {
-	if (token != null && token.image.getBytes().length > MAX_NAME_SIZE) {
-		throw new PdfParseException("Object Name is toot long : " + token.image.getBytes().length, ERROR_SYNTAX_NAME_TOO_LONG);
+	if (token != null && token.image.getBytes(AbstractValidator.encoding).length > MAX_NAME_SIZE) {
+		throw new PdfParseException("Object Name is toot long : " + token.image.getBytes(AbstractValidator.encoding).length, ERROR_SYNTAX_NAME_TOO_LONG);
 	} else {
 		// Nothing to do
 	}	
@@ -347,7 +348,7 @@ void checkNameLength() throws ParseException {
 
 JAVACODE
 void checkMagicNumberLength() throws ParseException {
-   if (token != null && token.image.getBytes().length < 4) {
+   if (token != null && token.image.getBytes(AbstractValidator.encoding).length < 4) {
       throw new PdfParseException("Not enough bytes after the Header (at least 4 bytes should be present with a value bigger than 127) : " + token.image, ERROR_SYNTAX_HEADER);
    } else {
       // Nothing to do

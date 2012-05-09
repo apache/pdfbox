@@ -23,6 +23,7 @@ package org.apache.padaf.preflight;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +40,8 @@ public abstract class AbstractValidator implements PdfAValidator {
 
 
     public static final String version = "${project.version}";
+    
+    public static final Charset encoding = Charset.forName("ISO-8859-1");
 
     public static final String fullName = "PADAF - "+version;
 
