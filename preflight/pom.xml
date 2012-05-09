@@ -40,7 +40,6 @@
 
   <properties>
     <compileSource>1.5</compileSource>
-    <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
   </properties>
 
   <build>

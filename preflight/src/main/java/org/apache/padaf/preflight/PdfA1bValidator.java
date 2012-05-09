@@ -22,6 +22,7 @@
 package org.apache.padaf.preflight;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import javax.activation.DataSource;
@@ -56,7 +57,10 @@ public class PdfA1bValidator extends AbstractValidator {
 			
 			// syntax (javacc) validation
 			try {
-				PDFParser parser = new PDFParser(source.getInputStream());
+		                InputStreamReader reader = new InputStreamReader(
+		                        source.getInputStream(),encoding); 
+
+		                PDFParser parser = new PDFParser(reader);
 				handler.setParser(parser);
 				parser.PDF();
 			} catch (IOException e) {
