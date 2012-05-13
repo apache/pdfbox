@@ -260,12 +260,12 @@ public class PDResources implements COSObjectable
         {
             Map<String,PDXObject> allXObjects = getXObjects();
             images = new HashMap<String,PDXObjectImage>();
-            for( String imageName : allXObjects.keySet() )
+            for( Map.Entry<String,PDXObject> entry: allXObjects.entrySet() )
             {
-                PDXObject xobject = images.get(imageName);
+                PDXObject xobject = entry.getValue();
                 if( xobject instanceof PDXObjectImage )
                 {
-                    images.put( imageName, (PDXObjectImage)xobject);
+                    images.put( entry.getKey(), (PDXObjectImage)xobject);
                 }
             }
         }
