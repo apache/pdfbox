@@ -113,7 +113,23 @@ public class PDCcitt extends PDXObjectImage
         }
         else if (decodeP instanceof COSArray)
         {
-            decodeParms =  (COSDictionary)((COSArray)decodeP).get(0);
+            int index = 0;
+            // determine the index for the CCITT-filter
+            COSBase filters = stream.getFilters();
+            if (filters instanceof COSArray) 
+            {
+                COSArray filterArray = (COSArray)filters;
+                while (index < filterArray.size())
+                {
+                    COSName filtername = (COSName)filterArray.get(index);
+                    if (COSName.CCITTFAX_DECODE.equals(filtername))
+                    {
+                        break;
+                    }
+                    index++;
+                }
+            }
+            decodeParms =  (COSDictionary)((COSArray)decodeP).get(index);
         }
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
