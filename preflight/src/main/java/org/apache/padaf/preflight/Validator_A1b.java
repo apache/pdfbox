@@ -24,6 +24,7 @@ package org.apache.padaf.preflight;
 import javax.activation.FileDataSource;
 
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.Version;
 
 
 
@@ -41,6 +42,7 @@ public class Validator_A1b {
 		if (args.length == 0) {
 			System.out
 			.println("Usage : java net.awl.edoc.pdfa.Validator <file path>");
+			System.out.println("Version : "+Version.getVersion());
 			System.exit(1);
 		}
 
