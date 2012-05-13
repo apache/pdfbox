@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -155,31 +154,14 @@ public class PDJpeg extends PDXObjectImage
         BufferedImage alpha = null;
         if (bi.getColorModel().hasAlpha())
         {
-            alpha = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            Graphics2D g = alpha.createGraphics();
-            g.setColor(Color.BLACK);
-            g.drawRect(0, 0, bi.getWidth(), bi.getHeight());
-            g.setColor(Color.WHITE);
-            g.drawImage(bi, 0, 0, null);
-            int alphaHeight = alpha.getHeight();
-            int alphaWidth = alpha.getWidth();
-            int whiteRGB = (Color.WHITE).getRGB();
-            for(int y = 0; y < alphaHeight; y++)
-            {
-                for(int x = 0; x < alphaWidth; x++)
-                {
-                    int colorValues = alpha.getRGB(x, y);
-                    // TODO check condition PDFBOX-626
-                    if( ((colorValues >> 16) & 0xFF) != 0 
-                            && ((colorValues >> 8) & 0xFF) != 0 
-                            && ((colorValues >> 0) & 0xFF) != 0 )
-                    {
-                        alpha.setRGB(x, y, whiteRGB);
-                    }
-                }
-            }
-            image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_USHORT_565_RGB);
-            g = image.createGraphics();
+            // extract the alpha information
+            WritableRaster alphaRaster = bi.getAlphaRaster();
+            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), 
+                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            alpha = new BufferedImage(cm, alphaRaster, false, null);
+            // create a RGB image without alpha
+            image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = image.createGraphics();
             g.drawImage(bi, 0, 0, null);
             bi = image;
         }
