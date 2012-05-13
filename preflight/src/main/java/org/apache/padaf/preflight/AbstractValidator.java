@@ -33,17 +33,16 @@ import javax.activation.DataSource;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
 import org.apache.padaf.preflight.helpers.AbstractValidationHelper;
 import org.apache.padaf.preflight.javacc.ParseException;
+import org.apache.pdfbox.Version;
 
 public abstract class AbstractValidator implements PdfAValidator {
 
     protected ValidatorConfig config = null;
 
 
-    public static final String version = "${project.version}";
-    
     public static final Charset encoding = Charset.forName("ISO-8859-1");
 
-    public static final String fullName = "PADAF - "+version;
+    public static final String fullName = "PADAF - "+Version.getVersion();
 
 
     protected Collection<AbstractValidationHelper> priorHelpers = new ArrayList<AbstractValidationHelper>();
@@ -185,7 +184,7 @@ public abstract class AbstractValidator implements PdfAValidator {
      * @see org.apache.padaf.preflight.PdfAValidator#getVersion()
      */
     public String getVersion() {
-        return version;
+        return Version.getVersion();
     }
 
 
