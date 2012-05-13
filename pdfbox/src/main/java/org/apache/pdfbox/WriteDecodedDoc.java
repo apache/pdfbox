@@ -27,7 +27,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
-
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 /**
@@ -38,6 +37,8 @@ import org.apache.pdfbox.exceptions.InvalidPasswordException;
  */
 public class WriteDecodedDoc
 {
+
+    private static final String PASSWORD = "-password";
 
     /**
      * Constructor.
@@ -55,8 +56,25 @@ public class WriteDecodedDoc
      *
      * @throws IOException If there is an error parsing the document.
      * @throws COSVisitorException If there is an error while copying the document.
+     * 
+     * @deprecated use {@link WriteDecodedDoc#doIt(String, String, String)} instead.
      */
     public void doIt(String in, String out) throws IOException, COSVisitorException
+    {
+        doIt(in, out, "");
+    }
+    
+    /**
+     * This will perform the document reading, decoding and writing.
+     *
+     * @param in The filename used for input.
+     * @param out The filename used for output.
+     * @param password The password to open the document.
+     *
+     * @throws IOException If there is an error parsing the document.
+     * @throws COSVisitorException If there is an error while copying the document.
+     */
+    public void doIt(String in, String out, String password) throws IOException, COSVisitorException
     {
         PDDocument doc = null;
         try
@@ -66,15 +84,25 @@ public class WriteDecodedDoc
             {
                 try
                 {
-                    doc.decrypt( "" );
+                    doc.decrypt( password );
+                    doc.setAllSecurityToBeRemoved(true);
                 }
                 catch( InvalidPasswordException e )
                 {
-                    System.err.println( "Error: The document is encrypted." );
+                    if (password.trim().length() == 0)
+                    {
+                        System.err.println( "Password needed!!" );
+                    }
+                    else
+                    {
+                        System.err.println( "Wrong password!!" );
+                    }
+                    return;
                 }
                 catch( org.apache.pdfbox.exceptions.CryptographyException e )
                 {
                     e.printStackTrace();
+                    return;
                 }
             }
 
@@ -110,28 +138,78 @@ public class WriteDecodedDoc
     public static void main(String[] args)
     {
         WriteDecodedDoc app = new WriteDecodedDoc();
-        try
+        String password = "";
+        String pdfFile = null;
+        String outputFile = null;
+        for( int i=0; i<args.length; i++ )
         {
-            if( args.length != 2 )
+            if( args[i].equals( PASSWORD ) )
             {
-                app.usage();
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                password = args[i];
             }
             else
             {
-                app.doIt( args[0], args[1]);
+                if( pdfFile == null )
+                {
+                    pdfFile = args[i];
+                }
+                else
+                {
+                    outputFile = args[i];
+                }
             }
         }
-        catch (Exception e)
+        if( pdfFile == null )
         {
-            e.printStackTrace();
+            usage();
+        }
+        else
+        {
+            try
+            {
+                if (outputFile == null)
+                {
+                    outputFile = calculateOutputFilename(pdfFile);
+                }
+                app.doIt(pdfFile, outputFile, password);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
+    private static String calculateOutputFilename(String filename) 
+    {
+        String outputFilename;
+        if (filename.toLowerCase().endsWith(".pdf"))
+        {
+            outputFilename = filename.substring(0,filename.length()-4);
+        }
+        else
+        {
+            outputFilename = filename;
+        }
+        outputFilename += "_unc.pdf";
+        return outputFilename;
+    }
+    
     /**
      * This will print out a message telling how to use this example.
      */
-    private void usage()
+    private static void usage()
     {
-        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc <input-file> <output-file>" );
+        System.err.println(
+                "usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [OPTIONS] <input-file> [output-file]\n" +
+                "  -password <password>      Password to decrypt the document\n" +
+                "  <input-file>              The PDF document to be decompressed\n" +
+                "  [output-file]             The filename for the decompressed pdf\n"
+                );
     }
 }
