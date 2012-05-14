@@ -20,6 +20,8 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
@@ -35,11 +37,13 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
@@ -75,50 +79,86 @@ public class PDPixelMap extends PDXObjectImage
 
     /**
      * Construct a pixel map image from an AWT image.
-     *
+     * 
+     * 
      * @param doc The PDF document to embed the image in.
-     * @param awtImage The image to read data from.
+     * @param bi The image to read data from.
      *
      * @throws IOException If there is an error while embedding this image.
      */
-    /*
-     * This method is broken and needs to be implemented, any takers?
-    public PDPixelMap(PDDocument doc, BufferedImage awtImage) throws IOException
+    public PDPixelMap(PDDocument doc, BufferedImage bi) throws IOException
     {
-        super( doc, "png");
-        image = awtImage;
-        setWidth( image.getWidth() );
-        setHeight( image.getHeight() );
+        super( doc, PNG);
+        createImageStream(doc, bi);
+    }
 
-        ColorModel cm = image.getColorModel();
-        ColorSpace cs = cm.getColorSpace();
-        PDColorSpace pdColorSpace = PDColorSpaceFactory.createColorSpace( doc, cs );
-        setColorSpace( pdColorSpace );
-        //setColorSpace( )
-
-        PDStream stream = getPDStream();
-        OutputStream output = null;
+    private void createImageStream(PDDocument doc, BufferedImage bi) throws IOException
+    {
+        BufferedImage alphaImage = null;
+        BufferedImage rgbImage = null;
+        int width = bi.getWidth();
+        int height = bi.getHeight();
+        if (bi.getColorModel().hasAlpha())
+        {
+            // extract the alpha information
+            WritableRaster alphaRaster = bi.getAlphaRaster();
+            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), 
+                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            alphaImage = new BufferedImage(cm, alphaRaster, false, null);
+            // create a RGB image without alpha
+            rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g = rgbImage.createGraphics();
+            g.setComposite(AlphaComposite.Src);
+            g.drawImage(bi, 0, 0, null);
+        }
+        else
+        {
+            rgbImage = bi;
+        }
+        java.io.OutputStream os = null;
         try
         {
-            output = stream.createOutputStream();
-            DataBuffer buffer = awtImage.getRaster().getDataBuffer();
-            if( buffer instanceof DataBufferByte )
+            int numberOfComponents = rgbImage.getColorModel().getNumComponents();
+            if (numberOfComponents == 3)
             {
-                DataBufferByte byteBuffer = (DataBufferByte)buffer;
-                byte[] data = byteBuffer.getData();
-                output.write( data );
+                setColorSpace( PDDeviceRGB.INSTANCE );
             }
-            setBitsPerComponent( cm.getPixelSize() );
+            else
+            {
+                if (numberOfComponents == 1)
+                {
+                    setColorSpace( new PDDeviceGray() );
+                }
+                else
+                {
+                    throw new IllegalStateException();
+                }
+            }
+            byte[] outData = new byte[width * height * numberOfComponents];
+            rgbImage.getData().getDataElements(0, 0, width, height, outData);
+            // add FlateDecode compression
+            getPDStream().addCompression();
+            os = getCOSStream().createUnfilteredStream();
+            os.write(outData);
+            
+            COSDictionary dic = getCOSStream();
+            dic.setItem( COSName.FILTER, COSName.FLATE_DECODE );
+            dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
+            dic.setItem( COSName.TYPE, COSName.XOBJECT );
+            if(alphaImage != null)
+            {
+                PDPixelMap smask = new PDPixelMap(doc, alphaImage);
+                dic.setItem(COSName.SMASK, smask);
+            }
+            setBitsPerComponent( 8 );
+            setHeight( height );
+            setWidth( width );
         }
         finally
         {
-            if( output != null )
-            {
-                output.close();
-            }
+            os.close();
         }
-    }*/
-
+    }
     /**
      * Returns a {@link java.awt.image.BufferedImage} of the COSStream
      * set in the constructor or null if the COSStream could not be encoded.
