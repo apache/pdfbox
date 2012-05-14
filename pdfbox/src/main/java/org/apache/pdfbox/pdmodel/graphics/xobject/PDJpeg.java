@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -35,17 +36,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.IIOException;
 import javax.imageio.ImageReader;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -162,6 +157,7 @@ public class PDJpeg extends PDXObjectImage
             // create a RGB image without alpha
             image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D g = image.createGraphics();
+            g.setComposite(AlphaComposite.Src);
             g.drawImage(bi, 0, 0, null);
             bi = image;
         }
@@ -169,25 +165,8 @@ public class PDJpeg extends PDXObjectImage
         java.io.OutputStream os = getCOSStream().createFilteredStream();
         try
         {
-            ImageWriter writer = null;
-            Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName(JPG);
-            if (iter.hasNext())
-            {
-                writer = iter.next();
-            }
-            ImageOutputStream ios = ImageIO.createImageOutputStream(os);
-            writer.setOutput(ios);
-
-            // Set the compression quality
-            JPEGImageWriteParam iwparam = new JPEGImageWriteParam(Locale.getDefault());
-            iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            iwparam.setCompressionQuality(compressionQuality);
-
-            // Write the image
-            writer.write(null, new IIOImage(bi, null, null), iwparam);
-
-            writer.dispose();
-
+            ImageIOUtil.writeImage(bi, JPG, os);
+            
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
             dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
