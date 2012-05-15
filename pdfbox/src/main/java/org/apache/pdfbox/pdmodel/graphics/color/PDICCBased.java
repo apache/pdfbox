@@ -28,8 +28,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.operator.pagedrawer.Invoke;
 
+import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
@@ -141,24 +141,19 @@ public class PDICCBased extends PDColorSpace
             profile = stream.createInputStream();
             ICC_Profile iccProfile = ICC_Profile.getInstance( profile );
             cSpace = new ICC_ColorSpace( iccProfile );
+            float[] components = new float[numberOfComponents];
+            // there maybe a ProfileDataException or a CMMException as there
+            // are some issues when loading ICC_Profiles, see PDFBOX-1295
+            // Try to create a color as test ...
+            new Color(cSpace,components,1f);
         }
-        catch(IllegalArgumentException excpetion)
+        catch (RuntimeException e)
         {
-            LOG.debug("Can't read ICC-profile, using alterbnate colorspace instead");
-            List colorspacesList = getAlternateColorSpaces();
-            if (colorspacesList != null && colorspacesList.size() > 0) 
-            {
-                Object[] colorspaces = colorspacesList.toArray();
-                int numOfComponents = getNumberOfComponents();
-                for (int i=0;i<colorspaces.length;i++)
-                {
-                    if (numberOfComponents == ((PDColorSpace)colorspaces[i]).getNumberOfComponents())
-                    {
-                        cSpace = ((PDColorSpace)colorspaces[i]).createColorSpace();
-                        break;
-                    }
-                }
-            }
+            // we are using an alternate colorspace as fallback
+            LOG.debug("Can't read ICC-profile, using alternate colorspace instead");
+            List alternateCSList = getAlternateColorSpaces();
+            PDColorSpace alternate = (PDColorSpace)alternateCSList.get(0);
+            cSpace = alternate.getJavaColorSpace();
         }
         finally
         {
