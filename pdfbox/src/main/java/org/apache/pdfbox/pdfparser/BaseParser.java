@@ -860,13 +860,10 @@ public abstract class BaseParser
      */
     private final COSString parseCOSHexString() throws IOException
     {
-    	
         final StringBuilder sBuf = new StringBuilder();
-    	
         while( true )
         {
             int c = pdfSource.read();
-      	 
             if ( isHexDigit((char)c) )
             {
                 sBuf.append( (char) c );
@@ -1213,7 +1210,8 @@ public abstract class BaseParser
                     int peek = pdfSource.peek();
                     // we can end up in an infinite loop otherwise
                     throw new IOException( "Unknown dir object c='" + c +
-                            "' cInt=" + (int)c + " peek='" + (char)peek + "' peekInt=" + peek + " " + pdfSource.getOffset() );
+                            "' cInt=" + (int)c + " peek='" + (char)peek 
+                            + "' peekInt=" + peek + " " + pdfSource.getOffset() );
                 }
 
                 // if it's an endstream/endobj, we want to put it back so the caller will see it

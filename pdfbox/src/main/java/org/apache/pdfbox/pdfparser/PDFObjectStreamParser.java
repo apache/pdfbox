@@ -40,7 +40,7 @@ public class PDFObjectStreamParser extends BaseParser
     /**
      * Log instance.
      */
-    private static final Log log =
+    private static final Log LOG =
         LogFactory.getLog(PDFObjectStreamParser.class);
 
     private List<COSObject> streamObjects = null;
@@ -53,13 +53,14 @@ public class PDFObjectStreamParser extends BaseParser
      * @since Apache PDFBox 1.3.0
      * @param strm The stream to parse.
      * @param doc The document for the current parsing.
-     * @param forceParcing flag to skip malformed or otherwise unparseable
+     * @param forceParsing flag to skip malformed or otherwise unparseable
      *                     input where possible
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFObjectStreamParser(
             COSStream strm, COSDocument doc, boolean forceParsing)
-            throws IOException {
+            throws IOException 
+    {
        super(strm.getUnfilteredStream(), forceParsing);
        setDocument( doc );
        stream = strm;
@@ -74,7 +75,8 @@ public class PDFObjectStreamParser extends BaseParser
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFObjectStreamParser(COSStream strm, COSDocument doc)
-            throws IOException {
+            throws IOException 
+    {
         this(strm, doc, FORCE_PARSING);
     }
 
@@ -109,9 +111,9 @@ public class PDFObjectStreamParser extends BaseParser
                     COSInteger.get( objectNumbers.get( objectCounter).intValue() );
                 object.setObjectNumber( objNum );
                 streamObjects.add( object );
-                if(log.isDebugEnabled())
+                if(LOG.isDebugEnabled())
                 {
-                    log.debug( "parsed=" + object );
+                    LOG.debug( "parsed=" + object );
                 }
                 objectCounter++;
             }
