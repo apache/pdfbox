@@ -122,9 +122,13 @@ public class XrefTrailerResolver
 
     /**
      * Returns the trailer last set by {@link #setTrailer(COSDictionary)}.
+     * 
+     * @return the current trailer.
+     * 
      */
-    public COSDictionary getCurrentTrailer() {
-    		return curXrefTrailerObj.trailer;
+    public COSDictionary getCurrentTrailer() 
+    {
+        return curXrefTrailerObj.trailer;
     }
 
     /**
@@ -137,6 +141,9 @@ public class XrefTrailerResolver
      * in byte position order.
      * Thus for incomplete PDF documents with missing
      * startxref one could call this method with parameter value -1.
+     * 
+     * @param startxrefBytePosValue starting position of the first XRef
+     * 
      */
     public void setStartxref( long startxrefBytePosValue )
     {
@@ -242,17 +249,20 @@ public class XrefTrailerResolver
      */
     public Set<Long> getContainedObjectNumbers( final int objstmObjNr ) 
     {
-    		if ( resolvedXrefTrailer == null )
-    			return null;
-    		
-    		final Set<Long> refObjNrs = new HashSet<Long>();
-    		final int       cmpVal    = - objstmObjNr;
-    		
-    		for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) {
-						if ( xrefEntry.getValue() == cmpVal )
-							refObjNrs.add( xrefEntry.getKey().getNumber() );
-				}
-    		
-    		return refObjNrs;
+        if ( resolvedXrefTrailer == null )
+        {
+            return null;
+        }
+        final Set<Long> refObjNrs = new HashSet<Long>();
+        final int       cmpVal    = - objstmObjNr;
+        
+        for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) 
+        {
+            if ( xrefEntry.getValue() == cmpVal )
+            {
+                refObjNrs.add( xrefEntry.getKey().getNumber() );
+            }
+        }
+        return refObjNrs;
     }
 }

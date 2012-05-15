@@ -49,19 +49,19 @@ public class PDFXrefStreamParser extends BaseParser
      * @param doc The document for the current parsing.
      * @param forceParsing flag to skip malformed or otherwise unparseable
      *                     input where possible
-     * @param xrefTrailerResolver resolver to read the xref/trailer information
+     * @param resolver resolver to read the xref/trailer information
      *
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFXrefStreamParser(
             COSStream strm, COSDocument doc, boolean forceParsing,
-            XrefTrailerResolver xrefTrailerResolver )
+            XrefTrailerResolver resolver )
             throws IOException
     {
         super(strm.getUnfilteredStream(), forceParsing);
         setDocument(doc);
         stream = strm;
-        this.xrefTrailerResolver = xrefTrailerResolver;
+        this.xrefTrailerResolver = resolver;
     }
 
     /**
@@ -163,11 +163,11 @@ public class PDFXrefStreamParser extends BaseParser
                          * table but add object stream number with minus sign in order to
                          * distinguish from file offsets
                          */
-	                      int objstmObjNr = 0;
-	                      for(int i = 0; i < w1; i++)
-	                      {
-	                      		objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
-	                      }
+                        int objstmObjNr = 0;
+                        for(int i = 0; i < w1; i++)
+                        {
+                            objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        }    
                         objKey = new COSObjectKey( objID.intValue(), 0 );
                         xrefTrailerResolver.setXRef( objKey, -objstmObjNr );
                         break;

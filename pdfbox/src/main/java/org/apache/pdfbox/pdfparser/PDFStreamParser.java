@@ -55,13 +55,14 @@ public class PDFStreamParser extends BaseParser
      * @since Apache PDFBox 1.3.0
      * @param stream The stream to read data from.
      * @param raf The random access file.
-     * @param forceParcing flag to skip malformed or otherwise unparseable
+     * @param forceParsing flag to skip malformed or otherwise unparseable
      *                     input where possible
      * @throws IOException If there is an error reading from the stream.
      */
     public PDFStreamParser(
             InputStream stream, RandomAccess raf, boolean forceParsing)
-            throws IOException {
+            throws IOException 
+    {
         super(stream, forceParsing);
         file = raf;
     }
@@ -75,7 +76,8 @@ public class PDFStreamParser extends BaseParser
      * @throws IOException If there is an error reading from the stream.
      */
     public PDFStreamParser(InputStream stream, RandomAccess raf)
-            throws IOException {
+            throws IOException 
+    {
         this(stream, raf, FORCE_PARSING);
     }
 
@@ -96,12 +98,13 @@ public class PDFStreamParser extends BaseParser
      *
      * @since Apache PDFBox 1.3.0
      * @param stream The stream to parse.
-     * @param forceParcing flag to skip malformed or otherwise unparseable
+     * @param forceParsing flag to skip malformed or otherwise unparseable
      *                     input where possible
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFStreamParser(COSStream stream, boolean forceParsing)
-            throws IOException {
+            throws IOException 
+    {
        this(stream.getUnfilteredStream(), stream.getScratchFile(), forceParsing);
     }
 
@@ -150,6 +153,9 @@ public class PDFStreamParser extends BaseParser
         return streamObjects;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void close() throws IOException
     {
         pdfSource.close();
@@ -190,7 +196,8 @@ public class PDFStreamParser extends BaseParser
             }
 
             /** {@inheritDoc} */
-            public Object next() {
+            public Object next() 
+            {
                 tryNext();
                 Object tmp = token;
                 if (tmp == null)
@@ -474,7 +481,8 @@ public class PDFStreamParser extends BaseParser
             nextChar = pdfSource.peek();
             buffer.append( currentChar );
             // Type3 Glyph description has operators with a number in the name
-            if (currentChar == 'd' && (nextChar == '0' || nextChar == '1') ) {
+            if (currentChar == 'd' && (nextChar == '0' || nextChar == '1') ) 
+            {
                 buffer.append( (char)pdfSource.read() );
                 nextChar = pdfSource.peek();
             }
