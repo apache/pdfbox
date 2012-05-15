@@ -1104,11 +1104,27 @@ public class PDDocument implements Pageable
      */
     public static PDDocument loadNonSeq( File file, RandomAccess scratchFile ) throws IOException
     {
-    	  NonSequentialPDFParser parser = new NonSequentialPDFParser( file, scratchFile );
+        return loadNonSeq( file, scratchFile, "" );
+    }
+    
+    /**
+     * Parses PDF with non sequential parser.
+     *  
+     * @param file  file to be loaded
+     * @param scratchFile  location to store temp PDFBox data for this document
+     * @param password password to be used for decryption
+     *
+     * @return loaded document
+     *
+     * @throws IOException  in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq( File file, RandomAccess scratchFile, String password ) throws IOException
+    {
+        NonSequentialPDFParser parser = new NonSequentialPDFParser( file, scratchFile, password );
         parser.parse();
         return parser.getPDDocument();
     }
-    
+
     /**
      * This will save this document to the filesystem.
      *
