@@ -134,7 +134,37 @@ public class NonSequentialPDFParser extends PDFParser
      *  
      * @throws IOException If something went wrong.
      */
+    /** 
+     * Constructs parser for given file using given buffer for temporary storage. 
+     * 
+     * @param file the pdf to be parsed
+     * @param raBuf the buffer to be used for parsing
+     *  
+     * @throws IOException If something went wrong.
+     */
     public NonSequentialPDFParser( File file, RandomAccess raBuf ) throws IOException
+    {
+        this(file, raBuf, "");
+    }
+    
+    /** 
+     * Constructs parser for given file using given buffer for temporary storage. 
+     * 
+     * @param file the pdf to be parsed
+     * @param raBuf the buffer to be used for parsing
+     *  
+     * @throws IOException If something went wrong.
+     */
+    /** 
+     * Constructs parser for given file using given buffer for temporary storage. 
+     * 
+     * @param file the pdf to be parsed
+     * @param raBuf the buffer to be used for parsing
+     * @param decryptionPassword password to be used for decryption
+     *  
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser( File file, RandomAccess raBuf, String decryptionPassword ) throws IOException
     {
         super( EMPTY_INPUT_STREAM, null, false );
             
@@ -159,6 +189,8 @@ public class NonSequentialPDFParser extends PDFParser
                                          new COSDocument( raBuf, false ) );
     
         pdfSource = new PushBackInputStream( raStream, 4096 );
+        
+        password = decryptionPassword;
     }
         
     // ------------------------------------------------------------------------
