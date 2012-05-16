@@ -95,6 +95,7 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
 
         suite.addTestSuite( PDFParserTest.class );
+        suite.addTestSuite( TestExtractText.class );
 
         return suite;
     }

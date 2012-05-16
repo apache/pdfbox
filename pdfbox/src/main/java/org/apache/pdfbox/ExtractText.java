@@ -19,10 +19,17 @@ package org.apache.pdfbox;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
+import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.PDFText2HTML;
@@ -262,7 +269,53 @@ public class ExtractText
                     System.err.println("Writing to "+outputFile);
                 }
                 
+                // Extract text for main document:
                 stripper.writeText( document, output );
+                
+                // ... also for any embedded PDFs:
+                PDDocumentCatalog catalog = document.getDocumentCatalog();
+                PDDocumentNameDictionary names = catalog.getNames();    
+                if (names != null)
+                {
+                    PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+                    if (embeddedFiles != null)
+                    {
+                        for (Map.Entry<String,Object> ent : embeddedFiles.getNames().entrySet()) 
+                        {
+                            if (debug)
+                            {
+                                System.err.println("Processing embedded file " + ent.getKey() + ":");
+                            }
+                            PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
+                            PDEmbeddedFile file = spec.getEmbeddedFile();
+                            if (file.getSubtype().equals("application/pdf")) 
+                            {
+                                if (debug)
+                                {
+                                    System.err.println("  is PDF (size=" + file.getSize() + ")");
+                                }
+                                InputStream fis = file.createInputStream();
+                                PDDocument subDoc = null;
+                                try 
+                                {
+                                    subDoc = PDDocument.load(fis);
+                                } 
+                                finally 
+                                {
+                                    fis.close();
+                                }
+                                try 
+                                {
+                                    stripper.writeText( subDoc, output );
+                                } 
+                                finally 
+                                {
+                                    subDoc.close();
+                                }
+                            } 
+                        }
+                    }
+                }
                 stopProcessing("Time for extraction: ", startTime);
             }
             finally
