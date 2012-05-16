@@ -21,8 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -47,8 +45,11 @@ public class ExtractText
     private static final String SORT = "-sort";
     private static final String IGNORE_BEADS = "-ignoreBeads";
     private static final String DEBUG = "-debug";
-    private static final String HTML = "-html";  // jjb - added simple HTML output
-    private static final String FORCE = "-force"; //enables pdfbox to skip corrupt objects
+    // jjb - added simple HTML output
+    private static final String HTML = "-html";  
+    // enables pdfbox to skip corrupt objects
+    private static final String FORCE = "-force"; 
+    private static final String NONSEQ = "-nonSeq";
 
     /*
      * debug flag
@@ -75,7 +76,13 @@ public class ExtractText
         ExtractText extractor = new ExtractText();
         extractor.startExtraction(args);
     }
-
+    /**
+     * Starts the text extraction.
+     *  
+     * @param args the commandline arguments.
+     * 
+     * @throws Exception if something went wrong.
+     */
     public void startExtraction( String[] args ) throws Exception
     {
         boolean toConsole = false;
@@ -83,6 +90,7 @@ public class ExtractText
         boolean force = false;
         boolean sort = false;
         boolean separateBeads = true;
+        boolean useNonSeqParser = false; 
         String password = "";
         String encoding = null;
         String pdfFile = null;
@@ -154,6 +162,10 @@ public class ExtractText
             {
                 force = true;
             }
+            else if( args[i].equals( NONSEQ ) )
+            {
+                useNonSeqParser = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -179,39 +191,31 @@ public class ExtractText
             try
             {
                 long startTime = startProcessing("Loading PDF "+pdfFile);
-                try
+                if( outputFile == null && pdfFile.length() >4 )
                 {
-                    //basically try to load it from a url first and if the URL
-                    //is not recognized then try to load it from the file system.
-                    URL url = new URL( pdfFile );
-                    document = PDDocument.load(url, force);
-                    String fileName = url.getFile();
-                    if( outputFile == null && fileName.length() >4 )
-                    {
-                        outputFile = new File( fileName.substring( 0, fileName.length() -4 ) + ext ).getName();
-                    }
+                    outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
                 }
-                catch( MalformedURLException e )
+                if (useNonSeqParser) 
+                {
+                    document = PDDocument.loadNonSeq(new File( pdfFile ), null, password);
+                }
+                else
                 {
                     document = PDDocument.load(pdfFile, force);
-                    if( outputFile == null && pdfFile.length() >4 )
+                    if( document.isEncrypted() )
                     {
-                        outputFile = pdfFile.substring( 0, pdfFile.length() -4 ) + ext;
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
+                        document.openProtection( sdm );
+                        AccessPermission ap = document.getCurrentAccessPermission();
+
+                        if( ! ap.canExtractContent() )
+                        {
+                            throw new IOException( "You do not have permission to extract text" );
+                        }
                     }
                 }
                 stopProcessing("Time for loading: ", startTime);
 
-                if( document.isEncrypted() )
-                {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
-                    document.openProtection( sdm );
-                    AccessPermission ap = document.getCurrentAccessPermission();
-
-                    if( ! ap.canExtractContent() )
-                    {
-                        throw new IOException( "You do not have permission to extract text" );
-                    }
-                }
 
                 if ((encoding == null) && (toHTML))
                 {
@@ -253,6 +257,11 @@ public class ExtractText
                 stripper.setEndPage( endPage );
 
                 startTime = startProcessing("Starting text extraction");
+                if (debug) 
+                {
+                    System.err.println("Writing to "+outputFile);
+                }
+                
                 stripper.writeText( document, output );
                 stopProcessing("Time for extraction: ", startTime);
             }
@@ -270,7 +279,8 @@ public class ExtractText
         }
     }
 
-    private long startProcessing(String message) {
+    private long startProcessing(String message) 
+    {
         if (debug) 
         {
             System.err.println(message);
@@ -278,7 +288,8 @@ public class ExtractText
         return System.currentTimeMillis();
     }
     
-    private void stopProcessing(String message, long startTime) {
+    private void stopProcessing(String message, long startTime) 
+    {
         if (debug)
         {
             long stopTime = System.currentTimeMillis();
@@ -303,6 +314,7 @@ public class ExtractText
             "  -debug                       Enables debug output about the time consumption of every stage\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
+            "  -nonSeq                      Enables the new non-sequential parser\n" +
             "  <PDF file>                   The PDF document to use\n" +
             "  [Text File]                  The file to write the text to\n"
             );
