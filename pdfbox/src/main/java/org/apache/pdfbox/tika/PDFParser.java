@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -29,15 +30,24 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
+import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.extractor.EmbeddedDocumentExtractor;
+import org.apache.tika.extractor.ParsingEmbeddedDocumentExtractor;
 import org.apache.tika.io.CloseShieldInputStream;
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.PagedText;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.AbstractParser;
 import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.EmbeddedContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -47,8 +57,11 @@ import org.xml.sax.SAXException;
  * This parser can process also encrypted PDF documents if the required
  * password is given as a part of the input metadata associated with a
  * document. If no password is given, then this parser will try decrypting
- * the document using the empty password that's often used with PDFs.
- *
+ * the document using the empty password that's often used with PDFs.  If
+ * the PDF contains any embedded documents (for example as part of a PDF
+ * package) then this parser will use the {@link EmbeddedDocumentExtractor}
+ * to handle them.
+
  * @since Apache PDFBox 1.7.0
  */
 public class PDFParser extends AbstractParser {
@@ -116,10 +129,55 @@ public class PDFParser extends AbstractParser {
             PDF2XHTML.process(pdfDocument, handler, metadata,
                     extractAnnotationText, enableAutoSpace,
                     suppressDuplicateOverlappingText, sortByPosition);
+
+            extractEmbeddedDocuments(context, pdfDocument, handler);
+
         } finally {
             pdfDocument.close();
         }
     }
+
+    private void extractEmbeddedDocuments(ParseContext context, PDDocument document, ContentHandler handler)
+        throws IOException, SAXException, TikaException {
+
+        PDDocumentCatalog catalog = document.getDocumentCatalog();    
+        PDDocumentNameDictionary names = catalog.getNames();    
+        if (names != null) {
+
+            PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+            if (embeddedFiles != null) {
+
+                EmbeddedDocumentExtractor embeddedExtractor = context.get(EmbeddedDocumentExtractor.class);
+                if (embeddedExtractor == null) {
+                    embeddedExtractor = new ParsingEmbeddedDocumentExtractor(context);
+                }
+
+                for (Map.Entry<String,Object> ent : embeddedFiles.getNames().entrySet()) {
+                    PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
+                    PDEmbeddedFile file = spec.getEmbeddedFile();
+
+                    Metadata metadata = new Metadata();
+                    // TODO: other metadata?
+                    metadata.set(Metadata.RESOURCE_NAME_KEY, ent.getKey());
+                    metadata.set(Metadata.CONTENT_TYPE, file.getSubtype());
+                    metadata.set(Metadata.CONTENT_LENGTH, Long.toString(file.getSize()));
+
+                    if (embeddedExtractor.shouldParseEmbedded(metadata)) {
+                        TikaInputStream stream = TikaInputStream.get(file.createInputStream());
+                        try {
+                            embeddedExtractor.parseEmbedded(
+                                                            stream,
+                                                            new EmbeddedContentHandler(handler),
+                                                            metadata, false);
+                        } finally {
+                            stream.close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private void extractMetadata(PDDocument document, Metadata metadata)
             throws TikaException {
