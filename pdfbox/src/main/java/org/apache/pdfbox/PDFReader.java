@@ -32,8 +32,6 @@ import javax.swing.KeyStroke;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,11 +58,15 @@ public class PDFReader extends javax.swing.JFrame
     private ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
 
     private PDDocument document = null;
-    private List pages= null;
+    private List<PDPage> pages= null;
     
     private int currentPage = 0;
     private int numberOfPages = 0;
     private String currentFilename = null;
+
+    private static final String PASSWORD = "-password";
+    private static final String NONSEQ = "-nonSeq";
+    private static boolean useNonSeqParser = false; 
     
     /**
      * Constructor.
@@ -241,7 +243,7 @@ public class PDFReader extends javax.swing.JFrame
             currentDir = new File(name).getParentFile();
             try
             {
-                openPDFFile(name);
+                openPDFFile(name, "");
             }
             catch (Exception e)
             {
@@ -275,27 +277,45 @@ public class PDFReader extends javax.swing.JFrame
     public static void main(String[] args) throws Exception
     {
         PDFReader viewer = new PDFReader();
-        if( args.length >0 )
+        String password = "";
+        String filename = null;
+        for( int i = 0; i < args.length; i++ )
         {
-            viewer.openPDFFile( args[0] );
+            if( args[i].equals( PASSWORD ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                password = args[i];
+            }
+            if( args[i].equals( NONSEQ ) )
+            {
+                useNonSeqParser = true;
+            }
+            else
+            {
+                filename = args[i];
+            }
         }
+        viewer.openPDFFile( filename, password );
         viewer.setVisible(true);
     }
 
-    private void openPDFFile(String file) throws Exception
+    private void openPDFFile(String filename, String password) throws Exception
     {
         if( document != null )
         {
             document.close();
             documentPanel.removeAll();
         }
-        InputStream input = null;
-        File f = new File( file );
-        input = new FileInputStream(f);
-        document = parseDocument( input );
+        
+        File file = new File( filename );
+        parseDocument( file, password );
         pages = document.getDocumentCatalog().getAllPages();
         numberOfPages = pages.size();
-        currentFilename = f.getAbsolutePath();
+        currentFilename = file.getAbsolutePath();
         currentPage = 0;
         updateTitle();
         showPage(0);
@@ -344,30 +364,34 @@ public class PDFReader extends javax.swing.JFrame
      *
      * @param input The input stream for the document.
      *
-     * @return The document.
-     *
      * @throws IOException If there is an error parsing the document.
      */
-    private static PDDocument parseDocument( InputStream input )throws IOException
+    private void parseDocument( File file, String password )throws IOException
     {
-        PDDocument document = PDDocument.load( input );
-        if( document.isEncrypted() )
+        document = null;
+        if (useNonSeqParser)
         {
-            try
+            document = PDDocument.loadNonSeq(file, null, password);
+        }
+        else
+        {
+            document = PDDocument.load(file);
+            if( document.isEncrypted() )
             {
-                document.decrypt( "" );
-            }
-            catch( InvalidPasswordException e )
-            {
-                System.err.println( "Error: The document is encrypted." );
-            }
-            catch( org.apache.pdfbox.exceptions.CryptographyException e )
-            {
-                e.printStackTrace();
+                try
+                {
+                    document.decrypt( password );
+                }
+                catch( InvalidPasswordException e )
+                {
+                    System.err.println( "Error: The document is encrypted." );
+                }
+                catch( org.apache.pdfbox.exceptions.CryptographyException e )
+                {
+                    e.printStackTrace();
+                }
             }
         }
-
-        return document;
     }
 
     /**
@@ -379,4 +403,18 @@ public class PDFReader extends javax.swing.JFrame
     {
         return bottomStatusPanel;
     }
+    
+    /**
+     * This will print out a message telling how to use this utility.
+     */
+    private static void usage()
+    {
+        System.err.println(
+                "usage: java -jar pdfbox-app-x.y.z.jar PDFReader [OPTIONS] <input-file>\n" +
+                "  -password <password>      Password to decrypt the document\n" +
+                "  -nonSeq                   Enables the new non-sequential parser\n" +
+                "  <input-file>              The PDF document to be loaded\n"
+                );
+    }
+
 }
