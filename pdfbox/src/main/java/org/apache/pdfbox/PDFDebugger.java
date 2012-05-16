@@ -45,7 +45,6 @@ import javax.swing.UIManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -59,6 +58,11 @@ public class PDFDebugger extends javax.swing.JFrame
 {
     private File currentDir=new File(".");
     private PDDocument document = null;
+
+    private static final String NONSEQ = "-nonSeq";
+    private static final String PASSWORD = "-password";
+
+    private static boolean useNonSeqParser = false; 
 
     /**
      * Constructor.
@@ -148,10 +152,8 @@ public class PDFDebugger extends javax.swing.JFrame
         fileMenu.add(openMenuItem);
 
         saveMenuItem.setText("Save");
-        //fileMenu.add(saveMenuItem);
 
         saveAsMenuItem.setText("Save As ...");
-        //fileMenu.add(saveAsMenuItem);
 
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
@@ -179,16 +181,12 @@ public class PDFDebugger extends javax.swing.JFrame
         deleteMenuItem.setText("Delete");
         editMenu.add(deleteMenuItem);
 
-        //menuBar.add(editMenu);
-
         helpMenu.setText("Help");
         contentsMenuItem.setText("Contents");
         helpMenu.add(contentsMenuItem);
 
         aboutMenuItem.setText("About");
         helpMenu.add(aboutMenuItem);
-
-        //menuBar.add(helpMenu);
 
         setJMenuBar(menuBar);
 
@@ -211,7 +209,7 @@ public class PDFDebugger extends javax.swing.JFrame
             currentDir = new File(name).getParentFile();
             try
             {
-                readPDFFile(name);
+                readPDFFile(name, "");
             }
             catch (Exception e)
             {
@@ -350,65 +348,95 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         PDFDebugger viewer = new PDFDebugger();
-        if( args.length >0 )
+        String filename = null;
+        String password = "";
+        for( int i = 0; i < args.length; i++ )
         {
-            viewer.readPDFFile( args[0] );
+            if( args[i].equals( PASSWORD ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                password = args[i];
+            }
+            if( args[i].equals( NONSEQ ) )
+            {
+                useNonSeqParser = true;
+            }
+            else
+            {
+                filename = args[i];
+            }
+        }
+
+        if (filename != null)
+        {
+            viewer.readPDFFile( filename, password );
         }
         viewer.setVisible(true);
     }
 
-    private void readPDFFile(String file) throws Exception
+    private void readPDFFile(String file, String password) throws Exception
     {
         if( document != null )
         {
             document.close();
         }
-        InputStream input = null;
         File f = new File( file );
-        input = new FileInputStream(f);
-        document = parseDocument( input );
+        parseDocument( f, password );
         TreeModel model=new PDFTreeModel(document);
         jTree1.setModel(model);
         setTitle( "PDFBox - " + f.getAbsolutePath() );
-        /*
-        List pages = document.getDocumentCatalog().getAllPages();
-        for( int i=0; i<pages.size(); i++ )
-        {
-            PageWrapper wrapper = new PageWrapper();
-            wrapper.displayPage( (PDPage)pages.get(i) );
-            documentPanel.add( wrapper.getPanel() );
-        }*/
     }
         /**
      * This will parse a document.
      *
-     * @param input The input stream for the document.
-     *
-     * @return The document.
+     * @param input The file addressing the document.
      *
      * @throws IOException If there is an error parsing the document.
      */
-    private static PDDocument parseDocument( InputStream input )throws IOException
+    private void parseDocument( File file, String password )throws IOException
     {
-        PDDocument document = PDDocument.load( input );
-        if( document.isEncrypted() )
+        if (useNonSeqParser)
         {
-            try
+            document = PDDocument.loadNonSeq(file, null, password);
+        }
+        else
+        {
+            document = PDDocument.load( file );
+            if( document.isEncrypted() )
             {
-                document.decrypt( "" );
-            }
-            catch( InvalidPasswordException e )
-            {
-                System.err.println( "Error: The document is encrypted." );
-            }
-            catch( org.apache.pdfbox.exceptions.CryptographyException e )
-            {
-                e.printStackTrace();
+                try
+                {
+                    document.decrypt( password );
+                }
+                catch( InvalidPasswordException e )
+                {
+                    System.err.println( "Error: The document is encrypted." );
+                }
+                catch( org.apache.pdfbox.exceptions.CryptographyException e )
+                {
+                    e.printStackTrace();
+                }
             }
         }
-
-        return document;
     }
+
+    /**
+     * This will print out a message telling how to use this utility.
+     */
+    private static void usage()
+    {
+        System.err.println(
+                "usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [OPTIONS] <input-file>\n" +
+                "  -password <password>      Password to decrypt the document\n" +
+                "  -nonSeq                   Enables the new non-sequential parser\n" +
+                "  <input-file>              The PDF document to be loaded\n"
+                );
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
