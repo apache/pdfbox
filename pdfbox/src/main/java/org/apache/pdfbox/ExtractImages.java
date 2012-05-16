@@ -46,6 +46,7 @@ public class ExtractImages
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
+    private static final String NONSEQ = "-nonSeq";
 
     private ExtractImages()
     {
@@ -76,6 +77,7 @@ public class ExtractImages
             String password = "";
             String prefix = null;
             boolean addKey = false;
+            boolean useNonSeqParser = false;
             for( int i=0; i<args.length; i++ )
             {
                 if( args[i].equals( PASSWORD ) )
@@ -100,6 +102,10 @@ public class ExtractImages
                 {
                     addKey = true;
                 }
+                else if( args[i].equals( NONSEQ ) )
+                {
+                    useNonSeqParser = true;
+                }
                 else
                 {
                     if( pdfFile == null )
@@ -123,20 +129,25 @@ public class ExtractImages
 
                 try
                 {
-                    document = PDDocument.load( pdfFile );
-
-                    if( document.isEncrypted() )
+                    if (useNonSeqParser)
                     {
-
-                        StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
-                        document.openProtection(spm);
-                        AccessPermission ap = document.getCurrentAccessPermission();
-
-
-                        if( ! ap.canExtractContent() )
+                        document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+                    }
+                    else
+                    {
+                        document = PDDocument.load( pdfFile );
+    
+                        if( document.isEncrypted() )
                         {
-                            throw new IOException(
-                                "Error: You do not have permission to extract images." );
+                            StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
+                            document.openProtection(spm);
+                            AccessPermission ap = document.getCurrentAccessPermission();
+    
+                            if( ! ap.canExtractContent() )
+                            {
+                                throw new IOException(
+                                    "Error: You do not have permission to extract images." );
+                            }
                         }
                     }
 
@@ -224,6 +235,7 @@ public class ExtractImages
             "  -password  <password>        Password to decrypt document\n" +
             "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
             "  -addkey                      add the internal image key to the file name\n" +
+            "  -nonSeq                      Enables the new non-sequential parser\n" +
             "  <PDF file>                   The PDF document to use\n"
             );
         System.exit( 1 );

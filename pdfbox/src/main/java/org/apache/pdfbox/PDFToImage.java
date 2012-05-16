@@ -19,6 +19,7 @@ package org.apache.pdfbox;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -46,6 +47,7 @@ public class PDFToImage
     private static final String COLOR = "-color";
     private static final String RESOLUTION = "-resolution";
     private static final String CROPBOX = "-cropbox";
+    private static final String NONSEQ = "-nonSeq";
 
     /**
      * private constructor.
@@ -64,6 +66,7 @@ public class PDFToImage
      */
     public static void main( String[] args ) throws Exception
     {
+        boolean useNonSeqParser = false; 
         String password = "";
         String pdfFile = null;
         String outputPrefix = null;
@@ -144,6 +147,10 @@ public class PDFToImage
                 i++;
                 cropBoxUpperRightY = Float.valueOf(args[i]).floatValue();
             }
+            else if( args[i].equals( NONSEQ ) )
+            {
+                useNonSeqParser = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -166,28 +173,32 @@ public class PDFToImage
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( pdfFile );
-
-
-                //document.print();
-                if( document.isEncrypted() )
+                if (useNonSeqParser)
                 {
-                    try
+                    document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+                }
+                else
+                {
+                    document = PDDocument.load( pdfFile );
+                    if( document.isEncrypted() )
                     {
-                        document.decrypt( password );
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        if( args.length == 4 )//they supplied the wrong password
+                        try
                         {
-                            System.err.println( "Error: The supplied password is incorrect." );
-                            System.exit( 2 );
+                            document.decrypt( password );
                         }
-                        else
+                        catch( InvalidPasswordException e )
                         {
-                            //they didn't supply a password and the default of "" was wrong.
-                            System.err.println( "Error: The document is encrypted." );
-                            usage();
+                            if( args.length == 4 )//they supplied the wrong password
+                            {
+                                System.err.println( "Error: The supplied password is incorrect." );
+                                System.exit( 2 );
+                            }
+                            else
+                            {
+                                //they didn't supply a password and the default of "" was wrong.
+                                System.err.println( "Error: The document is encrypted." );
+                                usage();
+                            }
                         }
                     }
                 }
@@ -267,6 +278,7 @@ public class PDFToImage
             "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
             "  -resolution <number>           The bitmap resolution in dpi\n" +
             "  -cropbox <number> <number> <number> <number> The page area to export\n" +
+            "  -nonSeq                        Enables the new non-sequential parser\n" +
             "  <PDF file>                     The PDF document to use\n"
             );
         System.exit( 1 );

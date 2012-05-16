@@ -16,17 +16,14 @@
  */
 package org.apache.pdfbox;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import java.util.List;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.COSVisitorException;
-
-import org.apache.pdfbox.pdfparser.PDFParser;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -47,6 +44,7 @@ public class PDFSplit
     private static final String SPLIT = "-split";
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";
+    private static final String NONSEQ = "-nonSeq";
 
     private PDFSplit()
     {
@@ -70,7 +68,7 @@ public class PDFSplit
         String split = null;
         String startPage = null;
         String endPage = null;
-        
+        boolean useNonSeqParser = false;
         Splitter splitter = new Splitter();
         String pdfFile = null;
         for( int i=0; i<args.length; i++ )
@@ -111,6 +109,10 @@ public class PDFSplit
                 }
                 endPage = args[i];
             }
+            else if( args[i].equals( NONSEQ ) )
+            {
+                useNonSeqParser = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -126,33 +128,36 @@ public class PDFSplit
         }
         else
         {
-
-            InputStream input = null;
             PDDocument document = null;
             List<PDDocument> documents = null;
             try
             {
-                input = new FileInputStream( pdfFile );
-                document = parseDocument( input );
-
-                if( document.isEncrypted() )
+                if (useNonSeqParser) 
                 {
-                    try
+                    document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+                }
+                else
+                {
+                    document = PDDocument.load(pdfFile);
+                    if( document.isEncrypted() )
                     {
-                        document.decrypt( password );
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        if( args.length == 4 )//they supplied the wrong password
+                        try
                         {
-                            System.err.println( "Error: The supplied password is incorrect." );
-                            System.exit( 2 );
+                            document.decrypt( password );
                         }
-                        else
+                        catch( InvalidPasswordException e )
                         {
-                            //they didn't supply a password and the default of "" was wrong.
-                            System.err.println( "Error: The document is encrypted." );
-                            usage();
+                            if( args.length == 4 )//they supplied the wrong password
+                            {
+                                System.err.println( "Error: The supplied password is incorrect." );
+                                System.exit( 2 );
+                            }
+                            else
+                            {
+                                //they didn't supply a password and the default of "" was wrong.
+                                System.err.println( "Error: The document is encrypted." );
+                                usage();
+                            }
                         }
                     }
                 }
@@ -199,10 +204,6 @@ public class PDFSplit
             }
             finally
             {
-                if( input != null )
-                {
-                    input.close();
-                }
                 if( document != null )
                 {
                     document.close();
@@ -240,22 +241,6 @@ public class PDFSplit
     }
 
     /**
-     * This will parse a document.
-     *
-     * @param input The input stream for the document.
-     *
-     * @return The document.
-     *
-     * @throws IOException If there is an error parsing the document.
-     */
-    private static PDDocument parseDocument( InputStream input )throws IOException
-    {
-        PDFParser parser = new PDFParser( input );
-        parser.parse();
-        return parser.getPDDocument();
-    }
-
-    /**
      * This will print the usage requirements and exit.
      */
     private static void usage()
@@ -265,6 +250,7 @@ public class PDFSplit
             "  -split     <integer>   split after this many pages (default 1, if startPage and endPage are unset)\n"+
             "  -startPage <integer>   start page\n" +
             "  -endPage   <integer>   end page\n" +
+            "  -nonSeq                Enables the new non-sequential parser\n" +
             "  <PDF file>             The PDF document to use\n"
             );
         System.exit( 1 );
