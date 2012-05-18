@@ -27,8 +27,13 @@ import java.util.Map;
  */
 class LZWNode
 {
-    private long code;
-    private Map subNodes = new HashMap();
+    private final long code;
+    private final Map<Byte,LZWNode> subNodes = new HashMap<Byte,LZWNode>();
+
+    public LZWNode( long codeValue ) 
+    {
+        code = codeValue;
+    }
 
     /**
      * This will get the number of children.
@@ -48,7 +53,7 @@ class LZWNode
      */
     public void setNode( byte b, LZWNode node )
     {
-        subNodes.put( new Byte( b ), node );
+        subNodes.put( b, node );
     }
 
     /**
@@ -60,7 +65,7 @@ class LZWNode
      */
     public LZWNode getNode( byte data )
     {
-        return (LZWNode)subNodes.get( new Byte( data ) );
+        return subNodes.get( data );
     }
 
 
@@ -88,14 +93,6 @@ class LZWNode
     public long getCode()
     {
         return code;
-    }
-
-    /** Setter for property code.
-     * @param codeValue New value of property code.
-     */
-    public void setCode(long codeValue)
-    {
-        code = codeValue;
     }
 
 }

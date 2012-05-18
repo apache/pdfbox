@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.filter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import java.util.HashMap;
@@ -29,28 +28,18 @@ import java.util.Map;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
  */
-class LZWDictionary
+final class LZWDictionary
 {
-    private Map codeToData = new HashMap();
-    private LZWNode root = new LZWNode();
+    private Map<Long,byte[]> codeToData = new HashMap<Long,byte[]>();
+    private LZWNode root = new LZWNode( 0 );
 
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    private byte[] buffer = new byte[8];
+    private int bufferNextWrite = 0;
     private long nextCode = 258;
     private int codeSize = 9;
 
-    /**
-     * constructor.
-     */
-    public LZWDictionary()
-    {
-        for( long i=0; i<256; i++ )
-        {
-            LZWNode node = new LZWNode();
-            node.setCode( i );
-            root.setNode( (byte)i, node );
-            codeToData.put( new Long( i ), new byte[]{ (byte)i } );
-        }
-    }
+    private LZWNode previous = null;
+    private LZWNode current = root;
 
     /**
      * This will get the value for the code.  It will return null if the code is not
@@ -62,7 +51,13 @@ class LZWDictionary
      */
     public byte[] getData( long code )
     {
-        return (byte[])codeToData.get( new Long( code ) );
+        byte[] result = codeToData.get( code );
+        if (result == null && code < 256) 
+        {
+            addRootNode( (byte) code );
+            result = codeToData.get( code );
+        }
+        return result;
     }
 
     /**
@@ -91,38 +86,42 @@ class LZWDictionary
      */
     public void visit( byte data ) throws IOException
     {
-        buffer.write( data );
-        byte[] curBuffer = buffer.toByteArray();
-        LZWNode previous = null;
-        LZWNode current = root;
-        boolean createNewCode = false;
-        for( int i=0; i<curBuffer.length && current != null; i++ )
+        if (buffer.length == bufferNextWrite) 
         {
-            previous = current;
-            current = current.getNode( curBuffer[i] );
-            if( current == null )
-            {
-                createNewCode = true;
-                current = new LZWNode();
-                previous.setNode( curBuffer[i], current );
-            }
+            final byte[] nextBuffer = new byte[2*buffer.length];
+            System.arraycopy(buffer, 0, nextBuffer, 0, buffer.length);
+            buffer = nextBuffer;
         }
-        if( createNewCode )
+        buffer[bufferNextWrite++] = data;
+        previous = current;
+        current = current.getNode( data );
+        if (current == null) 
         {
-            long code = nextCode++;
-            current.setCode( code );
-            codeToData.put( new Long( code ), curBuffer );
+            final long code;
+            if ( previous == root ) 
+            {
+                code = data & 0xFF;
+            } 
+            else 
+            {
+                code = nextCode++;
+            }
+            current = new LZWNode( code );
+            previous.setNode( data, current );
+            byte[] sav = new byte[bufferNextWrite];
+            System.arraycopy(buffer, 0, sav, 0, bufferNextWrite);
+            codeToData.put( code,  sav);
 
             /**
             System.out.print( "Adding " + code + "='" );
-            for( int i=0; i<curBuffer.length; i++ )
+            for( int i=0; i<bufferNextWrite; i++ )
             {
-                String hex = Integer.toHexString( ((curBuffer[i]+256)%256) );
+                String hex = Integer.toHexString( ((buffer[i]&0xFF );
                 if( hex.length() <=1 )
                 {
                     hex = "0" + hex;
                 }
-                if( i != curBuffer.length -1 )
+                if( i != bufferNextWrite -1 )
                 {
                     hex += " ";
                 }
@@ -130,8 +129,9 @@ class LZWDictionary
             }
             System.out.println( "'" );
             **/
-            buffer.reset();
-            buffer.write( data );
+            bufferNextWrite = 0;
+            current = root;
+            visit(data);
             resetCodeSize();
         }
     }
@@ -161,30 +161,32 @@ class LZWDictionary
      */
     private void resetCodeSize()
     {
-        if( nextCode >= 2048 )
-        {
-            codeSize = 12;
-        }
-        else if( nextCode >= 1024 )
-        {
-            codeSize = 11;
-        }
-        else if( nextCode >= 512 )
-        {
-            codeSize = 10;
-        }
-        else
+        if ( nextCode < 512) 
         {
             codeSize = 9;
+        } 
+        else if ( nextCode < 1024 ) 
+        {
+            codeSize = 10;
+        } 
+        else if ( nextCode < 2048 ) 
+        {
+            codeSize = 11;
+        } 
+        else 
+        {
+            codeSize = 12;
         }
     }
 
     /**
-     * This will crear the internal buffer that the dictionary uses.
+     * This will clear the internal buffer that the dictionary uses.
      */
     public void clear()
     {
-        buffer.reset();
+        bufferNextWrite = 0;
+        current = root;
+        previous = null;
     }
 
     /**
@@ -196,6 +198,20 @@ class LZWDictionary
      */
     public LZWNode getNode( byte[] data )
     {
-        return root.getNode( data );
+        LZWNode result = root.getNode( data );
+        if (result == null && data.length == 1) 
+        {
+            result = addRootNode(data[0]);
+        }
+        return result;
+    }
+
+    private LZWNode addRootNode( byte b) 
+    {
+        long code = b & 0xFF;
+        LZWNode result = new LZWNode( code );
+        root.setNode( b, result );
+        codeToData.put( code, new byte[] { b } );
+        return result;
     }
 }
