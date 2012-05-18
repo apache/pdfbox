@@ -354,15 +354,16 @@ public abstract class PDXObjectImage extends PDXObject
     /**
      * Returns the optional mask of a XObjectImage if there is one.
      *
-     * @return The mask as COSArray otherwise null.
+     * @return The mask otherwise null.
      */
-    public COSArray getMask()
+    public COSBase getMask()
     {
         COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
         if (mask != null)
         {
-            return (COSArray)mask;
+            return mask;
         }
         return null;
     }
+
 }
