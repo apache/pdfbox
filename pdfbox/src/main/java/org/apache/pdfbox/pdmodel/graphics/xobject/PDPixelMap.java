@@ -210,7 +210,7 @@ public class PDPixelMap extends PDXObjectImage
                 int size = Math.min(numberOfColorValues-1, highValue);
                 byte[] index = csIndexed.getLookupData();
                 boolean hasAlpha = baseColorModel.hasAlpha();
-                COSArray maskArray = getMask();
+                COSBase maskArray = getMask();
                 if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
                 {
                     throw new IOException( "Not implemented" );
@@ -235,9 +235,9 @@ public class PDPixelMap extends PDXObjectImage
                     }
                     bufferIndex += numberOfComponents;
                 }
-                if (maskArray != null)
+                if (maskArray != null && maskArray instanceof COSArray)
                 {
-                    cm = new IndexColorModel(bpc, size+1, colorValues, 0, hasAlpha, maskArray.getInt(0));
+                    cm = new IndexColorModel(bpc, size+1, colorValues, 0, hasAlpha, ((COSArray)maskArray).getInt(0));
                 }
                 else
                 {
