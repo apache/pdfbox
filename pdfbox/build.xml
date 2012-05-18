@@ -764,7 +764,7 @@
             <arg value="-out:${bin.dir}\ImportFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportFDF.class" />
         </exec>
-        <echo>Building IimportXFDF</echo>
+        <echo>Building ImportXFDF</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
@@ -818,6 +818,24 @@
             <arg value="-out:${bin.dir}\PDFSplit.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFSplit.class" />
         </exec>
+        <echo>Building PDFMerger</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
+            <arg value="-reference:bin/junit.dll" />
+            <arg value="-reference:bin/${fontbox.release.name}.dll" />
+            <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
+            <arg value="-out:${bin.dir}\PDFMerger.exe" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFMerger.class" />
+        </exec>
         <echo>Building PDFReader</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
@@ -853,6 +871,24 @@
             <arg value="-version:${project.version}.0" />
             <arg value="-out:${bin.dir}\PDFDebugger.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\PDFDebugger.class" />
+        </exec>
+        <echo>Building WriteDecodedDoc</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.AWT.WinForms.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
+            <arg value="-reference:bin/junit.dll" />
+            <arg value="-reference:bin/${fontbox.release.name}.dll" />
+            <arg value="-reference:bin\${pdfbox.release.name}.dll" />
+            <arg value="-version:${project.version}.0" />
+            <arg value="-out:${bin.dir}\WriteDecodedDoc.exe" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\WriteDecodedDoc.class" />
         </exec>
     </target>
 
