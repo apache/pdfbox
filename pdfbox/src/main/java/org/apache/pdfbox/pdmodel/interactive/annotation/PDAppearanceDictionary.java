@@ -44,7 +44,7 @@ public class PDAppearanceDictionary implements COSObjectable
     {
         dictionary = new COSDictionary();
         //the N entry is required.
-        dictionary.setItem( COSName.getPDFName( "N" ), new COSDictionary() );
+        dictionary.setItem( COSName.N, new COSDictionary() );
     }
 
     /**
@@ -82,9 +82,9 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map getNormalAppearance()
+    public Map<String,PDAppearanceStream> getNormalAppearance()
     {
-        COSBase ap = dictionary.getDictionaryObject( COSName.getPDFName( "N" ) );
+        COSBase ap = dictionary.getDictionaryObject( COSName.N );
         if ( ap == null )
         { 
             return null; 
@@ -103,7 +103,6 @@ public class PDAppearanceDictionary implements COSObjectable
             COSStream as = (COSStream)map.getDictionaryObject( asName );
             actuals.put( asName.getName(), new PDAppearanceStream( as ) );
         }
-
         return retval;
     }
 
@@ -114,9 +113,9 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param appearanceMap The updated map with the appearance.
      */
-    public void setNormalAppearance( Map appearanceMap )
+    public void setNormalAppearance( Map<String,PDAppearanceStream> appearanceMap )
     {
-        dictionary.setItem( COSName.getPDFName( "N" ), COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.N, COSDictionaryMap.convert( appearanceMap ) );
     }
 
     /**
@@ -127,7 +126,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public void setNormalAppearance( PDAppearanceStream ap )
     {
-        dictionary.setItem( COSName.getPDFName( "N" ), ap.getStream() );
+        dictionary.setItem( COSName.N, ap.getStream() );
     }
 
     /**
@@ -138,10 +137,10 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map getRolloverAppearance()
+    public Map<String,PDAppearanceStream> getRolloverAppearance()
     {
-        Map retval = null;
-        COSBase ap = dictionary.getDictionaryObject( COSName.getPDFName( "R" ) );
+        Map<String,PDAppearanceStream> retval = null;
+        COSBase ap = dictionary.getDictionaryObject( COSName.R );
         if( ap == null )
         {
             retval = getNormalAppearance();
@@ -163,7 +162,6 @@ public class PDAppearanceDictionary implements COSObjectable
                 actuals.put( asName.getName(), new PDAppearanceStream( as ) );
             }
         }
-
         return retval;
     }
 
@@ -174,9 +172,20 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param appearanceMap The updated map with the appearance.
      */
-    public void setRolloverAppearance( Map appearanceMap )
+    public void setRolloverAppearance( Map<String,PDAppearanceStream> appearanceMap )
     {
-        dictionary.setItem( COSName.getPDFName( "R" ), COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.R, COSDictionaryMap.convert( appearanceMap ) );
+    }
+
+    /**
+     * This will set the rollover appearance when there is rollover appearance
+     * to be shown.
+     *
+     * @param ap The appearance stream to show.
+     */
+    public void setRolloverAppearance( PDAppearanceStream ap )
+    {
+        dictionary.setItem( COSName.R, ap.getStream() );
     }
 
     /**
@@ -187,10 +196,10 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map getDownAppearance()
+    public Map<String,PDAppearanceStream> getDownAppearance()
     {
-        Map retval = null;
-        COSBase ap = dictionary.getDictionaryObject( COSName.getPDFName( "D" ) );
+        Map<String,PDAppearanceStream> retval = null;
+        COSBase ap = dictionary.getDictionaryObject( COSName.D );
         if( ap == null )
         {
             retval = getNormalAppearance();
@@ -213,7 +222,6 @@ public class PDAppearanceDictionary implements COSObjectable
                 actuals.put( asName.getName(), new PDAppearanceStream( as ) );
             }
         }
-
         return retval;
     }
 
@@ -224,8 +232,20 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param appearanceMap The updated map with the appearance.
      */
-    public void setDownAppearance( Map appearanceMap )
+    public void setDownAppearance( Map<String,PDAppearanceStream> appearanceMap )
     {
-        dictionary.setItem( COSName.getPDFName( "D" ), COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.D, COSDictionaryMap.convert( appearanceMap ) );
     }
+    
+    /**
+     * This will set the down appearance when there is down appearance
+     * to be shown.
+     *
+     * @param ap The appearance stream to show.
+     */
+    public void setDownAppearance( PDAppearanceStream ap )
+    {
+        dictionary.setItem( COSName.D, ap.getStream() );
+    }
+
 }
