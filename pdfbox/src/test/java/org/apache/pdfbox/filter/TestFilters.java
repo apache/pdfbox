@@ -40,36 +40,78 @@ public class TestFilters extends TestCase
      */
     public void testFilters() throws IOException
     {
-        byte[] original = new byte[12345];
-        new Random( 1234567890 ).nextBytes( original );
-
-        FilterManager manager = new FilterManager();
-        for( Filter filter : manager.getFilters() )
+        for(int iter=0;iter<10;iter++) 
         {
-            // Skip filters that don't currently support roundtripping
-            if( filter instanceof DCTFilter ||
-                  filter instanceof CCITTFaxDecodeFilter ||
-                  filter instanceof JPXFilter ||
-                  filter instanceof JBIG2Filter ||
-                  filter instanceof RunLengthDecodeFilter )
+            final long seed = new Random().nextLong();
+            boolean success = false;
+            try 
             {
-                continue;
+                final Random random = new Random(seed);
+                final int numBytes = 10000 + random.nextInt(20000);
+                byte[] original = new byte[numBytes];
+
+                int upto = 0;
+                while(upto < numBytes) 
+                {
+                    final int left = numBytes - upto;
+                    if (random.nextBoolean() || left < 2) 
+                    {
+                        // Fill w/ truly random bytes:
+                        final int end = upto + Math.min(left, 10+random.nextInt(100));
+                        while(upto < end) 
+                        {
+                            original[upto++] = (byte) random.nextInt();
+                        }
+                    } 
+                    else 
+                    {
+                        // Fill w/ very predictable bytes:
+                        final int end = upto + Math.min(left, 2+random.nextInt(10));
+                        final byte value = (byte) random.nextInt(4);
+                        while(upto < end) 
+                        {
+                            original[upto++] = value;
+                        }
+                    }
+                }
+        
+                FilterManager manager = new FilterManager();
+                for( Filter filter : manager.getFilters() ) 
+                {
+                    // Skip filters that don't currently support roundtripping
+                    if( filter instanceof DCTFilter ||
+                        filter instanceof CCITTFaxDecodeFilter ||
+                        filter instanceof JPXFilter ||
+                        filter instanceof JBIG2Filter ||
+                        filter instanceof RunLengthDecodeFilter )
+                        {
+                            continue;
+                        }
+
+                    ByteArrayOutputStream encoded = new ByteArrayOutputStream();
+                    filter.encode(
+                                  new ByteArrayInputStream( original ),
+                                  encoded, new COSDictionary(), 0 );
+
+                    ByteArrayOutputStream decoded = new ByteArrayOutputStream();
+                    filter.decode(
+                                  new ByteArrayInputStream( encoded.toByteArray() ),
+                                  decoded, new COSDictionary(), 0 );
+
+                    assertTrue(
+                               "Data that is encoded and then decoded through "
+                               + filter.getClass() + " does not match the original data",
+                               Arrays.equals( original, decoded.toByteArray() ) );
+                }
+                success = true;
+            } 
+            finally 
+            {
+                if (!success) 
+                {
+                    System.err.println("NOTE: test failed with seed=" + seed);
+                }
             }
-
-            ByteArrayOutputStream encoded = new ByteArrayOutputStream();
-            filter.encode(
-                    new ByteArrayInputStream( original ),
-                    encoded, new COSDictionary(), 0 );
-
-            ByteArrayOutputStream decoded = new ByteArrayOutputStream();
-            filter.decode(
-                    new ByteArrayInputStream( encoded.toByteArray() ),
-                    decoded, new COSDictionary(), 0 );
-
-            assertTrue(
-                    "Data that is encoded and then decoded through "
-                    + filter.getClass() + " does not match the original data",
-                    Arrays.equals( original, decoded.toByteArray() ) );
         }
     }
 
