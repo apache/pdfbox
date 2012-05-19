@@ -213,14 +213,15 @@ public class ExtractText
                     {
                         StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
                         document.openProtection( sdm );
-                        AccessPermission ap = document.getCurrentAccessPermission();
-
-                        if( ! ap.canExtractContent() )
-                        {
-                            throw new IOException( "You do not have permission to extract text" );
-                        }
                     }
                 }
+                
+                AccessPermission ap = document.getCurrentAccessPermission();
+                if( ! ap.canExtractContent() )
+                {
+                    throw new IOException( "You do not have permission to extract text" );
+                }
+                
                 stopProcessing("Time for loading: ", startTime);
 
 

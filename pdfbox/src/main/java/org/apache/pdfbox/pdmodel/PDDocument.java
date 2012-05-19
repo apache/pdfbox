@@ -1402,6 +1402,23 @@ public class PDDocument implements Pageable
     {
         return securityHandler;
     }
+    
+    /**
+     * Sets security handler if none is set already.
+     * 
+     * @param _sHandler  security handler to be assigned to document
+     * @return  <code>true</code> if security handler was set, <code>false</code>
+     *          otherwise (a security handler was already set)
+     */
+    public boolean setSecurityHandler( SecurityHandler _sHandler )
+    {
+        if ( securityHandler == null )
+        {
+            securityHandler = _sHandler;
+            return true;
+        }
+        return false;
+    }
 
     public boolean isAllSecurityToBeRemoved() {
         return allSecurityToBeRemoved;

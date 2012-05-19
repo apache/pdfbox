@@ -141,14 +141,13 @@ public class ExtractImages
                         {
                             StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
                             document.openProtection(spm);
-                            AccessPermission ap = document.getCurrentAccessPermission();
-    
-                            if( ! ap.canExtractContent() )
-                            {
-                                throw new IOException(
-                                    "Error: You do not have permission to extract images." );
-                            }
                         }
+                    }
+                    AccessPermission ap = document.getCurrentAccessPermission();
+                    if( ! ap.canExtractContent() )
+                    {
+                        throw new IOException(
+                            "Error: You do not have permission to extract images." );
                     }
 
                     List pages = document.getDocumentCatalog().getAllPages();
