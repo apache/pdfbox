@@ -53,6 +53,7 @@ import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -301,10 +302,6 @@ public class NonSequentialPDFParser extends PDFParser
                 if ( ! permission.canExtractContent() )
                 {
                     LOG.warn( "PDF file '" + pdfFile.getPath() + "' does not allow extracting content." );
-                }
-                else
-                {
-                    LOG.info( "PDF file '" + pdfFile.getPath() + "' allows content extraction." );
                 }
                   
             }
@@ -619,6 +616,27 @@ public class NonSequentialPDFParser extends PDFParser
     public SecurityHandler getSecurityHandler() 
     {
         return securityHandler;
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * This will get the PD document that was parsed.  When you are done with
+     * this document you must call close() on it to release resources.
+     *
+     * Overwriting super method was necessary in order to set security handler.
+     *
+     * @return The document at the PD layer.
+     *
+     * @throws IOException If there is an error getting the document.
+     */
+    @Override
+    public PDDocument getPDDocument() throws IOException
+    {
+        PDDocument pdDocument = super.getPDDocument();
+        if ( securityHandler != null )
+            pdDocument.setSecurityHandler( securityHandler );
+        
+        return pdDocument;
     }
 
     // ------------------------------------------------------------------------
