@@ -150,6 +150,7 @@ public class Decrypt
                     AccessPermission ap = document.getCurrentAccessPermission();
                     if(ap.isOwnerPermission())
                     {
+                        document.setAllSecurityToBeRemoved(true);
                         document.save( outfile );
                     }
                     else
