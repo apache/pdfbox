@@ -446,10 +446,43 @@ public abstract class BaseParser
             //Need to keep track of the
             out = stream.createFilteredStream( streamLength );
 
-            String endStream = null;
-            readUntilEndStream(out);
+            // try to read stream length - even if it is an indirect object
+            int length = -1;
+            if ( streamLength instanceof COSNumber )
+            {
+                length = ( (COSNumber) streamLength).intValue();
+            }
+            else if ( ( streamLength instanceof COSObject ) &&
+                      ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
+            {
+                length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
+            } 
+            
+            if ( length == -1 )
+            {
+                // Couldn't determine length from dict: just
+                // scan until we find endstream:
+                readUntilEndStream( out );
+            }
+            else
+            {
+                // Copy length bytes over:
+                int left = length;
+                while ( left > 0 )
+                {
+                    final int chunk = Math.min( left, strmBufLen );
+                    final int readCount = pdfSource.read( strmBuf, 0, chunk );
+                    if ( readCount == -1 )
+                    {
+                        break;
+                    }
+                    out.write( strmBuf, 0, readCount );
+                    left -= readCount;
+                }
+            }
+            
             skipSpaces();
-            endStream = readString();
+            String endStream = readString();
 
             if (!endStream.equals(ENDSTREAM_STRING))
             {
