@@ -253,7 +253,10 @@ public class NonSequentialPDFParser extends PDFParser
                 parseXrefTable( prev );
                 
                 // parse the last trailer.
-                parseTrailer();
+                if ( ! parseTrailer() )
+                {
+                    throw new IOException( "Expected trailer object at position: " + pdfSource.getOffset() );
+                }
                 COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
                 prev = trailer.getInt( COSName.PREV );
             }
