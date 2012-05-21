@@ -452,11 +452,19 @@ public abstract class BaseParser
             {
                 length = ( (COSNumber) streamLength).intValue();
             }
-            else if ( ( streamLength instanceof COSObject ) &&
-                      ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
-            {
-                length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
-            } 
+// commented out next chunk since for the sequentially working PDFParser
+// we do not know if length object is redefined later on and the currently
+// read indirect object might be obsolete (e.g. not referenced in xref table);
+// this would result in reading wrong number of bytes;
+// Thus the only reliable information is a direct length. 
+// This exclusion shouldn't harm much since in case of indirect objects they will
+// typically be defined after the stream object, thus keeping the directly
+// provided length will fix most cases
+//            else if ( ( streamLength instanceof COSObject ) &&
+//                      ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
+//            {
+//                length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
+//            } 
             
             if ( length == -1 )
             {
