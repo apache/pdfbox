@@ -299,7 +299,11 @@ public class PDFReader extends javax.swing.JFrame
                 filename = args[i];
             }
         }
-        viewer.openPDFFile( filename, password );
+        // open the pdf if present
+        if (filename != null)
+        {
+            viewer.openPDFFile( filename, password );
+        }
         viewer.setVisible(true);
     }
 
