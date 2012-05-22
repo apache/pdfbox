@@ -117,16 +117,6 @@
     </pluginManagement>
   </build>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.tika</groupId>
-        <artifactId>tika-core</artifactId>
-        <version>1.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <!-- Developers listed by PMC Chair, PMC all alphabetical-->
   <developers>
     <developer>
