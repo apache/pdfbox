@@ -281,37 +281,40 @@ public class ExtractText
                     PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
                     if (embeddedFiles != null)
                     {
-                        for (Map.Entry<String,Object> ent : embeddedFiles.getNames().entrySet()) 
-                        {
-                            if (debug)
-                            {
-                                System.err.println("Processing embedded file " + ent.getKey() + ":");
-                            }
-                            PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
-                            PDEmbeddedFile file = spec.getEmbeddedFile();
-                            if (file.getSubtype().equals("application/pdf")) 
+                        Map<String,Object> embeddedFileNames = embeddedFiles.getNames();
+                        if (embeddedFileNames != null) {
+                            for (Map.Entry<String,Object> ent : embeddedFileNames.entrySet()) 
                             {
                                 if (debug)
                                 {
-                                    System.err.println("  is PDF (size=" + file.getSize() + ")");
+                                    System.err.println("Processing embedded file " + ent.getKey() + ":");
                                 }
-                                InputStream fis = file.createInputStream();
-                                PDDocument subDoc = null;
-                                try 
+                                PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
+                                PDEmbeddedFile file = spec.getEmbeddedFile();
+                                if (file.getSubtype().equals("application/pdf")) 
                                 {
-                                    subDoc = PDDocument.load(fis);
-                                } 
-                                finally 
-                                {
-                                    fis.close();
-                                }
-                                try 
-                                {
-                                    stripper.writeText( subDoc, output );
-                                } 
-                                finally 
-                                {
-                                    subDoc.close();
+                                    if (debug)
+                                    {
+                                        System.err.println("  is PDF (size=" + file.getSize() + ")");
+                                    }
+                                    InputStream fis = file.createInputStream();
+                                    PDDocument subDoc = null;
+                                    try 
+                                    {
+                                        subDoc = PDDocument.load(fis);
+                                    } 
+                                    finally 
+                                    {
+                                        fis.close();
+                                    }
+                                    try 
+                                    {
+                                        stripper.writeText( subDoc, output );
+                                    } 
+                                    finally 
+                                    {
+                                        subDoc.close();
+                                    }
                                 }
                             } 
                         }

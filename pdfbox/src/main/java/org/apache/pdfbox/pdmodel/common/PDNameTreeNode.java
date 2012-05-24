@@ -175,7 +175,8 @@ public class PDNameTreeNode implements COSObjectable
      * This will return a map of names. The key will be a string, and the
      * value will depend on where this class is being used.
      *
-     * @return ordered map of cos objects
+     * @return ordered map of cos objects or <code>null</code> if dictionary
+     *         contains no 'Names' entry
      * @throws IOException If there is an error while creating the sub types.
      */
     public Map<String, Object> getNames() throws IOException
