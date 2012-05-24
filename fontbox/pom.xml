@@ -56,41 +56,5 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>ikvm</id>
-      <activation>
-        <property>
-          <name>ikvm</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <phase>package</phase>
-                <configuration>
-                  <tasks>
-                    <exec executable="${ikvm}/bin/ikvmc.exe">
-                      <arg value="-reference:${ikvm}/bin/IKVM.OpenJDK.ClassLibrary.dll" />
-                      <arg value="-reference:${ikvm}/bin/IKVM.AWT.WinForms.dll" />
-                      <arg value="-target:library" />
-                      <arg value="-out:${project.build.directory}/${project.build.finalName}.dll" />
-                      <arg value="${project.build.directory}/${project.build.finalName}.jar" />
-                    </exec>
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>
+
