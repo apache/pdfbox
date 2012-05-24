@@ -11,10 +11,7 @@ build FontBox. The recommended build command is:
     mvn clean install
 
 The default build will compile the Java sources and package the binary
-classes into a jar package. If you have IKVM.NET <http://www.ikvm.net/>
-installed, you can use the -Dikvm=... option to also build a .NET DLL.
-
-    mvn clean install -Dikvm=/path/to/ikvm
+classes into a jar package.
 
 See the Maven documentation for all the other available build options.
 
@@ -27,7 +24,7 @@ Apache Software Foundation <http://www.apache.org/>.
 License (see also LICENSE.txt)
 ==============================
 
-Collective work: Copyright 2011 The Apache Software Foundation.
+Collective work: Copyright 2012 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
