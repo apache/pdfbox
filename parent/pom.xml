@@ -105,6 +105,8 @@
             <configuration>
               <excludes>
                 <exclude>release.properties</exclude>
+		<!-- temporarily added as long as the preflight is disabled -->
+	        <exclude>preflight/src/test/resources/org/apache/padaf/preflight/font/*.font</exclude>
               </excludes>
             </configuration>
           </plugin>
