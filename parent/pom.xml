@@ -29,7 +29,7 @@
 
   <groupId>org.apache.pdfbox</groupId>
   <artifactId>pdfbox-parent</artifactId>
-  <version>1.7.1-SNAPSHOT</version>
+  <version>1.7.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDFBox parent</name>
@@ -220,4 +220,10 @@
         </roles>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/1.7/pdfbox-parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/1.7/pdfbox-parent</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/pom/branches/1.7/pdfbox-parent</url>
+  </scm>
 </project>
