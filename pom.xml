@@ -46,11 +46,9 @@
     <module>parent</module>
     <module>fontbox</module>
     <module>jempbox</module>
-    <!-- disabled due to some unfinished refactoring-->
-    <!-- module>xmpbox</module -->
+    <module>xmpbox</module>
     <module>pdfbox</module>
-    <!-- disabled due to some unfinished refactoring-->
-    <!-- module>preflight</module -->
+    <module>preflight</module>
     <module>lucene</module>
     <module>ant</module>
     <module>war</module>
