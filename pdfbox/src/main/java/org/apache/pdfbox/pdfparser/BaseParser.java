@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,6 +40,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.exceptions.WrappedIOException;
 
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
@@ -51,6 +53,9 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public abstract class BaseParser
 {
+
+    /** system property allowing to define size of push back buffer */
+    public static final String PROP_PUSHBACK_SIZE = "org.apache.pdfbox.baseParser.pushBackSize";
 
     /**
      * Log instance.
@@ -157,7 +162,7 @@ public abstract class BaseParser
             throws IOException
     {
         this.pdfSource = new PushBackInputStream(
-                new BufferedInputStream(input, 16384),  4096);
+                new BufferedInputStream(input, 16384),  Integer.getInteger( PROP_PUSHBACK_SIZE, 65536 ) );
         this.forceParsing = forceParsingValue;
     }
 
@@ -486,6 +491,68 @@ public abstract class BaseParser
                     }
                     out.write( strmBuf, 0, readCount );
                     left -= readCount;
+                }
+                
+                // in order to handle broken documents we test if 'endstream' is reached
+                // if not, length value possibly was wrong, fall back to scanning for endstream
+                
+                // fill buffer with next bytes and test for 'endstream' (with leading whitespaces)
+                int readCount = pdfSource.read( strmBuf, 0, 20 );
+                if ( readCount > 0 )
+                {
+                    boolean foundEndstream    = false;
+                    int     nextEndstreamCIdx = 0;
+                    for ( int cIdx = 0; cIdx < readCount; cIdx++ )
+                    {
+                        final int ch = strmBuf[ cIdx ] & 0xff; 
+                        if ( ch == ENDSTREAM[ nextEndstreamCIdx ] )
+                        {
+                            if ( ++nextEndstreamCIdx >= ENDSTREAM.length )
+                            {
+                                foundEndstream = true;
+                                break;
+                            }
+                        }
+                        else if ( ( nextEndstreamCIdx > 0 ) || ( ! isWhitespace( ch ) ) )
+                        {
+                            // not found
+                            break;
+                        }
+                    }
+                    
+                    // push back test bytes
+                    pdfSource.unread( strmBuf, 0, readCount );
+                    
+                    // if 'endstream' was not found fall back to scanning
+                    if ( ! foundEndstream )
+                    {
+                        LOG.warn( "Specified stream length " + length + " is wrong. Fall back to reading stream until 'endstream'." );
+                        
+                        // push back all read stream bytes
+                        out.flush();    // we got a buffered stream wrapper around filteredStream thus first flush to underlying stream
+                        InputStream writtenStreamBytes = stream.getFilteredStream();
+                        ByteArrayOutputStream     bout = new ByteArrayOutputStream( length );
+                        
+                        while ( ( readCount = writtenStreamBytes.read( strmBuf ) ) >= 0 )
+                        {
+                            bout.write( strmBuf, 0, readCount );
+                        }
+                        try
+                        {
+                            pdfSource.unread( bout.toByteArray() );
+                        }
+                        catch ( IOException ioe )
+                        {
+                            throw new WrappedIOException( "Could not push back " + bout.size() + 
+                                                          " bytes in order to reparse stream. " +
+                                                          "Try increasing push back buffer using system property " +
+                                                          PROP_PUSHBACK_SIZE, ioe );
+                        }
+                        // create new filtered stream
+                        out = stream.createFilteredStream( streamLength );
+                        // scan until we find endstream:
+                        readUntilEndStream( out );
+                    }
                 }
             }
             
