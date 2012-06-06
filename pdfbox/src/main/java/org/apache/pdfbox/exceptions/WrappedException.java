@@ -16,18 +16,17 @@
  */
 package org.apache.pdfbox.exceptions;
 
-import java.io.PrintStream;
 
 /**
  * An exception that that holds a sub exception.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
+ * 
+ * @deprecated  java.lang.Exception itself has wrapper capabilities since Java 1.4
  */
 public class WrappedException extends Exception
 {
-    private Exception wrapped = null;
-
     /**
      * constructor comment.
      *
@@ -35,27 +34,6 @@ public class WrappedException extends Exception
      */
     public WrappedException( Exception e )
     {
-        wrapped = e;
-    }
-
-    /**
-     * Gets the wrapped exception message.
-     *
-     * @return A message indicating the exception.
-     */
-    public String getMessage()
-    {
-        return wrapped.getMessage();
-    }
-
-    /**
-     * Prints this throwable and its backtrace to the specified print stream.
-     *
-     * @param s <code>PrintStream</code> to use for output
-     */
-    public void printStackTrace(PrintStream s)
-    {
-        super.printStackTrace( s );
-        wrapped.printStackTrace( s );
+        super( e );
     }
 }
