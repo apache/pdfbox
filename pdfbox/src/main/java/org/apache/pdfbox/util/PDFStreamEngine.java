@@ -598,6 +598,11 @@ public class PDFStreamEngine
      */
     public Map<String,PDFont> getFonts()
     {
+        if ( streamResourcesStack.isEmpty() )
+        {
+            return Collections.emptyMap();
+        }
+        
         return streamResourcesStack.peek().getFonts();
     }
     /**
