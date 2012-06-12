@@ -16,9 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents an Operator in the content stream.
@@ -32,7 +30,8 @@ public class PDFOperator
     private byte[] imageData;
     private ImageParameters imageParameters;
 
-    private static Map operators = Collections.synchronizedMap( new HashMap() );
+    /** map for singleton operator objects; use {@link ConcurrentHashMap} for better scalability with multiple threads */
+    private final static ConcurrentHashMap<String,PDFOperator> operators = new ConcurrentHashMap<String, PDFOperator>();
 
     /**
      * Constructor.
@@ -65,11 +64,16 @@ public class PDFOperator
         }
         else
         {
-            operation = (PDFOperator)operators.get( operator );
+            operation = operators.get( operator );
             if( operation == null )
             {
-                operation = new PDFOperator( operator );
-                operators.put( operator, operation );
+                // another thread may has already added an operator of this kind
+                // make sure that we get the same operator
+                operation = operators.putIfAbsent( operator, new PDFOperator( operator ) );
+                if ( operation == null )
+                {
+                    operation = operators.get( operator );
+                }
             }
         }
 
