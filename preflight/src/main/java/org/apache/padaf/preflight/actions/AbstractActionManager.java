@@ -127,7 +127,7 @@ public abstract class AbstractActionManager {
   }
 
   /**
-   * Validate an Action dictionary.
+   *  Validate an Action dictionary.
    * 
    * Return false if the dictionary is invalid (ex : missing key). If the
    * ActionManager represents an AdditionalAction, this method returns false and
