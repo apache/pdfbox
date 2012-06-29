@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -92,8 +93,11 @@ public final class PDColorSpaceFactory
     throws IOException
     {
         PDColorSpace retval = null;
-        if( colorSpace instanceof COSName )
+        if (colorSpace instanceof COSObject) 
         {
+            retval = createColorSpace( ((COSObject)colorSpace).getObject(), colorSpaces );
+        } 
+        else if( colorSpace instanceof COSName ) {
             retval = createColorSpace( ((COSName)colorSpace).getName(), colorSpaces );
         }
         else if( colorSpace instanceof COSArray )
