@@ -31,7 +31,8 @@ public class ValidationException extends IOException {
   private static final long serialVersionUID = -1616141241190424669L;
 
   public ValidationException(String message, Throwable cause) {
-    super(message, cause);
+    super(message);
+    initCause(cause);
   }
 
   public ValidationException(String message) {
@@ -39,7 +40,8 @@ public class ValidationException extends IOException {
   }
 
   public ValidationException(Throwable cause) {
-    super(cause);
+    super();
+    initCause(cause);
   }
 
 }
