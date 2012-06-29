@@ -32,7 +32,7 @@ options {
 // order of appearance
 PARSER_BEGIN(Extractor)
 
-package org.apache.pdfbox.preflight.javacc.extractor;
+package org.apache.padaf.preflight.javacc.extractor;
 
 import java.io.*;
 import java.util.ArrayList;

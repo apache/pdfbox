@@ -111,7 +111,7 @@ isartor-6-3-4-t01-fail-c.pdf=3.1.3
 isartor-6-3-4-t01-fail-d.pdf=3.1.3
 isartor-6-3-4-t01-fail-e.pdf=3.1.3
 isartor-6-3-4-t01-fail-f.pdf=3.1.3
-isartor-6-3-4-t01-fail-g.pdf=3.1.3 // -- Type3 invalide parce qu'il référence une police Type1 non embarquée. ==> L'erreur retournée concerne le Type1 et non le Type3
+isartor-6-3-4-t01-fail-g.pdf=3.2.4 // Type3 Damage because the Type1 used as Resource isn't embedded 
 isartor-6-3-4-t01-fail-h.pdf=3.1.3
 isartor-6-3-5-t01-fail-a.pdf=3.3.1
 isartor-6-3-5-t01-fail-b.pdf=3.3.1
@@ -125,7 +125,7 @@ isartor-6-3-6-t01-fail-c.pdf=3.1.6
 isartor-6-3-7-t01-fail-a.pdf=3.1.5
 isartor-6-3-7-t02-fail-a.pdf=3.1.5
 isartor-6-3-7-t03-fail-a.pdf=3.1.5
-isartor-6-4-t01-fail-a.pdf=2.2.1 // -- Il y a un XObj contenant S=Transparency
+isartor-6-4-t01-fail-a.pdf=4.1.1
 isartor-6-4-t01-fail-b.pdf=2.2.2
 isartor-6-4-t02-fail-a.pdf=2.2.1
 isartor-6-4-t03-fail-a.pdf=4.1.3
