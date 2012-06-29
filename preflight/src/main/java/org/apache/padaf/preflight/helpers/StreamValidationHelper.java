@@ -26,14 +26,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.commons.io.IOUtils;
 import org.apache.padaf.preflight.DocumentHandler;
 import org.apache.padaf.preflight.ValidationConstants;
 import org.apache.padaf.preflight.ValidationException;
 import org.apache.padaf.preflight.ValidationResult;
-import org.apache.padaf.preflight.ValidatorConfig;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
+import org.apache.padaf.preflight.ValidatorConfig;
 import org.apache.padaf.preflight.utils.COSUtils;
 import org.apache.padaf.preflight.utils.FilterHelper;
 import org.apache.pdfbox.cos.COSArray;
