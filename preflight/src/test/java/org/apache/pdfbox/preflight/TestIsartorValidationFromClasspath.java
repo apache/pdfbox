@@ -19,10 +19,11 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.preflight;
+package org.apache.pdfbox.preflight;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,27 +36,22 @@ import java.util.StringTokenizer;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.padaf.preflight.PdfAValidator;
-import org.apache.padaf.preflight.PdfAValidatorFactory;
-import org.apache.padaf.preflight.ValidationException;
-import org.apache.padaf.preflight.ValidationResult;
-import org.apache.padaf.preflight.ValidationResult.ValidationError;
-import org.apache.padaf.preflight.util.ByteArrayDataSource;
+import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.ValidationResult;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class TestIsartorValidationFromClasspath {
 
 	protected static FileOutputStream isartorResultFile = null;
-
-	protected static PdfAValidator validator = null;
 
 	protected String expectedError;
 
@@ -68,8 +64,6 @@ public class TestIsartorValidationFromClasspath {
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		validator = new 
-				PdfAValidatorFactory().createValidatorInstance(PdfAValidatorFactory.PDF_A_1_b); 
 
 		String irp = System.getProperty("isartor.results.path");
 		if (irp != null) {
@@ -94,15 +88,16 @@ public class TestIsartorValidationFromClasspath {
 
 	@Test()
 	public void validate() throws Exception {
-		ValidationResult result = null;
+		PreflightDocument document = null;
 		try {
 			InputStream input = this.getClass().getResourceAsStream(path);
-			ByteArrayDataSource bds = new ByteArrayDataSource(input);
-			result = validator.validate(bds);
-			Assert.assertFalse(path + " : Isartor file should be invalid ("
-					+ path + ")", result.isValid());
-			Assert.assertTrue(path + " : Should find at least one error",
-					result.getErrorsList().size() > 0);
+			PreflightParser parser = new PreflightParser(new org.apache.pdfbox.preflight.utils.ByteArrayDataSource(input));
+			parser.parse();
+			document = (PreflightDocument)parser.getPDDocument();
+			document.validate();
+			ValidationResult result = document.getResult();
+			Assert.assertFalse(path + " : Isartor file should be invalid ("	+ path + ")", result.isValid());
+			Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
 			// could contain more than one error
 			boolean found = false;
 			for (ValidationError error : result.getErrorsList()) {
@@ -135,9 +130,7 @@ public class TestIsartorValidationFromClasspath {
 		} catch (ValidationException e) {
 			throw new Exception(path + " :" + e.getMessage(), e);
 		} finally {
-			if (result!=null) {
-				result.closePdf();
-			}
+			if (document != null) document.close();
 		}
 	}
 
@@ -145,13 +138,15 @@ public class TestIsartorValidationFromClasspath {
 	public static Collection<Object[]> initializeParameters() throws Exception 
 	{
 		// load expected errors
-		InputStream expected = IsartorTargetFileInformation.class.getResourceAsStream("/expected_errors.txt");
+		File f = new File("src/test/resources/expected_errors.txt");
+		System.out.println(f.exists());
+		InputStream expected = new FileInputStream(f);
 		Properties props = new Properties();
 		props.load(expected);
 		IOUtils.closeQuietly(expected);
 		// prepare config
 		List<Object[]> data = new ArrayList<Object[]>();
-		InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
+        InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
 		if (is != null)
 		{
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -167,7 +162,7 @@ public class TestIsartorValidationFromClasspath {
 		}
 		else
 		{
-			System.out.println("TestIsartorValidationFromClasspath.initializeParameters(): No input files found");
+			System.out.println("TestIsartorValidationFromClasspath2.initializeParameters(): No input files found");
 		}
 		return data;
 	}

@@ -28,17 +28,18 @@ options {
 
 PARSER_BEGIN(PDFParser)
 
-package org.apache.pdfbox.preflight.javacc;
+package org.apache.padaf.preflight.javacc;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.pdfbox.preflight.exception.HeaderParseException;
-import org.apache.pdfbox.preflight.exception.BodyParseException;
-import org.apache.pdfbox.preflight.exception.CrossRefParseException;
-import org.apache.pdfbox.preflight.exception.TrailerParseException;
-import org.apache.pdfbox.preflight.exception.PdfParseException;
+import org.apache.padaf.preflight.HeaderParseException;
+import org.apache.padaf.preflight.BodyParseException;
+import org.apache.padaf.preflight.CrossRefParseException;
+import org.apache.padaf.preflight.TrailerParseException;
+import org.apache.padaf.preflight.PdfParseException;
+import org.apache.padaf.preflight.AbstractValidator;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
+import static org.apache.padaf.preflight.ValidationConstants.*;
 
 public class PDFParser
 {
