@@ -33,10 +33,10 @@ public class SaveMetadataHelperTest {
 	@Test
 	public void testSchemaParsing() throws Exception {
 		DublinCoreSchema dc = new DublinCoreSchema(new XMPMetadata());
-		dc.setCoverageValue("coverage");
-		dc.addToContributorValue("contributor1");
-		dc.addToContributorValue("contributor2");
-		dc.addToDescriptionValue("x-default", "Description");
+		dc.setCoverage("coverage");
+		dc.addContributor("contributor1");
+		dc.addContributor("contributor2");
+		dc.addDescription("x-default", "Description");
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		SaveMetadataHelper.serialize(dc, bos);
 		byte[] tmp = SaveMetadataHelper.serialize(dc);
@@ -47,14 +47,14 @@ public class SaveMetadataHelperTest {
 	public void testMetadataParsing() throws Exception {
 		XMPMetadata meta = new XMPMetadata();
 		DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
-		dc.setCoverageValue("coverage");
-		dc.addToContributorValue("contributor1");
-		dc.addToContributorValue("contributor2");
-		dc.addToDescriptionValue("x-default", "Description");
+		dc.setCoverage("coverage");
+		dc.addContributor("contributor1");
+		dc.addContributor("contributor2");
+		dc.addDescription("x-default", "Description");
 
 		AdobePDFSchema pdf = meta.createAndAddAdobePDFSchema();
-		pdf.setProducerValue("Producer");
-		pdf.setPDFVersionValue("1.4");
+		pdf.setProducer("Producer");
+		pdf.setPDFVersion("1.4");
 
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		byte[] tmp = SaveMetadataHelper.serialize(meta);

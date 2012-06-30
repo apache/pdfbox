@@ -48,25 +48,25 @@ public class AdobePDFErrorsTest {
 		String pdfVersion = "1.4";
 		String producer = "producer";
 
-		schem.setKeywordsValue(keywords);
-		schem.setPDFVersionValue(pdfVersion);
+		schem.setKeywords(keywords);
+		schem.setPDFVersion(pdfVersion);
 
 		// Check get null if property not defined
 		Assert.assertNull(schem.getProducer());
 
-		schem.setProducerValue(producer);
+		schem.setProducer(producer);
 
-		Assert.assertEquals("pdf:Keywords", schem.getKeywords()
+		Assert.assertEquals("pdf:Keywords", schem.getKeywordsProperty()
 				.getQualifiedName());
-		Assert.assertEquals(keywords, schem.getKeywordsValue());
+		Assert.assertEquals(keywords, schem.getKeywords());
 
-		Assert.assertEquals("pdf:PDFVersion", schem.getPDFVersion()
+		Assert.assertEquals("pdf:PDFVersion", schem.getPDFVersionProperty()
 				.getQualifiedName());
-		Assert.assertEquals(pdfVersion, schem.getPDFVersionValue());
+		Assert.assertEquals(pdfVersion, schem.getPDFVersion());
 
-		Assert.assertEquals("pdf:Producer", schem.getProducer()
+		Assert.assertEquals("pdf:Producer", schem.getProducerProperty()
 				.getQualifiedName());
-		Assert.assertEquals(producer, schem.getProducerValue());
+		Assert.assertEquals(producer, schem.getProducer());
 
 		// check retrieve this schema in metadata
 		Assert.assertEquals(schem, metadata.getAdobePDFSchema());
@@ -79,7 +79,7 @@ public class AdobePDFErrorsTest {
 		PDFAIdentificationSchema pdfaid = metadata
 				.createAndAddPFAIdentificationSchema();
 		String conformance = "kiohiohiohiohio";
-		pdfaid.setConformanceValue(conformance);
+		pdfaid.setConformance(conformance);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

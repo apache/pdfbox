@@ -100,7 +100,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @param value
 	 *            The version Id property to set
 	 */
-	public void setPartValue(Integer value) {
+	public void setPart(Integer value) {
 		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
 		addProperty(part);
 	}
@@ -111,7 +111,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @param part
 	 *            set the PDF/A Version id property
 	 */
-	public void setPart(IntegerType part) {
+	public void setPartProperty(IntegerType part) {
 		addProperty(part);
 	}
 
@@ -121,7 +121,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @param value
 	 *            The amendment identifier value to set
 	 */
-	public void setAmdValue(String value) {
+	public void setAmd(String value) {
 		TextType amd = new TextType(metadata, IDPREFIX, AMD, value);
 		addProperty(amd);
 	}
@@ -132,7 +132,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @param amd
 	 *            The amendment identifier property to set
 	 */
-	public void setAmd(TextType amd) {
+	public void setAmdProperty(TextType amd) {
 		addProperty(amd);
 	}
 
@@ -144,7 +144,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @throws BadFieldValueException
 	 *             If Conformance Value not 'A' or 'B'
 	 */
-	public void setConformanceValue(String value) throws BadFieldValueException {
+	public void setConformance(String value) throws BadFieldValueException {
 		if (value.equals("A") || value.equals("B")) {
 			TextType conf = new TextType(metadata, IDPREFIX, CONFORMANCE, value);
 			addProperty(conf);
@@ -163,7 +163,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @throws BadFieldValueException
 	 *             If Conformance Value not 'A' or 'B'
 	 */
-	public void setConformance(TextType conf) throws BadFieldValueException {
+	public void setConformanceProperty(TextType conf) throws BadFieldValueException {
 		String value = conf.getStringValue();
 		if (value.equals("A") || value.equals("B")) {
 			addProperty(conf);
@@ -178,8 +178,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return Part value (Integer)
 	 */
-	public Integer getPartValue() {
-		AbstractField tmp = getPart();
+	public Integer getPart() {
+		AbstractField tmp = getPartProperty();
 		if (tmp != null) {
 			if (tmp instanceof IntegerType) {
 				return ((IntegerType) tmp).getValue();
@@ -201,7 +201,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return Part property
 	 */
-	public IntegerType getPart() {
+	public IntegerType getPartProperty() {
 		AbstractField tmp = getProperty(IDPREFIXSEP + PART);
 		if (tmp != null) {
 			if (tmp instanceof IntegerType) {
@@ -216,7 +216,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return Amendment value
 	 */
-	public String getAmendmentValue() {
+	public String getAmendment() {
 		AbstractField tmp = getProperty(IDPREFIXSEP + AMD);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -231,7 +231,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return Amendment property
 	 */
-	public TextType getAmd() {
+	public TextType getAmdProperty() {
 		AbstractField tmp = getProperty(IDPREFIXSEP + AMD);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -246,8 +246,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return Amendment Value
 	 */
-	public String getAmdValue() {
-		TextType tmp = getAmd();
+	public String getAmd() {
+		TextType tmp = getAmdProperty();
 		if (tmp==null) {
 			for (Attribute attribute : getAllAttributes()) {
 				if (attribute.getQualifiedName().equals(IDPREFIXSEP + AMD)) {
@@ -265,7 +265,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return conformance property
 	 */
-	public TextType getConformance() {
+	public TextType getConformanceProperty() {
 		AbstractField tmp = getProperty(IDPREFIXSEP + CONFORMANCE);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -280,8 +280,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 * @return conformance id value
 	 */
-	public String getConformanceValue() {
-		TextType tt = getConformance();
+	public String getConformance() {
+		TextType tt = getConformanceProperty();
 		if (tt==null) {
 			for (Attribute attribute : getAllAttributes()) {
 				if (attribute.getQualifiedName().equals(IDPREFIXSEP + CONFORMANCE)) {

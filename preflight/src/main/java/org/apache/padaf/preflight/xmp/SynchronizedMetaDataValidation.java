@@ -68,9 +68,9 @@ public class SynchronizedMetaDataValidation {
       if (dc != null) {
         // Check the x-default value, if not found, check with the first value
         // found
-        if (dc.getTitle() != null) {
-          if (dc.getTitleValue("x-default") != null) {
-            if (!dc.getTitleValue("x-default").equals(title)) {
+        if (dc.getTitleProperty() != null) {
+          if (dc.getTitle("x-default") != null) {
+            if (!dc.getTitle("x-default").equals(title)) {
               ve.add(unsynchronizedMetaDataError("Title"));
             }
           } else {
@@ -78,7 +78,7 @@ public class SynchronizedMetaDataValidation {
             // with lot of PDF documents
             // which use title without lang definition
             // REM : MAY we have to delete this option in the future
-            Iterator<AbstractField> it = dc.getTitle().getContainer()
+            Iterator<AbstractField> it = dc.getTitleProperty().getContainer()
                 .getAllProperties().iterator();
             if (it.hasNext()) {
               AbstractField tmp = it.next();
@@ -122,18 +122,18 @@ public class SynchronizedMetaDataValidation {
     String author = dico.getAuthor();
     if (author != null) {
       if (dc != null) {
-        if (dc.getCreator() != null) {
-          if (dc.getCreatorValue().size() != 1) {
+        if (dc.getCreatorsProperty() != null) {
+          if (dc.getCreators().size() != 1) {
             ve
                 .add(AbsentXMPPropertyError(
                     "Author",
                     "In XMP metadata, Author(s) must be represented by a single entry in a text array (dc:creator) "));
           } else {
-            if (dc.getCreatorValue().get(0) == null) {
+            if (dc.getCreators().get(0) == null) {
               ve.add(AbsentXMPPropertyError("Author",
                   "Property is defined as null"));
             } else {
-              if (!dc.getCreatorValue().get(0).equals(author)) {
+              if (!dc.getCreators().get(0).equals(author)) {
                 ve.add(unsynchronizedMetaDataError("Author"));
               }
             }
@@ -166,13 +166,13 @@ public class SynchronizedMetaDataValidation {
       if (dc != null) {
         // PDF/A Conformance Erratum (2007) specifies XMP Subject
         // as a Text type embedded in the dc:description["x-default"].
-        if (dc.getDescription() != null) {
-          if (dc.getDescriptionValue("x-default") == null) {
+        if (dc.getDescriptionProperty() != null) {
+          if (dc.getDescription("x-default") == null) {
             ve
                 .add(AbsentXMPPropertyError("Subject",
                     "Subject not found in XMP (dc:description[\"x-default\"] not found)"));
           } else {
-            if (!dc.getDescriptionValue("x-default").equals(subject)) {
+            if (!dc.getDescription("x-default").equals(subject)) {
               ve.add(unsynchronizedMetaDataError("Subject"));
 
             }
@@ -206,7 +206,7 @@ public class SynchronizedMetaDataValidation {
         if (pdf.getKeywords() == null) {
           ve.add(AbsentXMPPropertyError("Keywords", "Property is not defined"));
         } else {
-          if (!pdf.getKeywordsValue().equals(keyword)) {
+          if (!pdf.getKeywords().equals(keyword)) {
             ve.add(unsynchronizedMetaDataError("Keywords"));
           }
         }
@@ -235,7 +235,7 @@ public class SynchronizedMetaDataValidation {
         if (pdf.getProducer() == null) {
           ve.add(AbsentXMPPropertyError("Producer", "Property is not defined"));
         } else {
-          if (!pdf.getProducerValue().equals(producer)) {
+          if (!pdf.getProducer().equals(producer)) {
             ve.add(unsynchronizedMetaDataError("Producer"));
           }
         }
@@ -263,11 +263,11 @@ public class SynchronizedMetaDataValidation {
     String creatorTool = dico.getCreator();
     if (creatorTool != null) {
       if (xmp != null) {
-        if (xmp.getCreatorTool() == null) {
+        if (xmp.getCreatorToolProperty() == null) {
           ve.add(AbsentXMPPropertyError("CreatorTool",
               "Property is not defined"));
         } else {
-          if (!xmp.getCreatorToolValue().equals(creatorTool)) {
+          if (!xmp.getCreatorTool().equals(creatorTool)) {
             ve.add(unsynchronizedMetaDataError("CreatorTool"));
           }
         }
@@ -301,7 +301,7 @@ public class SynchronizedMetaDataValidation {
     }
     if (creationDate != null) {
       if (xmp != null) {
-        Calendar xmpCreationDate = xmp.getCreateDateValue();
+        Calendar xmpCreationDate = xmp.getCreateDate();
 
         if (xmpCreationDate == null) {
           ve.add(AbsentXMPPropertyError("CreationDate",
@@ -339,7 +339,7 @@ public class SynchronizedMetaDataValidation {
       if (modifyDate != null) {
         if (xmp != null) {
 
-          Calendar xmpModifyDate = xmp.getModifyDateValue();
+          Calendar xmpModifyDate = xmp.getModifyDate();
           if (xmpModifyDate == null) {
             ve.add(AbsentXMPPropertyError("ModifyDate",
                 "Property is not defined"));

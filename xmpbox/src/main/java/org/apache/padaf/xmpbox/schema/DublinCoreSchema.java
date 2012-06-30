@@ -83,7 +83,7 @@ public class DublinCoreSchema extends XMPSchema {
 	@PropertyType(propertyType = "Lang Alt")
 	public static final String TITLE = "title";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(propertyType = "bag Text")
 	public static final String TYPE = "type";
 
 	/**
@@ -114,17 +114,22 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param properName
 	 *            Value to set
 	 */
-	public void addToContributorValue(String properName) {
+	public void addContributor(String properName) {
 		addBagValue(localPrefixSep + CONTRIBUTOR, properName);
 	}
 
+	public void removeContributor (String properName) {
+		removeBagValue(localPrefixSep + CONTRIBUTOR, properName);
+	}
+	
+	
 	/**
 	 * set the extent or scope of the resource
 	 * 
 	 * @param text
 	 *            Value to set
 	 */
-	public void setCoverageValue(String text) {
+	public void setCoverage(String text) {
 		addProperty(new TextType(metadata, localPrefix, COVERAGE, text));
 	}
 
@@ -134,7 +139,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Property to set
 	 */
-	public void setCoverage(TextType text) {
+	public void setCoverageProperty(TextType text) {
 		addProperty(text);
 	}
 
@@ -145,20 +150,28 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to add
 	 * @throws InappropriateTypeException
 	 */
-	public void addToCreatorValue(String properName) {
+	public void addCreator(String properName) {
 		addSequenceValue(localPrefixSep + CREATOR, properName);
 	}
 
+	public void removeCreator (String name) {
+		removeSequenceValue(localPrefixSep +CREATOR, name);
+	}
+	
 	/**
 	 * Set date(s) that something interesting happened to the resource
 	 * 
 	 * @param date
 	 *            Value to add
 	 */
-	public void addToDateValue(Calendar date) {
+	public void addDate(Calendar date) {
 		addSequenceDateValue(localPrefixSep + DATE, date);
 	}
 
+	public void removeDate (Calendar date) {
+		removeSequenceDateValue(localPrefixSep + DATE, date);
+	}
+	
 	/**
 	 * add a textual description of the content of the resource (multiple values
 	 * may be present for different languages)
@@ -168,17 +181,41 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param value
 	 *            Value to add
 	 */
-	public void addToDescriptionValue(String lang, String value) {
+	public void addDescription(String lang, String value) {
 		setLanguagePropertyValue(localPrefixSep + DESCRIPTION, lang, value);
 	}
 
+    /**
+     * Set the default value for the description.
+     *
+     * @param value The description of this resource.
+     */
+    public void setDescription( String value )
+    {
+		addDescription(null, value);
+    }
+    
+
+    /**
+     * Convenience method for signature compatibility with jempbox
+     *
+     * @see DublinCoreSchema#addDescription(String, String)
+     */
+    @Deprecated
+    public void setDescription( String language, String description )
+    {
+        addDescription(language, description );
+    }
+    
+
+	
 	/**
 	 * set the file format used when saving the resource.
 	 * 
 	 * @param mimeType
 	 *            Value to set
 	 */
-	public void setFormatValue(String mimeType) {
+	public void setFormat(String mimeType) {
 		addProperty(new TextType(metadata, localPrefix, FORMAT, mimeType));
 	}
 
@@ -188,7 +225,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Value to set
 	 */
-	public void setIdentifierValue(String text) {
+	public void setIdentifier(String text) {
 		addProperty(new TextType(metadata, localPrefix, IDENTIFIER, text));
 	}
 
@@ -198,7 +235,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Property to set
 	 */
-	public void setIdentifier(TextType text) {
+	public void setIdentifierProperty(TextType text) {
 		addProperty(text);
 	}
 
@@ -208,8 +245,12 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param locale
 	 *            Value to set
 	 */
-	public void addToLanguageValue(String locale) {
+	public void addLanguage(String locale) {
 		addBagValue(localPrefixSep + LANGUAGE, locale);
+	}
+	
+	public void removeLanguage (String locale) {
+		removeBagValue(localPrefixSep + LANGUAGE, locale);
 	}
 
 	/**
@@ -218,20 +259,28 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param properName
 	 *            Value to add
 	 */
-	public void addToPublisherValue(String properName) {
+	public void addPublisher(String properName) {
 		addBagValue(localPrefixSep + PUBLISHER, properName);
 	}
 
+	public void removePublisher (String name) {
+		removeBagValue(localPrefixSep + PUBLISHER, name);
+	}
+	
 	/**
 	 * Add relationships to other documents
 	 * 
 	 * @param text
 	 *            Value to set
 	 */
-	public void addToRelationValue(String text) {
+	public void addRelation(String text) {
 		addBagValue(localPrefixSep + RELATION, text);
 	}
 
+	public void removeRelation (String text) {
+		removeBagValue (localPrefixSep + RELATION, text);
+	}
+	
 	/**
 	 * add informal rights statement, by language.
 	 * 
@@ -240,17 +289,41 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param value
 	 *            Value to set
 	 */
-	public void addToRightsValue(String lang, String value) {
+	public void addRights(String lang, String value) {
 		setLanguagePropertyValue(localPrefixSep + RIGHTS, lang, value);
 	}
 
+    /**
+     * Convenience method for signature compatibility with jempbox
+     *
+     * @see DublinCoreSchema#addRights(String, String)
+     */
+	@Deprecated
+    public void setRights( String language, String rights )
+    {
+        addRights(language, rights );
+    }
+
+    /**
+     * Convenience method for signature compatibility with jempbox.
+     * Add default rights
+     *
+     * @see DublinCoreSchema#addRights(String, String)
+     */
+	@Deprecated
+    public void setRights( String rights )
+    {
+        addRights(null, rights );
+    }
+
+	
 	/**
 	 * Set the unique identifer of the work from which this resource was derived
 	 * 
 	 * @param text
 	 *            Value to set
 	 */
-	public void setSourceValue(String text) {
+	public void setSource(String text) {
 		addProperty(new TextType(metadata, localPrefix, SOURCE, text));
 	}
 
@@ -260,7 +333,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Property to set
 	 */
-	public void setSource(TextType text) {
+	public void setSourceProperty(TextType text) {
 		addProperty(text);
 	}
 
@@ -270,7 +343,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Property to set
 	 */
-	public void setFormat(TextType text) {
+	public void setFormatProperty(TextType text) {
 		addProperty(text);
 	}
 
@@ -281,10 +354,14 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Value to add
 	 */
-	public void addToSubjectValue(String text) {
+	public void addSubject(String text) {
 		addBagValue(localPrefixSep + SUBJECT, text);
 	}
 
+	public void removeSubject (String text) {
+		removeBagValue(localPrefixSep + SUBJECT, text);
+	}
+	
 	/**
 	 * set the title of the document, or the name given to the resource (by
 	 * language)
@@ -294,8 +371,22 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param value
 	 *            Value to set
 	 */
-	public void addToTitleValue(String lang, String value) {
+	public void setTitle(String lang, String value) {
 		setLanguagePropertyValue(localPrefixSep + TITLE, lang, value);
+	}
+
+	/**
+	 * set default title
+	 * @param lang
+	 * @param value
+	 */
+	public void setTitle(String value) {
+		setTitle(null, value);
+	}
+
+	// TODO javadoc convenience method
+	public void addTitle(String lang, String value) {
+		setTitle(lang,value);
 	}
 
 	/**
@@ -304,7 +395,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param type
 	 *            Value to set
 	 */
-	public void addToTypeValue(String type) {
+	public void addType(String type) {
 		addBagValue(localPrefixSep + TYPE, type);
 	}
 
@@ -313,7 +404,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Contributor property
 	 */
-	public ComplexProperty getContributor() {
+	public ComplexProperty getContributorsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + CONTRIBUTOR);
 	}
 
@@ -322,7 +413,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return List of contributors values
 	 */
-	public List<String> getContributorValue() {
+	public List<String> getContributors() {
 		return getBagValueList(localPrefixSep + CONTRIBUTOR);
 
 	}
@@ -332,7 +423,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Coverage property
 	 */
-	public TextType getCoverage() {
+	public TextType getCoverageProperty() {
 		return (TextType) getProperty(localPrefixSep + COVERAGE);
 	}
 
@@ -341,7 +432,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Coverage value
 	 */
-	public String getCoverageValue() {
+	public String getCoverage() {
 		TextType tt = (TextType) getProperty(localPrefixSep + COVERAGE);
 		return tt == null ? null : tt.getStringValue();
 	}
@@ -351,7 +442,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Creator property
 	 */
-	public ComplexProperty getCreator() {
+	public ComplexProperty getCreatorsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + CREATOR);
 	}
 
@@ -360,7 +451,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return List of creators values
 	 */
-	public List<String> getCreatorValue() {
+	public List<String> getCreators() {
 		return getSequenceValueList(localPrefixSep + CREATOR);
 	}
 
@@ -369,7 +460,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return date property
 	 */
-	public ComplexProperty getDate() {
+	public ComplexProperty getDatesProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + DATE);
 	}
 
@@ -378,7 +469,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return List of dates values
 	 */
-	public List<Calendar> getDateValue() {
+	public List<Calendar> getDates() {
 		return getSequenceDateValueList(localPrefixSep + DATE);
 	}
 
@@ -387,7 +478,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Description property
 	 */
-	public ComplexProperty getDescription() {
+	public ComplexProperty getDescriptionProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + DESCRIPTION);
 	}
 
@@ -407,16 +498,28 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            The language wanted
 	 * @return Desription value for specified language
 	 */
-	public String getDescriptionValue(String lang) {
+	public String getDescription(String lang) {
 		return getLanguagePropertyValue(localPrefixSep + DESCRIPTION, lang);
 	}
+	
+    /**
+     * Get the default value for the description.
+     *
+     * @return The description of this resource.
+     */
+    public String getDescription()
+    {
+        return getDescription( null );
+    }
+    
+
 
 	/**
 	 * Return the file format property
 	 * 
 	 * @return the format property
 	 */
-	public TextType getFormat() {
+	public TextType getFormatProperty() {
 		return (TextType) getProperty(localPrefixSep + FORMAT);
 	}
 
@@ -425,7 +528,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the format value
 	 */
-	public String getFormatValue() {
+	public String getFormat() {
 		TextType tt = (TextType) getProperty(localPrefixSep + FORMAT);
 		return tt == null ? null : tt.getStringValue();
 	}
@@ -435,7 +538,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the identifier property
 	 */
-	public TextType getIdentifier() {
+	public TextType getIdentifierProperty() {
 		return (TextType) getProperty(localPrefixSep + IDENTIFIER);
 	}
 
@@ -444,7 +547,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the unique identifier value
 	 */
-	public String getIdentifierValue() {
+	public String getIdentifier() {
 		TextType tt = (TextType) getProperty(localPrefixSep + IDENTIFIER);
 		return tt == null ? null : tt.getStringValue();
 	}
@@ -454,7 +557,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return language property
 	 */
-	public ComplexProperty getLanguage() {
+	public ComplexProperty getLanguagesProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + LANGUAGE);
 	}
 
@@ -463,7 +566,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return list of languages defined for language property
 	 */
-	public List<String> getLanguageValue() {
+	public List<String> getLanguages() {
 		return getBagValueList(localPrefixSep + LANGUAGE);
 	}
 
@@ -472,7 +575,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return publisher property
 	 */
-	public ComplexProperty getPublisher() {
+	public ComplexProperty getPublishersProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + PUBLISHER);
 	}
 
@@ -481,7 +584,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return list of values for publisher property
 	 */
-	public List<String> getPublisherValue() {
+	public List<String> getPublishers() {
 		return getBagValueList(localPrefixSep + PUBLISHER);
 	}
 
@@ -490,7 +593,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return relation property
 	 */
-	public ComplexProperty getRelation() {
+	public ComplexProperty getRelationsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + RELATION);
 	}
 
@@ -499,8 +602,18 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return list of values for relation property
 	 */
-	public List<String> getRelationValue() {
+	public List<String> getRelations() {
 		return getBagValueList(localPrefixSep + RELATION);
+	}
+
+	/**
+	 * Convenience method for signature compatibility with jempbox
+	 * 
+	 * @see DublinCoreSchema#getRelations()
+	 */
+	@Deprecated
+	public List<String> getRelationships() {
+		return getRelations();
 	}
 
 	/**
@@ -508,7 +621,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return rights property
 	 */
-	public ComplexProperty getRights() {
+	public ComplexProperty getRightsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + RIGHTS);
 	}
 
@@ -528,16 +641,26 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            language concerned
 	 * @return the rights value for specified language
 	 */
-	public String getRightsValue(String lang) {
+	public String getRights(String lang) {
 		return getLanguagePropertyValue(localPrefixSep + RIGHTS, lang);
 	}
 
+	/**
+	 * Return the default value for Right property
+	 * 
+	 * @see DublinCoreSchema#getRights(String)
+	 */
+	public String getRights() {
+		return getRights(null);
+	}
+
+	
 	/**
 	 * Return the source property of this resource
 	 * 
 	 * @return source property
 	 */
-	public TextType getSource() {
+	public TextType getSourceProperty() {
 		return (TextType) getProperty(localPrefixSep + SOURCE);
 	}
 
@@ -546,7 +669,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return value of source property
 	 */
-	public String getSourceValue() {
+	public String getSource() {
 		TextType tt = (TextType) getProperty(localPrefixSep + SOURCE);
 		return tt == null ? null : tt.getStringValue();
 	}
@@ -554,9 +677,9 @@ public class DublinCoreSchema extends XMPSchema {
 	/**
 	 * Return the bag DC Subject
 	 * 
-	 * @return the subject property
+     * @return the subject property
 	 */
-	public ComplexProperty getSubject() {
+	public ComplexProperty getSubjectsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + SUBJECT);
 	}
 
@@ -565,7 +688,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the list of subject values
 	 */
-	public List<String> getSubjectValue() {
+	public List<String> getSubjects() {
 		return getBagValueList(localPrefixSep + SUBJECT);
 	}
 
@@ -574,7 +697,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the title property
 	 */
-	public ComplexProperty getTitle() {
+	public ComplexProperty getTitleProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + TITLE);
 	}
 
@@ -594,16 +717,27 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            the language concerned
 	 * @return the title value for specified language
 	 */
-	public String getTitleValue(String lang) {
+	public String getTitle(String lang) {
 		return getLanguagePropertyValue(localPrefixSep + TITLE, lang);
 	}
+
+	/**
+	 * Get the default value for the title.
+	 *
+	 * @return The default title of this resource.
+	 */
+	public String getTitle()
+	{
+		return getTitle( null );
+	}
+
 
 	/**
 	 * Return the bag DC Type
 	 * 
 	 * @return the type property
 	 */
-	public ComplexProperty getType() {
+	public ComplexProperty getTypesProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + TYPE);
 	}
 
@@ -612,7 +746,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the value of type property
 	 */
-	public List<String> getTypeValue() {
+	public List<String> getTypes() {
 		return getBagValueList(localPrefixSep + TYPE);
 	}
 
