@@ -58,7 +58,6 @@ public abstract class AbstractXMPSchemaTest {
 		this.property = property;
 		this.value = value;
 		this.type = type;
-
 	}
 
 	public static Object[] wrapProperty(String name, String type, Object value) {
@@ -99,6 +98,8 @@ public abstract class AbstractXMPSchemaTest {
 		} else if (type.equals("Lang Alt")) {
 			// do nothing
 		} else if (type.equals("Alt Thumbnail")) {
+			// do nothing
+		} else if (type.equals("ResourceRef")) {
 			// do nothing
 		} else if (type.equals("URL")) {
 			testGetSetTextValue();
@@ -143,16 +144,25 @@ public abstract class AbstractXMPSchemaTest {
 						// do not check method existence
 					} else if (pt.propertyType().equals("Alt Thumbnail")) {
 						// do not check method existence
+					} else if (pt.propertyType().equals("ResourceRef")) {
+						// do not check method existence
 					} else {
 						// type test
-						String getName = "get"
-								+ firstUpper(field.get(schema).toString());
-						Method getMethod = schemaClass.getMethod(getName);
-						Assert.assertNull(getName
+						// TODO use getMethod()
+						String spt = retrievePropertyType(field.get(schema).toString());
+//						String getNameProperty = getMethod(field.get(schema).toString());
+						String getNameProperty = "get" + prepareName(
+								field.get(schema).toString(), spt) + "Property";
+//								+ firstUpper(field.get(schema).toString())+ "Property";
+						Method getMethod = schemaClass.getMethod(getNameProperty);
+						Assert.assertNull(getNameProperty
 								+ " should return null when testing "
 								+ property, getMethod.invoke(schema));
 						// value test
-						String getNameValue = getName + "Value";
+//						String getNameValue = "get"
+//								+ firstUpper(field.get(schema).toString());
+						String getNameValue = "get" + prepareName(
+								field.get(schema).toString(), spt);
 						getMethod = schemaClass.getMethod(getNameValue);
 						Assert.assertNotNull(getNameValue
 								+ " method should exist", getMethod);
@@ -165,6 +175,19 @@ public abstract class AbstractXMPSchemaTest {
 		}
 	}
 
+	protected String retrievePropertyType (String prop) throws IllegalArgumentException,IllegalAccessException {
+		Field [] fields = schemaClass.getFields();
+		for (Field field : fields) {
+			if (field.isAnnotationPresent(PropertyType.class)) {
+				PropertyType pt = field.getAnnotation(PropertyType.class);
+				if (field.get(schema).equals(prop)) {
+					return pt.propertyType();
+				}
+			}
+		}
+		return type;
+	}
+	
 	protected String firstUpper(String name) {
 		StringBuilder sb = new StringBuilder(name.length());
 		sb.append(name.substring(0, 1).toUpperCase());
@@ -172,10 +195,25 @@ public abstract class AbstractXMPSchemaTest {
 		return sb.toString();
 	}
 
+	protected String prepareName (String prop, String type) {
+		String fu = firstUpper(prop);
+		StringBuilder sb = new StringBuilder(fu.length()+1);
+		sb.append(fu);
+		if (fu.endsWith("s")) { 
+			// do nothing
+		} else if (fu.endsWith("y")) {
+			// do nothing
+		}
+		else if (type.startsWith("bag ")) sb.append("s");
+		else if (type.startsWith("seq ")) sb.append("s");
+		// TODO others
+		return sb.toString();
+	}
+	
 	protected String setMethod(String prop) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(3 + prop.length());
-		sb.append("set").append(fu);
+		sb.append("set").append(prepareName(prop, type)).append("Property");
 		return sb.toString();
 	}
 
@@ -189,28 +227,28 @@ public abstract class AbstractXMPSchemaTest {
 	protected String getMethod(String prop) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(3 + prop.length());
-		sb.append("get").append(fu);
+		sb.append("get").append(fu).append("Property");
 		return sb.toString();
 	}
 
 	protected String setValueMethod(String prop) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(8 + prop.length());
-		sb.append("set").append(fu).append("Value");
+		sb.append("set").append(fu);
 		return sb.toString();
 	}
 
 	protected String getValueMethod(String prop) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(8 + prop.length());
-		sb.append("get").append(fu).append("Value");
+		sb.append("get").append(prepareName(prop, type));
 		return sb.toString();
 	}
 
 	protected String addToValueMethod(String prop) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(10 + prop.length());
-		sb.append("addTo").append(fu).append("Value");
+		sb.append("add").append(fu);
 		return sb.toString();
 
 	}

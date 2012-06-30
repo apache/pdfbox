@@ -48,11 +48,11 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest {
 		List<Object[]> data = new ArrayList<Object[]>();
 		data.add(wrapProperty("DocumentID", "Text",
 				"uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"));
-		data.add(wrapProperty("ResourceRef", "Text", "uuid:14"));
+//		data.add(wrapProperty("ResourceRef", "Text", "uuid:14"));
 		data.add(wrapProperty("Manager", "Text", "Raoul"));
 		data.add(wrapProperty("ManageTo", "Text", "uuid:36"));
 		data.add(wrapProperty("ManageUI", "Text", "uuid:3635"));
-		data.add(wrapProperty("ManageFrom", "Text", "uuid:36"));
+//		data.add(wrapProperty("ManageFrom", "Text", "uuid:36"));
 		data.add(wrapProperty("InstanceID", "Text", "uuid:42"));
 		data.add(wrapProperty("OriginalDocumentID", "Text", "uuid:142"));
 		data.add(wrapProperty("RenditionClass", "Text", "myclass"));

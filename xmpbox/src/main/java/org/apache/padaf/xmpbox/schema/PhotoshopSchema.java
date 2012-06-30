@@ -107,282 +107,298 @@ public class PhotoshopSchema extends XMPSchema {
 	@PropertyType(propertyType = "Integer")
 	public static final String URGENCY = "Urgency";
 
-	public TextType getAncestor() {
+	public TextType getAncestorProperty() {
 		return (TextType) getProperty(localPrefix + ANCESTOR);
 	}
 	
-	public String getAncestorValue() {
+	public String getAncestor() {
 		TextType tt = ((TextType) getProperty(localPrefix + ANCESTOR));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setAncestorValue(String text) {
+	public void setAncestor(String text) {
 		addProperty(new TextType(metadata, localPrefix, ANCESTOR, text));
 	}
 
-	public void setAncestor(TextType text) {
+	public void setAncestorProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getAuthorsPosition() {
+	public TextType getAuthorsPositionProperty() {
 		return (TextType) getProperty(localPrefix + AUTHORS_POSITION);
 	}
 	
-	public String getAuthorsPositionValue() {
+	public String getAuthorsPosition() {
 		TextType tt = ((TextType) getProperty(localPrefix + AUTHORS_POSITION));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setAuthorsPositionValue(String text) {
+	public void setAuthorsPosition(String text) {
 		addProperty(new TextType(metadata, localPrefix, AUTHORS_POSITION, text));
 	}
 
-	public void setAuthorsPosition(TextType text) {
+	public void setAuthorsPositionProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public TextType getCaptionWriter() {
+	public TextType getCaptionWriterProperty() {
 		return (TextType) getProperty(localPrefix + CAPTION_WRITER);
 	}
 	
-	public String getCaptionWriterValue() {
+	public String getCaptionWriter() {
 		TextType tt = ((TextType) getProperty(localPrefix + CAPTION_WRITER));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setCaptionWriterValue(String text) {
+	public void setCaptionWriter(String text) {
 		addProperty(new TextType(metadata, localPrefix, CAPTION_WRITER, text));
 	}
 
-	public void setCaptionWriter(TextType text) {
+	public void setCaptionWriterProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public TextType getCategory() {
+	public TextType getCategoryProperty() {
 		return (TextType) getProperty(localPrefix + CATEGORY);
 	}
 	
-	public String getCategoryValue() {
+	public String getCategory() {
 		TextType tt = ((TextType) getProperty(localPrefix + CATEGORY));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setCategoryValue(String text) {
+	public void setCategory(String text) {
 		addProperty(new TextType(metadata, localPrefix, CATEGORY, text));
 	}
 
-	public void setCategory(TextType text) {
+	public void setCategoryProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getCity() {
+	public TextType getCityProperty() {
 		return (TextType) getProperty(localPrefix + CITY);
 	}
 	
-	public String getCityValue() {
+	public String getCity() {
 		TextType tt = ((TextType) getProperty(localPrefix + CITY));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setCityValue(String text) {
+	public void setCity(String text) {
 		addProperty(new TextType(metadata, localPrefix, CITY, text));
 	}
 
-	public void setCity(TextType text) {
+	public void setCityProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public IntegerType getColorMode() {
+	public IntegerType getColorModeProperty() {
 		return (IntegerType) getProperty(localPrefix + COLOR_MODE);
 	}
 	
-	public Integer getColorModeValue() {
+	public Integer getColorMode() {
 		IntegerType tt = ((IntegerType) getProperty(localPrefix + COLOR_MODE));
 		return tt == null ? null : tt.getValue();
 	}
 	
-	public void setColorModeValue(String text) {
+	public void setColorMode(String text) {
 		addProperty(new IntegerType(metadata, localPrefix, COLOR_MODE, text));
 	}
 
-	public void setColorMode(IntegerType text) {
+	public void setColorModeProperty(IntegerType text) {
 		addProperty(text);
 	}
 
-	public TextType getCountry() {
+	public TextType getCountryProperty() {
 		return (TextType) getProperty(localPrefix + COUNTRY);
 	}
 	
-	public String getCountryValue() {
+	public String getCountry() {
 		TextType tt = ((TextType) getProperty(localPrefix + COUNTRY));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setCountryValue(String text) {
+	public void setCountry(String text) {
 		addProperty(new TextType(metadata, localPrefix, COUNTRY, text));
 	}
 
-	public void setCountry(TextType text) {
+	public void setCountryProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getCredit() {
+	public TextType getCreditProperty() {
 		return (TextType) getProperty(localPrefix + CREDIT);
 	}
 	
-	public String getCreditValue() {
+	public String getCredit() {
 		TextType tt = ((TextType) getProperty(localPrefix + CREDIT));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setCreditValue(String text) {
+	public void setCredit(String text) {
 		addProperty(new TextType(metadata, localPrefix, CREDIT, text));
 	}
 
-	public void setCredit(TextType text) {
+	public void setCreditProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public TextType getDateCreated() {
+	public TextType getDateCreatedProperty() {
 		return (TextType) getProperty(localPrefix + DATE_CREATED);
 	}
 	
-	public String getDateCreatedValue() {
+	public String getDateCreated() {
 		TextType tt = ((TextType) getProperty(localPrefix + DATE_CREATED));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setDateCreatedValue(String text) {
+	public void setDateCreated(String text) {
 		addProperty(new TextType(metadata, localPrefix, DATE_CREATED, text));
 	}
 
-	public void setDateCreated(TextType text) {
+	public void setDateCreatedProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public void addToDocumentAncestorsValue(String text) {
+	public void addDocumentAncestors(String text) {
 		addBagValue(localPrefixSep + DOCUMENT_ANCESTORS, text);
 	}
 
-	public ComplexProperty getDocumentAncestors() {
+	public ComplexProperty getDocumentAncestorsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + DOCUMENT_ANCESTORS);
 	}
 
-	public List<String> getDocumentAncestorsValue() {
+	public List<String> getDocumentAncestors() {
 		return getBagValueList(localPrefixSep + DOCUMENT_ANCESTORS);
 	}
 
-	public TextType getHeadline() {
+	public TextType getHeadlineProperty() {
 		return (TextType) getProperty(localPrefix + HEADLINE);
 	}
 	
-	public String getHeadlineValue() {
+	public String getHeadline() {
 		TextType tt = ((TextType) getProperty(localPrefix + HEADLINE));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setHeadlineValue(String text) {
+	public void setHeadline(String text) {
 		addProperty(new TextType(metadata, localPrefix, HEADLINE, text));
 	}
 
-	public void setHeadline(TextType text) {
+	public void setHeadlineProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getHistory() {
+	public TextType getHistoryProperty() {
 		return (TextType) getProperty(localPrefix + HISTORY);
 	}
 	
-	public String getHistoryValue() {
+	public String getHistory() {
 		TextType tt = ((TextType) getProperty(localPrefix + HISTORY));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setHistoryValue(String text) {
+	public void setHistory(String text) {
 		addProperty(new TextType(metadata, localPrefix, HISTORY, text));
 	}
 
-	public void setHistory(TextType text) {
+	public void setHistoryProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getIccProfile() {
+	public TextType getIccProfileProperty() {
 		return (TextType) getProperty(localPrefix + ICC_PROFILE);
 	}
 	
-	public String getIccProfileValue() {
+	public String getIccProfile() {
 		TextType tt = ((TextType) getProperty(localPrefix + ICC_PROFILE));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setIccProfileValue(String text) {
+	public void setIccProfile(String text) {
 		addProperty(new TextType(metadata, localPrefix, ICC_PROFILE, text));
 	}
 
-	public void setIccProfile(TextType text) {
+	public void setIccProfileProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public TextType getInstructions() {
+	public TextType getInstructionsProperty() {
 		return (TextType) getProperty(localPrefix + INSTRUCTIONS);
 	}
 	
-	public String getInstructionsValue() {
+	public String getInstructions() {
 		TextType tt = ((TextType) getProperty(localPrefix + INSTRUCTIONS));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setInstructionsValue(String text) {
+	public void setInstructions(String text) {
 		addProperty(new TextType(metadata, localPrefix, INSTRUCTIONS, text));
 	}
 
-	public void setInstructions(TextType text) {
+	public void setInstructionsProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public TextType getSource() {
+	public TextType getSourceProperty() {
 		return (TextType) getProperty(localPrefix + SOURCE);
 	}
 	
-	public String getSourceValue() {
+	public String getSource() {
 		TextType tt = ((TextType) getProperty(localPrefix + SOURCE));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setSourceValue(String text) {
+	public void setSource(String text) {
 		addProperty(new TextType(metadata, localPrefix, SOURCE, text));
 	}
 
-	public void setSource(TextType text) {
+	public void setSourceProperty(TextType text) {
 		addProperty(text);
 	}
 	
-	public TextType getState() {
+	public TextType getStateProperty() {
 		return (TextType) getProperty(localPrefix + STATE);
 	}
 	
-	public String getStateValue() {
+	public String getState() {
 		TextType tt = ((TextType) getProperty(localPrefix + STATE));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setStateValue(String text) {
+	public void setState(String text) {
 		addProperty(new TextType(metadata, localPrefix, STATE, text));
 	}
 
-	public void setState(TextType text) {
+	public void setStateProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public void addToSupplementalCategoriesValue(String text) {
+	public void addSupplementalCategories(String text) {
 		addBagValue(localPrefixSep + SUPPLEMENTAL_CATEGORIES, text);
 	}
 
-	public ComplexProperty getSupplementalCategories() {
+	public void removeSupplementalCategory(String text) {
+		removeBagValue(localPrefixSep + SUPPLEMENTAL_CATEGORIES, text);
+	}
+	
+	/**
+     * Add a new supplemental category.
+     * 
+     * @param s The supplemental category.
+     */
+    public void addSupplementalCategory( String s )
+    {
+    	addSupplementalCategories(s);
+    }
+
+
+	
+	public ComplexProperty getSupplementalCategoriesProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + SUPPLEMENTAL_CATEGORIES);
 	}
 
-	public List<String> getSupplementalCategoriesValue() {
+	public List<String> getSupplementalCategories() {
 		return getBagValueList(localPrefixSep + SUPPLEMENTAL_CATEGORIES);
 	}
 	
@@ -416,37 +432,51 @@ public class PhotoshopSchema extends XMPSchema {
 
 	}
 	
-	public TextType getTransmissionReference() {
+	public TextType getTransmissionReferenceProperty() {
 		return (TextType) getProperty(localPrefix + TRANSMISSION_REFERENCE);
 	}
 	
-	public String getTransmissionReferenceValue() {
+	public String getTransmissionReference() {
 		TextType tt = ((TextType) getProperty(localPrefix + TRANSMISSION_REFERENCE));
 		return tt == null ? null : tt.getStringValue();
 	}
 	
-	public void setTransmissionReferenceValue(String text) {
+	public void setTransmissionReference(String text) {
 		addProperty(new TextType(metadata, localPrefix, TRANSMISSION_REFERENCE, text));
 	}
 
-	public void setTransmissionReference(TextType text) {
+	public void setTransmissionReferenceProperty(TextType text) {
 		addProperty(text);
 	}
 
-	public IntegerType getUrgency() {
+	public IntegerType getUrgencyProperty() {
 		return (IntegerType) getProperty(localPrefix + URGENCY);
 	}
 	
-	public Integer getUrgencyValue() {
+	public Integer getUrgency() {
 		IntegerType tt = ((IntegerType) getProperty(localPrefix + URGENCY));
 		return tt == null ? null : tt.getValue();
 	}
 	
-	public void setUrgencyValue(String text) {
+	public void setUrgency(String text) {
 		addProperty(new IntegerType(metadata, localPrefix, URGENCY, text));
 	}
 
-	public void setUrgency(IntegerType text) {
+    public void setUrgency( Integer s )
+    {
+    	// TODO should this test be done here ?
+//        if( s != null )
+//        {
+//            if( s.intValue() < 1 || s.intValue() > 8 )
+//            {
+//                throw new RuntimeException( "Error: photoshop:Urgency must be between 1 and 8.  value=" + s );
+//            }
+//        }
+		addProperty(new IntegerType(metadata, localPrefix, URGENCY, s));
+    }
+
+	
+	public void setUrgencyProperty(IntegerType text) {
 		addProperty(text);
 	}
 	

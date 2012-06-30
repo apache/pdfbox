@@ -60,28 +60,28 @@ public class DoubleSameTypeSchemaTest {
 		creators.add("creator2");
 
 		String format = "application/pdf";
-		dc1.setFormatValue(format);
-		dc1.addToCreatorValue(creators.get(0));
-		dc1.addToCreatorValue(creators.get(1));
+		dc1.setFormat(format);
+		dc1.addCreator(creators.get(0));
+		dc1.addCreator(creators.get(1));
 
 		String coverage = "Coverage";
-		dc2.setCoverageValue(coverage);
-		dc2.addToCreatorValue(creators.get(0));
-		dc2.addToCreatorValue(creators.get(1));
+		dc2.setCoverage(coverage);
+		dc2.addCreator(creators.get(0));
+		dc2.addCreator(creators.get(1));
 
 		// We can't use metadata.getDublinCoreSchema() due to specification of
 		// XMPBox (see Javadoc of XMPMetadata)
 		Assert.assertEquals(format, ((DublinCoreSchema) metadata.getSchema(
 				DublinCoreSchema.PREFERRED_DC_PREFIX, DublinCoreSchema.DCURI))
-				.getFormatValue());
+				.getFormat());
 		Assert.assertEquals(coverage, ((DublinCoreSchema) metadata.getSchema(
-				ownPrefix, DublinCoreSchema.DCURI)).getCoverageValue());
+				ownPrefix, DublinCoreSchema.DCURI)).getCoverage());
 
 		List<XMPSchema> schems = metadata.getAllSchemas();
 		DublinCoreSchema dc;
 		for (XMPSchema xmpSchema : schems) {
 			dc = (DublinCoreSchema) xmpSchema;
-			Assert.assertTrue(dc.getCreatorValue().containsAll(creators));
+			Assert.assertTrue(dc.getCreators().containsAll(creators));
 		}
 
 		// SaveMetadataHelper.serialize(metadata, true, System.out);

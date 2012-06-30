@@ -49,16 +49,16 @@ public class PDFAIdentificationOthersTest {
 		String conformance = "B";
 
 		pdfaid.setPartValueWithInt(versionId);
-		pdfaid.setAmdValue(amdId);
-		pdfaid.setConformanceValue(conformance);
+		pdfaid.setAmd(amdId);
+		pdfaid.setConformance(conformance);
 
-		Assert.assertEquals(versionId, pdfaid.getPartValue());
-		Assert.assertEquals(amdId, pdfaid.getAmendmentValue());
-		Assert.assertEquals(conformance, pdfaid.getConformanceValue());
+		Assert.assertEquals(versionId, pdfaid.getPart());
+		Assert.assertEquals(amdId, pdfaid.getAmendment());
+		Assert.assertEquals(conformance, pdfaid.getConformance());
 
-		Assert.assertEquals("" + versionId, pdfaid.getPart().getStringValue());
-		Assert.assertEquals(amdId, pdfaid.getAmd().getStringValue());
-		Assert.assertEquals(conformance, pdfaid.getConformance()
+		Assert.assertEquals("" + versionId, pdfaid.getPartProperty().getStringValue());
+		Assert.assertEquals(amdId, pdfaid.getAmdProperty().getStringValue());
+		Assert.assertEquals(conformance, pdfaid.getConformanceProperty()
 				.getStringValue());
 
 		// check retrieve this schema in metadata
@@ -72,7 +72,7 @@ public class PDFAIdentificationOthersTest {
 		PDFAIdentificationSchema pdfaid = metadata
 				.createAndAddPFAIdentificationSchema();
 		String conformance = "kiohiohiohiohio";
-		pdfaid.setConformanceValue(conformance);
+		pdfaid.setConformance(conformance);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

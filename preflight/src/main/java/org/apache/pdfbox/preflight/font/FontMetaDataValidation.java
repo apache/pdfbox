@@ -77,8 +77,8 @@ public class FontMetaDataValidation {
 
 		DublinCoreSchema dc = metadata.getDublinCoreSchema();
 		if (dc != null) {
-			if (dc.getTitle() != null) {
-				String defaultTitle = dc.getTitleValue("x-default");
+			if (dc.getTitleProperty() != null) {
+				String defaultTitle = dc.getTitle("x-default");
 				if (defaultTitle != null) {
 
 					if (!defaultTitle.equals(fontName)
@@ -96,7 +96,7 @@ public class FontMetaDataValidation {
 					// --- default value is the right one
 					return true;
 				} else {
-					Iterator<AbstractField> it = dc.getTitle().getContainer()
+					Iterator<AbstractField> it = dc.getTitleProperty().getContainer()
 					.getAllProperties().iterator();
 					boolean empty = true;
 					while (it.hasNext()) {
@@ -156,7 +156,7 @@ public class FontMetaDataValidation {
 
 		DublinCoreSchema dc = metadata.getDublinCoreSchema();
 		if (dc != null) {
-			ComplexProperty copyrights = dc.getRights();
+			ComplexProperty copyrights = dc.getRightsProperty();
 			if (copyrights == null || copyrights.getContainer() == null
 					|| copyrights.getContainer().getAllProperties().isEmpty()) {
 				ve
@@ -169,7 +169,7 @@ public class FontMetaDataValidation {
 
 		XMPRightsManagementSchema rights = metadata.getXMPRightsManagementSchema();
 		if (rights != null) {
-			BooleanType marked = rights.getMarked();
+			BooleanType marked = rights.getMarkedProperty();
 			if (marked != null && !marked.getValue()) {
 				ve
 				.add(new ValidationError(

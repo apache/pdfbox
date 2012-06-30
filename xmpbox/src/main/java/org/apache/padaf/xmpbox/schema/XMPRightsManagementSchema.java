@@ -83,16 +83,20 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param value
 	 *            value to add
 	 */
-	public void addToOwnerValue(String value) {
+	public void addOwner(String value) {
 		addBagValue(localPrefixSep + OWNER, value);
 	}
 
+	public void removeOwner (String value) {
+		removeBagValue(localPrefixSep + OWNER, value);
+	}
+	
 	/**
 	 * Return the Bag of owner(s)
 	 * 
 	 * @return owners property
 	 */
-	public ComplexProperty getOwner() {
+	public ComplexProperty getOwnersProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + OWNER);
 	}
 
@@ -101,7 +105,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return list of defined owners
 	 */
-	public List<String> getOwnerValue() {
+	public List<String> getOwners() {
 		return getBagValueList(localPrefixSep + OWNER);
 	}
 
@@ -111,7 +115,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param marked
 	 *            value to add
 	 */
-	public void setMarkedValue(Boolean marked) {
+	public void setMarked(Boolean marked) {
 		addProperty(new BooleanType(metadata, localPrefix, MARKED, marked));
 	}
 
@@ -121,7 +125,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param marked
 	 *            Marked property to set
 	 */
-	public void setMarked(BooleanType marked) {
+	public void setMarkedProperty(BooleanType marked) {
 		addProperty(marked);
 	}
 
@@ -130,7 +134,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return Marked property
 	 */
-	public BooleanType getMarked() {
+	public BooleanType getMarkedProperty() {
 		return (BooleanType) getProperty(localPrefixSep + MARKED);
 	}
 
@@ -139,7 +143,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return marked value
 	 */
-	public Boolean getMarkedValue() {
+	public Boolean getMarked() {
 		BooleanType bt = ((BooleanType) getProperty(localPrefixSep + MARKED));
 		return bt == null ? null : bt.getValue();
 	}
@@ -152,16 +156,38 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param value
 	 *            value to set
 	 */
-	public void addToUsageTermsValue(String lang, String value) {
+	public void addUsageTerms(String lang, String value) {
 		setLanguagePropertyValue(localPrefixSep + USAGETERMS, lang, value);
 	}
 
+    /**
+     * Set the default usage terms for this resource.
+     *
+     * @param terms The resource usage terms. 
+     */
+    public void setUsageTerms( String terms )
+    {
+        addUsageTerms(null, terms);
+    }
+
+    /**
+     * Convenience method for jempbox signature compatibility
+     *
+     * @see XMPRightsManagementSchema#addUsageTerms(String, String)
+     */
+    @Deprecated
+    public void setDescription( String language, String terms )
+    {
+    	addUsageTerms(language, terms);
+    }
+
+	
 	/**
 	 * Return the Lang alt UsageTerms
 	 * 
 	 * @return usageterms property
 	 */
-	public ComplexProperty getUsageTerms() {
+	public ComplexProperty getUsageTermsProperty() {
 		return (ComplexProperty) getProperty(localPrefixSep + USAGETERMS);
 	}
 
@@ -181,16 +207,26 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            concerned language
 	 * @return value of specified language
 	 */
-	public String getUsageTermsValue(String lang) {
+	public String getUsageTerms(String lang) {
 		return getLanguagePropertyValue(localPrefixSep + USAGETERMS, lang);
 	}
 
+    /**
+     * Get the default usage terms for the document.
+     *
+     * @return The terms for this resource.
+     */
+    public String getUsageTerms()
+    {
+        return getUsageTerms(null);
+    }
+	
 	/**
 	 * Return the WebStatement URL as TextType.
 	 * 
 	 * @return Webstatement URL property
 	 */
-	public TextType getWebStatement() {
+	public TextType getWebStatementProperty() {
 		return ((TextType) getProperty(localPrefixSep + WEBSTATEMENT));
 	}
 
@@ -199,7 +235,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return webStatement URL value
 	 */
-	public String getWebStatementValue() {
+	public String getWebStatement() {
 		TextType tt = ((TextType) getProperty(localPrefixSep + WEBSTATEMENT));
 		return tt == null ? null : tt.getStringValue();
 	}
@@ -210,7 +246,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param url
 	 *            WebStatemen url value to set
 	 */
-	public void setWebStatementValue(String url) {
+	public void setWebStatement(String url) {
 		addProperty(new TextType(metadata, localPrefix, WEBSTATEMENT, url));
 	}
 
@@ -220,7 +256,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param url
 	 *            WebStatemen url property to set
 	 */
-	public void setWebStatement(TextType url) {
+	public void setWebStatementProperty(TextType url) {
 		addProperty(url);
 	}
 
@@ -229,7 +265,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return certificate url property
 	 */
-	public TextType getCertificate() {
+	public TextType getCertificateProperty() {
 		return ((TextType) getProperty(localPrefixSep + CERTIFICATE));
 	}
 
@@ -238,28 +274,52 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return certificate URL value
 	 */
-	public String getCertificateValue() {
+	public String getCertificate() {
 		TextType tt = ((TextType) getProperty(localPrefixSep + CERTIFICATE));
 		return tt == null ? null : tt.getStringValue();
 	}
 
+    /**
+     * Convenience method for jempbox signature compatibility
+     *
+     * @see XMPRightsManagementSchema#getCertificate()
+     */
+	@Deprecated
+    public String getCertificateURL()
+    {
+        return getCertificate();
+    }
+
+	
 	/**
 	 * Set the Certificate URL.
 	 * 
 	 * @param url
 	 *            certficate url value to set
 	 */
-	public void setCertificateValue(String url) {
+	public void setCertificate(String url) {
 		addProperty(new TextType(metadata, localPrefix, CERTIFICATE, url));
 	}
 
+    /**
+     * Convenience method for jempbox signature compatibility
+     *
+     * @see XMPRightsManagementSchema#setCertificate(String)
+     */
+	@Deprecated
+	public void setCertificateURL( String certificate )
+    {
+        setCertificate(certificate);
+    }
+
+	
 	/**
 	 * Set the Certificate URL.
 	 * 
 	 * @param url
 	 *            certificate url property to set
 	 */
-	public void setCertificate(TextType url) {
+	public void setCertificateProperty(TextType url) {
 		addProperty(url);
 	}
 }

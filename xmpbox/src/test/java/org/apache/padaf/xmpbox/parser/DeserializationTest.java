@@ -59,20 +59,20 @@ public class DeserializationTest {
 		XMPMetadata metadata = xdb.parse(fis);
 		// <xmpMM:DocumentID>
 		Assert.assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7",
-				metadata.getXMPMediaManagementSchema().getDocumentIDValue());
+				metadata.getXMPMediaManagementSchema().getDocumentID());
 
 		// <xmp:CreateDate>
 		// <xmp:ModifyDate>
 		// <xmp:MetadataDate>
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getCreateDateValue());
+				.getXMPBasicSchema().getCreateDate());
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getModifyDateValue());
+				.getXMPBasicSchema().getModifyDate());
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getMetadataDateValue());
+				.getXMPBasicSchema().getMetadataDate());
 
 		// PDFA Extension
 		// Check numbers of schema descriptions
@@ -131,15 +131,15 @@ public class DeserializationTest {
 
 		// Check PDFA Conformance schema
 		Assert.assertEquals("1", metadata.getPDFIdentificationSchema()
-				.getPart().getStringValue());
+				.getPartProperty().getStringValue());
 		Assert.assertEquals("B", metadata.getPDFIdentificationSchema()
-				.getConformanceValue());
+				.getConformance());
 		Assert.assertEquals("1:2005", metadata.getPDFIdentificationSchema()
-				.getAmd().getStringValue());
+				.getAmdProperty().getStringValue());
 
 		// Check ADOBE PDF Schema
 		Assert.assertEquals("PDFlib Personalization Server 7.0.2p5 (Win32)",
-				metadata.getAdobePDFSchema().getProducerValue());
+				metadata.getAdobePDFSchema().getProducer());
 
 		// Check Defined Schema
 		XMPSchema schem = metadata.getSchema("http://www.acme.com/ns/email/1/");
@@ -176,24 +176,24 @@ public class DeserializationTest {
 
 		// <xmpMM:DocumentID>
 		Assert.assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7",
-				metadata.getXMPMediaManagementSchema().getDocumentIDValue());
+				metadata.getXMPMediaManagementSchema().getDocumentID());
 
 		// <xmp:CreateDate>
 		// <xmp:ModifyDate>
 		// <xmp:MetadataDate>
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getCreateDateValue());
+				.getXMPBasicSchema().getCreateDate());
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getModifyDateValue());
+				.getXMPBasicSchema().getModifyDate());
 		Assert.assertEquals(DateConverter
 				.toCalendar("2008-01-18T16:59:54+01:00"), metadata
-				.getXMPBasicSchema().getMetadataDateValue());
+				.getXMPBasicSchema().getMetadataDate());
 
 		// THUMBNAILS TEST
 		List<ThumbnailType> thumbs = metadata.getXMPBasicSchema()
-				.getThumbnails();
+				.getThumbnailsProperty();
 		Assert.assertNotNull(thumbs);
 		Assert.assertEquals(1, thumbs.size());
 		ThumbnailType thumb = thumbs.get(0);
@@ -265,15 +265,15 @@ public class DeserializationTest {
 
 		// Check PDFA Conformance schema
 		Assert.assertEquals("1", metadata.getPDFIdentificationSchema()
-				.getPart().getStringValue());
+				.getPartProperty().getStringValue());
 		Assert.assertEquals("B", metadata.getPDFIdentificationSchema()
-				.getConformanceValue());
+				.getConformance());
 		Assert.assertEquals("1:2005", metadata.getPDFIdentificationSchema()
-				.getAmdValue());
+				.getAmd());
 
 		// Check ADOBE PDF Schema
 		Assert.assertEquals("PDFlib Personalization Server 7.0.2p5 (Win32)",
-				metadata.getAdobePDFSchema().getProducerValue());
+				metadata.getAdobePDFSchema().getProducer());
 
 		// Check Defined Schema
 		XMPSchema schem = metadata.getSchema("http://www.acme.com/ns/email/1/");

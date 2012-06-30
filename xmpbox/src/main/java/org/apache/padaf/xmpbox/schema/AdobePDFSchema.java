@@ -74,7 +74,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param value
 	 *            Value to set
 	 */
-	public void setKeywordsValue(String value) {
+	public void setKeywords(String value) {
 		TextType keywords;
 		keywords = new TextType(metadata, localPrefix, KEYWORDS, value);
 		addProperty(keywords);
@@ -86,7 +86,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param keywords
 	 *            Property to set
 	 */
-	public void setKeywords(TextType keywords) {
+	public void setKeywordsProperty(TextType keywords) {
 		addProperty(keywords);
 	}
 
@@ -96,7 +96,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param value
 	 *            Value to set
 	 */
-	public void setPDFVersionValue(String value) {
+	public void setPDFVersion(String value) {
 		TextType version;
 		version = new TextType(metadata, localPrefix, PDF_VERSION, value);
 		addProperty(version);
@@ -109,7 +109,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param version
 	 *            Property to set
 	 */
-	public void setPDFVersion(TextType version) {
+	public void setPDFVersionProperty(TextType version) {
 		addProperty(version);
 	}
 
@@ -119,7 +119,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param value
 	 *            Value to set
 	 */
-	public void setProducerValue(String value) {
+	public void setProducer(String value) {
 		TextType producer;
 		producer = new TextType(metadata, localPrefix, PRODUCER, value);
 		addProperty(producer);
@@ -131,7 +131,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @param producer
 	 *            Property to set
 	 */
-	public void setProducer(TextType producer) {
+	public void setProducerProperty(TextType producer) {
 		addProperty(producer);
 	}
 
@@ -140,7 +140,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property object
 	 */
-	public TextType getKeywords() {
+	public TextType getKeywordsProperty() {
 		AbstractField tmp = getProperty(localPrefixSep + KEYWORDS);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -155,7 +155,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property value
 	 */
-	public String getKeywordsValue() {
+	public String getKeywords() {
 		AbstractField tmp = getProperty(localPrefixSep + KEYWORDS);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -170,7 +170,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property object
 	 */
-	public TextType getPDFVersion() {
+	public TextType getPDFVersionProperty() {
 		AbstractField tmp = getProperty(localPrefixSep + PDF_VERSION);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -185,7 +185,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property value
 	 */
-	public String getPDFVersionValue() {
+	public String getPDFVersion() {
 		AbstractField tmp = getProperty(localPrefixSep + PDF_VERSION);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -200,7 +200,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property object
 	 */
-	public TextType getProducer() {
+	public TextType getProducerProperty() {
 		AbstractField tmp = getProperty(localPrefixSep + PRODUCER);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
@@ -215,7 +215,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * 
 	 * @return The property value
 	 */
-	public String getProducerValue() {
+	public String getProducer() {
 		AbstractField tmp = getProperty(localPrefixSep + PRODUCER);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {

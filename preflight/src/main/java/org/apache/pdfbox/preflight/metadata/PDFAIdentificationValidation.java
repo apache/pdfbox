@@ -69,8 +69,8 @@ public class PDFAIdentificationValidation {
             PDFAIdentificationSchema.IDPREFIX, PDFAIdentificationSchema.IDURI);
       }
     }
-    checkConformanceLevel(ve, id.getConformanceValue());
-    checkPartNumber(ve, id.getPartValue());
+    checkConformanceLevel(ve, id.getConformance());
+    checkPartNumber(ve, id.getPart());
     return ve;
   }
 

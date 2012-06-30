@@ -223,11 +223,11 @@ public class TestSynchronizedMetadataValidation {
 
     // AUTHOR
     dico.setAuthor("dicoAuthor");
-    dc.addToCreatorValue(null);
+    dc.addCreator(null);
 
     // SUBJECT
     dico.setSubject("dicoSubj");
-    dc.addToSubjectValue(null);
+    dc.addSubject(null);
 
     // Launching synchronization test
     try {
@@ -257,32 +257,32 @@ public class TestSynchronizedMetadataValidation {
     // Writing info in XMP and Document Information dictionary
     // TITLE
     dico.setTitle("dicoTitle");
-    dc.addToTitleValue("x-default", "XMPTitle");
+    dc.setTitle("x-default", "XMPTitle");
     // AUTHOR
     dico.setAuthor("dicoAuthor");
-    dc.addToCreatorValue("XMPAuthor");
-    dc.addToCreatorValue("2ndCreator");
+    dc.addCreator("XMPAuthor");
+    dc.addCreator("2ndCreator");
     // SUBJECT
     dico.setSubject("dicoSubj");
-    dc.addToSubjectValue("XMPSubj");
-    dc.addToSubjectValue("2ndSubj");
+    dc.addSubject("XMPSubj");
+    dc.addSubject("2ndSubj");
     // KEYWORDS
     dico.setKeywords("DicoKeywords");
-    pdf.setKeywordsValue("XMPkeywords");
+    pdf.setKeywords("XMPkeywords");
     // CREATOR
     dico.setCreator("DicoCreator");
-    xmp.setCreatorToolValue("XMPCreator");
+    xmp.setCreatorTool("XMPCreator");
     // PRODUCER
     dico.setProducer("DicoProducer");
-    pdf.setProducerValue("XMPProducer");
+    pdf.setProducer("XMPProducer");
     // CREATION DATE
     dico.setCreationDate(Calendar.getInstance());
     GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
-    xmp.setCreateDateValue(XMPCreate);
+    xmp.setCreateDate(XMPCreate);
     // MODIFY DATE
     dico.setModificationDate(Calendar.getInstance());
     GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
-    xmp.setModifyDateValue(XMPModify);
+    xmp.setModifyDate(XMPModify);
 
     // Launching synchronization test
     try {
@@ -312,30 +312,30 @@ public class TestSynchronizedMetadataValidation {
     // Writing info in XMP and Document Information dictionary
     // TITLE
     dico.setTitle("dicoTitle");
-    dc.addToTitleValue("x-default", "XMPTitle");
+    dc.setTitle("x-default", "XMPTitle");
     // AUTHOR
     dico.setAuthor("dicoAuthor");
-    dc.addToCreatorValue("XMPAuthor");
+    dc.addCreator("XMPAuthor");
     // SUBJECT
     dico.setSubject("dicoSubj");
-    dc.addToSubjectValue("XMPSubj");
+    dc.addSubject("XMPSubj");
     // KEYWORDS
     dico.setKeywords("DicoKeywords");
-    pdf.setKeywordsValue("XMPkeywords");
+    pdf.setKeywords("XMPkeywords");
     // CREATOR
     dico.setCreator("DicoCreator");
-    xmp.setCreatorToolValue("XMPCreator");
+    xmp.setCreatorTool("XMPCreator");
     // PRODUCER
     dico.setProducer("DicoProducer");
-    pdf.setProducerValue("XMPProducer");
+    pdf.setProducer("XMPProducer");
     // CREATION DATE
     dico.setCreationDate(Calendar.getInstance());
     GregorianCalendar XMPCreate = new GregorianCalendar(2008, 11, 05);
-    xmp.setCreateDateValue(XMPCreate);
+    xmp.setCreateDate(XMPCreate);
     // MODIFY DATE
     dico.setModificationDate(Calendar.getInstance());
     GregorianCalendar XMPModify = new GregorianCalendar(2009, 10, 15);
-    xmp.setModifyDateValue(XMPModify);
+    xmp.setModifyDate(XMPModify);
 
     // Launching synchronization test
     try {
@@ -371,28 +371,28 @@ public class TestSynchronizedMetadataValidation {
     // Writing info in XMP and Document Information dictionary
     // TITLE
     dico.setTitle(title);
-    dc.addToTitleValue("x-default", title);
+    dc.setTitle("x-default", title);
     // AUTHOR
     dico.setAuthor(author);
-    dc.addToCreatorValue(author);
+    dc.addCreator(author);
     // SUBJECT
     dico.setSubject(subject);
-    dc.addToDescriptionValue("x-default", subject);
+    dc.addDescription("x-default", subject);
     // KEYWORDS
     dico.setKeywords(keywords);
-    pdf.setKeywordsValue(keywords);
+    pdf.setKeywords(keywords);
     // CREATOR
     dico.setCreator(creator);
-    xmp.setCreatorToolValue(creator);
+    xmp.setCreatorTool(creator);
     // PRODUCER
     dico.setProducer(producer);
-    pdf.setProducerValue(producer);
+    pdf.setProducer(producer);
     // CREATION DATE
     dico.setCreationDate(creationDate);
-    xmp.setCreateDateValue(creationDate);
+    xmp.setCreateDate(creationDate);
     // MODIFY DATE
     dico.setModificationDate(modifyDate);
-    xmp.setModifyDateValue(modifyDate);
+    xmp.setModifyDate(modifyDate);
 
     // Launching synchronization test
     try {
@@ -456,28 +456,28 @@ public class TestSynchronizedMetadataValidation {
     // Writing info in XMP and Document Information dictionary
     // TITLE
     dico.setTitle(title);
-    dc.addToTitleValue("x-default", title);
+    dc.setTitle("x-default", title);
     // AUTHOR
     dico.setAuthor(author);
-    dc.addToCreatorValue(author);
+    dc.addCreator(author);
     // SUBJECT
     dico.setSubject(subject);
-    dc.addToDescriptionValue("x-default", subject);
+    dc.addDescription("x-default", subject);
     // KEYWORDS
     dico.setKeywords(keywords);
-    pdf.setKeywordsValue(keywords);
+    pdf.setKeywords(keywords);
     // CREATOR
     dico.setCreator(creator);
-    xmp.setCreatorToolValue(creator);
+    xmp.setCreatorTool(creator);
     // PRODUCER
     dico.setProducer(producer);
-    pdf.setProducerValue(producer);
+    pdf.setProducer(producer);
     // CREATION DATE
     dico.setCreationDate(creationDate);
-    xmp.setCreateDateValue(creationDate);
+    xmp.setCreateDate(creationDate);
     // MODIFY DATE
     dico.setModificationDate(modifyDate);
-    xmp.setModifyDateValue(modifyDate);
+    xmp.setModifyDate(modifyDate);
 
     // Launching synchronization test
     try {
@@ -520,35 +520,35 @@ public class TestSynchronizedMetadataValidation {
     metadata.addSchema(pdf2);
 
     // write some temp info in 'false' schemas
-    dc2.setCoverageValue("tmpcover");
-    xmp2.setCreatorToolValue("tmpcreator");
-    pdf2.setKeywordsValue("tmpkeys");
+    dc2.setCoverage("tmpcover");
+    xmp2.setCreatorTool("tmpcreator");
+    pdf2.setKeywords("tmpkeys");
 
     // Writing info in XMP and Document Information dictionary
     // TITLE
     dico.setTitle(title);
-    dc.addToTitleValue("x-default", title);
+    dc.setTitle("x-default", title);
     // AUTHOR
     dico.setAuthor(author);
-    dc.addToCreatorValue(author);
+    dc.addCreator(author);
     // SUBJECT
     dico.setSubject(subject);
-    dc.addToDescriptionValue("x-default", subject);
+    dc.addDescription("x-default", subject);
     // KEYWORDS
     dico.setKeywords(keywords);
-    pdf.setKeywordsValue(keywords);
+    pdf.setKeywords(keywords);
     // CREATOR
     dico.setCreator(creator);
-    xmp.setCreatorToolValue(creator);
+    xmp.setCreatorTool(creator);
     // PRODUCER
     dico.setProducer(producer);
-    pdf.setProducerValue(producer);
+    pdf.setProducer(producer);
     // CREATION DATE
     dico.setCreationDate(creationDate);
-    xmp.setCreateDateValue(creationDate);
+    xmp.setCreateDate(creationDate);
     // MODIFY DATE
     dico.setModificationDate(modifyDate);
-    xmp.setModifyDateValue(modifyDate);
+    xmp.setModifyDate(modifyDate);
 
     // Launching synchronization test
     try {
