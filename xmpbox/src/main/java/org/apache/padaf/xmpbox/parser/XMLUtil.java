@@ -78,8 +78,7 @@ public final class XMLUtil {
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(is);
         } catch (Exception e) {
-            IOException thrown = new IOException(e.getMessage());
-            throw thrown;
+        	throw prepareIOException("Failed to create document", e);
         }
     }
 
@@ -99,8 +98,7 @@ public final class XMLUtil {
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(is);
         } catch (Exception e) {
-            IOException thrown = new IOException(e.getMessage());
-            throw thrown;
+        	throw prepareIOException("Failed to create document", e);
         }
     }
 
@@ -120,8 +118,7 @@ public final class XMLUtil {
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(fileName);
         } catch (Exception e) {
-            IOException thrown = new IOException(e.getMessage());
-            throw thrown;
+        	throw prepareIOException("Failed to create document", e);
         }
     }
 
@@ -140,8 +137,7 @@ public final class XMLUtil {
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.newDocument();
         } catch (Exception e) {
-            IOException thrown = new IOException(e.getMessage());
-            throw thrown;
+        	throw prepareIOException("Failed to create document", e);
         }
     }
 
@@ -403,5 +399,12 @@ public final class XMLUtil {
         DOMSource source = new DOMSource(doc);
         transformer.transform(source, result);
         return writer.getBuffer().toString().getBytes();
+    }
+    
+    // TODO : remove this in java 6 (when constructor with message and cause will be added)
+    private static IOException prepareIOException (String message, Throwable cause) {
+    	IOException e = new IOException(message);
+    	e.initCause(cause);
+    	return e;
     }
 }

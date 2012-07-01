@@ -134,7 +134,7 @@ public class XMLPropertiesDescriptionManager {
 		} catch (Exception e) {
 			throw new BuildPDFAExtensionSchemaDescriptionException(
 					"Failed to get correct properties descriptions from specified XML stream",
-					e.getCause());
+					e);
 		} finally {
 			IOUtils.closeQuietly(is);
 		}

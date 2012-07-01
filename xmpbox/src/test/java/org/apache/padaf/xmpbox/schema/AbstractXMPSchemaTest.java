@@ -301,7 +301,7 @@ public abstract class AbstractXMPSchemaTest {
 		String getName = getMethod(property);
 
 		TextType tt = new TextType(metadata, schema.getLocalPrefix(), property,
-				value);
+				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, TextType.class);
 		Method getMethod = schemaClass.getMethod(getName);
 
