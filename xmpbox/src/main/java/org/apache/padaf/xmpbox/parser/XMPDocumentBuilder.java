@@ -340,7 +340,7 @@ public class XMPDocumentBuilder {
 		} catch (NoSuchElementException e) {
 			// unexpected end of stream
 			throw new XmpParsingException(
-					"XMP Stream did not end in a good way, invalid content");
+					"XMP Stream did not end in a good way, invalid content",e);
 		}
 	}
 
@@ -369,7 +369,7 @@ public class XMPDocumentBuilder {
 		} catch (NoSuchElementException e) {
 			// unexpected end of stream
 			throw new XmpParsingException(
-					"XMP Stream did not end in a good way, invalid content");
+					"XMP Stream did not end in a good way, invalid content",e);
 		}
 	}
 
@@ -715,8 +715,6 @@ public class XMPDocumentBuilder {
 				fillSchemaDescription(desc, metadata);  
 				// read the end tag
 				reader.get().nextTag();
-			} else {
-				// ?? TODO
 			}
 		}
 
@@ -739,10 +737,12 @@ public class XMPDocumentBuilder {
 							.getPrefix(), reader.get().getLocalName(), reader
 							.get().getElementText()));
 				} catch (IllegalArgumentException e) {
+					StringBuilder message = new StringBuilder(50);
+					message.append("Unexpected value for '");
+					message.append(reader.get().getLocalName()).append("' property");
 					throw new XmpPropertyFormatException(
-							"Unexpected value for '"
-									+ reader.get().getLocalName()
-									+ "' property");
+							message.toString(),e
+							);
 				}
 			} else if (reader.get().getLocalName().equals("property")) {
 				parsePropertyDefinition(desc);
@@ -907,8 +907,6 @@ public class XMPDocumentBuilder {
 					fillDescription(desc);  
 					// read the end tag
 					reader.get().nextTag();
-				} else {
-					// ?? TODO
 				}
 			}
 			// expectNextTag(XMLStreamReader.END_ELEMENT,"Expected element end");
@@ -1021,7 +1019,7 @@ public class XMPDocumentBuilder {
 	 *             When error during reading the rest of xmp stream
 	 */
 	protected void parseXmpSimpleProperty(XMPMetadata metadata,	QName propertyName, XmpPropertyType stype, ComplexPropertyContainer container)	
-					throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
+			throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
 		try {
 			AbstractSimpleProperty prop = null;
 			ArrayList<Attribute> attributes = new ArrayList<Attribute>();

@@ -168,7 +168,7 @@ public class XMLValueTypeDescriptionManager {
 		} catch (Exception e) {
 			throw new BuildPDFAExtensionSchemaDescriptionException(
 					"Failed to get correct valuetypes descriptions from specified XML stream",
-					e.getCause());
+					e);
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
