@@ -16,6 +16,20 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
@@ -25,34 +39,20 @@ import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.HorizontalHeaderTable;
 import org.apache.fontbox.ttf.HorizontalMetricsTable;
-import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.NameRecord;
+import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.util.ResourceLoader;
-
-import java.awt.Font;
-import java.awt.FontFormatException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * This is the TrueType implementation of fonts.
@@ -152,15 +152,47 @@ public class PDTrueTypeFont extends PDSimpleFont
      */
     public static PDTrueTypeFont loadTTF( PDDocument doc, InputStream stream ) throws IOException
     { 
-        PDTrueTypeFont retval = new PDTrueTypeFont();
-        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
-        retval.setFontDescriptor( fd );
+        return PDTrueTypeFont.loadTTF(doc,stream,new WinAnsiEncoding());
+    }
+
+    /**
+     * This will load a TTF to be embedded into a document.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param stream a ttf input stream.
+     * @param enc The font encoding.
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont loadTTF( PDDocument doc, InputStream stream, Encoding enc ) throws IOException
+    { 
         PDStream fontStream = new PDStream(doc, stream, false );
         fontStream.getStream().setInt( COSName.LENGTH1, fontStream.getByteArray().length );
         fontStream.addCompression();
+        //only support winansi encoding right now, should really
+        //just use Identity-H with unicode mapping
+        return PDTrueTypeFont.loadTTF(fontStream,enc);
+    }
+
+    /**
+     * This will load a TTF to be embedded into a document.
+     *
+     * @param fontStream a ttf input stream.
+     * @param enc The font encoding.
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont loadTTF( PDStream fontStream, Encoding enc ) throws IOException
+    { 
+        PDTrueTypeFont retval = new PDTrueTypeFont();
+        retval.setFontEncoding( enc );
+        retval.setEncoding(enc.getCOSObject());
+
+        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
+        retval.setFontDescriptor( fd );
         fd.setFontFile2( fontStream );
         // As the stream was close within the PDStream constructor, we have to recreate it
-        stream = fontStream.createInputStream();
+        InputStream stream = fontStream.createInputStream();
         try
         {
             retval.loadDescriptorDictionary(fd, stream); 
@@ -169,10 +201,6 @@ public class PDTrueTypeFont extends PDSimpleFont
         {
             stream.close();
         }
-        //only support winansi encoding right now, should really
-        //just use Identity-H with unicode mapping
-        retval.setFontEncoding( new WinAnsiEncoding() );
-        retval.setEncoding(COSName.WIN_ANSI_ENCODING);
         return retval;
     }
 
@@ -285,15 +313,15 @@ public class PDTrueTypeFont extends PDSimpleFont
             HeaderTable header = ttf.getHeader();
             PDRectangle rect = new PDRectangle();
             float scaling = 1000f/header.getUnitsPerEm();
-            rect.setLowerLeftX( header.getXMin() * 1000f/header.getUnitsPerEm() );
-            rect.setLowerLeftY( header.getYMin() * 1000f/header.getUnitsPerEm() );
-            rect.setUpperRightX( header.getXMax() * 1000f/header.getUnitsPerEm() );
-            rect.setUpperRightY( header.getYMax() * 1000f/header.getUnitsPerEm() );
+            rect.setLowerLeftX( header.getXMin() * scaling );
+            rect.setLowerLeftY( header.getYMin() * scaling );
+            rect.setUpperRightX( header.getXMax() * scaling );
+            rect.setUpperRightY( header.getYMax() * scaling );
             fd.setFontBoundingBox( rect );
 
             HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
-            fd.setAscent( hHeader.getAscender() * 1000f/header.getUnitsPerEm() );
-            fd.setDescent( hHeader.getDescender() * 1000f/header.getUnitsPerEm() );
+            fd.setAscent( hHeader.getAscender() * scaling );
+            fd.setDescent( hHeader.getDescender() * scaling );
 
             GlyphTable glyphTable = ttf.getGlyph();
             GlyphData[] glyphs = glyphTable.getGlyphs();
@@ -303,20 +331,20 @@ public class PDTrueTypeFont extends PDSimpleFont
             fd.setItalicAngle( ps.getItalicAngle() );
 
             String[] names = ps.getGlyphNames();
+            
             if( names != null )
             {
                 for( int i=0; i<names.length; i++ )
                 {
-                    //if we have a capital H then use that, otherwise use the
+                     //if we have a capital H then use that, otherwise use the
                     //tallest letter
                     if( names[i].equals( "H" ) )
                     {
-                        fd.setCapHeight( (glyphs[i].getBoundingBox().getUpperRightY()* 1000f)/
-                                         header.getUnitsPerEm() );
+                        fd.setCapHeight( glyphs[i].getBoundingBox().getUpperRightY()/scaling );
                     }
                     if( names[i].equals( "x" ) )
                     {
-                        fd.setXHeight( (glyphs[i].getBoundingBox().getUpperRightY()* 1000f)/header.getUnitsPerEm() );
+                        fd.setXHeight( glyphs[i].getBoundingBox().getUpperRightY()/scaling );
                     }
                 }
             }
@@ -325,44 +353,62 @@ public class PDTrueTypeFont extends PDSimpleFont
             //this is close enough and I am told it doesn't usually get used.
             fd.setStemV( (fd.getFontBoundingBox().getWidth() * .13f) );
 
-
             CMAPTable cmapTable = ttf.getCMAP();
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            int[] glyphToCCode = null;
+            CMAPEncodingEntry uniMap = null;
+            
             for( int i=0; i<cmaps.length; i++ )
             {
                 if( cmaps[i].getPlatformId() == CMAPTable.PLATFORM_WINDOWS) 
                 {
                     int platformEncoding = cmaps[i].getPlatformEncodingId();
-                    if ( (isSymbolic && CMAPTable.ENCODING_SYMBOL == platformEncoding)
-                            ||CMAPTable.ENCODING_UNICODE == platformEncoding )
+                    if ( CMAPTable.ENCODING_UNICODE == platformEncoding )
                     {
-                        glyphToCCode = cmaps[i].getGlyphIdToCharacterCode();
+                        uniMap = cmaps[i];
                         break;
                     }
                 }
             }
-            int firstChar = os2.getFirstCharIndex();
-            int maxWidths = glyphToCCode.length;
+
+            Map<Integer, String> codeToName = this.getFontEncoding().getCodeToNameMap();
+             
+            int firstChar = Collections.min(codeToName.keySet());
+            int lastChar = Collections.max(codeToName.keySet());
+            
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
-            List<Float> widths = new ArrayList<Float>(maxWidths);
-            float zero = 250;
-            for( int i=0; i<maxWidths; i++ )
+            int nWidths=lastChar-firstChar+1;
+            List<Float> widths = new ArrayList<Float>(nWidths);
+            // width of the .notdef character.
+            Float zero = Float.valueOf(widthValues[0]*scaling);
+            for( int i=0; i<nWidths; i++ )
             {
                 widths.add( zero );
             }
-            for( int i=0; i<maxWidths; i++ )
+            // Encoding singleton to have acces to the chglyph name to
+            // unicode cpoint point mapping of Adobe's glyphlist.txt
+            Encoding glyphlist = WinAnsiEncoding.INSTANCE;
+
+            // A character code is mapped to a glyph name via the provided
+            // font encoding. Afterwards, the glyph name is translated to a
+            // glyph ID.
+            // For details, see PDFReference16.pdf, Section 5.5.5, p.401
+            //
+            for (Entry<Integer, String> e : codeToName.entrySet()) 
             {
-                if(glyphToCCode[i]-firstChar < widths.size() && glyphToCCode[i]-firstChar >= 0 
-                        && widths.get( glyphToCCode[i]-firstChar) == zero )
+                String name = e.getValue();
+                // pdf code to unicode by glyph list.
+                String c = glyphlist.getCharacter(name);
+                int charCode = c.codePointAt(0);
+                int gid = uniMap.getGlyphId(charCode);
+                if (gid != 0) 
                 {
-                    widths.set( glyphToCCode[i]-firstChar, widthValues[i]*scaling );
+                    widths.set( e.getKey().intValue()-firstChar,widthValues[gid]*scaling );
                 }
             }
             setWidths( widths );
-            setFirstChar( isSymbolic ? 0 : firstChar );
-            setLastChar( isSymbolic ? widths.size() : firstChar + widths.size()-1 );
+            setFirstChar( firstChar );
+            setLastChar( lastChar );
         }
         finally
         {
