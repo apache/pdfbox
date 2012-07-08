@@ -21,6 +21,8 @@ package org.apache.fontbox.encoding;
  *
  * @author Ben Litchfield
  * @version $Revision: 1.1 $
+ * 
+ * @deprecated no longer needed by fontbox
  */
 public class MacRomanEncoding extends Encoding
 {
