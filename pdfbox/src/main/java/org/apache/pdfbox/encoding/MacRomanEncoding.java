@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.encoding;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
@@ -248,6 +250,19 @@ public class MacRomanEncoding extends Encoding
         addCharacterEncoding( 0172, "z" );
         addCharacterEncoding( 060, "zero" );
     }
+    
+    public String getName( int code ) throws IOException
+  	{
+  		if (!codeToName.containsKey(code) && code == 0312) {
+  				/*
+  				 * The space character is also encoded as 0312 in MacRoman and 0240 in WinAnsi. 
+  				 * The meaning of this duplicate code is "nonbreaking space" but it is 
+  				 * typographically the same as space. 
+  				 */
+  				return "space";
+  		}
+  		return codeToName.get( code );
+  	}
 
     /**
      * Convert this standard java object to a COS object.

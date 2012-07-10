@@ -263,13 +263,30 @@ public class WinAnsiEncoding extends Encoding
 	public String getName( int code ) throws IOException
 	{
 		if (!codeToName.containsKey(code) && code > 040) {
-			/*
-			 * According to the PDFReference Appendix D :
-			 * In WinAnsiEncoding, all unused codes greater than 40 map to the bullet character. 
-			 * However, only code 0225 is specifically assigned to the bullet character;
-			 * other codes are subject to future reassignment
-			 */
-			return "bullet";
+			switch (code) {
+			case 0240:
+				/*
+				 * The space character is also encoded as 0312 in MacRoman and 0240 in WinAnsi. 
+				 * The meaning of this duplicate code is "nonbreaking space" but it is 
+				 * typographically the same as space. 
+				 */
+				return "space";
+			case 0255:
+				/*
+				 * The hyphen character is also encoded as 0255 in WinAnsi. 
+				 * The meaning of this duplicate code is "soft hyphen" but it is 
+				 * typographically the same as hyphen. 
+				 */
+				return "hyphen";
+			default:
+				/*
+				 * According to the PDFReference Appendix D :
+				 * In WinAnsiEncoding, all unused codes greater than 40 map to the bullet character. 
+				 * However, only code 0225 is specifically assigned to the bullet character;
+				 * other codes are subject to future reassignment
+				 */
+				return "bullet";
+			}
 		}
 		return codeToName.get( code );
 	}
