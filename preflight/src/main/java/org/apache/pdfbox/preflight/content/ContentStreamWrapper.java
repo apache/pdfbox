@@ -22,7 +22,6 @@
 package org.apache.pdfbox.preflight.content;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING_ERROR;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_REF;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP;
@@ -47,9 +46,8 @@ import org.apache.pdfbox.pdmodel.text.PDTextState;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.font.AbstractFontContainer;
-import org.apache.pdfbox.preflight.font.AbstractFontContainer.State;
-import org.apache.pdfbox.preflight.font.GlyphException;
+import org.apache.pdfbox.preflight.font.container.FontContainer;
+import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -280,42 +278,36 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 	 * @throws IOException
 	 */
 	public void validText(byte[] string) throws IOException {
-		// --- TextSize accessible through the TextState
+		// TextSize accessible through the TextState
 		PDTextState textState = getGraphicsState().getTextState();
 		final int renderingMode = textState.getRenderingMode();
 		final PDFont font = textState.getFont();
 
 		if (font == null) {
-			// ---- Unable to decode the Text without Font
+			// Unable to decode the Text without Font
 			throwContentStreamException("Text operator can't be process without Font", ERROR_FONTS_UNKNOWN_FONT_REF);
 		}
 
-		AbstractFontContainer fontContainer = context.getFont(font.getCOSObject());
-
-		if (fontContainer != null && fontContainer.isValid() == State.INVALID) {
-			context.addValidationErrors(fontContainer.getErrors());
-			return;
-		}
-
-		if (renderingMode == 3 && (fontContainer == null || !fontContainer.isFontProgramEmbedded())) {
+		FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
+		if (renderingMode == 3 && (fontContainer == null || !fontContainer.isEmbeddedFont())) {
 			// font not embedded and rendering mode is 3. Valid case and nothing to check
 			return ;
-		}
-
-		if (fontContainer == null) {
-			// ---- Font Must be embedded if the RenderingMode isn't 3
+		} else if (fontContainer == null) {
+			// Font Must be embedded if the RenderingMode isn't 3
 			throwContentStreamException(font.getBaseFont() + " is unknown wasn't found by the FontHelperValdiator", ERROR_FONTS_UNKNOWN_FONT_REF);	
+		} else if (!fontContainer.isValid() && ! fontContainer.errorsAleadyMerged()) {
+			context.addValidationErrors(fontContainer.getAllErrors());
+			fontContainer.setErrorsAleadyMerged(true);
 		}
 
-		if (!fontContainer.isFontProgramEmbedded()) {
-			throwContentStreamException(font.getBaseFont() + " isn't embedded and the rendering mode isn't 3", ERROR_FONTS_FONT_FILEX_INVALID);
-		}
 
 		int codeLength = 1;
 		for (int i = 0; i < string.length; i += codeLength) {
+			// explore the string to detect character code (length can be 1 or 2 bytes)
 			int cid = -1; 
 			codeLength = 1;
 			try {
+				// according to the encoding, extract the character identifier
 				cid = font.encodeToCID(string, i, codeLength);
 				if (cid == -1 && i + 1 < string.length) {
 					// maybe a multibyte encoding
@@ -327,7 +319,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			}
 
 			try {
-				fontContainer.checkCID(cid);
+				fontContainer.checkGlyphWith(cid);
 			} catch (GlyphException e) {
 				if (renderingMode != 3) {
 					throwContentStreamException(e.getMessage(), e.getErrorCode());

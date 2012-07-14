@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font.type1;
+package org.apache.pdfbox.preflight.font.util;
 
 import java.util.List;
 

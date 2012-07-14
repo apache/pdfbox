@@ -21,26 +21,28 @@
 
 package org.apache.pdfbox.preflight.font;
 
-public class GlyphDetail {
-	private GlyphException invalidGlyphError = null;
-	private int charecterIdentifier = 0;
-	
-	public GlyphDetail(int cid) {
-		this.charecterIdentifier = cid;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.font.container.CIDType2Container;
+import org.apache.pdfbox.preflight.font.descriptor.CIDType2DescriptorHelper;
+import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
+
+public class CIDType2FontValidator extends DescendantFontValidator<CIDType2Container> {
+
+	public CIDType2FontValidator(PreflightContext context, PDFont font) {
+		super(context, font, new CIDType2Container(font));
 	}
 
-	public GlyphDetail(int cid, GlyphException error) {
-		this.charecterIdentifier = cid;
-		this.invalidGlyphError = error;
+	@Override
+	protected void checkCIDToGIDMap(COSBase ctog) {
+		CIDToGIDMap cidToGid = checkCIDToGIDMap(ctog, true);
+		this.fontContainer.setCidToGid(cidToGid);
 	}
 
-	public void throwExceptionIfNotValid() throws GlyphException {
-		if (this.invalidGlyphError != null) {
-			throw this.invalidGlyphError;
-		}
+	@Override
+	protected void createFontDescriptorHelper() {
+		this.descriptorHelper = new CIDType2DescriptorHelper(context, font, fontContainer);
 	}
 
-	public int getCID() {
-		return this.charecterIdentifier;
-	}
 }

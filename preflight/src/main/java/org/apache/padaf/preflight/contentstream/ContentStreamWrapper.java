@@ -344,7 +344,7 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			} catch (IOException e) {
 				throwContentStreamException("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR);
 			}
-
+			
 			try {
 				fontContainer.checkCID(cid);
 			} catch (GlyphException e) {
