@@ -19,30 +19,24 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font;
+package org.apache.pdfbox.preflight.font.container;
 
-public class GlyphException extends Exception {
-	private String errorCode;
-	private int invalidCid;
-	
-	public GlyphException(String code, int cid) {
-		super();
-		this.errorCode = code;
-		this.invalidCid = cid;
-	}
+import org.apache.pdfbox.pdmodel.font.PDFont;
 
-	public GlyphException(String code, int cid, String message) {
-		super(message);
-		this.errorCode = code;
-		this.invalidCid = cid;
+/**
+ * Because Type3 font program is an inner type of the PDF file, 
+ * this font container is quite different from the other because
+ * all character/glyph are already checked.
+ */
+public class Type3Container extends FontContainer {
+
+	public Type3Container(PDFont font) {
+		super(font);
 	}
 	
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-	public int getInvalidCid() {
-		return invalidCid;
+	@Override
+	protected float getFontProgramWidth(int cid) {
+		return 0;
 	}
 
 }

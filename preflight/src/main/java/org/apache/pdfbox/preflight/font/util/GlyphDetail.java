@@ -19,20 +19,28 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font;
+package org.apache.pdfbox.preflight.font.util;
 
+public class GlyphDetail {
+	private GlyphException invalidGlyphError = null;
+	private int charecterIdentifier = 0;
+	
+	public GlyphDetail(int cid) {
+		this.charecterIdentifier = cid;
+	}
 
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.preflight.PreflightConstants;
+	public GlyphDetail(int cid, GlyphException error) {
+		this.charecterIdentifier = cid;
+		this.invalidGlyphError = error;
+	}
 
-public class UndefFontContainer extends AbstractFontContainer {
+	public void throwExceptionIfNotValid() throws GlyphException {
+		if (this.invalidGlyphError != null) {
+			throw this.invalidGlyphError;
+		}
+	}
 
-  public UndefFontContainer(PDFont fd) {
-    super(fd);
-  }
-
-  @Override
-  public void checkCID(int cid) throws GlyphException {
-  	throw new GlyphException(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_REF, 0, "A text content is using a undefined font type.");
-  }
+	public int getCID() {
+		return this.charecterIdentifier;
+	}
 }

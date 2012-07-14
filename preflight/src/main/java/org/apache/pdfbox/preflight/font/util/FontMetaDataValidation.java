@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font;
+package org.apache.pdfbox.preflight.font.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,6 +37,7 @@ import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.font.FontValidator;
 
 /**
  * Class used to validate the MetaData entry of the Font File Stream dictionary.
@@ -63,16 +64,12 @@ public class FontMetaDataValidation {
 	 *          The FontDescriptor dictionary
 	 * @param ve
 	 *          the list of validation error to update if the validation fails
-	 * @throws ValidationException
 	 */
-	public boolean analyseFontName(XMPMetadata metadata,
-			PDFontDescriptor fontDesc, List<ValidationError> ve)
-	throws ValidationException {
+	public boolean analyseFontName(XMPMetadata metadata,PDFontDescriptor fontDesc, List<ValidationError> ve){
 		String fontName = fontDesc.getFontName();
 		String noSubSetName = fontName;
-		if (AbstractFontValidator.isSubSet(fontName)) {
-			noSubSetName = fontName.split(AbstractFontValidator
-					.getSubSetPatternDelimiter())[1];
+		if (FontValidator.isSubSet(fontName)) {
+			noSubSetName = fontName.split(FontValidator.getSubSetPatternDelimiter())[1];
 		}
 
 		DublinCoreSchema dc = metadata.getDublinCoreSchema();
@@ -149,10 +146,8 @@ public class FontMetaDataValidation {
 	 *          The FontDescriptor dictionary
 	 * @param ve
 	 *          the list of validation error to update if the validation fails
-	 * @throws ValidationException
 	 */
-	public boolean analyseRights(XMPMetadata metadata, PDFontDescriptor fontDesc, List<ValidationError> ve)
-	throws ValidationException {
+	public boolean analyseRights(XMPMetadata metadata, PDFontDescriptor fontDesc, List<ValidationError> ve)  {
 
 		DublinCoreSchema dc = metadata.getDublinCoreSchema();
 		if (dc != null) {

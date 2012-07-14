@@ -21,33 +21,49 @@
 
 package org.apache.pdfbox.preflight.font;
 
-import org.apache.pdfbox.preflight.font.AbstractFontContainer.State;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.font.container.FontContainer;
+import org.apache.pdfbox.preflight.font.descriptor.FontDescriptorHelper;
 
+public abstract class FontValidator <T extends FontContainer> {
+	
+	protected T fontContainer;
+	protected PreflightContext context;
+	protected PDFont font;
+	protected FontDescriptorHelper<T> descriptorHelper;
 
-public interface FontValidator {
+	private static final String subSetPattern = "^[A-Z]{6}\\+.*";
 
-  /**
-   * Call this method to validate the font wrapped by this interface
-   * implementation. Return true if the validation succeed, false otherwise. If
-   * the validation failed, the error is updated in the FontContainer with the
-   * right error code.
-   * 
-   * @return
-   */
-  public abstract void validate() throws ValidationException;
+	public FontValidator(PreflightContext context, PDFont font, T fContainer) {
+		super();
+		this.context = context;
+		this.font = font;
+		this.fontContainer = fContainer;
+		this.context.addFontContainer(font.getCOSObject(), fContainer);
+	}
 
-  /**
-   * Return the State of the Font Validation. Three values are possible :
-   * <UL>
-   * <li>VALID : there are no errors
-   * <li>MAYBE : Metrics aren't consistent of the FontProgram isn't embedded,
-   * but it can be valid.
-   * <li>INVALID : the validation fails
-   * </UL>
-   * 
-   * @return
-   */
-  public State getState();
+  public static boolean isSubSet(String fontName) {
+    return fontName.matches(subSetPattern);
+  }
 
+  public static String getSubSetPatternDelimiter() {
+    return "\\+";
+  }
+ 	
+	public abstract void validate() throws ValidationException;
+	
+	protected void checkEncoding() {
+		// nothing to check for PDF/A-1b
+	}
+
+	protected void checkToUnicode() {
+		// nothing to check for PDF/A-1b
+	}
+
+	public T getFontContainer() {
+		return fontContainer;
+	}
+	
 }

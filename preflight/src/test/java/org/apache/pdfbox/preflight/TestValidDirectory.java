@@ -30,11 +30,8 @@ import javax.activation.FileDataSource;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.preflight.PdfAValidator;
-import org.apache.padaf.preflight.PdfAValidatorFactory;
 import org.apache.padaf.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

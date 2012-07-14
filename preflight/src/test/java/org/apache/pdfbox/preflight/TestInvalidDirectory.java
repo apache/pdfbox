@@ -38,55 +38,56 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class TestInvalidDirectory {
-  
-  
-  protected static File directory;
-    
-  protected File target = null;
-  
-  
-  public TestInvalidDirectory (File file) {
-    this.target = file;
-  }
-  
-  @Test
-  public void validate () throws Exception {
-  		PreflightParser parser = new PreflightParser(new FileDataSource(target));
-  		parser.parse();
-  		PreflightDocument document = (PreflightDocument) parser.getPDDocument();
-  		document.validate();
-  		Assert.assertFalse(document.getResult().isValid());
-  		document.close();
-  }
-  
-  @Parameters
-  public static Collection<Object[]> initializeParameters() throws Exception {
-    // check directory
-    File directory = null;
-    String pdfPath = System.getProperty("pdfa.invalid", null);
-    if ("${user.pdfa.invalid}".equals(pdfPath)) {pdfPath=null;}
-    if (pdfPath!=null) {
-      directory = new File(pdfPath);
-      if (!directory.exists()) throw new Exception ("directory does not exists : "+directory.getAbsolutePath());
-      if (!directory.isDirectory()) throw new Exception ("not a directory : "+directory.getAbsolutePath());
-    } else {
-      System.err.println("System property 'pdfa.invalid' not defined, will not run TestValidaDirectory");
-    }
-    // create list
-    if (directory==null) {
-      return new ArrayList<Object[]>(0);
-    } else {
-      File [] files = directory.listFiles();
-      List<Object[]> data = new ArrayList<Object[]>(files.length);
-      for (File file : files) {
-        if (file.isFile()) {
-          data.add(new Object [] {file});
-        }
-      }
-      return data;
-    }
-  }
-  
-  
-  
+
+
+	protected static File directory;
+
+	protected File target = null;
+
+
+	public TestInvalidDirectory (File file) {
+		this.target = file;
+	}
+
+	@Test
+	public void validate () throws Exception {
+		System.out.println(target);
+		PreflightParser parser = new PreflightParser(new FileDataSource(target));
+		parser.parse();
+		PreflightDocument document = (PreflightDocument) parser.getPDDocument();
+		document.validate();
+		Assert.assertFalse(document.getResult().isValid());
+		document.close();
+	}
+
+	@Parameters
+	public static Collection<Object[]> initializeParameters() throws Exception {
+		// check directory
+		File directory = null;
+		String pdfPath = System.getProperty("pdfa.invalid", null);
+		if ("${user.pdfa.invalid}".equals(pdfPath)) {pdfPath=null;}
+		if (pdfPath!=null) {
+			directory = new File(pdfPath);
+			if (!directory.exists()) throw new Exception ("directory does not exists : "+directory.getAbsolutePath());
+			if (!directory.isDirectory()) throw new Exception ("not a directory : "+directory.getAbsolutePath());
+		} else {
+			System.err.println("System property 'pdfa.invalid' not defined, will not run TestValidaDirectory");
+		}
+		// create list
+		if (directory==null) {
+			return new ArrayList<Object[]>(0);
+		} else {
+			File [] files = directory.listFiles();
+			List<Object[]> data = new ArrayList<Object[]>(files.length);
+			for (File file : files) {
+				if (file.isFile()) {
+					data.add(new Object [] {file});
+				}
+			}
+			return data;
+		}
+	}
+
+
+
 }

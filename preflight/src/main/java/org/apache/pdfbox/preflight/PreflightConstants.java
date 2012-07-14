@@ -85,7 +85,6 @@ public interface PreflightConstants {
 
 	String DICTIONARY_KEY_XOBJECT = "XObject";
 	String DICTIONARY_KEY_PATTERN = "Pattern";
-	String DICTIONARY_KEY_FONT = "Font";
 
 	String DICTIONARY_KEY_PATTERN_TYPE = "PatternType";
 	int DICTIONARY_PATTERN_TILING = 1;
@@ -147,18 +146,12 @@ public interface PreflightConstants {
 	String FONT_DICTIONARY_KEY_DESCENT = "Descent";
 	String FONT_DICTIONARY_KEY_CAPHEIGHT = "CapHeight";
 	String FONT_DICTIONARY_KEY_STEMV = "StemV";
-	String FONT_DICTIONARY_KEY_LENGTH1 = "Length1";
 	String FONT_DICTIONARY_KEY_LENGTH2 = "Length2";
 	String FONT_DICTIONARY_KEY_LENGTH3 = "Length3";
 	String FONT_DICTIONARY_KEY_METADATA = "Metadata";
 	String FONT_DICTIONARY_KEY_BASEENCODING = "BaseEncoding";
-	String FONT_DICTIONARY_KEY_DIFFERENCES = "Differences";
 	String FONT_DICTIONARY_KEY_DESCENDANT_FONTS = "DescendantFonts";
-	String FONT_DICTIONARY_KEY_CID_SYSINFO = "CIDSystemInfo";
 	String FONT_DICTIONARY_KEY_CID_GIDMAP = "CIDToGIDMap";
-	String FONT_DICTIONARY_KEY_SYSINFO_REGISTRY = "Registry";
-	String FONT_DICTIONARY_KEY_SYSINFO_ORDERING = "Ordering";
-	String FONT_DICTIONARY_KEY_SYSINFO_SUPPLEMENT = "Supplement";
 	String FONT_DICTIONARY_KEY_CMAP_NAME = "CMapName";
 	String FONT_DICTIONARY_KEY_CMAP_WMODE = "WMode";
 	String FONT_DICTIONARY_KEY_CMAP_USECMAP = "UseCMap";
@@ -833,6 +826,14 @@ public interface PreflightConstants {
 	 * Unexpected type of a Metadata entry 
 	 */
 	String ERROR_METADATA_FORMAT_UNKOWN = "7.1.3";
+	/**
+	 * Invalid metadata, unable to process the font due to IOException
+	 */
+	String ERROR_METADATA_FORMAT_STREAM = "7.1.4";
+	/**
+	 * Invalid metadata, unable to process the font due to Invalid XPacket exception
+	 */
+	String ERROR_METADATA_FORMAT_XPACKET = "7.1.5";
 	/**
 	 * Metadata mismatch between PDF Dictionnary and xmp
 	 */

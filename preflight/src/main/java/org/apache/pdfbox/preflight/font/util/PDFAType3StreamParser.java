@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font;
+package org.apache.pdfbox.preflight.font.util;
 
 import java.awt.Image;
 import java.io.IOException;

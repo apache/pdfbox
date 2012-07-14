@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font.type1;
+package org.apache.pdfbox.preflight.font.util;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
-import org.apache.pdfbox.preflight.font.GlyphException;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.preflight.PreflightConstants;
 

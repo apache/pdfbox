@@ -21,31 +21,25 @@
 
 package org.apache.pdfbox.preflight.font;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.font.container.CIDType0Container;
+import org.apache.pdfbox.preflight.font.descriptor.CIDType0DescriptorHelper;
 
-public class CompositeFontContainer extends AbstractFontContainer {
-	private AbstractFontContainer delegatedContainer = null;
+public class CIDType0FontValidator extends DescendantFontValidator<CIDType0Container> {
 
-  public CompositeFontContainer(PDFont fd) {
-    super(fd);
-  }
+	public CIDType0FontValidator(PreflightContext context, PDFont font) {
+		super(context, font, new CIDType0Container(font));
+	}
 
-  @Override
-  public void checkCID(int cid) throws GlyphException {
-    this.delegatedContainer.checkCID(cid);
-  }
+	@Override
+	protected void checkCIDToGIDMap(COSBase ctog) {
+		checkCIDToGIDMap(ctog, false);
+	}
 
-  CFFType0FontContainer getCFFType0() {
-  	if (delegatedContainer == null) {
-  		delegatedContainer = new CFFType0FontContainer(this);
-  	}
-  	return (CFFType0FontContainer)this.delegatedContainer;
-  }
-
-  CFFType2FontContainer getCFFType2() {
-  	if (delegatedContainer == null) {
-  		delegatedContainer = new CFFType2FontContainer(this);
-  	}
-  	return (CFFType2FontContainer)this.delegatedContainer;
-  }
+	@Override
+	protected void createFontDescriptorHelper() {
+		this.descriptorHelper = new CIDType0DescriptorHelper(context, font, fontContainer);
+	}
 }

@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font.type1;
+package org.apache.pdfbox.preflight.font.util;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP;

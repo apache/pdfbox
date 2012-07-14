@@ -19,32 +19,30 @@
  * 
  ****************************************************************************/
 
-package org.apache.pdfbox.preflight.font;
+package org.apache.pdfbox.preflight.font.util;
 
+public class GlyphException extends Exception {
+	private String errorCode;
+	private int invalidCid;
+	
+	public GlyphException(String code, int cid) {
+		super();
+		this.errorCode = code;
+		this.invalidCid = cid;
+	}
 
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.preflight.PreflightConstants;
+	public GlyphException(String code, int cid, String message) {
+		super(message);
+		this.errorCode = code;
+		this.invalidCid = cid;
+	}
+	
+	public String getErrorCode() {
+		return errorCode;
+	}
 
-/**
- * Because Type3 font program is an inner type of the PDF file, 
- * this font container is quite different from the other because
- * all character/glyph are already checked.
- * 
- */
-public class Type3FontContainer extends AbstractFontContainer {
+	public int getInvalidCid() {
+		return invalidCid;
+	}
 
-  public Type3FontContainer(PDFont fd) {
-    super(fd);
-  }
-
-  @Override
-  public void checkCID(int cid) throws GlyphException {
-  	if (!isAlreadyComputedCid(cid)) {
-  		// missing glyph
-  		GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, cid, 
-  																					"There are no glyph in the Type 3 font for the character \"" + cid + "\"");
-	  	addKnownCidElement(new GlyphDetail(cid, e));
-	  	throw e;
-  	}  	
-  } 
 }

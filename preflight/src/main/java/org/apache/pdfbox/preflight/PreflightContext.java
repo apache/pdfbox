@@ -30,7 +30,7 @@ import javax.activation.DataSource;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.AbstractFontContainer;
+import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.javacc.extractor.ExtractorTokenManager;
 import org.apache.pdfbox.preflight.utils.COSUtils;
@@ -39,8 +39,8 @@ public class PreflightContext {
 	/**
 	 * Contains the list of font name embedded in the PDF document.
 	 */
-	protected Map<COSBase, AbstractFontContainer> embeddedFonts = new HashMap<COSBase, AbstractFontContainer>();
-
+	protected Map<COSBase, FontContainer> fontContainers = new HashMap<COSBase, FontContainer>();
+	
 	/**
 	 * The PDFbox object representation of the PDF source.
 	 */
@@ -148,23 +148,21 @@ public class PreflightContext {
 	 * @param fKey
 	 * @param fc
 	 */
-	public void addFont(COSBase cBase, AbstractFontContainer fc) {
-		this.embeddedFonts.put(cBase, fc);
+	public void addFontContainer(COSBase cBase, FontContainer fc) {
+		this.fontContainers.put(cBase, fc);
 	}
-
-
 
 	/**
 	 * Return the FontContainer identified by the COSBase. If the given object
-	 * is missing from the emmbeddedFont map, the null value is returned.
+	 * is missing from the {@link #fontContainers} map, the null value is returned.
 	 * 
 	 * @param fKey
 	 * @return
 	 */
-	public AbstractFontContainer getFont(COSBase cBase) {
-		return this.embeddedFonts.get(cBase);
+	public FontContainer getFontContainer(COSBase cBase) {
+		return this.fontContainers.get(cBase);
 	}
-
+	
 	/**
 	 * @return the iccProfileWrapper
 	 */
