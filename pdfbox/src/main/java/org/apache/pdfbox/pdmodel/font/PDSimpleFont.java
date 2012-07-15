@@ -451,7 +451,7 @@ public abstract class PDSimpleFont extends PDFont
             {
                 try 
                 {
-                    toUnicodeCmap = parseCmap(null, ((COSStream)toUnicode).getUnfilteredStream());
+                    toUnicodeCmap = parseCmap( resourceRootCMAP, ((COSStream)toUnicode).getUnfilteredStream());
                 }
                 catch(IOException exception) 
                 {
