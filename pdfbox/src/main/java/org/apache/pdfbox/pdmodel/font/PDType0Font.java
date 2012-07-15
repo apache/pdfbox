@@ -190,7 +190,7 @@ public class PDType0Font extends PDSimpleFont
             int result = cmap.lookupCID(c, offset, length);
             if (result != -1)
             {
-                retval = descendantFont.cmapEncoding(result, 2, true, cmap);
+                retval = descendantFont.cmapEncoding(result, 2, true, null);
             }
         }
         return retval;
