@@ -480,6 +480,11 @@ public abstract class PDFont implements COSObjectable
     protected String cmapEncoding( int code, int length, boolean isCIDFont, CMap sourceCmap ) throws IOException
     {
         String retval = null;
+        // there is not sourceCmap if this is a descendant font
+        if (sourceCmap == null)
+        {
+            sourceCmap = cmap;
+        }
         if (sourceCmap != null)
         {
             retval = sourceCmap.lookup(code, length);
