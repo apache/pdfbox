@@ -130,9 +130,8 @@
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
+          <configuration>
           <instructions>
-            <Bundle-DocURL>http://pdfbox.apache.org/</Bundle-DocURL>
             <Include-Resource>
               {maven-resources},
               META-INF=target/maven-shared-archive-resources/META-INF,

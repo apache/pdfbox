@@ -577,7 +577,9 @@ public class COSDocument extends COSBase
             for( COSObject next : parser.getObjects() )
             {
                 COSObjectKey key = new COSObjectKey( next );
-                if(objectPool.get(key) == null || objectPool.get(key).getObject() == null)
+                if ( objectPool.get(key) == null || objectPool.get(key).getObject() == null ||
+                     // xrefTable stores negated objNr of objStream for objects in objStreams
+                     (xrefTable.containsKey( key ) && xrefTable.get( key ) == - objStream.getObjectNumber().longValue()) )  
                 {
                     COSObject obj = getObjectFromPool(key);
                     obj.setObject(next.getObject());
