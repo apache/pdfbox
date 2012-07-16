@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * This is implementation of the Type0 Font. 
+ * This is implementation of the Type0 Font.
  * See <a href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a>
  * for the related improvement issue.
  *
@@ -66,7 +66,7 @@ public class PDType0Font extends PDSimpleFont
         descendantFontDictionary = (COSDictionary)getDescendantFonts().getObject( 0 );
         if (descendantFontDictionary != null)
         {
-            try 
+            try
             {
                 descendantFont = PDFontFactory.createFont( descendantFontDictionary );
             }
@@ -84,11 +84,15 @@ public class PDType0Font extends PDSimpleFont
     {
         if (awtFont == null)
         {
-            if (descendantFont != null) 
+            if (descendantFont != null)
             {
                 awtFont = ((PDSimpleFont)descendantFont).getawtFont();
             }
-            if (awtFont == null)
+            if (awtFont != null)
+            {
+                setIsFontSubstituted(((PDSimpleFont)descendantFont).isFontSubstituted());
+            }
+            else
             {
                 awtFont = FontManager.getStandardFont();
                 LOG.info("Using font "+awtFont.getName()
@@ -98,7 +102,7 @@ public class PDType0Font extends PDSimpleFont
         }
         return awtFont;
     }
-    
+
     /**
      * This will get the fonts bounding box.
      *
@@ -154,7 +158,7 @@ public class PDType0Font extends PDSimpleFont
     {
         return descendantFont.getAverageFontWidth();
     }
- 
+
     private COSArray getDescendantFonts()
     {
         if (descendantFontArray == null)
@@ -163,11 +167,11 @@ public class PDType0Font extends PDSimpleFont
         }
         return descendantFontArray;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public float getFontWidth( int charCode ) 
+    public float getFontWidth( int charCode )
     {
         return descendantFont.getFontWidth(charCode);
     }
@@ -180,25 +184,25 @@ public class PDType0Font extends PDSimpleFont
         {
             retval = super.encode(c, offset, length);
         }
-        
+
         if (retval == null)
         {
             int result = cmap.lookupCID(c, offset, length);
-            if (result != -1) 
+            if (result != -1)
             {
-                retval = descendantFont.cmapEncoding(result, 2, true, cmap);
+                retval = descendantFont.cmapEncoding(result, 2, true, null);
             }
         }
         return retval;
     }
 
     /**
-     * 
+     *
      * Provides the descendant font.
      * @return the descendant font.
-     * 
+     *
      */
-    protected PDFont getDescendantFont() 
+    protected PDFont getDescendantFont()
     {
         return descendantFont;
     }

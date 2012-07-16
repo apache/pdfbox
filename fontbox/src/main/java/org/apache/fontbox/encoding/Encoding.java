@@ -26,6 +26,9 @@ import java.util.Map;
  *
  * @author Ben Litchfield
  * @version $Revision: 1.1 $
+ * 
+ * @deprecated no longer needed by fontbox
+ * 
  */
 public abstract class Encoding
 {

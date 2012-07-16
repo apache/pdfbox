@@ -156,7 +156,7 @@ public class PDFMergerUtility
      */
     public void addSources(List<InputStream> sourcesList)
     {
-        this.sources.addAll(sources);
+        this.sources.addAll(sourcesList);
     }
 
     /**

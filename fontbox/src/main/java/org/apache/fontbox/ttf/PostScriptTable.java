@@ -18,8 +18,6 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
-import org.apache.fontbox.encoding.MacRomanEncoding;
-
 /**
  * A table in a true type font.
  * 
@@ -39,6 +37,57 @@ public class PostScriptTable extends TTFTable
     private long maxMemType1;
     private String[] glyphNames = null;
     
+    /**
+     * The 258 standard mac glyph names a used in 'post' format 1 and 2.
+     */
+    private static final int NUMBER_OF_MAC_GLYPHS = 258;
+    
+    private static final String[] MAC_GLYPH_NAMES = new String[] 
+    { 
+        ".notdef",".null", "nonmarkingreturn", "space", "exclam", "quotedbl",
+            "numbersign", "dollar", "percent", "ampersand", "quotesingle",
+            "parenleft", "parenright", "asterisk", "plus", "comma", "hyphen",
+            "period", "slash", "zero", "one", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine", "colon", "semicolon", "less",
+            "equal", "greater", "question", "at", "A", "B", "C", "D", "E", "F",
+            "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+            "T", "U", "V", "W", "X", "Y", "Z", "bracketleft", "backslash",
+            "bracketright", "asciicircum", "underscore", "grave", "a", "b",
+            "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+            "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "braceleft",
+            "bar", "braceright", "asciitilde", "Adieresis", "Aring",
+            "Ccedilla", "Eacute", "Ntilde", "Odieresis", "Udieresis", "aacute",
+            "agrave", "acircumflex", "adieresis", "atilde", "aring",
+            "ccedilla", "eacute", "egrave", "ecircumflex", "edieresis",
+            "iacute", "igrave", "icircumflex", "idieresis", "ntilde", "oacute",
+            "ograve", "ocircumflex", "odieresis", "otilde", "uacute", "ugrave",
+            "ucircumflex", "udieresis", "dagger", "degree", "cent", "sterling",
+            "section", "bullet", "paragraph", "germandbls", "registered",
+            "copyright", "trademark", "acute", "dieresis", "notequal", "AE",
+            "Oslash", "infinity", "plusminus", "lessequal", "greaterequal",
+            "yen", "mu", "partialdiff", "summation", "product", "pi",
+            "integral", "ordfeminine", "ordmasculine", "Omega", "ae", "oslash",
+            "questiondown", "exclamdown", "logicalnot", "radical", "florin",
+            "approxequal", "Delta", "guillemotleft", "guillemotright",
+            "ellipsis", "nonbreakingspace", "Agrave", "Atilde", "Otilde", "OE",
+            "oe", "endash", "emdash", "quotedblleft", "quotedblright",
+            "quoteleft", "quoteright", "divide", "lozenge", "ydieresis",
+            "Ydieresis", "fraction", "currency", "guilsinglleft",
+            "guilsinglright", "fi", "fl", "daggerdbl", "periodcentered",
+            "quotesinglbase", "quotedblbase", "perthousand", "Acircumflex",
+            "Ecircumflex", "Aacute", "Edieresis", "Egrave", "Iacute",
+            "Icircumflex", "Idieresis", "Igrave", "Oacute", "Ocircumflex",
+            "apple", "Ograve", "Uacute", "Ucircumflex", "Ugrave", "dotlessi",
+            "circumflex", "tilde", "macron", "breve", "dotaccent", "ring",
+            "cedilla", "hungarumlaut", "ogonek", "caron", "Lslash", "lslash",
+            "Scaron", "scaron", "Zcaron", "zcaron", "brokenbar", "Eth", "eth",
+            "Yacute", "yacute", "Thorn", "thorn", "minus", "multiply",
+            "onesuperior", "twosuperior", "threesuperior", "onehalf",
+            "onequarter", "threequarters", "franc", "Gbreve", "gbreve",
+            "Idotaccent", "Scedilla", "scedilla", "Cacute", "cacute", "Ccaron",
+            "ccaron", "dcroat" 
+    };
+
     /**
      * A tag that identifies this table type.
      */
@@ -63,8 +112,6 @@ public class PostScriptTable extends TTFTable
         maxMemType42 = data.readUnsignedInt();
         mimMemType1 = data.readUnsignedInt();
         maxMemType1 = data.readUnsignedInt();
-        MacRomanEncoding encoding = new MacRomanEncoding();
-        
         
         if( formatType == 1.0f )
         {
@@ -72,15 +119,8 @@ public class PostScriptTable extends TTFTable
              * This TrueType font file contains exactly the 258 glyphs in the standard 
              * Macintosh TrueType.
              */
-            glyphNames = new String[258];
-            for( int i=0; i<glyphNames.length; i++)
-            {
-                String name = encoding.getName( i );
-                if( name != null )
-                {
-                    glyphNames[i] = name;
-                }
-            }
+            glyphNames = new String[NUMBER_OF_MAC_GLYPHS];
+            System.arraycopy(MAC_GLYPH_NAMES, 0, glyphNames, 0, NUMBER_OF_MAC_GLYPHS);
         }
         else if( formatType == 2.0f )
         {
@@ -94,15 +134,16 @@ public class PostScriptTable extends TTFTable
                 glyphNameIndex[i] = index;
                 // PDFBOX-808: Index numbers between 32768 and 65535 are
                 // reserved for future use, so we should just ignore them
-                if (index <= 32767) {
+                if (index <= 32767) 
+                {
                     maxIndex = Math.max( maxIndex, index );
                 }
             }
             String[] nameArray = null;
-            if( maxIndex >= 258 )
+            if( maxIndex >= NUMBER_OF_MAC_GLYPHS )
             {
-                nameArray = new String[ maxIndex-258 +1 ];
-                for( int i=0; i<maxIndex-258+1; i++ )
+                nameArray = new String[ maxIndex-NUMBER_OF_MAC_GLYPHS +1 ];
+                for( int i=0; i<maxIndex-NUMBER_OF_MAC_GLYPHS+1; i++ )
                 {
                     int numberOfChars = data.read();
                     nameArray[i]=data.readString( numberOfChars );
@@ -111,13 +152,13 @@ public class PostScriptTable extends TTFTable
             for( int i=0; i<numGlyphs; i++ )
             {
                 int index = glyphNameIndex[i];
-                if( index < 258 )
+                if( index < NUMBER_OF_MAC_GLYPHS )
                 {
-                    glyphNames[i] = encoding.getName( index );
+                    glyphNames[i] = MAC_GLYPH_NAMES[index];
                 }
-                else if( index >= 258 && index <= 32767 )
+                else if( index >= NUMBER_OF_MAC_GLYPHS && index <= 32767 )
                 {
-                    glyphNames[i] = nameArray[index-258];
+                    glyphNames[i] = nameArray[index-NUMBER_OF_MAC_GLYPHS];
                 }
                 else
                 {
@@ -138,7 +179,7 @@ public class PostScriptTable extends TTFTable
             glyphNames = new String[glyphNameIndex.length];
             for( int i=0; i<glyphNames.length; i++)
             {
-                String name = encoding.getName( glyphNameIndex[i] );
+                String name = MAC_GLYPH_NAMES[glyphNameIndex[i]];
                 if( name != null )
                 {
                     glyphNames[i] = name;
