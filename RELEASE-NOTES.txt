@@ -1,162 +1,42 @@
-Release Notes -- Apache PDFBox -- Version 1.7.0
+Release Notes -- Apache PDFBox -- Version 1.7.1
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental feature release based on the earlier 1.x releases.
-This release contains many improvements and fixes especially related to
-performance, resource usage and rendering. The most significant 
-new feature is the new non sequential parser.
+This is an incremental bugfix release based on the earlier 1.7.0 release.
 
 This version also includes the new PDF/A preflight module. Due to some unfinished 
 refactoring we decided to release them source only. Uncomment the commented entries
 in the reactor pom to build your own jars.
 
-For more details on these changes and all the other fixes and improvements
-included in this release, please refer to the following issues on the
-PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
-
-New features
-
-[PDFBOX-5] - CJK decoding
-[PDFBOX-1056] - Integration of a PDF/A validator in PDFBox
-[PDFBOX-1142] - Implement type 4 functions (PDFunctionType4)
-[PDFBOX-1156] - Color conversion for PDJpegs using a DeviceN colorspace
-[PDFBOX-1160] - Add "Save as image" to PDFReader
-[PDFBOX-1214] - Allow subclassing of PDFParser
-[PDFBOX-1221] - Add support to set a start and/or end page when splitting a pdf
-[PDFBOX-1230] - Support CIDToGIDMap of CID-Type2 fonts
-[PDFBOX-1253] - split PDFont#encode
+For more details on all fixes and improvements included in this release, please
+refer to the following issues on the PDFBox issue tracker at 
+https://issues.apache.org/jira/browse/PDFBOX.
 
 Improvements
 
-[PDFBOX-804] - First page not rendered correctly by the pdfbox tools (PDFReader, PDTToImage ...)
-[PDFBOX-956] - Poor text extraction performance in PDFTextStripper.java
-[PDFBOX-1080] - Improve TextPosition.isDiacritic and ICU4JImpl normalizeDiac performance
-[PDFBOX-1081] - padaf integration : remove unused style file and change subproject cases
-[PDFBOX-1105] - Integration Test in preflight to make easy validation
-[PDFBOX-1111] - Add Duplex and PrintScaling to viewer preferences
-[PDFBOX-1117] - [Preflight] Continue the PDF validation after syntax error
-[PDFBOX-1131] - Patch: Adding line cap, line join, and line pattern support to PDPageContentStream
-[PDFBOX-1136] - Possibilty to direcvtly add R and D stream into PDAppearanceDictionary
-[PDFBOX-1144] - update pom in parent project to support maven build in eclipse Indigo
-[PDFBOX-1146] - Don't use COSArrays when calling PDFunction#eval
-[PDFBOX-1159] - Speed up LZWFilter decoding
-[PDFBOX-1165] - Xmpbox does not accept rdf:description without rdf:about attribute
-[PDFBOX-1168] - Adding Basic Job Ticket Schema
-[PDFBOX-1175] - Stream parsing performance improvement + patch
-[PDFBOX-1177] - Create a module with examples instead having them in pdfbox.jar
-[PDFBOX-1179] - Remove file resource used to retrieve version of parser
-[PDFBOX-1186] - Improve xmpbox code strength
-[PDFBOX-1193] - BaseParser print useful offset instead of java object
-[PDFBOX-1196] - Object offsets should be of type long + PATCH
-[PDFBOX-1198] - Remove dependency to commons-io in xmpbox
-[PDFBOX-1199] - Non-sequential PDF parser + PATCH
-[PDFBOX-1211] - Refactor IO interfaces + PATCH
-[PDFBOX-1252] - Use a separate CMap for the ToUnicode mapping
-[PDFBOX-1286] - Add the BouncyCastleProvider only once a time
-[PDFBOX-1294] - Unable to read values from PDF Form fields saved by Acrobat Reader
-[PDFBOX-1297] - ExtractText fails to extract text from packaged PDFs
-[PDFBOX-1309] - Support decompression of password protected pdfs
-[PDFBOX-1310] - Remove project version retrieval in preflight
-[PDFBOX-1311] - Extend commandline utilities to use the non sequential parser by choice
-[PDFBOX-1315] - Build WriteDecodedDoc and PDFMerger as .NET tool
+[PDFBOX-564] -  Change the wrapped exception to extend Exception and pass the wrapped 
+                exception for more standard/better printout of wrapped exceptions
+[PDFBOX-1099] - Only parsing object streams if they are referenced by the xref table/stream
+[PDFBOX-1333] - Stream parsing of BaseParser should fall back to scanning if length 
+		value is wrong
+[PDFBOX-1358] - Reduce the memory consumption of a RandomAccessBuffer
 
 Bug Fixes
 
-[PDFBOX-163] - IOException: expected='/' actual='e'-101
-[PDFBOX-383] - BaseParser incorrectly handling stream, exhibiting IOException
-[PDFBOX-479] - loading a CUPS-generated PDF results in RasterExceptions
-[PDFBOX-569] - Text-Extraction of PDF fails
-[PDFBOX-585] - PrintImageLocations example calculates wrong image width/height
-[PDFBOX-610] - Fonts should not be cached by PDFStreamEngine
-[PDFBOX-611] - PDSimpleFont. Font height reported as zero.
-[PDFBOX-692] - Contents are unknown type:org.apache.pdfbox.cos.COSDictionary
-[PDFBOX-697] - Error: Expected an integer type, actual='' -
-[PDFBOX-744] - Landscape PDF Rasterized as Portrait
-[PDFBOX-750] - Extracted images are dark without color
-[PDFBOX-807] - NullPointerException in StandardSecurityHandler.java:261
-[PDFBOX-817] - IllegalArgumentException not catched or declared while creating ICC profile
-[PDFBOX-847] - FlateFilter.java swallows Exceptions (should rethrow)
-[PDFBOX-864] - Incorrect cropping from PDFToImage with offset mediaBox
-[PDFBOX-879] - PDFMergerUtility
-[PDFBOX-886] - Scanned PDFs from XEROX scanners was blank/black when convert to image
-[PDFBOX-892] - ClassCastException in PDXObjectImage.getMask
-[PDFBOX-895] - Infinite recursion when trying to extract text from specific types of PDFs
-[PDFBOX-980] - Expected an integer type, actual='Active'
-[PDFBOX-999] - Cant compile PDFBOX 1.5 with IKVM
-[PDFBOX-1001] - TextPosition.getHeight() returns erroneous value for some PDFs
-[PDFBOX-1047] - PDPageLabels with Junks in Particular Pdf
-[PDFBOX-1059] - WinAnsiEncoding : the code 0251 (Copyrigth) inserted twice
-[PDFBOX-1075] - Can't get images from a PDF
-[PDFBOX-1079] - TestCOSFloat occasionally fails: Is something wrong with my machine?
-[PDFBOX-1085] - Wrong PostcriptScriptTable due to wrong assumption in Encoding/MacRomanEncoding
-[PDFBOX-1088] - Class PDDocument Method getPageMap returns a ClassCastException
-[PDFBOX-1092] - Image Rendering Regression
-[PDFBOX-1095] - PDFToImage image rendering fails on pdf with embedded picture(s)
-[PDFBOX-1096] - CMapParser doesn't parse cmap version
-[PDFBOX-1097] - Classes from generated sources are not included in preflight jar
-[PDFBOX-1098] - Wrong implemented stream reader
-[PDFBOX-1101] - Improve JavaCC Grammar and Preflight to manage Xref stream object
-[PDFBOX-1106] - PDFMergerUtility corrupts file attachments
-[PDFBOX-1108] - NPE and IndexOutOfBounds in PDFunctionType3
-[PDFBOX-1112] - Fix outline hierarchy control
-[PDFBOX-1116] - Wrong colors with test file
-[PDFBOX-1118] - All images in pdf document is not listed/extracted
-[PDFBOX-1125] - NullPointerException when saving Document
-[PDFBOX-1127] - PDF supplies glyph->unicode mapping, but PDFBox doesn't use it.
-[PDFBOX-1128] - Wrong color space used for DeviceN operator without color space specified
-[PDFBOX-1137] - PDSimpleFont.determineEncoding will never parse embedded CMAPs
-[PDFBOX-1140] - TTFDataStream.read32Fixed() discards fractions
-[PDFBOX-1145] - "write2file" gives Null Pointer Exception
-[PDFBOX-1161] - CMapParser exception when call extractToUnicodeEndoding
-[PDFBOX-1162] - Font error in "preflight" .....when validating the attached PDF/A
-[PDFBOX-1171] - Parsing hexadecimal strings is not strict enough + FIX
-[PDFBOX-1172] - COSNumber throws IOException
-[PDFBOX-1173] - Missing Fonts after PDFMergerUtility mergeDocuments
-[PDFBOX-1174] - i have problem in BaseParser.readInt
-[PDFBOX-1178] - Type3Validation error when firstChar and lastChar badly defined in 
-                font description dictionary
-[PDFBOX-1180] - Anomalie lors de la validation d'un PDF/A1-b
-[PDFBOX-1184] - [PATCH] Bug in PDPage when the page is rasterized
-[PDFBOX-1185] - A problem with indexed color spaces: bpc of the base color space seems wrong.
-[PDFBOX-1188] - PDStream Exception when using a Cast
-[PDFBOX-1190] - Attempting to render to BMP, WBMP or GIF causes IllegalStateException
-[PDFBOX-1194] - XMLValueTypeDescriptionManagerTest fails on Java 7
-[PDFBOX-1195] - Font Validation Problem
-[PDFBOX-1197] - PrintImageLocations does not print information of all images
-[PDFBOX-1212] - NullPointerException in SecurityHandler.addDictionaryAndSubDictionary
-[PDFBOX-1216] - Arabic / Farsi (Persian) text appear disconnected when PDF is converted to image
-[PDFBOX-1218] - width = 0 if a type1 font uses a standard base 14 font
-[PDFBOX-1220] - CMYK image cannot be extracted (empty file generated)
-[PDFBOX-1232] - FlateDecoder in stream mode
-[PDFBOX-1233] - CCITTFaxG31DDecodeInputStream - Extended codes have wrong length
-[PDFBOX-1237] - PDPixelMap uses wrong number of components for the target colorspace
-[PDFBOX-1238] - Document stream used a undefined font resource
-[PDFBOX-1243] - XMPSchemaMediaManagement : bad setManagedFrom
-[PDFBOX-1248] - PDNumberTreeNode method setNumbers( Map numbers ) sets the key for the for the 
-                Nums dictionary entry to Names rather than Nums
-[PDFBOX-1249] - PDF/A file has a preflight, .pdmodel.font exception. Validates with commercial viewers
-[PDFBOX-1265] - Invalid Font Definition
-[PDFBOX-1266] - When I try to convert certain pages of certain PDF to images I am getting error 
-                java.lang.ClassCastException: org.apache.pdfbox.cos.COSNull cannot be cast to 
-                org.apache.pdfbox.cos.COSDictionary
-[PDFBOX-1269] - ClassCastException on COSDocument#getDocumentID
-[PDFBOX-1275] - Glyph error, CID 0 -- passes compercial validators as a valid PDF/A
-[PDFBOX-1279] - Preflight reports "1.1 : Body Syntax error"
-[PDFBOX-1281] - FDFDictionary parses fields in XFDF incorrectly
-[PDFBOX-1285] - Unable to process attached pdf
-[PDFBOX-1289] - PDResources overrides any existing font when calling addFont
-[PDFBOX-1290] - CloseFillNonZeroAndStrokePath operator fails to do the stroke.
-[PDFBOX-1295] - Unable to create the color instance / bg color inverted
-[PDFBOX-1299] - BaseParser.readUntilEndOfStream can stop too early, causing IOException on valid PDFs
-[PDFBOX-1306] - Transparent PNG file display with black border
-[PDFBOX-1308] - PDResources.getImages() is broken
-[PDFBOX-1316] - NonSequentialPDFParser does not set security handler for access check
-[PDFBOX-1319] - NullPointerException in NonSequentialPDFParser with corrupt xref/trailer
-[PDFBOX-1320] - NPE in extractEmbeddedDocuments
+[PDFBOX-954] -  Embedded font: value for /Widths faulty (worked in PDFBox 1.3.0!)
+[PDFBOX-1323] - PDF with subset CIDFontType2 (TTF) paints wrong characters
+[PDFBOX-1331] - Can't load any text when font is null
+[PDFBOX-1334] - EmptyStackException in PDFStreamEngine.getFonts
+[PDFBOX-1337] - Improve PDFOperator performance on multithreading environment
+[PDFBOX-1339] - PDFMergerUtility addSources function does not work
+[PDFBOX-1340] - i got wrong characters when i extract some chinese pdf files
+[PDFBOX-1349] - Postscript tables of truetype fonts are not correctly parsed.
+[PDFBOX-1353] - PDFBox extracts wrong characters for some korean pdf files.
+[PDFBOX-1355] - Truetype font loaded in 1.6.0 (and previous), does not load in 1.7.0
+[PDFBOX-1357] - Missing character encoding in MacRoman & WinAnsi
 
 Release Contents
 ----------------
