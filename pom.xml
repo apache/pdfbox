@@ -141,8 +141,8 @@ The release candidate is a zip archive of the sources in:
 The SHA1 checksum of the archive is ${checksum}.
 
 Please vote on releasing this package as Apache PDFBox ${project.version}.
-The vote is open for the next 72 hours and passes if a majority of at
-least three +1 PDFBox PMC votes are cast.
+The vote is open for the next 7 days and passes if a majority of at least 
+three +1 PDFBox PMC votes are cast.
 
     [ ] +1 Release this package as Apache PDFBox ${project.version}
     [ ] -1 Do not release this package because...${line.separator}
