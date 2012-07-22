@@ -120,21 +120,17 @@ public class Invoke extends OperatorProcessor
             context.getGraphicsStack().push( (PDGraphicsState)context.getGraphicsState().clone() );
             
             PDXObjectForm form = (PDXObjectForm)xobject;
-            COSStream invoke = (COSStream)form.getCOSObject();
+            COSStream formContentstream = form.getCOSStream();
+            // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
-            if(pdResources == null)
-            {
-                pdResources = page.findResources();
-            }
-            // if there is an optional form matrix, we have to
-            // map the form space to the user space
+            // if there is an optional form matrix, we have to map the form space to the user space
             Matrix matrix = form.getMatrix();
             if (matrix != null) 
             {
                 Matrix xobjectCTM = matrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix());
                 context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
             }
-            getContext().processSubStream( page, pdResources, invoke );
+            getContext().processSubStream( page, pdResources, formContentstream );
             
             // restore the graphics state
             context.setGraphicsState( (PDGraphicsState)context.getGraphicsStack().pop() );
