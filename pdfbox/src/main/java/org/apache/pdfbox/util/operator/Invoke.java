@@ -19,7 +19,6 @@ package org.apache.pdfbox.util.operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
@@ -40,10 +39,9 @@ import java.util.Map;
  */
 public class Invoke extends OperatorProcessor
 {
-    //private Set inProcess = new TreeSet();
-
     /**
      * process : Do - Invoke a named xobject.
+     * 
      * @param operator The operator that is being executed.
      * @param arguments List
      *
@@ -53,7 +51,7 @@ public class Invoke extends OperatorProcessor
     {
         COSName name = (COSName) arguments.get( 0 );
 
-        Map xobjects = context.getXObjects();
+        Map<String,PDXObject> xobjects = context.getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(name.getName());
         if (this.context instanceof PDFMarkedContentExtractor)
         {
@@ -63,15 +61,10 @@ public class Invoke extends OperatorProcessor
         if(xobject instanceof PDXObjectForm)
         {
             PDXObjectForm form = (PDXObjectForm)xobject;
-            COSStream invoke = (COSStream)form.getCOSObject();
+            COSStream formContentstream = form.getCOSStream();
+            // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
-            PDPage page = context.getCurrentPage();
-            if(pdResources == null)
-            {
-                pdResources = page.findResources();
-            }
-
-            getContext().processSubStream( page, pdResources, invoke );
+            getContext().processSubStream( context.getCurrentPage(), pdResources, formContentstream );
         }
     }
 }
