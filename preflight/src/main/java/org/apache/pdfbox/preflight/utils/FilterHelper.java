@@ -39,36 +39,34 @@ import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_V
 import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_LZW;
 import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_RUN;
 
-import java.util.List;
-
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 
 public class FilterHelper {
 
 	/**
-	 * This method checks if the filter is authorized for a PDF/A file.
-	 * According to the PDF/A-1 specification, only the LZW filter is forbidden due to
+	 * This method checks if the filter is authorized for the PDF file according to the preflight document specification attribute.
+	 * For example according to the PDF/A-1 specification, only the LZW filter is forbidden due to
 	 * Copyright compatibility. Because of the PDF/A is based on the PDF1.4 specification, 
 	 * all filters that aren't declared in the PDF Reference Third Edition are rejected. 
 	 * 
+	 * @param context the preflight context
 	 * @param filter the filter to checks
-	 * @param errors the list of validation errors
-	 * @return true if the filter is authorized, false otherwise.
 	 */
-	public static boolean isAuthorizedFilter(String filter, List<ValidationError> errors) {
-		String errorCode = isAuthorizedFilter(filter);
-		if (errorCode != null) {
-			// --- LZW is forbidden.
-			if ( ERROR_SYNTAX_STREAM_INVALID_FILTER.equals(errorCode) ) {
-				errors.add(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER, "LZWDecode is forbidden"));
-				return false;
-			} else {
-				errors.add(new ValidationError(ERROR_SYNTAX_STREAM_UNDEFINED_FILTER, "This filter isn't defined in the PDF Reference Third Edition : "+filter));
-				return false;				
-			}
+	public static void isAuthorizedFilter(PreflightContext context, String filter) {
+		PreflightDocument preflightDocument = context.getDocument();
+		switch (preflightDocument.getSpecification()) {
+		case PDF_A1A:
+			isAuthorizedFilterInPDFA(context, filter);		
+			break;
+
+		default:
+			// PDF/A-1b is the default format
+			isAuthorizedFilterInPDFA(context, filter);		
+			break;
 		}
-		return true;
 	}
 
 	/**
@@ -77,14 +75,14 @@ public class FilterHelper {
 	 * Copyright compatibility. Because of the PDF/A is based on the PDF1.4 specification, 
 	 * all filters that aren't declared in the PDF Reference Third Edition are rejected. 
 	 * 
+	 * @param context
 	 * @param filter
-	 * @return null if validation succeed, the errorCode if the validation failed
 	 */
-	public static String isAuthorizedFilter(String filter) {
+	public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter) {
 		if (filter != null) {
 			// --- LZW is forbidden.
 			if (STREAM_DICTIONARY_VALUE_FILTER_LZW.equals(filter) || INLINE_DICTIONARY_VALUE_FILTER_LZW.equals(filter) ) {
-				return ERROR_SYNTAX_STREAM_INVALID_FILTER;
+				context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER, "LZWDecode is forbidden"));
 			}
 
 			// --- Filters declared in the PDF Reference for PDF 1.4
@@ -103,11 +101,10 @@ public class FilterHelper {
 			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
 			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
 			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
-			
+
 			if (!definedFilter) {
-				return ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
+				context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_UNDEFINED_FILTER, "This filter isn't defined in the PDF Reference Third Edition : "+filter));
 			}
 		}
-		return null;
 	}
 }

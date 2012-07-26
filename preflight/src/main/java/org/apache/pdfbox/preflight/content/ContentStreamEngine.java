@@ -26,8 +26,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVAL
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_GRAPHIC_STATES;
 
 import java.awt.color.ColorSpace;
@@ -52,6 +50,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelper;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRestriction;
@@ -107,12 +106,13 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	protected PreflightContext context = null;
 
 	protected COSDocument cosDocument = null;
-	
+
 	protected PDPage processeedPage = null;
-	
+
 	protected Map<String,OperatorProcessor> contentStreamEngineOperators = new HashMap<String,OperatorProcessor>();
 
 	public ContentStreamEngine(PreflightContext _context, PDPage _page) {
+		super();
 		this.context = _context;
 		this.cosDocument = _context.getDocument().getDocument();
 		this.processeedPage = _page;
@@ -276,15 +276,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		 * The LZWDecode Filter is forbidden.
 		 */
 		COSBase filter = dict.getDictionaryObject(COSName.F, COSName.FILTER);
-		String errorCode = FilterHelper.isAuthorizedFilter(COSUtils.getAsString(filter, this.context.getDocument().getDocument()));
-		if (errorCode != null) {
-			// LZW is forbidden.
-			if ( ERROR_SYNTAX_STREAM_INVALID_FILTER.equals(errorCode) ) {
-				throwContentStreamException("LZW filter can't be used in a PDF/A File", ERROR_SYNTAX_STREAM_INVALID_FILTER);
-			} else {
-				throwContentStreamException("This filter isn't defined in the PDF Reference Third Edition.", ERROR_SYNTAX_STREAM_UNDEFINED_FILTER);
-			}
-		}
+		FilterHelper.isAuthorizedFilter(context, COSUtils.getAsString(filter, this.context.getDocument().getDocument()));
 	}
 
 	/**
@@ -391,7 +383,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		}
 	}
 
-	private boolean validColorSpace(PDColorState colorState, ColorSpaceType expectedType) {
+	private boolean validColorSpace(PDColorState colorState, ColorSpaceType expectedType)
+			throws ContentStreamException {
 		boolean result = true;
 		if (colorState == null) {
 			result = validColorSpaceDestOutputProfile(expectedType);
@@ -413,25 +406,30 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @param expectedType
 	 * @return
 	 */
-	private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType) {
+	private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType) throws ContentStreamException {
 		boolean result = false;
-		ICCProfileWrapper profileWrapper = context.getIccProfileWrapper();
-		if (profileWrapper != null) {
-			switch (expectedType) {
-			case RGB:
-				result = profileWrapper.isRGBColorSpace();
-				break;
-			case CMYK:
-				result = profileWrapper.isCMYKColorSpace();
-				break;
-			default:
-				result = true;
-				break;
+		ICCProfileWrapper profileWrapper;
+		try {
+			profileWrapper = ICCProfileWrapper.getOrSearchICCProfile(context);
+			if (profileWrapper != null) {
+				switch (expectedType) {
+				case RGB:
+					result = profileWrapper.isRGBColorSpace();
+					break;
+				case CMYK:
+					result = profileWrapper.isCMYKColorSpace();
+					break;
+				default:
+					result = true;
+					break;
+				}
 			}
+		} catch (ValidationException e) {
+			throw new ContentStreamException(e);
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return true if the given ColorSpace is an independent device ColorSpace.
 	 * If the color space is an ICCBased, check the embedded profile color (RGB or CMYK)
@@ -493,7 +491,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	 * @throws IOException
 	 */
 	protected void checkSetColorSpaceOperators(PDFOperator operator, List<?> arguments) 
-	throws IOException {
+			throws IOException {
 		if (!("CS".equals(operator.getOperation()) || "cs".equals(operator.getOperation()))) {
 			return;
 		}

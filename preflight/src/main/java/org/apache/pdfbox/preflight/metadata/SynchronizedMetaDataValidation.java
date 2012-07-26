@@ -425,7 +425,7 @@ public class SynchronizedMetaDataValidation {
    * @param schema
    * @return
    */
-  protected ValidationError UnexpectedPrefixFoundError(String prefFound,
+  protected ValidationError unexpectedPrefixFoundError(String prefFound,
       String prefExpected, String schema) {
     StringBuilder sb = new StringBuilder(80);
     sb.append(schema).append(" found but prefix used is '").append(prefFound)

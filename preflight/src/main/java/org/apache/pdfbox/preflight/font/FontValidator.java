@@ -34,7 +34,7 @@ public abstract class FontValidator <T extends FontContainer> {
 	protected PDFont font;
 	protected FontDescriptorHelper<T> descriptorHelper;
 
-	private static final String subSetPattern = "^[A-Z]{6}\\+.*";
+	private static final String SUB_SET_PATTERN = "^[A-Z]{6}\\+.*";
 
 	public FontValidator(PreflightContext context, PDFont font, T fContainer) {
 		super();
@@ -45,7 +45,7 @@ public abstract class FontValidator <T extends FontContainer> {
 	}
 
   public static boolean isSubSet(String fontName) {
-    return fontName.matches(subSetPattern);
+    return fontName.matches(SUB_SET_PATTERN);
   }
 
   public static String getSubSetPatternDelimiter() {

@@ -42,7 +42,7 @@ import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
-public class Type1Parser {
+public final class Type1Parser {
 	protected static final char NAME_START = '/';
 	protected static final String NOTDEF = NAME_START + ".notdef";
 	protected static final int DEFAULT_LEN_IV = 4;

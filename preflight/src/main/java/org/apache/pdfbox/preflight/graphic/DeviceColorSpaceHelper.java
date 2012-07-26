@@ -68,12 +68,12 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper {
 		PDIndexed indexed = (PDIndexed) pdcs;
 		try {
 			PDColorSpace based = indexed.getBaseColorSpace();
-			ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-			switch (cs) {      
+			ColorSpaces colorSpace = ColorSpaces.valueOf(based.getName());
+			switch (colorSpace) {      
 			case Indexed:
 			case Indexed_SHORT:
 			case Pattern:
-				context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, cs.getLabel() + " ColorSpace is forbidden"));
+				context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpace.getLabel() + " ColorSpace is forbidden"));
 				break;
 			default:
 				processAllColorSpace(based);

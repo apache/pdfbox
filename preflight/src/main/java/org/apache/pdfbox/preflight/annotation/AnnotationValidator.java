@@ -119,7 +119,7 @@ public abstract class AnnotationValidator {
 	 * 
 	 * @return
 	 */
-	protected boolean checkColors() {
+	protected boolean checkColors() throws ValidationException {
 		if (this.pdAnnot.getColour() != null) {
 			if (!searchRGBProfile()) {
 				ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,"Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
@@ -134,8 +134,8 @@ public abstract class AnnotationValidator {
 	 * 
 	 * @return true if a rgb profile is found, false otherwise.
 	 */
-	protected boolean searchRGBProfile() {
-		ICCProfileWrapper iccpw = this.ctx.getIccProfileWrapper();
+	protected boolean searchRGBProfile() throws ValidationException{
+		ICCProfileWrapper iccpw = ICCProfileWrapper.getOrSearchICCProfile(ctx);
 		if (iccpw != null) {
 			return iccpw.isRGBColorSpace();
 		}

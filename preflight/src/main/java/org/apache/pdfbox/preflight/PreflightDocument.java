@@ -96,7 +96,7 @@ public class PreflightDocument extends PDDocument {
 		}
 	}
 	
-	protected void initConfiguration(Format format) {
+	private void initConfiguration(Format format) {
 		switch (format) {
 //		case PDF_A1A:
 //			
@@ -151,4 +151,9 @@ public class PreflightDocument extends PDDocument {
 			ContextHelper.validateElement(context, name);
 		}
 	}
+
+	public Format getSpecification() {
+		return specification;
+	}
+	
 }
