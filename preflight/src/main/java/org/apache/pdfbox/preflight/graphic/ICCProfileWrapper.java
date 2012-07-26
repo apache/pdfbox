@@ -21,8 +21,23 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
+import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
+import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE;
+
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
+import java.io.IOException;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * This class embeds an instance of java.awt.color.ICC_Profile which represent
@@ -33,14 +48,14 @@ public class ICCProfileWrapper {
   /**
    * The ICCProfile extracted from DestOutputItents
    */
-  private ICC_Profile profile = null;
+  private final ICC_Profile profile;
 
   /**
    * The ICC ColorSpace created using the ICCProfile
    */
-  private ICC_ColorSpace colorSpace = null;
+  private final ICC_ColorSpace colorSpace;
 
-  public ICCProfileWrapper(ICC_Profile _profile) {
+  public ICCProfileWrapper(final ICC_Profile _profile) {
     this.profile = _profile;
     this.colorSpace = new ICC_ColorSpace(_profile);
   }
@@ -87,4 +102,47 @@ public class ICCProfileWrapper {
   public boolean isGrayColorSpace() {
     return ICC_ColorSpace.TYPE_GRAY == colorSpace.getType();
   }
+
+	/**
+	 * This method read all outputIntent dictionary until on of them have a destOutputProfile stream.
+	 * This stream is parsed and is used to create a IccProfileWrapper.
+	 *  
+	 * @param context
+	 * @return an instance of ICCProfileWrapper or null if there are no DestOutputProfile
+	 * @throws ValidationException if an IOException occurs during the DestOutputProfile parsing 
+	 */
+	private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context) throws ValidationException {
+		PreflightDocument document = context.getDocument();
+		PDDocumentCatalog catalog = document.getDocumentCatalog();
+		COSBase cBase = catalog.getCOSDictionary().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
+		COSArray outputIntents = COSUtils.getAsArray(cBase, document.getDocument());
+
+		for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i) {
+			COSDictionary outputIntentDict = COSUtils.getAsDictionary(outputIntents.get(i), document.getDocument());
+			COSBase destOutputProfile = outputIntentDict.getItem(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE);
+			if (destOutputProfile != null) {
+				try {
+					PDStream stream = PDStream.createFromCOS(COSUtils.getAsStream(destOutputProfile, document.getDocument()));
+					if (stream != null) {
+						ICC_Profile iccp = ICC_Profile.getInstance(stream.getByteArray());
+						return new ICCProfileWrapper(iccp);
+					}
+				} catch (IllegalArgumentException e) {
+					throw new ValidationException("DestOutputProfile isn't a ICCProfile", e);
+				} catch (IOException e) {
+					throw new ValidationException("Unable to parse the ICCProfile", e);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static ICCProfileWrapper getOrSearchICCProfile(PreflightContext context) throws ValidationException {
+		ICCProfileWrapper profileWrapper = context.getIccProfileWrapper();
+		if (profileWrapper == null && !context.isIccProfileAlreadySearched()) {
+			profileWrapper = searchFirstICCProfile(context);
+			context.setIccProfileAlreadySearched(true);
+		}
+		return profileWrapper;
+	}
 }

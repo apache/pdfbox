@@ -62,7 +62,7 @@ public class PDFAIdentificationValidation {
     // According to the PDF/A specification, the prefix must be pdfaid for this schema.
     if (!id.getPrefix().equals(PDFAIdentificationSchema.IDPREFIX)) {
       if (metadata.getSchema(PDFAIdentificationSchema.IDPREFIX, XMPBasicSchema.XMPBASICURI) == null) {
-        ve.add(UnexpectedPrefixFoundError(id.getPrefix(),
+        ve.add(unexpectedPrefixFoundError(id.getPrefix(),
             PDFAIdentificationSchema.IDPREFIX, PDFAIdentificationSchema.class.getName()));
       } else {
         id = (PDFAIdentificationSchema) metadata.getSchema(
@@ -83,7 +83,7 @@ public class PDFAIdentificationValidation {
    * @param schema
    * @return
    */
-  protected ValidationError UnexpectedPrefixFoundError(String prefFound, String prefExpected, String schema) {
+  protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema) {
     StringBuilder sb = new StringBuilder(80);
     sb.append(schema).append(" found but prefix used is '").append(prefFound)
         .append("', prefix '").append(prefExpected).append("' is expected.");

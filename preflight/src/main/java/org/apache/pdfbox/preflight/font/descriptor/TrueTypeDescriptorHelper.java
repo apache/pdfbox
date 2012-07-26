@@ -48,7 +48,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
 
 	public PDStream extractFontFile(PDFontDescriptorDictionary fontDescriptor) {
 		PDStream fontFile = fontDescriptor.getFontFile2();
-		COSStream stream =  (fontFile != null ? fontFile.getStream() : null);
+		COSStream stream =  (fontFile == null ? null : fontFile.getStream());
 		if (stream == null) {
 			this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile2 is missing"));
 			this.fContainer.notEmbedded();

@@ -249,7 +249,7 @@ public class CatalogValidationProcess extends AbstractProcess {
 			if (efs != null) {
 				addValidationError(ctx, 
 						new ValidationError(ERROR_SYNTAX_TRAILER_CATALOG_EMBEDDEDFILES,
-						"EmbeddedFile entry is present in the Names dictionary"));
+								"EmbeddedFile entry is present in the Names dictionary"));
 			}
 		}
 	}
@@ -264,7 +264,7 @@ public class CatalogValidationProcess extends AbstractProcess {
 		if (catalog.getOCProperties() != null) {
 			addValidationError(ctx, 
 					new ValidationError(ERROR_SYNTAX_TRAILER_CATALOG_OCPROPERTIES, 
-					"A Catalog shall not contain the OCPProperties entry."));
+							"A Catalog shall not contain the OCPProperties entry."));
 		}
 	}
 
@@ -294,14 +294,14 @@ public class CatalogValidationProcess extends AbstractProcess {
 			if (outputIntentDict == null) {
 				addValidationError(ctx, 
 						new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-						"OutputIntent object is null or isn't a dictionary"));
+								"OutputIntent object is null or isn't a dictionary"));
 			} else {
 				// S entry is mandatory and must be equals to GTS_PDFA1
 				String sValue = outputIntentDict.getNameAsString(OUTPUT_INTENT_DICTIONARY_KEY_S);
 				if (!OUTPUT_INTENT_DICTIONARY_VALUE_GTS_PDFA1.equals(sValue)) {
 					addValidationError(ctx, 
 							new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID,
-							"The S entry of the OutputIntent isn't GTS_PDFA1"));
+									"The S entry of the OutputIntent isn't GTS_PDFA1"));
 					continue;
 				}
 
@@ -310,7 +310,7 @@ public class CatalogValidationProcess extends AbstractProcess {
 				if (outputConditionIdentifier == null) {// empty string is authorized (it may be an application specific value)
 					addValidationError(ctx, 
 							new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-							"The OutputIntentCondition is missing"));
+									"The OutputIntentCondition is missing"));
 					continue;
 				}
 
@@ -324,7 +324,7 @@ public class CatalogValidationProcess extends AbstractProcess {
 				 */
 				COSBase destOutputProfile = outputIntentDict.getItem(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE);
 				validateICCProfile(destOutputProfile, tmpDestOutputProfile, ctx);
-				
+
 				PreflightConfiguration config = ctx.getConfig();
 				if (config.isLazyValidation() && !isStandardICCCharacterization(outputConditionIdentifier)) {
 					String info = outputIntentDict.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
@@ -338,6 +338,7 @@ public class CatalogValidationProcess extends AbstractProcess {
 			}
 		}
 	}
+
 
 	/**
 	 * This method checks the destOutputProfile which must be a valid ICCProfile.

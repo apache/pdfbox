@@ -35,15 +35,15 @@ public class PdfElementParser extends BaseParser {
   /**
    * Create the PDFElementParser object.
    * 
-   * @param cd
+   * @param cosDocument
    *          a COSDocument which will be used to parse the byte array
    * @param input
    *          the byte array to parse
    * @throws IOException
    */
-  public PdfElementParser(COSDocument cd, byte[] input) throws IOException {
+  public PdfElementParser(COSDocument cosDocument, byte[] input) throws IOException {
     super(input);
-    this.document = cd;
+    this.document = cosDocument;
   }
 
   /**

@@ -73,8 +73,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 	protected StandardColorSpaceHelper(PreflightContext _context, PDColorSpace _cs) {
 		this.context = _context;
 		this.pdcs = _cs;
-
-		this.iccpw = this.context.getIccProfileWrapper();
 	}
 
 	/*
@@ -89,6 +87,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper {
 			throw new ValidationException("Unable to create a PDColorSpace with the value null");
 		}
 
+		this.iccpw = ICCProfileWrapper.getOrSearchICCProfile(context);
 		processAllColorSpace(pdcs);
 	}
 

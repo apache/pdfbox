@@ -39,7 +39,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 public class COSUtils {
 
-	public static final Logger logger = Logger.getLogger(COSUtils.class);
+	public static final Logger LOGGER = Logger.getLogger(COSUtils.class);
 
 	  /**
 	   * return true if the elt is a COSDictionary or a reference to a COSDictionary
@@ -380,7 +380,7 @@ public class COSUtils {
 	        document.close();
 	      }
 	    } catch (IOException e) {
-	      logger.warn("Error occured during the close of a COSDocument : "
+	      LOGGER.warn("Error occured during the close of a COSDocument : "
 	          + e.getMessage());
 	    }
 	  }

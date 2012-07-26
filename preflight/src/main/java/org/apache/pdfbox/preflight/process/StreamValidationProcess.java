@@ -28,7 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -41,7 +40,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
@@ -96,19 +94,11 @@ public class StreamValidationProcess extends AbstractProcess {
 			if (COSUtils.isArray(bFilter, cosDocument)) {
 				COSArray afName = (COSArray) bFilter;
 				for (int i = 0; i < afName.size(); ++i) {
-					List<ValidationError> errorFIlters = new ArrayList<ValidationResult.ValidationError>();
-					if (!FilterHelper.isAuthorizedFilter(afName.getString(i), errorFIlters)) {
-						addValidationErrors(context, errorFIlters);
-						return;
-					}
+					FilterHelper.isAuthorizedFilter(context, afName.getString(i));
 				}
 			} else if (bFilter instanceof COSName) {
 				String fName = ((COSName) bFilter).getName();
-				List<ValidationError> errorFIlters = new ArrayList<ValidationResult.ValidationError>();
-				if (!FilterHelper.isAuthorizedFilter(fName, errorFIlters)) {
-					addValidationErrors(context, errorFIlters);
-					return;
-				}
+				FilterHelper.isAuthorizedFilter(context, fName);
 			} else {
 				// ---- The filter type is invalid
 				addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,	"Filter should be a Name or an Array"));

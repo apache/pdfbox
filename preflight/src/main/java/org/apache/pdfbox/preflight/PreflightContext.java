@@ -62,6 +62,11 @@ public class PreflightContext {
 	 */
 	protected ICCProfileWrapper iccProfileWrapper = null;
 	/**
+	 * 
+	 */
+	protected boolean iccProfileAlreadySearched = false;
+	
+	/**
 	 * MetaData of the current pdf file. 
 	 */
 	protected XMPMetadata metadata = null;
@@ -219,6 +224,14 @@ public class PreflightContext {
 
 	public void setValidationPath(PreflightPath validationPath) {
 		this.validationPath = validationPath;
+	}
+
+	public boolean isIccProfileAlreadySearched() {
+		return iccProfileAlreadySearched;
+	}
+
+	public void setIccProfileAlreadySearched(boolean iccProfileAlreadySearched) {
+		this.iccProfileAlreadySearched = iccProfileAlreadySearched;
 	}
 	
 	
