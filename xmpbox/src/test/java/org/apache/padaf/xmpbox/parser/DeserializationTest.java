@@ -206,7 +206,7 @@ public class DeserializationTest {
 		Assert.assertEquals(new Integer(162), thumb.getHeight());
 		Assert.assertEquals(new Integer(216), thumb.getWidth());
 		Assert.assertEquals("JPEG", thumb.getFormat());
-		Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImg());
+		Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
 		// PDFA Extension
 		// Check numbers of schema descriptions

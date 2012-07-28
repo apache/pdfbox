@@ -54,9 +54,9 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 
 		data.add(wrapProperty("Advisory", "bag Xpath", new String[] { "xpath1",
 				"xpath2" }));
-		data.add(wrapProperty("BaseURL", "URL", "URL"));
+//		data.add(wrapProperty("BaseURL", "URL", "URL"));
 		data.add(wrapProperty("CreateDate", "Date", Calendar.getInstance()));
-		data.add(wrapProperty("CreatorTool", "Text", "CreatorTool"));
+//		data.add(wrapProperty("CreatorTool", "Text", "CreatorTool"));
 		data.add(wrapProperty("Identifier", "bag Text", new String[] { "id1",
 				"id2" }));
 		data.add(wrapProperty("Label", "Text", "label"));
@@ -65,89 +65,11 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 		data.add(wrapProperty("Nickname", "Text", "nick name"));
 		data.add(wrapProperty("Rating", "Integer", 7));
 
-		// TODO test Thumbnail when implemented in the XMPBasicSchema
+		// TODO TEST test Thumbnail when implemented in the XMPBasicSchema
 		data.add(wrapProperty("Thumbnails", "Alt Thumbnail", null));
 
 		return data;
 	}
 
-	// @Test
-	// public void testPDFExt() throws TransformException{
-	// XMPBasicSchema schem=metadata.createAndAddXMPBasicSchema();
-	//
-	// String xpath1="xpath1";
-	// String xpath2="xpath2";
-	// String url="URL";
-	// Calendar createDate=Calendar.getInstance();
-	// String creatorTool="CreatorTool";
-	// String identifier1="id1";
-	// String identifier2="id2";
-	// String label="label";
-	// Calendar metaDataDate=Calendar.getInstance();
-	// Calendar modifyDate=Calendar.getInstance();
-	// String nickname="nickname";
-	// int rate=7;
-	//
-	// schem.addAdvisoryValue(xpath1);
-	// schem.addAdvisoryValue(xpath2);
-	// schem.setBaseURLValue(url);
-	// schem.setCreateDateValue(createDate);
-	// schem.setCreatorToolValue(creatorTool);
-	// schem.addIdentifierValue(identifier1);
-	// schem.addIdentifierValue(identifier2);
-	// schem.setLabelValue(label);
-	// schem.setMetadataDateValue(metaDataDate);
-	// schem.setModifyDateValue(modifyDate);
-	// schem.setNicknameValue(nickname);
-	// schem.setRatingValue(rate);
-	//
-	// //check retrieve this schema in metadata
-	// Assert.assertEquals(schem, metadata.getXMPBasicSchema());
-	//
-	// //check values embedded in this schema
-	// Assert.assertEquals("xmp:Advisory",
-	// schem.getAdvisory().getQualifiedName());
-	// Assert.assertTrue(schem.getAdvisoryValues().contains(xpath1));
-	// Assert.assertTrue(schem.getAdvisoryValues().contains(xpath2));
-	//
-	// Assert.assertEquals("xmp:BaseURL",
-	// schem.getBaseURL().getQualifiedName());
-	// Assert.assertEquals(url, schem.getBaseURLValue());
-	//
-	// Assert.assertEquals("xmp:CreateDate",
-	// schem.getCreateDate().getQualifiedName());
-	// Assert.assertEquals(createDate, schem.getCreateDateValue());
-	//
-	// Assert.assertEquals("xmp:CreatorTool",
-	// schem.getCreatorTool().getQualifiedName());
-	// Assert.assertEquals(creatorTool, schem.getCreatorToolValue());
-	//
-	// Assert.assertEquals("xmp:Identifier",
-	// schem.getIdentifier().getQualifiedName());
-	// Assert.assertTrue(schem.getIdentifierValues().contains(identifier1));
-	// Assert.assertTrue(schem.getIdentifierValues().contains(identifier2));
-	//
-	// Assert.assertEquals("xmp:Label", schem.getLabel().getQualifiedName());
-	// Assert.assertEquals(label, schem.getLabelValue());
-	//
-	// Assert.assertEquals("xmp:MetadataDate",
-	// schem.getMetadataDate().getQualifiedName());
-	// Assert.assertEquals(metaDataDate, schem.getMetadataDateValue());
-	//
-	// Assert.assertEquals("xmp:ModifyDate",
-	// schem.getModifyDate().getQualifiedName());
-	// Assert.assertEquals(modifyDate, schem.getModifyDateValue());
-	//
-	// Assert.assertEquals("xmp:Nickname",
-	// schem.getNickname().getQualifiedName());
-	// Assert.assertEquals(nickname, schem.getNicknameValue());
-	//
-	// Assert.assertEquals("xmp:Rating", schem.getRating().getQualifiedName());
-	// Assert.assertEquals(rate, schem.getRatingValue());
-	//
-	// //SaveMetadataHelper.serialize(metadata, true, System.out);
-	//
-	// //TODO test Thumbnail when implemented in the XMPBasicSchema
-	// }
 
 }

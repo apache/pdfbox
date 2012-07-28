@@ -24,7 +24,6 @@ package org.apache.padaf.xmpbox;
 import java.util.Calendar;
 import java.util.Iterator;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PropertyExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
@@ -78,7 +77,7 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 	}
 
 	public void addLastname(String ln) {
-		this.addSequenceValueAsSimple(LAST_NAME, ln);
+		this.addUnqualifiedSequenceValue(LAST_NAME, ln);
 	}
 
 	public void setBirthPlace(String city) {
@@ -94,21 +93,21 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 	}
 
 	public String getFirstname() {
-		return this.getTextProperty(localPrefixSep + FIRST_NAME)
+		return this.getUnqualifiedTextProperty(FIRST_NAME)
 				.getStringValue();
 	}
 
 	public String getLastname() {
-		return this.getTextProperty(localPrefixSep + LAST_NAME)
+		return this.getUnqualifiedTextProperty(LAST_NAME)
 				.getStringValue();
 	}
 
 	public void setMailaddr(String name, String domain) {
-		ComplexPropertyContainer field = new ComplexPropertyContainer(metadata,
-				localPrefix, MAIL_ADR);
+		ComplexPropertyContainer field = new ComplexPropertyContainer(getMetadata(),null,
+				getLocalPrefix(), MAIL_ADR);
 		field.setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
-		TextType namePart = new TextType(metadata, "madn", "name", name);
-		TextType domainPart = new TextType(metadata, "madn", "domain", domain);
+		TextType namePart = new TextType(getMetadata(), null, "madn", "name", name);
+		TextType domainPart = new TextType(getMetadata(), null, "madn", "domain", domain);
 		field.addProperty(namePart);
 		field.addProperty(domainPart);
 		addProperty(field);

@@ -52,8 +52,8 @@ public class XmpRightsSchemaTest extends AbstractXMPSchemaTest {
 	@Parameters
 	public static Collection<Object[]> initializeParameters() throws Exception {
 		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(wrapProperty("Certificate", "URL",
-				"http://une.url.vers.un.certificat/moncert.cer"));
+//		data.add(wrapProperty("Certificate", "URL",
+//				"http://une.url.vers.un.certificat/moncert.cer"));
 		data.add(wrapProperty("Marked", "Boolean", true));
 		data.add(wrapProperty("Owner", "bag ProperName",
 				new String[] { "OwnerName" }));
@@ -62,8 +62,8 @@ public class XmpRightsSchemaTest extends AbstractXMPSchemaTest {
 		desc.put("fr", "Termes d'utilisation");
 		desc.put("en", "Usage Terms");
 		data.add(wrapProperty("UsageTerms", "Lang Alt", desc));
-		data.add(wrapProperty("WebStatement", "URL",
-				"http://une.url.vers.une.page.fr/"));
+//		data.add(wrapProperty("WebStatement", "URL",
+//				"http://une.url.vers.une.page.fr/"));
 		return data;
 	}
 

@@ -31,13 +31,12 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PropertyType;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
+import org.apache.padaf.xmpbox.type.URIType;
 import org.junit.Test;
 
 public abstract class AbstractXMPSchemaTest {
@@ -95,6 +94,8 @@ public abstract class AbstractXMPSchemaTest {
 			// do nothing
 		} else if (type.equals("seq Date")) {
 			// do nothing
+		} else if (type.equals("seq Versions")) {
+			// do nothing
 		} else if (type.equals("Lang Alt")) {
 			// do nothing
 		} else if (type.equals("Alt Thumbnail")) {
@@ -103,6 +104,8 @@ public abstract class AbstractXMPSchemaTest {
 			// do nothing
 		} else if (type.equals("URL")) {
 			testGetSetTextValue();
+		} else if (type.equals("URI")) {
+			testGetSetTextValue();
 		} else {
 			throw new Exception("Unknown type : " + type);
 		}
@@ -110,8 +113,10 @@ public abstract class AbstractXMPSchemaTest {
 
 	@Test
 	public void testGetSetProperty() throws Exception {
-		if (value instanceof String) {
+		if (type.equals("Text")) {
 			testGetSetTextProperty();
+		} else if (type.equals("URI")) {
+			testGetSetURIProperty();
 		} else if (type.equals("Boolean")) {
 			testGetSetBooleanProperty();
 		} else if (type.equals("Integer")) {
@@ -133,7 +138,7 @@ public abstract class AbstractXMPSchemaTest {
 		} else if (type.equals("Alt Thumbnail")) {
 			testGetSetThumbnail();
 		} else {
-			throw new Exception("Unknown type : " + value.getClass());
+			throw new Exception("Unknown type : " + type);
 		}
 		Field[] fields = schemaClass.getFields();
 		for (Field field : fields) {
@@ -146,9 +151,11 @@ public abstract class AbstractXMPSchemaTest {
 						// do not check method existence
 					} else if (pt.propertyType().equals("ResourceRef")) {
 						// do not check method existence
+					} else if (pt.propertyType().equals("seq Version")) {
+						// do not check method existence
 					} else {
 						// type test
-						// TODO use getMethod()
+						// TODO TEST use getMethod()
 						String spt = retrievePropertyType(field.get(schema).toString());
 //						String getNameProperty = getMethod(field.get(schema).toString());
 						String getNameProperty = "get" + prepareName(
@@ -206,12 +213,11 @@ public abstract class AbstractXMPSchemaTest {
 		}
 		else if (type.startsWith("bag ")) sb.append("s");
 		else if (type.startsWith("seq ")) sb.append("s");
-		// TODO others
+		else if (type.startsWith("alt ")) sb.append("s");
 		return sb.toString();
 	}
 	
 	protected String setMethod(String prop) {
-		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(3 + prop.length());
 		sb.append("set").append(prepareName(prop, type)).append("Property");
 		return sb.toString();
@@ -239,7 +245,6 @@ public abstract class AbstractXMPSchemaTest {
 	}
 
 	protected String getValueMethod(String prop) {
-		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(8 + prop.length());
 		sb.append("get").append(prepareName(prop, type));
 		return sb.toString();
@@ -257,7 +262,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		BooleanType bt = new BooleanType(metadata, schema.getLocalPrefix(),
+		BooleanType bt = new BooleanType(metadata,null, schema.getLocalPrefix(),
 				property, value);
 		Method setMethod = schemaClass.getMethod(setName, BooleanType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -272,7 +277,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		DateType dt = new DateType(metadata, schema.getLocalPrefix(), property,
+		DateType dt = new DateType(metadata, null, schema.getLocalPrefix(), property,
 				value);
 		Method setMethod = schemaClass.getMethod(setName, DateType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -286,7 +291,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		IntegerType it = new IntegerType(metadata, schema.getLocalPrefix(),
+		IntegerType it = new IntegerType(metadata, null,schema.getLocalPrefix(),
 				property, value);
 		Method setMethod = schemaClass.getMethod(setName, IntegerType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -300,7 +305,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		TextType tt = new TextType(metadata, schema.getLocalPrefix(), property,
+		TextType tt = new TextType(metadata, null,schema.getLocalPrefix(), property,
 				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, TextType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -311,6 +316,22 @@ public abstract class AbstractXMPSchemaTest {
 
 	}
 
+	protected void testGetSetURIProperty() throws Exception {
+		String setName = setMethod(property);
+		String getName = getMethod(property);
+
+		URIType tt = new URIType(metadata, null,schema.getLocalPrefix(), property,
+				(String)value);
+		Method setMethod = schemaClass.getMethod(setName, URIType.class);
+		Method getMethod = schemaClass.getMethod(getName);
+
+		setMethod.invoke(schema, tt);
+		String found = ((TextType) getMethod.invoke(schema)).getStringValue();
+		Assert.assertEquals(value, found);
+
+	}
+
+	
 	protected void testGetSetTextListValue(String tp) throws Exception {
 		String setName = addToValueMethod(property);
 		String getName = getValueMethod(property);
@@ -373,7 +394,7 @@ public abstract class AbstractXMPSchemaTest {
 		Assert.assertEquals(height, t1.getHeight());
 		Assert.assertEquals(width, t1.getWidth());
 		Assert.assertEquals(format, t1.getFormat());
-		Assert.assertEquals(img, t1.getImg());
+		Assert.assertEquals(img, t1.getImage());
 
 	}
 
