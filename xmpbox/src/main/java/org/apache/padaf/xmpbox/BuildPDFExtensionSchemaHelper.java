@@ -29,13 +29,13 @@ import org.apache.padaf.xmpbox.parser.XMLPropertiesDescriptionManager;
 import org.apache.padaf.xmpbox.parser.XMLValueTypeDescriptionManager;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PropertyExtensionDefinition;
-import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
 import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
+import org.apache.padaf.xmpbox.schema.ValueTypeDescription;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.PropertyDescription;
-import org.apache.padaf.xmpbox.type.ValueTypeDescription;
+import org.apache.padaf.xmpbox.type.PropertyType;
 
 
 /**

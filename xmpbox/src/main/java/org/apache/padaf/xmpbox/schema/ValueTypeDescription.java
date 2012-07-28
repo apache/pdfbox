@@ -19,13 +19,12 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.type;
+package org.apache.padaf.xmpbox.schema;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 
 
 /**

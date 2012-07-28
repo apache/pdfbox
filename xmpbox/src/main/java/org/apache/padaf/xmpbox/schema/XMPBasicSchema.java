@@ -29,9 +29,10 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AgentNameType;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.type.URLType;
@@ -82,7 +83,7 @@ public class XMPBasicSchema extends XMPSchema {
 	@PropertyType(propertyType = "Alt Thumbnail")
 	public static final String THUMBNAILS = "Thumbnails";
 
-	private ComplexProperty altThumbs;
+	private ArrayProperty altThumbs;
 
 	/**
 	 * Constructor of XMPBasic schema with preferred prefix
@@ -123,8 +124,8 @@ public class XMPBasicSchema extends XMPSchema {
 	public void addThumbnails(Integer height, Integer width, String format,
 			String img) {
 		if (altThumbs == null) {
-			altThumbs = new ComplexProperty(getMetadata(), null, getLocalPrefix(), THUMBNAILS,
-					ComplexProperty.ALTERNATIVE_ARRAY);
+			altThumbs = new ArrayProperty(getMetadata(), null, getLocalPrefix(), THUMBNAILS,
+					ArrayProperty.ALTERNATIVE_ARRAY);
 			addProperty(altThumbs);
 		}
 		ThumbnailType thumb = new ThumbnailType(getMetadata());
@@ -344,8 +345,8 @@ public class XMPBasicSchema extends XMPSchema {
 	 * 
 	 * @return the advisory property
 	 */
-	public ComplexProperty getAdvisoryProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(ADVISORY);
+	public ArrayProperty getAdvisoryProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(ADVISORY);
 	}
 
 	/**
@@ -434,8 +435,8 @@ public class XMPBasicSchema extends XMPSchema {
 	 * 
 	 * @return the Identifier property
 	 */
-	public ComplexProperty getIdentifiersProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(IDENTIFIER);
+	public ArrayProperty getIdentifiersProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(IDENTIFIER);
 	}
 
 	/**

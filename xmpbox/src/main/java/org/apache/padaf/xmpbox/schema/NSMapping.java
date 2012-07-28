@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.schema;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +29,10 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
-import org.apache.padaf.xmpbox.schema.PDFAPropertyDescription;
-import org.apache.padaf.xmpbox.schema.PDFAValueTypeDescription;
-import org.apache.padaf.xmpbox.schema.SchemaDescription;
-import org.apache.padaf.xmpbox.schema.SchemaMapping;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.parser.PropMapping;
+import org.apache.padaf.xmpbox.parser.XMPSchemaFactory;
+import org.apache.padaf.xmpbox.parser.XmpSchemaException;
+import org.apache.padaf.xmpbox.parser.XmpUnknownValueTypeException;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 
 

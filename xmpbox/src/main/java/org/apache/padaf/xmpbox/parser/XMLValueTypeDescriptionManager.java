@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.BuildPDFAExtensionSchemaDescriptionException;
+import org.apache.padaf.xmpbox.schema.FieldDescription;
+import org.apache.padaf.xmpbox.schema.ValueTypeDescription;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.FieldDescription;
-import org.apache.padaf.xmpbox.type.ValueTypeDescription;
 import org.apache.pdfbox.io.IOUtils;
 
 import com.thoughtworks.xstream.XStream;

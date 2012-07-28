@@ -34,7 +34,7 @@ import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.Elementable;
@@ -629,7 +629,7 @@ public class XMPSchema implements Elementable {
 	 */
 	private void removeUnqualifiedArrayValue(String arrayName, String fieldValue) {
 		String qualifiedArrayName = getQualifiedName(arrayName);
-		ComplexProperty array = (ComplexProperty) getAbstractProperty(qualifiedArrayName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
 		if (array != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
 			Iterator<AbstractField> it = array.getContainer()
@@ -676,14 +676,14 @@ public class XMPSchema implements Elementable {
 
 	private void internalAddBagValue(String qualifiedBagName, String bagValue) {
 		String[] splittedQualifiedName = qualifiedBagName.split(":");
-		ComplexProperty bag = (ComplexProperty) getAbstractProperty(qualifiedBagName);
+		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
 		TextType li = new TextType(metadata,null, "rdf", "li", bagValue);
 		if (bag != null) {
 			bag.getContainer().addProperty(li);
 		} else {
-			ComplexProperty newBag = new ComplexProperty(metadata,null,
+			ArrayProperty newBag = new ArrayProperty(metadata,null,
 					splittedQualifiedName[0], splittedQualifiedName[1],
-					ComplexProperty.UNORDERED_ARRAY);
+					ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(li);
 			content.addProperty(newBag);
 		}
@@ -709,7 +709,7 @@ public class XMPSchema implements Elementable {
 	 * @return String list which represents content of array property
 	 */
 	private List<String> getArrayListToString(String qualifiedArrayName) {
-		ComplexProperty array = (ComplexProperty) getAbstractProperty(qualifiedArrayName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
 		return TypeUtil.getArrayListToString(array);
 	}
 
@@ -766,7 +766,7 @@ public class XMPSchema implements Elementable {
 	public void removeUnqualifiedArrayValue(String arrayName,
 			Elementable fieldValue) {
 		String qualifiedArrayName = getQualifiedName(arrayName);
-		ComplexProperty array = (ComplexProperty) getAbstractProperty(qualifiedArrayName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
 		if (array != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
 			Iterator<AbstractField> it = array.getContainer()
@@ -811,14 +811,14 @@ public class XMPSchema implements Elementable {
 	public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue) {
 		String qualifiedSeqName = getQualifiedName(simpleSeqName);
 		String[] splittedQualifiedName = qualifiedSeqName.split(":");
-		ComplexProperty seq = (ComplexProperty) getAbstractProperty(qualifiedSeqName);
+		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		TextType li = new TextType(metadata,null, "rdf", "li", seqValue);
 		if (seq != null) {
 			seq.getContainer().addProperty(li);
 		} else {
-			ComplexProperty newSeq = new ComplexProperty(metadata,null,
+			ArrayProperty newSeq = new ArrayProperty(metadata,null,
 					splittedQualifiedName[0], splittedQualifiedName[1],
-					ComplexProperty.ORDERED_ARRAY);
+					ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(li);
 			content.addProperty(newSeq);
 		}
@@ -837,13 +837,13 @@ public class XMPSchema implements Elementable {
 	public void addBagValue(String qualifiedSeqName, AbstractField seqValue) {
 
 		String[] splittedQualifiedName = qualifiedSeqName.split(":");
-		ComplexProperty bag = (ComplexProperty) getAbstractProperty(qualifiedSeqName);
+		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (bag != null) {
 			bag.getContainer().addProperty(seqValue);
 		} else {
-			ComplexProperty newBag = new ComplexProperty(metadata,null,
+			ArrayProperty newBag = new ArrayProperty(metadata,null,
 					splittedQualifiedName[0], splittedQualifiedName[1],
-					ComplexProperty.UNORDERED_ARRAY);
+					ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(seqValue);
 			content.addProperty(newBag);
 		}
@@ -873,13 +873,13 @@ public class XMPSchema implements Elementable {
 	public void addUnqualifiedSequenceValue(String seqName, AbstractField seqValue) {
 		String qualifiedSeqName = getQualifiedName(seqName);
 		String[] splittedQualifiedName = qualifiedSeqName.split(":");
-		ComplexProperty seq = (ComplexProperty) getAbstractProperty(qualifiedSeqName);
+		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
 			seq.getContainer().addProperty(seqValue);
 		} else {
-			ComplexProperty newSeq = new ComplexProperty(metadata,null,
+			ArrayProperty newSeq = new ArrayProperty(metadata,null,
 					splittedQualifiedName[0], splittedQualifiedName[1],
-					ComplexProperty.ORDERED_ARRAY);
+					ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(seqValue);
 			content.addProperty(newSeq);
 		}
@@ -910,7 +910,7 @@ public class XMPSchema implements Elementable {
 	 */
 	public void removeUnqualifiedSequenceDateValue(String seqName, Calendar date) {
 		String qualifiedSeqName = getQualifiedName(seqName);
-		ComplexProperty seq = (ComplexProperty) getAbstractProperty(qualifiedSeqName);
+		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
 			Iterator<AbstractField> it = seq.getContainer().getAllProperties()
@@ -972,7 +972,7 @@ public class XMPSchema implements Elementable {
 	public List<Calendar> getUnqualifiedSequenceDateValueList(String seqName) {
 		String qualifiedSeqName = getQualifiedName(seqName);
 		List<Calendar> retval = null;
-		ComplexProperty seq = (ComplexProperty) getAbstractProperty(qualifiedSeqName);
+		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
 			retval = new ArrayList<Calendar>();
 			Iterator<AbstractField> it = seq.getContainer().getAllProperties()
@@ -1054,11 +1054,11 @@ public class XMPSchema implements Elementable {
 			String value) {
 		String qualifiedName = getQualifiedName(name);
 		AbstractField property = getAbstractProperty(qualifiedName);
-		ComplexProperty prop;
+		ArrayProperty prop;
 		if (property != null) {
 			// Analyzing content of property
-			if (property instanceof ComplexProperty) {
-				prop = (ComplexProperty) property;
+			if (property instanceof ArrayProperty) {
+				prop = (ArrayProperty) property;
 				Iterator<AbstractField> itCplx = prop.getContainer()
 						.getAllProperties().iterator();
 				// try to find the same lang definition
@@ -1097,8 +1097,8 @@ public class XMPSchema implements Elementable {
 			}
 		} else {
 			String[] splittedQualifiedName = qualifiedName.split(":");
-			prop = new ComplexProperty(metadata, null, splittedQualifiedName[0],
-					splittedQualifiedName[1], ComplexProperty.ALTERNATIVE_ARRAY);
+			prop = new ArrayProperty(metadata, null, splittedQualifiedName[0],
+					splittedQualifiedName[1], ArrayProperty.ALTERNATIVE_ARRAY);
 			TextType langValue;
 			langValue = new TextType(metadata,null, "rdf", "li", value);
 			langValue
@@ -1124,8 +1124,8 @@ public class XMPSchema implements Elementable {
 		String language = (expectedLanguage!=null)?expectedLanguage:"x-default";
 		AbstractField property = getAbstractProperty(qualifiedName);
 		if (property != null) {
-			if (property instanceof ComplexProperty) {
-				ComplexProperty prop = (ComplexProperty) property;
+			if (property instanceof ArrayProperty) {
+				ArrayProperty prop = (ArrayProperty) property;
 				Iterator<AbstractField> langsDef = prop.getContainer()
 						.getAllProperties().iterator();
 				AbstractField tmp;
@@ -1166,8 +1166,8 @@ public class XMPSchema implements Elementable {
 
 		AbstractField property = getAbstractProperty(qualifiedName);
 		if (property != null) {
-			if (property instanceof ComplexProperty) {
-				ComplexProperty prop = (ComplexProperty) property;
+			if (property instanceof ArrayProperty) {
+				ArrayProperty prop = (ArrayProperty) property;
 				Iterator<AbstractField> langsDef = prop.getContainer()
 						.getAllProperties().iterator();
 				AbstractField tmp;
@@ -1222,7 +1222,7 @@ public class XMPSchema implements Elementable {
 		while (itProp.hasNext()) {
 			prop = itProp.next();
 			if (prop.getPrefix().equals(getPrefix())) {
-				if (prop instanceof ComplexProperty) {
+				if (prop instanceof ArrayProperty) {
 					analyzedPropQualifiedName = prop.getQualifiedName();
 					Iterator<AbstractField> itActualEmbeddedProperties = content
 							.getAllProperties().iterator();
@@ -1238,16 +1238,16 @@ public class XMPSchema implements Elementable {
 
 					while (itActualEmbeddedProperties.hasNext()) {
 						tmpEmbeddedProperty = itActualEmbeddedProperties.next();
-						if (tmpEmbeddedProperty instanceof ComplexProperty) {
+						if (tmpEmbeddedProperty instanceof ArrayProperty) {
 							if (tmpEmbeddedProperty.getQualifiedName().equals(
 									analyzedPropQualifiedName)) {
-								itNewValues = ((ComplexProperty) prop)
+								itNewValues = ((ArrayProperty) prop)
 										.getContainer().getAllProperties()
 										.iterator();
 								// Merge a complex property
 								while (itNewValues.hasNext()) {
 									tmpNewValue = (TextType) itNewValues.next();
-									itOldValues = ((ComplexProperty) tmpEmbeddedProperty)
+									itOldValues = ((ArrayProperty) tmpEmbeddedProperty)
 											.getContainer().getAllProperties()
 											.iterator();
 									while (itOldValues.hasNext()
@@ -1263,7 +1263,7 @@ public class XMPSchema implements Elementable {
 										}
 									}
 									if (!alreadyPresent) {
-										((ComplexProperty) tmpEmbeddedProperty)
+										((ArrayProperty) tmpEmbeddedProperty)
 										.getContainer().addProperty(
 												tmpNewValue);
 									}
@@ -1292,14 +1292,14 @@ public class XMPSchema implements Elementable {
 	public List<AbstractField> getUnqualifiedArrayList(String name)
 			throws BadFieldValueException {
 		String qualifiedName = getQualifiedName(name);
-		ComplexProperty array = null;
+		ArrayProperty array = null;
 		Iterator<AbstractField> itProp = content.getAllProperties().iterator();
 		AbstractField tmp;
 		while (itProp.hasNext()) {
 			tmp = itProp.next();
 			if (tmp.getQualifiedName().equals(qualifiedName)) {
-				if (tmp instanceof ComplexProperty) {
-					array = (ComplexProperty) tmp;
+				if (tmp instanceof ArrayProperty) {
+					array = (ArrayProperty) tmp;
 					break;
 				} else {
 					throw new BadFieldValueException(

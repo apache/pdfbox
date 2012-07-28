@@ -34,7 +34,7 @@ import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
@@ -88,8 +88,8 @@ public class XMPSchemaTest {
 
 	@Test
 	public void testArrayList() throws Exception {
-		ComplexProperty newSeq = new ComplexProperty(parent, null, "nsSchem",
-				"seqType", ComplexProperty.ORDERED_ARRAY);
+		ArrayProperty newSeq = new ArrayProperty(parent, null, "nsSchem",
+				"seqType", ArrayProperty.ORDERED_ARRAY);
 		TextType li1 = new TextType(parent,null, "rdf", "li", "valeur1");
 		TextType li2 = new TextType(parent,null, "rdf", "li", "valeur2");
 		newSeq.getContainer().addProperty(li1);

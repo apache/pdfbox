@@ -25,8 +25,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.MIMEType;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 
@@ -411,8 +412,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Contributor property
 	 */
-	public ComplexProperty getContributorsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(CONTRIBUTOR);
+	public ArrayProperty getContributorsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(CONTRIBUTOR);
 	}
 
 	/**
@@ -449,8 +450,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Creator property
 	 */
-	public ComplexProperty getCreatorsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(CREATOR);
+	public ArrayProperty getCreatorsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(CREATOR);
 	}
 
 	/**
@@ -467,8 +468,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return date property
 	 */
-	public ComplexProperty getDatesProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(DATE);
+	public ArrayProperty getDatesProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(DATE);
 	}
 
 	/**
@@ -485,8 +486,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return Description property
 	 */
-	public ComplexProperty getDescriptionProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(DESCRIPTION);
+	public ArrayProperty getDescriptionProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(DESCRIPTION);
 	}
 
 	/**
@@ -564,8 +565,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return language property
 	 */
-	public ComplexProperty getLanguagesProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(LANGUAGE);
+	public ArrayProperty getLanguagesProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(LANGUAGE);
 	}
 
 	/**
@@ -582,8 +583,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return publisher property
 	 */
-	public ComplexProperty getPublishersProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(PUBLISHER);
+	public ArrayProperty getPublishersProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(PUBLISHER);
 	}
 
 	/**
@@ -600,8 +601,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return relation property
 	 */
-	public ComplexProperty getRelationsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(RELATION);
+	public ArrayProperty getRelationsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(RELATION);
 	}
 
 	/**
@@ -628,8 +629,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return rights property
 	 */
-	public ComplexProperty getRightsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(RIGHTS);
+	public ArrayProperty getRightsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(RIGHTS);
 	}
 
 	/**
@@ -686,8 +687,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
      * @return the subject property
 	 */
-	public ComplexProperty getSubjectsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(SUBJECT);
+	public ArrayProperty getSubjectsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(SUBJECT);
 	}
 
 	/**
@@ -704,8 +705,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the title property
 	 */
-	public ComplexProperty getTitleProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(TITLE);
+	public ArrayProperty getTitleProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(TITLE);
 	}
 
 	/**
@@ -744,8 +745,8 @@ public class DublinCoreSchema extends XMPSchema {
 	 * 
 	 * @return the type property
 	 */
-	public ComplexProperty getTypesProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(TYPE);
+	public ArrayProperty getTypesProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(TYPE);
 	}
 
 	/**

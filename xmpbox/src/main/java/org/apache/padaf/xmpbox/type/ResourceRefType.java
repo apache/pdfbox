@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 
 public class ResourceRefType extends AbstractStructuredType {
@@ -294,11 +293,11 @@ public class ResourceRefType extends AbstractStructuredType {
 	}
 	
 	public void addAlternatePath(String value) {
-        ComplexProperty seq = (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
+        ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq==null) {
-        	seq = new ComplexProperty(getMetadata(), null,
+        	seq = new ArrayProperty(getMetadata(), null,
                     PREFERRED_PREFIX, ALTERNATE_PATHS,
-                    ComplexProperty.ORDERED_ARRAY);
+                    ArrayProperty.ORDERED_ARRAY);
         	addProperty(seq);
         }
         TextType tt = (TextType)TypeMapping.instanciateSimpleProperty(getMetadata(), null, "rdf", "li", value, "Text");
@@ -310,8 +309,8 @@ public class ResourceRefType extends AbstractStructuredType {
 	 * 
 	 * @return version property to set
 	 */
-	public ComplexProperty getAlternatePathsProperty() {
-        return (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
+	public ArrayProperty getAlternatePathsProperty() {
+        return (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
 	}
 
 	/**
@@ -320,7 +319,7 @@ public class ResourceRefType extends AbstractStructuredType {
 	 * @return List of Versions values
 	 */
 	public List<String> getAlternatePaths() {
-        ComplexProperty seq = (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
+        ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq!=null) {
         	return TypeUtil.getArrayListToString(seq);
         } else {

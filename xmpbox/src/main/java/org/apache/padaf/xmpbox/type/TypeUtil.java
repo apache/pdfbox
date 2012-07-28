@@ -37,7 +37,7 @@ public final class TypeUtil {
 	 * 
 	 * @return String list which represents content of array property
 	 */
-    public static List<String> getArrayListToString(ComplexProperty array) {
+    public static List<String> getArrayListToString(ArrayProperty array) {
         List<String> retval = null;
         if (array != null) {
             retval = new ArrayList<String>();

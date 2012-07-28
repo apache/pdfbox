@@ -25,7 +25,8 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AgentNameType;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.RenditionClassType;
 import org.apache.padaf.xmpbox.type.ResourceRefType;
 import org.apache.padaf.xmpbox.type.TextType;
@@ -622,8 +623,8 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * 
 	 * @return version property to set
 	 */
-	public ComplexProperty getVersionsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(VERSIONS);
+	public ArrayProperty getVersionsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(VERSIONS);
 	}
 
 //	/**
@@ -657,8 +658,8 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * 
 	 * @return History Property
 	 */
-	public ComplexProperty getHistoryProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(HISTORY);
+	public ArrayProperty getHistoryProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(HISTORY);
 	}
 
 	/**
@@ -691,8 +692,8 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * 
 	 * @return Ingredients property
 	 */
-	public ComplexProperty getIngredientsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(INGREDIENTS);
+	public ArrayProperty getIngredientsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(INGREDIENTS);
 	}
 
 	/**

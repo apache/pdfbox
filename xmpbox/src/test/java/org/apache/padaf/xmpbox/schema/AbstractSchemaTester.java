@@ -28,7 +28,7 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.padaf.xmpbox.type.TypeTestingHelper;
@@ -171,8 +171,8 @@ public abstract class AbstractSchemaTester {
     	String getter = TypeTestingHelper.calculateArrayGetter(fieldName)+"Property";
     	Method getcp = getSchemaClass().getMethod(getter, new Class[0]);
     	Object ocp = getcp.invoke(getSchema(), new Object[0]);
-    	Assert.assertTrue(ocp instanceof ComplexProperty);
-    	ComplexProperty cp = (ComplexProperty)ocp;
+    	Assert.assertTrue(ocp instanceof ArrayProperty);
+    	ArrayProperty cp = (ArrayProperty)ocp;
     	// check size is ok (1)
     	Assert.assertEquals(1,cp.getContainer().getAllProperties().size());
     	// add a new one

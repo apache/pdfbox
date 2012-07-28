@@ -27,11 +27,12 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.LayerType;
 import org.apache.padaf.xmpbox.type.ProperNameType;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URIType;
 
@@ -103,7 +104,7 @@ public class PhotoshopSchema extends XMPSchema {
 	@PropertyType(propertyType = "seq Layer")
 	public static final String TEXT_LAYERS = "TextLayers";
 	
-	private ComplexProperty seqLayer;
+	private ArrayProperty seqLayer;
 
 	@PropertyType(propertyType = "Text")
 	public static final String TRANSMISSION_REFERENCE = "TransmissionReference";
@@ -277,8 +278,8 @@ public class PhotoshopSchema extends XMPSchema {
 		addQualifiedBagValue(DOCUMENT_ANCESTORS, text);
 	}
 
-	public ComplexProperty getDocumentAncestorsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(DOCUMENT_ANCESTORS);
+	public ArrayProperty getDocumentAncestorsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(DOCUMENT_ANCESTORS);
 	}
 
 	public List<String> getDocumentAncestors() {
@@ -418,8 +419,8 @@ public class PhotoshopSchema extends XMPSchema {
 
 
 	
-	public ComplexProperty getSupplementalCategoriesProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(SUPPLEMENTAL_CATEGORIES);
+	public ArrayProperty getSupplementalCategoriesProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(SUPPLEMENTAL_CATEGORIES);
 	}
 
 	public List<String> getSupplementalCategories() {
@@ -428,8 +429,8 @@ public class PhotoshopSchema extends XMPSchema {
 	
 	public void addTextLayers(String layerName, String layerText) {
 		if (seqLayer == null) {
-			seqLayer = new ComplexProperty(getMetadata(), null, getLocalPrefix(), TEXT_LAYERS,
-					ComplexProperty.ORDERED_ARRAY);
+			seqLayer = new ArrayProperty(getMetadata(), null, getLocalPrefix(), TEXT_LAYERS,
+					ArrayProperty.ORDERED_ARRAY);
 			addProperty(seqLayer);
 		}
 		LayerType layer = new LayerType(getMetadata());

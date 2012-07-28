@@ -31,7 +31,7 @@ import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -151,7 +151,7 @@ public class FontMetaDataValidation {
 
 		DublinCoreSchema dc = metadata.getDublinCoreSchema();
 		if (dc != null) {
-			ComplexProperty copyrights = dc.getRightsProperty();
+			ArrayProperty copyrights = dc.getRightsProperty();
 			if (copyrights == null || copyrights.getContainer() == null
 					|| copyrights.getContainer().getAllProperties().isEmpty()) {
 				ve

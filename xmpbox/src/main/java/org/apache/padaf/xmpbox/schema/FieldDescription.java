@@ -19,10 +19,9 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.type;
+package org.apache.padaf.xmpbox.schema;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 
 /**
  * Represents one Property Description described in xml file in order to be use

@@ -23,7 +23,6 @@ package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 
 public class JobType extends AbstractStructuredType {

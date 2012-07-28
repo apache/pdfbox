@@ -42,6 +42,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.padaf.xmpbox.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
@@ -51,7 +52,7 @@ import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeDescription;
@@ -655,7 +656,7 @@ public class XMPDocumentBuilder {
 		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "schemas",
 				"Cannot find container declaration of schemas descriptions ");
 		// <rdf:Bag>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ComplexProperty.UNORDERED_ARRAY,
+		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.UNORDERED_ARRAY,
 				"Cannot find bag declaration for container of schemas descriptions");
 		// now work on each rdf:li corresponding to each schema description
 		int type = reader.get().nextTag();
@@ -758,7 +759,7 @@ public class XMPDocumentBuilder {
 			XMPMetadata metadata) throws XmpParsingException,
 			XMLStreamException {
 		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ComplexProperty.ORDERED_ARRAY,
+		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY,
 				"Expected Seq Declaration");
 		int elmtType = reader.get().nextTag();
 		String type, namespaceURI, prefix, description;
@@ -820,7 +821,7 @@ public class XMPDocumentBuilder {
 			XMLStreamException {
 		List<PDFAFieldDescription> fields = new ArrayList<PDFAFieldDescription>();
 		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ComplexProperty.ORDERED_ARRAY,
+		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY,
 				"Expected Seq Declaration");
 		int elmtType = reader.get().nextTag();
 		String name, type, description;
@@ -880,7 +881,7 @@ public class XMPDocumentBuilder {
 	private void parsePropertyDefinition(SchemaDescription desc)
 			throws XmpParsingException, XMLStreamException,	BadFieldValueException {
 		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ComplexProperty.ORDERED_ARRAY, "Expected Seq Declaration");
+		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY, "Expected Seq Declaration");
 		// Each property definition
 		int elmtType = reader.get().nextTag();
 		while (elmtType == XMLStreamReader.START_ELEMENT) {
@@ -1037,7 +1038,7 @@ public class XMPDocumentBuilder {
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
-		ComplexProperty cp = new ComplexProperty(metadata,null,
+		ArrayProperty cp = new ArrayProperty(metadata,null,
 				name.getPrefix(), name.getLocalPart(),
 				ctype);
 		container.addProperty(cp);
@@ -1065,7 +1066,7 @@ public class XMPDocumentBuilder {
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
-		ComplexProperty cp = new ComplexProperty(metadata,null,
+		ArrayProperty cp = new ArrayProperty(metadata,null,
 				name.getPrefix(), name.getLocalPart(),
 				ctype);
 		container.addProperty(cp);
@@ -1095,7 +1096,7 @@ public class XMPDocumentBuilder {
 		
 		if (type.equals("Lang alt")) {
 			parseSimplePropertyArray(metadata, reader.get().getName(),
-					ComplexProperty.ALTERNATIVE_ARRAY, TextType.class, container);
+					ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, container);
 		} else if (TypeMapping.isSimpleType(typeDesc.getType())) {
 			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)typeDesc.getTypeClass();
 			parseSimpleProperty(metadata, reader.get().getName(),
@@ -1170,7 +1171,7 @@ public class XMPDocumentBuilder {
 		String type;
 		int elmtType = reader.get().nextTag();
 		while ((elmtType != XMLStreamReader.END_ELEMENT)
-				&& !reader.get().getName().getLocalPart().equals(ComplexProperty.ORDERED_ARRAY)) {
+				&& !reader.get().getName().getLocalPart().equals(ArrayProperty.ORDERED_ARRAY)) {
 
 			type = getPropertyDeclarationInNamespaces(schema, reader.get()
 					.getName());
@@ -1241,7 +1242,7 @@ public class XMPDocumentBuilder {
 				}
 			}
 		} else if (type.equals("Lang Alt")) {
-			parseSimplePropertyArray(metadata, propertyName, ComplexProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
+			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
 		} else if (TypeMapping.isSimpleType(type)) {
 			TypeDescription tclass = TypeMapping.getTypeDescription(type);
 			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)tclass.getTypeClass();
