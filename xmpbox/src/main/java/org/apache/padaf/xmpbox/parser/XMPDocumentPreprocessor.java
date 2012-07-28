@@ -21,6 +21,7 @@
 
 package org.apache.padaf.xmpbox.parser;
 
+import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 
 public interface XMPDocumentPreprocessor {

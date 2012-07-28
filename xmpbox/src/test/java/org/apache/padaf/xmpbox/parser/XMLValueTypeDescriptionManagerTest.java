@@ -29,8 +29,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.type.FieldDescription;
-import org.apache.padaf.xmpbox.type.ValueTypeDescription;
+import org.apache.padaf.xmpbox.schema.FieldDescription;
+import org.apache.padaf.xmpbox.schema.ValueTypeDescription;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 

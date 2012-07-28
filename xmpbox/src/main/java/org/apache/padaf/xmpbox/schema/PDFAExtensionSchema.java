@@ -32,6 +32,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.Elementable;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.w3c.dom.Element;
 
 /**

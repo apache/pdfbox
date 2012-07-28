@@ -26,7 +26,6 @@ import java.util.Calendar;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.junit.Before;
 import org.junit.Test;
 

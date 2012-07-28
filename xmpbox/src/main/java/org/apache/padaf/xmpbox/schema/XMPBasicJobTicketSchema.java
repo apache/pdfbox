@@ -28,8 +28,9 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.JobType;
+import org.apache.padaf.xmpbox.type.PropertyType;
 
 public class XMPBasicJobTicketSchema extends XMPSchema {
 
@@ -40,7 +41,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     @PropertyType(propertyType = "bag Job")
     public static final String JOB_REF = "JobRef";
 
-    private ComplexProperty bagJobs;
+    private ArrayProperty bagJobs;
 
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata) {
@@ -69,8 +70,8 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     public void addJob (JobType job) {
     	// create bag if not existing
         if (bagJobs == null) {
-            bagJobs = new ComplexProperty(getMetadata(), null, getLocalPrefix(), JOB_REF,
-                    ComplexProperty.UNORDERED_ARRAY);
+            bagJobs = new ArrayProperty(getMetadata(), null, getLocalPrefix(), JOB_REF,
+                    ArrayProperty.UNORDERED_ARRAY);
             addProperty(bagJobs);
         }
         // add job

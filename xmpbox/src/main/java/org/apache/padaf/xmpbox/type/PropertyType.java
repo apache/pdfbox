@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.schema;
+package org.apache.padaf.xmpbox.type;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

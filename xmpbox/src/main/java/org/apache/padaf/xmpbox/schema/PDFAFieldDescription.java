@@ -27,6 +27,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 

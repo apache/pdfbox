@@ -34,6 +34,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.type.URIType;

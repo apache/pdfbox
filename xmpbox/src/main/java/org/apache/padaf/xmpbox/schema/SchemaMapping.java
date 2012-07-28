@@ -31,6 +31,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.PropMapping;
 import org.apache.padaf.xmpbox.parser.XMPSchemaFactory;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
+import org.apache.padaf.xmpbox.type.PropertyType;
 
 public final class SchemaMapping {
 

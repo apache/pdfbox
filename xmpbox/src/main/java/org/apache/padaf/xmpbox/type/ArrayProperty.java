@@ -30,7 +30,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class ComplexProperty extends AbstractField {
+public class ArrayProperty extends AbstractField {
 
 	public static final String UNORDERED_ARRAY = "Bag";
 
@@ -54,7 +54,7 @@ public class ComplexProperty extends AbstractField {
 	 * @param type
 	 *            type of complexProperty (Bag, Seq, Alt)
 	 */
-	public ComplexProperty(XMPMetadata metadata, String namespace,
+	public ArrayProperty(XMPMetadata metadata, String namespace,
 			String prefix, String propertyName, String type) {
 		super(metadata, namespace, prefix, propertyName);
 		container = new ComplexPropertyContainer(metadata,null, "rdf", type);

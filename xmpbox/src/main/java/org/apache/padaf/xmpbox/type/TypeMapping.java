@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
 
 public final class TypeMapping {
@@ -282,12 +281,12 @@ public final class TypeMapping {
     		return null;
     	} else {
     		String first = type.substring(0,pos);
-    		if (first.equalsIgnoreCase(ComplexProperty.UNORDERED_ARRAY)) {
-    			return ComplexProperty.UNORDERED_ARRAY;
-    		} else if (first.equalsIgnoreCase(ComplexProperty.ORDERED_ARRAY)) {
-    			return ComplexProperty.ORDERED_ARRAY;
-    		} else if (first.equalsIgnoreCase(ComplexProperty.ALTERNATIVE_ARRAY)) {
-    			return ComplexProperty.ALTERNATIVE_ARRAY;
+    		if (first.equalsIgnoreCase(ArrayProperty.UNORDERED_ARRAY)) {
+    			return ArrayProperty.UNORDERED_ARRAY;
+    		} else if (first.equalsIgnoreCase(ArrayProperty.ORDERED_ARRAY)) {
+    			return ArrayProperty.ORDERED_ARRAY;
+    		} else if (first.equalsIgnoreCase(ArrayProperty.ALTERNATIVE_ARRAY)) {
+    			return ArrayProperty.ALTERNATIVE_ARRAY;
     		} else {
 	    		// else not an array
 	    		return null;

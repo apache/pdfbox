@@ -25,7 +25,8 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URLType;
 
@@ -97,8 +98,8 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return owners property
 	 */
-	public ComplexProperty getOwnersProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(OWNER);
+	public ArrayProperty getOwnersProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(OWNER);
 	}
 
 	/**
@@ -189,8 +190,8 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * 
 	 * @return usageterms property
 	 */
-	public ComplexProperty getUsageTermsProperty() {
-		return (ComplexProperty) getUnqualifiedProperty(USAGETERMS);
+	public ArrayProperty getUsageTermsProperty() {
+		return (ArrayProperty) getUnqualifiedProperty(USAGETERMS);
 	}
 
 	/**
