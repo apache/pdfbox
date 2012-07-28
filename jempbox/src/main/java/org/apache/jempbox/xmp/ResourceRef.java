@@ -43,7 +43,7 @@ public class ResourceRef implements Elementable
         if( !parent.hasAttribute( "xmlns:stRef" ) )
         {
             parent.setAttributeNS( 
-                "http://ns.adobe.com/xap/1.0/sType/ResourceRef#", 
+           		XMPSchema.NS_NAMESPACE,
                 "xmlns:stRef", 
                 "http://ns.adobe.com/xap/1.0/sType/ResourceRef#" );
         }
