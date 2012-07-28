@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
  * @author a183132
  * 
  */
-public class SimpleMetadataPropertyTest {
+public class TestSimpleMetadataProperties {
 
 	protected XMPMetadata parent;
 
@@ -59,7 +59,7 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testBooleanBadTypeDetection() {
-		new BooleanType(parent, "test", "booleen", "Not a Boolean");
+		new BooleanType(parent, null, "test", "booleen", "Not a Boolean");
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testDateBadTypeDetection() {
-		new DateType(parent, "test", "date", "Bad Date");
+		new DateType(parent, null, "test", "date", "Bad Date");
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testIntegerBadTypeDetection() {
-		new IntegerType(parent, "test", "integer", "Not an int");
+		new IntegerType(parent, null,"test", "integer", "Not an int");
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testRealBadTypeDetection() throws Exception {
-		new RealType(parent, "test", "real", "Not a real");
+		new RealType(parent, null,"test", "real", "Not a real");
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testTextBadTypeDetection() throws Exception {
-		new TextType(parent, "test", "text", Calendar.getInstance());
+		new TextType(parent, null,"test", "text", Calendar.getInstance());
 	}
 
 	/**
@@ -114,12 +114,12 @@ public class SimpleMetadataPropertyTest {
 		int integerv = 1;
 		float realv = Float.parseFloat("1.69");
 		String textv = "TEXTCONTENT";
-		BooleanType bool = new BooleanType(parent, "test", "booleen", boolv);
-		DateType date = new DateType(parent, "test", "date", datev);
-		IntegerType integer = new IntegerType(parent, "test", "integer",
+		BooleanType bool = new BooleanType(parent, null, "test", "booleen", boolv);
+		DateType date = new DateType(parent, null,"test", "date", datev);
+		IntegerType integer = new IntegerType(parent, null, "test", "integer",
 				integerv);
-		RealType real = new RealType(parent, "test", "real", realv);
-		TextType text = new TextType(parent, "test", "text", textv);
+		RealType real = new RealType(parent, null, "test", "real", realv);
+		TextType text = new TextType(parent, null,"test", "text", textv);
 
 		Assert.assertEquals(bool.getNamespace(), bool.getElement()
 				.getNamespaceURI());
@@ -142,12 +142,12 @@ public class SimpleMetadataPropertyTest {
 	 */
 	@Test
 	public void testObjectCreationFromJavaType() throws Exception {
-		BooleanType bool = new BooleanType(parent, "test", "booleen", true);
-		DateType date = new DateType(parent, "test", "date", Calendar
+		BooleanType bool = new BooleanType(parent, null,"test", "booleen", true);
+		DateType date = new DateType(parent, null, "test", "date", Calendar
 				.getInstance());
-		IntegerType integer = new IntegerType(parent, "test", "integer", 1);
-		RealType real = new RealType(parent, "test", "real", (float) 1.6);
-		TextType text = new TextType(parent, "test", "text", "TEST");
+		IntegerType integer = new IntegerType(parent,null, "test", "integer", 1);
+		RealType real = new RealType(parent, null,"test", "real", (float) 1.6);
+		TextType text = new TextType(parent, null,"test", "text", "TEST");
 
 		Element e = parent.getFuturOwner().createElement("TEST");
 		parent.getFuturOwner().appendChild(e);
@@ -174,12 +174,12 @@ public class SimpleMetadataPropertyTest {
 		String realv = "1.92";
 		String textv = "text";
 
-		BooleanType bool = new BooleanType(parent, "test", "booleen", boolv);
-		DateType date = new DateType(parent, "test", "date", datev);
-		IntegerType integer = new IntegerType(parent, "test", "integer",
+		BooleanType bool = new BooleanType(parent, null, "test", "booleen", boolv);
+		DateType date = new DateType(parent, null,"test", "date", datev);
+		IntegerType integer = new IntegerType(parent,null, "test", "integer",
 				integerv);
-		RealType real = new RealType(parent, "test", "real", realv);
-		TextType text = new TextType(parent, "test", "text", textv);
+		RealType real = new RealType(parent, null, "test", "real", realv);
+		TextType text = new TextType(parent, null,"test", "text", textv);
 
 		Assert.assertEquals(boolv, bool.getStringValue());
 		Assert.assertEquals(datev, date.getStringValue());
@@ -239,7 +239,7 @@ public class SimpleMetadataPropertyTest {
 	@Test
 	public void testAttribute() throws Exception {
 
-		IntegerType integer = new IntegerType(parent, "test", "integer", 1);
+		IntegerType integer = new IntegerType(parent,null, "test", "integer", 1);
 		Attribute value = new Attribute("http://www.test.org/test/", "test",
 				"value1", "StringValue1");
 		Attribute value2 = new Attribute(null, "test", "value2", "StringValue2");

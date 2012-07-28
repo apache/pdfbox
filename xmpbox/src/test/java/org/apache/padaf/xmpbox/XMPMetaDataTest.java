@@ -50,22 +50,22 @@ public class XMPMetaDataTest {
 		metadata = new XMPMetadata();
 		String tmpNsURI = "http://www.test.org/schem/";
 		tmp = new XMPSchema(metadata, "test", tmpNsURI);
-		tmp.addBagValue("test:BagContainer", "Value1");
-		tmp.addBagValue("test:BagContainer", "Value2");
-		tmp.addBagValue("test:BagContainer", "Value3");
+		tmp.addQualifiedBagValue("BagContainer", "Value1");
+		tmp.addQualifiedBagValue("BagContainer", "Value2");
+		tmp.addQualifiedBagValue("BagContainer", "Value3");
 
-		tmp.addSequenceValue("test:SeqContainer", "Value1");
-		tmp.addSequenceValue("test:SeqContainer", "Value2");
-		tmp.addSequenceValue("test:SeqContainer", "Value3");
+		tmp.addUnqualifiedSequenceValue("SeqContainer", "Value1");
+		tmp.addUnqualifiedSequenceValue("SeqContainer", "Value2");
+		tmp.addUnqualifiedSequenceValue("SeqContainer", "Value3");
 
 		tmp
-				.addProperty(new TextType(metadata, "test", "simpleProperty",
+				.addProperty(new TextType(metadata, null,"test", "simpleProperty",
 						"YEP"));
 
 		tmp2 = new XMPSchema(metadata, "space", "http://www.space.org/schem/");
-		tmp2.addSequenceValue("test:SeqSpContainer", "ValueSpace1");
-		tmp2.addSequenceValue("test:SeqSpContainer", "ValueSpace2");
-		tmp2.addSequenceValue("test:SeqSpContainer", "ValueSpace3");
+		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace1");
+		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace2");
+		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace3");
 
 		metadata.addSchema(tmp);
 
