@@ -363,6 +363,7 @@ public final class XMLUtil {
         Transformer transformer = TransformerFactory.newInstance()
         .newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
         "yes");
@@ -401,7 +402,7 @@ public final class XMLUtil {
         return writer.getBuffer().toString().getBytes();
     }
     
-    // TODO : remove this in java 6 (when constructor with message and cause will be added)
+    // XXX : remove this in java 6 (when constructor with message and cause will be added)
     private static IOException prepareIOException (String message, Throwable cause) {
     	IOException e = new IOException(message);
     	e.initCause(cause);

@@ -54,16 +54,18 @@ import org.w3c.dom.Element;
  */
 public class XMPMetadata {
 
-    protected String xpacketId = "W5M0MpCehiHzreSzNTczkc9d";
-    protected String xpacketBegin = "\uFEFF";
+    private String xpacketId = "W5M0MpCehiHzreSzNTczkc9d";
+    
+    private String xpacketBegin = "\uFEFF";
 
     // DEPRECATED (SHOULD STAY NULL (Default value))
-    protected String xpacketBytes;
-    protected String xpacketEncoding;
+    private String xpacketBytes;
+    
+    private String xpacketEncoding;
 
-    protected String xpacketEndData = "end=\"w\"";
+    private String xpacketEndData = "end=\"w\"";
 
-    protected SchemasContainer schemas;
+    private SchemasContainer schemas;
 
     private Document xmpDocument;
 
@@ -502,8 +504,9 @@ public class XMPMetadata {
      */
     public class SchemasContainer implements Elementable {
 
-        protected Element element;
-        protected List<XMPSchema> schemas;
+        private Element element;
+        
+        private List<XMPSchema> schemas;
 
         /**
          * 
