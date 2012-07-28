@@ -47,10 +47,14 @@ public abstract class AbstractField implements Elementable {
 	 * the element associated will not appear)
 	 */
 
-	protected Element element;
-	protected Document parent;
+	private Element element;
+	
+	private Document parent;
+	
+	private XMPMetadata metadata;
 
 	private String namespaceURI, prefix, propertyName;
+	
 	private Map<String, Attribute> attributes;
 
 	/**
@@ -65,13 +69,7 @@ public abstract class AbstractField implements Elementable {
 	 */
 	public AbstractField(XMPMetadata metadata, String prefix,
 			String propertyName) {
-		String qualifiedName;
-		this.prefix = prefix;
-		qualifiedName = prefix + ":" + propertyName;
-		this.parent = metadata.getFuturOwner();
-		this.propertyName = propertyName;
-		element = parent.createElement(qualifiedName);
-		attributes = new HashMap<String, Attribute>();
+		this(metadata,null,prefix,propertyName);
 	}
 
 	/**
@@ -91,10 +89,15 @@ public abstract class AbstractField implements Elementable {
 		String qualifiedName;
 		this.prefix = prefix;
 		qualifiedName = prefix + ":" + propertyName;
+		this.metadata = metadata;
 		this.parent = metadata.getFuturOwner();
 		this.namespaceURI = namespaceURI;
 		this.propertyName = propertyName;
-		element = parent.createElementNS(namespaceURI, qualifiedName);
+		if (this.namespaceURI!=null) {
+			element = parent.createElementNS(namespaceURI, qualifiedName);
+		} else {
+			element = parent.createElement(qualifiedName);
+		}
 		attributes = new HashMap<String, Attribute>();
 	}
 
@@ -112,7 +115,7 @@ public abstract class AbstractField implements Elementable {
 	 * 
 	 * @return the namespace URI
 	 */
-	public String getNamespace() {
+	public final String getNamespace() {
 		return namespaceURI;
 	}
 
@@ -210,4 +213,9 @@ public abstract class AbstractField implements Elementable {
 
 	}
 
+	public XMPMetadata getMetadata() {
+		return metadata;
+	}
+
+	
 }

@@ -31,23 +31,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class IntegerType extends AbstractSimpleProperty {
 
-	/**
-	 * Property Integer type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public IntegerType(XMPMetadata metadata, String prefix,
-			String propertyName, Object value) {
-		super(metadata, prefix, propertyName, value);
-
-	}
 
 	/**
 	 * Property Integer type constructor (namespaceURI is given)
@@ -75,39 +58,7 @@ public class IntegerType extends AbstractSimpleProperty {
 	 * @return the property value
 	 */
 	public int getValue() {
-		return (Integer) objValue;
-	}
-
-	/**
-	 * Set property value
-	 * 
-	 * @param value
-	 *            the value to set
-	 */
-	private void setValueFromInt(int value) {
-		objValue = value;
-		element.setTextContent("" + value);
-	}
-
-	/**
-	 * Check if the value can be treated
-	 * 
-	 * @param value
-	 *            The object to check
-	 * @return True if types are compatibles
-	 */
-	public boolean isGoodType(Object value) {
-		if (value instanceof Integer) {
-			return true;
-		} else if (value instanceof String) {
-			try {
-				Integer.parseInt((String) value);
-				return true;
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
-		return false;
+		return (Integer) getObjectValue();
 	}
 
 	/**
@@ -117,30 +68,35 @@ public class IntegerType extends AbstractSimpleProperty {
 	 *            The value to set
 	 */
 	public void setValue(Object value) {
-		if (!isGoodType(value)) {
-			throw new IllegalArgumentException(
-					"Value given is not allowed for the Integer type.");
+		if (value instanceof Integer) {
+			setObjectValue(value);
+		} else if (value instanceof String) {
+			// NumberFormatException is thrown (sub of InvalidArgumentException)
+			setObjectValue(Integer.valueOf((String)value));
 		} else {
-			// if string object
-			if (value instanceof String) {
-				setValueFromString((String) value);
-			} else {
-				// if Integer
-				setValueFromInt((Integer) value);
-			}
-
+			// invalid type of value
+			throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
 		}
-
+		// set value
+		getElement().setTextContent(getObjectValue().toString());
 	}
+//
+//	public void setValue(Object value) {
+//		if (!isGoodType(value)) {
+//			throw new IllegalArgumentException(
+//					"Value given is not allowed for the Integer type.");
+//		} else {
+//			// if string object
+//			if (value instanceof String) {
+//				setValueFromString((String) value);
+//			} else {
+//				// if Integer
+//				setValueFromInt((Integer) value);
+//			}
+//
+//		}
+//
+//	}
 
-	/**
-	 * Set the value from a String
-	 * 
-	 * @param value
-	 *            the String value to set
-	 */
-	private void setValueFromString(String value) {
-		setValueFromInt(Integer.parseInt(value));
-	}
 
 }

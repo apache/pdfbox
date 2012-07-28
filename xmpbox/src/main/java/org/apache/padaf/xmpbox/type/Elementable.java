@@ -36,5 +36,5 @@ public interface Elementable {
 	 * 
 	 * @return The xml element.
 	 */
-	public Element getElement();
+	Element getElement();
 }

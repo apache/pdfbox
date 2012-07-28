@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ComplexProperty;
+import org.apache.padaf.xmpbox.type.MIMEType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 
@@ -56,7 +57,7 @@ public class DublinCoreSchema extends XMPSchema {
 	@PropertyType(propertyType = "Lang Alt")
 	public static final String DESCRIPTION = "description";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(propertyType = "MIMEType")
 	public static final String FORMAT = "format";
 
 	@PropertyType(propertyType = "Text")
@@ -115,11 +116,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void addContributor(String properName) {
-		addBagValue(localPrefixSep + CONTRIBUTOR, properName);
+		addQualifiedBagValue(CONTRIBUTOR, properName);
 	}
 
 	public void removeContributor (String properName) {
-		removeBagValue(localPrefixSep + CONTRIBUTOR, properName);
+		removeUnqualifiedBagValue(CONTRIBUTOR, properName);
 	}
 	
 	
@@ -130,7 +131,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setCoverage(String text) {
-		addProperty(new TextType(metadata, localPrefix, COVERAGE, text));
+		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), COVERAGE, text));
 	}
 
 	/**
@@ -151,11 +152,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @throws InappropriateTypeException
 	 */
 	public void addCreator(String properName) {
-		addSequenceValue(localPrefixSep + CREATOR, properName);
+		addUnqualifiedSequenceValue(CREATOR, properName);
 	}
 
 	public void removeCreator (String name) {
-		removeSequenceValue(localPrefixSep +CREATOR, name);
+		removeUnqualifiedSequenceValue(CREATOR, name);
 	}
 	
 	/**
@@ -165,11 +166,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to add
 	 */
 	public void addDate(Calendar date) {
-		addSequenceDateValue(localPrefixSep + DATE, date);
+		addUnqualifiedSequenceDateValue(DATE, date);
 	}
 
 	public void removeDate (Calendar date) {
-		removeSequenceDateValue(localPrefixSep + DATE, date);
+		removeUnqualifiedSequenceDateValue(DATE, date);
 	}
 	
 	/**
@@ -182,7 +183,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to add
 	 */
 	public void addDescription(String lang, String value) {
-		setLanguagePropertyValue(localPrefixSep + DESCRIPTION, lang, value);
+		setUnqualifiedLanguagePropertyValue(DESCRIPTION, lang, value);
 	}
 
     /**
@@ -216,7 +217,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setFormat(String mimeType) {
-		addProperty(new TextType(metadata, localPrefix, FORMAT, mimeType));
+		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), FORMAT, mimeType));
 	}
 
 	/**
@@ -226,7 +227,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setIdentifier(String text) {
-		addProperty(new TextType(metadata, localPrefix, IDENTIFIER, text));
+		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), IDENTIFIER, text));
 	}
 
 	/**
@@ -246,11 +247,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void addLanguage(String locale) {
-		addBagValue(localPrefixSep + LANGUAGE, locale);
+		addQualifiedBagValue(LANGUAGE, locale);
 	}
 	
 	public void removeLanguage (String locale) {
-		removeBagValue(localPrefixSep + LANGUAGE, locale);
+		removeUnqualifiedBagValue(LANGUAGE, locale);
 	}
 
 	/**
@@ -260,11 +261,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to add
 	 */
 	public void addPublisher(String properName) {
-		addBagValue(localPrefixSep + PUBLISHER, properName);
+		addQualifiedBagValue(PUBLISHER, properName);
 	}
 
 	public void removePublisher (String name) {
-		removeBagValue(localPrefixSep + PUBLISHER, name);
+		removeUnqualifiedBagValue(PUBLISHER, name);
 	}
 	
 	/**
@@ -274,11 +275,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void addRelation(String text) {
-		addBagValue(localPrefixSep + RELATION, text);
+		addQualifiedBagValue(RELATION, text);
 	}
 
 	public void removeRelation (String text) {
-		removeBagValue (localPrefixSep + RELATION, text);
+		removeUnqualifiedBagValue (RELATION, text);
 	}
 	
 	/**
@@ -290,7 +291,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void addRights(String lang, String value) {
-		setLanguagePropertyValue(localPrefixSep + RIGHTS, lang, value);
+		setUnqualifiedLanguagePropertyValue(RIGHTS, lang, value);
 	}
 
     /**
@@ -324,7 +325,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setSource(String text) {
-		addProperty(new TextType(metadata, localPrefix, SOURCE, text));
+		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), SOURCE, text));
 	}
 
 	/**
@@ -343,7 +344,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @param text
 	 *            Property to set
 	 */
-	public void setFormatProperty(TextType text) {
+	public void setFormatProperty(MIMEType text) {
 		addProperty(text);
 	}
 
@@ -355,11 +356,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to add
 	 */
 	public void addSubject(String text) {
-		addBagValue(localPrefixSep + SUBJECT, text);
+		addQualifiedBagValue(SUBJECT, text);
 	}
 
 	public void removeSubject (String text) {
-		removeBagValue(localPrefixSep + SUBJECT, text);
+		removeUnqualifiedBagValue(SUBJECT, text);
 	}
 	
 	/**
@@ -372,7 +373,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setTitle(String lang, String value) {
-		setLanguagePropertyValue(localPrefixSep + TITLE, lang, value);
+		setUnqualifiedLanguagePropertyValue(TITLE, lang, value);
 	}
 
 	/**
@@ -384,7 +385,13 @@ public class DublinCoreSchema extends XMPSchema {
 		setTitle(null, value);
 	}
 
-	// TODO javadoc convenience method
+	/**
+	 * set the title of the document, or the name given to the resource (by
+	 * language)
+	 * 
+	 * @see DublinCoreSchema#setTitle(String)
+	 * 
+	 */
 	public void addTitle(String lang, String value) {
 		setTitle(lang,value);
 	}
@@ -396,7 +403,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void addType(String type) {
-		addBagValue(localPrefixSep + TYPE, type);
+		addQualifiedBagValue(TYPE, type);
 	}
 
 	/**
@@ -405,7 +412,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Contributor property
 	 */
 	public ComplexProperty getContributorsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + CONTRIBUTOR);
+		return (ComplexProperty) getUnqualifiedProperty(CONTRIBUTOR);
 	}
 
 	/**
@@ -414,7 +421,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return List of contributors values
 	 */
 	public List<String> getContributors() {
-		return getBagValueList(localPrefixSep + CONTRIBUTOR);
+		return getUnqualifiedBagValueList(CONTRIBUTOR);
 
 	}
 
@@ -424,7 +431,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Coverage property
 	 */
 	public TextType getCoverageProperty() {
-		return (TextType) getProperty(localPrefixSep + COVERAGE);
+		return (TextType) getUnqualifiedProperty(COVERAGE);
 	}
 
 	/**
@@ -433,7 +440,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Coverage value
 	 */
 	public String getCoverage() {
-		TextType tt = (TextType) getProperty(localPrefixSep + COVERAGE);
+		TextType tt = (TextType) getUnqualifiedProperty(COVERAGE);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -443,7 +450,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Creator property
 	 */
 	public ComplexProperty getCreatorsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + CREATOR);
+		return (ComplexProperty) getUnqualifiedProperty(CREATOR);
 	}
 
 	/**
@@ -452,7 +459,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return List of creators values
 	 */
 	public List<String> getCreators() {
-		return getSequenceValueList(localPrefixSep + CREATOR);
+		return getUnqualifiedSequenceValueList(CREATOR);
 	}
 
 	/**
@@ -461,7 +468,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return date property
 	 */
 	public ComplexProperty getDatesProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + DATE);
+		return (ComplexProperty) getUnqualifiedProperty(DATE);
 	}
 
 	/**
@@ -470,7 +477,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return List of dates values
 	 */
 	public List<Calendar> getDates() {
-		return getSequenceDateValueList(localPrefixSep + DATE);
+		return getUnqualifiedSequenceDateValueList(DATE);
 	}
 
 	/**
@@ -479,7 +486,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Description property
 	 */
 	public ComplexProperty getDescriptionProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + DESCRIPTION);
+		return (ComplexProperty) getUnqualifiedProperty(DESCRIPTION);
 	}
 
 	/**
@@ -488,7 +495,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return get List of languages defined for description property
 	 */
 	public List<String> getDescriptionLanguages() {
-		return getLanguagePropertyLanguagesValue(localPrefixSep + DESCRIPTION);
+		return getUnqualifiedLanguagePropertyLanguagesValue(DESCRIPTION);
 	}
 
 	/**
@@ -499,7 +506,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Desription value for specified language
 	 */
 	public String getDescription(String lang) {
-		return getLanguagePropertyValue(localPrefixSep + DESCRIPTION, lang);
+		return getUnqualifiedLanguagePropertyValue(DESCRIPTION, lang);
 	}
 	
     /**
@@ -520,7 +527,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the format property
 	 */
 	public TextType getFormatProperty() {
-		return (TextType) getProperty(localPrefixSep + FORMAT);
+		return (TextType) getUnqualifiedProperty(FORMAT);
 	}
 
 	/**
@@ -529,7 +536,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the format value
 	 */
 	public String getFormat() {
-		TextType tt = (TextType) getProperty(localPrefixSep + FORMAT);
+		TextType tt = (TextType) getUnqualifiedProperty(FORMAT);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -539,7 +546,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the identifier property
 	 */
 	public TextType getIdentifierProperty() {
-		return (TextType) getProperty(localPrefixSep + IDENTIFIER);
+		return (TextType) getUnqualifiedProperty(IDENTIFIER);
 	}
 
 	/**
@@ -548,7 +555,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the unique identifier value
 	 */
 	public String getIdentifier() {
-		TextType tt = (TextType) getProperty(localPrefixSep + IDENTIFIER);
+		TextType tt = (TextType) getUnqualifiedProperty(IDENTIFIER);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -558,7 +565,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return language property
 	 */
 	public ComplexProperty getLanguagesProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + LANGUAGE);
+		return (ComplexProperty) getUnqualifiedProperty(LANGUAGE);
 	}
 
 	/**
@@ -567,7 +574,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return list of languages defined for language property
 	 */
 	public List<String> getLanguages() {
-		return getBagValueList(localPrefixSep + LANGUAGE);
+		return getUnqualifiedBagValueList(LANGUAGE);
 	}
 
 	/**
@@ -576,7 +583,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return publisher property
 	 */
 	public ComplexProperty getPublishersProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + PUBLISHER);
+		return (ComplexProperty) getUnqualifiedProperty(PUBLISHER);
 	}
 
 	/**
@@ -585,7 +592,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return list of values for publisher property
 	 */
 	public List<String> getPublishers() {
-		return getBagValueList(localPrefixSep + PUBLISHER);
+		return getUnqualifiedBagValueList(PUBLISHER);
 	}
 
 	/**
@@ -594,7 +601,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return relation property
 	 */
 	public ComplexProperty getRelationsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + RELATION);
+		return (ComplexProperty) getUnqualifiedProperty(RELATION);
 	}
 
 	/**
@@ -603,7 +610,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return list of values for relation property
 	 */
 	public List<String> getRelations() {
-		return getBagValueList(localPrefixSep + RELATION);
+		return getUnqualifiedBagValueList(RELATION);
 	}
 
 	/**
@@ -622,7 +629,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return rights property
 	 */
 	public ComplexProperty getRightsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + RIGHTS);
+		return (ComplexProperty) getUnqualifiedProperty(RIGHTS);
 	}
 
 	/**
@@ -631,7 +638,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return list of rights languages values defined
 	 */
 	public List<String> getRightsLanguages() {
-		return getLanguagePropertyLanguagesValue(localPrefixSep + RIGHTS);
+		return getUnqualifiedLanguagePropertyLanguagesValue(RIGHTS);
 	}
 
 	/**
@@ -642,7 +649,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the rights value for specified language
 	 */
 	public String getRights(String lang) {
-		return getLanguagePropertyValue(localPrefixSep + RIGHTS, lang);
+		return getUnqualifiedLanguagePropertyValue(RIGHTS, lang);
 	}
 
 	/**
@@ -661,7 +668,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return source property
 	 */
 	public TextType getSourceProperty() {
-		return (TextType) getProperty(localPrefixSep + SOURCE);
+		return (TextType) getUnqualifiedProperty(SOURCE);
 	}
 
 	/**
@@ -670,7 +677,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return value of source property
 	 */
 	public String getSource() {
-		TextType tt = (TextType) getProperty(localPrefixSep + SOURCE);
+		TextType tt = (TextType) getUnqualifiedProperty(SOURCE);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -680,7 +687,7 @@ public class DublinCoreSchema extends XMPSchema {
      * @return the subject property
 	 */
 	public ComplexProperty getSubjectsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + SUBJECT);
+		return (ComplexProperty) getUnqualifiedProperty(SUBJECT);
 	}
 
 	/**
@@ -689,7 +696,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the list of subject values
 	 */
 	public List<String> getSubjects() {
-		return getBagValueList(localPrefixSep + SUBJECT);
+		return getUnqualifiedBagValueList(SUBJECT);
 	}
 
 	/**
@@ -698,7 +705,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the title property
 	 */
 	public ComplexProperty getTitleProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + TITLE);
+		return (ComplexProperty) getUnqualifiedProperty(TITLE);
 	}
 
 	/**
@@ -707,7 +714,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return list of languages defined for title property
 	 */
 	public List<String> getTitleLanguages() {
-		return getLanguagePropertyLanguagesValue(localPrefixSep + TITLE);
+		return getUnqualifiedLanguagePropertyLanguagesValue(TITLE);
 	}
 
 	/**
@@ -718,7 +725,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the title value for specified language
 	 */
 	public String getTitle(String lang) {
-		return getLanguagePropertyValue(localPrefixSep + TITLE, lang);
+		return getUnqualifiedLanguagePropertyValue(TITLE, lang);
 	}
 
 	/**
@@ -738,7 +745,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the type property
 	 */
 	public ComplexProperty getTypesProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + TYPE);
+		return (ComplexProperty) getUnqualifiedProperty(TYPE);
 	}
 
 	/**
@@ -747,7 +754,11 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the value of type property
 	 */
 	public List<String> getTypes() {
-		return getBagValueList(localPrefixSep + TYPE);
+		return getUnqualifiedBagValueList(TYPE);
+	}
+
+	public void removeType (String type) {
+		removeUnqualifiedBagValue(TYPE, type);
 	}
 
 }

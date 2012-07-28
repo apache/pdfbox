@@ -79,7 +79,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * 
 	 */
 	public void setPartValueWithString(String value) {
-		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
+		IntegerType part = (IntegerType)instanciateSimple(PART, value);
 		addProperty(part);
 	}
 
@@ -90,7 +90,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The version Id value to set
 	 */
 	public void setPartValueWithInt(int value) {
-		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
+//		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
+		IntegerType part = (IntegerType)instanciateSimple(PART, value);
 		addProperty(part);
 	}
 
@@ -101,8 +102,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The version Id property to set
 	 */
 	public void setPart(Integer value) {
-		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
-		addProperty(part);
+		setPartValueWithInt(value.intValue());
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The amendment identifier value to set
 	 */
 	public void setAmd(String value) {
-		TextType amd = new TextType(metadata, IDPREFIX, AMD, value);
+		TextType amd = new TextType(getMetadata(), null, IDPREFIX, AMD, value);
 		addProperty(amd);
 	}
 
@@ -146,7 +146,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public void setConformance(String value) throws BadFieldValueException {
 		if (value.equals("A") || value.equals("B")) {
-			TextType conf = new TextType(metadata, IDPREFIX, CONFORMANCE, value);
+			TextType conf = new TextType(getMetadata(), null, IDPREFIX, CONFORMANCE, value);
 			addProperty(conf);
 
 		} else {

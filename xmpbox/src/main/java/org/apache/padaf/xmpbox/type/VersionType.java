@@ -24,24 +24,29 @@ package org.apache.padaf.xmpbox.type;
 import java.util.Calendar;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 
-public class VersionType extends ComplexPropertyContainer {
+public class VersionType extends AbstractStructuredType {
 
 	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/Version#";
 
 	public static final String PREFERRED_PREFIX = "stVer";
 	
-	protected XMPMetadata metadata;
-	
+	@PropertyType(propertyType="Text")
 	public static final String COMMENTS = "comments";
 
+	@PropertyType(propertyType="ResourceEvent")
 	public static final String EVENT = "event";
 
+	@PropertyType(propertyType="ProperName") 
 	public static final String MODIFIER = "modifier";
 	
+	@PropertyType(propertyType="Date")
 	public static final String MODIFY_DATE = "modifyDate";
 	
+	@PropertyType(propertyType="Text")
 	public static final String VERSION = "version";
 
 
@@ -56,29 +61,21 @@ public class VersionType extends ComplexPropertyContainer {
 	 * @param propertyName
 	 *            The local Name of this thumbnail type
 	 */
-	public VersionType(XMPMetadata metadata, String namespace, String prefix,
-			String propertyName) {
-		super(metadata, namespace, prefix, propertyName);
-		this.metadata = metadata;
+	public VersionType(XMPMetadata metadata) {
+		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
 	
 	public String getComments() {
-		TextType absProp = (TextType)getFirstEquivalentProperty(COMMENTS,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(COMMENTS);
 	}
 
 	public void setComments (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, COMMENTS, value));
+		addSimpleProperty(COMMENTS, value);
 	}
 
 	public ResourceEventType getEvent () {
-//		ResourceEventType event = (ResourceEventType)getPropertiesByLocalName(EVENT);
 		return (ResourceEventType)getFirstEquivalentProperty(EVENT,ResourceEventType.class);
 	}
 
@@ -87,44 +84,33 @@ public class VersionType extends ComplexPropertyContainer {
 	}
 
 	public Calendar getModifyDate () {
-		DateType absProp = (DateType)getFirstEquivalentProperty(MODIFY_DATE,DateType.class);
-		if (absProp != null) {
-			return absProp.getValue();
-		} else {
-			return null;
-		}
+		return getDatePropertyAsCalendar(MODIFY_DATE);
 	}
 
 	public void setModifyDate (Calendar value) {
-		this.addProperty(new DateType(metadata, PREFERRED_PREFIX, MODIFY_DATE, value));
+		addSimpleProperty(MODIFY_DATE, value);
 	}
 
 	public String getVersion () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(VERSION,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(VERSION);
 	}
 
 	public void setVersion (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, VERSION, value));
+		addSimpleProperty(VERSION, value);
 	}
 
 	public String getModifier () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(MODIFIER,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(MODIFIER);
 	}
 
 	public void setModifier (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MODIFIER, value));
+		addSimpleProperty(MODIFIER, value);
+	}
+
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
 	}
 
 
-	
 }

@@ -31,23 +31,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class TextType extends AbstractSimpleProperty {
 
-	/**
-	 * Property Text type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public TextType(XMPMetadata metadata, String prefix, String propertyName,
-			Object value) {
-		super(metadata, prefix, propertyName, value);
-
-	}
 
 	/**
 	 * Property Text type constructor (namespaceURI is given)
@@ -70,30 +53,19 @@ public class TextType extends AbstractSimpleProperty {
 	}
 
 	/**
-	 * Check if the value can be treated
-	 * 
-	 * @param value
-	 *            The object to check
-	 * @return True if types are compatibles
-	 */
-	public boolean isGoodType(Object value) {
-		return value instanceof String;
-	}
-
-	/**
 	 * Set the property value
 	 * 
 	 * @param value
 	 *            The value to set
 	 */
 	public void setValue(Object value) {
-		if (!isGoodType(value)) {
+		if (!(value instanceof String)) {
 			throw new IllegalArgumentException(
 					"Value given is not allowed for the Text type : '" + value
 							+ "'");
 		} else {
-			objValue = (String) value;
-			element.setTextContent((String) value);
+			setObjectValue((String) value);
+			getElement().setTextContent((String) value);
 		}
 
 	}

@@ -46,8 +46,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class XMLPropertiesDescriptionManager {
 
-	protected List<PropertyDescription> propDescs;
-	protected XStream xstream;
+	private List<PropertyDescription> propDescs;
+	
+	private XStream xstream;
 
 	/**
 	 * Create new XMLPropertiesDescriptionManager

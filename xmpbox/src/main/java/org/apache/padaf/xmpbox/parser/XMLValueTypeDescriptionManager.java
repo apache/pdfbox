@@ -48,8 +48,9 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
  */
 public class XMLValueTypeDescriptionManager {
 
-	protected List<ValueTypeDescription> vTypes;
-	protected XStream xstream;
+	private List<ValueTypeDescription> vTypes;
+	
+	private XStream xstream;
 
 	/**
 	 * Create a new XMLValueTypeDescriptionManager

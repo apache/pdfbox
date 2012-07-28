@@ -36,11 +36,16 @@ import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
  * 
  */
 public class ValueTypeDescription {
-	protected String type;
-	protected String namespaceURI;
-	protected String prefix;
-	protected String description;
-	protected List<FieldDescription> fields;
+	
+	private String type;
+	
+	private String namespaceURI;
+	
+	private String prefix;
+	
+	private String description;
+	
+	private List<FieldDescription> fields;
 
 	/**
 	 * Constructor of ValueType Description with fields associated in order to

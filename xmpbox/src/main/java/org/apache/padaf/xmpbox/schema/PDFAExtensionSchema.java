@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.type.Attribute;
@@ -168,7 +167,7 @@ public class PDFAExtensionSchema extends XMPSchema {
      * @return a new empty description schema
      */
     public SchemaDescription createSchemaDescription() {
-        return new SchemaDescription(metadata);
+        return new SchemaDescription(getMetadata());
     }
 
     /**
@@ -197,17 +196,17 @@ public class PDFAExtensionSchema extends XMPSchema {
      */
     public class SchemaDescriptionContainer implements Elementable {
 
-        protected Element element, content;
-        protected List<SchemaDescription> schemaDescriptions;
+        private Element element, content;
+        private List<SchemaDescription> schemaDescriptions;
 
         /**
          * 
          * SchemasDescription Container constructor
          */
         public SchemaDescriptionContainer() {
-            element = metadata.getFuturOwner().createElement(
+            element = getMetadata().getFuturOwner().createElement(
                     PDFAEXTENSION + ":schemas");
-            content = metadata.getFuturOwner().createElement("rdf:Bag");
+            content = getMetadata().getFuturOwner().createElement("rdf:Bag");
             element.appendChild(content);
 
             schemaDescriptions = new ArrayList<SchemaDescription>();
@@ -225,13 +224,13 @@ public class PDFAExtensionSchema extends XMPSchema {
             SchemaDescription sd = getSameSchemaDescription(obj);
             if (sd != null) {
                 schemaDescriptions.remove(sd);
-                content.removeChild(sd.content.getElement());
+                content.removeChild(sd.getContent().getElement());
             }
             // if(containsSchemaDescription(obj)){
             // removeSchemaDescription(obj);
             // }
             schemaDescriptions.add(obj);
-            content.appendChild(obj.content.getElement());
+            content.appendChild(obj.getContent().getElement());
             return sd;
         }
 

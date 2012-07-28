@@ -52,9 +52,11 @@ public class PDFAValueTypeDescription implements Elementable {
 	public static final String DESCRIPTION = "description";
 	public static final String FIELD = "field";
 
-	protected FieldDescriptionContainer fields;
-	protected XMPMetadata metadata;
-	protected ComplexPropertyContainer content;
+	private FieldDescriptionContainer fields;
+	
+	private XMPMetadata metadata;
+	
+	private ComplexPropertyContainer content;
 
 	/**
 	 * Build a new valuetype description
@@ -64,7 +66,7 @@ public class PDFAValueTypeDescription implements Elementable {
 	 */
 	public PDFAValueTypeDescription(XMPMetadata metadata) {
 		this.metadata = metadata;
-		content = new ComplexPropertyContainer(metadata, "rdf", "li");
+		content = new ComplexPropertyContainer(metadata, null, "rdf", "li");
 		content
 				.setAttribute(new Attribute(null, "rdf", "parseType",
 						"Resource"));
@@ -80,7 +82,7 @@ public class PDFAValueTypeDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setTypeNameValue(String name) {
-		content.addProperty(new TextType(metadata, PDFATYPEPREFIX, TYPE, name));
+		content.addProperty(new TextType(metadata, null, PDFATYPEPREFIX, TYPE, name));
 	}
 
 	/**
@@ -90,7 +92,7 @@ public class PDFAValueTypeDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setNamespaceURIValue(String nsURI) {
-		content.addProperty(new TextType(metadata, PDFATYPEPREFIX, NS_URI,
+		content.addProperty(new TextType(metadata, null, PDFATYPEPREFIX, NS_URI,
 				nsURI));
 	}
 
@@ -101,7 +103,7 @@ public class PDFAValueTypeDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setPrefixValue(String prefix) {
-		content.addProperty(new TextType(metadata, PDFATYPEPREFIX, PREFIX,
+		content.addProperty(new TextType(metadata, null, PDFATYPEPREFIX, PREFIX,
 				prefix));
 	}
 
@@ -112,7 +114,7 @@ public class PDFAValueTypeDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setDescriptionValue(String desc) {
-		content.addProperty(new TextType(metadata, PDFATYPEPREFIX, DESCRIPTION,
+		content.addProperty(new TextType(metadata, null, PDFATYPEPREFIX, DESCRIPTION,
 				desc));
 	}
 
@@ -276,6 +278,14 @@ public class PDFAValueTypeDescription implements Elementable {
 		return content.getElement();
 	}
 
+	
+	
+	public ComplexPropertyContainer getContent() {
+		return content;
+	}
+
+
+
 	/**
 	 * Container of Field Description
 	 * 
@@ -284,8 +294,9 @@ public class PDFAValueTypeDescription implements Elementable {
 	 */
 	public class FieldDescriptionContainer implements Elementable {
 
-		protected Element element, content;
-		protected List<PDFAFieldDescription> fields;
+		private Element element, content;
+		
+		private List<PDFAFieldDescription> fields;
 
 		/**
 		 * 
@@ -311,7 +322,7 @@ public class PDFAValueTypeDescription implements Elementable {
 				removeFieldDescription(obj);
 			}
 			fields.add(obj);
-			content.appendChild(obj.content.getElement());
+			content.appendChild(obj.getContent().getElement());
 		}
 
 		/**
@@ -335,8 +346,8 @@ public class PDFAValueTypeDescription implements Elementable {
 		public boolean isSameFieldDescription(PDFAFieldDescription prop1,
 				PDFAFieldDescription prop2) {
 			if (prop1.getClass().equals(prop2.getClass())) {
-				if (prop1.content.getElement().getTextContent().equals(
-						prop2.content.getElement().getTextContent())) {
+				if (prop1.getContent().getElement().getTextContent().equals(
+						prop2.getContent().getElement().getTextContent())) {
 					return true;
 				}
 			}
@@ -371,7 +382,7 @@ public class PDFAValueTypeDescription implements Elementable {
 		public void removeFieldDescription(PDFAFieldDescription field) {
 			if (containsFieldDescription(field)) {
 				fields.remove(field);
-				content.removeChild(field.content.getElement());
+				content.removeChild(field.getContent().getElement());
 			}
 		}
 

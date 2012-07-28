@@ -22,6 +22,8 @@
 package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.PropertyType;
 
 
 /**
@@ -29,9 +31,23 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  * 
  * @author eric
  */
-public class ThumbnailType extends ComplexPropertyContainer {
-	protected static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/g/img/";
-	protected XMPMetadata metadata;
+public class ThumbnailType extends AbstractStructuredType {
+	
+	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/g/img/";
+	
+	public static final String PREFERRED_PREFIX = "xmpGImg";
+	
+	@PropertyType(propertyType = "Choice")
+	public static final String FORMAT = "format";
+
+	@PropertyType(propertyType = "Integer")
+	public static final String HEIGHT = "height";
+	
+	@PropertyType(propertyType = "Integer")
+	public static final String WIDTH = "width";
+
+	@PropertyType(propertyType = "Text")
+	public static final String IMAGE = "image";
 
 	/**
 	 * 
@@ -44,29 +60,10 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @param propertyName
 	 *            The local Name of this thumbnail type
 	 */
-	public ThumbnailType(XMPMetadata metadata, String namespace, String prefix,
-			String propertyName) {
-		super(metadata, namespace, prefix, propertyName);
-		this.metadata = metadata;
+	public ThumbnailType(XMPMetadata metadata) {
+		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
 		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
 	}
-
-	/**
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this thumbnail type
-	 */
-	public ThumbnailType(XMPMetadata metadata, String prefix,
-			String propertyName) {
-		super(metadata, prefix, propertyName);
-		this.metadata = metadata;
-		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
-	}
-
 
 	/**
 	 * Get Height
@@ -74,7 +71,7 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @return the height
 	 */
 	public Integer getHeight() {
-		AbstractField absProp = getFirstEquivalentProperty("height",
+		AbstractField absProp = getFirstEquivalentProperty(HEIGHT,
 				IntegerType.class);
 		if (absProp != null) {
 			return ((IntegerType) absProp).getValue();
@@ -92,8 +89,8 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @param height
 	 *            the value of Height property to set
 	 */
-	public void setHeight(String prefix, String name, Integer height) {
-		this.addProperty(new IntegerType(metadata, prefix, name, height));
+	public void setHeight(Integer height) {
+		addSimpleProperty(HEIGHT, height);
 	}
 
 	/**
@@ -102,7 +99,7 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @return the width
 	 */
 	public Integer getWidth() {
-		AbstractField absProp = getFirstEquivalentProperty("width",
+		AbstractField absProp = getFirstEquivalentProperty(WIDTH,
 				IntegerType.class);
 		if (absProp != null) {
 
@@ -121,8 +118,8 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @param width
 	 *            the value of width property to set
 	 */
-	public void setWidth(String prefix, String name, Integer width) {
-		this.addProperty(new IntegerType(metadata, prefix, name, width));
+	public void setWidth(Integer width) {
+		addSimpleProperty(WIDTH, width);
 	}
 
 	/**
@@ -130,8 +127,8 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * 
 	 * @return the img
 	 */
-	public String getImg() {
-		AbstractField absProp = getFirstEquivalentProperty("image",
+	public String getImage() {
+		AbstractField absProp = getFirstEquivalentProperty(IMAGE,
 				TextType.class);
 		if (absProp != null) {
 			return ((TextType) absProp).getStringValue();
@@ -149,8 +146,8 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @param image
 	 *            the value of image property to set
 	 */
-	public void setImg(String prefix, String name, String image) {
-		this.addProperty(new TextType(metadata, prefix, name, image));
+	public void setImage(String image) {
+		addSimpleProperty(IMAGE, image);
 	}
 
 	/**
@@ -159,8 +156,7 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @return the format
 	 */
 	public String getFormat() {
-		AbstractField absProp = getFirstEquivalentProperty("format",
-				TextType.class);
+		AbstractField absProp = getFirstEquivalentProperty(FORMAT,ChoiceType.class);
 		if (absProp != null) {
 			return ((TextType) absProp).getStringValue();
 		}
@@ -177,8 +173,14 @@ public class ThumbnailType extends ComplexPropertyContainer {
 	 * @param format
 	 *            the value of format property to set
 	 */
-	public void setFormat(String prefix, String name, String format) {
-		this.addProperty(new TextType(metadata, prefix, name, format));
+	public void setFormat(String format) {
+		addSimpleProperty(FORMAT, format);
 	}
 
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
+	}
+
+	
 }
