@@ -31,23 +31,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class RealType extends AbstractSimpleProperty {
 
-	/**
-	 * Property Real type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public RealType(XMPMetadata metadata, String prefix, String propertyName,
-			Object value) {
-		super(metadata, prefix, propertyName, value);
-
-	}
 
 	/**
 	 * Property Real type constructor (namespaceURI is given)
@@ -75,39 +58,7 @@ public class RealType extends AbstractSimpleProperty {
 	 * @return float the property value
 	 */
 	public float getValue() {
-		return (Float) objValue;
-	}
-
-	/**
-	 * Set property value
-	 * 
-	 * @param value
-	 *            the value to set
-	 */
-	private void setValueFromFloat(float value) {
-		objValue = value;
-		element.setTextContent("" + value);
-	}
-
-	/**
-	 * Check if the value can be treated
-	 * 
-	 * @param value
-	 *            The object to check
-	 * @return True if types are compatibles
-	 */
-	public boolean isGoodType(Object value) {
-		if (value instanceof Float) {
-			return true;
-		} else if (value instanceof String) {
-			try {
-				Float.parseFloat((String) value);
-				return true;
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
-		return false;
+		return (Float) getObjectValue();
 	}
 
 	/**
@@ -117,30 +68,19 @@ public class RealType extends AbstractSimpleProperty {
 	 *            The value to set
 	 */
 	public void setValue(Object value) {
-		if (!isGoodType(value)) {
-			throw new IllegalArgumentException(
-					"Value given is not allowed for the Real type.");
+		if (value instanceof Float) {
+			setObjectValue(value);
+		} else if (value instanceof String) {
+			// NumberFormatException is thrown (sub of InvalidArgumentException)
+			setObjectValue(Float.valueOf((String)value));
 		} else {
-			// if string object
-			if (value instanceof String) {
-				setValueFromString((String) value);
-			} else {
-				// if Real (float)
-				setValueFromFloat((Float) value);
-			}
-
+			// invalid type of value
+			throw new IllegalArgumentException("Value given is not allowed for the Real type.");
 		}
-
+		// set value
+		getElement().setTextContent(getObjectValue().toString());
 	}
 
-	/**
-	 * Set the value from a String
-	 * 
-	 * @param value
-	 *            the String value to set
-	 */
-	private void setValueFromString(String value) {
-		setValueFromFloat(Float.parseFloat(value));
-	}
+
 
 }

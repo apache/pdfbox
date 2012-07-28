@@ -44,10 +44,13 @@ import org.w3c.dom.Element;
  */
 public class SchemaDescription implements Elementable {
 
-	protected XMPMetadata metadata;
-	protected ValueTypesDescriptionContainer valueTypes;
-	protected PropertyDescriptionContainer properties;
-	protected ComplexPropertyContainer content;
+	private XMPMetadata metadata;
+	
+	private ValueTypesDescriptionContainer valueTypes;
+	
+	private PropertyDescriptionContainer properties;
+	
+	private ComplexPropertyContainer content;
 
 	/**
 	 * Create a new Schema Description
@@ -57,7 +60,7 @@ public class SchemaDescription implements Elementable {
 	 */
 	public SchemaDescription(XMPMetadata metadata) {
 		this.metadata = metadata;
-		content = new ComplexPropertyContainer(metadata, "rdf", "li");
+		content = new ComplexPropertyContainer(metadata, null, "rdf", "li");
 		content
 				.setAttribute(new Attribute(null, "rdf", "parseType",
 						"Resource"));
@@ -109,7 +112,7 @@ public class SchemaDescription implements Elementable {
 	 */
 	public void setSchemaValue(String description) {
 		// <pdfaSchema:schema>
-		content.addProperty(new TextType(metadata,
+		content.addProperty(new TextType(metadata,null,
 				PDFAExtensionSchema.PDFASCHEMA, PDFAExtensionSchema.SCHEMA,
 				description));
 	}
@@ -132,7 +135,7 @@ public class SchemaDescription implements Elementable {
 	 */
 	public void setNameSpaceURIValue(String uri) {
 		content
-				.addProperty(new TextType(metadata,
+				.addProperty(new TextType(metadata,null,
 						PDFAExtensionSchema.PDFASCHEMA,
 						PDFAExtensionSchema.NS_URI, uri));
 	}
@@ -154,7 +157,7 @@ public class SchemaDescription implements Elementable {
 	 *            the prefix to set for this Schema Description
 	 */
 	public void setPrefixValue(String prefix) {
-		content.addProperty(new TextType(metadata,
+		content.addProperty(new TextType(metadata,null,
 				PDFAExtensionSchema.PDFASCHEMA, PDFAExtensionSchema.PREFIX,
 				prefix));
 	}
@@ -252,6 +255,14 @@ public class SchemaDescription implements Elementable {
 
 		return valueType;
 	}
+	
+	
+
+	public ComplexPropertyContainer getContent() {
+		return content;
+	}
+
+
 
 	/**
 	 * Container for PDF/A Value Type Descriptions associated to a Schema
@@ -262,8 +273,9 @@ public class SchemaDescription implements Elementable {
 	 */
 	public class ValueTypesDescriptionContainer implements Elementable {
 
-		protected Element element, content;
-		protected List<PDFAValueTypeDescription> valueTypes;
+		private Element element, content;
+		
+		private List<PDFAValueTypeDescription> valueTypes;
 
 		/**
 		 * 
@@ -291,7 +303,7 @@ public class SchemaDescription implements Elementable {
 						.getTypeNameValue()));
 			}
 			valueTypes.add(obj);
-			content.appendChild(obj.content.getElement());
+			content.appendChild(obj.getContent().getElement());
 		}
 
 		/**
@@ -371,7 +383,7 @@ public class SchemaDescription implements Elementable {
 		public void removeValueTypeDescription(PDFAValueTypeDescription vtype) {
 			if (containsValueTypeDescription(vtype)) {
 				valueTypes.remove(vtype);
-				content.removeChild(vtype.content.getElement());
+				content.removeChild(vtype.getContent().getElement());
 			}
 		}
 
@@ -395,8 +407,9 @@ public class SchemaDescription implements Elementable {
 	 */
 	public class PropertyDescriptionContainer implements Elementable {
 
-		protected Element element, content;
-		protected List<PDFAPropertyDescription> properties;
+		private Element element, content;
+		
+		private List<PDFAPropertyDescription> properties;
 
 		/**
 		 * 
@@ -424,7 +437,7 @@ public class SchemaDescription implements Elementable {
 						.getNameValue()));
 			}
 			properties.add(obj);
-			content.appendChild(obj.content.getElement());
+			content.appendChild(obj.getContent().getElement());
 		}
 
 		/**
@@ -507,7 +520,7 @@ public class SchemaDescription implements Elementable {
 		public void removePropertyDescription(PDFAPropertyDescription prop) {
 			if (containsPropertyDescription(prop)) {
 				properties.remove(prop);
-				content.removeChild(prop.content.getElement());
+				content.removeChild(prop.getContent().getElement());
 			}
 		}
 

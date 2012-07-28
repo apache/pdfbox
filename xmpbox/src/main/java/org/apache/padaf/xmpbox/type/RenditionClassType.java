@@ -19,11 +19,15 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.type;
 
-/**
- * List the basic types of xmp properties
- */
-public enum XmpPropertyType {
-	Text, Date, Integer, Boolean, Real
+import org.apache.padaf.xmpbox.XMPMetadata;
+
+public class RenditionClassType extends TextType {
+
+	public RenditionClassType(XMPMetadata metadata, String namespaceURI,
+			String prefix, String propertyName, Object value) {
+		super(metadata, namespaceURI, prefix, propertyName, value);
+	}
+
 }

@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 
@@ -38,25 +39,9 @@ import org.w3c.dom.NodeList;
  */
 public class ComplexPropertyContainer extends AbstractField {
 
-	protected List<AbstractField> properties;
-
-	/**
-	 * Complex Property type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 */
-	public ComplexPropertyContainer(XMPMetadata metadata, String prefix,
-			String propertyName) {
-		super(metadata, prefix, propertyName);
-		properties = new ArrayList<AbstractField>();
-
-	}
-
+	
+	private List<AbstractField> properties;
+	
 	/**
 	 * Complex Property type constructor (namespaceURI is given)
 	 * 
@@ -90,7 +75,6 @@ public class ComplexPropertyContainer extends AbstractField {
 		List<AbstractField> list = getPropertiesByLocalName(localName);
 		if (list != null) {
 			for (AbstractField abstractField : list) {
-				// System.out.println(abstractField.getQualifiedName());
 				if (abstractField.getClass().equals(type)) {
 					return abstractField;
 				}
@@ -113,7 +97,7 @@ public class ComplexPropertyContainer extends AbstractField {
 		// BUT IT CREATE PROBLEM TO FIND AND ERASE CLONED ELEMENT
 		// Node cloned = obj.getElement().cloneNode(true);
 		// parent.adoptNode(cloned);
-		element.appendChild(obj.getElement());
+		getElement().appendChild(obj.getElement());
 		// element.appendChild(cloned);
 	}
 
@@ -142,7 +126,11 @@ public class ComplexPropertyContainer extends AbstractField {
 					list.add(abstractField);
 				}
 			}
-			return list;
+			if (list.size()==0) {
+				return null;
+			} else {
+				return list;
+			}
 		}
 		return null;
 
@@ -196,6 +184,7 @@ public class ComplexPropertyContainer extends AbstractField {
 	public void removeProperty(AbstractField property) {
 		if (containsProperty(property)) {
 			properties.remove(property);
+			Element element = getElement();
 			if (element.hasChildNodes()) {
 				NodeList nodes = element.getChildNodes();
 				boolean canRemove = false;
@@ -205,7 +194,9 @@ public class ComplexPropertyContainer extends AbstractField {
 					}
 				}
 				// remove out of the loop to avoid concurrent exception
-				if (canRemove)element.removeChild(property.getElement());
+				if (canRemove) {
+					element.removeChild(property.getElement());
+				}
 			}
 		}
 	}

@@ -24,26 +24,32 @@ package org.apache.padaf.xmpbox.type;
 import java.util.Calendar;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 
-public class ResourceEventType extends ComplexPropertyContainer {
+public class ResourceEventType extends AbstractStructuredType {
 
 	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#";
 
 	public static final String PREFERRED_PREFIX = "stEvt";
 	
-	protected XMPMetadata metadata;
-	
+	@PropertyType(propertyType="Choice")
 	public static final String ACTION = "action";
 
+	@PropertyType(propertyType="Text")
 	public static final String CHANGED = "changed";
 
+	@PropertyType(propertyType="GUID")
 	public static final String INSTANCE_ID = "instanceID";
 	
+	@PropertyType(propertyType="Text")
 	public static final String PARAMETERS = "parameters";
 	
+	@PropertyType(propertyType="AgentName")
 	public static final String SOFTWARE_AGENT = "softwareAgent";
 
+	@PropertyType(propertyType="Date")
 	public static final String WHEN = "when";
 	
 
@@ -58,94 +64,65 @@ public class ResourceEventType extends ComplexPropertyContainer {
 	 * @param propertyName
 	 *            The local Name of this thumbnail type
 	 */
-	public ResourceEventType(XMPMetadata metadata, String namespace, String prefix,
-			String propertyName) {
-		super(metadata, namespace, prefix, propertyName);
-		this.metadata = metadata;
+	public ResourceEventType(XMPMetadata metadata) {
+		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
 	
 	public String getInstanceID () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(INSTANCE_ID,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(INSTANCE_ID);
 	}
 
 	public void setInstanceID (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, INSTANCE_ID, value));
+		addSimpleProperty(INSTANCE_ID, value);
 	}
 
 	public String getSoftwareAgent () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(SOFTWARE_AGENT,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(SOFTWARE_AGENT);
 	}
 
 	public void setSoftwareAgent (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, SOFTWARE_AGENT, value));
+		addSimpleProperty(SOFTWARE_AGENT, value);
 	}
 
 	public Calendar getWhen () {
-		DateType absProp = (DateType)getFirstEquivalentProperty(WHEN,DateType.class);
-		if (absProp != null) {
-			return absProp.getValue();
-		} else {
-			return null;
-		}
+		return getDatePropertyAsCalendar(WHEN);
 	}
 
 	public void setWhen (Calendar value) {
-		this.addProperty(new DateType(metadata, PREFERRED_PREFIX, WHEN, value));
+		addSimpleProperty(WHEN, value);
 	}
 
 	public String getAction () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(ACTION,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(ACTION);
 	}
 
 	public void setAction (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, ACTION, value));
+		addSimpleProperty(ACTION, value);
 	}
 
 	
 	public String getChanged () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(CHANGED,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(CHANGED);
 	}
 
 	public void setChanged (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, CHANGED, value));
+		addSimpleProperty(CHANGED, value);
 	}
 
 	public String getParameters () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(PARAMETERS,TextType.class);
-		if (absProp != null) {
-			return absProp.getStringValue();
-		} else {
-			return null;
-		}
+		return getPropertyValueAsString(PARAMETERS);
 	}
 
 	public void setParameters (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, PARAMETERS, value));
+		addSimpleProperty(PARAMETERS, value);
 	}
 
-
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
+	}
 
 	
 }

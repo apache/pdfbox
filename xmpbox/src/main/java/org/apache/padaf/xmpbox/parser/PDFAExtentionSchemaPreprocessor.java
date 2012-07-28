@@ -29,6 +29,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.TypeMapping;
 
 public class PDFAExtentionSchemaPreprocessor extends XMPDocumentBuilder implements XMPDocumentPreprocessor {
 
@@ -39,7 +40,7 @@ public class PDFAExtentionSchemaPreprocessor extends XMPDocumentBuilder implemen
 	public NSMapping process(byte[] xmp) throws XmpParsingException, XmpSchemaException, 
 		XmpUnknownValueTypeException, XmpExpectedRdfAboutAttribute, XmpXpacketEndException, BadFieldValueException {
 		parse(xmp);
-		return this.nsMap;
+		return this.getNsMap();
 	}
 
 	protected void parseDescription(XMPMetadata metadata)
@@ -47,15 +48,16 @@ public class PDFAExtentionSchemaPreprocessor extends XMPDocumentBuilder implemen
 	XmpUnknownValueTypeException, XmpExpectedRdfAboutAttribute,
 	BadFieldValueException {
 
+		NSMapping nsMap = getNsMap();
+		XMLStreamReader reader = getReader();
 		nsMap.resetComplexBasicTypesDeclarationInSchemaLevel();
-		int cptNS = reader.get().getNamespaceCount();
+		int cptNS = reader.getNamespaceCount();
 		HashMap<String, String> namespaces = new HashMap<String, String>();
 		for (int i = 0; i < cptNS; i++) {
-			namespaces.put(reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i));
-			if (nsMap.isComplexBasicTypes(reader.get().getNamespaceURI(i))) {
+			namespaces.put(reader.getNamespacePrefix(i), reader.getNamespaceURI(i));
+			if (TypeMapping.isStructuredTypeNamespace(reader.getNamespaceURI(i))) {
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
-						.get().getNamespaceURI(i), reader.get()
-						.getNamespacePrefix(i));
+						.getNamespaceURI(i), reader.getNamespacePrefix(i));
 			}
 		}
 
@@ -81,10 +83,10 @@ public class PDFAExtentionSchemaPreprocessor extends XMPDocumentBuilder implemen
 
 		} else {
 			int openedTag = 0;
-			while (reader.get().nextTag() == XMLStreamReader.START_ELEMENT) {
+			while (reader.nextTag() == XMLStreamReader.START_ELEMENT) {
 				openedTag=1;
 				do {
-					int tag = reader.get().next();
+					int tag = reader.next();
 					if (tag == XMLStreamReader.START_ELEMENT) {
 						openedTag++;
 					} else if (tag == XMLStreamReader.END_ELEMENT) {

@@ -39,6 +39,7 @@ import org.apache.padaf.xmpbox.type.TextType;
 public class PDFAFieldDescription {
 
 	public static final String PDFAFIELDPREFIX = "pdfaField";
+	
 	public static final String PDFAFIELDPREFIXSEP = "pdfaField:";
 
 	@PropertyType(propertyType = "Text")
@@ -50,8 +51,9 @@ public class PDFAFieldDescription {
 	@PropertyType(propertyType = "Text")
 	public static final String DESCRIPTION = "description";
 
-	protected XMPMetadata metadata;
-	protected ComplexPropertyContainer content;
+	private XMPMetadata metadata;
+	
+	private ComplexPropertyContainer content;
 
 	/**
 	 * Build a new PDF/A field description
@@ -61,7 +63,7 @@ public class PDFAFieldDescription {
 	 */
 	public PDFAFieldDescription(XMPMetadata metadata) {
 		this.metadata = metadata;
-		content = new ComplexPropertyContainer(metadata, "rdf", "li");
+		content = new ComplexPropertyContainer(metadata,null, "rdf", "li");
 		content
 				.setAttribute(new Attribute(null, "rdf", "parseType",
 						"Resource"));
@@ -75,7 +77,7 @@ public class PDFAFieldDescription {
 	 */
 	public void setNameValue(String name) {
 		content
-				.addProperty(new TextType(metadata, PDFAFIELDPREFIX, NAME, name));
+				.addProperty(new TextType(metadata, null, PDFAFIELDPREFIX, NAME, name));
 	}
 
 	/**
@@ -85,7 +87,7 @@ public class PDFAFieldDescription {
 	 *            The value to set
 	 */
 	public void setValueTypeValue(String valueType) {
-		content.addProperty(new TextType(metadata, PDFAFIELDPREFIX, VALUETYPE,
+		content.addProperty(new TextType(metadata, null, PDFAFIELDPREFIX, VALUETYPE,
 				valueType));
 	}
 
@@ -96,7 +98,7 @@ public class PDFAFieldDescription {
 	 *            The value to set
 	 */
 	public void setDescriptionValue(String description) {
-		content.addProperty(new TextType(metadata, PDFAFIELDPREFIX,
+		content.addProperty(new TextType(metadata, null, PDFAFIELDPREFIX,
 				DESCRIPTION, description));
 	}
 
@@ -192,4 +194,9 @@ public class PDFAFieldDescription {
 		return getFieldProperty(PDFAFIELDPREFIXSEP + DESCRIPTION);
 	}
 
+	protected ComplexPropertyContainer getContent() {
+		return content;
+	}
+
+	
 }

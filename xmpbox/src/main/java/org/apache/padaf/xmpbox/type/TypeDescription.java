@@ -21,48 +21,48 @@
 
 package org.apache.padaf.xmpbox.type;
 
-/**
- * Represents one Property Description described in xml file in order to be use
- * in automatic SchemaDescriptionBulding
- * 
- * @author a183132
- * 
- */
-public class PropertyDescription {
 
-	private String propName;
+public class TypeDescription {
+
+	public enum BasicType {	Text, Date, Integer, Boolean, Real}
+
+	private String type;
 	
-	private String propDesc;
+	private BasicType basic;
+	
+	private Class<? extends AbstractField> clz;
 
-	/**
-	 * Constructor of a propertyDescription in order to be use in automatic
-	 * SchemaDescriptionBulding
-	 * 
-	 * @param propName
-	 *            the local Name of the property to describe
-	 * @param propDesc
-	 *            the description of the property to describe
-	 */
-	public PropertyDescription(String propName, String propDesc) {
-		this.propName = propName;
-		this.propDesc = propDesc;
+	public TypeDescription(String type, BasicType basic,Class<? extends AbstractField> clz) {
+		super();
+		this.type = type;
+		this.basic = basic;
+		this.clz = clz;
+	}
+	
+
+	public TypeDescription(String type, BasicType basic) {
+		this(type, basic,TextType.class);
 	}
 
-	/**
-	 * Get description declared
-	 * 
-	 * @return description declared
-	 */
-	public String getDescription() {
-		return propDesc;
+	public TypeDescription(String type) {
+		this(type,BasicType.Text,TextType.class);
 	}
 
-	/**
-	 * Get property name declared
-	 * 
-	 * @return property name declared
-	 */
-	public String getPropertyName() {
-		return propName;
+	
+	public String getType() {
+		return type;
 	}
+
+	public Class<? extends AbstractField> getTypeClass() {
+		return clz;
+	}
+
+	public BasicType getBasic() {
+		return basic;
+	}
+
+	
+	
+	
+	
 }

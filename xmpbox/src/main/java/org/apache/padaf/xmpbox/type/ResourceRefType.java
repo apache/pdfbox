@@ -21,52 +21,63 @@
 
 package org.apache.padaf.xmpbox.type;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.schema.PropertyType;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 
-public class ResourceRefType extends ComplexPropertyContainer {
+public class ResourceRefType extends AbstractStructuredType {
 
 	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/ResourceRef#";
 
 	public static final String PREFERRED_PREFIX = "stRef";
 	
-	protected XMPMetadata metadata;
-	
+	@PropertyType(propertyType = "URI")
 	public static final String DOCUMENT_ID = "documentID";
 
+	@PropertyType(propertyType = "URI")
 	public static final String FILE_PATH = "filePath";
 
+	@PropertyType(propertyType = "URI")
 	public static final String INSTANCE_ID = "instanceID";
 	
-	public static final String LAS_MODIFY_DATE = "lastModifyDate";
+	@PropertyType(propertyType = "Date")
+	public static final String LAST_MODIFY_DATE = "lastModifyDate";
 	
+	@PropertyType(propertyType = "URI")
 	public static final String MANAGE_TO = "manageTo";
 
+	@PropertyType(propertyType = "URI")
 	public static final String MANAGE_UI = "manageUI";
 	
+	@PropertyType(propertyType = "AgentName")
 	public static final String MANAGER = "manager";
 
+	@PropertyType(propertyType = "Text")
 	public static final String MANAGER_VARIANT = "managerVariant";
 
+	@PropertyType(propertyType = "Text")
 	public static final String PART_MAPPING = "partMapping";
 	
+	@PropertyType(propertyType = "Text")
 	public static final String RENDITION_PARAMS = "renditionParams";
-	
+
+	@PropertyType(propertyType = "Text")
 	public static final String VERSION_ID = "versionID";
 
+	@PropertyType(propertyType = "Choice")
 	public static final String MASK_MARKERS = "maskMarkers";
 	
+	@PropertyType(propertyType = "RenditionClass")
 	public static final String RENDITION_CLASS = "renditionClass";
 	
+	@PropertyType(propertyType = "Part")
 	public static final String FROM_PART = "fromPart";
 	
+	@PropertyType(propertyType = "Part")
 	public static final String TO_PART = "toPart";
 	
 	public static final String ALTERNATE_PATHS = "alternatePaths";
@@ -82,15 +93,13 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	 * @param propertyName
 	 *            The local Name of this thumbnail type
 	 */
-	public ResourceRefType(XMPMetadata metadata, String namespace, String prefix,
-			String propertyName) {
-		super(metadata, namespace, prefix, propertyName);
-		this.metadata = metadata;
+	public ResourceRefType(XMPMetadata metadata) {
+		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
-	public String getDocumentId () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(DOCUMENT_ID,TextType.class);
+	public String getDocumentID () {
+		TextType absProp = (TextType)getFirstEquivalentProperty(DOCUMENT_ID,URIType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -98,12 +107,12 @@ public class ResourceRefType extends ComplexPropertyContainer {
 		}
 	}
 	
-	public void setDocumentId (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, DOCUMENT_ID, value));
+	public void setDocumentID (String value) {
+		addSimpleProperty(DOCUMENT_ID, value);
 	}
 	
 	public String getFilePath () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(FILE_PATH,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(FILE_PATH,URIType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -112,11 +121,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 
 	public void setFilePath (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, FILE_PATH, value));
+		addSimpleProperty(FILE_PATH, value);
 	}
 
 	public String getInstanceID () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(INSTANCE_ID,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(INSTANCE_ID,URIType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -125,11 +134,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 
 	public void setInstanceID (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, INSTANCE_ID, value));
+		addSimpleProperty(INSTANCE_ID, value);
 	}
 
 	public Calendar getLastModifyDate () {
-		DateType absProp = (DateType)getFirstEquivalentProperty(INSTANCE_ID,DateType.class);
+		DateType absProp = (DateType)getFirstEquivalentProperty(LAST_MODIFY_DATE,DateType.class);
 		if (absProp != null) {
 			return absProp.getValue();
 		} else {
@@ -138,11 +147,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 
 	public void setLastModifyDate (Calendar value) {
-		this.addProperty(new DateType(metadata, PREFERRED_PREFIX, INSTANCE_ID, value));
+		addSimpleProperty(LAST_MODIFY_DATE, value);
 	}
 
 	public String getManageUI () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGE_UI,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGE_UI,URIType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -151,11 +160,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setManageUI (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MANAGE_UI, value));
+		addSimpleProperty(MANAGE_UI, value);
 	}
 	
 	public String getManageTo () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGE_TO,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGE_TO,URIType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -164,11 +173,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setManageTo (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MANAGE_TO, value));
+		addSimpleProperty(MANAGE_TO, value);
 	}
 	
 	public String getManager () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGER,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(MANAGER,AgentNameType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -177,7 +186,7 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setManager (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MANAGER, value));
+		addSimpleProperty(MANAGER, value);
 	}
 	
 	public String getManagerVariant () {
@@ -190,7 +199,7 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setManagerVariant (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MANAGER_VARIANT, value));
+		addSimpleProperty(MANAGER_VARIANT, value);
 	}
 	
 	public String getPartMapping () {
@@ -203,7 +212,7 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setPartMapping (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, PART_MAPPING, value));
+		addSimpleProperty(PART_MAPPING, value);
 	}
 	
 	public String getRenditionParams () {
@@ -216,7 +225,7 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setRenditionParams (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, RENDITION_PARAMS, value));
+		addSimpleProperty(RENDITION_PARAMS, value);
 	}
 	
 	public String getVersionID () {
@@ -229,11 +238,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setVersionID (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, VERSION_ID, value));
+		addSimpleProperty(VERSION_ID, value);
 	}
 	
 	public String getMaskMarkers () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(MASK_MARKERS,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(MASK_MARKERS,ChoiceType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -242,11 +251,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setMaskMarkers (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, MASK_MARKERS, value));
+		addSimpleProperty(MASK_MARKERS, value);
 	}
 	
 	public String getRenditionClass () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(RENDITION_CLASS,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(RENDITION_CLASS,RenditionClassType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -255,11 +264,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setRenditionClass (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, RENDITION_CLASS, value));
+		addSimpleProperty(RENDITION_CLASS, value);
 	}
 	
 	public String getFromPart () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(FROM_PART,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(FROM_PART,PartType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -268,11 +277,11 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setFromPart (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, FROM_PART, value));
+		addSimpleProperty(FROM_PART, value);
 	}
 	
 	public String getToPart () {
-		TextType absProp = (TextType)getFirstEquivalentProperty(TO_PART,TextType.class);
+		TextType absProp = (TextType)getFirstEquivalentProperty(TO_PART,PartType.class);
 		if (absProp != null) {
 			return absProp.getStringValue();
 		} else {
@@ -281,18 +290,19 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	}
 	
 	public void setToPart (String value) {
-		this.addProperty(new TextType(metadata, PREFERRED_PREFIX, TO_PART, value));
+		addSimpleProperty(TO_PART, value);
 	}
 	
 	public void addAlternatePath(String value) {
         ComplexProperty seq = (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
         if (seq==null) {
-        	seq = new ComplexProperty(metadata,
+        	seq = new ComplexProperty(getMetadata(), null,
                     PREFERRED_PREFIX, ALTERNATE_PATHS,
                     ComplexProperty.ORDERED_ARRAY);
         	addProperty(seq);
         }
-        seq.getContainer().addProperty(new TextType(metadata, "rdf", "li", value) );
+        TextType tt = (TextType)TypeMapping.instanciateSimpleProperty(getMetadata(), null, "rdf", "li", value, "Text");
+        seq.getContainer().addProperty(tt);
 	}
 
 	/**
@@ -301,8 +311,7 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	 * @return version property to set
 	 */
 	public ComplexProperty getAlternatePathsProperty() {
-        ComplexProperty seq = (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
-		return seq;
+        return (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
 	}
 
 	/**
@@ -313,28 +322,16 @@ public class ResourceRefType extends ComplexPropertyContainer {
 	public List<String> getAlternatePaths() {
         ComplexProperty seq = (ComplexProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ComplexProperty.class);
         if (seq!=null) {
-        	return getArrayListToString(seq);
+        	return TypeUtil.getArrayListToString(seq);
         } else {
         	return null;
         }
 	}
 
-	// TODO should factorize in helper (exists in XMPSchema)
-    private List<String> getArrayListToString(ComplexProperty array) {
-        List<String> retval = null;
-        if (array != null) {
-            retval = new ArrayList<String>();
-            Iterator<AbstractField> it = array.getContainer()
-            .getAllProperties().iterator();
-            AbstractSimpleProperty tmp;
-            while (it.hasNext()) {
-                tmp = (AbstractSimpleProperty) it.next();
-                retval.add(tmp.getStringValue());
-            }
-            retval = Collections.unmodifiableList(retval);
-        }
-        return retval;
-    }
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
+	}
 
-	
+
 }

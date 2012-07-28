@@ -32,9 +32,12 @@ import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
  * 
  */
 public class FieldDescription {
-	protected String name;
-	protected String valueType;
-	protected String description;
+	
+	private String name;
+	
+	private String valueType;
+	
+	private String description;
 
 	/**
 	 * Constructor of a FieldDescription in order to be use in automatic

@@ -27,6 +27,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.ComplexProperty;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.URLType;
 
 
 /**
@@ -84,11 +85,11 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            value to add
 	 */
 	public void addOwner(String value) {
-		addBagValue(localPrefixSep + OWNER, value);
+		addQualifiedBagValue(OWNER, value);
 	}
 
 	public void removeOwner (String value) {
-		removeBagValue(localPrefixSep + OWNER, value);
+		removeUnqualifiedBagValue(OWNER, value);
 	}
 	
 	/**
@@ -97,7 +98,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return owners property
 	 */
 	public ComplexProperty getOwnersProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + OWNER);
+		return (ComplexProperty) getUnqualifiedProperty(OWNER);
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return list of defined owners
 	 */
 	public List<String> getOwners() {
-		return getBagValueList(localPrefixSep + OWNER);
+		return getUnqualifiedBagValueList(OWNER);
 	}
 
 	/**
@@ -116,7 +117,8 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            value to add
 	 */
 	public void setMarked(Boolean marked) {
-		addProperty(new BooleanType(metadata, localPrefix, MARKED, marked));
+		BooleanType tt = (BooleanType)instanciateSimple(MARKED, marked?BooleanType.TRUE:BooleanType.FALSE);
+		setMarkedProperty(tt);
 	}
 
 	/**
@@ -135,7 +137,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return Marked property
 	 */
 	public BooleanType getMarkedProperty() {
-		return (BooleanType) getProperty(localPrefixSep + MARKED);
+		return (BooleanType) getUnqualifiedProperty(MARKED);
 	}
 
 	/**
@@ -144,7 +146,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return marked value
 	 */
 	public Boolean getMarked() {
-		BooleanType bt = ((BooleanType) getProperty(localPrefixSep + MARKED));
+		BooleanType bt = ((BooleanType) getUnqualifiedProperty(MARKED));
 		return bt == null ? null : bt.getValue();
 	}
 
@@ -157,7 +159,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            value to set
 	 */
 	public void addUsageTerms(String lang, String value) {
-		setLanguagePropertyValue(localPrefixSep + USAGETERMS, lang, value);
+		setUnqualifiedLanguagePropertyValue(USAGETERMS, lang, value);
 	}
 
     /**
@@ -188,7 +190,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return usageterms property
 	 */
 	public ComplexProperty getUsageTermsProperty() {
-		return (ComplexProperty) getProperty(localPrefixSep + USAGETERMS);
+		return (ComplexProperty) getUnqualifiedProperty(USAGETERMS);
 	}
 
 	/**
@@ -197,7 +199,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return list of languages defined for usageterms
 	 */
 	public List<String> getUsageTermsLanguages() {
-		return getLanguagePropertyLanguagesValue(localPrefixSep + USAGETERMS);
+		return getUnqualifiedLanguagePropertyLanguagesValue(USAGETERMS);
 	}
 
 	/**
@@ -208,7 +210,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return value of specified language
 	 */
 	public String getUsageTerms(String lang) {
-		return getLanguagePropertyValue(localPrefixSep + USAGETERMS, lang);
+		return getUnqualifiedLanguagePropertyValue(USAGETERMS, lang);
 	}
 
     /**
@@ -227,7 +229,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return Webstatement URL property
 	 */
 	public TextType getWebStatementProperty() {
-		return ((TextType) getProperty(localPrefixSep + WEBSTATEMENT));
+		return ((TextType) getUnqualifiedProperty(WEBSTATEMENT));
 	}
 
 	/**
@@ -236,7 +238,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return webStatement URL value
 	 */
 	public String getWebStatement() {
-		TextType tt = ((TextType) getProperty(localPrefixSep + WEBSTATEMENT));
+		TextType tt = ((TextType) getUnqualifiedProperty(WEBSTATEMENT));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -247,7 +249,8 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            WebStatemen url value to set
 	 */
 	public void setWebStatement(String url) {
-		addProperty(new TextType(metadata, localPrefix, WEBSTATEMENT, url));
+		URLType tt = (URLType)instanciateSimple(WEBSTATEMENT, url);
+		setWebStatementProperty(tt);
 	}
 
 	/**
@@ -266,7 +269,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return certificate url property
 	 */
 	public TextType getCertificateProperty() {
-		return ((TextType) getProperty(localPrefixSep + CERTIFICATE));
+		return ((TextType) getUnqualifiedProperty(CERTIFICATE));
 	}
 
 	/**
@@ -275,10 +278,20 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return certificate URL value
 	 */
 	public String getCertificate() {
-		TextType tt = ((TextType) getProperty(localPrefixSep + CERTIFICATE));
+		TextType tt = ((TextType) getUnqualifiedProperty(CERTIFICATE));
 		return tt == null ? null : tt.getStringValue();
 	}
 
+    /**
+     * Convenience method for jempbox signature compatibility
+     *
+     * @see XMPRightsManagementSchema#getCertificate()
+     */
+	@Deprecated
+	public String getCopyright () {
+		return getCertificate();
+	}
+	
     /**
      * Convenience method for jempbox signature compatibility
      *
@@ -298,7 +311,8 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            certficate url value to set
 	 */
 	public void setCertificate(String url) {
-		addProperty(new TextType(metadata, localPrefix, CERTIFICATE, url));
+		URLType tt = (URLType)instanciateSimple(CERTIFICATE, url);
+		setCertificateProperty(tt);
 	}
 
     /**
@@ -308,6 +322,17 @@ public class XMPRightsManagementSchema extends XMPSchema {
      */
 	@Deprecated
 	public void setCertificateURL( String certificate )
+    {
+        setCertificate(certificate);
+    }
+
+    /**
+     * Convenience method for jempbox signature compatibility
+     *
+     * @see XMPRightsManagementSchema#setCertificate(String)
+     */
+	@Deprecated
+	public void setCopyright( String certificate )
     {
         setCertificate(certificate);
     }

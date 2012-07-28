@@ -33,29 +33,12 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 public class ComplexProperty extends AbstractField {
 
 	public static final String UNORDERED_ARRAY = "Bag";
+
 	public static final String ORDERED_ARRAY = "Seq";
+	
 	public static final String ALTERNATIVE_ARRAY = "Alt";
 
-	protected ComplexPropertyContainer container;
-
-	/**
-	 * Contructor of a complex property
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param type
-	 *            type of complexProperty (Bag, Seq, Alt)
-	 */
-	public ComplexProperty(XMPMetadata metadata, String prefix,
-			String propertyName, String type) {
-		super(metadata, prefix, propertyName);
-		container = new ComplexPropertyContainer(metadata, "rdf", type);
-		element.appendChild(container.getElement());
-	}
+	private ComplexPropertyContainer container;
 
 	/**
 	 * Contructor of a complex property
@@ -74,8 +57,8 @@ public class ComplexProperty extends AbstractField {
 	public ComplexProperty(XMPMetadata metadata, String namespace,
 			String prefix, String propertyName, String type) {
 		super(metadata, namespace, prefix, propertyName);
-		container = new ComplexPropertyContainer(metadata, "rdf", type);
-		element.appendChild(container.getElement());
+		container = new ComplexPropertyContainer(metadata,null, "rdf", type);
+		getElement().appendChild(container.getElement());
 	}
 
 	/**

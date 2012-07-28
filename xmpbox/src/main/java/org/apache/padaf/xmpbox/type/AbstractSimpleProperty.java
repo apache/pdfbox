@@ -31,26 +31,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public abstract class AbstractSimpleProperty extends AbstractField {
 
-	protected Object objValue;
-
-	/**
-	 * Property specific type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            the value to give
-	 * 
-	 */
-	public AbstractSimpleProperty(XMPMetadata metadata, String prefix,
-			String propertyName, Object value) {
-		super(metadata, prefix, propertyName);
-		setValue(value);
-	}
+	private Object objValue;
 
 	/**
 	 * Property specific type constructor (namespaceURI is given)
@@ -74,16 +55,6 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	}
 
 	/**
-	 * Must be rewritten in each special XMP type Class to check if the value
-	 * type corresponding to the XMP Type
-	 * 
-	 * @param value
-	 *            Object to analyze
-	 * @return true if object type can be treat by the property type
-	 */
-	public abstract boolean isGoodType(Object value);
-
-	/**
 	 * Check and set new property value (in Element and in its Object
 	 * Representation)
 	 * 
@@ -91,6 +62,10 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 *            Object value to set
 	 */
 	public abstract void setValue(Object value);
+	
+	protected void setObjectValue (Object value) {
+		this.objValue = value;
+	}
 
 	/**
 	 * Return the property value
@@ -98,7 +73,18 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 * @return a string
 	 */
 	public String getStringValue() {
-		return element.getTextContent();
+		return getElement().getTextContent();
 	}
 
+	public Object getObjectValue () {
+		return objValue;
+	}
+	
+	public String toString () {
+		StringBuilder sb = new StringBuilder ();
+		sb.append("[").append(this.getClass().getSimpleName()).append(":");
+		sb.append(objValue).append("]");
+		return sb.toString();
+	}
+	
 }

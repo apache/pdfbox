@@ -21,25 +21,218 @@
 
 package org.apache.padaf.xmpbox.parser;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.schema.PropertyType;
+import org.apache.padaf.xmpbox.type.AbstractField;
+import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
+import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
+import org.apache.padaf.xmpbox.type.TypeDescription;
+import org.apache.padaf.xmpbox.type.TypeMapping;
 
-public abstract class StructuredPropertyParser {
+public class StructuredPropertyParser {
+
+	private XMPDocumentBuilder builder = null;
+	
+	private Class<? extends AbstractStructuredType> typeClass = null;
+
+	private Constructor<? extends AbstractStructuredType> typeConstructor = null;
+
+	private Map<String,PropertyDescription> propDesc = null;
+
+//	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class,String.class};
+	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class};
+
+	public StructuredPropertyParser(XMPDocumentBuilder builder,Class<? extends AbstractStructuredType> propertyTypeClass) 
+			throws XmpPropertyFormatException 
+			{
+		this.builder = builder;
+		this.typeClass = propertyTypeClass;
+		this.propDesc = new HashMap<String, PropertyDescription>();
+		// retrieve xmp properties
+		Field [] fields = typeClass.getFields();
+		for (Field field : fields) {
+			if (field.getAnnotation(PropertyType.class)!=null) {
+				PropertyDescription pd = new PropertyDescription();
+				pd.propertyType = field.getAnnotation(PropertyType.class);
+//				pd.fieldName = field.getName();
+				try {
+					pd.propertyName = field.get(null).toString();
+				} catch (IllegalArgumentException e1) {
+					throw new XmpPropertyFormatException("Failed to parse structured type : "+typeClass.getName(),e1);
+				} catch (IllegalAccessException e1) {
+					throw new XmpPropertyFormatException("Failed to parse structured type : "+typeClass.getName(),e1);
+				}
+				propDesc.put(pd.propertyName, pd);
+			}
+		}
+		// retrieve constructor
+		try {
+			typeConstructor = typeClass.getConstructor(propertyConstructorParams);
+		} catch (SecurityException e) {
+			throw new XmpPropertyFormatException("Failed to initialize structured type parser : "+typeClass.getName(),e);
+		} catch (NoSuchMethodException e) {
+			throw new XmpPropertyFormatException("Failed to initialize structured type parser : "+typeClass.getName(),e);
+		}
+
+			}
+
+	private AbstractStructuredType instanciateProperty (XMPMetadata metadata) throws XmpParsingException {
+		try {
+//			return typeConstructor.newInstance(metadata,prefix);
+			return typeConstructor.newInstance(metadata);
+		} catch (IllegalArgumentException e) {
+			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
+		} catch (InstantiationException e) {
+			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
+		} catch (IllegalAccessException e) {
+			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
+		} catch (InvocationTargetException e) {
+			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
+		}
+	}
+
+	
+//	private String retrieveNamespacePrefix (XMLStreamReader reader, String namespace) {
+//		int na = reader.getNamespaceCount();
+//		for (int i=0; i < na; i++) {
+//			if (reader.getNamespaceURI(i).equals(namespace)) {
+//				return reader.getNamespacePrefix(i);
+//			}
+//		}
+//		// no namespace for prefix
+//		return null;
+//	}
+//	
+//	private String getStructuredClassNamespace (Class<? extends AbstractStructuredType> clz) throws XmpUnexpectedTypeException {
+//		try {
+//			return (String)typeClass.getField("ELEMENT_NS").get(null);
+//		} catch (IllegalArgumentException e) {
+//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
+//		} catch (SecurityException e) {
+//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
+//		} catch (IllegalAccessException e) {
+//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
+//		} catch (NoSuchFieldException e) {
+//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
+//		}
+//		
+//	}
+	
+	
+	public void parse(XMPMetadata metadata, QName altName,
+			ComplexPropertyContainer container)
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
+		builder.expectCurrentLocalName("li");
+		// create property
+//		String fieldPrefix = retrieveNamespacePrefix(
+//				builder.reader.get(), 
+//				getStructuredClassNamespace(typeClass));
+//		ComplexPropertyContainer property = instanciateProperty(metadata, fieldPrefix );
+		ComplexPropertyContainer property = instanciateProperty(metadata);
+		XMLStreamReader reader = builder.getReader();
+		int elmtType = reader.nextTag();
+		QName eltName;
+		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals("li"))) {
+			// read element name, then text content
+			eltName = reader.getName();
+			String eltContent = reader.getElementText();
+			// check if property is expected
+			String localPart = eltName.getLocalPart();
+			if (propDesc.containsKey(localPart)) {
+				PropertyDescription description = propDesc.get(localPart);
+
+				AbstractField a = instanciateSimple(
+						description.propertyType.propertyType(), 
+						metadata, 
+						eltName.getPrefix(),
+						localPart,
+						eltContent);
+
+				property.addProperty(a);
+			} else {
+				// expect only defined properties are accepted
+				// XXX : really the good choice ? 
+				// XXX : should we create text properties for unknown types ?
+				throw new XmpParsingException(
+						"Unknown property name for a job element : "
+								+ eltName.getLocalPart());
+			}
+			elmtType = reader.nextTag();
+		}
+		container.addProperty(property);
+
+	}
 
 
-    protected XMPDocumentBuilder builder = null;
 
-    public StructuredPropertyParser (XMPDocumentBuilder builder) {
-        this.builder = builder;
-    };
 
-    public abstract void parse(XMPMetadata metadata, QName altName,
-            ComplexPropertyContainer container)
-    throws XmpUnexpectedTypeException, XmpParsingException,
-    XMLStreamException, XmpUnknownPropertyTypeException,
-    XmpPropertyFormatException;
+	private AbstractSimpleProperty instanciateSimple (
+			String type, 
+			XMPMetadata metadata, 
+			String prefix, 
+			String propertyName,
+			String valueAsString) 
+					throws XmpParsingException {
+		TypeDescription description = TypeMapping.getTypeDescription(type);
+		Object value = null;
+		switch (description.getBasic()) {
+		case Boolean : 
+			value =  Boolean.parseBoolean(valueAsString);
+			break;
+		case Date :
+			try {
+				value = DateConverter.toCalendar(valueAsString);
+			} catch (IOException e) {
+				throw new XmpParsingException("Failed to parse date property",e);
+			} 
+			break;
+		case Integer :
+			try {
+				value = Integer.parseInt(valueAsString);
+			} catch (NumberFormatException e) {
+				throw new XmpParsingException("Failed to parse integer property",e);
+			} 
+			break;
+		case Real :
+			try {
+				value = Float.parseFloat(valueAsString);
+			} catch (NumberFormatException e) {
+				throw new XmpParsingException("Failed to parse real type property",e);
+			} 
+			break;
+		case Text :
+			value = valueAsString;
+		}
+
+		return TypeMapping.instanciateSimpleProperty(metadata, null, prefix, propertyName, value, type);
+	}
+
+
+
+	protected class PropertyDescription {
+
+//		private String fieldName;
+//
+		private String propertyName;
+
+		private PropertyType propertyType;
+
+	}
+
+
 
 }

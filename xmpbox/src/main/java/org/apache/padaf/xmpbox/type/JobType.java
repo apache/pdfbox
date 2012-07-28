@@ -22,71 +22,63 @@
 package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.PropertyType;
+import org.apache.padaf.xmpbox.schema.XMPSchema;
 
-public class JobType extends ComplexPropertyContainer {
+public class JobType extends AbstractStructuredType {
 
     public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/Job#";
 
     public static final String PREFERED_PREFIX = "stJob";
     
+    @PropertyType(propertyType="Text")
     public static final String ID = "id";
 
+    @PropertyType(propertyType="Text")
     public static final String NAME = "name";
 
+    @PropertyType(propertyType="URL")
     public static final String URL = "url";
 
-    protected XMPMetadata metadata;
 
-
-    public JobType(XMPMetadata metadata, String namespace, String prefix,
-            String propertyName) {
-        super(metadata, namespace, prefix, propertyName);
-        this.metadata = metadata;
-        setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
+    public JobType(XMPMetadata metadata) {
+        this(metadata, PREFERED_PREFIX);
     }
 
-    
-    
-    public JobType(XMPMetadata metadata, String prefix, String propertyName) {
-        super(metadata, prefix, propertyName);
-        this.metadata = metadata;
-        setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
+    public JobType(XMPMetadata metadata, String fieldPrefix) {
+        super(metadata, XmpConstants.RDF_NAMESPACE, fieldPrefix);
+		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", fieldPrefix, ELEMENT_NS));
     }
 
-    public void setId(String prefix, String id) {
-        this.addProperty(new TextType(metadata, prefix, ID, id));
+    public void setId(String id) {
+    	addSimpleProperty(ID, id);
     }
 
-    public void setName(String prefix, String name) {
-        this.addProperty(new TextType(metadata, prefix, NAME, name));
+    public void setName( String name) {
+    	addSimpleProperty(NAME, name);
     }
 
-    public void setUrl(String prefix, String name) {
-        this.addProperty(new TextType(metadata, prefix, URL, name));
+    public void setUrl(String name) {
+    	addSimpleProperty(URL, name);
     }
 
     public String getId() {
-        AbstractField absProp = getFirstEquivalentProperty(ID,TextType.class);
-        if (absProp != null) {
-            return ((TextType) absProp).getStringValue();
-        }
-        return null;
+    	return getPropertyValueAsString(ID);
     }
 
     public String getName() {
-        AbstractField absProp = getFirstEquivalentProperty(NAME,TextType.class);
-        if (absProp != null) {
-            return ((TextType) absProp).getStringValue();
-        }
-        return null;
+    	return getPropertyValueAsString(NAME);
     }
 
     public String getUrl() {
-        AbstractField absProp = getFirstEquivalentProperty(URL,TextType.class);
-        if (absProp != null) {
-            return ((TextType) absProp).getStringValue();
-        }
-        return null;
+    	return getPropertyValueAsString(URL);
     }
 
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
+	}
+
+    
 }

@@ -40,7 +40,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     @PropertyType(propertyType = "bag Job")
     public static final String JOB_REF = "JobRef";
 
-    protected ComplexProperty bagJobs;
+    private ComplexProperty bagJobs;
 
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata) {
@@ -49,26 +49,36 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
         super(metadata, ownPrefix, JOB_TICKET_URI);
-        content.setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
+        getContent().setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
                 JobType.PREFERED_PREFIX, JobType.ELEMENT_NS));
 
     }
 
     public void addJob(String id , String name, String url) {
+    	addJob(id,name,url,JobType.PREFERED_PREFIX);
+    }
+    
+    public void addJob(String id , String name, String url, String fieldPrefix) {
+        JobType job = new JobType(getMetadata(), fieldPrefix);
+        job.setId(id);
+        job.setName(name);
+        job.setUrl(url);
+        addJob(job);
+    }
+
+    public void addJob (JobType job) {
+    	// create bag if not existing
         if (bagJobs == null) {
-            bagJobs = new ComplexProperty(metadata, localPrefix, JOB_REF,
+            bagJobs = new ComplexProperty(getMetadata(), null, getLocalPrefix(), JOB_REF,
                     ComplexProperty.UNORDERED_ARRAY);
             addProperty(bagJobs);
         }
-        JobType job = new JobType(metadata, "rdf", "li");
-        job.setId("stJob", id);
-        job.setName("stJob", name);
-        job.setUrl("stJob", url);
+        // add job
         bagJobs.getContainer().addProperty(job);
     }
-
+    
     public List<JobType> getJobs() throws BadFieldValueException {
-        List<AbstractField> tmp = getArrayList(localPrefixSep + JOB_REF);
+        List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
         if (tmp != null) {
             List<JobType> layers = new ArrayList<JobType>();
             for (AbstractField abstractField : tmp) {

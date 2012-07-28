@@ -31,25 +31,8 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class BooleanType extends AbstractSimpleProperty {
 
-	private static final String TRUE = "True";
-	private static final String FALSE = "False";
-
-	/**
-	 * Property Boolean type constructor (namespaceURI is not given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            the value to give
-	 */
-	public BooleanType(XMPMetadata metadata, String prefix,
-			String propertyName, Object value) {
-		super(metadata, prefix, propertyName, value);
-	}
+	public static final String TRUE = "True";
+	public static final String FALSE = "False";
 
 	/**
 	 * Property Boolean type constructor (namespaceURI is given)
@@ -70,21 +53,6 @@ public class BooleanType extends AbstractSimpleProperty {
 		super(metadata, namespaceURI, prefix, propertyName, value);
 	}
 
-	/**
-	 * Check if object value type is compatible with this property type
-	 * 
-	 * @param value
-	 *            Object value to check
-	 * @return true if types are compatibles
-	 */
-	public boolean isGoodType(Object value) {
-		if (value instanceof Boolean) {
-			return true;
-		} else if (value instanceof String) {
-			return value.equals(TRUE) || value.equals(FALSE);
-		}
-		return false;
-	}
 
 	/**
 	 * return the property value
@@ -92,7 +60,7 @@ public class BooleanType extends AbstractSimpleProperty {
 	 * @return boolean the property value
 	 */
 	public boolean getValue() {
-		return (Boolean) objValue;
+		return (Boolean) getObjectValue();
 	}
 
 	/**
@@ -104,48 +72,27 @@ public class BooleanType extends AbstractSimpleProperty {
 	 * 
 	 */
 	public void setValue(Object value) {
-		if (!isGoodType(value)) {
-			throw new IllegalArgumentException(
-					"Value given is not allowed for the boolean type.");
-		} else {
-			// if string object
-			if (value instanceof String) {
-				setValueFromString((String) value);
+		if (value instanceof Boolean) {
+			setObjectValue(value);
+		} else if (value instanceof String) {
+			// NumberFormatException is thrown (sub of InvalidArgumentException)
+			String s = value.toString().trim().toUpperCase();
+			if ("TRUE".equals(s)) {
+				setObjectValue(Boolean.TRUE);
+				getElement().setTextContent(TRUE);
+			} else if ("FALSE".equals(s)) {
+				setObjectValue(Boolean.FALSE);
+				getElement().setTextContent(FALSE);
 			} else {
-				// if boolean
-				setValueFromBool((Boolean) value);
+				// unknown value
+				throw new IllegalArgumentException("Not a valid boolean value : '"+value+"'");
 			}
-
-		}
-	}
-
-	/**
-	 * Set property value
-	 * 
-	 * @param value
-	 *            the new boolean element value
-	 */
-	private void setValueFromBool(boolean value) {
-		objValue = value;
-		if (value) {
-			element.setTextContent(TRUE);
 		} else {
-			element.setTextContent(FALSE);
+			// invalid type of value
+			throw new IllegalArgumentException("Value given is not allowed for the Boolean type.");
 		}
 	}
 
-	/**
-	 * Set the value of this property
-	 * 
-	 * @param value
-	 *            The String value to set
-	 */
-	private void setValueFromString(String value) {
-		if (value.equals(TRUE)) {
-			setValueFromBool(true);
-		} else {
-			setValueFromBool(false);
-		}
-	}
+
 
 }

@@ -22,19 +22,24 @@
 package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
+import org.apache.padaf.xmpbox.schema.PropertyType;
 
-public class LayerType extends ComplexPropertyContainer {
-	protected XMPMetadata metadata;
+public class LayerType extends AbstractStructuredType {
+
+	public static final String PREFERED_PREFIX = "photoshop";
 	
-	public LayerType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName) {
-		super(metadata, namespaceURI, prefix, propertyName);
-		this.metadata = metadata;
-		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
-	}
+	public static final String ELEMENT_NS = "http://ns.adobe.com/photoshop/1.0/";
 	
-	public LayerType(XMPMetadata metadata, String prefix, String propertyName) {
-		super(metadata, prefix, propertyName);
-		this.metadata = metadata;
+	@PropertyType(propertyType="Text")
+	public static final String LAYER_NAME = "LayerName";
+
+	@PropertyType(propertyType="Text")
+	public static final String LAYER_TEXT = "LayerText";
+
+	
+	public LayerType(XMPMetadata metadata) {
+		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERED_PREFIX);
 		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
 	}
 	
@@ -44,7 +49,7 @@ public class LayerType extends ComplexPropertyContainer {
 	 * @return the LayerName
 	 */
 	public String getLayerName() {
-		AbstractField absProp = getFirstEquivalentProperty("LayerName",
+		AbstractField absProp = getFirstEquivalentProperty(LAYER_NAME,
 				TextType.class);
 		if (absProp != null) {
 			return ((TextType) absProp).getStringValue();
@@ -62,8 +67,8 @@ public class LayerType extends ComplexPropertyContainer {
 	 * @param image
 	 *            the value of LayerName property to set
 	 */
-	public void setLayerName(String prefix, String name, String image) {
-		this.addProperty(new TextType(metadata, prefix, name, image));
+	public void setLayerName(String image) {
+		this.addProperty(new TextType(getMetadata(), null,getFieldPrefix(), LAYER_NAME, image));
 	}
 	
 	/**
@@ -72,7 +77,7 @@ public class LayerType extends ComplexPropertyContainer {
 	 * @return the LayerText
 	 */
 	public String getLayerText() {
-		AbstractField absProp = getFirstEquivalentProperty("LayerText",
+		AbstractField absProp = getFirstEquivalentProperty(LAYER_TEXT,
 				TextType.class);
 		if (absProp != null) {
 			return ((TextType) absProp).getStringValue();
@@ -90,8 +95,14 @@ public class LayerType extends ComplexPropertyContainer {
 	 * @param image
 	 *            the value of LayerText property to set
 	 */
-	public void setLayerText(String prefix, String name, String image) {
-		this.addProperty(new TextType(metadata, prefix, name, image));
+	public void setLayerText(String image) {
+		this.addProperty(new TextType(getMetadata(), null,getFieldPrefix(), LAYER_TEXT, image));
 	}
+
+	@Override
+	public String getFieldsNamespace() {
+		return ELEMENT_NS;
+	}
+
 
 }

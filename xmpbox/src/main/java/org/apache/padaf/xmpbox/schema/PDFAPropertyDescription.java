@@ -49,8 +49,9 @@ public class PDFAPropertyDescription implements Elementable {
 	public static final String CATEGORY = "category";
 	public static final String DESCRIPTION = "description";
 
-	protected XMPMetadata metadata;
-	protected ComplexPropertyContainer content;
+	private XMPMetadata metadata;
+	
+	private ComplexPropertyContainer content;
 
 	/**
 	 * Build a new property description
@@ -60,7 +61,7 @@ public class PDFAPropertyDescription implements Elementable {
 	 */
 	public PDFAPropertyDescription(XMPMetadata metadata) {
 		this.metadata = metadata;
-		content = new ComplexPropertyContainer(metadata, "rdf", "li");
+		content = new ComplexPropertyContainer(metadata, null, "rdf", "li");
 		content
 				.setAttribute(new Attribute(null, "rdf", "parseType",
 						"Resource"));
@@ -73,7 +74,7 @@ public class PDFAPropertyDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setNameValue(String name) {
-		content.addProperty(new TextType(metadata, PDFAPROPPREFIX, NAME, name));
+		content.addProperty(new TextType(metadata, null, PDFAPROPPREFIX, NAME, name));
 	}
 
 	/**
@@ -83,7 +84,7 @@ public class PDFAPropertyDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setValueTypeValue(String type) {
-		content.addProperty(new TextType(metadata, PDFAPROPPREFIX, VALUETYPE,
+		content.addProperty(new TextType(metadata, null, PDFAPROPPREFIX, VALUETYPE,
 				type));
 	}
 
@@ -97,7 +98,7 @@ public class PDFAPropertyDescription implements Elementable {
 	 */
 	public void setCategoryValue(String category) throws BadFieldValueException {
 		if (category.equals("external") || category.equals("internal")) {
-			content.addProperty(new TextType(metadata, PDFAPROPPREFIX,
+			content.addProperty(new TextType(metadata, null, PDFAPROPPREFIX,
 					CATEGORY, category));
 		} else {
 			throw new BadFieldValueException(
@@ -114,7 +115,7 @@ public class PDFAPropertyDescription implements Elementable {
 	 *            The value to set
 	 */
 	public void setDescriptionValue(String desc) {
-		content.addProperty(new TextType(metadata, PDFAPROPPREFIX, DESCRIPTION,
+		content.addProperty(new TextType(metadata, null, PDFAPROPPREFIX, DESCRIPTION,
 				desc));
 	}
 
@@ -236,4 +237,10 @@ public class PDFAPropertyDescription implements Elementable {
 	public Element getElement() {
 		return content.getElement();
 	}
+
+	protected ComplexPropertyContainer getContent() {
+		return content;
+	}
+	
+	
 }
