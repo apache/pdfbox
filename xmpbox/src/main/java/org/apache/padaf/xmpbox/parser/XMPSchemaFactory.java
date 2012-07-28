@@ -37,13 +37,17 @@ import org.apache.padaf.xmpbox.schema.XMPSchema;
  */
 public class XMPSchemaFactory {
 
-	protected String namespace;
-	protected Class<? extends XMPSchema> schemaClass;
-	protected PropMapping propDef;
-	protected String nsName;
-	protected boolean isDeclarative;
+	private  String namespace;
 	
-	protected List<PropMapping> importedPropertyMapping = new ArrayList<PropMapping>();
+	private Class<? extends XMPSchema> schemaClass;
+	
+	private PropMapping propDef;
+	
+	private String nsName;
+	
+	private boolean isDeclarative;
+	
+	private List<PropMapping> importedPropertyMapping = new ArrayList<PropMapping>();
 	
 	/**
 	 * Factory Constructor for basic known schemas
@@ -153,11 +157,10 @@ public class XMPSchemaFactory {
 	 * @throws XmpSchemaException
 	 *             When Instancing specified Object Schema failed
 	 */
-	@SuppressWarnings("unchecked")
 	public XMPSchema createXMPSchema(XMPMetadata metadata, String prefix)
 	throws XmpSchemaException {
 		XMPSchema schema = null;
-		Class[] argsClass;
+		Class<?>[] argsClass;
 		Object[] schemaArgs;
 
 		if (isDeclarative) {
