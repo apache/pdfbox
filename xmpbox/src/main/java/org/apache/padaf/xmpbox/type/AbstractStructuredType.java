@@ -26,12 +26,14 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
-public abstract class AbstractStructuredType extends ComplexPropertyContainer {
+public abstract class AbstractStructuredType extends AbstractField {
 
 	
 	
 	/** The prefix of the fields of the structure */
 	private String fieldPrefix = null;
+	
+	private ComplexPropertyContainer container = null;
 
 	protected static final String STRUCTURE_ARRAY_PREFIX = "rdf";
 
@@ -40,13 +42,29 @@ public abstract class AbstractStructuredType extends ComplexPropertyContainer {
 	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
 			String fieldPrefix) {
 		super(metadata, namespaceURI, STRUCTURE_ARRAY_PREFIX, STRUCTURE_ARRAY_NAME);
+		this.container = new ComplexPropertyContainer(metadata, namespaceURI, STRUCTURE_ARRAY_PREFIX, "Description");
 		this.fieldPrefix = fieldPrefix;
+		getElement().appendChild(container.getElement());
 	}
 
 	public abstract String getFieldsNamespace();
 	
 	public String getFieldPrefix () {
 		return this.fieldPrefix;
+	}
+
+
+	public final void addProperty(AbstractField obj) {
+		container.addProperty(obj);
+	}
+	
+	protected final AbstractField getFirstEquivalentProperty(String localName,
+			Class<? extends AbstractField> type) {
+		return container.getFirstEquivalentProperty(localName, type);
+	}
+
+	public final List<AbstractField> getAllProperties() {
+		return container.getAllProperties();
 	}
 
 	
@@ -57,7 +75,7 @@ public abstract class AbstractStructuredType extends ComplexPropertyContainer {
 
 
 	protected AbstractSimpleProperty getProperty (String fieldName) {
-		List<AbstractField> list = getPropertiesByLocalName(fieldName);
+		List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
 		// return null if no property
 		if (list==null) {
 			return null;
@@ -77,7 +95,7 @@ public abstract class AbstractStructuredType extends ComplexPropertyContainer {
 	}
 
 	protected Calendar getDatePropertyAsCalendar(String fieldName) {
-		DateType absProp = (DateType)getFirstEquivalentProperty(fieldName,DateType.class);
+		DateType absProp = (DateType)container.getFirstEquivalentProperty(fieldName,DateType.class);
 		if (absProp != null) {
 			return absProp.getValue();
 		} else {
