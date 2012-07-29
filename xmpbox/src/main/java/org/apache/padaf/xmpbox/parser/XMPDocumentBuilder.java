@@ -1229,58 +1229,64 @@ public class XMPDocumentBuilder {
 						.getNamespacePrefix(i));
 			}
 		}
-		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
-		if (type.equals("Unmanaged")) {
-			// do not parse the property, no validation, no reserialization
-			boolean cont = true;
-			while (cont) {
-				int t = reader.get().next();
-				if (t==XMLStreamReader.END_ELEMENT) {
-					if (propertyName.equals(reader.get().getName())) {
-						cont = false;
-					}
-				}
-			}
-		} else if (type.equals("Lang Alt")) {
-			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
-		} else if (TypeMapping.isSimpleType(type)) {
-			TypeDescription tclass = TypeMapping.getTypeDescription(type);
-			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)tclass.getTypeClass();
-			parseSimpleProperty(metadata, propertyName, tcn, schema.getContent());
-		} else if (TypeMapping.isStructuredType(type)) {
-			TypeDescription tclass = TypeMapping.getTypeDescription(type);
-			StructuredPropertyParser parser = new StructuredPropertyParser(
-					this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
-			parseStructuredProperty(metadata, parser, schema.getContent());
-		} else if (TypeMapping.getArrayType(type)!=null) {
-			// retrieve array type and content type
-			int pos = type.indexOf(' ');
-			String arrayType = TypeMapping.getArrayType(type);
-			String typeInArray = type.substring(pos+1);
-			TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
-			Class<? extends AbstractField> tcn = tclass.getTypeClass();
-			
-			if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
-				// array of simple
-				parseSimplePropertyArray(
-						metadata, 
-						propertyName, 
-						arrayType, 
-						(Class<? extends AbstractSimpleProperty>)tcn,
-						schema.getContent());
-			} else if (AbstractStructuredType.class.isAssignableFrom(tcn)) {
-				// array of structured
+		try {
+			String type = getPropertyDeclarationInNamespaces(schema, propertyName);
+			// found type, manage it
+			if (type.equals("Lang Alt")) {
+				parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
+			} else if (TypeMapping.isSimpleType(type)) {
+				TypeDescription tclass = TypeMapping.getTypeDescription(type);
+				Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)tclass.getTypeClass();
+				parseSimpleProperty(metadata, propertyName, tcn, schema.getContent());
+			} else if (TypeMapping.isStructuredType(type)) {
+				TypeDescription tclass = TypeMapping.getTypeDescription(type);
 				StructuredPropertyParser parser = new StructuredPropertyParser(
-						this, (Class<? extends AbstractStructuredType>)tcn);
-				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContent());
+						this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
+				parseStructuredProperty(metadata, parser, schema.getContent());
+			} else if (TypeMapping.getArrayType(type)!=null) {
+				// retrieve array type and content type
+				int pos = type.indexOf(' ');
+				String arrayType = TypeMapping.getArrayType(type);
+				String typeInArray = type.substring(pos+1);
+				TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
+				Class<? extends AbstractField> tcn = tclass.getTypeClass();
+				
+				if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
+					// array of simple
+					parseSimplePropertyArray(
+							metadata, 
+							propertyName, 
+							arrayType, 
+							(Class<? extends AbstractSimpleProperty>)tcn,
+							schema.getContent());
+				} else if (AbstractStructuredType.class.isAssignableFrom(tcn)) {
+					// array of structured
+					StructuredPropertyParser parser = new StructuredPropertyParser(
+							this, (Class<? extends AbstractStructuredType>)tcn);
+					parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContent());
+				} else {
+					// invalid case
+					throw new XmpUnknownPropertyTypeException("Unknown type : "+type);
+				}
+			} else if (type.equals("Field")) {
+				parseFieldProperty(metadata, propertyName, schema);
 			} else {
-				// invalid case
-				throw new XmpUnknownPropertyTypeException("Unknown type : "+type);
+				throw new XmpUnknownPropertyTypeException("Unknown type : " + type);
 			}
-		} else if (type.equals("Field")) {
-			parseFieldProperty(metadata, propertyName, schema);
-		} else {
-			throw new XmpUnknownPropertyTypeException("Unknown type : " + type);
+
+		} catch (XmpUnknownPropertyException e) {
+//			// this property is not managed in the workspace
+//			// do not parse the property, no validation, no reserialization
+//			boolean cont = true;
+//			while (cont) {
+//				int t = reader.get().next();
+//				if (t==XMLStreamReader.END_ELEMENT) {
+//					if (propertyName.equals(reader.get().getName())) {
+//						cont = false;
+//					}
+//				}
+//			}
+			throw e;
 		}
 
 	}
