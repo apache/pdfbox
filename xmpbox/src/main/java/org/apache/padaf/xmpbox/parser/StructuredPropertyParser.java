@@ -137,16 +137,15 @@ public class StructuredPropertyParser {
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
 		builder.expectCurrentLocalName("li");
-		// create property
-//		String fieldPrefix = retrieveNamespacePrefix(
-//				builder.reader.get(), 
-//				getStructuredClassNamespace(typeClass));
-//		ComplexPropertyContainer property = instanciateProperty(metadata, fieldPrefix );
-		ComplexPropertyContainer property = instanciateProperty(metadata);
+		AbstractStructuredType property = instanciateProperty(metadata);
 		XMLStreamReader reader = builder.getReader();
 		int elmtType = reader.nextTag();
+		// rdf:Description is mandatory
+		builder.expectCurrentLocalName("Description");
+		elmtType = reader.nextTag();
+		
 		QName eltName;
-		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals("li"))) {
+		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals("Description"))) {
 			// read element name, then text content
 			eltName = reader.getName();
 			String eltContent = reader.getElementText();
@@ -173,6 +172,8 @@ public class StructuredPropertyParser {
 			}
 			elmtType = reader.nextTag();
 		}
+		// closing rdf:Description element
+		reader.nextTag();
 		container.addProperty(property);
 
 	}

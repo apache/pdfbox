@@ -24,10 +24,12 @@
 			<xmp:Thumbnails xmlns:xapGImg="http://ns.adobe.com/xap/1.0/g/img/">
 				<rdf:Alt>
 					<rdf:li rdf:parseType="Resource">
-						<xapGImg:height>162</xapGImg:height>
-						<xapGImg:width>216</xapGImg:width>
-						<xapGImg:format>JPEG</xapGImg:format>
-						<xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
+						<rdf:Description>
+							<xapGImg:height>162</xapGImg:height>
+							<xapGImg:width>216</xapGImg:width>
+							<xapGImg:format>JPEG</xapGImg:format>
+							<xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
+						</rdf:Description>
 					</rdf:li>
 				</rdf:Alt>
 			</xmp:Thumbnails>
