@@ -87,6 +87,13 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    public long getPosition() throws IOException {
+        return pointer;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public int read() throws IOException
     {
         if (pointer >= this.size)
