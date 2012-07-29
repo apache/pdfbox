@@ -195,14 +195,15 @@ public class DeserializationTest {
 		List<ThumbnailType> thumbs = metadata.getXMPBasicSchema()
 				.getThumbnailsProperty();
 		Assert.assertNotNull(thumbs);
-		Assert.assertEquals(1, thumbs.size());
+		Assert.assertEquals(2, thumbs.size());
+
 		ThumbnailType thumb = thumbs.get(0);
-		/*
-		 * <xapGImg:height>162</xapGImg:height>
-		 * <xapGImg:width>216</xapGImg:width>
-		 * <xapGImg:format>JPEG</xapGImg:format>
-		 * <xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
-		 */
+		Assert.assertEquals(new Integer(162), thumb.getHeight());
+		Assert.assertEquals(new Integer(216), thumb.getWidth());
+		Assert.assertEquals("JPEG", thumb.getFormat());
+		Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
+
+		thumb = thumbs.get(1);
 		Assert.assertEquals(new Integer(162), thumb.getHeight());
 		Assert.assertEquals(new Integer(216), thumb.getWidth());
 		Assert.assertEquals("JPEG", thumb.getFormat());

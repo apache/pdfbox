@@ -44,14 +44,14 @@ import org.apache.padaf.xmpbox.type.TypeMapping;
 public class StructuredPropertyParser {
 
 	private XMPDocumentBuilder builder = null;
-	
+
 	private Class<? extends AbstractStructuredType> typeClass = null;
 
 	private Constructor<? extends AbstractStructuredType> typeConstructor = null;
 
 	private Map<String,PropertyDescription> propDesc = null;
 
-//	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class,String.class};
+	//	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class,String.class};
 	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class};
 
 	public StructuredPropertyParser(XMPDocumentBuilder builder,Class<? extends AbstractStructuredType> propertyTypeClass) 
@@ -66,7 +66,7 @@ public class StructuredPropertyParser {
 			if (field.getAnnotation(PropertyType.class)!=null) {
 				PropertyDescription pd = new PropertyDescription();
 				pd.propertyType = field.getAnnotation(PropertyType.class);
-//				pd.fieldName = field.getName();
+				//				pd.fieldName = field.getName();
 				try {
 					pd.propertyName = field.get(null).toString();
 				} catch (IllegalArgumentException e1) {
@@ -90,7 +90,7 @@ public class StructuredPropertyParser {
 
 	private AbstractStructuredType instanciateProperty (XMPMetadata metadata) throws XmpParsingException {
 		try {
-//			return typeConstructor.newInstance(metadata,prefix);
+			//			return typeConstructor.newInstance(metadata,prefix);
 			return typeConstructor.newInstance(metadata);
 		} catch (IllegalArgumentException e) {
 			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
@@ -103,49 +103,46 @@ public class StructuredPropertyParser {
 		}
 	}
 
-	
-//	private String retrieveNamespacePrefix (XMLStreamReader reader, String namespace) {
-//		int na = reader.getNamespaceCount();
-//		for (int i=0; i < na; i++) {
-//			if (reader.getNamespaceURI(i).equals(namespace)) {
-//				return reader.getNamespacePrefix(i);
-//			}
-//		}
-//		// no namespace for prefix
-//		return null;
-//	}
-//	
-//	private String getStructuredClassNamespace (Class<? extends AbstractStructuredType> clz) throws XmpUnexpectedTypeException {
-//		try {
-//			return (String)typeClass.getField("ELEMENT_NS").get(null);
-//		} catch (IllegalArgumentException e) {
-//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
-//		} catch (SecurityException e) {
-//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
-//		} catch (IllegalAccessException e) {
-//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
-//		} catch (NoSuchFieldException e) {
-//			throw new XmpUnexpectedTypeException("Failed to find Structured type namespace ("+clz.getName()+")",e);
-//		}
-//		
-//	}
-	
-	
+
+
+	private boolean isParseTypeResource () {
+		XMLStreamReader reader = builder.getReader();
+		int count = reader.getAttributeCount();
+		for (int i=0; i < count ; i++) {
+			if ("parseType".equals(reader.getAttributeLocalName(i))) {
+				if ("Resource".equals(reader.getAttributeValue(i))) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
 	public void parse(XMPMetadata metadata, QName altName,
 			ComplexPropertyContainer container)
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
 		builder.expectCurrentLocalName("li");
-		AbstractStructuredType property = instanciateProperty(metadata);
 		XMLStreamReader reader = builder.getReader();
+		// check if parseType is defined
+		boolean skipDescription = isParseTypeResource();
+
 		int elmtType = reader.nextTag();
-		// rdf:Description is mandatory
-		builder.expectCurrentLocalName("Description");
-		elmtType = reader.nextTag();
-		
+
+		if (!skipDescription) {
+			// rdf:Description 
+			builder.expectCurrentLocalName("Description");
+			elmtType = reader.nextTag();
+		}
+		AbstractStructuredType property = instanciateProperty(metadata);
+
 		QName eltName;
-		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals("Description"))) {
+		String structuredEndName = skipDescription?"li":"Description";
+
+		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals(structuredEndName))) {
 			// read element name, then text content
 			eltName = reader.getName();
 			String eltContent = reader.getElementText();
@@ -172,8 +169,10 @@ public class StructuredPropertyParser {
 			}
 			elmtType = reader.nextTag();
 		}
-		// closing rdf:Description element
-		reader.nextTag();
+		if (!skipDescription) {
+			// closing rdf:Description element
+			reader.nextTag();
+		}
 		container.addProperty(property);
 
 	}
@@ -226,8 +225,8 @@ public class StructuredPropertyParser {
 
 	protected class PropertyDescription {
 
-//		private String fieldName;
-//
+		//		private String fieldName;
+		//
 		private String propertyName;
 
 		private PropertyType propertyType;
