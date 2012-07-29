@@ -62,6 +62,13 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    public long getPosition() throws IOException {
+        return ras.getFilePointer();
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
     public int read() throws IOException
     {
         return ras.read();
