@@ -627,20 +627,10 @@ public class XMPMediaManagementSchema extends XMPSchema {
 		return (ArrayProperty) getUnqualifiedProperty(VERSIONS);
 	}
 
-//	/**
-//	 * Get List of Versions values
-//	 * 
-//	 * @return List of Versions values
-//	 */
-//	public List<String> getVersions() {
-//		return getSequenceValueList(localPrefixSep + VERSIONS);
-//	}
-
 	// --------------------------------------- History
 	// ----------------------------
 
-//    @PropertyType(propertyType = "seq Text")
-	@PropertyType(propertyType = "Unmanaged")
+	@PropertyType(propertyType = "seq ResourceEvent")
 	public static final String HISTORY = "History";
 
 	/**
