@@ -606,7 +606,7 @@ public class XMPDocumentBuilder {
 	 * @throws XMLStreamException
 	 *             When error during reading the rest of xmp stream
 	 */
-	private void expectNextSpecificTag(int type, String localNameExpected,
+	protected void expectNextSpecificTag(int type, String localNameExpected,
 			String ... message) throws XmpUnexpectedTypeException,
 			XmpParsingException, XMLStreamException {
 		expectNextTag(type, message);
