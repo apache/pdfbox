@@ -27,6 +27,7 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.TransformException;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.junit.Before;
@@ -47,7 +48,7 @@ public class XMPMetaDataTest {
 
 	@Before
 	public void init() throws Exception {
-		metadata = new XMPMetadata();
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 		String tmpNsURI = "http://www.test.org/schem/";
 		tmp = new XMPSchema(metadata, "test", tmpNsURI);
 		tmp.addQualifiedBagValue("BagContainer", "Value1");
@@ -107,7 +108,7 @@ public class XMPMetaDataTest {
 	@Test
 	public void testInitMetaDataWithInfo() throws Exception {
 		String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
-		metadata = new XMPMetadata(xpacketBegin, xpacketId, xpacketBytes,
+		metadata = new XMPDocumentBuilder().createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes,
 				xpacketEncoding);
 		Assert.assertEquals(xpacketBegin, metadata.getXpacketBegin());
 		Assert.assertEquals(xpacketId, metadata.getXpacketId());

@@ -33,6 +33,7 @@ import org.apache.padaf.preflight.ValidationException;
 import org.apache.padaf.preflight.ValidationResult.ValidationError;
 import org.apache.padaf.preflight.xmp.SynchronizedMetaDataValidation;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
@@ -70,7 +71,7 @@ public class TestSynchronizedMetadataValidation {
     try {
       doc = new PDDocument();
       dico = doc.getDocumentInformation();
-      metadata = new XMPMetadata();
+      metadata = new XMPDocumentBuilder().createXMPMetadata();
     } catch (IOException e) {
       throw new Exception("Failed to create temporary test PDF/XMP Document");
     }

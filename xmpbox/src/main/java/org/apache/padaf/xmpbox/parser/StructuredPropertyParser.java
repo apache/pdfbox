@@ -222,19 +222,19 @@ public class StructuredPropertyParser {
 				}
 
 				if (reader.getEventType()==XMLStreamConstants.START_ELEMENT) {
-					TypeDescription td = TypeMapping.getStructuredTypeName(eltName.getNamespaceURI());
+					TypeDescription td = builder.getTypeMapping().getStructuredTypeName(eltName.getNamespaceURI());
 					String ptype = td.getProperties().getPropertyType(eltName.getLocalPart());
-					if (TypeMapping.isStructuredType(ptype)) {
-						TypeDescription tclass = TypeMapping.getTypeDescription(ptype);
+					if (builder.getTypeMapping().isStructuredType(ptype)) {
+						TypeDescription tclass = builder.getTypeMapping().getTypeDescription(ptype);
 						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
 						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tcn);
 						sp.parseSimple(metadata, reader.getName(), property.getContainer(),isSubSkipDescription,subExpected);// TODO
-					} else if (TypeMapping.getArrayType(ptype)!=null) {
+					} else if (builder.getTypeMapping().getArrayType(ptype)!=null) {
 						int pos = ptype.indexOf(' ');
-						String arrayType = TypeMapping.getArrayType(ptype);
+						String arrayType = builder.getTypeMapping().getArrayType(ptype);
 						String typeInArray = ptype.substring(pos+1);
 
-						TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
+						TypeDescription tclass = builder.getTypeMapping().getTypeDescription(typeInArray);
 						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
 						// array element starting
 						builder.expectCurrentLocalName(arrayType);
@@ -278,7 +278,7 @@ public class StructuredPropertyParser {
 			String propertyName,
 			String valueAsString) 
 					throws XmpParsingException {
-		TypeDescription description = TypeMapping.getTypeDescription(type);
+		TypeDescription description = builder.getTypeMapping().getTypeDescription(type);
 		Object value = null;
 		switch (description.getBasic()) {
 		case Boolean : 
@@ -309,7 +309,7 @@ public class StructuredPropertyParser {
 			value = valueAsString;
 		}
 
-		return TypeMapping.instanciateSimpleProperty(metadata, null, prefix, propertyName, value, type);
+		return builder.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, propertyName, value, type);
 	}
 
 

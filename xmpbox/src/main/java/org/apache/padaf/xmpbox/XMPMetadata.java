@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
@@ -68,6 +69,8 @@ public class XMPMetadata {
     private SchemasContainer schemas;
 
     private Document xmpDocument;
+    
+    private XMPDocumentBuilder builder;
 
     /**
      * Contructor of an empty default XMPMetaData
@@ -75,8 +78,9 @@ public class XMPMetadata {
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    public XMPMetadata() throws CreateXMPMetadataException {
+    protected XMPMetadata(XMPDocumentBuilder builder) throws CreateXMPMetadataException {
         try {
+        	this.builder = builder;
             xmpDocument = org.apache.padaf.xmpbox.parser.XMLUtil.newDocument();
             schemas = new SchemasContainer();
         } catch (IOException e) {
@@ -101,9 +105,10 @@ public class XMPMetadata {
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    public XMPMetadata(String xpacketBegin, String xpacketId,
+    protected XMPMetadata(XMPDocumentBuilder builder, String xpacketBegin, String xpacketId,
             String xpacketBytes, String xpacketEncoding)
     throws CreateXMPMetadataException {
+    	this.builder = builder;
         this.xpacketBegin = xpacketBegin;
         this.xpacketId = xpacketId;
         this.xpacketBytes = xpacketBytes;
@@ -495,7 +500,14 @@ public class XMPMetadata {
         return (AdobePDFSchema) getSchema(AdobePDFSchema.PDFURI);
     }
 
-    /**
+    public XMPDocumentBuilder getBuilder() {
+		return builder;
+	}
+
+
+
+
+	/**
      * Class which represent a container for schemas associated to a metadata
      * representation
      * 

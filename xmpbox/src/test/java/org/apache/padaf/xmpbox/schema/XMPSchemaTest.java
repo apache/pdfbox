@@ -29,6 +29,7 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.DateConverter;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
@@ -48,7 +49,7 @@ public class XMPSchemaTest {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPMetadata();
+		parent = new XMPDocumentBuilder().createXMPMetadata();
 		schem = new XMPSchema(parent, "nsSchem", "nsURI");
 
 	}

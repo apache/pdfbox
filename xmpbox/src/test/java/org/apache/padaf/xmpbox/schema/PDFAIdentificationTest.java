@@ -27,6 +27,7 @@ import java.util.List;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -38,7 +39,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest {
 
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPMetadata();
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 		schema = metadata.createAndAddPFAIdentificationSchema();
 		schemaClass = PDFAIdentificationSchema.class;
 	}

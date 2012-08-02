@@ -300,7 +300,8 @@ public class ResourceRefType extends AbstractStructuredType {
                     ArrayProperty.ORDERED_ARRAY);
         	addProperty(seq);
         }
-        TextType tt = (TextType)TypeMapping.instanciateSimpleProperty(getMetadata(), null, "rdf", "li", value, "Text");
+		TypeMapping tm = getMetadata().getBuilder().getTypeMapping();
+        TextType tt = (TextType)tm.instanciateSimpleProperty(getMetadata(), null, "rdf", "li", value, "Text");
         seq.getContainer().addProperty(tt);
 	}
 

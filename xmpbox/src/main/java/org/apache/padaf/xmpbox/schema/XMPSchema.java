@@ -220,10 +220,11 @@ public class XMPSchema implements Elementable {
 		} else {
 			AbstractSimpleProperty specifiedTypeProperty;
 			try {
-				specifiedTypeProperty = TypeMapping.instanciateSimpleProperty(
+				TypeMapping tm = metadata.getBuilder().getTypeMapping();
+				specifiedTypeProperty = tm.instanciateSimpleProperty(
 						metadata, null, 
 						splittedQualifiedName[0], splittedQualifiedName[1], propertyValue,
-						TypeMapping.getType(type));
+						tm.getType(type));
 			} catch (Exception e) {
 				throw new IllegalArgumentException(
 						"Failed to create property with the specified type given in parameters",
@@ -1421,7 +1422,8 @@ public class XMPSchema implements Elementable {
 	}
 
 	protected AbstractSimpleProperty instanciateSimple (String param, Object value) {
-		return TypeMapping.instanciateSimpleField(
+		TypeMapping tm = metadata.getBuilder().getTypeMapping();
+		return tm.instanciateSimpleField(
 				getClass(), 
 				metadata, 
 				null, 

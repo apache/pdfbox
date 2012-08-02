@@ -26,6 +26,7 @@ import java.util.List;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.DateType;
@@ -49,7 +50,7 @@ public class TestSimpleMetadataProperties {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPMetadata();
+		parent = new XMPDocumentBuilder().createXMPMetadata();
 	}
 
 	/**

@@ -25,6 +25,7 @@ import javax.xml.transform.TransformerException;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 import org.apache.padaf.xmpbox.schema.PDFAValueTypeDescription;
 import org.junit.Assert;
@@ -37,7 +38,7 @@ public class PDFAValueTypeDescriptionTest {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPMetadata();
+		parent = new XMPDocumentBuilder().createXMPMetadata();
 	}
 
 	@Test

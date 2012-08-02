@@ -26,6 +26,7 @@ import java.util.Calendar;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,7 +62,7 @@ public class TestAbstractStructuredType {
 	
 	@Before
 	public void before () throws Exception {
-		XMPMetadata xmp = new XMPMetadata();
+		XMPMetadata xmp = new XMPDocumentBuilder().createXMPMetadata();
 		st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
 	}
 	
