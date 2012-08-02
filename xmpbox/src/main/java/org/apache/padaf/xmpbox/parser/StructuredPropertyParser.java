@@ -106,8 +106,8 @@ public class StructuredPropertyParser {
 
 
 
-	private boolean isParseTypeResource () {
-		XMLStreamReader reader = builder.getReader();
+	private boolean isParseTypeResource (XMLStreamReader reader) {
+//		XMLStreamReader reader = builder.getReader();
 		int count = reader.getAttributeCount();
 		for (int i=0; i < count ; i++) {
 			if ("parseType".equals(reader.getAttributeLocalName(i))) {
@@ -121,17 +121,32 @@ public class StructuredPropertyParser {
 		return false;
 	}
 
+	
 	public void parse(XMPMetadata metadata, QName altName,
 			ComplexPropertyContainer container)
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
 		builder.expectCurrentLocalName("li");
-		XMLStreamReader reader = builder.getReader();
 		// check if parseType is defined
-		boolean skipDescription = isParseTypeResource();
+		boolean skipDescription = isParseTypeResource(builder.getReader());
+		
+		builder.getReader().nextTag();
+		parseSimple(metadata, altName, container, skipDescription,"li");
+		if (!skipDescription) {
+			builder.getReader().nextTag();
+		}
+	}
 
-		int elmtType = reader.nextTag();
+	
+	public void parseSimple(XMPMetadata metadata, QName altName,
+			ComplexPropertyContainer container, boolean skipDescription, String limiter)
+					throws XmpUnexpectedTypeException, XmpParsingException,
+					XMLStreamException, XmpUnknownPropertyTypeException,
+					XmpPropertyFormatException {
+
+		XMLStreamReader reader = builder.getReader();
+		int elmtType = reader.getEventType();
 
 		if (!skipDescription) {
 			// rdf:Description 
@@ -141,10 +156,17 @@ public class StructuredPropertyParser {
 		AbstractStructuredType property = instanciateProperty(metadata);
 
 		QName eltName;
-		String structuredEndName = skipDescription?"li":"Description";
+		String structuredEndName = skipDescription?limiter:"Description";
 		while (!((elmtType == XMLStreamReader.END_ELEMENT) && reader.getName().getLocalPart().equals(structuredEndName))) {
 			// read element name, then text content
 			eltName = reader.getName();
+
+			boolean isSubSkipDescription = false;
+			String subExpected = null;
+			if (reader.getEventType()==XMLStreamConstants.START_ELEMENT) {
+				isSubSkipDescription = isParseTypeResource(reader);
+				subExpected = reader.getName().getLocalPart();
+			}
 			// prepare the text
 			elmtType = reader.next();
 			// TODO why not a space ??
@@ -170,7 +192,6 @@ public class StructuredPropertyParser {
 					elmtType = reader.next();
 				}
 
-
 				String eltContent = content.toString();
 				// check if property is expected
 				String localPart = eltName.getLocalPart();
@@ -195,10 +216,11 @@ public class StructuredPropertyParser {
 				}
 				elmtType = reader.nextTag();
 
-			} else {
+			} else {	
 				if (reader.getEventType()!=XMLStreamConstants.START_ELEMENT && reader.getEventType()!=XMLStreamConstants.END_ELEMENT) {
 					reader.nextTag();
 				}
+
 				if (reader.getEventType()==XMLStreamConstants.START_ELEMENT) {
 					TypeDescription td = TypeMapping.getStructuredTypeName(eltName.getNamespaceURI());
 					String ptype = td.getProperties().getPropertyType(eltName.getLocalPart());
@@ -206,9 +228,7 @@ public class StructuredPropertyParser {
 						TypeDescription tclass = TypeMapping.getTypeDescription(ptype);
 						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
 						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tcn);
-						sp.parse(metadata, reader.getName(), property.getContainer());
-						reader.nextTag();
-						
+						sp.parseSimple(metadata, reader.getName(), property.getContainer(),isSubSkipDescription,subExpected);// TODO
 					} else if (TypeMapping.getArrayType(ptype)!=null) {
 						int pos = ptype.indexOf(' ');
 						String arrayType = TypeMapping.getArrayType(ptype);
@@ -217,7 +237,8 @@ public class StructuredPropertyParser {
 						TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
 						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
 						// array element starting
-						builder.expectNextSpecificTag(XMLStreamConstants.START_ELEMENT, arrayType, "Should be starting a ",arrayType);
+						builder.expectCurrentLocalName(arrayType);
+						builder.expectNextSpecificTag(XMLStreamConstants.START_ELEMENT, "li", "Should be starting a 'li'");
 						// array elements
 						while (reader.getEventType()==XMLStreamConstants.START_ELEMENT && reader.getName().getLocalPart().equals("li")) {
 							StructuredPropertyParser sp = new StructuredPropertyParser(builder, tcn);
@@ -225,7 +246,8 @@ public class StructuredPropertyParser {
 							reader.nextTag();
 						}
 						// array element ending
-						builder.expectNextSpecificTag(XMLStreamConstants.END_ELEMENT, arrayType, "Should be ending a ",arrayType);
+						builder.expectCurrentLocalName(arrayType);
+						reader.nextTag();
 					}
 					
 					
@@ -239,7 +261,8 @@ public class StructuredPropertyParser {
 		}
 		if (!skipDescription) {
 			// closing rdf:Description element
-			reader.nextTag();
+			builder.expectCurrentLocalName("Description");
+//			reader.nextTag();
 		}
 		container.addProperty(property);
 

@@ -24,10 +24,15 @@ package org.apache.padaf.xmpbox.type;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.PropMapping;
+import org.apache.padaf.xmpbox.schema.PropertyAttributesAnnotation;
+import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
 
 public final class TypeMapping {
@@ -101,6 +106,11 @@ public final class TypeMapping {
         addToStructuredMaps(new TypeDescription("Job",null,JobType.class));
         addToStructuredMaps(new TypeDescription("ResourceRef",null,ResourceRefType.class));
         addToStructuredMaps(new TypeDescription("Version",null,VersionType.class));
+        // PDF/A structured types
+//        addToStructuredMaps(new TypeDescription("PDFAField",null,PDFAFieldType.class));
+//        addToStructuredMaps(new TypeDescription("PDFAProperty",null,PDFAPropertyType.class));
+//        addToStructuredMaps(new TypeDescription("PDFAType",null,PDFATypeType.class));
+//        addToStructuredMaps(new TypeDescription("PDFASchema",null,PDFASchemaType.class));
     }
 
     private static void addToBasicMaps (TypeDescription td) {
@@ -116,8 +126,12 @@ public final class TypeMapping {
     private static void addToStructuredMaps (TypeDescription td) {
         STRUCTURED_TYPES.put(td.getType(),td);
         STRUCTURED_CLASSES.put(td.getTypeClass(), td);
+        
         try {
-			STRUCTURED_NAMESPACES.put((String)td.getTypeClass().getField("ELEMENT_NS").get(null), td);
+        	String ns = (String)td.getTypeClass().getField("ELEMENT_NS").get(null);
+			STRUCTURED_NAMESPACES.put(ns, td);
+	        PropMapping pm = initializePropMapping(ns, (Class<? extends AbstractStructuredType>)td.getTypeClass());
+	        td.setProperties(pm);
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
 		} catch (SecurityException e) {
@@ -258,7 +272,9 @@ public final class TypeMapping {
      * @return True if namespace URI is a reference for a complex basic type
      */
     public static boolean isStructuredTypeNamespace(String namespace) {
-        return STRUCTURED_TYPES.containsKey(namespace);
+//        return STRUCTURED_TYPES.containsKey(namespace);
+    	// TODO why was STRUCTURED_TYPE
+    	return STRUCTURED_NAMESPACES.containsKey(namespace);
     }
 
 
@@ -301,6 +317,45 @@ public final class TypeMapping {
     public static boolean isStructuredType(String type) {
     	return STRUCTURED_TYPES.containsKey(type);
     }
+
+	private static PropMapping initializePropMapping(String ns,
+			Class<? extends AbstractStructuredType> classSchem) {
+		PropertyType propType;
+		PropertyAttributesAnnotation propAtt;
+		Field[] fields;
+		PropMapping propMap = new PropMapping(ns);
+		fields = classSchem.getFields();
+		String propName = null;
+		for (Field field : fields) {
+			if (field.isAnnotationPresent(PropertyType.class)) {
+				try {
+					propName = (String) field.get(propName);
+				} catch (Exception e) {
+					throw new IllegalArgumentException(
+							"couldn't read one type declaration, please check accessibility and declaration of fields annoted in "
+									+ classSchem.getName(), e);
+				}
+				propType = field.getAnnotation(PropertyType.class);
+				if (!field.isAnnotationPresent(PropertyAttributesAnnotation.class)) {
+					propMap.addNewProperty(propName, propType.propertyType(),
+							null);
+				} else {
+					// XXX Case where a special annotation is used to specify
+					// attributes
+					// NOT IMPLEMENTED YET, JUST TO GIVE A CLUE TO MAKE THIS
+					propAtt = field
+							.getAnnotation(PropertyAttributesAnnotation.class);
+					List<String> attributes = new ArrayList<String>();
+					for (String att : propAtt.expectedAttributes()) {
+						attributes.add(att);
+					}
+					propMap.addNewProperty(propName, propType.propertyType(),
+							attributes);
+				}
+			}
+		}
+		return propMap;
+	}
 
     
 }

@@ -152,6 +152,18 @@ public class DeserializationTest {
 
 	}
 
+	
+	@Test
+	public void testStructuredRecursive () throws Exception {
+		InputStream fis = XMPDocumentBuilder.class
+				.getResourceAsStream("structured_recursive.xml");
+
+		XMPDocumentBuilder xdb = new XMPDocumentBuilder();
+
+		xdb.parse(fis);
+		
+	}
+	
 	@Test
 	public void testAltBagSeq() throws Exception {
 		InputStream fis = XMPDocumentBuilder.class
