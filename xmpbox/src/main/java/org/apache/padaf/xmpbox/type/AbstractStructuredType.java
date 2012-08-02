@@ -103,4 +103,8 @@ public abstract class AbstractStructuredType extends AbstractField {
 		}
 	}
 
+	public ComplexPropertyContainer getContainer() {
+		return container;
+	}
+
 }

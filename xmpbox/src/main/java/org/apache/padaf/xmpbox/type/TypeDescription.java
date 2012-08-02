@@ -21,6 +21,8 @@
 
 package org.apache.padaf.xmpbox.type;
 
+import org.apache.padaf.xmpbox.parser.PropMapping;
+
 
 public class TypeDescription {
 
@@ -31,6 +33,9 @@ public class TypeDescription {
 	private BasicType basic;
 	
 	private Class<? extends AbstractField> clz;
+	
+	// TODO PropMapping should be in package Type
+	private PropMapping properties = null;
 
 	public TypeDescription(String type, BasicType basic,Class<? extends AbstractField> clz) {
 		super();
@@ -61,8 +66,12 @@ public class TypeDescription {
 		return basic;
 	}
 
-	
-	
-	
+	public PropMapping getProperties() {
+		return properties;
+	}
+
+	protected void setProperties(PropMapping properties) {
+		this.properties = properties;
+	}
 	
 }
