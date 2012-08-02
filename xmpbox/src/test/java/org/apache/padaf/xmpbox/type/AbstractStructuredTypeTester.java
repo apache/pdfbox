@@ -31,6 +31,7 @@ import java.util.UUID;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.junit.Test;
 
 public abstract class AbstractStructuredTypeTester {
@@ -43,9 +44,14 @@ public abstract class AbstractStructuredTypeTester {
 	
 	protected Class<? extends AbstractStructuredType> clz;
 	
+	protected TypeMapping typeMapping = null;
+	
+	protected XMPDocumentBuilder builder;
 	
 	public void before () throws Exception {
-		xmp = new XMPMetadata();
+		builder = new XMPDocumentBuilder();
+		xmp = builder.createXMPMetadata();
+		typeMapping = builder.getTypeMapping();
 	}
 	
 	public AbstractStructuredTypeTester (Class<? extends AbstractStructuredType> clz, String fieldName, String type) {
@@ -69,7 +75,7 @@ public abstract class AbstractStructuredTypeTester {
 	
 	@Test
 	public void testSettingValue() throws Exception {
-		TypeDescription td =TypeMapping.getTypeDescription(type);
+		TypeDescription td =typeMapping.getTypeDescription(type);
 		Object value = TypeTestingHelper.getJavaValue(td);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
@@ -86,7 +92,7 @@ public abstract class AbstractStructuredTypeTester {
 
 	@Test
 	public void testPropertyType() throws Exception {
-		TypeDescription td =TypeMapping.getTypeDescription(type);
+		TypeDescription td =typeMapping.getTypeDescription(type);
 		Object value = TypeTestingHelper.getJavaValue(td);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
@@ -110,7 +116,7 @@ public abstract class AbstractStructuredTypeTester {
     @Test
     public void testSetter () throws Exception {
     	String setter = TypeTestingHelper.calculateSimpleSetter(fieldName);
-    	TypeDescription td = TypeMapping.getTypeDescription(type);
+    	TypeDescription td = typeMapping.getTypeDescription(type);
     	Object value = TypeTestingHelper.getJavaValue(td);
     	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
     	set.invoke(getStructured(), new Object [] {value});

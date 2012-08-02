@@ -24,6 +24,7 @@ package org.apache.padaf.xmpbox.schema;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
@@ -34,10 +35,12 @@ public class AdobePDFErrorsTest {
 
 	protected XMPMetadata metadata;
 
+	protected XMPDocumentBuilder builder;
+	
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPMetadata();
-
+		builder = new XMPDocumentBuilder();
+		metadata = builder.createXMPMetadata();
 	}
 
 	@Test

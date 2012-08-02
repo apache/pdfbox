@@ -29,6 +29,7 @@ import java.util.Map;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -44,7 +45,7 @@ public class XmpRightsSchemaTest extends AbstractXMPSchemaTest {
 
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPMetadata();
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 		schema = metadata.createAndAddXMPRightsManagementSchema();
 		schemaClass = XMPRightsManagementSchema.class;
 	}

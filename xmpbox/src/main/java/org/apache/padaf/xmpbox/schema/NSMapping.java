@@ -30,10 +30,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.PropMapping;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XMPSchemaFactory;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.parser.XmpUnknownValueTypeException;
-import org.apache.padaf.xmpbox.type.TypeMapping;
 
 
 /**
@@ -44,6 +44,8 @@ import org.apache.padaf.xmpbox.type.TypeMapping;
  */
 public class NSMapping {
 
+	private XMPDocumentBuilder builder = null;
+	
 	private Map<String, XMPSchemaFactory> definedNamespaces;
 
 
@@ -59,7 +61,8 @@ public class NSMapping {
 	 * @throws XmpSchemaException
 	 *             When could not read a property data in a Schema Class given
 	 */
-	public NSMapping() throws XmpSchemaException {
+	public NSMapping(XMPDocumentBuilder builder) throws XmpSchemaException {
+		this.builder = builder;
 		complexBasicTypesDeclarationEntireXMPLevel = new HashMap<String, String>();
 		complexBasicTypesDeclarationSchemaLevel = new HashMap<String, String>();
 		complexBasicTypesDeclarationPropertyLevel = new HashMap<String, String>();
@@ -110,7 +113,7 @@ public class NSMapping {
 	 * @return True if namespace URI is known
 	 */
 	public boolean isContainedNamespace(String namespace) {
-		boolean found = SchemaMapping.isContainedNamespace(namespace);
+		boolean found = builder.getSchemaMapping().isContainedNamespace(namespace);
 		if (!found) {
 			found = definedNamespaces.containsKey(namespace);
 		}
@@ -128,7 +131,7 @@ public class NSMapping {
 	 * @return Property type declared for namespace specified, null if unknown
 	 */
 	public String getSpecifiedPropertyType(String namespace, QName prop) {
-		XMPSchemaFactory factory = SchemaMapping.getSchemaFactory(namespace);
+		XMPSchemaFactory factory = builder.getSchemaMapping().getSchemaFactory(namespace);
 		if (factory==null) {
 			factory = definedNamespaces.get(namespace);
 		}
@@ -185,7 +188,7 @@ public class NSMapping {
 	 */
 	private String getValueTypeEquivalence(SchemaDescription desc,
 			String definedValueType) throws XmpUnknownValueTypeException {
-		if (TypeMapping.isSimpleType(definedValueType) || TypeMapping.isArrayOfSimpleType(definedValueType)) {
+		if (builder.getTypeMapping().isSimpleType(definedValueType) || builder.getTypeMapping().isArrayOfSimpleType(definedValueType)) {
 			return definedValueType;
 		}
 		PDFAValueTypeDescription val = findValueTypeDescription(desc,
@@ -249,7 +252,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelXMP(String namespace,
 			String prefix) {
-		if (TypeMapping.isStructuredTypeNamespace(namespace)) {
+		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationEntireXMPLevel.put(prefix, namespace);
 		}
 	}
@@ -266,7 +269,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelSchema(String namespace,
 			String prefix) {
-		if (TypeMapping.isStructuredTypeNamespace(namespace)) {
+		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationSchemaLevel.put(prefix, namespace);
 		}
 
@@ -283,7 +286,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelProperty(
 			String namespace, String prefix) {
-		if (TypeMapping.isStructuredTypeNamespace(namespace)) {
+		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationPropertyLevel.put(prefix, namespace);
 		}
 	}
@@ -330,7 +333,7 @@ public class NSMapping {
 		}
 		// return complex basic type
 		if (tmp!=null) {
-			return TypeMapping.getStructuredTypeName(tmp).getType();
+			return builder.getTypeMapping().getStructuredTypeName(tmp).getType();
 		} else {
 			// 
 			return null;
@@ -350,7 +353,7 @@ public class NSMapping {
 	 *             When Instancing specified Object Schema failed
 	 */
 	public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix) throws XmpSchemaException {
-		XMPSchema found = SchemaMapping.getAssociatedSchemaObject(metadata, namespace, prefix);
+		XMPSchema found = builder.getSchemaMapping().getAssociatedSchemaObject(metadata, namespace, prefix);
 		if (found!=null) {
 			return found;
 		} else {

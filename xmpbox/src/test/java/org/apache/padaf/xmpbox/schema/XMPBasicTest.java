@@ -28,6 +28,7 @@ import java.util.List;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPMetadata();
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 		schema = metadata.createAndAddXMPBasicSchema();
 		schemaClass = XMPBasicSchema.class;
 	}

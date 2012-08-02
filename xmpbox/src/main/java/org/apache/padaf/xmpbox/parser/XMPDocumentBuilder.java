@@ -46,6 +46,7 @@ import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
+import org.apache.padaf.xmpbox.schema.SchemaMapping;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
@@ -69,6 +70,10 @@ import org.apache.pdfbox.io.IOUtils;
 public class XMPDocumentBuilder {
 
 	private NSMapping nsMap;
+	
+	private TypeMapping typeMapping = null;
+	
+	private SchemaMapping schemaMapping = null;
 
 	private ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
 
@@ -88,9 +93,36 @@ public class XMPDocumentBuilder {
 	 *             case, if its namespace miss
 	 */
 	public XMPDocumentBuilder() throws XmpSchemaException {
-		nsMap = new NSMapping();
+		nsMap = new NSMapping(this);
+		this.typeMapping = new TypeMapping();
+		this.schemaMapping = new SchemaMapping();
 	}
 
+	public XMPMetadata createXMPMetadata () throws CreateXMPMetadataException {
+		return new WrappedXMPMetadata(this);
+	}
+	
+	public XMPMetadata createXMPMetadata (String begin, String id, String bytes, String encoding) throws CreateXMPMetadataException {
+		return new WrappedXMPMetadata(this,begin, id, bytes, encoding);
+
+	}
+	protected class WrappedXMPMetadata extends XMPMetadata {
+
+		public WrappedXMPMetadata(XMPDocumentBuilder builder) throws CreateXMPMetadataException {
+			super(builder);
+		}
+
+		public WrappedXMPMetadata(XMPDocumentBuilder builder, String xpacketBegin, String xpacketId,
+				String xpacketBytes, String xpacketEncoding)
+				throws CreateXMPMetadataException {
+			super(builder, xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
+			// TODO Auto-generated constructor stub
+		}
+		
+		
+	}
+	
+	
 	/**
 	 * Parsing method. Return a XMPMetadata object with all elements read
 	 * 
@@ -152,7 +184,7 @@ public class XMPDocumentBuilder {
 			// all others declarations are ignored
 			int nsCount = reader.get().getNamespaceCount();
 			for (int i = 0; i < nsCount; i++) {
-				if (TypeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
+				if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 					nsMap.setComplexBasicTypesDeclarationForLevelXMP(
 							reader.get().getNamespaceURI(i), 
 							reader.get().getNamespacePrefix(i));
@@ -308,7 +340,7 @@ public class XMPDocumentBuilder {
 						"Unknown attribute in xpacket PI : '" + token + "'");
 			}
 		}
-		return new XMPMetadata(begin, id, bytes, encoding);
+		return new WrappedXMPMetadata(this,begin, id, bytes, encoding);
 	}
 
 	/**
@@ -488,7 +520,7 @@ public class XMPDocumentBuilder {
 		String type = this.nsMap.getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
 		
 		if (type != null) {
-			AbstractSimpleProperty prop = TypeMapping.instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
+			AbstractSimpleProperty prop = typeMapping.instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
 			schema.getContent().addProperty(prop);
 			added = true;
 		}
@@ -526,7 +558,7 @@ public class XMPDocumentBuilder {
 		for (int i = 0; i < cptNS; i++) {
 			namespaces.put(reader.get().getNamespacePrefix(i), reader.get()
 					.getNamespaceURI(i));
-			if (TypeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
+			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 				// System.out.println("in parseDesc method: prefix:"+reader.get().getNamespacePrefix(i)+", nsURI:"+reader.get().getNamespaceURI(i));
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
 						.get().getNamespaceURI(i), reader.get()
@@ -1092,28 +1124,28 @@ public class XMPDocumentBuilder {
 					throws XmpParsingException, XmpUnexpectedTypeException,
 					XmpUnknownPropertyTypeException, XmpPropertyFormatException,
 					XMLStreamException {
-		TypeDescription typeDesc = TypeMapping.getTypeDescription(type);
+		TypeDescription typeDesc = typeMapping.getTypeDescription(type);
 		
 		if (type.equals("Lang alt")) {
 			parseSimplePropertyArray(metadata, reader.get().getName(),
 					ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, container);
-		} else if (TypeMapping.isSimpleType(typeDesc.getType())) {
+		} else if (typeMapping.isSimpleType(typeDesc.getType())) {
 			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)typeDesc.getTypeClass();
 			parseSimpleProperty(metadata, reader.get().getName(),
 					tcn, container);
-		} else if (TypeMapping.isStructuredType(type)) {
+		} else if (typeMapping.isStructuredType(type)) {
 			QName propertyName = reader.get().getName();
-			TypeDescription tclass = TypeMapping.getTypeDescription(type);
+			TypeDescription tclass = typeMapping.getTypeDescription(type);
 			StructuredPropertyParser parser = new StructuredPropertyParser(
 					this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
 			parseStructuredProperty(metadata, parser, container);
-		} else if (TypeMapping.getArrayType(type)!=null) {
+		} else if (typeMapping.getArrayType(type)!=null) {
 			QName propertyName = reader.get().getName();
 			// retrieve array type and content type
 			int pos = type.indexOf(' ');
-			String arrayType = TypeMapping.getArrayType(type);
+			String arrayType = typeMapping.getArrayType(type);
 			String typeInArray = type.substring(pos+1);
-			TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
+			TypeDescription tclass = typeMapping.getTypeDescription(typeInArray);
 			Class<? extends AbstractField> tcn = tclass.getTypeClass();
 			
 			if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
@@ -1223,7 +1255,7 @@ public class XMPDocumentBuilder {
 		nsMap.resetComplexBasicTypesDeclarationInPropertyLevel();
 		int cptNs = reader.get().getNamespaceCount();
 		for (int i = 0; i < cptNs; i++) {
-			if (TypeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
+			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
 						.get().getNamespaceURI(i), reader.get()
 						.getNamespacePrefix(i));
@@ -1234,21 +1266,21 @@ public class XMPDocumentBuilder {
 			// found type, manage it
 			if (type.equals("Lang Alt")) {
 				parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
-			} else if (TypeMapping.isSimpleType(type)) {
-				TypeDescription tclass = TypeMapping.getTypeDescription(type);
+			} else if (typeMapping.isSimpleType(type)) {
+				TypeDescription tclass = typeMapping.getTypeDescription(type);
 				Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)tclass.getTypeClass();
 				parseSimpleProperty(metadata, propertyName, tcn, schema.getContent());
-			} else if (TypeMapping.isStructuredType(type)) {
-				TypeDescription tclass = TypeMapping.getTypeDescription(type);
+			} else if (typeMapping.isStructuredType(type)) {
+				TypeDescription tclass = typeMapping.getTypeDescription(type);
 				StructuredPropertyParser parser = new StructuredPropertyParser(
 						this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
 				parseStructuredProperty(metadata, parser, schema.getContent());
-			} else if (TypeMapping.getArrayType(type)!=null) {
+			} else if (typeMapping.getArrayType(type)!=null) {
 				// retrieve array type and content type
 				int pos = type.indexOf(' ');
-				String arrayType = TypeMapping.getArrayType(type);
+				String arrayType = typeMapping.getArrayType(type);
 				String typeInArray = type.substring(pos+1);
-				TypeDescription tclass = TypeMapping.getTypeDescription(typeInArray);
+				TypeDescription tclass = typeMapping.getTypeDescription(typeInArray);
 				Class<? extends AbstractField> tcn = tclass.getTypeClass();
 				
 				if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
@@ -1314,6 +1346,13 @@ public class XMPDocumentBuilder {
 		return reader.get();
 	}
 
+	public TypeMapping getTypeMapping () {
+		return this.typeMapping;
+	}
 
+	public SchemaMapping getSchemaMapping() {
+		return schemaMapping;
+	}
 
+	
 }

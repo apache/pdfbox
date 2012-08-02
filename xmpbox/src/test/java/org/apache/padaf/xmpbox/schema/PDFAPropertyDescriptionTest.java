@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.schema;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.PDFAPropertyDescription;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.junit.Assert;
@@ -36,7 +37,7 @@ public class PDFAPropertyDescriptionTest {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPMetadata();
+		parent = new XMPDocumentBuilder().createXMPMetadata();
 	}
 
 	@Test

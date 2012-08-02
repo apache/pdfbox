@@ -37,18 +37,27 @@ import org.apache.padaf.xmpbox.parser.XmpUnknownValueTypeException;
 import org.apache.padaf.xmpbox.parser.XmpXpacketEndException;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.JobType;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BasicJobTicketSchemaTest {
 
 	protected static XMPDocumentBuilder builder;
+
+	protected XMPMetadata metadata;
+
 	
 	@BeforeClass
 	public static void bc () throws Exception {
 		builder = new XMPDocumentBuilder();
 	}
 	
+	@Before
+	public void initTempMetaData() throws Exception {
+		metadata = builder.createXMPMetadata();
+	}
+
 	private InputStream transfer(ByteArrayOutputStream out) {
 		IOUtils.closeQuietly(out);
 		ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
@@ -68,8 +77,7 @@ public class BasicJobTicketSchemaTest {
 	@Test
 	public void testAddTwoJobs() throws Exception {
 		
-		XMPMetadata xmpMetadata = new XMPMetadata();
-		XMPBasicJobTicketSchema basic = xmpMetadata.createAndAddBasicJobTicketSchema();
+		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
 		basic.addJob("zeid1", "zename1", "zeurl1","aaa");
 		basic.addJob("zeid2", "zename2", "zeurl2");
@@ -77,7 +85,7 @@ public class BasicJobTicketSchemaTest {
 //		SaveMetadataHelper.serialize(xmpMetadata, System.out);
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		SaveMetadataHelper.serialize(xmpMetadata, bos);
+		SaveMetadataHelper.serialize(metadata, bos);
 		XMPMetadata rxmp = parse(bos);
 
 		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
@@ -89,13 +97,12 @@ public class BasicJobTicketSchemaTest {
 	@Test
 	public void testAddWithDefaultPrefix() throws Exception {
 		
-		XMPMetadata xmpMetadata = new XMPMetadata();
-		XMPBasicJobTicketSchema basic = xmpMetadata.createAndAddBasicJobTicketSchema();
+		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
 		basic.addJob("zeid2", "zename2", "zeurl2");
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		SaveMetadataHelper.serialize(xmpMetadata, bos);
+		SaveMetadataHelper.serialize(metadata, bos);
 		XMPMetadata rxmp = parse(bos);
 
 		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
@@ -114,15 +121,14 @@ public class BasicJobTicketSchemaTest {
 //	@Test
 	public void testAddWithDefinedPrefix() throws Exception {
 		
-		XMPMetadata xmpMetadata = new XMPMetadata();
-		XMPBasicJobTicketSchema basic = xmpMetadata.createAndAddBasicJobTicketSchema();
+		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
 		basic.addJob("zeid2", "zename2", "zeurl2","aaa");
 		
-		SaveMetadataHelper.serialize(xmpMetadata, System.out);
+		SaveMetadataHelper.serialize(metadata, System.out);
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		SaveMetadataHelper.serialize(xmpMetadata, bos);
+		SaveMetadataHelper.serialize(metadata, bos);
 		XMPMetadata rxmp = parse(bos);
 
 		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();

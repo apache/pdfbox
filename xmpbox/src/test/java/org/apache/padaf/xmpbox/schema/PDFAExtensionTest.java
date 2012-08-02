@@ -29,6 +29,7 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAPropertyDescription;
@@ -44,7 +45,7 @@ public class PDFAExtensionTest {
 
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPMetadata();
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 	}
 
 	@Test

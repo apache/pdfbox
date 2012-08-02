@@ -25,6 +25,7 @@ package org.apache.padaf.xmpbox;
 import org.apache.padaf.xmpbox.BuildPDFExtensionSchemaHelper;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.DateConverter;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.SchemaDescription;
 import org.junit.Assert;
@@ -37,8 +38,7 @@ public class BuildPDFAExtensionSchemaDescriptionTest {
 
 	@Before
 	public void init() throws Exception {
-		metadata = new XMPMetadata();
-
+		metadata = new XMPDocumentBuilder().createXMPMetadata();
 	}
 
 	@Test

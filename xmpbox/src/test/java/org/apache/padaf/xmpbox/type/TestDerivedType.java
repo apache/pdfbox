@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +81,7 @@ public class TestDerivedType {
 
     @Before
     public void before () throws Exception {
-		xmp = new XMPMetadata();
+		xmp =new XMPDocumentBuilder().createXMPMetadata();
 		constructor = clz.getConstructor(new Class [] {
 				XMPMetadata.class,
 				String.class,

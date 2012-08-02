@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox;
 
 import java.io.ByteArrayOutputStream;
 
+import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.junit.Assert;
@@ -32,7 +33,7 @@ public class SaveMetadataHelperTest {
 
 	@Test
 	public void testSchemaParsing() throws Exception {
-		DublinCoreSchema dc = new DublinCoreSchema(new XMPMetadata());
+		DublinCoreSchema dc = new DublinCoreSchema(new XMPDocumentBuilder().createXMPMetadata());
 		dc.setCoverage("coverage");
 		dc.addContributor("contributor1");
 		dc.addContributor("contributor2");
@@ -45,7 +46,8 @@ public class SaveMetadataHelperTest {
 
 	@Test
 	public void testMetadataParsing() throws Exception {
-		XMPMetadata meta = new XMPMetadata();
+		XMPMetadata meta = new XMPDocumentBuilder().createXMPMetadata();
+
 		DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
 		dc.setCoverage("coverage");
 		dc.addContributor("contributor1");

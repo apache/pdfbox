@@ -57,7 +57,7 @@ public final class TypeMapping {
 
     
 	// no public constructor
-	private TypeMapping() {
+	public TypeMapping() {
 		
 	}
     
@@ -143,7 +143,7 @@ public final class TypeMapping {
 		}  
     }
 
-    public static String getType (Class<?> clz) {
+    public String getType (Class<?> clz) {
     	// search in basic
     	TypeDescription td = BASIC_CLASSES.get(clz);
     	// search in derived
@@ -166,7 +166,7 @@ public final class TypeMapping {
      * @param type
      * @return
      */
-    public static TypeDescription getTypeDescription (String type) {
+    public TypeDescription getTypeDescription (String type) {
     	if (BASIC_TYPES.containsKey(type)) {
     		return BASIC_TYPES.get(type);
     	} else if (DERIVED_TYPES.containsKey(type)) {
@@ -184,7 +184,7 @@ public final class TypeMapping {
     	}
     }
     
-    public static AbstractSimpleProperty instanciateSimpleProperty (XMPMetadata xmp,String nsuri, String prefix, String name, Object value, String type) {
+    public AbstractSimpleProperty instanciateSimpleProperty (XMPMetadata xmp,String nsuri, String prefix, String name, Object value, String type) {
     	// constructor parameters
     	Object [] params = new Object [] {
     		xmp,	
@@ -216,14 +216,14 @@ public final class TypeMapping {
 		}
     }
    
-	public static AbstractSimpleProperty instanciateSimpleField (Class<?> clz, XMPMetadata xmp, String nsuri, String prefix,String propertyName, Object value) {
+	public  AbstractSimpleProperty instanciateSimpleField (Class<?> clz, XMPMetadata xmp, String nsuri, String prefix,String propertyName, Object value) {
 		Map<String, String> fields = getStructuredTypeFields(clz);
 		String fieldName = fields.get(propertyName);
 		try {
 			Field f= clz.getField(fieldName);
 			PropertyType pt = f.getAnnotation(PropertyType.class);
 			String simpleType = pt.propertyType();
-			return TypeMapping.instanciateSimpleProperty(xmp, nsuri, prefix, propertyName, value, simpleType);
+			return instanciateSimpleProperty(xmp, nsuri, prefix, propertyName, value, simpleType);
 		} catch (SecurityException e) {
 			throw new IllegalArgumentException("Failed to instanciate",e);
 		} catch (NoSuchFieldException e) {
@@ -259,7 +259,7 @@ public final class TypeMapping {
     
 
     
-    public static TypeDescription getStructuredTypeName (String namespace) {
+    public TypeDescription getStructuredTypeName (String namespace) {
     	return STRUCTURED_NAMESPACES.get(namespace);
     }
   
@@ -271,14 +271,14 @@ public final class TypeMapping {
      *            The namespace URI to check
      * @return True if namespace URI is a reference for a complex basic type
      */
-    public static boolean isStructuredTypeNamespace(String namespace) {
+    public boolean isStructuredTypeNamespace(String namespace) {
 //        return STRUCTURED_TYPES.containsKey(namespace);
     	// TODO why was STRUCTURED_TYPE
     	return STRUCTURED_NAMESPACES.containsKey(namespace);
     }
 
 
-    public static boolean isArrayOfSimpleType (String type) {
+    public boolean isArrayOfSimpleType (String type) {
     	int pos = type.indexOf(' ');
     	if (pos<0) {
     		// not array
@@ -290,7 +290,7 @@ public final class TypeMapping {
     	
     }
     
-    public static String  getArrayType (String type) {
+    public String  getArrayType (String type) {
     	int pos = type.indexOf(' ');
     	if (pos<0) {
     		// not array
@@ -310,11 +310,11 @@ public final class TypeMapping {
     	}
     }
     
-    public static boolean isSimpleType(String type) {
+    public boolean isSimpleType(String type) {
     	return (BASIC_TYPES.containsKey(type) || DERIVED_TYPES.containsKey(type));
     }
 
-    public static boolean isStructuredType(String type) {
+    public boolean isStructuredType(String type) {
     	return STRUCTURED_TYPES.containsKey(type);
     }
 

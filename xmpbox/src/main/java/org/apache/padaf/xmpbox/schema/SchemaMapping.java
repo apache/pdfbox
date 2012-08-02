@@ -51,7 +51,7 @@ public final class SchemaMapping {
 
 	}
 
-	private SchemaMapping () {
+	public SchemaMapping () {
 		// hide constructor
 	}
 	
@@ -136,7 +136,7 @@ public final class SchemaMapping {
 	 * @throws XmpSchemaException
 	 *             When Instancing specified Object Schema failed
 	 */
-	public static XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix) throws XmpSchemaException {
+	public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix) throws XmpSchemaException {
 		if (!nsMaps.containsKey(namespace)) {
 			return null;
 		}
@@ -144,12 +144,12 @@ public final class SchemaMapping {
 		return factory.createXMPSchema(metadata, prefix);
 	}
 
-	public static XMPSchemaFactory getSchemaFactory(String namespace) {
+	public XMPSchemaFactory getSchemaFactory(String namespace) {
 		return nsMaps.get(namespace);
 	}
 
 	
-	public static boolean isContainedNamespace(String namespace) {
+	public boolean isContainedNamespace(String namespace) {
 		return nsMaps.containsKey(namespace);
 	}
 

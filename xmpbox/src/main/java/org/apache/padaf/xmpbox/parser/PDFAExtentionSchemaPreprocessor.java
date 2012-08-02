@@ -56,7 +56,7 @@ public class PDFAExtentionSchemaPreprocessor extends XMPDocumentBuilder implemen
 		HashMap<String, String> namespaces = new HashMap<String, String>();
 		for (int i = 0; i < cptNS; i++) {
 			namespaces.put(reader.getNamespacePrefix(i), reader.getNamespaceURI(i));
-			if (TypeMapping.isStructuredTypeNamespace(reader.getNamespaceURI(i))) {
+			if (getTypeMapping().isStructuredTypeNamespace(reader.getNamespaceURI(i))) {
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
 						.getNamespaceURI(i), reader.getNamespacePrefix(i));
 			}
