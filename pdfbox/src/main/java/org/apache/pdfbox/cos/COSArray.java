@@ -303,8 +303,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      */
     public void setString( int index, String string )
     {
-        set( index, new COSString( string ) );
-    }
+        if ( string != null )
+        {
+            set( index, new COSString( string ) );
+        }
+        else
+        {
+            set ( index, null );
+        }
+    }   
 
     /**
      * Get the value of the array as a string.
