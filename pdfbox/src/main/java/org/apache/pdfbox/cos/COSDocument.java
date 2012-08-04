@@ -48,7 +48,7 @@ public class COSDocument extends COSBase
      */
     private static final Log LOG = LogFactory.getLog(COSDocument.class);
 
-    private float version;
+    private float version = 1.4f;
 
     /**
      * Maps ObjectKeys to a COSObject. Note that references to these objects
@@ -85,7 +85,7 @@ public class COSDocument extends COSBase
 
     private final File tmpFile;
 
-    private String headerString = "%PDF-1.4";
+    private String headerString = "%PDF-" + version;
 
     private boolean warnMissingClose = true;
     
