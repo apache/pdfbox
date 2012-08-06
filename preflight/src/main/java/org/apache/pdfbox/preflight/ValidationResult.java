@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * Object returned by the validate method of the PDFValidator. This object
