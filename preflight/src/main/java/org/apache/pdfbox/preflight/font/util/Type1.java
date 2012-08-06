@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.preflight.PreflightConstants;
 
