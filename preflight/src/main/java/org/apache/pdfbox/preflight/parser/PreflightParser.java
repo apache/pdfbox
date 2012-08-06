@@ -202,4 +202,8 @@ public class PreflightParser extends PDFParser {
 		// Add XMP MetaData
 		return document;
 	}
+	
+	public PreflightDocument getPreflightDocument() throws IOException {
+		return (PreflightDocument)getPDDocument();
+	}
 }
