@@ -30,7 +30,6 @@ import javax.activation.FileDataSource;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,17 +47,17 @@ public class TestValidDirectory {
   
   @Test
   public void validate () throws Exception {
-  	ValidationResult result = null;
+  	PreflightDocument document = null;
   	try {
   		System.out.println(target);
   		PreflightParser parser = new PreflightParser(new FileDataSource(target));
   		parser.parse();
-  		PreflightDocument document = (PreflightDocument) parser.getPDDocument();
+  		document = (PreflightDocument) parser.getPDDocument();
   		document.validate();
   		Assert.assertTrue("Validation of " + target ,document.getResult().isValid());
   	} finally {
-  		if (result != null) {
-  			result.closePdf();
+  		if (document != null) {
+  			document.close();
   		}
   	}
   }
