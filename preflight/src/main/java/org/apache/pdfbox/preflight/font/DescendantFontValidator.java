@@ -21,8 +21,10 @@
 
 package org.apache.pdfbox.preflight.font;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_CIDTOGID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_SYSINFO;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY;
 
 import java.io.IOException;
 

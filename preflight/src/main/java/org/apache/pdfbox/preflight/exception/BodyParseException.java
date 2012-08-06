@@ -21,7 +21,7 @@
 
 package org.apache.pdfbox.preflight.exception;
 
-import org.apache.padaf.preflight.ValidationConstants;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.javacc.PDFParserConstants;
 import org.apache.pdfbox.preflight.javacc.ParseException;
 /**
@@ -77,7 +77,7 @@ public class BodyParseException extends PdfParseException {
     }
 
     // default error code
-    this.errorCode = ValidationConstants.ERROR_SYNTAX_BODY;
+    this.errorCode = PreflightConstants.ERROR_SYNTAX_BODY;
 
     if (!isTokenMgrError) {
       // it is a parse error, according to the ExpectedTokens data
@@ -91,7 +91,7 @@ public class BodyParseException extends PdfParseException {
           switch (this.expectedTokenSequences[i][0]) {
           case PDFParserConstants.START_OBJECT:
           case PDFParserConstants.END_OBJECT:
-            this.errorCode = ValidationConstants.ERROR_SYNTAX_OBJ_DELIMITER;
+            this.errorCode = PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER;
             break;
           }
         }
