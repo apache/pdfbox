@@ -565,7 +565,7 @@ public final class Type1Parser {
 
 	private boolean isDupKeyWord(byte[] token) throws IOException {
 		String word = new String(token, TOKEN_ENCODING);
-		return "/Encoding".equals(word);
+		return "dup".equals(word);
 	}
 
 	private boolean isStartOfEExecReached() {

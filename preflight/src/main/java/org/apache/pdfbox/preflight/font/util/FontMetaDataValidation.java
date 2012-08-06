@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;

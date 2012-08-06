@@ -49,7 +49,16 @@ public class GlyphDescription {
 			if (obj instanceof CharStringCommand) {
 				CharStringCommand csCmd = (CharStringCommand) obj;
 				if ("hsbw".equals(CharStringCommand.TYPE1_VOCABULARY.get(csCmd.getKey()))) {
-					return (Integer) operations.get(i - 1);
+					// Numbers with absolute values greater than 32,000 must be followed
+					// by a div operator such that the result of the div is less than 32,000.
+					if (operations.get(i - 1) instanceof CharStringCommand) {
+						CharStringCommand div = (CharStringCommand) operations.get(i - 1);
+						if ("div".equals(CharStringCommand.TYPE1_VOCABULARY.get(div.getKey()))) {
+							return ((Integer)operations.get(i - 3) / (Integer)operations.get(i - 2));
+						}
+					} else {
+						return (Integer) operations.get(i - 1);
+					}
 				}
 			}
 		}

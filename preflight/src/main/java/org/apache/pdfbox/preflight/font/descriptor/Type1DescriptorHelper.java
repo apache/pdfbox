@@ -89,7 +89,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container> 
 
 			boolean hasLength1 = stream.getInt(COSName.LENGTH1) > 0;
 			boolean hasLength2 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH2)) > 0;
-			boolean hasLength3 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH3)) > 0;
+			boolean hasLength3 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH3)) >= 0;
 			if (!(hasLength1 && hasLength2 && hasLength3)) {
 				this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is invalid"));
 				return null;
@@ -126,10 +126,10 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container> 
 			IOUtils.closeQuietly(bis);
 
 			// Parse the Type1 Font program in order to extract Glyph Width
-			bis = new ByteArrayInputStream(fontFile.getByteArray());
 			COSStream streamObj = fontFile.getStream();
 			int length1 = streamObj.getInt(COSName.LENGTH1);
 			int length2 = streamObj.getInt(COSName.LENGTH2);
+			bis = new ByteArrayInputStream(fontFile.getByteArray());
 			Type1Parser parserForMetrics = Type1Parser.createParserWithEncodingObject(bis, length1, length2, font.getFontEncoding());
 			Type1 parsedData = parserForMetrics.parse();
 
