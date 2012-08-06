@@ -109,7 +109,7 @@
           </descriptorRefs>
           <archive>
           <manifest>
-            <mainClass>org.apache.padaf.preflight.Validator_A1b</mainClass>
+            <mainClass>org.apache.pdfbox.preflight.Validator_A1b</mainClass>
           </manifest>
           </archive>
         </configuration>
@@ -143,11 +143,11 @@
         <configuration>
           <instrumentation>
             <ignores>
-              <ignore>org.apache.padaf.preflight.javacc.*</ignore>
-              <ignore>org.apache.padaf.preflight.javacc.extractor.*</ignore>
+              <ignore>org.apache.pdfbox.preflight.javacc.*</ignore>
+              <ignore>org.apache.pdfbox.preflight.javacc.extractor.*</ignore>
             </ignores>
             <excludes>
-              <exclude>org/apache/padaf/preflight/javacc/**/*.class</exclude>
+              <exclude>org/apache/pdfbox/preflight/javacc/**/*.class</exclude>
             </excludes>
           </instrumentation>
         </configuration>
