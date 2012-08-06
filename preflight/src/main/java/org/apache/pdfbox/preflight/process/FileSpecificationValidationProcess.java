@@ -50,8 +50,6 @@ public class FileSpecificationValidationProcess extends AbstractProcess {
 
 		List<?> lCOSObj = cDoc.getObjects();
 		for (Object o : lCOSObj) {
-			// If this object represents a Stream
-			// The Dictionary must contain the Length key
 			COSBase cBase = ((COSObject) o).getObject();
 			if (cBase instanceof COSDictionary) {
 				COSDictionary dic = (COSDictionary) cBase;

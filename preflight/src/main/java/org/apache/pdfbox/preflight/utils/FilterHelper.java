@@ -21,23 +21,23 @@
 
 package org.apache.pdfbox.preflight.utils;
 
-import static org.apache.padaf.preflight.ValidationConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
-import static org.apache.padaf.preflight.ValidationConstants.ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_ASCII_85;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_CCITTFF;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_DCT;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_LZW;
-import static org.apache.padaf.preflight.ValidationConstants.INLINE_DICTIONARY_VALUE_FILTER_RUN;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_ASCII_85;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_CCITTFF;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_DCT;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_JBIG;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_LZW;
-import static org.apache.padaf.preflight.ValidationConstants.STREAM_DICTIONARY_VALUE_FILTER_RUN;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_ASCII_85;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_CCITTFF;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_DCT;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_LZW;
+import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_RUN;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_ASCII_85;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_CCITTFF;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_DCT;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_JBIG;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_LZW;
+import static org.apache.pdfbox.preflight.PreflightConstants.STREAM_DICTIONARY_VALUE_FILTER_RUN;
 
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightDocument;
