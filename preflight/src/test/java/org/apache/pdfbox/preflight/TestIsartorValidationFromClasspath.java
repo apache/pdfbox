@@ -36,8 +36,6 @@ import java.util.StringTokenizer;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.preflight.PreflightDocument;
-import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
@@ -90,6 +88,7 @@ public class TestIsartorValidationFromClasspath {
 	public void validate() throws Exception {
 		PreflightDocument document = null;
 		try {
+			System.out.println(path);
 			InputStream input = this.getClass().getResourceAsStream(path);
 			PreflightParser parser = new PreflightParser(new org.apache.pdfbox.preflight.utils.ByteArrayDataSource(input));
 			parser.parse();
