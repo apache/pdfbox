@@ -21,10 +21,10 @@
 
 package org.apache.pdfbox.preflight.utils;
 
-import static org.apache.padaf.preflight.ValidationConstants.RENDERING_INTENT_ABS_COLOR;
-import static org.apache.padaf.preflight.ValidationConstants.RENDERING_INTENT_PERCEPTUAL;
-import static org.apache.padaf.preflight.ValidationConstants.RENDERING_INTENT_REL_COLOR;
-import static org.apache.padaf.preflight.ValidationConstants.RENDERING_INTENT_SATURATION;
+import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_ABS_COLOR;
+import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_PERCEPTUAL;
+import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_REL_COLOR;
+import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_SATURATION;
 
 import java.util.ArrayList;
 import java.util.Collections;

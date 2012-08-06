@@ -23,11 +23,6 @@ package org.apache.pdfbox.preflight.process.reflect;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
-import static org.apache.pdfbox.preflight.PreflightConstants.PATTERN_KEY_BBOX;
-import static org.apache.pdfbox.preflight.PreflightConstants.PATTERN_KEY_PAINT_TYPE;
-import static org.apache.pdfbox.preflight.PreflightConstants.PATTERN_KEY_TILING_TYPE;
-import static org.apache.pdfbox.preflight.PreflightConstants.PATTERN_KEY_XSTEP;
-import static org.apache.pdfbox.preflight.PreflightConstants.PATTERN_KEY_YSTEP;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;

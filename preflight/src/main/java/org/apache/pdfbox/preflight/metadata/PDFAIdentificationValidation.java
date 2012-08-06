@@ -21,17 +21,19 @@
 
 package org.apache.pdfbox.preflight.metadata;
 
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_INVALID_PDFA_CONFORMANCE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_INVALID_PDFA_VERSION_ID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_PDFA_ID_MISSING;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
-import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-
-import static org.apache.pdfbox.preflight.PreflightConstants.*; 
 
 /**
  * Class which check if PDF/A Identification Schema contains good information
