@@ -37,7 +37,7 @@ public class TestJobType extends AbstractStructuredTypeTester{
 	@Before
 	public void before () throws Exception {
 		super.before();
-		structured = new JobType(xmp);
+		structured = new JobType(xmp,"job");
 	}
 	
 	public TestJobType (Class<? extends AbstractStructuredType> clz, String field,String type) {

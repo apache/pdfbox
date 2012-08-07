@@ -85,6 +85,16 @@ public abstract class AbstractStructuredType extends AbstractField {
 		return (AbstractSimpleProperty)list.get(0);
 	}
 
+	protected ArrayProperty getArrayProperty (String fieldName) {
+		List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
+		// return null if no property
+		if (list==null) {
+			return null;
+		}
+		// return the first element of the list
+		return (ArrayProperty)list.get(0);
+	}
+
 	
 	protected String getPropertyValueAsString (String fieldName) {
 		AbstractSimpleProperty absProp = getProperty(fieldName);

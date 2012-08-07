@@ -45,8 +45,6 @@ public class XMPSchemaFactory {
 	
 	private String nsName;
 	
-	private boolean isDeclarative;
-	
 	private List<PropMapping> importedPropertyMapping = new ArrayList<PropMapping>();
 	
 	/**
@@ -61,31 +59,9 @@ public class XMPSchemaFactory {
 	 */
 	public XMPSchemaFactory(String namespace,
 			Class<? extends XMPSchema> schemaClass, PropMapping propDef) {
-		this.isDeclarative = false;
 		this.namespace = namespace;
 		this.schemaClass = schemaClass;
 		this.propDef = propDef;
-	}
-
-	/**
-	 * Factory constructor for declarative XMP Schemas
-	 * 
-	 * @param nsName
-	 *            namespace name to treat
-	 * @param namespace
-	 *            namespace URI to treat
-	 * @param schemaClass
-	 *            Class representation associated to this URI
-	 * @param propDef
-	 *            Properties Types list associated
-	 */
-	public XMPSchemaFactory(String nsName, String namespace,
-			Class<? extends XMPSchema> schemaClass, PropMapping propDef) {
-		this.isDeclarative = true;
-		this.namespace = namespace;
-		this.schemaClass = schemaClass;
-		this.propDef = propDef;
-		this.nsName = nsName;
 	}
 
 	public void importXMPSchemaFactory(XMPSchemaFactory externalFactory) 
@@ -163,7 +139,7 @@ public class XMPSchemaFactory {
 		Class<?>[] argsClass;
 		Object[] schemaArgs;
 
-		if (isDeclarative) {
+		if (schemaClass == XMPSchema.class) {
 			argsClass = new Class[] { XMPMetadata.class, String.class, String.class };
 			schemaArgs = new Object[] { metadata, nsName, namespace };
 		} else if (prefix != null && !"".equals(prefix)) {
@@ -186,6 +162,10 @@ public class XMPSchemaFactory {
 			throw new XmpSchemaException(
 					"Cannot Instanciate specified Object Schema", e);
 		}
+	}
+
+	public PropMapping getPropertyDefinition () {
+		return this.propDef;
 	}
 
 }

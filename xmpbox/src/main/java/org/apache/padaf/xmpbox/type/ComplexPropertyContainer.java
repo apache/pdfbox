@@ -22,8 +22,10 @@
 package org.apache.padaf.xmpbox.type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.w3c.dom.Element;
@@ -37,10 +39,16 @@ import org.w3c.dom.NodeList;
  * @author a183132
  * 
  */
-public class ComplexPropertyContainer extends AbstractField {
+public class ComplexPropertyContainer /*extends AbstractField*/ {
 
 	
 	private List<AbstractField> properties;
+
+	private Element element;
+	
+	private Map<String, Attribute> attributes;
+
+
 	
 	/**
 	 * Complex Property type constructor (namespaceURI is given)
@@ -56,10 +64,88 @@ public class ComplexPropertyContainer extends AbstractField {
 	 */
 	public ComplexPropertyContainer(XMPMetadata metadata, String namespaceURI,
 			String prefix, String propertyName) {
-		super(metadata, namespaceURI, prefix, propertyName);
+		String qualifiedName = prefix + ":" + propertyName;
+		if (namespaceURI!=null) {
+			element = metadata.getFuturOwner().createElementNS(namespaceURI, qualifiedName);
+		} else {
+			element = metadata.getFuturOwner().createElement(qualifiedName);
+		}
 		properties = new ArrayList<AbstractField>();
+		attributes = new HashMap<String, Attribute>();
+	}
+
+	
+	
+	public Element getElement() {
+		return element;
+	}
+
+	/**
+	 * Get an attribute with its name in this entity
+	 * 
+	 * @param qualifiedName
+	 *            the full qualified name of the attribute wanted
+	 * @return The attribute property
+	 */
+	public Attribute getAttribute(String qualifiedName) {
+		return attributes.get(qualifiedName);
+	}
+
+	/**
+	 * Get attributes list defined for this entity
+	 * 
+	 * @return Attributes list
+	 */
+	public List<Attribute> getAllAttributes() {
+		return new ArrayList<Attribute>(attributes.values());
+	}
+
+	/**
+	 * Set a new attribute for this entity
+	 * 
+	 * @param value
+	 *            The Attribute property to add
+	 */
+	public void setAttribute(Attribute value) {
+		if (attributes.containsKey(value.getQualifiedName())) {
+			// if same name in element, attribute will be replaced
+			attributes.remove(value.getQualifiedName());
+		}
+		if (value.getNamespace() == null) {
+			attributes.put(value.getQualifiedName(), value);
+			element.setAttribute(value.getQualifiedName(), value.getValue());
+		} else {
+			attributes.put(value.getQualifiedName(), value);
+			element.setAttributeNS(value.getNamespace(), value
+					.getQualifiedName(), value.getValue());
+		}
+	}
+
+	/**
+	 * Remove an attribute of this entity
+	 * 
+	 * @param qualifiedName
+	 *            the full qualified name of the attribute wanted
+	 */
+	public void removeAttribute(String qualifiedName) {
+		if (containsAttribute(qualifiedName)) {
+			element.removeAttribute(qualifiedName);
+			attributes.remove(qualifiedName);
+		}
+
 	}
 	
+	/**
+	 * Check if an attribute is declared for this entity
+	 * 
+	 * @param qualifiedName
+	 *            the full qualified name of the attribute concerned
+	 * @return true if attribute is present
+	 */
+	public boolean containsAttribute(String qualifiedName) {
+		return attributes.containsKey(qualifiedName);
+	}
+
 	/**
 	 * Give the first property found in this container with type and localname
 	 * expected
@@ -97,7 +183,7 @@ public class ComplexPropertyContainer extends AbstractField {
 		// BUT IT CREATE PROBLEM TO FIND AND ERASE CLONED ELEMENT
 		// Node cloned = obj.getElement().cloneNode(true);
 		// parent.adoptNode(cloned);
-		getElement().appendChild(obj.getElement());
+		element.appendChild(obj.getElement());
 		// element.appendChild(cloned);
 	}
 
@@ -184,7 +270,6 @@ public class ComplexPropertyContainer extends AbstractField {
 	public void removeProperty(AbstractField property) {
 		if (containsProperty(property)) {
 			properties.remove(property);
-			Element element = getElement();
 			if (element.hasChildNodes()) {
 				NodeList nodes = element.getChildNodes();
 				boolean canRemove = false;

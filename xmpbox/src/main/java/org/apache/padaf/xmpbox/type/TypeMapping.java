@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.parser.PropMapping;
 import org.apache.padaf.xmpbox.schema.PropertyAttributesAnnotation;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
 
 public final class TypeMapping {
@@ -56,7 +56,6 @@ public final class TypeMapping {
 	private static Map<Class<?>, Map<String,String>> structuredTypes = new HashMap<Class<?>, Map<String,String>>();
 
     
-	// no public constructor
 	public TypeMapping() {
 		
 	}
@@ -107,10 +106,10 @@ public final class TypeMapping {
         addToStructuredMaps(new TypeDescription("ResourceRef",null,ResourceRefType.class));
         addToStructuredMaps(new TypeDescription("Version",null,VersionType.class));
         // PDF/A structured types
-//        addToStructuredMaps(new TypeDescription("PDFAField",null,PDFAFieldType.class));
-//        addToStructuredMaps(new TypeDescription("PDFAProperty",null,PDFAPropertyType.class));
-//        addToStructuredMaps(new TypeDescription("PDFAType",null,PDFATypeType.class));
-//        addToStructuredMaps(new TypeDescription("PDFASchema",null,PDFASchemaType.class));
+        addToStructuredMaps(new TypeDescription("PDFAField",null,PDFAFieldType.class));
+        addToStructuredMaps(new TypeDescription("PDFAProperty",null,PDFAPropertyType.class));
+        addToStructuredMaps(new TypeDescription("PDFAType",null,PDFATypeType.class));
+        addToStructuredMaps(new TypeDescription("PDFASchema",null,PDFASchemaType.class));
     }
 
     private static void addToBasicMaps (TypeDescription td) {
@@ -118,20 +117,26 @@ public final class TypeMapping {
         BASIC_CLASSES.put(td.getTypeClass(), td);
     }
 
-    private static void addToDerivedMaps (TypeDescription td) {
+    public static void addToDerivedMaps (TypeDescription td) {
         DERIVED_TYPES.put(td.getType(),td);
         DERIVED_CLASSES.put(td.getTypeClass(), td);
     }
 
-    private static void addToStructuredMaps (TypeDescription td) {
+    public static void addToStructuredMaps (TypeDescription td) {
         STRUCTURED_TYPES.put(td.getType(),td);
         STRUCTURED_CLASSES.put(td.getTypeClass(), td);
         
         try {
         	String ns = (String)td.getTypeClass().getField("ELEMENT_NS").get(null);
 			STRUCTURED_NAMESPACES.put(ns, td);
-	        PropMapping pm = initializePropMapping(ns, (Class<? extends AbstractStructuredType>)td.getTypeClass());
-	        td.setProperties(pm);
+			Class<? extends AbstractStructuredType> clz = (Class<? extends AbstractStructuredType>)td.getTypeClass();
+			if (clz!=null) {
+		        PropMapping pm = initializePropMapping(ns, clz);
+		        td.setProperties(pm);
+			} else {
+		        PropMapping pm = initializePropMapping(ns, td.getDefinedStructure());
+		        td.setProperties(pm);
+			}
 		} catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
 		} catch (SecurityException e) {
@@ -143,6 +148,13 @@ public final class TypeMapping {
 		}  
     }
 
+    public void addToStructuredMaps (TypeDescription td, String ns) {
+        STRUCTURED_TYPES.put(td.getType(),td);
+        STRUCTURED_CLASSES.put(td.getTypeClass(), td);
+		STRUCTURED_NAMESPACES.put(ns, td);
+    }
+
+    
     public String getType (Class<?> clz) {
     	// search in basic
     	TypeDescription td = BASIC_CLASSES.get(clz);
@@ -272,8 +284,6 @@ public final class TypeMapping {
      * @return True if namespace URI is a reference for a complex basic type
      */
     public boolean isStructuredTypeNamespace(String namespace) {
-//        return STRUCTURED_TYPES.containsKey(namespace);
-    	// TODO why was STRUCTURED_TYPE
     	return STRUCTURED_NAMESPACES.containsKey(namespace);
     }
 
@@ -357,5 +367,13 @@ public final class TypeMapping {
 		return propMap;
 	}
 
+	private static PropMapping initializePropMapping(String ns,
+			DefinedStructuredType dst) {
+		PropMapping propMap = new PropMapping(ns);
+		for (Entry<String, String> entry: dst.getDefinedProperties().entrySet()) {
+				propMap.addNewProperty(entry.getKey(), entry.getValue(), null);
+		}
+		return propMap;
+	}
     
 }

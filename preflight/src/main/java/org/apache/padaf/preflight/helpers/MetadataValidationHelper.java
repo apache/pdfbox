@@ -42,7 +42,6 @@ import org.apache.padaf.preflight.xmp.SynchronizedMetaDataValidation;
 import org.apache.padaf.preflight.xmp.XpacketParsingException;
 import org.apache.padaf.preflight.xmp.RDFAboutAttributeConcordanceValidation.DifferentRDFAboutException;
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.PDFAExtentionSchemaPreprocessor;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XmpExpectedRdfAboutAttribute;
 import org.apache.padaf.xmpbox.parser.XmpParsingException;
@@ -115,7 +114,6 @@ public class MetadataValidationHelper extends AbstractValidationHelper {
       XMPDocumentBuilder builder;
 	  try {
 		builder = new XMPDocumentBuilder();
-		builder.addPreprocessor(new PDFAExtentionSchemaPreprocessor());
 	  } catch (XmpSchemaException e1) {
 	    throw new ValidationException(e1.getMessage(), e1);
 	  }

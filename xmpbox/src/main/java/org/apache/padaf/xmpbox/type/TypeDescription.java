@@ -34,6 +34,8 @@ public class TypeDescription {
 	
 	private Class<? extends AbstractField> clz;
 	
+	private DefinedStructuredType definedStructuredType;
+	
 	// TODO PropMapping should be in package Type
 	private PropMapping properties = null;
 
@@ -44,7 +46,16 @@ public class TypeDescription {
 		this.clz = clz;
 	}
 	
+	public TypeDescription(String type, BasicType basic, DefinedStructuredType definedStructured) {
+		super();
+		this.type = type;
+		this.basic = basic;
+		this.clz = null;
+		this.definedStructuredType = definedStructured;
+	}
+	
 
+	
 	public TypeDescription(String type, BasicType basic) {
 		this(type, basic,TextType.class);
 	}
@@ -72,6 +83,10 @@ public class TypeDescription {
 
 	protected void setProperties(PropMapping properties) {
 		this.properties = properties;
+	}
+	
+	public DefinedStructuredType getDefinedStructure () {
+		return this.definedStructuredType;
 	}
 	
 }

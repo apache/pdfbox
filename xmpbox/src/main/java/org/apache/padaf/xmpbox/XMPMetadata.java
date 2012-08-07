@@ -321,7 +321,7 @@ public class XMPMetadata {
      */
     public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithNS(
            Map<String, String> namespaces) throws XmpSchemaException {
-        PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this, namespaces);
+    	PDFAExtensionSchema pdfAExt = new PDFAExtensionSchema(this);
         pdfAExt.setAboutAsSimple("");
         addSchema(pdfAExt);
         return pdfAExt;

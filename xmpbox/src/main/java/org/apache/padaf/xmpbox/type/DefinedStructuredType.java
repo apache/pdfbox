@@ -19,15 +19,36 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.type;
 
-import org.apache.padaf.xmpbox.schema.NSMapping;
-import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface XMPDocumentPreprocessor {
+import org.apache.padaf.xmpbox.XMPMetadata;
+
+public class DefinedStructuredType extends AbstractStructuredType {
+
+	private Map<String, String> definedProperties = null;
 	
-	NSMapping process(byte[] xmp) throws XmpParsingException,
-	XmpSchemaException, XmpUnknownValueTypeException,
-	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
-	BadFieldValueException;
+	public DefinedStructuredType(XMPMetadata metadata, String namespaceURI,
+			String fieldPrefix) {
+		super(metadata, namespaceURI, fieldPrefix);
+		this.definedProperties = new HashMap<String, String>();
+	}
+
+	@Override
+	public String getFieldsNamespace() {
+		return getNamespace();
+	}
+
+	public void addProperty (String name, String type) {
+		definedProperties.put(name, type);
+	}
+
+	protected Map<String, String> getDefinedProperties() {
+		return definedProperties;
+	}
+
+
+	
 }

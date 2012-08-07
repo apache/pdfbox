@@ -82,7 +82,7 @@ public class BasicJobTicketSchemaTest {
 		basic.addJob("zeid1", "zename1", "zeurl1","aaa");
 		basic.addJob("zeid2", "zename2", "zeurl2");
 		
-//		SaveMetadataHelper.serialize(xmpMetadata, System.out);
+		SaveMetadataHelper.serialize(metadata, System.out);
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		SaveMetadataHelper.serialize(metadata, bos);
