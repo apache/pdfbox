@@ -49,8 +49,6 @@ public abstract class AbstractField implements Elementable {
 
 	private Element element;
 	
-	private Document parent;
-	
 	private XMPMetadata metadata;
 
 	private String namespaceURI, prefix, propertyName;
@@ -90,7 +88,7 @@ public abstract class AbstractField implements Elementable {
 		this.prefix = prefix;
 		qualifiedName = prefix + ":" + propertyName;
 		this.metadata = metadata;
-		this.parent = metadata.getFuturOwner();
+		Document parent = metadata.getFuturOwner();
 		this.namespaceURI = namespaceURI;
 		this.propertyName = propertyName;
 		if (this.namespaceURI!=null) {

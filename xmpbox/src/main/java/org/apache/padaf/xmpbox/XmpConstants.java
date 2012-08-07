@@ -20,7 +20,7 @@
 
 package org.apache.padaf.xmpbox;
 
-public class XmpConstants {
+public final class XmpConstants {
 
 	public static final String RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 

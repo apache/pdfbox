@@ -21,6 +21,8 @@
 
 package org.apache.padaf.xmpbox.type;
 
+import java.util.List;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
 
 /**
@@ -88,4 +90,9 @@ public class ArrayProperty extends AbstractField {
 		return false;
 	}
 
+	public List<AbstractField> getAllProperties() {
+		return container.getAllProperties();
+	}
+
+	
 }

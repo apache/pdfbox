@@ -44,17 +44,20 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
-import org.apache.padaf.xmpbox.schema.PDFAFieldDescription;
-import org.apache.padaf.xmpbox.schema.SchemaDescription;
 import org.apache.padaf.xmpbox.schema.SchemaMapping;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
-import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
+import org.apache.padaf.xmpbox.type.DefinedStructuredType;
+import org.apache.padaf.xmpbox.type.PDFAFieldType;
+import org.apache.padaf.xmpbox.type.PDFAPropertyType;
+import org.apache.padaf.xmpbox.type.PDFASchemaType;
+import org.apache.padaf.xmpbox.type.PDFATypeType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
@@ -70,17 +73,15 @@ import org.apache.pdfbox.io.IOUtils;
 public class XMPDocumentBuilder {
 
 	private NSMapping nsMap;
-	
+
 	private TypeMapping typeMapping = null;
-	
+
 	private SchemaMapping schemaMapping = null;
 
 	private ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
 
-	private List<XMPDocumentPreprocessor> preprocessors = new ArrayList<XMPDocumentPreprocessor>();
-
 	public static final String VALUE_TYPE_NAME = "valueType";
-	
+
 	/**
 	 * RDF namespace constant
 	 */
@@ -101,7 +102,7 @@ public class XMPDocumentBuilder {
 	public XMPMetadata createXMPMetadata () throws CreateXMPMetadataException {
 		return new WrappedXMPMetadata(this);
 	}
-	
+
 	public XMPMetadata createXMPMetadata (String begin, String id, String bytes, String encoding) throws CreateXMPMetadataException {
 		return new WrappedXMPMetadata(this,begin, id, bytes, encoding);
 
@@ -114,15 +115,14 @@ public class XMPDocumentBuilder {
 
 		public WrappedXMPMetadata(XMPDocumentBuilder builder, String xpacketBegin, String xpacketId,
 				String xpacketBytes, String xpacketEncoding)
-				throws CreateXMPMetadataException {
+						throws CreateXMPMetadataException {
 			super(builder, xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
-			// TODO Auto-generated constructor stub
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 	/**
 	 * Parsing method. Return a XMPMetadata object with all elements read
 	 * 
@@ -152,12 +152,19 @@ public class XMPDocumentBuilder {
 	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
 	BadFieldValueException {
 
-		if (!(this instanceof XMPDocumentPreprocessor)) {
-			for (XMPDocumentPreprocessor processor : preprocessors) {
-				NSMapping additionalNSMapping = processor.process(xmp);
-				this.nsMap.importNSMapping(additionalNSMapping);				
-			}
-		}
+		XMPDocumentBuilder preproc = new XMPDocumentBuilder();
+		XMPMetadata xmpPreproc = preproc.doParsingParsing(xmp,true);
+		populateSchemaMapping(schemaMapping, xmpPreproc);
+
+
+		return doParsingParsing(xmp,false);
+	}
+
+	public XMPMetadata doParsingParsing(byte[] xmp, boolean parseExtension) throws XmpParsingException,
+	XmpSchemaException, XmpUnknownValueTypeException,
+	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
+	BadFieldValueException {
+
 
 		ByteArrayInputStream is = new ByteArrayInputStream(xmp);
 		try {
@@ -183,6 +190,7 @@ public class XMPDocumentBuilder {
 			// add all namespaces which could declare nsURI of a basicValueType
 			// all others declarations are ignored
 			int nsCount = reader.get().getNamespaceCount();
+			// TODO MUTUALIZE namespace list loading
 			for (int i = 0; i < nsCount; i++) {
 				if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 					nsMap.setComplexBasicTypesDeclarationForLevelXMP(
@@ -194,7 +202,7 @@ public class XMPDocumentBuilder {
 			// now work on each rdf:Description
 			int type = reader.get().nextTag();
 			while (type == XMLStreamReader.START_ELEMENT) {
-				parseDescription(metadata);
+				parseDescription(metadata,parseExtension);
 				type = reader.get().nextTag();
 			}
 
@@ -243,6 +251,109 @@ public class XMPDocumentBuilder {
 		}
 	}
 
+	private void populateSchemaMapping (SchemaMapping sm, XMPMetadata meta) 
+			throws XmpRequiredPropertyException,XmpUnknownValueTypeException,XmpUnexpectedNamespacePrefixException {
+		List<XMPSchema> schems = meta.getAllSchemas();
+		for (XMPSchema xmpSchema : schems) {
+			if (xmpSchema.getNamespaceValue().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
+				// ensure the prefix is the preferred one (cannot use other definition)
+				if (!xmpSchema.getPrefix().equals(PDFAExtensionSchema.PDFAEXTENSION)) {
+					throw new XmpUnexpectedNamespacePrefixException("Found invalid prefix for PDF/A extension, found '"+
+							xmpSchema.getPrefix()+"', should be '"+PDFAExtensionSchema.PDFAEXTENSION+"'"
+							);
+				}
+				// create schema and types
+				PDFAExtensionSchema pes = (PDFAExtensionSchema)xmpSchema;
+				ArrayProperty sp = pes.getSchemasProperty();
+				for (AbstractField af: sp.getAllProperties()) {
+					if (af instanceof PDFASchemaType) {
+						PDFASchemaType st = (PDFASchemaType)af;
+						String namespaceUri = st.getNamespaceURI();
+						ArrayProperty properties = st.getProperty();
+						ArrayProperty valueTypes = st.getValueType();
+						XMPSchemaFactory xsf = schemaMapping.getSchemaFactory(namespaceUri);
+						// retrieve namespaces
+						if (xsf==null) {
+							// create namespace with no field
+							schemaMapping.addNewNameSpace(namespaceUri);
+							xsf = schemaMapping.getSchemaFactory(namespaceUri);
+						}
+						// populate value type
+						if (valueTypes!=null) {
+							for (AbstractField af2 : valueTypes.getAllProperties()) {
+								if (af2 instanceof PDFATypeType) {
+									PDFATypeType type = (PDFATypeType)af2;
+									String ttype= type.getType();
+									String tns = type.getNamespaceURI();
+									String tprefix = type.getPrefix();
+									String tdescription = type.getDescription();
+									ArrayProperty fields = type.getFields();
+									if (ttype==null || tns==null || tprefix==null || tdescription==null) {
+										// all fields are mandatory
+										throw new XmpRequiredPropertyException("Missing field in type definition");
+									}
+									// create the structured type
+									DefinedStructuredType structuredType = new DefinedStructuredType(meta, tns, tprefix);
+									if (fields!=null) {
+										List<AbstractField> definedFields = fields.getAllProperties();
+										for (AbstractField af3 : definedFields) {
+											if (af3 instanceof PDFAFieldType) {
+												PDFAFieldType field = (PDFAFieldType)af3;
+												String fName = field.getName();
+												String fDescription = field.getDescription();
+												String fValueType = field.getValueType();
+												if (fName==null || fDescription==null || fValueType==null) {
+													throw new XmpRequiredPropertyException("Missing field in field definition");
+												}
+												// create the type
+												TypeDescription vtd = typeMapping.getTypeDescription(fValueType);
+												if (vtd!=null) {
+													// a type is found
+													String ftype = vtd.getType();
+													structuredType.addProperty(fName, ftype);
+												} else {
+													// unknown type
+													throw new XmpUnknownValueTypeException("Type not defined : "+fValueType);
+												}
+											} // else TODO
+										}
+									}
+									// add the structured type to list
+									TypeDescription td = new TypeDescription(ttype, null, DefinedStructuredType.class);
+									typeMapping.addToStructuredMaps(td,tns);
+								}
+							}	
+						}
+						// populate properties
+						for (AbstractField af2 : properties.getAllProperties()) {
+							if (af2 instanceof PDFAPropertyType) {
+								PDFAPropertyType property = (PDFAPropertyType)af2;
+								String pname = property.getName();
+								String ptype = property.getValueType();
+								String pdescription = property.getDescription();
+								String pCategory = property.getCategory();
+								// check all mandatory fields are OK
+								if (pname==null || ptype==null || pdescription==null || pCategory==null) {
+									// all fields are mandatory
+									throw new XmpRequiredPropertyException("Missing field in property definition");
+								}
+								// check ptype existance
+								TypeDescription td = typeMapping.getTypeDescription(ptype);
+								if (td==null) {
+									// type not defined
+									throw new XmpUnknownValueTypeException("Type not defined : "+ptype);
+								}
+								// load the property
+								xsf.getPropertyDefinition().addNewProperty(pname, ptype, null);
+							} // TODO unmanaged ?
+						}
+					} // TODO unmanaged ?
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Parsing method using serialized xmp read from a stream
 	 * 
@@ -287,10 +398,6 @@ public class XMPDocumentBuilder {
 			IOUtils.closeQuietly(input);
 		}
 		return bos.toByteArray();
-	}
-
-	public void addPreprocessor(XMPDocumentPreprocessor processor) {
-		this.preprocessors.add(processor);
 	}
 
 	/**
@@ -518,7 +625,7 @@ public class XMPDocumentBuilder {
 		String schemaNamespace = schema.getNamespaceValue();
 		String prefix = attr.getPrefix() != null ? attr.getPrefix() : schema.getPrefix();
 		String type = this.nsMap.getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
-		
+
 		if (type != null) {
 			AbstractSimpleProperty prop = typeMapping.instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
 			schema.getContent().addProperty(prop);
@@ -548,79 +655,52 @@ public class XMPDocumentBuilder {
 	 * @throws BadFieldValueException
 	 *             When a bad value found in Schema description content
 	 */
-	protected void parseDescription(XMPMetadata metadata)
+	protected void parseDescription(XMPMetadata metadata, boolean parseExtension)
 			throws XmpParsingException, XMLStreamException, XmpSchemaException,
 			XmpUnknownValueTypeException, XmpExpectedRdfAboutAttribute,
 			BadFieldValueException {
 		nsMap.resetComplexBasicTypesDeclarationInSchemaLevel();
 		int cptNS = reader.get().getNamespaceCount();
 		HashMap<String, String> namespaces = new HashMap<String, String>();
+		// TODO MUTUALIZE namespace list loading
 		for (int i = 0; i < cptNS; i++) {
 			namespaces.put(reader.get().getNamespacePrefix(i), reader.get()
 					.getNamespaceURI(i));
 			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
-				// System.out.println("in parseDesc method: prefix:"+reader.get().getNamespacePrefix(i)+", nsURI:"+reader.get().getNamespaceURI(i));
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
 						.get().getNamespaceURI(i), reader.get()
 						.getNamespacePrefix(i));
 			}
 		}
-		// Different treatment for PDF/A Extension schema
-		// System.out.println(PDFAExtensionSchema.PDFAEXTENSION+";"+PDFAExtensionSchema.PDFAPROPERTY+";"+PDFAExtensionSchema.PDFASCHEMA);
-		if (namespaces.containsKey(PDFAExtensionSchema.PDFAEXTENSION)) {
-			if (namespaces.containsKey(PDFAExtensionSchema.PDFAPROPERTY)
-					&& namespaces.containsKey(PDFAExtensionSchema.PDFASCHEMA)) {
-				if (namespaces
-						.containsValue(PDFAExtensionSchema.PDFAEXTENSIONURI)
-						&& namespaces
-						.containsValue(PDFAExtensionSchema.PDFAPROPERTYURI)
-						&& namespaces
-						.containsValue(PDFAExtensionSchema.PDFASCHEMAURI)) {
-					PDFAExtensionSchema schema = metadata
-							.createAndAddPDFAExtensionSchemaWithNS(namespaces);
-					treatDescriptionAttributes(metadata, schema);
-					parseExtensionSchema(schema, metadata);
-
-				} else {
-					throw new XmpUnexpectedNamespaceURIException(
-							"Unexpected namespaceURI in PDFA Extension Schema encountered");
-				}
-			} else {
-				throw new XmpUnexpectedNamespacePrefixException(
-						"Unexpected namespace Prefix in PDFA Extension Schema");
-			}
-
-		} else {
-			int c = 0;
-			String namespaceUri = reader.get().getNamespaceURI(c);
-			String namespacePrefix = reader.get().getNamespacePrefix(c);
+		int c = 0;
+		String namespaceUri = reader.get().getNamespaceURI(c);
+		String namespacePrefix = reader.get().getNamespacePrefix(c);
+		c++;
+		XMPSchema schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
+		while (c<reader.get().getNamespaceCount() && schema==null) {
+			// try next
+			namespaceUri = reader.get().getNamespaceURI(c);
+			namespacePrefix = reader.get().getNamespacePrefix(c);
+			schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
 			c++;
-			XMPSchema schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
-			while (c<reader.get().getNamespaceCount() && schema==null) {
-				// try next
-				namespaceUri = reader.get().getNamespaceURI(c);
-				namespacePrefix = reader.get().getNamespacePrefix(c);
-				schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
-				c++;
-			}
-
-			if (schema != null) {
-				namespaces.remove(namespacePrefix);
-			} else {
-				schema = metadata.createAndAddDefaultSchema(namespacePrefix,namespaceUri);
-			}
-
-			for (int i = 1; i < cptNS; i++) {
-				schema.setAttribute(new Attribute(XMPSchema.NS_NAMESPACE,
-						"xmlns", reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i)));
-			}
-			treatDescriptionAttributes(metadata, schema);
-			while (reader.get().nextTag() == XMLStreamReader.START_ELEMENT) {
-				parseProperty(schema);
-			}
 		}
 
+		if (schema != null) {
+			namespaces.remove(namespacePrefix);
+		} else {
+			schema = metadata.createAndAddDefaultSchema(namespacePrefix,namespaceUri);
+		}
+
+		for (int i = 1; i < cptNS; i++) {
+			schema.setAttribute(new Attribute(XMPSchema.NS_NAMESPACE,
+					"xmlns", reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i)));
+		}
+		treatDescriptionAttributes(metadata, schema);
+		while (reader.get().nextTag() == XMLStreamReader.START_ELEMENT) {
+			parseProperty(schema,parseExtension);
+		}
 	}
+
 
 	/**
 	 * Check the next element type and its expected value
@@ -663,309 +743,6 @@ public class XMPDocumentBuilder {
 	}
 
 	/**
-	 * Treat a PDFAExtension schema
-	 * 
-	 * @param schema
-	 *            PDFA/Extension schema where save information found
-	 * @param metadata
-	 *            Metadata to attach new elements
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 * @throws XmpUnknownValueTypeException
-	 *             When ValueType found not correspond to basic type and not has
-	 *             been declared in current schema
-	 * @throws BadFieldValueException
-	 *             When one of a field property include to describe a property
-	 *             in Schema Description contain an incorrect value
-	 */
-	protected final void parseExtensionSchema(PDFAExtensionSchema schema,
-			XMPMetadata metadata) throws XmpParsingException,
-			XMLStreamException, XmpUnknownValueTypeException,
-			BadFieldValueException {
-		// <pdfaExtension:schemas>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, "schemas",
-				"Cannot find container declaration of schemas descriptions ");
-		// <rdf:Bag>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.UNORDERED_ARRAY,
-				"Cannot find bag declaration for container of schemas descriptions");
-		// now work on each rdf:li corresponding to each schema description
-		int type = reader.get().nextTag();
-		while (type == XMLStreamReader.START_ELEMENT) {
-			parseSchemaDescription(schema, metadata);
-			type = reader.get().nextTag();
-		}
-		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, "schemas",
-				"Cannot find end of container declaration in schemas descriptions ");
-		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, "Description",
-				"Cannot find end of PDF/A Extension definition ");
-
-	}
-
-	/**
-	 * Treat one Schema description defined in the extension Schema found
-	 * 
-	 * @param schema
-	 *            PDFA/Extension schema where save information found
-	 * @param metadata
-	 *            Metadata to attach new elements
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 * @throws XmpUnknownValueTypeException
-	 *             When ValueType found not correspond to basic type and not has
-	 *             been declared in current schema
-	 * @throws BadFieldValueException
-	 *             When one of a field property contain an incorrect value
-	 */
-	private void parseSchemaDescription(PDFAExtensionSchema schema,
-			XMPMetadata metadata) throws XMLStreamException,
-			XmpParsingException, XmpUnknownValueTypeException,
-			BadFieldValueException {
-		expectCurrentLocalName("li");
-		SchemaDescription desc = schema.createSchemaDescription();
-		if ("Resource".equals(reader.get().getAttributeValue(XmpConstants.RDF_NAMESPACE, "parseType"))) {
-			fillSchemaDescription(desc, metadata);
-		} else {
-			int type = reader.get().nextTag();
-			if (type == XMLStreamReader.START_ELEMENT && reader.get().getLocalName().equals("Description")) {
-				fillSchemaDescription(desc, metadata);  
-				// read the end tag
-				reader.get().nextTag();
-			}
-		}
-
-		schema.addSchemaDescription(desc);
-		nsMap.setNamespaceDefinition(desc);
-
-	}
-
-	protected void fillSchemaDescription(SchemaDescription desc, XMPMetadata metadata)
-			throws XMLStreamException, XmpParsingException, 
-			XmpUnknownValueTypeException, BadFieldValueException {
-		int type = reader.get().nextTag();
-		while (type == XMLStreamReader.START_ELEMENT) {
-			if (reader.get().getLocalName().equals("schema")
-					|| reader.get().getLocalName().equals("namespaceURI")
-					|| reader.get().getLocalName().equals("prefix")) {
-				try {
-					// System.out.println(reader.get().getPrefix()+";"+reader.get().getLocalName()+";"+reader.get().getElementText());
-					desc.addProperty(new TextType(metadata, null, reader.get()
-							.getPrefix(), reader.get().getLocalName(), reader
-							.get().getElementText()));
-				} catch (IllegalArgumentException e) {
-					StringBuilder message = new StringBuilder(50);
-					message.append("Unexpected value for '");
-					message.append(reader.get().getLocalName()).append("' property");
-					throw new XmpPropertyFormatException(
-							message.toString(),e
-							);
-				}
-			} else if (reader.get().getLocalName().equals("property")) {
-				parsePropertyDefinition(desc);
-			} else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
-				parseValueTypeDefinition(desc, metadata);
-			} else {
-				throw new XmpUnexpectedElementException(
-						"Unexpected property definition in one of PDF/A Extension schemas description");
-			}
-			type = reader.get().nextTag();
-		}
-	}
-
-	/**
-	 * Treat value type definition for a specific Schema Description
-	 * 
-	 * @param desc
-	 *            the current Schema Description analyzed
-	 * @param metadata
-	 *            Metadata to attach new elements
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 */
-	private void parseValueTypeDefinition(SchemaDescription desc,
-			XMPMetadata metadata) throws XmpParsingException,
-			XMLStreamException {
-		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY,
-				"Expected Seq Declaration");
-		int elmtType = reader.get().nextTag();
-		String type, namespaceURI, prefix, description;
-		List<PDFAFieldDescription> fields;
-		while (elmtType == XMLStreamReader.START_ELEMENT) {
-			type = null;
-			namespaceURI = null;
-			prefix = null;
-			description = null;
-			fields = null;
-			expectCurrentLocalName("li");
-			elmtType = reader.get().nextTag();
-			while (elmtType == XMLStreamReader.START_ELEMENT) {
-				if (reader.get().getLocalName().equals("type")) {
-					type = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals("namespaceURI")) {
-					namespaceURI = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals("prefix")) {
-					prefix = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals("description")) {
-					description = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals("field")) {
-					fields = parseFieldDescription(metadata);
-
-				} else {
-					throw new XmpUnexpectedElementException(
-							"Unexpected property definition in one of ValueType Descriptions of PDF/A Extension schemas description");
-				}
-				elmtType = reader.get().nextTag();
-			}
-			if ((type != null) && (namespaceURI != null) && (prefix != null)
-					&& (description != null)) {
-				desc.addValueType(type, namespaceURI, prefix, description,
-						fields);
-			} else {
-				throw new XmpRequiredPropertyException(
-						"one property declaration in PDF/A Extension is not complete");
-			}
-			elmtType = reader.get().nextTag();
-		}
-		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, VALUE_TYPE_NAME,
-				"Expected End of ValueType Declaration");
-
-	}
-
-	/**
-	 * Treat field description on the current analyzed value type description
-	 * 
-	 * @param metadata
-	 *            Metadata to attach new elements
-	 * @return A list of parsed fields
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 */
-	private List<PDFAFieldDescription> parseFieldDescription(
-			XMPMetadata metadata) throws XmpParsingException,
-			XMLStreamException {
-		List<PDFAFieldDescription> fields = new ArrayList<PDFAFieldDescription>();
-		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY,
-				"Expected Seq Declaration");
-		int elmtType = reader.get().nextTag();
-		String name, type, description;
-		while (elmtType == XMLStreamReader.START_ELEMENT) {
-			expectCurrentLocalName("li");
-			elmtType = reader.get().nextTag();
-			name = null;
-			type = null;
-			description = null;
-
-			while (elmtType == XMLStreamReader.START_ELEMENT) {
-				if (reader.get().getLocalName().equals("name")) {
-					name = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
-					type = reader.get().getElementText();
-				} else if (reader.get().getLocalName().equals("description")) {
-					description = reader.get().getElementText();
-				} else {
-					throw new XmpUnexpectedElementException(
-							"Unexpected property definition in one of ValueType Field Descriptions of PDF/A Extension schemas description");
-				}
-				elmtType = reader.get().nextTag();
-			}
-			if ((name != null) && (type != null) && (description != null)) {
-				PDFAFieldDescription tmp = new PDFAFieldDescription(metadata);
-				tmp.setNameValue(name);
-				tmp.setValueTypeValue(type);
-				tmp.setDescriptionValue(description);
-				fields.add(tmp);
-			} else {
-				throw new XmpRequiredPropertyException(
-						"One valuetype field declaration in PDF/A Extension is not complete");
-			}
-			// expectNextTag(XMLStreamReader.END_ELEMENT,"Expected element end");
-			elmtType = reader.get().nextTag();
-		}
-		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, "field",
-				"Expected End of Properties Declaration");
-		if (fields.size() != 0) {
-			return fields;
-		}
-		return null;
-	}
-
-	/**
-	 * Treat a property definition for a specific Schema Description
-	 * 
-	 * @param desc
-	 *            the current Schema Description analyzed
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 * @throws BadFieldValueException
-	 *             When one of a field property contain an incorrect value
-	 */
-	private void parsePropertyDefinition(SchemaDescription desc)
-			throws XmpParsingException, XMLStreamException,	BadFieldValueException {
-		// <rdf:Seq>
-		expectNextSpecificTag(XMLStreamReader.START_ELEMENT, ArrayProperty.ORDERED_ARRAY, "Expected Seq Declaration");
-		// Each property definition
-		int elmtType = reader.get().nextTag();
-		while (elmtType == XMLStreamReader.START_ELEMENT) {
-			expectCurrentLocalName("li");
-			if ("Resource".equals(reader.get().getAttributeValue(XmpConstants.RDF_NAMESPACE, "parseType"))) {
-				fillDescription(desc);
-			} else {
-				elmtType = reader.get().nextTag();
-				if (elmtType == XMLStreamReader.START_ELEMENT && reader.get().getLocalName().equals("Description")) {
-					fillDescription(desc);  
-					// read the end tag
-					reader.get().nextTag();
-				}
-			}
-			// expectNextTag(XMLStreamReader.END_ELEMENT,"Expected element end");
-			elmtType = reader.get().nextTag();
-		}
-		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, "property",
-				"Expected End of Properties Declaration");
-	}
-
-	protected void fillDescription(SchemaDescription desc)
-			throws XmpParsingException, XMLStreamException,	BadFieldValueException {
-		int elmtType = reader.get().nextTag();
-		String name = null;
-		String type = null;
-		String category = null;
-		String description = null;
-
-		while (elmtType == XMLStreamReader.START_ELEMENT) {
-			if (reader.get().getLocalName().equals("name")) {
-				name = reader.get().getElementText();
-			} else if (reader.get().getLocalName().equals(VALUE_TYPE_NAME)) {
-				type = reader.get().getElementText();
-			} else if (reader.get().getLocalName().equals("category")) {
-				category = reader.get().getElementText();
-			} else if (reader.get().getLocalName().equals("description")) {
-				description = reader.get().getElementText();
-			} else {
-				throw new XmpUnexpectedElementException(
-						"Unexpected property definition in one of Properties Descriptions of PDF/A Extension schemas description");
-			}
-			elmtType = reader.get().nextTag();
-		}
-		if ((name != null) && (type != null) && (category != null)&& (description != null)) {
-			desc.addProperty(name, type, category, description);
-		} else {
-			throw new XmpRequiredPropertyException("one property declaration in PDF/A Extension is not complete");
-		}
-	}
-
-	/**
 	 * Check for all namespaces declared for the specified schema if the
 	 * property searched exists and return its type or null
 	 * 
@@ -979,7 +756,6 @@ public class XMPDocumentBuilder {
 	 */
 	private String getPropertyDeclarationInNamespaces(XMPSchema schema,
 			QName prop) throws XmpParsingException {
-
 		Iterator<Attribute> it = schema.getAllAttributes().iterator();
 		Attribute tmp;
 		ArrayList<Attribute> list = new ArrayList<Attribute>();
@@ -1019,7 +795,7 @@ public class XMPDocumentBuilder {
 
 	private void parseSimpleProperty(XMPMetadata metadata,	QName propertyName, 
 			Class<? extends AbstractSimpleProperty> typeclass, ComplexPropertyContainer container)	
-			throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
+					throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
 		Class<? extends AbstractSimpleProperty> tclass = (Class<? extends AbstractSimpleProperty>)typeclass;
 		try {
 			AbstractSimpleProperty prop = null;
@@ -1033,7 +809,7 @@ public class XMPDocumentBuilder {
 			}
 			Class<?> [] constParams = new Class<?> [] {XMPMetadata.class,String.class,String.class,String.class,Object.class};
 			Constructor<? extends AbstractSimpleProperty> constructor = tclass.getConstructor(constParams);
-			
+
 			prop = constructor.newInstance(metadata, null,propertyName.getPrefix(),
 					propertyName.getLocalPart(), reader.get()
 					.getElementText());
@@ -1064,7 +840,7 @@ public class XMPDocumentBuilder {
 		}
 	}
 
-	
+
 	protected void parseStructuredPropertyArray(XMPMetadata metadata, QName name, String ctype, StructuredPropertyParser complexParser,
 			ComplexPropertyContainer container)
 					throws XmpUnexpectedTypeException, XmpParsingException,
@@ -1090,7 +866,7 @@ public class XMPDocumentBuilder {
 
 	}
 
-	
+
 
 
 	private void parseSimplePropertyArray(XMPMetadata metadata, QName name, String ctype,
@@ -1117,114 +893,6 @@ public class XMPDocumentBuilder {
 		expectNextSpecificTag(XMLStreamReader.END_ELEMENT, name
 				.getLocalPart(), "Expected end of '"+ctype+"' property");
 	}
-	
-
-	private boolean createAndAddPropertyToContainer(XMPMetadata metadata,
-			String type, ComplexPropertyContainer container)
-					throws XmpParsingException, XmpUnexpectedTypeException,
-					XmpUnknownPropertyTypeException, XmpPropertyFormatException,
-					XMLStreamException {
-		TypeDescription typeDesc = typeMapping.getTypeDescription(type);
-		
-		if (type.equals("Lang alt")) {
-			parseSimplePropertyArray(metadata, reader.get().getName(),
-					ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, container);
-		} else if (typeMapping.isSimpleType(typeDesc.getType())) {
-			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)typeDesc.getTypeClass();
-			parseSimpleProperty(metadata, reader.get().getName(),
-					tcn, container);
-		} else if (typeMapping.isStructuredType(type)) {
-			QName propertyName = reader.get().getName();
-			TypeDescription tclass = typeMapping.getTypeDescription(type);
-			StructuredPropertyParser parser = new StructuredPropertyParser(
-					this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
-			parseStructuredProperty(metadata, parser, container);
-		} else if (typeMapping.getArrayType(type)!=null) {
-			QName propertyName = reader.get().getName();
-			// retrieve array type and content type
-			int pos = type.indexOf(' ');
-			String arrayType = typeMapping.getArrayType(type);
-			String typeInArray = type.substring(pos+1);
-			TypeDescription tclass = typeMapping.getTypeDescription(typeInArray);
-			Class<? extends AbstractField> tcn = tclass.getTypeClass();
-			
-			if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
-				// array of simple
-				parseSimplePropertyArray(
-						metadata, 
-						propertyName, 
-						arrayType, 
-						(Class<? extends AbstractSimpleProperty>)tcn,
-						container);
-			} else if (AbstractStructuredType.class.isAssignableFrom(tcn)) {
-				// array of structured
-				StructuredPropertyParser parser = new StructuredPropertyParser(
-						this, (Class<? extends AbstractStructuredType>)tcn);
-				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, container);
-			} else {
-				// invalid case
-				throw new XmpUnexpectedTypeException("Unknown type : "+type);
-			}
-		} else {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Parse a specific field
-	 * 
-	 * @param metadata
-	 *            Metadata to attach new elements
-	 * @param propertyName
-	 *            the full qualified name of this property
-	 * @param schema
-	 *            The schema where save this property
-	 * @throws XmpUnexpectedTypeException
-	 *             When DOM Element type found unexpected
-	 * @throws XmpParsingException
-	 *             When element expected not found
-	 * @throws XMLStreamException
-	 *             When error during reading the rest of xmp stream
-	 * @throws XmpUnknownPropertyTypeException
-	 *             Value Type property is incorrect or the basic value type
-	 *             can't be treat at the moment
-	 * @throws XmpPropertyFormatException
-	 *             Unexpected type found (IllegalArgumentException)
-	 */
-	protected void parseFieldProperty(XMPMetadata metadata, QName propertyName,
-			XMPSchema schema) throws XmpUnexpectedTypeException,
-			XmpPropertyFormatException, XmpParsingException,
-			XMLStreamException, XmpUnknownPropertyTypeException {
-		ComplexPropertyContainer field = new ComplexPropertyContainer(metadata,null,
-				propertyName.getPrefix(), propertyName.getLocalPart());
-		schema.addProperty(field);
-		field.setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
-		String type;
-		int elmtType = reader.get().nextTag();
-		while ((elmtType != XMLStreamReader.END_ELEMENT)
-				&& !reader.get().getName().getLocalPart().equals(ArrayProperty.ORDERED_ARRAY)) {
-
-			type = getPropertyDeclarationInNamespaces(schema, reader.get()
-					.getName());
-			if (!createAndAddPropertyToContainer(metadata, type, field)) {
-				if (type.equals("Field")) {
-					String stype = getPropertyDeclarationInNamespaces(schema,
-							reader.get().getName());
-					createAndAddPropertyToContainer(metadata, stype, field);
-				} else {
-					throw new XmpUnknownPropertyTypeException("Unknown type : "
-							+ type);
-				}
-			}
-			elmtType = reader.get().nextTag();
-		}
-		expectCurrentLocalName(propertyName.getLocalPart());
-
-		// expectNextSpecificTag(XMLStreamReader.END_ELEMENT,
-		// propertyName.getLocalPart(), "Expected end of field declaration");
-
-	}
 
 	/**
 	 * analyze one property in the stream, retrieve its type according to the
@@ -1246,14 +914,23 @@ public class XMPDocumentBuilder {
 	 * @throws XmpPropertyFormatException
 	 *             Unexpected type found (IllegalArgumentException)
 	 */
-	protected void parseProperty(XMPSchema schema)
+	protected void parseProperty(XMPSchema schema, boolean parsingExtension)
 			throws XmpParsingException, XmpPropertyFormatException,
 			XmpUnexpectedTypeException, XMLStreamException,
 			XmpUnknownPropertyTypeException {
 		XMPMetadata metadata = schema.getMetadata();
 		QName propertyName = reader.get().getName();
+		if (parsingExtension) {
+			if (!propertyName.getNamespaceURI().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
+				// this schema won't be parsed as extension, skip
+				// XXX skip to end of element
+				skipCurrentElement();
+				return;
+			}
+		}
 		nsMap.resetComplexBasicTypesDeclarationInPropertyLevel();
 		int cptNs = reader.get().getNamespaceCount();
+		// TODO MUTUALIZE namespace list loading
 		for (int i = 0; i < cptNs; i++) {
 			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
@@ -1282,7 +959,7 @@ public class XMPDocumentBuilder {
 				String typeInArray = type.substring(pos+1);
 				TypeDescription tclass = typeMapping.getTypeDescription(typeInArray);
 				Class<? extends AbstractField> tcn = tclass.getTypeClass();
-				
+
 				if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
 					// array of simple
 					parseSimplePropertyArray(
@@ -1300,24 +977,13 @@ public class XMPDocumentBuilder {
 					// invalid case
 					throw new XmpUnknownPropertyTypeException("Unknown type : "+type);
 				}
-			} else if (type.equals("Field")) {
-				parseFieldProperty(metadata, propertyName, schema);
+				//			} else if (type.equals("Field")) {
+				//				parseFieldProperty(metadata, propertyName, schema);
 			} else {
 				throw new XmpUnknownPropertyTypeException("Unknown type : " + type);
 			}
 
 		} catch (XmpUnknownPropertyException e) {
-//			// this property is not managed in the workspace
-//			// do not parse the property, no validation, no reserialization
-//			boolean cont = true;
-//			while (cont) {
-//				int t = reader.get().next();
-//				if (t==XMLStreamReader.END_ELEMENT) {
-//					if (propertyName.equals(reader.get().getName())) {
-//						cont = false;
-//					}
-//				}
-//			}
 			throw e;
 		}
 
@@ -1354,5 +1020,21 @@ public class XMPDocumentBuilder {
 		return schemaMapping;
 	}
 
-	
+	public void skipCurrentElement () throws XmpParsingException,XMLStreamException {
+		if (!reader.get().isStartElement()) {
+			throw new XmpParsingException("SkipElement only start on Start element event");
+		}
+		// on start element
+		int openedTag = 1;
+		do {
+			int tag = reader.get().next();
+			if (tag == XMLStreamReader.START_ELEMENT) {
+				openedTag++;
+			} else if (tag == XMLStreamReader.END_ELEMENT) {
+				openedTag--;
+			} 
+		} while (openedTag>0);
+	}
+
+
 }

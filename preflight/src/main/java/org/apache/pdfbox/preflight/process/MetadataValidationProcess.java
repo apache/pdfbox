@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.PDFAExtentionSchemaPreprocessor;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.parser.XmpExpectedRdfAboutAttribute;
 import org.apache.padaf.xmpbox.parser.XmpParsingException;
@@ -73,7 +72,6 @@ public class MetadataValidationProcess extends AbstractProcess {
 			XMPDocumentBuilder builder;
 			try {
 				builder = new XMPDocumentBuilder();
-				builder.addPreprocessor(new PDFAExtentionSchemaPreprocessor());
 			} catch (XmpSchemaException e1) {
 				throw new ValidationException(e1.getMessage(), e1);
 			}

@@ -52,7 +52,6 @@ public final class SchemaMapping {
 	}
 
 	public SchemaMapping () {
-		// hide constructor
 	}
 	
 	
@@ -70,6 +69,13 @@ public final class SchemaMapping {
 		nsMaps.put(ns, new XMPSchemaFactory(ns, classSchem,	initializePropMapping(ns, classSchem)));
 	}
 
+	public void addNewNameSpace(String ns) {
+		PropMapping mapping = new PropMapping(ns);
+		nsMaps.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
+	}
+	
+	
+	
 	
 	/**
 	 * Initialize the Property Mapping for a given schema

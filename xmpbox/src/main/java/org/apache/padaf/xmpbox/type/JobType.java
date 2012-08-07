@@ -42,7 +42,7 @@ public class JobType extends AbstractStructuredType {
 
 
     public JobType(XMPMetadata metadata) {
-        this(metadata, PREFERED_PREFIX);
+    	this(metadata, PREFERED_PREFIX);
     }
 
     public JobType(XMPMetadata metadata, String fieldPrefix) {
