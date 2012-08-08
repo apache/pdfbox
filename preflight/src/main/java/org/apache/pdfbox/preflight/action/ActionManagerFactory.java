@@ -75,7 +75,7 @@ public class ActionManagerFactory {
 	 * @return
 	 * @throws ValidationException
 	 */
-	public final List<AbstractActionManager> getActions(PreflightContext ctx, COSDictionary dictionary) 
+	public final List<AbstractActionManager> getActionManagers(PreflightContext ctx, COSDictionary dictionary) 
 	throws ValidationException {
 		List<AbstractActionManager> result = new ArrayList<AbstractActionManager>(0);
 		Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<COSObjectKey, Boolean>();
