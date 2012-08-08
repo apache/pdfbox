@@ -32,7 +32,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class PreflightDocument extends PDDocument {
 
-	protected ValidationResult result;
+	protected ValidationResult result = new ValidationResult(true);
 	
 	protected PreflightConfiguration config;
 

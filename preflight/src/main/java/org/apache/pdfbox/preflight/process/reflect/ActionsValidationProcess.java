@@ -48,7 +48,7 @@ public class ActionsValidationProcess extends AbstractProcess {
 		
 		PreflightConfiguration config = context.getConfig();
 		ActionManagerFactory factory = config.getActionFact();
-	    List<AbstractActionManager> la = factory.getActions(context, actionsDict);
+	    List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
 	    for (AbstractActionManager aMng : la) {
 	      aMng.valid(aaEntryAuth);
 	    }
