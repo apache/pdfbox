@@ -108,8 +108,8 @@ public class TestDerivedType {
     public void test1 () throws Exception {
     	TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);
     	Assert.assertNull(element.getNamespace());
-    	Assert.assertTrue(element.getObjectValue() instanceof String);
-    	Assert.assertEquals(VALUE, element.getObjectValue());
+    	Assert.assertTrue(element.getValue() instanceof String);
+    	Assert.assertEquals(VALUE, element.getValue());
     	
     }
     

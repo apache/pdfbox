@@ -32,6 +32,8 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 public class IntegerType extends AbstractSimpleProperty {
 
 
+	private int integerValue;
+	
 	/**
 	 * Property Integer type constructor (namespaceURI is given)
 	 * 
@@ -57,8 +59,8 @@ public class IntegerType extends AbstractSimpleProperty {
 	 * 
 	 * @return the property value
 	 */
-	public int getValue() {
-		return (Integer) getObjectValue();
+	public Integer getValue() {
+		return integerValue;
 	}
 
 	/**
@@ -69,10 +71,10 @@ public class IntegerType extends AbstractSimpleProperty {
 	 */
 	public void setValue(Object value) {
 		if (value instanceof Integer) {
-			setObjectValue(value);
+			integerValue = ((Integer)value).intValue();
 		} else if (value instanceof String) {
+			integerValue = Integer.valueOf((String)value);
 			// NumberFormatException is thrown (sub of InvalidArgumentException)
-			setObjectValue(Integer.valueOf((String)value));
 		} else {
 			// invalid type of value
 			throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
@@ -81,7 +83,7 @@ public class IntegerType extends AbstractSimpleProperty {
 
 	@Override
 	public String getStringValue() {
-		return ((Integer)getObjectValue()).toString();
+		return Integer.toString(integerValue);
 	}
 	
 	

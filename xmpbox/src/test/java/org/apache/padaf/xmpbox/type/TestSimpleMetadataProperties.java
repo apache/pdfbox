@@ -130,7 +130,7 @@ public class TestSimpleMetadataProperties {
 //				.getNodeName());
 		Assert.assertEquals(boolv, bool.getValue());
 		Assert.assertEquals(datev, date.getValue());
-		Assert.assertEquals(integerv, integer.getValue());
+		Assert.assertEquals(Integer.valueOf(integerv), integer.getValue());
 		Assert.assertEquals(realv, real.getValue(), 0);
 		Assert.assertEquals(textv, text.getStringValue());
 

@@ -31,8 +31,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public abstract class AbstractSimpleProperty extends AbstractField {
 
-	private Object objValue;
-
 	/**
 	 * Property specific type constructor (namespaceURI is given)
 	 * 
@@ -63,10 +61,6 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 */
 	public abstract void setValue(Object value);
 	
-	protected void setObjectValue (Object value) {
-		this.objValue = value;
-	}
-
 	/**
 	 * Return the property value
 	 * 
@@ -74,14 +68,13 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 */
 	public abstract String getStringValue();
 
-	public Object getObjectValue () {
-		return objValue;
-	}
+	public abstract Object getValue();
+
 	
 	public String toString () {
 		StringBuilder sb = new StringBuilder ();
 		sb.append("[").append(this.getClass().getSimpleName()).append(":");
-		sb.append(objValue).append("]");
+		sb.append(getStringValue()).append("]");
 		return sb.toString();
 	}
 	
