@@ -20,7 +20,6 @@
  ****************************************************************************/
 package org.apache.padaf.xmpbox;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,9 +37,6 @@ import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.Elementable;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Object representation of XMPMetaData Be CAREFUL: typically, metadata should
@@ -59,7 +55,7 @@ public class XMPMetadata {
     
     private String xpacketBegin = "\uFEFF";
 
-    // DEPRECATED (SHOULD STAY NULL (Default value))
+    // TODO DEPRECATED (SHOULD STAY NULL (Default value))
     private String xpacketBytes;
     
     private String xpacketEncoding;
@@ -68,8 +64,6 @@ public class XMPMetadata {
 
     private SchemasContainer schemas;
 
-    private Document xmpDocument;
-    
     private XMPDocumentBuilder builder;
 
     /**
@@ -79,15 +73,8 @@ public class XMPMetadata {
      *             If DOM Document associated could not be created
      */
     protected XMPMetadata(XMPDocumentBuilder builder) throws CreateXMPMetadataException {
-        try {
-        	this.builder = builder;
-            xmpDocument = org.apache.padaf.xmpbox.parser.XMLUtil.newDocument();
-            schemas = new SchemasContainer();
-        } catch (IOException e) {
-            throw new CreateXMPMetadataException(
-            "Failed to create Dom Document",e);
-        }
-
+      	this.builder = builder;
+        schemas = new SchemasContainer();
     }
 
     /**
@@ -113,13 +100,7 @@ public class XMPMetadata {
         this.xpacketId = xpacketId;
         this.xpacketBytes = xpacketBytes;
         this.xpacketEncoding = xpacketEncoding;
-        try {
-            xmpDocument = org.apache.padaf.xmpbox.parser.XMLUtil.newDocument();
-            schemas = new SchemasContainer();
-        } catch (IOException e) {
-            throw new CreateXMPMetadataException(
-            "Failed to create Dom Document",e);
-        }
+        schemas = new SchemasContainer();
     }
 
     /**
@@ -199,24 +180,6 @@ public class XMPMetadata {
      */
     public String getEndXPacket() {
         return xpacketEndData;
-    }
-
-    /**
-     * Get element associated to all schemas contained in this Metadata
-     * 
-     * @return Dom Element representing serialized metadata
-     */
-    public Element getContainerElement() {
-        return schemas.getElement();
-    }
-
-    /**
-     * Give the DOM Document to build metadata content
-     * 
-     * @return The XML Document which is serialized metadata
-     */
-    public Document getFuturOwner() {
-        return xmpDocument;
     }
 
     /**
@@ -514,10 +477,8 @@ public class XMPMetadata {
      * @author a183132
      * 
      */
-    public class SchemasContainer implements Elementable {
+    public class SchemasContainer {
 
-        private Element element;
-        
         private List<XMPSchema> schemas;
 
         /**
@@ -525,9 +486,6 @@ public class XMPMetadata {
          * Schemas Container constructor
          */
         public SchemasContainer() {
-            element = xmpDocument.createElement("rdf:RDF");
-            element.setAttributeNS(XMPSchema.NS_NAMESPACE, "xmlns:rdf",
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
             schemas = new ArrayList<XMPSchema>();
         }
 
@@ -539,7 +497,6 @@ public class XMPMetadata {
          */
         public void addSchema(XMPSchema obj) {
             schemas.add(obj);
-            element.appendChild(obj.getElement());
         }
 
         /**
@@ -549,18 +506,7 @@ public class XMPMetadata {
          *            The schema to remove
          */
         public void removeSchema(XMPSchema schema) {
-            if (schemas.remove(schema)) {
-                element.removeChild(schema.getElement());
-            }
-        }
-
-        /**
-         * Get The Dom Element in order to build serialized metadata
-         * 
-         * @return Dom Element
-         */
-        public Element getElement() {
-            return element;
+        	schemas.remove(schema);
         }
 
     }

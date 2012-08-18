@@ -77,26 +77,14 @@ public class IntegerType extends AbstractSimpleProperty {
 			// invalid type of value
 			throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
 		}
-		// set value
-		getElement().setTextContent(getObjectValue().toString());
 	}
-//
-//	public void setValue(Object value) {
-//		if (!isGoodType(value)) {
-//			throw new IllegalArgumentException(
-//					"Value given is not allowed for the Integer type.");
-//		} else {
-//			// if string object
-//			if (value instanceof String) {
-//				setValueFromString((String) value);
-//			} else {
-//				// if Integer
-//				setValueFromInt((Integer) value);
-//			}
-//
-//		}
-//
-//	}
 
+	@Override
+	public String getStringValue() {
+		return ((Integer)getObjectValue()).toString();
+	}
+	
+	
+	
 
 }

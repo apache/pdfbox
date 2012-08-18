@@ -122,12 +122,12 @@ public class TestSimpleMetadataProperties {
 		RealType real = new RealType(parent, null, "test", "real", realv);
 		TextType text = new TextType(parent, null,"test", "text", textv);
 
-		Assert.assertEquals(bool.getNamespace(), bool.getElement()
-				.getNamespaceURI());
-		Assert.assertEquals(bool.getPrefix() + ":" + bool.getPropertyName(),
-				bool.getElement().getNodeName());
-		Assert.assertEquals(bool.getQualifiedName(), bool.getElement()
-				.getNodeName());
+//		Assert.assertEquals(bool.getNamespace(), bool.getElement()
+//				.getNamespaceURI());
+//		Assert.assertEquals(bool.getPrefix() + ":" + bool.getPropertyName(),
+//				bool.getElement().getNodeName());
+//		Assert.assertEquals(bool.getQualifiedName(), bool.getElement()
+//				.getNodeName());
 		Assert.assertEquals(boolv, bool.getValue());
 		Assert.assertEquals(datev, date.getValue());
 		Assert.assertEquals(integerv, integer.getValue());
@@ -136,31 +136,31 @@ public class TestSimpleMetadataProperties {
 
 	}
 
-	/**
-	 * Check Object creation from corresponding Java type
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void testObjectCreationFromJavaType() throws Exception {
-		BooleanType bool = new BooleanType(parent, null,"test", "booleen", true);
-		DateType date = new DateType(parent, null, "test", "date", Calendar
-				.getInstance());
-		IntegerType integer = new IntegerType(parent,null, "test", "integer", 1);
-		RealType real = new RealType(parent, null,"test", "real", (float) 1.6);
-		TextType text = new TextType(parent, null,"test", "text", "TEST");
-
-		Element e = parent.getFuturOwner().createElement("TEST");
-		parent.getFuturOwner().appendChild(e);
-		e.appendChild(bool.getElement());
-		e.appendChild(date.getElement());
-		e.appendChild(integer.getElement());
-		e.appendChild(real.getElement());
-		e.appendChild(text.getElement());
-
-		// XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8");
-
-	}
+//	/**
+//	 * Check Object creation from corresponding Java type
+//	 * 
+//	 * @throws Exception
+//	 */
+//	@Test
+//	public void testObjectCreationFromJavaType() throws Exception {
+//		BooleanType bool = new BooleanType(parent, null,"test", "booleen", true);
+//		DateType date = new DateType(parent, null, "test", "date", Calendar
+//				.getInstance());
+//		IntegerType integer = new IntegerType(parent,null, "test", "integer", 1);
+//		RealType real = new RealType(parent, null,"test", "real", (float) 1.6);
+//		TextType text = new TextType(parent, null,"test", "text", "TEST");
+//
+//		Element e = parent.getFuturOwner().createElement("TEST");
+//		parent.getFuturOwner().appendChild(e);
+//		e.appendChild(bool.getElement());
+//		e.appendChild(date.getElement());
+//		e.appendChild(integer.getElement());
+//		e.appendChild(real.getElement());
+//		e.appendChild(text.getElement());
+//
+//		// XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8");
+//
+//	}
 
 	/**
 	 * Check the creation from string attributes
@@ -210,13 +210,13 @@ public class TestSimpleMetadataProperties {
 		Assert.assertEquals(ns, real.getNamespace());
 		Assert.assertEquals(ns, text.getNamespace());
 
-		Element e = parent.getFuturOwner().createElement("TEST");
-		parent.getFuturOwner().appendChild(e);
-		e.appendChild(bool.getElement());
-		e.appendChild(date.getElement());
-		e.appendChild(integer.getElement());
-		e.appendChild(real.getElement());
-		e.appendChild(text.getElement());
+//		Element e = parent.getFuturOwner().createElement("TEST");
+//		parent.getFuturOwner().appendChild(e);
+//		e.appendChild(bool.getElement());
+//		e.appendChild(date.getElement());
+//		e.appendChild(integer.getElement());
+//		e.appendChild(real.getElement());
+//		e.appendChild(text.getElement());
 
 		// XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8");
 
@@ -281,7 +281,7 @@ public class TestSimpleMetadataProperties {
 		Assert.assertFalse(atts.contains(valueNS));
 		Assert.assertTrue(atts.contains(valueNS2));
 
-		parent.getFuturOwner().appendChild(integer.getElement());
+//		parent.getFuturOwner().appendChild(integer.getElement());
 		// XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8");
 	}
 

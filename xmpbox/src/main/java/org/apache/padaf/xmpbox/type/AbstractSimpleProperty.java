@@ -72,9 +72,7 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 * 
 	 * @return a string
 	 */
-	public String getStringValue() {
-		return getElement().getTextContent();
-	}
+	public abstract String getStringValue();
 
 	public Object getObjectValue () {
 		return objValue;

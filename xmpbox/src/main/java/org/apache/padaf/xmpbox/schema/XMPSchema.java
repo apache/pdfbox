@@ -37,12 +37,10 @@ import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.DateType;
-import org.apache.padaf.xmpbox.type.Elementable;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.padaf.xmpbox.type.TypeUtil;
-import org.w3c.dom.Element;
 
 /**
  * This class represents a metadata schema that can be stored in an XMP
@@ -51,7 +49,7 @@ import org.w3c.dom.Element;
  * REPRESENTATION
  * 
  */
-public class XMPSchema implements Elementable {
+public class XMPSchema {
 	/**
 	 * The standard xmlns namespace.
 	 */
@@ -62,8 +60,6 @@ public class XMPSchema implements Elementable {
 	private String localPrefix;
 	
 	private String localNSUri;
-	
-//	private String localPrefixSep;
 	
 	private XMPMetadata metadata;
 	
@@ -765,7 +761,7 @@ public class XMPSchema implements Elementable {
 	 *            the elementable field value
 	 */
 	public void removeUnqualifiedArrayValue(String arrayName,
-			Elementable fieldValue) {
+			AbstractField fieldValue) {
 		String qualifiedArrayName = getQualifiedName(arrayName);
 		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
 		if (array != null) {
@@ -797,7 +793,7 @@ public class XMPSchema implements Elementable {
 	 *            The value to remove from the list.
 	 */
 	public void removeUnqualifiedSequenceValue(String qualifiedSeqName,
-			Elementable seqValue) {
+			AbstractField seqValue) {
 		removeUnqualifiedArrayValue(qualifiedSeqName, seqValue);
 	}
 
@@ -1366,15 +1362,6 @@ public class XMPSchema implements Elementable {
 	 */
 	public void addProperty(AbstractField obj) {
 		content.addProperty(obj);
-	}
-
-	/**
-	 * Get DOM Element for rdf/xml serialization
-	 * 
-	 * @return the DOM Element
-	 */
-	public Element getElement() {
-		return content.getElement();
 	}
 
 	/**

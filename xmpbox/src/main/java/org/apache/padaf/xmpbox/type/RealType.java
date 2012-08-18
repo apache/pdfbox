@@ -77,10 +77,12 @@ public class RealType extends AbstractSimpleProperty {
 			// invalid type of value
 			throw new IllegalArgumentException("Value given is not allowed for the Real type.");
 		}
-		// set value
-		getElement().setTextContent(getObjectValue().toString());
 	}
 
+	@Override
+	public String getStringValue() {
+		return ((Float)getObjectValue()).toString();
+	}
 
 
 }

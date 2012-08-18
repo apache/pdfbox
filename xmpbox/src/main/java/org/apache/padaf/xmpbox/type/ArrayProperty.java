@@ -60,7 +60,6 @@ public class ArrayProperty extends AbstractField {
 			String prefix, String propertyName, String type) {
 		super(metadata, namespace, prefix, propertyName);
 		container = new ComplexPropertyContainer(metadata,null, "rdf", type);
-		getElement().appendChild(container.getElement());
 	}
 
 	/**
@@ -71,23 +70,6 @@ public class ArrayProperty extends AbstractField {
 	 */
 	public ComplexPropertyContainer getContainer() {
 		return container;
-	}
-
-	/**
-	 * Check if this complex property equals to another
-	 * 
-	 * @param prop2
-	 *            The Complex property to compare
-	 * @return True if properties are equals
-	 */
-	public boolean isSameProperty(AbstractField prop2) {
-		if (this.getQualifiedName().equals(prop2.getQualifiedName())) {
-			if (this.getElement().getTextContent().equals(
-					prop2.getElement().getTextContent())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public List<AbstractField> getAllProperties() {

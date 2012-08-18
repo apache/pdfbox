@@ -65,9 +65,14 @@ public class TextType extends AbstractSimpleProperty {
 							+ "'");
 		} else {
 			setObjectValue((String) value);
-			getElement().setTextContent((String) value);
 		}
 
 	}
 
+	@Override
+	public String getStringValue() {
+		return ((String)getObjectValue());
+	}
+
+	
 }

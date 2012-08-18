@@ -65,8 +65,6 @@ public class DateType extends AbstractSimpleProperty {
      */
     private void setValueFromCalendar(Calendar value) {
         setObjectValue(value);
-        getElement().setTextContent(DateConverter.toISO8601(value));
-
     }
 
     /**
@@ -122,6 +120,12 @@ public class DateType extends AbstractSimpleProperty {
 
     }
 
+    public String getStringValue() {
+		return DateConverter.toISO8601((Calendar)getObjectValue());
+	} // TODO should be abstract
+
+	
+    
     /**
      * Set the property value with a String
      * 
