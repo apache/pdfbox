@@ -31,6 +31,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class RealType extends AbstractSimpleProperty {
 
+	private float realValue;
 
 	/**
 	 * Property Real type constructor (namespaceURI is given)
@@ -57,8 +58,8 @@ public class RealType extends AbstractSimpleProperty {
 	 * 
 	 * @return float the property value
 	 */
-	public float getValue() {
-		return (Float) getObjectValue();
+	public Float getValue() {
+		return realValue;
 	}
 
 	/**
@@ -69,10 +70,10 @@ public class RealType extends AbstractSimpleProperty {
 	 */
 	public void setValue(Object value) {
 		if (value instanceof Float) {
-			setObjectValue(value);
+			realValue = ((Float)value).floatValue();
 		} else if (value instanceof String) {
 			// NumberFormatException is thrown (sub of InvalidArgumentException)
-			setObjectValue(Float.valueOf((String)value));
+			realValue = Float.valueOf((String)value);
 		} else {
 			// invalid type of value
 			throw new IllegalArgumentException("Value given is not allowed for the Real type.");
@@ -81,7 +82,7 @@ public class RealType extends AbstractSimpleProperty {
 
 	@Override
 	public String getStringValue() {
-		return ((Float)getObjectValue()).toString();
+		return Float.toString(realValue);
 	}
 
 

@@ -121,7 +121,7 @@ public abstract class AbstractStructuredTypeTester {
     	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
     	set.invoke(getStructured(), new Object [] {value});
     	// check property set
-    	Assert.assertEquals(value, getStructured().getProperty(fieldName).getObjectValue());
+    	Assert.assertEquals(value, getStructured().getProperty(fieldName).getValue());
     	// check getter
     	Method get = clz.getMethod(TypeTestingHelper.calculateSimpleGetter(fieldName), new Class[0]);
     	Object result = get.invoke(getStructured(), new Object [0]);

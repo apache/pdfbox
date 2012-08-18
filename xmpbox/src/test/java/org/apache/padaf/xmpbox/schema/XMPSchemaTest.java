@@ -220,7 +220,7 @@ public class XMPSchemaTest {
 		schem.addUnqualifiedSequenceValue(seqprop, seqPropVal);
 		schem.addSequenceDateValueAsSimple(seqdate, dateVal);
 
-		Assert.assertEquals(boolVal, schem.getBooleanProperty(prefSchem + bool)
+		Assert.assertEquals(Boolean.valueOf(boolVal), schem.getBooleanProperty(prefSchem + bool)
 				.getValue());
 		Assert.assertEquals(dateVal, schem.getDateProperty(prefSchem + date)
 				.getValue());

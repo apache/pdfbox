@@ -155,7 +155,7 @@ public abstract class AbstractSchemaTester {
     	set.invoke(getSchema(), new Object [] {asp});
     	// check property set
     	AbstractSimpleProperty stored = (AbstractSimpleProperty)getSchema().getProperty(getPropertyQualifiedName(fieldName));
-    	Assert.assertEquals(value, stored.getObjectValue());
+    	Assert.assertEquals(value, stored.getValue());
     	// check getter
     	String getter = TypeTestingHelper.calculateSimpleGetter(fieldName)+"Property";
     	Method get = getSchemaClass().getMethod(getter, new Class[0]);

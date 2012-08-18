@@ -32,8 +32,11 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 public class BooleanType extends AbstractSimpleProperty {
 
 	public static final String TRUE = "True";
+
 	public static final String FALSE = "False";
 
+	private boolean booleanValue;
+	
 	/**
 	 * Property Boolean type constructor (namespaceURI is given)
 	 * 
@@ -59,8 +62,8 @@ public class BooleanType extends AbstractSimpleProperty {
 	 * 
 	 * @return boolean the property value
 	 */
-	public boolean getValue() {
-		return (Boolean) getObjectValue();
+	public Boolean getValue() {
+		return booleanValue;
 	}
 
 	/**
@@ -73,14 +76,14 @@ public class BooleanType extends AbstractSimpleProperty {
 	 */
 	public void setValue(Object value) {
 		if (value instanceof Boolean) {
-			setObjectValue(value);
+			booleanValue = ((Boolean)value).booleanValue();
 		} else if (value instanceof String) {
 			// NumberFormatException is thrown (sub of InvalidArgumentException)
 			String s = value.toString().trim().toUpperCase();
 			if ("TRUE".equals(s)) {
-				setObjectValue(Boolean.TRUE);
+				booleanValue = true;
 			} else if ("FALSE".equals(s)) {
-				setObjectValue(Boolean.FALSE);
+				booleanValue = false;
 			} else {
 				// unknown value
 				throw new IllegalArgumentException("Not a valid boolean value : '"+value+"'");
@@ -94,7 +97,7 @@ public class BooleanType extends AbstractSimpleProperty {
 
 	@Override
 	public String getStringValue() {
-		return ((Boolean)getObjectValue()).booleanValue()?TRUE:FALSE;
+		return booleanValue?TRUE:FALSE;
 	}
 
 

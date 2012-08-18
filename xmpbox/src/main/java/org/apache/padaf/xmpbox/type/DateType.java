@@ -36,7 +36,9 @@ import org.apache.padaf.xmpbox.parser.DateConverter;
  */
 public class DateType extends AbstractSimpleProperty {
 
-
+	private Calendar dateValue;
+	
+	
     /**
      * Property Date type constructor (namespaceURI is given)
      * 
@@ -64,7 +66,7 @@ public class DateType extends AbstractSimpleProperty {
      * @throws InappropriateTypeException
      */
     private void setValueFromCalendar(Calendar value) {
-        setObjectValue(value);
+        dateValue = value;
     }
 
     /**
@@ -73,7 +75,7 @@ public class DateType extends AbstractSimpleProperty {
      * @return boolean
      */
     public Calendar getValue() {
-        return (Calendar) getObjectValue();
+        return dateValue;
     }
 
     /**
@@ -121,8 +123,8 @@ public class DateType extends AbstractSimpleProperty {
     }
 
     public String getStringValue() {
-		return DateConverter.toISO8601((Calendar)getObjectValue());
-	} // TODO should be abstract
+		return DateConverter.toISO8601(dateValue);
+	} 
 
 	
     

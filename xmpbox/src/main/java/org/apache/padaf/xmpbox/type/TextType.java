@@ -31,6 +31,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class TextType extends AbstractSimpleProperty {
 
+	private String textValue;
 
 	/**
 	 * Property Text type constructor (namespaceURI is given)
@@ -64,14 +65,19 @@ public class TextType extends AbstractSimpleProperty {
 					"Value given is not allowed for the Text type : '" + value
 							+ "'");
 		} else {
-			setObjectValue((String) value);
+			textValue = (String)value;
 		}
 
 	}
 
 	@Override
 	public String getStringValue() {
-		return ((String)getObjectValue());
+		return textValue;
+	}
+
+	@Override
+	public Object getValue() {
+		return textValue;
 	}
 
 	
