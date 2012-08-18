@@ -26,10 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Astract Object representation of a XMP 'field' (-> Properties and specific
@@ -38,17 +35,8 @@ import org.w3c.dom.Element;
  * @author a183132
  * 
  */
-public abstract class AbstractField implements Elementable {
+public abstract class AbstractField {
 
-	/**
-	 * ALL PROPERTIES MUST NOT BE USED MORE THAN ONE TIME BECAUSE THE SAME
-	 * ELEMENT CANNOT BE MORE THAN ONE TIME IN THE SAME DOM DOCUMENT (if you
-	 * choose to use the same property in different places in the same document,
-	 * the element associated will not appear)
-	 */
-
-	private Element element;
-	
 	private XMPMetadata metadata;
 
 	private String namespaceURI, prefix, propertyName;
@@ -84,28 +72,11 @@ public abstract class AbstractField implements Elementable {
 	 */
 	public AbstractField(XMPMetadata metadata, String namespaceURI,
 			String prefix, String propertyName) {
-		String qualifiedName;
 		this.prefix = prefix;
-		qualifiedName = prefix + ":" + propertyName;
 		this.metadata = metadata;
-		Document parent = metadata.getFuturOwner();
 		this.namespaceURI = namespaceURI;
 		this.propertyName = propertyName;
-		if (this.namespaceURI!=null) {
-			element = parent.createElementNS(namespaceURI, qualifiedName);
-		} else {
-			element = parent.createElement(qualifiedName);
-		}
 		attributes = new HashMap<String, Attribute>();
-	}
-
-	/**
-	 * Get the DOM element for rdf/xml serialization
-	 * 
-	 * @return The DOM Element
-	 */
-	public Element getElement() {
-		return element;
 	}
 
 	/**
@@ -158,11 +129,8 @@ public abstract class AbstractField implements Elementable {
 		}
 		if (value.getNamespace() == null) {
 			attributes.put(value.getQualifiedName(), value);
-			element.setAttribute(value.getQualifiedName(), value.getValue());
 		} else {
 			attributes.put(value.getQualifiedName(), value);
-			element.setAttributeNS(value.getNamespace(), value
-					.getQualifiedName(), value.getValue());
 		}
 	}
 
@@ -205,7 +173,6 @@ public abstract class AbstractField implements Elementable {
 	 */
 	public void removeAttribute(String qualifiedName) {
 		if (containsAttribute(qualifiedName)) {
-			element.removeAttribute(qualifiedName);
 			attributes.remove(qualifiedName);
 		}
 

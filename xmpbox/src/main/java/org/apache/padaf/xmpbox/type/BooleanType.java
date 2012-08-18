@@ -79,10 +79,8 @@ public class BooleanType extends AbstractSimpleProperty {
 			String s = value.toString().trim().toUpperCase();
 			if ("TRUE".equals(s)) {
 				setObjectValue(Boolean.TRUE);
-				getElement().setTextContent(TRUE);
 			} else if ("FALSE".equals(s)) {
 				setObjectValue(Boolean.FALSE);
-				getElement().setTextContent(FALSE);
 			} else {
 				// unknown value
 				throw new IllegalArgumentException("Not a valid boolean value : '"+value+"'");
@@ -91,6 +89,12 @@ public class BooleanType extends AbstractSimpleProperty {
 			// invalid type of value
 			throw new IllegalArgumentException("Value given is not allowed for the Boolean type.");
 		}
+	}
+
+
+	@Override
+	public String getStringValue() {
+		return ((Boolean)getObjectValue()).booleanValue()?TRUE:FALSE;
 	}
 
 

@@ -169,7 +169,7 @@ public class XMPDocumentBuilder {
 		ByteArrayInputStream is = new ByteArrayInputStream(xmp);
 		try {
 			XMLInputFactory factory = XMLInputFactory.newInstance();
-			reader.set(factory.createXMLStreamReader(is));
+			reader.set(factory.createXMLStreamReader(is,"UTF8"));
 
 			// expect xpacket processing instruction
 			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,

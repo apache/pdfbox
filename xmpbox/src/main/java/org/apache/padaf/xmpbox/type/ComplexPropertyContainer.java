@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 
 /**
  * Object representation for arrays content This Class could be used to define
@@ -41,15 +38,13 @@ import org.w3c.dom.NodeList;
  */
 public class ComplexPropertyContainer /*extends AbstractField*/ {
 
-	
+
 	private List<AbstractField> properties;
 
-	private Element element;
-	
 	private Map<String, Attribute> attributes;
 
 
-	
+
 	/**
 	 * Complex Property type constructor (namespaceURI is given)
 	 * 
@@ -64,20 +59,8 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	 */
 	public ComplexPropertyContainer(XMPMetadata metadata, String namespaceURI,
 			String prefix, String propertyName) {
-		String qualifiedName = prefix + ":" + propertyName;
-		if (namespaceURI!=null) {
-			element = metadata.getFuturOwner().createElementNS(namespaceURI, qualifiedName);
-		} else {
-			element = metadata.getFuturOwner().createElement(qualifiedName);
-		}
 		properties = new ArrayList<AbstractField>();
 		attributes = new HashMap<String, Attribute>();
-	}
-
-	
-	
-	public Element getElement() {
-		return element;
 	}
 
 	/**
@@ -113,11 +96,8 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 		}
 		if (value.getNamespace() == null) {
 			attributes.put(value.getQualifiedName(), value);
-			element.setAttribute(value.getQualifiedName(), value.getValue());
 		} else {
 			attributes.put(value.getQualifiedName(), value);
-			element.setAttributeNS(value.getNamespace(), value
-					.getQualifiedName(), value.getValue());
 		}
 	}
 
@@ -129,12 +109,11 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	 */
 	public void removeAttribute(String qualifiedName) {
 		if (containsAttribute(qualifiedName)) {
-			element.removeAttribute(qualifiedName);
 			attributes.remove(qualifiedName);
 		}
 
 	}
-	
+
 	/**
 	 * Check if an attribute is declared for this entity
 	 * 
@@ -179,12 +158,6 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 			removeProperty(obj);
 		}
 		properties.add(obj);
-		// COMMENTS REPRESENTS CLUES TO USE SAME PROPERTY AT MORE THAN ONE PLACE
-		// BUT IT CREATE PROBLEM TO FIND AND ERASE CLONED ELEMENT
-		// Node cloned = obj.getElement().cloneNode(true);
-		// parent.adoptNode(cloned);
-		element.appendChild(obj.getElement());
-		// element.appendChild(cloned);
 	}
 
 	/**
@@ -233,11 +206,8 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	 */
 	public boolean isSameProperty(AbstractField prop1, AbstractField prop2) {
 		if (prop1.getClass().equals(prop2.getClass())
-				&& prop1.getQualifiedName().equals(prop2.getQualifiedName())) {
-			if (prop1.getElement().getTextContent().equals(
-					prop2.getElement().getTextContent())) {
-				return true;
-			}
+				&& prop1.getPropertyName().equals(prop2.getPropertyName())) {
+			return prop1.equals(prop2);
 		}
 		return false;
 	}
@@ -270,19 +240,6 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	public void removeProperty(AbstractField property) {
 		if (containsProperty(property)) {
 			properties.remove(property);
-			if (element.hasChildNodes()) {
-				NodeList nodes = element.getChildNodes();
-				boolean canRemove = false;
-				for (int i = 0; i < nodes.getLength(); ++i) {
-					if (nodes.item(i).equals(property.getElement())) {
-						canRemove = true;
-					}
-				}
-				// remove out of the loop to avoid concurrent exception
-				if (canRemove) {
-					element.removeChild(property.getElement());
-				}
-			}
 		}
 	}
 

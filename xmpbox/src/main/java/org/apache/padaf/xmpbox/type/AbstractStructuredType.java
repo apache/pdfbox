@@ -44,7 +44,6 @@ public abstract class AbstractStructuredType extends AbstractField {
 		super(metadata, namespaceURI, STRUCTURE_ARRAY_PREFIX, STRUCTURE_ARRAY_NAME);
 		this.container = new ComplexPropertyContainer(metadata, namespaceURI, STRUCTURE_ARRAY_PREFIX, "Description");
 		this.fieldPrefix = fieldPrefix;
-		getElement().appendChild(container.getElement());
 	}
 
 	public abstract String getFieldsNamespace();

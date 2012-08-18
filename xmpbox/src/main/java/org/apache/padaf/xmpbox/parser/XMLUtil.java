@@ -38,7 +38,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 
-import org.apache.padaf.xmpbox.type.Elementable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -283,66 +282,6 @@ public final class XMLUtil {
             }
         }
         node.appendChild(node.getOwnerDocument().createTextNode(value));
-    }
-
-    /**
-     * Set an XML element document.
-     * 
-     * @param parent
-     *            The parent document to set the value in.
-     * @param name
-     *            The name of the XML element to set.
-     * @param node
-     *            The node to set or clear.
-     */
-    public static void setElementableValue(Element parent, String name,
-            Elementable node) {
-        NodeList nodes = parent.getElementsByTagName(name);
-        if (node == null) {
-            for (int i = 0; i < nodes.getLength(); i++) {
-                parent.removeChild(nodes.item(i));
-            }
-        } else {
-            if (nodes.getLength() == 0) {
-                if (parent.hasChildNodes()) {
-                    Node firstChild = parent.getChildNodes().item(0);
-                    parent.insertBefore(node.getElement(), firstChild);
-                } else {
-                    parent.appendChild(node.getElement());
-                }
-            } else {
-                Node oldNode = nodes.item(0);
-                parent.replaceChild(node.getElement(), oldNode);
-            }
-        }
-    }
-
-    /**
-     * Save the XML document to a file.
-     * 
-     * @param doc
-     *            The XML document to save.
-     * @param file
-     *            The file to save the document to.
-     * @param encoding
-     *            The encoding to save the file as.
-     * 
-     * @throws TransformerException
-     *             If there is an error while saving the XML.
-     */
-    public static void save(Document doc, String file, String encoding)
-    throws TransformerException {
-        Transformer transformer = TransformerFactory.newInstance()
-        .newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-        "yes");
-        // initialize StreamResult with File object to save to file
-
-        Result result = new StreamResult(new File(file));
-        DOMSource source = new DOMSource(doc);
-        transformer.transform(source, result);
     }
 
     /**
