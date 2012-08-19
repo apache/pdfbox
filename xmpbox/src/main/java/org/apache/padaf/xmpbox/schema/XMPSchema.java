@@ -78,9 +78,7 @@ public class XMPSchema {
 	 */
 	public XMPSchema(XMPMetadata metadata, String namespaceName, String namespaceURI) {
 		this.metadata = metadata;
-		content = new ComplexPropertyContainer(metadata,
-				XmpConstants.RDF_NAMESPACE, "rdf",
-				"Description");
+		content = new ComplexPropertyContainer();
 
 		localPrefix = namespaceName;
 		localNSUri = namespaceURI;

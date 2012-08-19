@@ -109,11 +109,10 @@ public class XmpSerializer {
 				// attributes
 				fillElementWithAttributes(asimple, array.getAllAttributes());
 				// the array definition
-				ComplexPropertyContainer container = array.getContainer();
-				Element econtainer = doc.createElement("rdf"+":"+"Bag"); // TODO 
+				Element econtainer = doc.createElement("rdf"+":"+array.getArrayType()); 
 				asimple.appendChild(econtainer);
 				// for each element of the array
-				List<AbstractField> innerFields = container.getAllProperties();
+				List<AbstractField> innerFields = array.getAllProperties();
 				xxxxxxx(doc, econtainer, innerFields);
 			} else if (field instanceof AbstractStructuredType) {
 				AbstractStructuredType structured = (AbstractStructuredType)field;

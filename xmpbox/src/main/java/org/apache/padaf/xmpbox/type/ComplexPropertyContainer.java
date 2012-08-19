@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-
 /**
  * Object representation for arrays content This Class could be used to define
  * directly a property with more than one field (structure) and also schemas
@@ -57,8 +55,7 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	 * @param propertyName
 	 *            The local Name of this property
 	 */
-	public ComplexPropertyContainer(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName) {
+	public ComplexPropertyContainer() {
 		properties = new ArrayList<AbstractField>();
 		attributes = new HashMap<String, Attribute>();
 	}
