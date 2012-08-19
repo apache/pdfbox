@@ -21,8 +21,6 @@
 
 package org.apache.padaf.xmpbox.type;
 
-import java.util.List;
-
 import org.apache.padaf.xmpbox.XMPMetadata;
 
 /**
@@ -32,15 +30,15 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class ArrayProperty extends AbstractField {
+public class ArrayProperty extends AbstractComplexProperty {
 
 	public static final String UNORDERED_ARRAY = "Bag";
 
 	public static final String ORDERED_ARRAY = "Seq";
 	
 	public static final String ALTERNATIVE_ARRAY = "Alt";
-
-	private ComplexPropertyContainer container;
+	
+	private String arrayType;
 
 	/**
 	 * Contructor of a complex property
@@ -59,21 +57,11 @@ public class ArrayProperty extends AbstractField {
 	public ArrayProperty(XMPMetadata metadata, String namespace,
 			String prefix, String propertyName, String type) {
 		super(metadata, namespace, prefix, propertyName);
-		container = new ComplexPropertyContainer(metadata,null, "rdf", type);
+		this.arrayType = type;
 	}
 
-	/**
-	 * Return the container of this Array
-	 * 
-	 * @return The complex property container that represents content of this
-	 *         property
-	 */
-	public ComplexPropertyContainer getContainer() {
-		return container;
-	}
-
-	public List<AbstractField> getAllProperties() {
-		return container.getAllProperties();
+	public String getArrayType() {
+		return arrayType;
 	}
 
 	

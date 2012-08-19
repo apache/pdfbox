@@ -44,21 +44,6 @@ public abstract class AbstractField {
 	private Map<String, Attribute> attributes;
 
 	/**
-	 * Constructor of a XMP field without namespaceURI
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this field
-	 * @param prefix
-	 *            the prefix to set for this field
-	 * @param propertyName
-	 *            the local name to set for this field
-	 */
-	public AbstractField(XMPMetadata metadata, String prefix,
-			String propertyName) {
-		this(metadata,null,prefix,propertyName);
-	}
-
-	/**
 	 * Constructor of a XMP Field
 	 * 
 	 * @param metadata
