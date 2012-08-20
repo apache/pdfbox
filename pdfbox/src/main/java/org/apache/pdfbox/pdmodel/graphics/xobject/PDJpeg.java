@@ -165,7 +165,7 @@ public class PDJpeg extends PDXObjectImage
         java.io.OutputStream os = getCOSStream().createFilteredStream();
         try
         {
-            ImageIOUtil.writeImage(bi, JPG, os);
+            ImageIOUtil.writeImage(bi, JPG, os, ImageIOUtil.DEFAULT_SCREEN_RESOLUTION, compressionQuality);
             
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
