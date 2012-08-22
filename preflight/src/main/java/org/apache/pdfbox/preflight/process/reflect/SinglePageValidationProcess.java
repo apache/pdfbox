@@ -27,8 +27,11 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PRO
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_GROUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_UNKOWN_ERROR;
 import static org.apache.pdfbox.preflight.PreflightConstants.PAGE_DICTIONARY_VALUE_THUMB;
+import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_KEY_GROUP;
+import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +39,7 @@ import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -53,6 +57,7 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelper;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRestriction;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
+import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class SinglePageValidationProcess extends AbstractProcess {
@@ -70,7 +75,7 @@ public class SinglePageValidationProcess extends AbstractProcess {
 		validateColorSpaces(context, page);
 		validateResources(context, page);
 		validateGraphicObjects(context, page);
-
+		validateGroupTransparency(context, page);
 		// TODO
 		// add MetaData validation ?
 
@@ -177,4 +182,24 @@ public class SinglePageValidationProcess extends AbstractProcess {
 			throw new ValidationException("Unable to access Annotation", e);
 		}
 	}
+	
+	/**
+	 * Check that the group dictionary doesn't have a Transparency attribute
+	 * 
+	 * @param context
+	 * @param page
+	 * @throws ValidationException
+	 */
+	protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException {
+		COSBase baseGroup = page.getCOSDictionary().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
+		COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, context.getDocument().getDocument());
+		if (groupDictionary != null) {
+			String sVal = groupDictionary.getNameAsString(COSName.S);
+			if (XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal)) {
+				context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP , "Group has a transparency S entry or the S entry is null."));
+				return;
+			}
+		}
+	}
+
 }
