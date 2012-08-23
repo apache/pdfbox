@@ -547,7 +547,7 @@ public class PDResources implements COSObjectable
     {
         if (xobjects == null) 
         {
-            xobjects = new HashMap<String,PDXObject>();
+            xobjects = getXObjects();
             xobjectMappings = reverseMap(xobjects, PDXObject.class);
             setXObjects(xobjects);
         }
