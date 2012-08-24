@@ -45,25 +45,25 @@ public class StructuredPropertyParser {
 
 	private XMPDocumentBuilder builder = null;
 
-	private Class<? extends AbstractStructuredType> typeClass = null;
+	private TypeDescription description = null;
 
 	private PropMapping propDesc = null;
 	
 	private boolean isDefinedStructureType = false;
 	
 
-	public StructuredPropertyParser(XMPDocumentBuilder builder, Class<? extends AbstractStructuredType> propertyTypeClass) 
+	public StructuredPropertyParser(XMPDocumentBuilder builder, TypeDescription td) 
 			throws XmpPropertyFormatException {
 		this.builder = builder;
-		this.typeClass = propertyTypeClass;
+		this.description = td;
 		// retrieve xmp properties
-		this.propDesc = ReflectHelper.initializePropMapping(null, propertyTypeClass);
-		this.isDefinedStructureType = DefinedStructuredType.class.isAssignableFrom(typeClass); 
+		this.propDesc = ReflectHelper.initializePropMapping(null, td.getTypeClass());
+		this.isDefinedStructureType = DefinedStructuredType.class.isAssignableFrom(td.getTypeClass()); 
 	}
 
 	private AbstractStructuredType instanciateProperty (XMPMetadata metadata) throws XmpParsingException {
 		try {
-			return metadata.getTypeMapping().instanciateStructuredType(metadata, typeClass);
+			return metadata.getTypeMapping().instanciateStructuredType(metadata, description);
 		} catch (BadFieldValueException e) {
 			throw new XmpParsingException ("Failed to instanciate property",e);
 		}
@@ -72,7 +72,6 @@ public class StructuredPropertyParser {
 
 
 	private boolean isParseTypeResource (XMLStreamReader reader) {
-		//		XMLStreamReader reader = builder.getReader();
 		int count = reader.getAttributeCount();
 		for (int i=0; i < count ; i++) {
 			if ("parseType".equals(reader.getAttributeLocalName(i))) {
@@ -192,17 +191,13 @@ public class StructuredPropertyParser {
 					String ptype = td.getProperties().getPropertyType(eltName.getLocalPart());
 					if (metadata.getTypeMapping().isStructuredType(ptype)) {
 						TypeDescription tclass = metadata.getTypeMapping().getTypeDescription(ptype);
-						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
-						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tcn);
+						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tclass);
 						sp.parseSimple(metadata, reader.getName(), property.getContainer(),isSubSkipDescription,subExpected);// TODO
 					} else if (metadata.getTypeMapping().getArrayType(ptype)!=null) {
 						int pos = ptype.indexOf(' ');
 						String arrayType = metadata.getTypeMapping().getArrayType(ptype);
 						String typeInArray = ptype.substring(pos+1);
-
 						TypeDescription tclass = metadata.getTypeMapping().getTypeDescription(typeInArray);
-						Class<? extends AbstractStructuredType> tcn = (Class<? extends AbstractStructuredType>)tclass.getTypeClass();
-
 						ArrayProperty cp = new ArrayProperty(metadata,null,
 								eltName.getPrefix(), eltName.getLocalPart(),
 								arrayType);
@@ -214,7 +209,7 @@ public class StructuredPropertyParser {
 						if (reader.getLocalName().equals("li")) {
 							// array elements
 							while (reader.getEventType()==XMLStreamConstants.START_ELEMENT && reader.getName().getLocalPart().equals("li")) {
-								StructuredPropertyParser sp = new StructuredPropertyParser(builder, tcn);
+								StructuredPropertyParser sp = new StructuredPropertyParser(builder, tclass);
 								sp.parse(metadata, reader.getName(), cp.getContainer());
 								reader.nextTag();
 							}
