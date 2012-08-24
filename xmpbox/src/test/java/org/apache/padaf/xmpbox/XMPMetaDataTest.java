@@ -25,8 +25,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.TransformException;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.parser.TransformException;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.TextType;
@@ -95,12 +95,12 @@ public class XMPMetaDataTest {
 	 * }
 	 */
 
-	@Test(expected = org.apache.padaf.xmpbox.TransformException.class)
+	@Test(expected = org.apache.padaf.xmpbox.parser.TransformException.class)
 	public void testTransformerExceptionMessage() throws TransformException {
 		throw new TransformException("TEST");
 	}
 
-	@Test(expected = org.apache.padaf.xmpbox.TransformException.class)
+	@Test(expected = org.apache.padaf.xmpbox.parser.TransformException.class)
 	public void testTransformerExceptionWithCause() throws TransformException {
 		throw new TransformException("TEST", new Throwable());
 	}

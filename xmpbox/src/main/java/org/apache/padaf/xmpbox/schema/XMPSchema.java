@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
@@ -214,7 +213,7 @@ public class XMPSchema {
 		} else {
 			AbstractSimpleProperty specifiedTypeProperty;
 			try {
-				TypeMapping tm = metadata.getBuilder().getTypeMapping();
+				TypeMapping tm = metadata.getTypeMapping();
 				specifiedTypeProperty = tm.instanciateSimpleProperty(
 						metadata, null, 
 						splittedQualifiedName[0], splittedQualifiedName[1], propertyValue,
@@ -1407,7 +1406,7 @@ public class XMPSchema {
 	}
 
 	protected AbstractSimpleProperty instanciateSimple (String param, Object value) {
-		TypeMapping tm = metadata.getBuilder().getTypeMapping();
+		TypeMapping tm = metadata.getTypeMapping();
 		return tm.instanciateSimpleField(
 				getClass(), 
 				metadata, 

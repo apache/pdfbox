@@ -27,8 +27,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.DateConverter;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;

@@ -51,7 +51,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
 	
 	protected void addSimpleProperty (String propertyName, Object value) {
-		TypeMapping tm = getMetadata().getBuilder().getTypeMapping();
+		TypeMapping tm = getMetadata().getTypeMapping();
 		AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), getMetadata(),null,fieldPrefix,propertyName, value);
 		addProperty(asp);
 	}

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XmpParsingException;
 import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
 
 public final class TypeMapping {
@@ -186,22 +185,22 @@ public final class TypeMapping {
 		}
 	}
 
-	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, Class<? extends AbstractStructuredType> propertyTypeClass) throws XmpParsingException {
+	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, Class<? extends AbstractStructuredType> propertyTypeClass) throws BadFieldValueException {
 		try {
 			Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {XMPMetadata.class});
 			return construct.newInstance(metadata);
 		} catch (InvocationTargetException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} catch (IllegalArgumentException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} catch (InstantiationException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} catch (IllegalAccessException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} catch (SecurityException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} catch (NoSuchMethodException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
 		} 
 	}
 

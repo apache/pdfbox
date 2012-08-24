@@ -55,7 +55,7 @@ public abstract class AbstractSchemaTester {
 	public void before () throws Exception {
 		builder = new XMPDocumentBuilder();
 		xmp = builder.createXMPMetadata();
-		typeMapping = builder.getTypeMapping();
+		typeMapping = xmp.getTypeMapping();
 	}
 
 	protected abstract XMPSchema getSchema ();

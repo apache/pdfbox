@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.schema;
 
 /**
  * Exception thrown when problems occurs in Schema Treatment

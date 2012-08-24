@@ -18,44 +18,40 @@
  * under the License.
  * 
  ****************************************************************************/
-package org.apache.padaf.xmpbox;
 
-import org.apache.padaf.xmpbox.parser.XmpParsingException;
+package org.apache.padaf.xmpbox.parser;
 
 /**
- * This exception is thrown when a problem is encountered during the creation of
- * XMPMetadata Document
+ * Exception when Parsing cannot be made
  * 
  * @author a183132
  * 
  */
-public class CreateXMPMetadataException extends XmpParsingException {
+public class TransformException extends Exception {
+
+	private static final long serialVersionUID = -3495894314480173555L;
 
 	/**
-	 * serial version id
+	 * Create an instance of TransformException
+	 * 
+	 * @param message
+	 *            a description of the encountered problem
 	 */
-	private static final long serialVersionUID = 1L;
+	public TransformException(String message) {
+		super(message);
+	}
 
 	/**
-	 * Create an instance of CreateXMPMetadataException
+	 * Create an instance of TransformException
 	 * 
 	 * @param message
 	 *            a description of the encountered problem
 	 * @param cause
 	 *            the cause of the exception
 	 */
-	public CreateXMPMetadataException(String message, Throwable cause) {
+	public TransformException(String message, Throwable cause) {
 		super(message, cause);
-	}
 
-	/**
-	 * Create an instance of CreateXMPMetadataException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 */
-	public CreateXMPMetadataException(String message) {
-		super(message);
 	}
 
 }

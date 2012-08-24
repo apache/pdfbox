@@ -25,18 +25,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.parser.XmpSchemaException;
+//import org.apache.padaf.xmpbox.parser.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
+import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
+import org.apache.padaf.xmpbox.schema.SchemaMapping;
 import org.apache.padaf.xmpbox.schema.XMPBasicJobTicketSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.schema.XmpSchemaException;
+import org.apache.padaf.xmpbox.type.TypeMapping;
 
 /**
  * Object representation of XMPMetaData Be CAREFUL: typically, metadata should
@@ -63,8 +66,14 @@ public class XMPMetadata {
     private String xpacketEndData = "end=\"w\"";
 
     private SchemasContainer schemas;
+    
+    private TypeMapping typeMapping;
+    
+    private NSMapping nsMapping;
+    
+    private SchemaMapping schemaMapping;
 
-    private XMPDocumentBuilder builder;
+//    private XMPDocumentBuilder builder;
 
     /**
      * Contructor of an empty default XMPMetaData
@@ -72,9 +81,13 @@ public class XMPMetadata {
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    protected XMPMetadata(XMPDocumentBuilder builder) throws CreateXMPMetadataException {
-      	this.builder = builder;
+    protected XMPMetadata(TypeMapping tm) {
+//      	this.builder = builder;
         schemas = new SchemasContainer();
+        this.typeMapping = tm;
+        this.nsMapping = new NSMapping(this);
+        this.schemaMapping = new SchemaMapping();
+        
     }
 
     /**
@@ -92,10 +105,10 @@ public class XMPMetadata {
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    protected XMPMetadata(XMPDocumentBuilder builder, String xpacketBegin, String xpacketId,
-            String xpacketBytes, String xpacketEncoding)
-    throws CreateXMPMetadataException {
-    	this.builder = builder;
+    protected XMPMetadata(TypeMapping tm, String xpacketBegin, String xpacketId,
+            String xpacketBytes, String xpacketEncoding) {
+    	this(tm);
+//    	this.builder = builder;
         this.xpacketBegin = xpacketBegin;
         this.xpacketId = xpacketId;
         this.xpacketBytes = xpacketBytes;
@@ -103,6 +116,18 @@ public class XMPMetadata {
         schemas = new SchemasContainer();
     }
 
+    public TypeMapping getTypeMapping () {
+    	return this.typeMapping;
+    }
+    
+    public NSMapping getNsMapping () {
+    	return this.nsMapping;
+    }
+    
+    public SchemaMapping getSchemaMapping () {
+    	return this.schemaMapping;
+    }
+    
     /**
      * Get xpacketBytes
      * 
@@ -463,9 +488,9 @@ public class XMPMetadata {
         return (AdobePDFSchema) getSchema(AdobePDFSchema.PDFURI);
     }
 
-    public XMPDocumentBuilder getBuilder() {
-		return builder;
-	}
+//    public XMPDocumentBuilder getBuilder() {
+//		return builder;
+//	}
 
 
 

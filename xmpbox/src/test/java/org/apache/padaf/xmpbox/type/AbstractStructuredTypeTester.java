@@ -23,10 +23,7 @@ package org.apache.padaf.xmpbox.type;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import junit.framework.Assert;
 
@@ -51,7 +48,7 @@ public abstract class AbstractStructuredTypeTester {
 	public void before () throws Exception {
 		builder = new XMPDocumentBuilder();
 		xmp = builder.createXMPMetadata();
-		typeMapping = builder.getTypeMapping();
+		typeMapping = xmp.getTypeMapping();
 	}
 	
 	public AbstractStructuredTypeTester (Class<? extends AbstractStructuredType> clz, String fieldName, String type) {
