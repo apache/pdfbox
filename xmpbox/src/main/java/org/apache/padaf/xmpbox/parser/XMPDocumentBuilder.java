@@ -56,7 +56,6 @@ import org.apache.padaf.xmpbox.type.PDFAFieldType;
 import org.apache.padaf.xmpbox.type.PDFAPropertyType;
 import org.apache.padaf.xmpbox.type.PDFASchemaType;
 import org.apache.padaf.xmpbox.type.PDFATypeType;
-import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.pdfbox.io.IOUtils;
@@ -786,9 +785,8 @@ public class XMPDocumentBuilder {
 	}
 
 	private void parseSimpleProperty(XMPMetadata metadata,	QName propertyName, 
-			Class<? extends AbstractSimpleProperty> typeclass, ComplexPropertyContainer container)	
+			TypeDescription description, ComplexPropertyContainer container)	
 					throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
-		Class<? extends AbstractSimpleProperty> tclass = (Class<? extends AbstractSimpleProperty>)typeclass;
 		try {
 			AbstractSimpleProperty prop = null;
 			ArrayList<Attribute> attributes = new ArrayList<Attribute>();
@@ -800,7 +798,7 @@ public class XMPDocumentBuilder {
 						.getAttributeValue(i)));
 			}
 			prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, propertyName.getPrefix(), 
-					propertyName.getLocalPart(), reader.get().getElementText(),metadata.getTypeMapping().getType(tclass));
+					propertyName.getLocalPart(), reader.get().getElementText(),description.getType());
 			if (prop != null) {
 				container.addProperty(prop);
 				// ADD ATTRIBUTES
@@ -850,7 +848,7 @@ public class XMPDocumentBuilder {
 
 
 	private void parseSimplePropertyArray(XMPMetadata metadata, QName name, String ctype,
-			Class<? extends AbstractSimpleProperty> stype, ComplexPropertyContainer container)
+			TypeDescription td, ComplexPropertyContainer container)
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
@@ -865,7 +863,7 @@ public class XMPDocumentBuilder {
 		int elmtType = reader.get().nextTag();
 		while ((elmtType != XMLStreamReader.END_ELEMENT)
 				&& !reader.get().getName().getLocalPart().equals(ctype)) {
-			parseSimpleProperty(metadata, reader.get().getName(), stype, cp
+			parseSimpleProperty(metadata, reader.get().getName(), td, cp
 					.getContainer());
 			elmtType = reader.get().nextTag();
 
@@ -923,15 +921,14 @@ public class XMPDocumentBuilder {
 		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
 		// found type, manage it
 		if (type.equals("Lang Alt")) {
-			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, TextType.class, schema.getContent());
+			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getTypeDescription("Text"), schema.getContent());
 		} else if (typeMapping.isSimpleType(type)) {
 			TypeDescription tclass = typeMapping.getTypeDescription(type);
-			Class<? extends AbstractSimpleProperty> tcn = (Class<? extends AbstractSimpleProperty>)tclass.getTypeClass();
-			parseSimpleProperty(metadata, propertyName, tcn, schema.getContent());
+			parseSimpleProperty(metadata, propertyName, tclass, schema.getContent());
 		} else if (typeMapping.isStructuredType(type)) {
 			TypeDescription tclass = typeMapping.getTypeDescription(type);
 			StructuredPropertyParser parser = new StructuredPropertyParser(
-					this, (Class<? extends AbstractStructuredType>)tclass.getTypeClass());
+					this, tclass);
 			parseStructuredProperty(metadata, parser, schema.getContent());
 		} else if (typeMapping.getArrayType(type)!=null) {
 			// retrieve array type and content type
@@ -947,12 +944,12 @@ public class XMPDocumentBuilder {
 						metadata, 
 						propertyName, 
 						arrayType, 
-						(Class<? extends AbstractSimpleProperty>)tcn,
+						tclass,
 						schema.getContent());
 			} else if (AbstractStructuredType.class.isAssignableFrom(tcn)) {
 				// array of structured
 				StructuredPropertyParser parser = new StructuredPropertyParser(
-						this, (Class<? extends AbstractStructuredType>)tcn);
+						this, tclass);
 				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContent());
 			} else {
 				// invalid case

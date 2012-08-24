@@ -122,7 +122,7 @@ public final class TypeMapping {
 				PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
 				td.setProperties(pm);
 			} else {
-				PropMapping pm = initializePropMapping(ns, td.getDefinedStructure());
+				PropMapping pm = initializePropMapping(ns, null);
 				td.setProperties(pm);
 			}
 			addToStructuredMaps(td, ns);
@@ -185,22 +185,23 @@ public final class TypeMapping {
 		}
 	}
 
-	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, Class<? extends AbstractStructuredType> propertyTypeClass) throws BadFieldValueException {
+	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, TypeDescription td /*Class<? extends AbstractStructuredType> propertyTypeClass*/) throws BadFieldValueException {
 		try {
+			Class<? extends AbstractStructuredType> propertyTypeClass = (Class<? extends AbstractStructuredType>)td.getTypeClass();
 			Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {XMPMetadata.class});
 			return construct.newInstance(metadata);
 		} catch (InvocationTargetException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} catch (IllegalArgumentException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} catch (InstantiationException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} catch (IllegalAccessException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} catch (SecurityException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} catch (NoSuchMethodException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+propertyTypeClass,e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
 		} 
 	}
 
