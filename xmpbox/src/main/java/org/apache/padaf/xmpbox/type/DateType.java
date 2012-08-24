@@ -24,8 +24,8 @@ package org.apache.padaf.xmpbox.type;
 import java.io.IOException;
 import java.util.Calendar;
 
+import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.DateConverter;
 
 
 /**

@@ -18,7 +18,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox;
+package org.apache.padaf.xmpbox.parser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,7 +28,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.padaf.xmpbox.parser.XMLUtil;
+import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;

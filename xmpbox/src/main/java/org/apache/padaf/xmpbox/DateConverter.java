@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox;
 
 import java.io.IOException;
 import java.text.ParseException;

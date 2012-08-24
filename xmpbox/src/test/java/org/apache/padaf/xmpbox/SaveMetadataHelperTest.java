@@ -24,6 +24,7 @@ package org.apache.padaf.xmpbox;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
+import org.apache.padaf.xmpbox.parser.XmpSerializer;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.junit.Assert;

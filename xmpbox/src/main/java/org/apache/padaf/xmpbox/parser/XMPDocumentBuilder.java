@@ -37,13 +37,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.padaf.xmpbox.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
-import org.apache.padaf.xmpbox.schema.SchemaMapping;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.schema.XMPSchemaFactory;
+import org.apache.padaf.xmpbox.schema.XmpSchemaException;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
@@ -70,12 +70,6 @@ import org.apache.pdfbox.io.IOUtils;
  */
 public class XMPDocumentBuilder {
 
-	private NSMapping nsMap;
-
-	private TypeMapping typeMapping = null;
-
-	private SchemaMapping schemaMapping = null;
-
 	private ThreadLocal<XMLStreamReader> reader = new ThreadLocal<XMLStreamReader>();
 
 	public static final String VALUE_TYPE_NAME = "valueType";
@@ -92,29 +86,26 @@ public class XMPDocumentBuilder {
 	 *             case, if its namespace miss
 	 */
 	public XMPDocumentBuilder() throws XmpSchemaException {
-		nsMap = new NSMapping(this);
-		this.typeMapping = new TypeMapping();
-		this.schemaMapping = new SchemaMapping();
 	}
 
 	public XMPMetadata createXMPMetadata () throws CreateXMPMetadataException {
-		return new WrappedXMPMetadata(this);
+		return new WrappedXMPMetadata(new TypeMapping());
 	}
 
 	public XMPMetadata createXMPMetadata (String begin, String id, String bytes, String encoding) throws CreateXMPMetadataException {
-		return new WrappedXMPMetadata(this,begin, id, bytes, encoding);
+		return new WrappedXMPMetadata(new TypeMapping(),begin, id, bytes, encoding);
 
 	}
 	protected class WrappedXMPMetadata extends XMPMetadata {
 
-		public WrappedXMPMetadata(XMPDocumentBuilder builder) throws CreateXMPMetadataException {
-			super(builder);
+		public WrappedXMPMetadata(TypeMapping tm) throws CreateXMPMetadataException {
+			super(tm);
 		}
 
-		public WrappedXMPMetadata(XMPDocumentBuilder builder, String xpacketBegin, String xpacketId,
+		public WrappedXMPMetadata(TypeMapping tm, String xpacketBegin, String xpacketId,
 				String xpacketBytes, String xpacketEncoding)
 						throws CreateXMPMetadataException {
-			super(builder, xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
+			super(tm, xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
 		}
 
 
@@ -184,14 +175,15 @@ public class XMPDocumentBuilder {
 					"Did not find initial rdf:RDF");
 			expectName(XmpConstants.RDF_NAMESPACE, "RDF");
 
-			nsMap.resetComplexBasicTypesDeclarationInEntireXMPLevel();
+			// TODO GBL GBA maybe not remove
+			metadata.getNsMapping().resetComplexBasicTypesDeclarationInEntireXMPLevel();
 			// add all namespaces which could declare nsURI of a basicValueType
 			// all others declarations are ignored
 			int nsCount = reader.get().getNamespaceCount();
 			// TODO MUTUALIZE namespace list loading
 			for (int i = 0; i < nsCount; i++) {
-				if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
-					nsMap.setComplexBasicTypesDeclarationForLevelXMP(
+				if (metadata.getTypeMapping().isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
+					metadata.getNsMapping().setComplexBasicTypesDeclarationForLevelXMP(
 							reader.get().getNamespaceURI(i), 
 							reader.get().getNamespacePrefix(i));
 				}
@@ -269,12 +261,12 @@ public class XMPDocumentBuilder {
 						String namespaceUri = st.getNamespaceURI();
 						ArrayProperty properties = st.getProperty();
 						ArrayProperty valueTypes = st.getValueType();
-						XMPSchemaFactory xsf = schemaMapping.getSchemaFactory(namespaceUri);
+						XMPSchemaFactory xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
 						// retrieve namespaces
 						if (xsf==null) {
 							// create namespace with no field
-							schemaMapping.addNewNameSpace(namespaceUri);
-							xsf = schemaMapping.getSchemaFactory(namespaceUri);
+							meta.getSchemaMapping().addNewNameSpace(namespaceUri);
+							xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
 						}
 						// populate value type
 						if (valueTypes!=null) {
@@ -304,7 +296,7 @@ public class XMPDocumentBuilder {
 													throw new XmpRequiredPropertyException("Missing field in field definition");
 												}
 												// create the type
-												TypeDescription vtd = typeMapping.getTypeDescription(fValueType);
+												TypeDescription vtd = meta.getTypeMapping().getTypeDescription(fValueType);
 												if (vtd!=null) {
 													// a type is found
 													String ftype = vtd.getType();
@@ -318,7 +310,7 @@ public class XMPDocumentBuilder {
 									}
 									// add the structured type to list
 									TypeDescription td = new TypeDescription(ttype, null, DefinedStructuredType.class);
-									typeMapping.addToStructuredMaps(td,tns);
+									meta.getTypeMapping().addToStructuredMaps(td,tns);
 								}
 							}	
 						}
@@ -336,7 +328,7 @@ public class XMPDocumentBuilder {
 									throw new XmpRequiredPropertyException("Missing field in property definition");
 								}
 								// check ptype existance
-								TypeDescription td = typeMapping.getTypeDescription(ptype);
+								TypeDescription td = meta.getTypeMapping().getTypeDescription(ptype);
 								if (td==null) {
 									// type not defined
 									throw new XmpUnknownValueTypeException("Type not defined : "+ptype);
@@ -445,7 +437,7 @@ public class XMPDocumentBuilder {
 						"Unknown attribute in xpacket PI : '" + token + "'");
 			}
 		}
-		return new WrappedXMPMetadata(this,begin, id, bytes, encoding);
+		return new WrappedXMPMetadata(new TypeMapping(),begin, id, bytes, encoding);
 	}
 
 	/**
@@ -622,10 +614,10 @@ public class XMPDocumentBuilder {
 		boolean added = false;
 		String schemaNamespace = schema.getNamespaceValue();
 		String prefix = attr.getPrefix() != null ? attr.getPrefix() : schema.getPrefix();
-		String type = this.nsMap.getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
+		String type = metadata.getNsMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
 
 		if (type != null) {
-			AbstractSimpleProperty prop = typeMapping.instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
+			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
 			schema.getContent().addProperty(prop);
 			added = true;
 		}
@@ -657,6 +649,7 @@ public class XMPDocumentBuilder {
 			throws XmpParsingException, XMLStreamException, XmpSchemaException,
 			XmpUnknownValueTypeException, XmpExpectedRdfAboutAttribute,
 			BadFieldValueException {
+		NSMapping nsMap = metadata.getNsMapping();
 		nsMap.resetComplexBasicTypesDeclarationInSchemaLevel();
 		int cptNS = reader.get().getNamespaceCount();
 		HashMap<String, String> namespaces = new HashMap<String, String>();
@@ -664,7 +657,7 @@ public class XMPDocumentBuilder {
 		for (int i = 0; i < cptNS; i++) {
 			namespaces.put(reader.get().getNamespacePrefix(i), reader.get()
 					.getNamespaceURI(i));
-			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
+			if (metadata.getTypeMapping().isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
 				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
 						.get().getNamespaceURI(i), reader.get()
 						.getNamespacePrefix(i));
@@ -754,6 +747,7 @@ public class XMPDocumentBuilder {
 	 */
 	private String getPropertyDeclarationInNamespaces(XMPSchema schema,
 			QName prop) throws XmpParsingException {
+		NSMapping nsMap = schema.getMetadata().getNsMapping();
 		Iterator<Attribute> it = schema.getAllAttributes().iterator();
 		Attribute tmp;
 		ArrayList<Attribute> list = new ArrayList<Attribute>();
@@ -805,8 +799,8 @@ public class XMPDocumentBuilder {
 						.getAttributeLocalName(i), reader.get()
 						.getAttributeValue(i)));
 			}
-			prop = typeMapping.instanciateSimpleProperty(metadata, null, propertyName.getPrefix(), 
-					propertyName.getLocalPart(), reader.get().getElementText(),typeMapping.getType(tclass));
+			prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, propertyName.getPrefix(), 
+					propertyName.getLocalPart(), reader.get().getElementText(),metadata.getTypeMapping().getType(tclass));
 			if (prop != null) {
 				container.addProperty(prop);
 				// ADD ATTRIBUTES
@@ -905,6 +899,8 @@ public class XMPDocumentBuilder {
 			XmpUnexpectedTypeException, XMLStreamException,
 			XmpUnknownPropertyTypeException {
 		XMPMetadata metadata = schema.getMetadata();
+		NSMapping nsMap = metadata.getNsMapping();
+		TypeMapping typeMapping = metadata.getTypeMapping();
 		QName propertyName = reader.get().getName();
 		if (parsingExtension) {
 			if (!propertyName.getNamespaceURI().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
@@ -984,20 +980,8 @@ public class XMPDocumentBuilder {
 		}
 	}
 
-	public NSMapping getNsMap() {
-		return nsMap;
-	}
-
 	public XMLStreamReader getReader() {
 		return reader.get();
-	}
-
-	public TypeMapping getTypeMapping () {
-		return this.typeMapping;
-	}
-
-	public SchemaMapping getSchemaMapping() {
-		return schemaMapping;
 	}
 
 	public void skipCurrentElement () throws XmpParsingException,XMLStreamException {

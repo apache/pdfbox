@@ -28,9 +28,6 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.parser.XMPSchemaFactory;
-import org.apache.padaf.xmpbox.parser.XmpSchemaException;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 
 
@@ -42,7 +39,7 @@ import org.apache.padaf.xmpbox.type.TypeMapping;
  */
 public class NSMapping {
 
-	private XMPDocumentBuilder builder = null;
+	private XMPMetadata metadata = null;
 	
 	private Map<String, String> complexBasicTypesDeclarationEntireXMPLevel;
 	
@@ -56,12 +53,11 @@ public class NSMapping {
 	 * @throws XmpSchemaException
 	 *             When could not read a property data in a Schema Class given
 	 */
-	public NSMapping(XMPDocumentBuilder builder) throws XmpSchemaException {
-		this.builder = builder;
+	public NSMapping(XMPMetadata metadata) {
+		this.metadata = metadata;
 		complexBasicTypesDeclarationEntireXMPLevel = new HashMap<String, String>();
 		complexBasicTypesDeclarationSchemaLevel = new HashMap<String, String>();
 		complexBasicTypesDeclarationPropertyLevel = new HashMap<String, String>();
-//		definedNamespaces = new HashMap<String, XMPSchemaFactory>();
 	}
 
 
@@ -101,10 +97,9 @@ public class NSMapping {
 	 * @return True if namespace URI is known
 	 */
 	public boolean isContainedNamespace(String namespace) {
-		boolean found = builder.getSchemaMapping().isContainedNamespace(namespace);
+		boolean found = metadata.getSchemaMapping().isContainedNamespace(namespace);
 		if (!found) {
-//			found = definedNamespaces.containsKey(namespace);
-			TypeMapping tm = builder.getTypeMapping();
+			TypeMapping tm = metadata.getTypeMapping();
 			found = tm.isStructuredTypeNamespace(namespace);
 		}
 		return found;
@@ -121,7 +116,7 @@ public class NSMapping {
 	 * @return Property type declared for namespace specified, null if unknown
 	 */
 	public String getSpecifiedPropertyType(String namespace, QName prop) {
-		XMPSchemaFactory factory = builder.getSchemaMapping().getSchemaFactory(namespace);
+		XMPSchemaFactory factory = metadata.getSchemaMapping().getSchemaFactory(namespace);
 		if (factory!=null) {
 			return factory.getPropertyType(prop.getLocalPart());
 		} else {
@@ -141,7 +136,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelXMP(String namespace,
 			String prefix) {
-		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
+		if (metadata.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationEntireXMPLevel.put(prefix, namespace);
 		}
 	}
@@ -158,7 +153,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelSchema(String namespace,
 			String prefix) {
-		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
+		if (metadata.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationSchemaLevel.put(prefix, namespace);
 		}
 
@@ -175,7 +170,7 @@ public class NSMapping {
 	 */
 	public void setComplexBasicTypesDeclarationForLevelProperty(
 			String namespace, String prefix) {
-		if (builder.getTypeMapping().isStructuredTypeNamespace(namespace)) {
+		if (metadata.getTypeMapping().isStructuredTypeNamespace(namespace)) {
 			complexBasicTypesDeclarationPropertyLevel.put(prefix, namespace);
 		}
 	}
@@ -222,7 +217,7 @@ public class NSMapping {
 		}
 		// return complex basic type
 		if (tmp!=null) {
-			return builder.getTypeMapping().getStructuredTypeName(tmp).getType();
+			return metadata.getTypeMapping().getStructuredTypeName(tmp).getType();
 		} else {
 			// 
 			return null;
@@ -242,12 +237,12 @@ public class NSMapping {
 	 *             When Instancing specified Object Schema failed
 	 */
 	public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix) throws XmpSchemaException {
-		XMPSchema found = builder.getSchemaMapping().getAssociatedSchemaObject(metadata, namespace, prefix);
+		XMPSchema found = metadata.getSchemaMapping().getAssociatedSchemaObject(metadata, namespace, prefix);
 		if (found!=null) {
 			return found;
 		} else {
 			// look in local
-			XMPSchemaFactory factory = builder.getSchemaMapping().getSchemaFactory(namespace);
+			XMPSchemaFactory factory = metadata.getSchemaMapping().getSchemaFactory(namespace);
 			if (factory==null) {
 				return null;
 			}
