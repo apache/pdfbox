@@ -22,7 +22,6 @@
 package org.apache.padaf.xmpbox.type;
 
 import java.util.Calendar;
-import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 

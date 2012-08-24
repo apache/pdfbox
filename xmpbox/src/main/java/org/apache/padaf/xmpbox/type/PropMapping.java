@@ -19,7 +19,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +39,9 @@ import java.util.Map;
 public class PropMapping {
 
 	private String namespace;
+
 	private Map<String, String> types;
-	private Map<String, List<String>> attributes;
+
 
 	/**
 	 * Build PropMapping for specified namespace
@@ -51,8 +52,6 @@ public class PropMapping {
 	public PropMapping(String namespace) {
 		this.namespace = namespace;
 		types = new HashMap<String, String>();
-		attributes = new HashMap<String, List<String>>();
-
 	}
 
 	/**
@@ -84,11 +83,8 @@ public class PropMapping {
 	 *            A list of attribute (put null while attribute management is
 	 *            not implemented)
 	 */
-	public void addNewProperty(String name, String type, List<String> attr) {
+	public void addNewProperty(String name, String type) {
 		types.put(name, type);
-		if (attr != null) {
-			attributes.put(name, attr);
-		}
 	}
 
 	/**
@@ -102,15 +98,8 @@ public class PropMapping {
 		return types.get(name);
 	}
 
-	/**
-	 * Return an unmodifiable list of property attributes from its qualifiedName
-	 * 
-	 * @param name
-	 *            LocalName of the property
-	 * @return List of all attributes declared for this property
-	 */
-	public List<String> getPropertyAttributes(String name) {
-		return attributes.get(name);
+	public boolean containsKey (String name) {
+		return types.containsKey(name);
 	}
-
+	
 }
