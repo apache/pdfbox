@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.type.PropMapping;
 
 
 /**
@@ -94,26 +95,6 @@ public class XMPSchemaFactory {
 		if (result == null) {
 			for (PropMapping mapping : importedPropertyMapping) {
 				result = mapping.getPropertyType(name);
-				if (result != null) {
-					break;
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Get attributes declared for a property (NOT USED YET)
-	 * 
-	 * @param name
-	 *            The property Name
-	 * @return List of all attributes defined for this property
-	 */
-	public List<String> getPropertyAttributes(String name) {
-		List<String> result = propDef.getPropertyAttributes(name);
-		if (result == null) {
-			for (PropMapping mapping : importedPropertyMapping) {
-				result = mapping.getPropertyAttributes(name);
 				if (result != null) {
 					break;
 				}

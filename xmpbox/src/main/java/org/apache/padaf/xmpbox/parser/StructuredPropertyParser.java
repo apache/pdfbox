@@ -22,11 +22,6 @@
 package org.apache.padaf.xmpbox.parser;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -40,7 +35,8 @@ import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.DefinedStructuredType;
-import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.ReflectHelper;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 
 public class StructuredPropertyParser {
@@ -49,64 +45,21 @@ public class StructuredPropertyParser {
 
 	private Class<? extends AbstractStructuredType> typeClass = null;
 
-	private Constructor<? extends AbstractStructuredType> typeConstructor = null;
-
-	private Map<String,PropertyDescription> propDesc = null;
-
-	private static Class<?> [] propertyConstructorParams = new Class [] {XMPMetadata.class};
+	private PropMapping propDesc = null;
+	
+	private boolean isDefinedStructureType = false;
 
 	public StructuredPropertyParser(XMPDocumentBuilder builder,Class<? extends AbstractStructuredType> propertyTypeClass) 
 			throws XmpPropertyFormatException {
 		this.builder = builder;
 		this.typeClass = propertyTypeClass;
-		this.propDesc = new HashMap<String, PropertyDescription>();
 		// retrieve xmp properties
-		Field [] fields = typeClass.getFields();
-		for (Field field : fields) {
-			if (field.getAnnotation(PropertyType.class)!=null) {
-				PropertyDescription pd = new PropertyDescription();
-				pd.propertyType = field.getAnnotation(PropertyType.class);
-				//				pd.fieldName = field.getName();
-				try {
-					pd.propertyName = field.get(null).toString();
-				} catch (IllegalArgumentException e1) {
-					throw new XmpPropertyFormatException("Failed to parse structured type : "+typeClass.getName(),e1);
-				} catch (IllegalAccessException e1) {
-					throw new XmpPropertyFormatException("Failed to parse structured type : "+typeClass.getName(),e1);
-				}
-				propDesc.put(pd.propertyName, pd);
-			}
-		}
-		// retrieve constructor
-		if (DefinedStructuredType.class.isAssignableFrom(typeClass)) {
-			// specific case from DefinedStructured type
-			typeConstructor = null;
-		} else {
-			// reflection to find constructor
-			try {
-				typeConstructor = typeClass.getConstructor(propertyConstructorParams);
-			} catch (SecurityException e) {
-				throw new XmpPropertyFormatException("Failed to initialize structured type parser : "+typeClass.getName(),e);
-			} catch (NoSuchMethodException e) {
-				throw new XmpPropertyFormatException("Failed to initialize structured type parser : "+typeClass.getName(),e);
-			}
-		}
-
+		this.propDesc = ReflectHelper.initializePropMapping(null, propertyTypeClass); // TODO GBL GBA
+		this.isDefinedStructureType = DefinedStructuredType.class.isAssignableFrom(typeClass); 
 	}
 
 	private AbstractStructuredType instanciateProperty (XMPMetadata metadata) throws XmpParsingException {
-		try {
-			//			return typeConstructor.newInstance(metadata,prefix);
-			return typeConstructor.newInstance(metadata);
-		} catch (IllegalArgumentException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
-		} catch (InstantiationException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
-		} catch (IllegalAccessException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
-		} catch (InvocationTargetException e) {
-			throw new XmpParsingException("Failed to instanciate structured type : "+typeClass.getName(),e);
-		}
+		return builder.getTypeMapping().instanciateStructuredType(metadata, typeClass);
 	}
 
 
@@ -151,7 +104,7 @@ public class StructuredPropertyParser {
 			elmtType = reader.nextTag();
 		}
 		AbstractStructuredType property = null;
-		if (typeConstructor==null) {
+		if (isDefinedStructureType) {
 			// defined type
 			property = new DefinedStructuredType(metadata, null, null);// TODO
 		} else {
@@ -198,10 +151,10 @@ public class StructuredPropertyParser {
 				// check if property is expected
 				String localPart = eltName.getLocalPart();
 				if (propDesc.containsKey(localPart)) {
-					PropertyDescription description = propDesc.get(localPart);
+					String ptype = propDesc.getPropertyType(localPart);
 
 					AbstractField a = instanciateSimple(
-							description.propertyType.propertyType(), 
+							ptype, 
 							metadata, 
 							eltName.getPrefix(),
 							localPart,
@@ -325,17 +278,5 @@ public class StructuredPropertyParser {
 
 		return builder.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, propertyName, value, type);
 	}
-
-
-
-	protected class PropertyDescription {
-
-		private String propertyName;
-
-		private PropertyType propertyType;
-
-	}
-
-
 
 }
