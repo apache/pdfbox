@@ -23,6 +23,8 @@ package org.apache.padaf.xmpbox.type;
 
 import java.lang.reflect.Field;
 
+import org.apache.padaf.xmpbox.schema.XmpSchemaException;
+
 
 public final class ReflectHelper {
 
@@ -41,7 +43,7 @@ public final class ReflectHelper {
 	 *             When could not read property name in field with properties
 	 *             annotations
 	 */
-	public final static PropMapping initializePropMapping(String ns,
+	public static PropMapping initializePropMapping(String ns,
 			Class<?> classSchem) {
 		PropMapping propMap = new PropMapping(ns);
 		Field [] fields = classSchem.getFields();

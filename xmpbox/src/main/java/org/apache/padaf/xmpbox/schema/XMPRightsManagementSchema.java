@@ -24,8 +24,8 @@ package org.apache.padaf.xmpbox.schema;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URLType;

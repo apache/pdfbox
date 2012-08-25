@@ -21,23 +21,12 @@
 
 package org.apache.padaf.xmpbox;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.AbstractField;
-import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
-import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

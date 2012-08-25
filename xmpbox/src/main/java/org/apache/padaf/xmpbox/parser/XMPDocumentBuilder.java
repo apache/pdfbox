@@ -87,30 +87,6 @@ public class XMPDocumentBuilder {
 	public XMPDocumentBuilder() throws XmpSchemaException {
 	}
 
-	public XMPMetadata createXMPMetadata () throws CreateXMPMetadataException {
-		return new WrappedXMPMetadata(new TypeMapping());
-	}
-
-	public XMPMetadata createXMPMetadata (String begin, String id, String bytes, String encoding) throws CreateXMPMetadataException {
-		return new WrappedXMPMetadata(new TypeMapping(),begin, id, bytes, encoding);
-
-	}
-	protected class WrappedXMPMetadata extends XMPMetadata {
-
-		public WrappedXMPMetadata(TypeMapping tm) throws CreateXMPMetadataException {
-			super(tm);
-		}
-
-		public WrappedXMPMetadata(TypeMapping tm, String xpacketBegin, String xpacketId,
-				String xpacketBytes, String xpacketEncoding)
-						throws CreateXMPMetadataException {
-			super(tm, xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
-		}
-
-
-	}
-
-
 	/**
 	 * Parsing method. Return a XMPMetadata object with all elements read
 	 * 
@@ -213,23 +189,7 @@ public class XMPDocumentBuilder {
 			if (!reader.get().getPITarget().equals("xpacket")) {
 				throw new XmpXpacketEndException("Excepted PI xpacket");
 			}
-			String xpackData = reader.get().getPIData();
-			// end attribute must be present and placed in first
-			// xmp spec says Other unrecognized attributes can follow, but
-			// should be ignored
-			if (xpackData.startsWith("end=")) {
-				// check value (5 for end='X')
-				if (xpackData.charAt(5)!='r' && xpackData.charAt(5)!='w') {
-					throw new XmpXpacketEndException(
-							"Excepted xpacket 'end' attribute with value 'r' or 'w' ");
-				}
-			} else {
-				// should find end='r/w'
-				throw new XmpXpacketEndException(
-						"Excepted xpacket 'end' attribute (must be present and placed in first)");
-			}
-
-			metadata.setEndXPacket(xpackData);
+			parseEndPacket(metadata);
 			// return constructed object
 			return metadata;
 		} catch (XMLStreamException e) {
@@ -295,6 +255,7 @@ public class XMPDocumentBuilder {
 													throw new XmpRequiredPropertyException("Missing field in field definition");
 												}
 												// create the type
+//												TypeDescription vtd = meta.getTypeMapping().getTypeDescription(fValueType);
 												TypeDescription vtd = meta.getTypeMapping().getTypeDescription(fValueType);
 												if (vtd!=null) {
 													// a type is found
@@ -327,6 +288,7 @@ public class XMPDocumentBuilder {
 									throw new XmpRequiredPropertyException("Missing field in property definition");
 								}
 								// check ptype existance
+//								TypeDescription td = meta.getTypeMapping().getTypeDescription(ptype);
 								TypeDescription td = meta.getTypeMapping().getTypeDescription(ptype);
 								if (td==null) {
 									// type not defined
@@ -436,9 +398,30 @@ public class XMPDocumentBuilder {
 						"Unknown attribute in xpacket PI : '" + token + "'");
 			}
 		}
-		return new WrappedXMPMetadata(new TypeMapping(),begin, id, bytes, encoding);
+		return XMPMetadata.createXMPMetadata(begin, id, bytes, encoding);
 	}
 
+	protected void parseEndPacket (XMPMetadata metadata) throws XmpXpacketEndException {
+		String xpackData = reader.get().getPIData();
+		// end attribute must be present and placed in first
+		// xmp spec says Other unrecognized attributes can follow, but
+		// should be ignored
+		if (xpackData.startsWith("end=")) {
+			char end = xpackData.charAt(5);
+			// check value (5 for end='X')
+			if (end!='r' && end!='w') {
+				throw new XmpXpacketEndException(
+						"Excepted xpacket 'end' attribute with value 'r' or 'w' ");
+			} else {
+				metadata.setEndXPacket(Character.toString(end));
+			}
+		} else {
+			// should find end='r/w'
+			throw new XmpXpacketEndException(
+					"Excepted xpacket 'end' attribute (must be present and placed in first)");
+		}
+	}
+	
 	/**
 	 * Check the next element type. all comments are ignored.
 	 * 
@@ -923,10 +906,10 @@ public class XMPDocumentBuilder {
 		if (type.equals("Lang Alt")) {
 			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getTypeDescription("Text"), schema.getContent());
 		} else if (typeMapping.isSimpleType(type)) {
-			TypeDescription tclass = typeMapping.getTypeDescription(type);
+			TypeDescription<?> tclass = typeMapping.getTypeDescription(type);
 			parseSimpleProperty(metadata, propertyName, tclass, schema.getContent());
 		} else if (typeMapping.isStructuredType(type)) {
-			TypeDescription tclass = typeMapping.getTypeDescription(type);
+			TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(type);
 			StructuredPropertyParser parser = new StructuredPropertyParser(
 					this, tclass);
 			parseStructuredProperty(metadata, parser, schema.getContent());
@@ -935,21 +918,22 @@ public class XMPDocumentBuilder {
 			int pos = type.indexOf(' ');
 			String arrayType = typeMapping.getArrayType(type);
 			String typeInArray = type.substring(pos+1);
-			TypeDescription tclass = typeMapping.getTypeDescription(typeInArray);
-			Class<? extends AbstractField> tcn = tclass.getTypeClass();
+//			if (typeMapping.is)
+//		TypeDescription<AbstractStructuredType> tclass = typeMapping.getTypeDescription(typeInArray);
+//			Class<? extends AbstractField> tcn = tclass.getTypeClass();
 
-			if (AbstractSimpleProperty.class.isAssignableFrom(tcn)) {
+			if (typeMapping.isSimpleType(typeInArray)) {
 				// array of simple
 				parseSimplePropertyArray(
 						metadata, 
 						propertyName, 
 						arrayType, 
-						tclass,
+						typeMapping.getTypeDescription(typeInArray),
 						schema.getContent());
-			} else if (AbstractStructuredType.class.isAssignableFrom(tcn)) {
+			} else if (typeMapping.isStructuredType(typeInArray)) {
 				// array of structured
 				StructuredPropertyParser parser = new StructuredPropertyParser(
-						this, tclass);
+						this, (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(typeInArray));
 				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContent());
 			} else {
 				// invalid case

@@ -29,13 +29,11 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.AbstractField;
+import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
@@ -49,7 +47,7 @@ public class XMPSchemaTest {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPDocumentBuilder().createXMPMetadata();
+		parent = XMPMetadata.createXMPMetadata();
 		schem = new XMPSchema(parent, "nsSchem", "nsURI");
 
 	}

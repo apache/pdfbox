@@ -21,9 +21,6 @@
 
 package org.apache.padaf.xmpbox.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.type.PropMapping;

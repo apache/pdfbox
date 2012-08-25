@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,7 +36,7 @@ public class AdobePDFTest extends AbstractXMPSchemaTest {
 
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = new XMPDocumentBuilder().createXMPMetadata();
+		metadata = XMPMetadata.createXMPMetadata();
 		schema = metadata.createAndAddAdobePDFSchema();
 		schemaClass = AdobePDFSchema.class;
 	}

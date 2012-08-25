@@ -26,8 +26,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.junit.Before;
@@ -46,7 +44,7 @@ public class DoubleSameTypeSchemaTest {
 
 	@Before
 	public void testInit() throws Exception {
-		metadata = new XMPDocumentBuilder().createXMPMetadata();
+		metadata = XMPMetadata.createXMPMetadata();
 	}
 
 	@Test

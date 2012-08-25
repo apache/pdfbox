@@ -22,16 +22,12 @@
 package org.apache.padaf.xmpbox;
 
 import java.util.Calendar;
-import java.util.Iterator;
 
 import org.apache.padaf.xmpbox.schema.PropertyExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
-import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.PropertyType;
-import org.apache.padaf.xmpbox.type.TextType;
 
 
 @SchemaExtensionDefinition(schema = "Birth-Certificate Schema", valueType_description = "/org/apache/padaf/xmpbox/valueTypeDescription.xml", property_descriptions = "propertiesDescription.xml")

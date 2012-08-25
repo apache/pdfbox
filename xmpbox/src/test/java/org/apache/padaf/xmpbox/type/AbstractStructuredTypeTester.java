@@ -47,7 +47,7 @@ public abstract class AbstractStructuredTypeTester {
 	
 	public void before () throws Exception {
 		builder = new XMPDocumentBuilder();
-		xmp = builder.createXMPMetadata();
+		xmp = XMPMetadata.createXMPMetadata();
 		typeMapping = xmp.getTypeMapping();
 	}
 	
@@ -72,7 +72,7 @@ public abstract class AbstractStructuredTypeTester {
 	
 	@Test
 	public void testSettingValue() throws Exception {
-		TypeDescription td =typeMapping.getTypeDescription(type);
+		TypeDescription<AbstractSimpleProperty> td = (TypeDescription<AbstractSimpleProperty>)typeMapping.getTypeDescription(type);
 		Object value = TypeTestingHelper.getJavaValue(td);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
@@ -89,7 +89,7 @@ public abstract class AbstractStructuredTypeTester {
 
 	@Test
 	public void testPropertyType() throws Exception {
-		TypeDescription td =typeMapping.getTypeDescription(type);
+		TypeDescription<AbstractSimpleProperty> td = (TypeDescription<AbstractSimpleProperty>)typeMapping.getTypeDescription(type);
 		Object value = TypeTestingHelper.getJavaValue(td);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
@@ -113,7 +113,7 @@ public abstract class AbstractStructuredTypeTester {
     @Test
     public void testSetter () throws Exception {
     	String setter = TypeTestingHelper.calculateSimpleSetter(fieldName);
-    	TypeDescription td = typeMapping.getTypeDescription(type);
+    	TypeDescription<AbstractSimpleProperty> td = (TypeDescription<AbstractSimpleProperty>)typeMapping.getTypeDescription(type);
     	Object value = TypeTestingHelper.getJavaValue(td);
     	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
     	set.invoke(getStructured(), new Object [] {value});
