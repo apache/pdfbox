@@ -45,14 +45,14 @@ public class StructuredPropertyParser {
 
 	private XMPDocumentBuilder builder = null;
 
-	private TypeDescription description = null;
+	private TypeDescription<AbstractStructuredType> description = null;
 
 	private PropMapping propDesc = null;
 	
 	private boolean isDefinedStructureType = false;
 	
 
-	public StructuredPropertyParser(XMPDocumentBuilder builder, TypeDescription td) 
+	public StructuredPropertyParser(XMPDocumentBuilder builder, TypeDescription<AbstractStructuredType> td) 
 			throws XmpPropertyFormatException {
 		this.builder = builder;
 		this.description = td;
@@ -183,21 +183,21 @@ public class StructuredPropertyParser {
 				}
 
 				if (reader.getEventType()==XMLStreamConstants.START_ELEMENT) {
-					TypeDescription td = metadata.getTypeMapping().getStructuredTypeName(eltName.getNamespaceURI());
+					TypeDescription<AbstractStructuredType> td = metadata.getTypeMapping().getStructuredTypeName(eltName.getNamespaceURI());
 					if (td==null) {
 						throw new XmpUnexpectedNamespaceURIException("No namespace defined with name "+eltName.getNamespaceURI());
 					}
 
 					String ptype = td.getProperties().getPropertyType(eltName.getLocalPart());
 					if (metadata.getTypeMapping().isStructuredType(ptype)) {
-						TypeDescription tclass = metadata.getTypeMapping().getTypeDescription(ptype);
+						TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)metadata.getTypeMapping().getTypeDescription(ptype);
 						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tclass);
 						sp.parseSimple(metadata, reader.getName(), property.getContainer(),isSubSkipDescription,subExpected);// TODO
 					} else if (metadata.getTypeMapping().getArrayType(ptype)!=null) {
 						int pos = ptype.indexOf(' ');
 						String arrayType = metadata.getTypeMapping().getArrayType(ptype);
 						String typeInArray = ptype.substring(pos+1);
-						TypeDescription tclass = metadata.getTypeMapping().getTypeDescription(typeInArray);
+						TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)metadata.getTypeMapping().getTypeDescription(typeInArray);
 						ArrayProperty cp = new ArrayProperty(metadata,null,
 								eltName.getPrefix(), eltName.getLocalPart(),
 								arrayType);
@@ -247,7 +247,7 @@ public class StructuredPropertyParser {
 			String propertyName,
 			String valueAsString) 
 					throws XmpParsingException {
-		TypeDescription description = metadata.getTypeMapping().getTypeDescription(type);
+		TypeDescription<AbstractSimpleProperty> description = (TypeDescription<AbstractSimpleProperty>)metadata.getTypeMapping().getTypeDescription(type);
 		Object value = null;
 		switch (description.getBasic()) {
 		case Boolean : 

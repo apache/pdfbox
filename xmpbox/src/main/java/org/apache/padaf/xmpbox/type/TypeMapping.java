@@ -34,19 +34,19 @@ public final class TypeMapping {
 
 
 
-	private Map<String,TypeDescription> BASIC_TYPES;
+	private Map<String,TypeDescription<AbstractSimpleProperty>> BASIC_TYPES;
 
-	private Map<Class<? extends AbstractField>,TypeDescription> BASIC_CLASSES;
+	private Map<Class<? extends AbstractField>,TypeDescription<AbstractSimpleProperty>> BASIC_CLASSES;
 
-	private Map<String,TypeDescription> DERIVED_TYPES;
+	private Map<String,TypeDescription<AbstractSimpleProperty>> DERIVED_TYPES;
 
-	private Map<Class<? extends AbstractField>,TypeDescription> DERIVED_CLASSES;
+	private Map<Class<? extends AbstractField>,TypeDescription<AbstractSimpleProperty>> DERIVED_CLASSES;
 
-	private Map<String, TypeDescription> STRUCTURED_TYPES;
+	private Map<String, TypeDescription<AbstractStructuredType>> STRUCTURED_TYPES;
 
-	private Map<Class<? extends AbstractField>,TypeDescription> STRUCTURED_CLASSES;
+	private Map<Class<? extends AbstractField>,TypeDescription<AbstractStructuredType>> STRUCTURED_CLASSES;
 
-	private Map<String,TypeDescription> STRUCTURED_NAMESPACES;
+	private Map<String,TypeDescription<AbstractStructuredType>> STRUCTURED_NAMESPACES;
 
 	public TypeMapping() {
 		initialize();
@@ -63,61 +63,61 @@ public final class TypeMapping {
 
 	private void initialize () {
 		// basic
-		BASIC_TYPES = new HashMap<String,TypeDescription>();
-		BASIC_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription>();
-		addToBasicMaps(new TypeDescription("Text",BasicType.Text,TextType.class));
-		addToBasicMaps(new TypeDescription("Date",BasicType.Date,DateType.class));
-		addToBasicMaps(new TypeDescription("Boolean",BasicType.Boolean,BooleanType.class));
-		addToBasicMaps(new TypeDescription("Integer",BasicType.Integer,IntegerType.class));
-		addToBasicMaps(new TypeDescription("Real",BasicType.Real,RealType.class));
+		BASIC_TYPES = new HashMap<String,TypeDescription<AbstractSimpleProperty>>();
+		BASIC_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractSimpleProperty>>();
+		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>("Text",BasicType.Text,TextType.class));
+		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>("Date",BasicType.Date,DateType.class));
+		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>("Boolean",BasicType.Boolean,BooleanType.class));
+		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>("Integer",BasicType.Integer,IntegerType.class));
+		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>("Real",BasicType.Real,RealType.class));
 
 		// derived
-		DERIVED_TYPES = new HashMap<String,TypeDescription>();
-		DERIVED_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription>();
-		addToDerivedMaps(new TypeDescription("AgentName",BasicType.Text,AgentNameType.class));
-		addToDerivedMaps(new TypeDescription("Choice",BasicType.Text,ChoiceType.class));
-		addToDerivedMaps(new TypeDescription("GUID",BasicType.Text,GUIDType.class));
-		addToDerivedMaps(new TypeDescription("Lang Alt",BasicType.Text,TextType.class));
-		addToDerivedMaps(new TypeDescription("Locale",BasicType.Text,LocaleType.class));
-		addToDerivedMaps(new TypeDescription("MIMEType",BasicType.Text,MIMEType.class));
-		addToDerivedMaps(new TypeDescription("ProperName",BasicType.Text,ProperNameType.class));
-		addToDerivedMaps(new TypeDescription("RenditionClass",BasicType.Text,RenditionClassType.class));
-		addToDerivedMaps(new TypeDescription("URL",BasicType.Text,URLType.class));
-		addToDerivedMaps(new TypeDescription("URI",BasicType.Text,URIType.class));
-		addToDerivedMaps(new TypeDescription("XPath",BasicType.Text,XPathType.class));
-		addToDerivedMaps(new TypeDescription("Part",BasicType.Text,PartType.class));
+		DERIVED_TYPES = new HashMap<String,TypeDescription<AbstractSimpleProperty>>();
+		DERIVED_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractSimpleProperty>>();
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("AgentName",BasicType.Text,AgentNameType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("Choice",BasicType.Text,ChoiceType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("GUID",BasicType.Text,GUIDType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("Lang Alt",BasicType.Text,TextType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("Locale",BasicType.Text,LocaleType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("MIMEType",BasicType.Text,MIMEType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("ProperName",BasicType.Text,ProperNameType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("RenditionClass",BasicType.Text,RenditionClassType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("URL",BasicType.Text,URLType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("URI",BasicType.Text,URIType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("XPath",BasicType.Text,XPathType.class));
+		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>("Part",BasicType.Text,PartType.class));
 
 		// structured types
-		STRUCTURED_TYPES = new HashMap<String, TypeDescription>();
-		STRUCTURED_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription>();
-		STRUCTURED_NAMESPACES = new HashMap<String, TypeDescription>();
-		addToStructuredMaps(new TypeDescription("Thumbnail",null,ThumbnailType.class));
-		addToStructuredMaps(new TypeDescription("Layer",null,LayerType.class));
-		addToStructuredMaps(new TypeDescription("ResourceEvent",null,ResourceEventType.class));
-		addToStructuredMaps(new TypeDescription("Job",null,JobType.class));
-		addToStructuredMaps(new TypeDescription("ResourceRef",null,ResourceRefType.class));
-		addToStructuredMaps(new TypeDescription("Version",null,VersionType.class));
+		STRUCTURED_TYPES = new HashMap<String, TypeDescription<AbstractStructuredType>>();
+		STRUCTURED_CLASSES = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractStructuredType>>();
+		STRUCTURED_NAMESPACES = new HashMap<String, TypeDescription<AbstractStructuredType>>();
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("Thumbnail",null,ThumbnailType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("Layer",null,LayerType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("ResourceEvent",null,ResourceEventType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("Job",null,JobType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("ResourceRef",null,ResourceRefType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("Version",null,VersionType.class));
 		// PDF/A structured types
-		addToStructuredMaps(new TypeDescription("PDFAField",null,PDFAFieldType.class));
-		addToStructuredMaps(new TypeDescription("PDFAProperty",null,PDFAPropertyType.class));
-		addToStructuredMaps(new TypeDescription("PDFAType",null,PDFATypeType.class));
-		addToStructuredMaps(new TypeDescription("PDFASchema",null,PDFASchemaType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAField",null,PDFAFieldType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAProperty",null,PDFAPropertyType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAType",null,PDFATypeType.class));
+		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFASchema",null,PDFASchemaType.class));
 	}
 
-	private void addToBasicMaps (TypeDescription td) {
+	private void addToBasicMaps (TypeDescription<AbstractSimpleProperty> td) {
 		BASIC_TYPES.put(td.getType(),td);
 		BASIC_CLASSES.put(td.getTypeClass(), td);
 	}
 
-	public void addToDerivedMaps (TypeDescription td) {
+	public void addToDerivedMaps (TypeDescription<AbstractSimpleProperty> td) {
 		DERIVED_TYPES.put(td.getType(),td);
 		DERIVED_CLASSES.put(td.getTypeClass(), td);
 	}
 
-	public void addToStructuredMaps (TypeDescription td) {
+	public void addToStructuredMaps (TypeDescription<AbstractStructuredType> td) {
 		try {
 			String ns = (String)td.getTypeClass().getField("ELEMENT_NS").get(null);
-			Class<? extends AbstractStructuredType> clz = (Class<? extends AbstractStructuredType>)td.getTypeClass();
+			Class<? extends AbstractStructuredType> clz = td.getTypeClass();
 			if (clz!=null) {
 				PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
 				td.setProperties(pm);
@@ -137,7 +137,7 @@ public final class TypeMapping {
 		}
 	}
 
-	public void addToStructuredMaps (TypeDescription td, String ns) {
+	public void addToStructuredMaps (TypeDescription<AbstractStructuredType> td, String ns) {
 		STRUCTURED_TYPES.put(td.getType(),td);
 		STRUCTURED_CLASSES.put(td.getTypeClass(), td);
 		STRUCTURED_NAMESPACES.put(ns, td);
@@ -146,17 +146,20 @@ public final class TypeMapping {
 
 	public String getType (Class<?> clz) {
 		// search in basic
-		TypeDescription td = BASIC_CLASSES.get(clz);
+		TypeDescription<AbstractSimpleProperty> td = BASIC_CLASSES.get(clz);
 		// search in derived
 		if (td==null) {
 			td = DERIVED_CLASSES.get(clz);
 		}
-		// search in structured
-		if (td==null) {
-			td = STRUCTURED_CLASSES.get(clz);
+		// return simple
+		if (td!=null) {
+			return td.getType();
+		} else {
+			// search in structured
+			TypeDescription<AbstractStructuredType> td2 = STRUCTURED_CLASSES.get(clz);
+			// return type if exists
+			return (td2!=null)?td2.getType():null;
 		}
-		// return type if exists
-		return (td!=null)?td.getType():null;
 	}
 
 	/**
@@ -167,7 +170,7 @@ public final class TypeMapping {
 	 * @param type
 	 * @return
 	 */
-	public TypeDescription getTypeDescription (String type) {
+	public TypeDescription<?> getTypeDescription (String type) {
 		if (BASIC_TYPES.containsKey(type)) {
 			return BASIC_TYPES.get(type);
 		} else if (DERIVED_TYPES.containsKey(type)) {
@@ -185,9 +188,26 @@ public final class TypeMapping {
 		}
 	}
 
-	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, TypeDescription td /*Class<? extends AbstractStructuredType> propertyTypeClass*/) throws BadFieldValueException {
+	// TODO ces deux methodes doivent remplacer la précédente
+//	public TypeDescription<AbstractSimpleProperty> getSimpleDescription (String type) {
+//		if (BASIC_TYPES.containsKey(type)) {
+//			return BASIC_TYPES.get(type);
+//		} else if (DERIVED_TYPES.containsKey(type)) {
+//			return DERIVED_TYPES.get(type);
+//		} else {
+//			return null;
+//		}
+//	}
+//
+//	
+//	public TypeDescription<AbstractStructuredType> getStructuredDescription (String type) {
+//		return STRUCTURED_TYPES.get(type);
+//	}
+
+	
+	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, TypeDescription<AbstractStructuredType> td) throws BadFieldValueException {
 		try {
-			Class<? extends AbstractStructuredType> propertyTypeClass = (Class<? extends AbstractStructuredType>)td.getTypeClass();
+			Class<? extends AbstractStructuredType> propertyTypeClass = td.getTypeClass();
 			Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {XMPMetadata.class});
 			return construct.newInstance(metadata);
 		} catch (InvocationTargetException e) {
@@ -216,7 +236,7 @@ public final class TypeMapping {
 		};
 		// type 
 		try {
-			TypeDescription description = getTypeDescription(type);
+			TypeDescription<AbstractSimpleProperty> description = (TypeDescription<AbstractSimpleProperty>)getTypeDescription(type);
 			Class<? extends AbstractSimpleProperty> clz = (Class<? extends AbstractSimpleProperty>)description.getTypeClass();
 			Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(simplePropertyConstParams);
 			return cons.newInstance(params);
@@ -243,7 +263,7 @@ public final class TypeMapping {
 		return instanciateSimpleProperty(xmp, nsuri, prefix, propertyName, value, simpleType);
 	}
 
-	public TypeDescription getStructuredTypeName (String namespace) {
+	public TypeDescription<AbstractStructuredType> getStructuredTypeName (String namespace) {
 		return STRUCTURED_NAMESPACES.get(namespace);
 	}
 

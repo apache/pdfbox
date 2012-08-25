@@ -23,7 +23,6 @@ package org.apache.padaf.xmpbox.type;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.type.Attribute;
 import org.junit.Test;
 
 public class AttributeTest {

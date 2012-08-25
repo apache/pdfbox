@@ -54,7 +54,7 @@ public abstract class AbstractSchemaTester {
 	
 	public void before () throws Exception {
 		builder = new XMPDocumentBuilder();
-		xmp = builder.createXMPMetadata();
+		xmp = XMPMetadata.createXMPMetadata();
 		typeMapping = xmp.getTypeMapping();
 	}
 
@@ -116,6 +116,9 @@ public abstract class AbstractSchemaTester {
 		if (cardinality==Cardinality.Simple) return;
 		// only test array properties
 		TypeDescription td =typeMapping.getTypeDescription(type);
+		if (td==null) {
+			System.err.println(">>>>>>>>>>>>> "+type);
+		}
 		Object value = TypeTestingHelper.getJavaValue(td);
 		AbstractSimpleProperty property = getSchema().instanciateSimple(fieldName, value);
 		switch (cardinality) {

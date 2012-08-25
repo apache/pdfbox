@@ -23,6 +23,16 @@ package org.apache.padaf.xmpbox;
 public final class XmpConstants {
 
 	public static final String RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	
+	public static final String DEFAULT_XPACKET_BEGIN = "\uFEFF";
+	
+	public static final String DEFAULT_XPACKET_ID = "W5M0MpCehiHzreSzNTczkc9d";
+	
+	public static final String DEFAULT_XPACKET_ENCODING = "UTF-8";
+	
+	public static final String DEFAULT_XPACKET_BYTES = null;
+	
+	public static final String DEFAULT_XPACKET_END = "w";
 
 	private XmpConstants () {
 		// hide constructor

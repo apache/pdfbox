@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
-import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.LayerType;

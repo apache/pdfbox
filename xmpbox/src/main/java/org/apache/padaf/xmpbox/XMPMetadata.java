@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-//import org.apache.padaf.xmpbox.parser.CreateXMPMetadataException;
+import org.apache.padaf.xmpbox.parser.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.NSMapping;
@@ -54,16 +54,15 @@ import org.apache.padaf.xmpbox.type.TypeMapping;
  */
 public class XMPMetadata {
 
-    private String xpacketId = "W5M0MpCehiHzreSzNTczkc9d";
+    private String xpacketId = null;
     
-    private String xpacketBegin = "\uFEFF";
+    private String xpacketBegin = null;
 
-    // TODO DEPRECATED (SHOULD STAY NULL (Default value))
-    private String xpacketBytes;
+    private String xpacketBytes = null;
     
-    private String xpacketEncoding;
+    private String xpacketEncoding = null;
 
-    private String xpacketEndData = "end=\"w\"";
+    private String xpacketEndData = XmpConstants.DEFAULT_XPACKET_END;
 
     private SchemasContainer schemas;
     
@@ -73,21 +72,20 @@ public class XMPMetadata {
     
     private SchemaMapping schemaMapping;
 
-//    private XMPDocumentBuilder builder;
-
     /**
      * Contructor of an empty default XMPMetaData
      * 
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    protected XMPMetadata(TypeMapping tm) {
-//      	this.builder = builder;
-        schemas = new SchemasContainer();
-        this.typeMapping = tm;
-        this.nsMapping = new NSMapping(this);
-        this.schemaMapping = new SchemaMapping();
-        
+    // TODO GBL GBA make protected
+    protected XMPMetadata() {
+    	this (
+    			XmpConstants.DEFAULT_XPACKET_BEGIN,
+    			XmpConstants.DEFAULT_XPACKET_ID,
+    			XmpConstants.DEFAULT_XPACKET_BYTES, 
+    			XmpConstants.DEFAULT_XPACKET_ENCODING
+    			);
     }
 
     /**
@@ -105,15 +103,28 @@ public class XMPMetadata {
      * @throws CreateXMPMetadataException
      *             If DOM Document associated could not be created
      */
-    protected XMPMetadata(TypeMapping tm, String xpacketBegin, String xpacketId,
+    // TODO GBL GBA make protected
+    protected XMPMetadata(String xpacketBegin, String xpacketId,
             String xpacketBytes, String xpacketEncoding) {
-    	this(tm);
-//    	this.builder = builder;
-        this.xpacketBegin = xpacketBegin;
+//    	this(tm);
+        this.schemas = new SchemasContainer();
+        this.typeMapping = new TypeMapping();
+        this.nsMapping = new NSMapping(this);
+        this.schemaMapping = new SchemaMapping();
+
+    	this.xpacketBegin = xpacketBegin;
         this.xpacketId = xpacketId;
         this.xpacketBytes = xpacketBytes;
         this.xpacketEncoding = xpacketEncoding;
-        schemas = new SchemasContainer();
+    }
+
+    public static XMPMetadata createXMPMetadata () {
+    	return new XMPMetadata();
+    }
+
+    public static XMPMetadata createXMPMetadata (String xpacketBegin, String xpacketId,
+            String xpacketBytes, String xpacketEncoding) {
+    	return new XMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
     }
 
     public TypeMapping getTypeMapping () {

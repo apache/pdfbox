@@ -51,7 +51,7 @@ public class BasicJobTicketSchemaTest {
 	
 	@Before
 	public void initTempMetaData() throws Exception {
-		metadata = builder.createXMPMetadata();
+		metadata = XMPMetadata.createXMPMetadata();
 		serializer = new XmpSerializer();
 	}
 

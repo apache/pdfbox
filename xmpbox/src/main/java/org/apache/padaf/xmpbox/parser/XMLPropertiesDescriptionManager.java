@@ -26,10 +26,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.padaf.xmpbox.BuildPDFAExtensionSchemaDescriptionException;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.PropertyDescription;
+import org.apache.pdfbox.io.IOUtils;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;

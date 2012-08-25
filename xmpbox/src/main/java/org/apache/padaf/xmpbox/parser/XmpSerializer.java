@@ -20,13 +20,19 @@
 
 package org.apache.padaf.xmpbox.parser;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
@@ -36,9 +42,9 @@ import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
-import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
 public class XmpSerializer {
@@ -67,7 +73,7 @@ public class XmpSerializer {
 				rdf.appendChild(createSchemaElement(doc, schema));
 			}
 			// save
-			XMLUtil.save(doc, os, "UTF-8");
+			save(doc, os, "UTF-8");
 		} catch (Exception e) {
 			// TODO supprimer
 			throw new TransformException(
@@ -96,6 +102,7 @@ public class XmpSerializer {
 		return selem;
 	}
 
+	// TODO GBL rename method
 	public void xxxxxxx (Document doc, Element parent, List<AbstractField> fields) {
 		for (AbstractField field : fields) {
 			if (field instanceof AbstractSimpleProperty) {
@@ -155,8 +162,8 @@ public class XmpSerializer {
 		// ending xpacket
 		if (withXpacket) {
 			ProcessingInstruction endXPacket = doc
-					.createProcessingInstruction("xpacket", metadata
-							.getEndXPacket());
+					.createProcessingInstruction("xpacket", "end=\""+metadata
+							.getEndXPacket()+"\"");
 			doc.appendChild(endXPacket);
 		}
 		// rdf element
@@ -167,5 +174,35 @@ public class XmpSerializer {
 		return rdf;
 	}
   
-	
+    /**
+     * Save the XML document to an output stream.
+     * 
+     * @param doc
+     *            The XML document to save.
+     * @param outStream
+     *            The stream to save the document to.
+     * @param encoding
+     *            The encoding to save the file as.
+     * 
+     * @throws TransformerException
+     *             If there is an error while saving the XML.
+     */
+    private void save(Node doc, OutputStream outStream, String encoding)
+    throws TransformerException {
+        Transformer transformer = TransformerFactory.newInstance()
+        .newTransformer();
+        // human readable
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        // indent elements
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+        // encoding
+        transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+        "yes");
+        // initialize StreamResult with File object to save to file
+        Result result = new StreamResult(outStream);
+        DOMSource source = new DOMSource(doc);
+        // save
+        transformer.transform(source, result);
+    }	
 }

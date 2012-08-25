@@ -24,19 +24,10 @@ package org.apache.padaf.xmpbox.type;
 import java.util.Calendar;
 import java.util.List;
 
-
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.type.Attribute;
-import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.DateType;
-import org.apache.padaf.xmpbox.type.IntegerType;
-import org.apache.padaf.xmpbox.type.RealType;
-import org.apache.padaf.xmpbox.type.TextType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Element;
 
 /**
  * Test MetaData Objects for simple properties
@@ -50,7 +41,7 @@ public class TestSimpleMetadataProperties {
 
 	@Before
 	public void resetDocument() throws Exception {
-		parent = new XMPDocumentBuilder().createXMPMetadata();
+		parent = XMPMetadata.createXMPMetadata();
 	}
 
 	/**

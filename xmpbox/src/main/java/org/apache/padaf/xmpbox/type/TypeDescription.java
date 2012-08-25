@@ -23,7 +23,7 @@ package org.apache.padaf.xmpbox.type;
 
 
 
-public class TypeDescription {
+public class TypeDescription<T> {
 
 	public enum BasicType {	Text, Date, Integer, Boolean, Real}
 
@@ -31,11 +31,11 @@ public class TypeDescription {
 	
 	private BasicType basic;
 	
-	private Class<? extends AbstractField> clz;
+	private Class<? extends T> clz;
 	
 	private PropMapping properties = null;
 
-	public TypeDescription(String type, BasicType basic,Class<? extends AbstractField> clz) {
+	public TypeDescription(String type, BasicType basic,Class<? extends T> clz) {
 		super();
 		this.type = type;
 		this.basic = basic;
@@ -46,7 +46,7 @@ public class TypeDescription {
 		return type;
 	}
 
-	public Class<? extends AbstractField> getTypeClass() {
+	public Class<? extends T> getTypeClass() {
 		return clz;
 	}
 
