@@ -39,7 +39,16 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDDocumentNameDictionary( PDDocumentCatalog cat )
     {
-        nameDictionary = new COSDictionary();
+        COSBase names = cat.getCOSDictionary().getDictionaryObject(COSName.NAMES);
+        if (names != null)
+        {
+            nameDictionary = (COSDictionary)names;
+        }
+        else
+        {
+            nameDictionary = new COSDictionary();
+            cat.getCOSDictionary().setItem(COSName.NAMES, nameDictionary);
+        }
         catalog = cat;
     }
 
