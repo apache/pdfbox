@@ -46,7 +46,7 @@ public class JobType extends AbstractStructuredType {
     }
 
     public JobType(XMPMetadata metadata, String fieldPrefix) {
-        super(metadata, XmpConstants.RDF_NAMESPACE, fieldPrefix);
+        super(metadata, ELEMENT_NS, fieldPrefix);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", fieldPrefix, ELEMENT_NS));
     }
 
@@ -74,10 +74,4 @@ public class JobType extends AbstractStructuredType {
     	return getPropertyValueAsString(URL);
     }
 
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
-	}
-
-    
 }

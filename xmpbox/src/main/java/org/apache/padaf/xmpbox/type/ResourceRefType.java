@@ -93,7 +93,7 @@ public class ResourceRefType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public ResourceRefType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
+		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
@@ -327,11 +327,5 @@ public class ResourceRefType extends AbstractStructuredType {
         	return null;
         }
 	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
-	}
-
 
 }

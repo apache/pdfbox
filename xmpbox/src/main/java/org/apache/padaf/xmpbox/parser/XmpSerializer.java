@@ -125,7 +125,7 @@ public class XmpSerializer {
 			} else if (field instanceof AbstractStructuredType) {
 				AbstractStructuredType structured = (AbstractStructuredType)field;
 				// element li
-				Element estructured = doc.createElement(structured.getPrefix()+":"+structured.getPropertyName());
+				Element estructured = doc.createElement("rdf"+":"+"li");
 				parent.appendChild(estructured);
 				// element description
 				Element econtainer = doc.createElement("rdf"+":"+"Description");

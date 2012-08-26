@@ -38,7 +38,7 @@ public class LayerType extends AbstractStructuredType {
 
 	
 	public LayerType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERED_PREFIX);
+		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
 		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
 	}
 	
@@ -67,7 +67,7 @@ public class LayerType extends AbstractStructuredType {
 	 *            the value of LayerName property to set
 	 */
 	public void setLayerName(String image) {
-		this.addProperty(new TextType(getMetadata(), null,getFieldPrefix(), LAYER_NAME, image));
+		this.addProperty(new TextType(getMetadata(), null,getPrefix(), LAYER_NAME, image));
 	}
 	
 	/**
@@ -95,13 +95,7 @@ public class LayerType extends AbstractStructuredType {
 	 *            the value of LayerText property to set
 	 */
 	public void setLayerText(String image) {
-		this.addProperty(new TextType(getMetadata(), null,getFieldPrefix(), LAYER_TEXT, image));
+		this.addProperty(new TextType(getMetadata(), null,getPrefix(), LAYER_TEXT, image));
 	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
-	}
-
 
 }

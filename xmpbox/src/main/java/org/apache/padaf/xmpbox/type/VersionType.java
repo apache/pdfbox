@@ -61,7 +61,7 @@ public class VersionType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public VersionType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
+		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
 		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
@@ -105,11 +105,5 @@ public class VersionType extends AbstractStructuredType {
 	public void setModifier (String value) {
 		addSimpleProperty(MODIFIER, value);
 	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
-	}
-
 
 }
