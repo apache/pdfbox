@@ -44,12 +44,6 @@ public class TestAbstractStructuredType {
 			super(metadata, namespaceURI, fieldPrefix);
 		}
 
-		@Override
-		public String getFieldsNamespace() {
-			return "test";
-		}
-
-		
 	}
 
 	
@@ -68,8 +62,8 @@ public class TestAbstractStructuredType {
 	@Test
 	public void validate () throws Exception {
 		Assert.assertEquals(MY_NS, st.getNamespace());
-		Assert.assertEquals(AbstractStructuredType.STRUCTURE_ARRAY_PREFIX, st.getPrefix());
-		Assert.assertEquals(MY_PREFIX, st.getFieldPrefix());
+		Assert.assertEquals(MY_PREFIX, st.getPrefix());
+		Assert.assertEquals(MY_PREFIX, st.getPrefix());
 	}
 
 	@Test

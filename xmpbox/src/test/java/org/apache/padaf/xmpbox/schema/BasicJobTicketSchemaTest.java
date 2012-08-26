@@ -104,8 +104,8 @@ public class BasicJobTicketSchemaTest {
 		Assert.assertEquals("zeid2", job.getId());
 		Assert.assertEquals("zename2", job.getName());
 		Assert.assertEquals("zeurl2", job.getUrl());
-		Assert.assertEquals(JobType.ELEMENT_NS, job.getFieldsNamespace());
-		Assert.assertEquals(JobType.PREFERED_PREFIX, job.getFieldPrefix());
+		Assert.assertEquals(JobType.ELEMENT_NS, job.getNamespace());
+		Assert.assertEquals(JobType.PREFERED_PREFIX, job.getPrefix());
 	
 	}
 
@@ -135,8 +135,8 @@ public class BasicJobTicketSchemaTest {
 		Assert.assertEquals("zeid2", job.getId());
 		Assert.assertEquals("zename2", job.getName());
 		Assert.assertEquals("zeurl2", job.getUrl());
-		Assert.assertEquals(JobType.ELEMENT_NS, job.getFieldsNamespace());
-		Assert.assertEquals("aaa", job.getFieldPrefix());
+		Assert.assertEquals(JobType.ELEMENT_NS, job.getNamespace());
+		Assert.assertEquals("aaa", job.getPrefix());
 	
 	}
 

@@ -36,11 +36,6 @@ public class DefinedStructuredType extends AbstractStructuredType {
 		this.definedProperties = new HashMap<String, String>();
 	}
 
-	@Override
-	public String getFieldsNamespace() {
-		return getNamespace();
-	}
-
 	public void addProperty (String name, String type) {
 		definedProperties.put(name, type);
 	}

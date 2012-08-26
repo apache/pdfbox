@@ -46,12 +46,7 @@ public class PDFASchemaType extends AbstractStructuredType {
 	public static final String VALUE_TYPE = "valueType";
 
 	public PDFASchemaType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERED_PREFIX);
-	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
+		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
 	}
 
 	public String getNamespaceURI() {

@@ -60,7 +60,7 @@ public class ThumbnailType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public ThumbnailType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERRED_PREFIX);
+		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
 		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
 	}
 
@@ -175,11 +175,5 @@ public class ThumbnailType extends AbstractStructuredType {
 	public void setFormat(String format) {
 		addSimpleProperty(FORMAT, format);
 	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
-	}
-
 	
 }

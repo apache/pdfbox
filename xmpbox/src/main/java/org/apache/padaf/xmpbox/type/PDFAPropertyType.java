@@ -44,12 +44,7 @@ public class PDFAPropertyType extends AbstractStructuredType {
 
 
 	public PDFAPropertyType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERED_PREFIX);
-	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
+		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
 	}
 
 	public String getName () {

@@ -40,12 +40,7 @@ public class PDFAFieldType extends AbstractStructuredType {
 	public static final String DESCRIPTION = "description";
 
 	public PDFAFieldType(XMPMetadata metadata) {
-		super(metadata, XmpConstants.RDF_NAMESPACE, PREFERED_PREFIX);
-	}
-
-	@Override
-	public String getFieldsNamespace() {
-		return ELEMENT_NS;
+		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
 	}
 
 	public String getName () {

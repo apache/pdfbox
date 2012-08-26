@@ -29,30 +29,17 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
 	
 	
-	/** The prefix of the fields of the structure */
-	private String fieldPrefix = null;
-	
-	protected static final String STRUCTURE_ARRAY_PREFIX = "rdf";
-
 	protected static final  String STRUCTURE_ARRAY_NAME = "li"; 
 
 	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
 			String fieldPrefix) {
-		super(metadata, namespaceURI, STRUCTURE_ARRAY_PREFIX, STRUCTURE_ARRAY_NAME);
-		this.fieldPrefix = fieldPrefix;
+		super(metadata, namespaceURI, fieldPrefix, STRUCTURE_ARRAY_NAME);
 	}
-
-	public abstract String getFieldsNamespace();
-	
-	public String getFieldPrefix () {
-		return this.fieldPrefix;
-	}
-
 
 	
 	protected void addSimpleProperty (String propertyName, Object value) {
 		TypeMapping tm = getMetadata().getTypeMapping();
-		AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), getMetadata(),null,fieldPrefix,propertyName, value);
+		AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), getMetadata(),null,getPrefix(),propertyName, value);
 		addProperty(asp);
 	}
 
