@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
+import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
@@ -48,21 +49,13 @@ import org.apache.padaf.xmpbox.type.TypeUtil;
  * REPRESENTATION
  * 
  */
-public class XMPSchema {
+public class XMPSchema extends AbstractStructuredType {
 	/**
 	 * The standard xmlns namespace.
 	 */
 	public static final String NS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
 
 	public static final String RDFABOUT = "rdf:about";
-
-	private String localPrefix;
-	
-	private String localNSUri;
-	
-	private XMPMetadata metadata;
-	
-	private ComplexPropertyContainer content;
 
 	/**
 	 * Create a new blank schema that can be populated.
@@ -76,37 +69,10 @@ public class XMPSchema {
 	 * 
 	 */
 	public XMPSchema(XMPMetadata metadata, String namespaceName, String namespaceURI) {
-		this.metadata = metadata;
-		content = new ComplexPropertyContainer();
-
-		localPrefix = namespaceName;
-		localNSUri = namespaceURI;
-		content.setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
+		super(metadata, namespaceURI, namespaceName);
+		getContainer().setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
 				namespaceName, namespaceURI));
 
-	}
-
-	private String getQualifiedName (String name) {
-		return localPrefix + ':' + name;
-	}
-	
-	/**
-	 * Get the schema prefix
-	 * 
-	 * @return Prefix fixed for the schema
-	 */
-	public String getPrefix() {
-		return localPrefix;
-
-	}
-
-	/**
-	 * Get the namespace URI of this schema
-	 * 
-	 * @return the namespace URI of this schema
-	 */
-	public String getNamespaceValue() {
-		return localNSUri;
 	}
 
 	/**
@@ -117,11 +83,11 @@ public class XMPSchema {
 	 * @return The generic simple type property according to its qualified Name
 	 */
 	public AbstractField getAbstractProperty(String qualifiedName) {
-		Iterator<AbstractField> it = content.getAllProperties().iterator();
+		Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
 		AbstractField tmp;
 		while (it.hasNext()) {
 			tmp = it.next();
-			if (tmp.getQualifiedName().equals(qualifiedName)) {
+			if (tmp.getPropertyName().equals(qualifiedName)) {
 				return tmp;
 			}
 		}
@@ -135,7 +101,7 @@ public class XMPSchema {
 	 * @return The RDF 'about' attribute.
 	 */
 	public Attribute getAboutAttribute() {
-		return content.getAttribute(RDFABOUT);
+		return getContainer().getAttribute(RDFABOUT);
 	}
 
 	/**
@@ -144,7 +110,7 @@ public class XMPSchema {
 	 * @return The RDF 'about' value.
 	 */
 	public String getAboutValue() {
-		Attribute prop = content.getAttribute(RDFABOUT);
+		Attribute prop = getContainer().getAttribute(RDFABOUT);
 		if (prop != null) {
 			return prop.getValue();
 		}
@@ -162,7 +128,7 @@ public class XMPSchema {
 	public void setAbout(Attribute about) throws BadFieldValueException {
 		if (about.getQualifiedName().equals(RDFABOUT)
 				|| about.getQualifiedName().equals("about")) {
-			content.setAttribute(about);
+			getContainer().setAttribute(about);
 		} else {
 			throw new BadFieldValueException(
 					"Attribute 'about' must be named 'rdf:about' or 'about'");
@@ -177,9 +143,9 @@ public class XMPSchema {
 	 */
 	public void setAboutAsSimple(String about) {
 		if (about == null) {
-			content.removeAttribute(RDFABOUT);
+			getContainer().removeAttribute(RDFABOUT);
 		} else {
-			content.setAttribute(new Attribute(null, "rdf", "about", about));
+			getContainer().setAttribute(new Attribute(null, "rdf", "about", about));
 
 		}
 	}
@@ -201,23 +167,24 @@ public class XMPSchema {
 
 		if (propertyValue == null) {
 			// Search in properties to erase
-			Iterator<AbstractField> it = content.getAllProperties().iterator();
+			Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
 			AbstractField tmp;
 			while (it.hasNext()) {
 				tmp = it.next();
-				if (tmp.getQualifiedName().equals(qualifiedName)) {
-					content.removeProperty(tmp);
+				if (tmp.getPropertyName().equals(qualifiedName)) {
+					getContainer().removeProperty(tmp);
 					return;
 				}
 			}
 		} else {
 			AbstractSimpleProperty specifiedTypeProperty;
 			try {
-				TypeMapping tm = metadata.getTypeMapping();
+				TypeMapping tm = getMetadata().getTypeMapping();
 				specifiedTypeProperty = tm.instanciateSimpleProperty(
-						metadata, null, 
-						splittedQualifiedName[0], splittedQualifiedName[1], propertyValue,
-						tm.getType(type));
+						getMetadata(), null, 
+						getPrefix(), qualifiedName,
+//						splittedQualifiedName[0], splittedQualifiedName[1],
+						propertyValue, tm.getType(type));
 			} catch (Exception e) {
 				throw new IllegalArgumentException(
 						"Failed to create property with the specified type given in parameters",
@@ -225,17 +192,17 @@ public class XMPSchema {
 			}
 			// attribute placement for simple property has been removed
 			// Search in properties to erase
-			Iterator<AbstractField> it = content.getAllProperties().iterator();
+			Iterator<AbstractField> it = getAllProperties().iterator();
 			AbstractField tmp;
 			while (it.hasNext()) {
 				tmp = it.next();
-				if (tmp.getQualifiedName().equals(qualifiedName)) {
-					content.removeProperty(tmp);
-					content.addProperty(specifiedTypeProperty);
+				if (tmp.getPropertyName().equals(qualifiedName)) {
+					removeProperty(tmp);
+					addProperty(specifiedTypeProperty);
 					return;
 				}
 			}
-			content.addProperty(specifiedTypeProperty);
+			addProperty(specifiedTypeProperty);
 		}
 	}
 
@@ -248,17 +215,17 @@ public class XMPSchema {
 	private void setSpecifiedSimpleTypeProperty(AbstractSimpleProperty prop) {
 		// attribute placement for simple property has been removed
 		// Search in properties to erase
-		Iterator<AbstractField> it = content.getAllProperties().iterator();
+		Iterator<AbstractField> it = getAllProperties().iterator();
 		AbstractField tmp;
 		while (it.hasNext()) {
 			tmp = it.next();
-			if (tmp.getQualifiedName().equals(prop.getQualifiedName())) {
-				content.removeProperty(tmp);
-				content.addProperty(prop);
+			if (tmp.getPropertyName().equals(prop.getPropertyName())) {
+				removeProperty(tmp);
+				addProperty(prop);
 				return;
 			}
 		}
-		content.addProperty(prop);
+		addProperty(prop);
 	}
 
 	/**
@@ -297,7 +264,7 @@ public class XMPSchema {
 	 */
 	public void setTextPropertyValueAsSimple(String simpleName,
 			String propertyValue) {
-		this.setTextPropertyValue(getQualifiedName(simpleName), propertyValue);
+		this.setTextPropertyValue(simpleName, propertyValue);
 	}
 
 	/**
@@ -308,7 +275,7 @@ public class XMPSchema {
 	 * @return The Text Type property wanted
 	 */
 	public TextType getUnqualifiedTextProperty(String name) {
-		String qualifiedName = getQualifiedName(name);
+		String qualifiedName = name;
 		AbstractField prop = getAbstractProperty(qualifiedName);
 		if (prop != null) {
 			if (prop instanceof TextType) {
@@ -368,7 +335,7 @@ public class XMPSchema {
 	 * 
 	 */
 	public Calendar getDatePropertyValueAsSimple(String simpleName) {
-		return this.getDatePropertyValue(getQualifiedName(simpleName));
+		return this.getDatePropertyValue(simpleName);
 	}
 
 	/**
@@ -414,7 +381,7 @@ public class XMPSchema {
 	 *            Passing null will remove the property.
 	 */
 	public void setDatePropertyValueAsSimple(String simpleName, Calendar date) {
-		this.setDatePropertyValue(getQualifiedName(simpleName), date);
+		this.setDatePropertyValue(simpleName, date);
 	}
 
 	/**
@@ -459,7 +426,7 @@ public class XMPSchema {
 	 * @return The value of the property as a boolean.
 	 */
 	public Boolean getBooleanPropertyValueAsSimple(String simpleName) {
-		return this.getBooleanPropertyValue(getQualifiedName(simpleName));
+		return this.getBooleanPropertyValue(simpleName);
 	}
 
 	/**
@@ -508,7 +475,7 @@ public class XMPSchema {
 	 *            will remove the property.
 	 */
 	public void setBooleanPropertyValueAsSimple(String simpleName, Boolean bool) {
-		this.setBooleanPropertyValue(getQualifiedName(simpleName), bool);
+		this.setBooleanPropertyValue(simpleName, bool);
 	}
 
 	/**
@@ -552,7 +519,7 @@ public class XMPSchema {
 	 * @return The value of the property as an integer.
 	 */
 	public Integer getIntegerPropertyValueAsSimple(String simpleName) {
-		return this.getIntegerPropertyValue(getQualifiedName(simpleName));
+		return this.getIntegerPropertyValue(simpleName);
 	}
 
 	/**
@@ -597,7 +564,7 @@ public class XMPSchema {
 	 */
 	public void setIntegerPropertyValueAsSimple(String simpleName,
 			Integer intValue) {
-		this.setIntegerPropertyValue(getQualifiedName(simpleName), intValue);
+		this.setIntegerPropertyValue(simpleName, intValue);
 	}
 
 	/**
@@ -622,8 +589,7 @@ public class XMPSchema {
 	 *            the field value
 	 */
 	private void removeUnqualifiedArrayValue(String arrayName, String fieldValue) {
-		String qualifiedArrayName = getQualifiedName(arrayName);
-		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(arrayName);
 		if (array != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
 			Iterator<AbstractField> it = array.getContainer()
@@ -665,21 +631,20 @@ public class XMPSchema {
 	 *            the string value to add
 	 */
 	public void addBagValueAsSimple(String simpleName, String bagValue) {
-		this.internalAddBagValue(getQualifiedName(simpleName), bagValue);
+		this.internalAddBagValue(simpleName, bagValue);
 	}
 
 	private void internalAddBagValue(String qualifiedBagName, String bagValue) {
-		String[] splittedQualifiedName = qualifiedBagName.split(":");
 		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
-		TextType li = new TextType(metadata,null, "rdf", "li", bagValue);
+		TextType li = new TextType(getMetadata(),null, "rdf", "li", bagValue);
 		if (bag != null) {
 			bag.getContainer().addProperty(li);
 		} else {
-			ArrayProperty newBag = new ArrayProperty(metadata,null,
-					splittedQualifiedName[0], splittedQualifiedName[1],
+			ArrayProperty newBag = new ArrayProperty(getMetadata(),null, 
+					getPrefix(), qualifiedBagName,
 					ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(li);
-			content.addProperty(newBag);
+			addProperty(newBag);
 		}
 	}
 	
@@ -692,7 +657,7 @@ public class XMPSchema {
 	 *            The value to add to the bagList.
 	 */
 	public void addQualifiedBagValue(String simpleName, String bagValue) {
-		internalAddBagValue(getQualifiedName(simpleName), bagValue);
+		internalAddBagValue(simpleName, bagValue);
 	}
 
 	/**
@@ -732,7 +697,7 @@ public class XMPSchema {
 	 * @return All values of the bag property in a list.
 	 */
 	public List<String> getUnqualifiedBagValueList(String bagName) {
-		String qualifiedBagName = getQualifiedName( bagName);
+		String qualifiedBagName = bagName;
 		return getArrayListToString(qualifiedBagName);
 	}
 
@@ -759,7 +724,7 @@ public class XMPSchema {
 	 */
 	public void removeUnqualifiedArrayValue(String arrayName,
 			AbstractField fieldValue) {
-		String qualifiedArrayName = getQualifiedName(arrayName);
+		String qualifiedArrayName = arrayName;
 		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
 		if (array != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
@@ -803,18 +768,17 @@ public class XMPSchema {
 	 *            The value to add to the sequence.
 	 */
 	public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue) {
-		String qualifiedSeqName = getQualifiedName(simpleSeqName);
-		String[] splittedQualifiedName = qualifiedSeqName.split(":");
+		String qualifiedSeqName = simpleSeqName;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
-		TextType li = new TextType(metadata,null, "rdf", "li", seqValue);
+		TextType li = new TextType(getMetadata(),null, "rdf", "li", seqValue);
 		if (seq != null) {
 			seq.getContainer().addProperty(li);
 		} else {
-			ArrayProperty newSeq = new ArrayProperty(metadata,null,
-					splittedQualifiedName[0], splittedQualifiedName[1],
+			ArrayProperty newSeq = new ArrayProperty(getMetadata(),null,
+					getPrefix(), simpleSeqName,
 					ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(li);
-			content.addProperty(newSeq);
+			addProperty(newSeq);
 		}
 	}
 
@@ -829,31 +793,17 @@ public class XMPSchema {
 	 *            The value to add to the bag.
 	 */
 	public void addBagValue(String qualifiedSeqName, AbstractField seqValue) {
-
-		String[] splittedQualifiedName = qualifiedSeqName.split(":");
 		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (bag != null) {
 			bag.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newBag = new ArrayProperty(metadata,null,
-					splittedQualifiedName[0], splittedQualifiedName[1],
+			ArrayProperty newBag = new ArrayProperty(getMetadata(),null,
+					getPrefix(),qualifiedSeqName,
 					ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(seqValue);
-			content.addProperty(newBag);
+			addProperty(newBag);
 		}
 	}
-
-//	/**
-//	 * add a new value to a sequence property using the current prefix.
-//	 * 
-//	 * @param simpleName
-//	 *            the local name of the property
-//	 * @param seqValue
-//	 *            the string value to add
-//	 */
-//	public void addSequenceValueAsSimple(String simpleName, String seqValue) {
-//		this.internalAddSequenceValue(localPrefixSep + simpleName, seqValue);
-//	}
 
 	/**
 	 * Add a new value to a sequence property.
@@ -865,17 +815,16 @@ public class XMPSchema {
 	 *            The value to add to the sequence.
 	 */
 	public void addUnqualifiedSequenceValue(String seqName, AbstractField seqValue) {
-		String qualifiedSeqName = getQualifiedName(seqName);
-		String[] splittedQualifiedName = qualifiedSeqName.split(":");
+		String qualifiedSeqName = seqName;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
 			seq.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newSeq = new ArrayProperty(metadata,null,
-					splittedQualifiedName[0], splittedQualifiedName[1],
+			ArrayProperty newSeq = new ArrayProperty(getMetadata(),null,
+					getPrefix(), seqName,
 					ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(seqValue);
-			content.addProperty(newSeq);
+			addProperty(newSeq);
 		}
 	}
 	
@@ -889,7 +838,7 @@ public class XMPSchema {
 	 *         property does not exist.
 	 */
 	public List<String> getUnqualifiedSequenceValueList(String seqName) {
-		String qualifiedSeqName = getQualifiedName(seqName);
+		String qualifiedSeqName = seqName;
 		return getArrayListToString(qualifiedSeqName);
 	}
 
@@ -903,7 +852,7 @@ public class XMPSchema {
 	 *            The date to remove from the sequence property.
 	 */
 	public void removeUnqualifiedSequenceDateValue(String seqName, Calendar date) {
-		String qualifiedSeqName = getQualifiedName(seqName);
+		String qualifiedSeqName = seqName;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
 			ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
@@ -948,7 +897,7 @@ public class XMPSchema {
 	 *            The date to add to the sequence property.
 	 */
 	public void addUnqualifiedSequenceDateValue(String seqName, Calendar date) {
-		addUnqualifiedSequenceValue(seqName, new DateType(metadata,null, "rdf", "li",
+		addUnqualifiedSequenceValue(seqName, new DateType(getMetadata(),null, "rdf", "li",
 				date));
 	}
 
@@ -964,7 +913,7 @@ public class XMPSchema {
 	 * 
 	 */
 	public List<Calendar> getUnqualifiedSequenceDateValueList(String seqName) {
-		String qualifiedSeqName = getQualifiedName(seqName);
+		String qualifiedSeqName = seqName;
 		List<Calendar> retval = null;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
 		if (seq != null) {
@@ -1046,7 +995,7 @@ public class XMPSchema {
 	 */
 	public void setUnqualifiedLanguagePropertyValue(String name, String language,
 			String value) {
-		String qualifiedName = getQualifiedName(name);
+		String qualifiedName = name;
 		AbstractField property = getAbstractProperty(qualifiedName);
 		ArrayProperty prop;
 		if (property != null) {
@@ -1070,7 +1019,7 @@ public class XMPSchema {
 						} else {
 							prop.getContainer().removeProperty(tmp);
 							TextType langValue;
-							langValue = new TextType(metadata, null,"rdf", "li",
+							langValue = new TextType(getMetadata(), null,"rdf", "li",
 									value);
 
 							langValue.setAttribute(new Attribute(null, "xml",
@@ -1083,22 +1032,22 @@ public class XMPSchema {
 				}
 				// if no definition found, we add a new one
 				TextType langValue;
-				langValue = new TextType(metadata,null, "rdf", "li", value);
+				langValue = new TextType(getMetadata(),null, "rdf", "li", value);
 				langValue.setAttribute(new Attribute(null, "xml", "lang",
 						language));
 				prop.getContainer().addProperty(langValue);
 				reorganizeAltOrder(prop.getContainer());
 			}
 		} else {
-			String[] splittedQualifiedName = qualifiedName.split(":");
-			prop = new ArrayProperty(metadata, null, splittedQualifiedName[0],
-					splittedQualifiedName[1], ArrayProperty.ALTERNATIVE_ARRAY);
+			prop = new ArrayProperty(getMetadata(), null, 
+					getPrefix(), name,
+					ArrayProperty.ALTERNATIVE_ARRAY);
 			TextType langValue;
-			langValue = new TextType(metadata,null, "rdf", "li", value);
+			langValue = new TextType(getMetadata(),null, "rdf", "li", value);
 			langValue
 			.setAttribute(new Attribute(null, "xml", "lang", language));
 			prop.getContainer().addProperty(langValue);
-			content.addProperty(prop);
+			addProperty(prop);
 		}
 	}
 
@@ -1114,9 +1063,8 @@ public class XMPSchema {
 	 * @return The value of the language property.
 	 */
 	public String getUnqualifiedLanguagePropertyValue(String name, String expectedLanguage) {
-		String qualifiedName = getQualifiedName(name);
 		String language = (expectedLanguage!=null)?expectedLanguage:"x-default";
-		AbstractField property = getAbstractProperty(qualifiedName);
+		AbstractField property = getAbstractProperty(name);
 		if (property != null) {
 			if (property instanceof ArrayProperty) {
 				ArrayProperty prop = (ArrayProperty) property;
@@ -1136,7 +1084,7 @@ public class XMPSchema {
 				return null;
 			} else {
 				throw new IllegalArgumentException("The property '"
-						+ qualifiedName + "' is not of Lang Alt type");
+						+ name + "' is not of Lang Alt type");
 			}
 		}
 		return null;
@@ -1155,10 +1103,9 @@ public class XMPSchema {
 	 *         if none have been defined.
 	 */
 	public List<String> getUnqualifiedLanguagePropertyLanguagesValue(String name) {
-		String qualifiedName = getQualifiedName(name);
 		List<String> retval = new ArrayList<String>();
 
-		AbstractField property = getAbstractProperty(qualifiedName);
+		AbstractField property = getAbstractProperty(name);
 		if (property != null) {
 			if (property instanceof ArrayProperty) {
 				ArrayProperty prop = (ArrayProperty) property;
@@ -1178,7 +1125,7 @@ public class XMPSchema {
 				return retval;
 			} else {
 				throw new IllegalArgumentException("The property '"
-						+ qualifiedName + "' is not of Lang Alt type");
+						+ name + "' is not of Lang Alt type");
 			}
 		}
 		// no property with that name
@@ -1199,27 +1146,26 @@ public class XMPSchema {
 			throw new IOException("Can only merge schemas of the same type.");
 		}
 
-		Iterator<Attribute> itAtt = xmpSchema.content.getAllAttributes()
+		Iterator<Attribute> itAtt = xmpSchema.getContainer().getAllAttributes()
 				.iterator();
 		Attribute att;
 		while (itAtt.hasNext()) {
 			att = itAtt.next();
 			if (att.getPrefix().equals(getPrefix())) {
-				content.setAttribute(att);
+				getContainer().setAttribute(att);
 			}
 		}
 
 		String analyzedPropQualifiedName;
-		Iterator<AbstractField> itProp = xmpSchema.content.getAllProperties()
+		Iterator<AbstractField> itProp = xmpSchema.getContainer().getAllProperties()
 				.iterator();
 		AbstractField prop;
 		while (itProp.hasNext()) {
 			prop = itProp.next();
 			if (prop.getPrefix().equals(getPrefix())) {
 				if (prop instanceof ArrayProperty) {
-					analyzedPropQualifiedName = prop.getQualifiedName();
-					Iterator<AbstractField> itActualEmbeddedProperties = content
-							.getAllProperties().iterator();
+					analyzedPropQualifiedName = prop.getPropertyName();
+					Iterator<AbstractField> itActualEmbeddedProperties = getAllProperties().iterator();
 					AbstractField tmpEmbeddedProperty;
 
 					Iterator<AbstractField> itNewValues;
@@ -1233,7 +1179,7 @@ public class XMPSchema {
 					while (itActualEmbeddedProperties.hasNext()) {
 						tmpEmbeddedProperty = itActualEmbeddedProperties.next();
 						if (tmpEmbeddedProperty instanceof ArrayProperty) {
-							if (tmpEmbeddedProperty.getQualifiedName().equals(
+							if (tmpEmbeddedProperty.getPropertyName().equals(
 									analyzedPropQualifiedName)) {
 								itNewValues = ((ArrayProperty) prop)
 										.getContainer().getAllProperties()
@@ -1267,7 +1213,7 @@ public class XMPSchema {
 						}
 					}
 				} else {
-					content.addProperty(prop);
+					addProperty(prop);
 				}
 			}
 		}
@@ -1285,13 +1231,12 @@ public class XMPSchema {
 	 */
 	public List<AbstractField> getUnqualifiedArrayList(String name)
 			throws BadFieldValueException {
-		String qualifiedName = getQualifiedName(name);
 		ArrayProperty array = null;
-		Iterator<AbstractField> itProp = content.getAllProperties().iterator();
+		Iterator<AbstractField> itProp = getAllProperties().iterator();
 		AbstractField tmp;
 		while (itProp.hasNext()) {
 			tmp = itProp.next();
-			if (tmp.getQualifiedName().equals(qualifiedName)) {
+			if (tmp.getPropertyName().equals(name)) {
 				if (tmp instanceof ArrayProperty) {
 					array = (ArrayProperty) tmp;
 					break;
@@ -1315,30 +1260,12 @@ public class XMPSchema {
 	}
 
 	/**
-	 * Get PropertyContainer of this Schema
-	 * 
-	 * @return the ComplexProperty which represents the schema content
-	 */
-	public ComplexPropertyContainer getContent() {
-		return content;
-	}
-
-	/**
 	 * Get All attributes defined for this schema
 	 * 
 	 * @return Attributes list defined for this schema
 	 */
 	public List<Attribute> getAllAttributes() {
-		return content.getAllAttributes();
-	}
-
-	/**
-	 * Get All properties defined in this schema
-	 * 
-	 * @return Properties list defined in this schema
-	 */
-	public List<AbstractField> getAllProperties() {
-		return content.getAllProperties();
+		return getContainer().getAllAttributes();
 	}
 
 	/**
@@ -1348,80 +1275,18 @@ public class XMPSchema {
 	 *            The new Attribute to set
 	 */
 	public void setAttribute(Attribute attr) {
-		content.setAttribute(attr);
-	}
-
-	/**
-	 * Add a new Property to this schema
-	 * 
-	 * @param obj
-	 *            The new property to add
-	 */
-	public void addProperty(AbstractField obj) {
-		content.addProperty(obj);
-	}
-
-	/**
-	 * get a Property with its name, using the current prefix
-	 * 
-	 * @param simpleName
-	 *            the local name of the property
-	 * @return The property wanted
-	 */
-	protected AbstractField getPropertyAsSimple(String simpleName) {
-		return getProperty(getQualifiedName(simpleName));
-	}
-
-	/**
-	 * get a Property with its qualified Name (with its prefix)
-	 * 
-	 * @param qualifiedName
-	 *            The full qualified name of the property wanted
-	 * @return the property wanted
-	 */
-	// TODO should become private (and then disappear)
-	protected AbstractField getProperty(String qualifiedName) {
-		Iterator<AbstractField> it = getAllProperties().iterator();
-		AbstractField tmp;
-		while (it.hasNext()) {
-			tmp = it.next();
-			if (tmp.getQualifiedName().equals(qualifiedName)) {
-				return tmp;
-			}
-		}
-		return null;
-	}
-
-	protected AbstractField getUnqualifiedProperty (String simpleName) {
-		return getProperty(getQualifiedName(simpleName));
+		getContainer().setAttribute(attr);
 	}
 	
-	/**
-	 * Return local prefix
-	 * 
-	 * @return current prefix fixed for this schema
-	 */
-	public String getLocalPrefix() {
-		return this.localPrefix;
-	}
-
 	protected AbstractSimpleProperty instanciateSimple (String param, Object value) {
-		TypeMapping tm = metadata.getTypeMapping();
+		TypeMapping tm = getMetadata().getTypeMapping();
 		return tm.instanciateSimpleField(
 				getClass(), 
-				metadata, 
+				getMetadata(), 
 				null, 
-				localPrefix, 
+				getPrefix(), 
 				param, 
 				value);
 	}
 
-	public XMPMetadata getMetadata () {
-		return this.metadata;
-	}
-
-	public String getLocalNSUri() {
-		return localNSUri;
-	}
-	
 }

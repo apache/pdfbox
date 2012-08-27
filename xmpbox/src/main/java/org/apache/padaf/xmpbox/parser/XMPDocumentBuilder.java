@@ -204,7 +204,7 @@ public class XMPDocumentBuilder {
 			throws XmpRequiredPropertyException,XmpUnknownValueTypeException,XmpUnexpectedNamespacePrefixException {
 		List<XMPSchema> schems = meta.getAllSchemas();
 		for (XMPSchema xmpSchema : schems) {
-			if (xmpSchema.getNamespaceValue().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
+			if (xmpSchema.getNamespace().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
 				// ensure the prefix is the preferred one (cannot use other definition)
 				if (!xmpSchema.getPrefix().equals(PDFAExtensionSchema.PDFAEXTENSION)) {
 					throw new XmpUnexpectedNamespacePrefixException("Found invalid prefix for PDF/A extension, found '"+
@@ -594,13 +594,13 @@ public class XMPDocumentBuilder {
 	 */
 	private boolean addAttributeAsProperty(XMPMetadata metadata, XMPSchema schema, Attribute attr) {
 		boolean added = false;
-		String schemaNamespace = schema.getNamespaceValue();
+		String schemaNamespace = schema.getNamespace();
 		String prefix = attr.getPrefix() != null ? attr.getPrefix() : schema.getPrefix();
 		String type = metadata.getNsMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
 
 		if (type != null) {
 			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
-			schema.getContent().addProperty(prop);
+			schema.addProperty(prop);
 			added = true;
 		}
 		return added;
@@ -904,15 +904,15 @@ public class XMPDocumentBuilder {
 		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
 		// found type, manage it
 		if (type.equals("Lang Alt")) {
-			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getTypeDescription("Text"), schema.getContent());
+			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getTypeDescription("Text"), schema.getContainer());
 		} else if (typeMapping.isSimpleType(type)) {
 			TypeDescription<?> tclass = typeMapping.getTypeDescription(type);
-			parseSimpleProperty(metadata, propertyName, tclass, schema.getContent());
+			parseSimpleProperty(metadata, propertyName, tclass, schema.getContainer());
 		} else if (typeMapping.isStructuredType(type)) {
 			TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(type);
 			StructuredPropertyParser parser = new StructuredPropertyParser(
 					this, tclass);
-			parseStructuredProperty(metadata, parser, schema.getContent());
+			parseStructuredProperty(metadata, parser, schema.getContainer());
 		} else if (typeMapping.getArrayType(type)!=null) {
 			// retrieve array type and content type
 			int pos = type.indexOf(' ');
@@ -929,12 +929,12 @@ public class XMPDocumentBuilder {
 						propertyName, 
 						arrayType, 
 						typeMapping.getTypeDescription(typeInArray),
-						schema.getContent());
+						schema.getContainer());
 			} else if (typeMapping.isStructuredType(typeInArray)) {
 				// array of structured
 				StructuredPropertyParser parser = new StructuredPropertyParser(
 						this, (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(typeInArray));
-				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContent());
+				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContainer());
 			} else {
 				// invalid case
 				throw new XmpUnknownPropertyTypeException("Unknown type : "+type);

@@ -99,7 +99,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return owners property
 	 */
 	public ArrayProperty getOwnersProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(OWNER);
+		return (ArrayProperty) getProperty(OWNER);
 	}
 
 	/**
@@ -138,7 +138,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return Marked property
 	 */
 	public BooleanType getMarkedProperty() {
-		return (BooleanType) getUnqualifiedProperty(MARKED);
+		return (BooleanType) getProperty(MARKED);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return marked value
 	 */
 	public Boolean getMarked() {
-		BooleanType bt = ((BooleanType) getUnqualifiedProperty(MARKED));
+		BooleanType bt = ((BooleanType) getProperty(MARKED));
 		return bt == null ? null : bt.getValue();
 	}
 
@@ -191,7 +191,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return usageterms property
 	 */
 	public ArrayProperty getUsageTermsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(USAGETERMS);
+		return (ArrayProperty) getProperty(USAGETERMS);
 	}
 
 	/**
@@ -230,7 +230,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return Webstatement URL property
 	 */
 	public TextType getWebStatementProperty() {
-		return ((TextType) getUnqualifiedProperty(WEBSTATEMENT));
+		return ((TextType) getProperty(WEBSTATEMENT));
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return webStatement URL value
 	 */
 	public String getWebStatement() {
-		TextType tt = ((TextType) getUnqualifiedProperty(WEBSTATEMENT));
+		TextType tt = ((TextType) getProperty(WEBSTATEMENT));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -270,7 +270,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return certificate url property
 	 */
 	public TextType getCertificateProperty() {
-		return ((TextType) getUnqualifiedProperty(CERTIFICATE));
+		return ((TextType) getProperty(CERTIFICATE));
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @return certificate URL value
 	 */
 	public String getCertificate() {
-		TextType tt = ((TextType) getUnqualifiedProperty(CERTIFICATE));
+		TextType tt = ((TextType) getProperty(CERTIFICATE));
 		return tt == null ? null : tt.getStringValue();
 	}
 

@@ -39,7 +39,7 @@ import org.apache.padaf.xmpbox.type.TextType;
 public class PDFAIdentificationSchema extends XMPSchema {
 
 	public static final String IDPREFIX = "pdfaid";
-	public static final String IDPREFIXSEP = "pdfaid:";
+
 	public static final String IDURI = "http://www.aiim.org/pdfa/ns/id/";
 
 	@PropertyType(propertyType = "Integer")
@@ -91,7 +91,6 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The version Id value to set
 	 */
 	public void setPartValueWithInt(int value) {
-//		IntegerType part = new IntegerType(metadata, IDPREFIX, PART, value);
 		IntegerType part = (IntegerType)instanciateSimple(PART, value);
 		addProperty(part);
 	}
@@ -188,7 +187,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 			return null;
 		} else {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(IDPREFIXSEP + PART)) {
+				if (attribute.getQualifiedName().equals(PART)) {
 					return Integer.valueOf(attribute.getValue());
 				}
 			}
@@ -203,7 +202,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @return Part property
 	 */
 	public IntegerType getPartProperty() {
-		AbstractField tmp = getProperty(IDPREFIXSEP + PART);
+		AbstractField tmp = getProperty(PART);
 		if (tmp != null) {
 			if (tmp instanceof IntegerType) {
 				return (IntegerType) tmp;
@@ -218,7 +217,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @return Amendment value
 	 */
 	public String getAmendment() {
-		AbstractField tmp = getProperty(IDPREFIXSEP + AMD);
+		AbstractField tmp = getProperty(AMD);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return ((TextType) tmp).getStringValue();
@@ -233,7 +232,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @return Amendment property
 	 */
 	public TextType getAmdProperty() {
-		AbstractField tmp = getProperty(IDPREFIXSEP + AMD);
+		AbstractField tmp = getProperty(AMD);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return (TextType) tmp;
@@ -251,7 +250,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 		TextType tmp = getAmdProperty();
 		if (tmp==null) {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(IDPREFIXSEP + AMD)) {
+				if (attribute.getQualifiedName().equals(AMD)) {
 					return attribute.getValue();
 				}
 			}
@@ -267,7 +266,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 * @return conformance property
 	 */
 	public TextType getConformanceProperty() {
-		AbstractField tmp = getProperty(IDPREFIXSEP + CONFORMANCE);
+		AbstractField tmp = getProperty(CONFORMANCE);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return (TextType) tmp;
@@ -285,7 +284,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 		TextType tt = getConformanceProperty();
 		if (tt==null) {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(IDPREFIXSEP + CONFORMANCE)) {
+				if (attribute.getQualifiedName().equals(CONFORMANCE)) {
 					return attribute.getValue();
 				}
 			}

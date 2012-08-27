@@ -77,7 +77,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setKeywords(String value) {
 		TextType keywords;
-		keywords = new TextType(getMetadata(), null,getLocalPrefix(), KEYWORDS, value);
+		keywords = new TextType(getMetadata(), null,getPrefix(), KEYWORDS, value);
 		addProperty(keywords);
 	}
 
@@ -99,7 +99,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setPDFVersion(String value) {
 		TextType version;
-		version = new TextType(getMetadata(), null,getLocalPrefix(), PDF_VERSION, value);
+		version = new TextType(getMetadata(), null,getPrefix(), PDF_VERSION, value);
 		addProperty(version);
 
 	}
@@ -122,7 +122,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setProducer(String value) {
 		TextType producer;
-		producer = new TextType(getMetadata(),null, getLocalPrefix(), PRODUCER, value);
+		producer = new TextType(getMetadata(),null, getPrefix(), PRODUCER, value);
 		addProperty(producer);
 	}
 
@@ -142,7 +142,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property object
 	 */
 	public TextType getKeywordsProperty() {
-		AbstractField tmp = getUnqualifiedProperty(KEYWORDS);
+		AbstractField tmp = getProperty(KEYWORDS);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return (TextType) tmp;
@@ -157,7 +157,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property value
 	 */
 	public String getKeywords() {
-		AbstractField tmp = getUnqualifiedProperty(KEYWORDS);
+		AbstractField tmp = getProperty(KEYWORDS);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return ((TextType) tmp).getStringValue();
@@ -172,7 +172,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property object
 	 */
 	public TextType getPDFVersionProperty() {
-		AbstractField tmp = getUnqualifiedProperty(PDF_VERSION);
+		AbstractField tmp = getProperty(PDF_VERSION);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return (TextType) tmp;
@@ -187,7 +187,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property value
 	 */
 	public String getPDFVersion() {
-		AbstractField tmp = getUnqualifiedProperty(PDF_VERSION);
+		AbstractField tmp = getProperty(PDF_VERSION);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return ((TextType) tmp).getStringValue();
@@ -202,7 +202,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property object
 	 */
 	public TextType getProducerProperty() {
-		AbstractField tmp = getUnqualifiedProperty(PRODUCER);
+		AbstractField tmp = getProperty(PRODUCER);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return (TextType) tmp;
@@ -217,7 +217,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 * @return The property value
 	 */
 	public String getProducer() {
-		AbstractField tmp = getUnqualifiedProperty(PRODUCER);
+		AbstractField tmp = getProperty(PRODUCER);
 		if (tmp != null) {
 			if (tmp instanceof TextType) {
 				return ((TextType) tmp).getStringValue();

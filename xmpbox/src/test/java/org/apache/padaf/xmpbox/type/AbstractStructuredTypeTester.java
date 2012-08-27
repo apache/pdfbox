@@ -94,21 +94,9 @@ public abstract class AbstractStructuredTypeTester {
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
 		// check property type
-		AbstractSimpleProperty asp = getStructured().getProperty(fieldName);
+		AbstractSimpleProperty asp = (AbstractSimpleProperty) getStructured().getProperty(fieldName);
 		Assert.assertEquals(td.getTypeClass(),asp.getClass());
 	}
-
-	
-//	protected List<Field> getXmpFields () {
-//		Field [] fields = clz.getFields();
-//		List<Field> result = new ArrayList<Field>(fields.length);
-//		for (Field field : fields) {
-//			if (field.getAnnotation(PropertyType.class)!=null) {
-//				result.add(field);
-//			}
-//		}
-//		return result;
-//	}
 
     @Test
     public void testSetter () throws Exception {
@@ -118,7 +106,7 @@ public abstract class AbstractStructuredTypeTester {
     	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
     	set.invoke(getStructured(), new Object [] {value});
     	// check property set
-    	Assert.assertEquals(value, getStructured().getProperty(fieldName).getValue());
+    	Assert.assertEquals(value, ((AbstractSimpleProperty)getStructured().getProperty(fieldName)).getValue());
     	// check getter
     	Method get = clz.getMethod(TypeTestingHelper.calculateSimpleGetter(fieldName), new Class[0]);
     	Object result = get.invoke(getStructured(), new Object [0]);

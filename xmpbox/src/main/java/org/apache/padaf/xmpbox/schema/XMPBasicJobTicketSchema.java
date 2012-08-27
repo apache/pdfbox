@@ -50,7 +50,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
         super(metadata, ownPrefix, JOB_TICKET_URI);
-        getContent().setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
+        getContainer().setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
                 JobType.PREFERED_PREFIX, JobType.ELEMENT_NS));
 
     }
@@ -70,7 +70,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     public void addJob (JobType job) {
     	// create bag if not existing
         if (bagJobs == null) {
-            bagJobs = new ArrayProperty(getMetadata(), null, getLocalPrefix(), JOB_REF,
+            bagJobs = new ArrayProperty(getMetadata(), null, getPrefix(), JOB_REF,
                     ArrayProperty.UNORDERED_ARRAY);
             addProperty(bagJobs);
         }

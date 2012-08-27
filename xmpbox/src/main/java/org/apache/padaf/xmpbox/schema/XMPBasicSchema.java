@@ -124,7 +124,7 @@ public class XMPBasicSchema extends XMPSchema {
 	public void addThumbnails(Integer height, Integer width, String format,
 			String img) {
 		if (altThumbs == null) {
-			altThumbs = new ArrayProperty(getMetadata(), null, getLocalPrefix(), THUMBNAILS,
+			altThumbs = new ArrayProperty(getMetadata(), null, getPrefix(), THUMBNAILS,
 					ArrayProperty.ALTERNATIVE_ARRAY);
 			addProperty(altThumbs);
 		}
@@ -346,7 +346,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the advisory property
 	 */
 	public ArrayProperty getAdvisoryProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(ADVISORY);
+		return (ArrayProperty) getProperty(ADVISORY);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the base url property
 	 */
 	public TextType getBaseURLProperty() {
-		return (TextType) getUnqualifiedProperty(BASEURL);
+		return (TextType) getProperty(BASEURL);
 	}
 
 	/**
@@ -385,7 +385,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the base url value
 	 */
 	public String getBaseURL() {
-		TextType tt = ((TextType) getUnqualifiedProperty(BASEURL));
+		TextType tt = ((TextType) getProperty(BASEURL));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -395,7 +395,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the CreateDate property
 	 */
 	public DateType getCreateDateProperty() {
-		return (DateType) getUnqualifiedProperty(CREATEDATE);
+		return (DateType) getProperty(CREATEDATE);
 	}
 
 	/**
@@ -404,7 +404,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the CreateDate value
 	 */
 	public Calendar getCreateDate() {
-		DateType createDate = (DateType) getUnqualifiedProperty(CREATEDATE);
+		DateType createDate = (DateType) getProperty(CREATEDATE);
 		if (createDate != null) {
 			return createDate.getValue();
 		}
@@ -417,7 +417,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the CreationTool property
 	 */
 	public TextType getCreatorToolProperty() {
-		return (TextType) getUnqualifiedProperty(CREATORTOOL);
+		return (TextType) getProperty(CREATORTOOL);
 	}
 
 	/**
@@ -426,7 +426,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the CreationTool value
 	 */
 	public String getCreatorTool() {
-		TextType tt = ((TextType) getUnqualifiedProperty(CREATORTOOL));
+		TextType tt = ((TextType) getProperty(CREATORTOOL));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -436,7 +436,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the Identifier property
 	 */
 	public ArrayProperty getIdentifiersProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(IDENTIFIER);
+		return (ArrayProperty) getProperty(IDENTIFIER);
 	}
 
 	/**
@@ -454,7 +454,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the label property
 	 */
 	public TextType getLabelProperty() {
-		return (TextType) getUnqualifiedProperty(LABEL);
+		return (TextType) getProperty(LABEL);
 	}
 
 	/**
@@ -463,7 +463,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the label value
 	 */
 	public String getLabel() {
-		TextType tt = ((TextType) getUnqualifiedProperty(LABEL));
+		TextType tt = ((TextType) getProperty(LABEL));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -473,7 +473,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the MetadataDate property
 	 */
 	public DateType getMetadataDateProperty() {
-		return (DateType) getUnqualifiedProperty(METADATADATE);
+		return (DateType) getProperty(METADATADATE);
 	}
 
 	/**
@@ -482,7 +482,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the MetadataDate value
 	 */
 	public Calendar getMetadataDate() {
-		DateType dt = ((DateType) getUnqualifiedProperty(METADATADATE));
+		DateType dt = ((DateType) getProperty(METADATADATE));
 		return dt == null ? null : dt.getValue();
 	}
 
@@ -492,7 +492,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the ModifyDate property
 	 */
 	public DateType getModifyDateProperty() {
-		return (DateType) getUnqualifiedProperty(MODIFYDATE);
+		return (DateType) getProperty(MODIFYDATE);
 	}
 
 	/**
@@ -501,7 +501,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the ModifyDate value
 	 */
 	public Calendar getModifyDate() {
-		DateType modifyDate = (DateType) getUnqualifiedProperty(MODIFYDATE);
+		DateType modifyDate = (DateType) getProperty(MODIFYDATE);
 		if (modifyDate != null) {
 			return modifyDate.getValue();
 		}
@@ -515,7 +515,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the Nickname property
 	 */
 	public TextType getNicknameProperty() {
-		return (TextType) getUnqualifiedProperty(NICKNAME);
+		return (TextType) getProperty(NICKNAME);
 	}
 
 	/**
@@ -524,7 +524,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the Nickname value
 	 */
 	public String getNickname() {
-		TextType tt = ((TextType) getUnqualifiedProperty(NICKNAME));
+		TextType tt = ((TextType) getProperty(NICKNAME));
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -534,7 +534,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the Rating property
 	 */
 	public IntegerType getRatingProperty() {
-		return ((IntegerType) getUnqualifiedProperty(RATING));
+		return ((IntegerType) getProperty(RATING));
 	}
 
 	/**
@@ -543,7 +543,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 * @return the Rating value
 	 */
 	public Integer getRating() {
-		IntegerType it = ((IntegerType) getUnqualifiedProperty(RATING));
+		IntegerType it = ((IntegerType) getProperty(RATING));
 		return it == null ? null : it.getValue();
 	}
 

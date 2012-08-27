@@ -57,16 +57,16 @@ public class AdobePDFErrorsTest {
 
 		schem.setProducer(producer);
 
-		Assert.assertEquals("pdf:Keywords", schem.getKeywordsProperty()
-				.getQualifiedName());
+		Assert.assertEquals("Keywords", schem.getKeywordsProperty()
+				.getPropertyName());
 		Assert.assertEquals(keywords, schem.getKeywords());
 
-		Assert.assertEquals("pdf:PDFVersion", schem.getPDFVersionProperty()
-				.getQualifiedName());
+		Assert.assertEquals("PDFVersion", schem.getPDFVersionProperty()
+				.getPropertyName());
 		Assert.assertEquals(pdfVersion, schem.getPDFVersion());
 
-		Assert.assertEquals("pdf:Producer", schem.getProducerProperty()
-				.getQualifiedName());
+		Assert.assertEquals("Producer", schem.getProducerProperty()
+				.getPropertyName());
 		Assert.assertEquals(producer, schem.getProducer());
 
 		// check retrieve this schema in metadata

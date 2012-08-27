@@ -83,16 +83,6 @@ public abstract class AbstractField {
 	}
 
 	/**
-	 * Get the qualified Name of this entity (prefix+localName)
-	 * 
-	 * @return the full qualified name
-	 */
-	public String getQualifiedName() {
-		return prefix + ":" + propertyName;
-
-	}
-
-	/**
 	 * Get the propertyName (or localName)
 	 * 
 	 * @return the local Name
@@ -163,7 +153,7 @@ public abstract class AbstractField {
 
 	}
 
-	public XMPMetadata getMetadata() {
+	public final XMPMetadata getMetadata() {
 		return metadata;
 	}
 

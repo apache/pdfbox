@@ -99,7 +99,7 @@ public abstract class AbstractSchemaTester {
 		AbstractSimpleProperty property = getSchema().instanciateSimple(fieldName, value);
 		getSchema().addProperty(property);
 		String qn = getPropertyQualifiedName(fieldName);
-		Assert.assertNotNull(getSchema().getProperty(qn));
+		Assert.assertNotNull(getSchema().getProperty(fieldName));
 		// check other properties not modified
 		List<Field> fields = TypeTestingHelper.getXmpFields(getSchemaClass());
 		for (Field field : fields) {
@@ -116,9 +116,6 @@ public abstract class AbstractSchemaTester {
 		if (cardinality==Cardinality.Simple) return;
 		// only test array properties
 		TypeDescription td =typeMapping.getTypeDescription(type);
-		if (td==null) {
-			System.err.println(">>>>>>>>>>>>> "+type);
-		}
 		Object value = TypeTestingHelper.getJavaValue(td);
 		AbstractSimpleProperty property = getSchema().instanciateSimple(fieldName, value);
 		switch (cardinality) {
@@ -126,13 +123,13 @@ public abstract class AbstractSchemaTester {
 			getSchema().addUnqualifiedSequenceValue(property.getPropertyName(), property);
 			break;
 		case Bag:
-			getSchema().addBagValue(property.getQualifiedName(), property);
+			getSchema().addBagValue(property.getPropertyName(), property);
 			break;
 		default :
 			throw new Exception ("Unexpected case in test : "+cardinality.name());
 		}
 		String qn = getPropertyQualifiedName(fieldName);
-		Assert.assertNotNull(getSchema().getProperty(qn));
+		Assert.assertNotNull(getSchema().getProperty(fieldName));
 		// check other properties not modified
 		List<Field> fields = TypeTestingHelper.getXmpFields(getSchemaClass());
 		for (Field field : fields) {
@@ -152,12 +149,12 @@ public abstract class AbstractSchemaTester {
     	TypeDescription td = typeMapping.getTypeDescription(type);
     	Object value = TypeTestingHelper.getJavaValue(td);
     	AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(
-    			xmp, getSchema().getNamespaceValue(), 
-    			getSchema().getLocalPrefix(), fieldName, value, type);
+    			xmp, getSchema().getNamespace(), 
+    			getSchema().getPrefix(), fieldName, value, type);
     	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {td.getTypeClass()} );
     	set.invoke(getSchema(), new Object [] {asp});
     	// check property set
-    	AbstractSimpleProperty stored = (AbstractSimpleProperty)getSchema().getProperty(getPropertyQualifiedName(fieldName));
+    	AbstractSimpleProperty stored = (AbstractSimpleProperty)getSchema().getProperty(fieldName);
     	Assert.assertEquals(value, stored.getValue());
     	// check getter
     	String getter = TypeTestingHelper.calculateSimpleGetter(fieldName)+"Property";
@@ -209,7 +206,7 @@ public abstract class AbstractSchemaTester {
 	
 	protected String getPropertyQualifiedName (String name) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getSchema().getLocalPrefix()).append(":").append(name);
+		sb.append(getSchema().getPrefix()).append(":").append(name);
 		return sb.toString();
 	}
 	
