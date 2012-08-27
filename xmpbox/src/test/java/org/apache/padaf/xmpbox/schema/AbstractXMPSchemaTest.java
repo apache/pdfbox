@@ -263,7 +263,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		BooleanType bt = new BooleanType(metadata,null, schema.getLocalPrefix(),
+		BooleanType bt = new BooleanType(metadata,null, schema.getPrefix(),
 				property, value);
 		Method setMethod = schemaClass.getMethod(setName, BooleanType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -278,7 +278,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		DateType dt = new DateType(metadata, null, schema.getLocalPrefix(), property,
+		DateType dt = new DateType(metadata, null, schema.getPrefix(), property,
 				value);
 		Method setMethod = schemaClass.getMethod(setName, DateType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -292,7 +292,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		IntegerType it = new IntegerType(metadata, null,schema.getLocalPrefix(),
+		IntegerType it = new IntegerType(metadata, null,schema.getPrefix(),
 				property, value);
 		Method setMethod = schemaClass.getMethod(setName, IntegerType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -306,7 +306,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		TextType tt = new TextType(metadata, null,schema.getLocalPrefix(), property,
+		TextType tt = new TextType(metadata, null,schema.getPrefix(), property,
 				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, TextType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -321,7 +321,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		URIType tt = new URIType(metadata, null,schema.getLocalPrefix(), property,
+		URIType tt = new URIType(metadata, null,schema.getPrefix(), property,
 				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, URIType.class);
 		Method getMethod = schemaClass.getMethod(getName);

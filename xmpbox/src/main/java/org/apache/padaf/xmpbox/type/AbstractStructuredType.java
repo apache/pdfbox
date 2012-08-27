@@ -48,7 +48,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
 	
 	protected String getPropertyValueAsString (String fieldName) {
-		AbstractSimpleProperty absProp = getProperty(fieldName);
+		AbstractSimpleProperty absProp = (AbstractSimpleProperty)getProperty(fieldName);
 		if (absProp == null) {
 			return null;
 		} else {

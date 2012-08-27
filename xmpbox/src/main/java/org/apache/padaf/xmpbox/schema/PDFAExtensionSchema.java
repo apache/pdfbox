@@ -80,7 +80,7 @@ public class PDFAExtensionSchema extends XMPSchema {
 	 * @return the list of subject values
 	 */
 	public ArrayProperty getSchemasProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(SCHEMAS);
+		return (ArrayProperty) getProperty(SCHEMAS);
 	}
  
 

@@ -91,7 +91,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return ResourceRef property
 	 */
 	public ResourceRefType getResourceRefProperty() {
-		return (ResourceRefType)getUnqualifiedProperty(DERIVED_FROM);
+		return (ResourceRefType)getProperty(DERIVED_FROM);
 	}
 
 		
@@ -129,7 +129,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return DocumentId property
 	 */
 	public TextType getDocumentIDProperty() {
-		return (TextType) getUnqualifiedProperty(DOCUMENTID);
+		return (TextType) getProperty(DOCUMENTID);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return Manager property
 	 */
 	public TextType getManagerProperty() {
-		return (TextType) getUnqualifiedProperty(MANAGER);
+		return (TextType) getProperty(MANAGER);
 	}
 
 	/**
@@ -221,7 +221,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return ManageTo property
 	 */
 	public TextType getManageToProperty() {
-		return (TextType) getUnqualifiedProperty(MANAGETO);
+		return (TextType) getProperty(MANAGETO);
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return ManageUI property
 	 */
 	public TextType getManageUIProperty() {
-		return (TextType) getUnqualifiedProperty(MANAGEUI);
+		return (TextType) getProperty(MANAGEUI);
 	}
 
 	/**
@@ -313,7 +313,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return ManagerVariant property
 	 */
 	public TextType getManagerVariantProperty() {
-		return (TextType) getUnqualifiedProperty(MANAGERVARIANT);
+		return (TextType) getProperty(MANAGERVARIANT);
 	}
 
 	/**
@@ -359,7 +359,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return InstanceId property
 	 */
 	public TextType getInstanceIDProperty() {
-		return (TextType) getUnqualifiedProperty(INSTANCEID);
+		return (TextType) getProperty(INSTANCEID);
 	}
 
 	/**
@@ -405,7 +405,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return ManageFrom Property
 	 */
 	public ResourceRefType getManagedFromProperty() {
-		return (ResourceRefType) getUnqualifiedProperty(MANAGED_FROM);
+		return (ResourceRefType) getProperty(MANAGED_FROM);
 	}
 
 //	/**
@@ -451,7 +451,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return OriginalDocumentId property
 	 */
 	public TextType getOriginalDocumentIDProperty() {
-		return (TextType) getUnqualifiedProperty(ORIGINALDOCUMENTID);
+		return (TextType) getProperty(ORIGINALDOCUMENTID);
 	}
 
 	/**
@@ -497,7 +497,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return RenditionClass property
 	 */
 	public TextType getRenditionClassProperty() {
-		return (TextType) getUnqualifiedProperty(RENDITIONCLASS);
+		return (TextType) getProperty(RENDITIONCLASS);
 	}
 
 	/**
@@ -543,7 +543,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return RenditionParams property
 	 */
 	public TextType getRenditionParamsProperty() {
-		return (TextType) getUnqualifiedProperty(RENDITIONPARAMS);
+		return (TextType) getProperty(RENDITIONPARAMS);
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return VersionId property
 	 */
 	public TextType getVersionIDProperty() {
-		return (TextType) getUnqualifiedProperty(VERSIONID);
+		return (TextType) getProperty(VERSIONID);
 	}
 
 	/**
@@ -624,7 +624,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return version property to set
 	 */
 	public ArrayProperty getVersionsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(VERSIONS);
+		return (ArrayProperty) getProperty(VERSIONS);
 	}
 
 	// --------------------------------------- History
@@ -649,7 +649,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return History Property
 	 */
 	public ArrayProperty getHistoryProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(HISTORY);
+		return (ArrayProperty) getProperty(HISTORY);
 	}
 
 	/**
@@ -683,7 +683,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @return Ingredients property
 	 */
 	public ArrayProperty getIngredientsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(INGREDIENTS);
+		return (ArrayProperty) getProperty(INGREDIENTS);
 	}
 
 	/**

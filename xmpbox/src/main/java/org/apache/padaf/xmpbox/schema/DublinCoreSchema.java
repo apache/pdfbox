@@ -132,7 +132,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setCoverage(String text) {
-		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), COVERAGE, text));
+		addProperty(new TextType(getMetadata(), null, getPrefix(), COVERAGE, text));
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setFormat(String mimeType) {
-		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), FORMAT, mimeType));
+		addProperty(new TextType(getMetadata(), null, getPrefix(), FORMAT, mimeType));
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setIdentifier(String text) {
-		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), IDENTIFIER, text));
+		addProperty(new TextType(getMetadata(), null, getPrefix(), IDENTIFIER, text));
 	}
 
 	/**
@@ -326,7 +326,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setSource(String text) {
-		addProperty(new TextType(getMetadata(), null, getLocalPrefix(), SOURCE, text));
+		addProperty(new TextType(getMetadata(), null, getPrefix(), SOURCE, text));
 	}
 
 	/**
@@ -413,7 +413,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Contributor property
 	 */
 	public ArrayProperty getContributorsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(CONTRIBUTOR);
+		return (ArrayProperty) getProperty(CONTRIBUTOR);
 	}
 
 	/**
@@ -432,7 +432,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Coverage property
 	 */
 	public TextType getCoverageProperty() {
-		return (TextType) getUnqualifiedProperty(COVERAGE);
+		return (TextType) getProperty(COVERAGE);
 	}
 
 	/**
@@ -441,7 +441,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Coverage value
 	 */
 	public String getCoverage() {
-		TextType tt = (TextType) getUnqualifiedProperty(COVERAGE);
+		TextType tt = (TextType) getProperty(COVERAGE);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -451,7 +451,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Creator property
 	 */
 	public ArrayProperty getCreatorsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(CREATOR);
+		return (ArrayProperty) getProperty(CREATOR);
 	}
 
 	/**
@@ -469,7 +469,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return date property
 	 */
 	public ArrayProperty getDatesProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(DATE);
+		return (ArrayProperty) getProperty(DATE);
 	}
 
 	/**
@@ -487,7 +487,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return Description property
 	 */
 	public ArrayProperty getDescriptionProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(DESCRIPTION);
+		return (ArrayProperty) getProperty(DESCRIPTION);
 	}
 
 	/**
@@ -528,7 +528,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the format property
 	 */
 	public TextType getFormatProperty() {
-		return (TextType) getUnqualifiedProperty(FORMAT);
+		return (TextType) getProperty(FORMAT);
 	}
 
 	/**
@@ -537,7 +537,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the format value
 	 */
 	public String getFormat() {
-		TextType tt = (TextType) getUnqualifiedProperty(FORMAT);
+		TextType tt = (TextType) getProperty(FORMAT);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -547,7 +547,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the identifier property
 	 */
 	public TextType getIdentifierProperty() {
-		return (TextType) getUnqualifiedProperty(IDENTIFIER);
+		return (TextType) getProperty(IDENTIFIER);
 	}
 
 	/**
@@ -556,7 +556,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the unique identifier value
 	 */
 	public String getIdentifier() {
-		TextType tt = (TextType) getUnqualifiedProperty(IDENTIFIER);
+		TextType tt = (TextType) getProperty(IDENTIFIER);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -566,7 +566,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return language property
 	 */
 	public ArrayProperty getLanguagesProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(LANGUAGE);
+		return (ArrayProperty) getProperty(LANGUAGE);
 	}
 
 	/**
@@ -584,7 +584,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return publisher property
 	 */
 	public ArrayProperty getPublishersProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(PUBLISHER);
+		return (ArrayProperty) getProperty(PUBLISHER);
 	}
 
 	/**
@@ -602,7 +602,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return relation property
 	 */
 	public ArrayProperty getRelationsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(RELATION);
+		return (ArrayProperty) getProperty(RELATION);
 	}
 
 	/**
@@ -630,7 +630,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return rights property
 	 */
 	public ArrayProperty getRightsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(RIGHTS);
+		return (ArrayProperty) getProperty(RIGHTS);
 	}
 
 	/**
@@ -669,7 +669,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return source property
 	 */
 	public TextType getSourceProperty() {
-		return (TextType) getUnqualifiedProperty(SOURCE);
+		return (TextType) getProperty(SOURCE);
 	}
 
 	/**
@@ -678,7 +678,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return value of source property
 	 */
 	public String getSource() {
-		TextType tt = (TextType) getUnqualifiedProperty(SOURCE);
+		TextType tt = (TextType) getProperty(SOURCE);
 		return tt == null ? null : tt.getStringValue();
 	}
 
@@ -688,7 +688,7 @@ public class DublinCoreSchema extends XMPSchema {
      * @return the subject property
 	 */
 	public ArrayProperty getSubjectsProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(SUBJECT);
+		return (ArrayProperty) getProperty(SUBJECT);
 	}
 
 	/**
@@ -706,7 +706,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the title property
 	 */
 	public ArrayProperty getTitleProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(TITLE);
+		return (ArrayProperty) getProperty(TITLE);
 	}
 
 	/**
@@ -746,7 +746,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 * @return the type property
 	 */
 	public ArrayProperty getTypesProperty() {
-		return (ArrayProperty) getUnqualifiedProperty(TYPE);
+		return (ArrayProperty) getProperty(TYPE);
 	}
 
 	/**

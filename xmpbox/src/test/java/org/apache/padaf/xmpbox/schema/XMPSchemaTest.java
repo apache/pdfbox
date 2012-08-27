@@ -62,7 +62,7 @@ public class XMPSchemaTest {
 		String bagName = "BAGTEST";
 		String value1 = "valueOne";
 		String value2 = "valueTwo";
-		schem.addBagValue("nsSchem:"+bagName, new TextType(parent, null,"rdf", "li", value1));
+		schem.addBagValue(bagName, new TextType(parent, null,"rdf", "li", value1));
 		schem.addQualifiedBagValue(bagName, value2);
 
 		List<String> values = schem.getUnqualifiedBagValueList(bagName);
@@ -208,7 +208,8 @@ public class XMPSchemaTest {
 
 		String seqdate = "SeqDate";
 
-		String prefSchem = schem.getPrefix() + ":";
+//		String prefSchem = schem.getPrefix() + ":";
+		String prefSchem = "";
 
 		schem.setBooleanPropertyValueAsSimple(bool, boolVal);
 		schem.setDatePropertyValueAsSimple(date, dateVal);
@@ -258,7 +259,7 @@ public class XMPSchemaTest {
 	@Test
 	public void testProperties() throws Exception {
 
-		Assert.assertEquals("nsURI", schem.getNamespaceValue());
+		Assert.assertEquals("nsURI", schem.getNamespace());
 
 		// In real cases, rdf ns will be declared before !
 		schem.setAttribute(new Attribute("http://www.w3.org/2000/xmlns/",
@@ -274,7 +275,7 @@ public class XMPSchemaTest {
 
 		String textProp = "textProp";
 		String textPropVal = "TextPropTest";
-		schem.setTextPropertyValue("nsSchem:"+textProp, textPropVal);
+		schem.setTextPropertyValue(textProp, textPropVal);
 		Assert.assertEquals(textPropVal, schem.getUnqualifiedTextPropertyValue(textProp));
 
 		TextType text = new TextType(parent,null, "nsSchem", "textType", "GRINGO");
@@ -291,7 +292,7 @@ public class XMPSchemaTest {
 		schem.setDateProperty(dateType);
 		Assert
 				.assertEquals(dateType, schem
-						.getDateProperty("nsSchem:dateType"));
+						.getDateProperty("dateType"));
 
 		String bool = "nsSchem:booleanTestProp";
 		Boolean boolVal = false;
@@ -302,7 +303,7 @@ public class XMPSchemaTest {
 				false);
 		schem.setBooleanProperty(boolType);
 		Assert.assertEquals(boolType, schem
-				.getBooleanProperty("nsSchem:boolType"));
+				.getBooleanProperty("boolType"));
 
 		String intProp = "nsSchem:IntegerTestProp";
 		Integer intPropVal = 5;
@@ -312,12 +313,12 @@ public class XMPSchemaTest {
 		IntegerType intType = new IntegerType(parent, null, "nsSchem", "intType", 5);
 		schem.setIntegerProperty(intType);
 		Assert.assertEquals(intType, schem
-				.getIntegerProperty("nsSchem:intType"));
+				.getIntegerProperty("intType"));
 
 		// Check bad type verification
 		boolean ok = false;
 		try {
-			schem.getIntegerProperty("nsSchem:boolType");
+			schem.getIntegerProperty("boolType");
 		} catch (IllegalArgumentException e) {
 			ok = true;
 		}
@@ -331,14 +332,14 @@ public class XMPSchemaTest {
 		Assert.assertEquals(true, ok);
 		ok = false;
 		try {
-			schem.getDateProperty("nsSchem:textType");
+			schem.getDateProperty("textType");
 		} catch (IllegalArgumentException e) {
 			ok = true;
 		}
 		Assert.assertEquals(true, ok);
 		ok = false;
 		try {
-			schem.getBooleanProperty("nsSchem:dateType");
+			schem.getBooleanProperty("dateType");
 		} catch (IllegalArgumentException e) {
 			ok = true;
 		}
@@ -472,19 +473,17 @@ public class XMPSchemaTest {
 	public void testListAndContainerAccessor() throws Exception {
 		String boolname = "bool";
 		boolean boolVal = true;
-		BooleanType bool = new BooleanType(parent, null, schem.getLocalPrefix(),
+		BooleanType bool = new BooleanType(parent, null, schem.getPrefix(),
 				boolname, boolVal);
 		Attribute att = new Attribute(null, "rdf", "test", "vgh");
 		schem.setAttribute(att);
 		schem.setBooleanProperty(bool);
 
-		Assert.assertEquals(schem.getAllProperties(), schem.getContent()
-				.getAllProperties());
+		Assert.assertEquals(schem.getAllProperties(), schem.getAllProperties());
 		Assert.assertTrue(schem.getAllProperties().contains(bool));
 		Assert.assertTrue(schem.getAllAttributes().contains(att));
 
-		Assert.assertEquals(bool, schem.getPropertyAsSimple(boolname));
-		Assert.assertEquals(bool, schem.getUnqualifiedProperty(boolname));
+		Assert.assertEquals(bool, schem.getProperty(boolname));
 
 	}
 }

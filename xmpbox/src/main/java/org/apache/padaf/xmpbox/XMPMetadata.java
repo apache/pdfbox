@@ -233,7 +233,7 @@ public class XMPMetadata {
         XMPSchema tmp;
         while (it.hasNext()) {
             tmp = it.next();
-            if (tmp.getNamespaceValue().equals(nsURI)) {
+            if (tmp.getNamespace().equals(nsURI)) {
                 return tmp;
             }
         }
@@ -256,7 +256,7 @@ public class XMPMetadata {
         XMPSchema tmp;
         while (it.hasNext()) {
             tmp = it.next();
-            if (tmp.getNamespaceValue().equals(nsURI)
+            if (tmp.getNamespace().equals(nsURI)
                     && tmp.getPrefix().equals(prefix)) {
                 return tmp;
             }

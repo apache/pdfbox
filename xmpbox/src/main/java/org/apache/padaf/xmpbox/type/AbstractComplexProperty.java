@@ -68,14 +68,14 @@ public abstract class AbstractComplexProperty extends AbstractField {
 		return container.getAllProperties();
 	}
 
-	public final AbstractSimpleProperty getProperty (String fieldName) {
+	public final AbstractField getProperty (String fieldName) {
 		List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
 		// return null if no property
 		if (list==null) {
 			return null;
 		}
 		// return the first element of the list
-		return (AbstractSimpleProperty)list.get(0);
+		return list.get(0);
 	}
 
 	public final ArrayProperty getArrayProperty (String fieldName) {

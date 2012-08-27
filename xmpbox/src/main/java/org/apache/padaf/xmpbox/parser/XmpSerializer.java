@@ -87,7 +87,7 @@ public class XmpSerializer {
 		// prepare schema
 		Element selem = doc.createElement("rdf:Description");
 		selem.setAttribute("rdf:about", schema.getAboutValue()); 
-		selem.setAttributeNS(XMPSchema.NS_NAMESPACE, "xmlns:"+schema.getPrefix(), schema.getNamespaceValue());
+		selem.setAttributeNS(XMPSchema.NS_NAMESPACE, "xmlns:"+schema.getPrefix(), schema.getNamespace());
 		// the other attributes
 //		List<Attribute> attributes = schema.getAllAttributes();
 		fillElementWithAttributes(selem, schema.getAllAttributes());
