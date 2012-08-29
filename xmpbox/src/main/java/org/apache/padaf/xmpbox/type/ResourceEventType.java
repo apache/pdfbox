@@ -23,9 +23,9 @@ package org.apache.padaf.xmpbox.type;
 
 import java.util.Calendar;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 
 public class ResourceEventType extends AbstractStructuredType {
 
@@ -65,7 +65,7 @@ public class ResourceEventType extends AbstractStructuredType {
 	 */
 	public ResourceEventType(XMPMetadata metadata) {
 		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
+		setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
 	

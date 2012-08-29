@@ -108,7 +108,7 @@ public class XMPMetadata {
             String xpacketBytes, String xpacketEncoding) {
 //    	this(tm);
         this.schemas = new SchemasContainer();
-        this.typeMapping = new TypeMapping();
+        this.typeMapping = new TypeMapping(this);
         this.nsMapping = new NSMapping(this);
         this.schemaMapping = new SchemaMapping();
 

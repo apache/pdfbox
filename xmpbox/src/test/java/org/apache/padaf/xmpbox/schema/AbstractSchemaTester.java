@@ -146,10 +146,10 @@ public abstract class AbstractSchemaTester {
     public void testPropertySetterSimple () throws Exception {
 		if (cardinality!=Cardinality.Simple) return;
     	String setter = TypeTestingHelper.calculateSimpleSetter(fieldName)+"Property";
-    	TypeDescription td = typeMapping.getTypeDescription(type);
+    	TypeDescription<?> td = typeMapping.getTypeDescription(type);
     	Object value = TypeTestingHelper.getJavaValue(td);
     	AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(
-    			xmp, getSchema().getNamespace(), 
+    			getSchema().getNamespace(), 
     			getSchema().getPrefix(), fieldName, value, type);
     	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {td.getTypeClass()} );
     	set.invoke(getSchema(), new Object [] {asp});

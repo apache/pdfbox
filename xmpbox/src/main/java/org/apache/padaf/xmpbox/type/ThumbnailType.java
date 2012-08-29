@@ -61,7 +61,7 @@ public class ThumbnailType extends AbstractStructuredType {
 	 */
 	public ThumbnailType(XMPMetadata metadata) {
 		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
+		setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
 	}
 
 	/**

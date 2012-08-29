@@ -24,6 +24,8 @@ package org.apache.padaf.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
@@ -50,7 +52,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
         super(metadata, ownPrefix, JOB_TICKET_URI);
-        getContainer().setAttribute(new Attribute(NS_NAMESPACE, "xmlns",
+        getContainer().setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, 
                 JobType.PREFERED_PREFIX, JobType.ELEMENT_NS));
 
     }

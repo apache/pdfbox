@@ -21,9 +21,9 @@
 
 package org.apache.padaf.xmpbox.type;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 
 public class JobType extends AbstractStructuredType {
 
@@ -47,7 +47,7 @@ public class JobType extends AbstractStructuredType {
 
     public JobType(XMPMetadata metadata, String fieldPrefix) {
         super(metadata, ELEMENT_NS, fieldPrefix);
-		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", fieldPrefix, ELEMENT_NS));
+		setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, fieldPrefix, ELEMENT_NS));
     }
 
     public void setId(String id) {

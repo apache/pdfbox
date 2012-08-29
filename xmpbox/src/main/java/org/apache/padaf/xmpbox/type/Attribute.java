@@ -29,7 +29,7 @@ package org.apache.padaf.xmpbox.type;
  */
 public class Attribute {
 
-	private String nsURI, prefix, localName, value;
+	private String nsURI, localName, value;
 
 	/**
 	 * Constructor of a new Attribute
@@ -43,36 +43,10 @@ public class Attribute {
 	 * @param value
 	 *            value given to this attribute
 	 */
-	public Attribute(String nsURI, String prefix, String localName, String value) {
+	public Attribute(String nsURI, String localName, String value) {
 		this.nsURI = nsURI;
-		this.prefix = prefix;
 		this.localName = localName;
 		this.value = value;
-	}
-
-	/**
-	 * Get prefix defined for this attribute
-	 * 
-	 * @return prefix defined (could be null)
-	 */
-	public String getPrefix() {
-		if (prefix != null) {
-			if (prefix.equals("")) {
-				return null;
-			}
-			return prefix;
-		}
-		return null;
-	}
-
-	/**
-	 * Set prefix for this attribute
-	 * 
-	 * @param prefix
-	 *            the prefix defined for this attribute
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
 	}
 
 	/**
@@ -119,13 +93,8 @@ public class Attribute {
 	 * @return the full qualified name of this attribute
 	 */
 	public String getQualifiedName() {
-		if (prefix == null) {
-			return localName;
-		}
-		if (prefix.equals("")) {
-			return localName;
-		}
-		return prefix + ":" + localName;
+		// TODO remove that method
+		return localName;
 	}
 
 	/**

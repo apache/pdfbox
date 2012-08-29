@@ -24,9 +24,9 @@ package org.apache.padaf.xmpbox.type;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 
 public class ResourceRefType extends AbstractStructuredType {
 
@@ -94,7 +94,7 @@ public class ResourceRefType extends AbstractStructuredType {
 	 */
 	public ResourceRefType(XMPMetadata metadata) {
 		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		setAttribute(new Attribute(XMPSchema.NS_NAMESPACE, "xmlns", PREFERRED_PREFIX, ELEMENT_NS));
+		setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, PREFERRED_PREFIX, ELEMENT_NS));
 	}
 	
 	public String getDocumentID () {
@@ -301,7 +301,7 @@ public class ResourceRefType extends AbstractStructuredType {
         	addProperty(seq);
         }
 		TypeMapping tm = getMetadata().getTypeMapping();
-        TextType tt = (TextType)tm.instanciateSimpleProperty(getMetadata(), null, "rdf", "li", value, "Text");
+        TextType tt = (TextType)tm.instanciateSimpleProperty(null, "rdf", "li", value, "Text");
         seq.addProperty(tt);
 	}
 

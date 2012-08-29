@@ -47,8 +47,11 @@ public final class TypeMapping {
 	private Map<Class<? extends AbstractField>,TypeDescription<AbstractStructuredType>> STRUCTURED_CLASSES;
 
 	private Map<String,TypeDescription<AbstractStructuredType>> STRUCTURED_NAMESPACES;
+	
+	private XMPMetadata metadata;
 
-	public TypeMapping() {
+	public TypeMapping(XMPMetadata metadata) {
+		this.metadata = metadata;
 		initialize();
 	}
 
@@ -189,23 +192,22 @@ public final class TypeMapping {
 	}
 
 	// TODO ces deux methodes doivent remplacer la précédente
-//	public TypeDescription<AbstractSimpleProperty> getSimpleDescription (String type) {
-//		if (BASIC_TYPES.containsKey(type)) {
-//			return BASIC_TYPES.get(type);
-//		} else if (DERIVED_TYPES.containsKey(type)) {
-//			return DERIVED_TYPES.get(type);
-//		} else {
-//			return null;
-//		}
-//	}
-//
-//	
-//	public TypeDescription<AbstractStructuredType> getStructuredDescription (String type) {
-//		return STRUCTURED_TYPES.get(type);
-//	}
+	public TypeDescription<AbstractSimpleProperty> getSimpleDescription (String type) {
+		if (BASIC_TYPES.containsKey(type)) {
+			return BASIC_TYPES.get(type);
+		} else if (DERIVED_TYPES.containsKey(type)) {
+			return DERIVED_TYPES.get(type);
+		} else {
+			return null;
+		}
+	}
+
+	public TypeDescription<AbstractStructuredType> getStructuredDescription (String type) {
+		return STRUCTURED_TYPES.get(type);
+	}
 
 	
-	public AbstractStructuredType instanciateStructuredType (XMPMetadata metadata, TypeDescription<AbstractStructuredType> td) throws BadFieldValueException {
+	public AbstractStructuredType instanciateStructuredType (TypeDescription<AbstractStructuredType> td) throws BadFieldValueException {
 		try {
 			Class<? extends AbstractStructuredType> propertyTypeClass = td.getTypeClass();
 			Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {XMPMetadata.class});
@@ -225,10 +227,10 @@ public final class TypeMapping {
 		} 
 	}
 
-	public AbstractSimpleProperty instanciateSimpleProperty (XMPMetadata xmp,String nsuri, String prefix, String name, Object value, String type) {
+	public AbstractSimpleProperty instanciateSimpleProperty (String nsuri, String prefix, String name, Object value, String type) {
 		// constructor parameters
 		Object [] params = new Object [] {
-				xmp,	
+				metadata,	
 				nsuri,
 				prefix,
 				name,
@@ -236,7 +238,7 @@ public final class TypeMapping {
 		};
 		// type 
 		try {
-			TypeDescription<AbstractSimpleProperty> description = (TypeDescription<AbstractSimpleProperty>)getTypeDescription(type);
+			TypeDescription<AbstractSimpleProperty> description = getSimpleDescription(type);
 			Class<? extends AbstractSimpleProperty> clz = (Class<? extends AbstractSimpleProperty>)description.getTypeClass();
 			Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(simplePropertyConstParams);
 			return cons.newInstance(params);
@@ -257,10 +259,15 @@ public final class TypeMapping {
 		}
 	}
 
-	public  AbstractSimpleProperty instanciateSimpleField (Class<?> clz, XMPMetadata xmp, String nsuri, String prefix,String propertyName, Object value) {
+	public  AbstractSimpleProperty instanciateSimpleField (Class<?> clz, String nsuri, String prefix,String propertyName, Object value) {
 		PropMapping pm = ReflectHelper.initializePropMapping(null, clz);
 		String simpleType = pm.getPropertyType(propertyName);
-		return instanciateSimpleProperty(xmp, nsuri, prefix, propertyName, value, simpleType);
+		if (isArrayOfSimpleType(simpleType)) {
+			simpleType = simpleType.substring(simpleType.indexOf(" ")+1);
+			return instanciateSimpleProperty(nsuri, prefix, propertyName, value, simpleType);
+		} else {
+			return instanciateSimpleProperty(nsuri, prefix, propertyName, value, simpleType);
+		}
 	}
 
 	public TypeDescription<AbstractStructuredType> getStructuredTypeName (String namespace) {

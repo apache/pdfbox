@@ -232,9 +232,8 @@ public class TestSimpleMetadataProperties {
 	public void testAttribute() throws Exception {
 
 		IntegerType integer = new IntegerType(parent,null, "test", "integer", 1);
-		Attribute value = new Attribute("http://www.test.org/test/", "test",
-				"value1", "StringValue1");
-		Attribute value2 = new Attribute(null, "test", "value2", "StringValue2");
+		Attribute value = new Attribute("http://www.test.org/test/", "value1", "StringValue1");
+		Attribute value2 = new Attribute("http://www.test.org/test/", "value2", "StringValue2");
 
 		integer.setAttribute(value);
 
@@ -257,10 +256,10 @@ public class TestSimpleMetadataProperties {
 
 		// Attribute with namespace Creation checking
 		Attribute valueNS = new Attribute("http://www.tefst2.org/test/",
-				"test2", "value2", "StringValue.2");
+				 "value2", "StringValue.2");
 		integer.setAttribute(valueNS);
 		Attribute valueNS2 = new Attribute("http://www.test2.org/test/",
-				"test2", "value2", "StringValueTwo");
+				 "value2", "StringValueTwo");
 		integer.setAttribute(valueNS2);
 
 		List<Attribute> atts = integer.getAllAttributes();
