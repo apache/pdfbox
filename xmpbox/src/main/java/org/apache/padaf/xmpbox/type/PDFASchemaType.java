@@ -22,7 +22,6 @@
 package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.XmpConstants;
 
 public class PDFASchemaType extends AbstractStructuredType {
 

@@ -63,7 +63,7 @@ public class StructuredPropertyParser {
 
 	private AbstractStructuredType instanciateProperty (XMPMetadata metadata) throws XmpParsingException {
 		try {
-			return metadata.getTypeMapping().instanciateStructuredType(metadata, description);
+			return metadata.getTypeMapping().instanciateStructuredType( description);
 		} catch (BadFieldValueException e) {
 			throw new XmpParsingException ("Failed to instanciate property",e);
 		}
@@ -190,14 +190,14 @@ public class StructuredPropertyParser {
 
 					String ptype = td.getProperties().getPropertyType(eltName.getLocalPart());
 					if (metadata.getTypeMapping().isStructuredType(ptype)) {
-						TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)metadata.getTypeMapping().getTypeDescription(ptype);
+						TypeDescription<AbstractStructuredType> tclass = metadata.getTypeMapping().getStructuredDescription(ptype);
 						StructuredPropertyParser sp = new StructuredPropertyParser(builder, tclass);
 						sp.parseSimple(metadata, reader.getName(), property.getContainer(),isSubSkipDescription,subExpected);// TODO
 					} else if (metadata.getTypeMapping().getArrayType(ptype)!=null) {
 						int pos = ptype.indexOf(' ');
 						String arrayType = metadata.getTypeMapping().getArrayType(ptype);
 						String typeInArray = ptype.substring(pos+1);
-						TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)metadata.getTypeMapping().getTypeDescription(typeInArray);
+						TypeDescription<AbstractStructuredType> tclass = metadata.getTypeMapping().getStructuredDescription(typeInArray);
 						ArrayProperty cp = new ArrayProperty(metadata,null,
 								eltName.getPrefix(), eltName.getLocalPart(),
 								arrayType);
@@ -247,7 +247,7 @@ public class StructuredPropertyParser {
 			String propertyName,
 			String valueAsString) 
 					throws XmpParsingException {
-		TypeDescription<AbstractSimpleProperty> description = (TypeDescription<AbstractSimpleProperty>)metadata.getTypeMapping().getTypeDescription(type);
+		TypeDescription<AbstractSimpleProperty> description = metadata.getTypeMapping().getSimpleDescription(type);
 		Object value = null;
 		switch (description.getBasic()) {
 		case Boolean : 
@@ -278,7 +278,7 @@ public class StructuredPropertyParser {
 			value = valueAsString;
 		}
 
-		return metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, propertyName, value, type);
+		return metadata.getTypeMapping().instanciateSimpleProperty(null, prefix, propertyName, value, type);
 	}
 
 }

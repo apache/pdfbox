@@ -23,6 +23,8 @@ package org.apache.padaf.xmpbox;
 
 import java.util.Calendar;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.schema.PropertyExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
@@ -63,7 +65,7 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 
 	public BirthCertificateSchemaWithXMLDescriptions(XMPMetadata metadata) {
 		super(metadata, PREFERED_PREFIX, NAMESPACE);
-		this.setAttribute(new Attribute(null, "xmlns", "madn",
+		this.setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "madn",
 				"http://test.withfield.com/vt/"));
 		this.setAboutAsSimple("");
 	}

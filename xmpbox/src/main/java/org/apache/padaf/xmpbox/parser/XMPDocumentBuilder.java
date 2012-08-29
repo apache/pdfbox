@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -256,7 +257,7 @@ public class XMPDocumentBuilder {
 												}
 												// create the type
 //												TypeDescription vtd = meta.getTypeMapping().getTypeDescription(fValueType);
-												TypeDescription vtd = meta.getTypeMapping().getTypeDescription(fValueType);
+												TypeDescription<?> vtd = meta.getTypeMapping().getTypeDescription(fValueType);
 												if (vtd!=null) {
 													// a type is found
 													String ftype = vtd.getType();
@@ -269,7 +270,7 @@ public class XMPDocumentBuilder {
 										}
 									}
 									// add the structured type to list
-									TypeDescription td = new TypeDescription(ttype, null, DefinedStructuredType.class);
+									TypeDescription<AbstractStructuredType> td = new TypeDescription<AbstractStructuredType>(ttype, null, DefinedStructuredType.class);
 									meta.getTypeMapping().addToStructuredMaps(td,tns);
 								}
 							}	
@@ -289,7 +290,7 @@ public class XMPDocumentBuilder {
 								}
 								// check ptype existance
 //								TypeDescription td = meta.getTypeMapping().getTypeDescription(ptype);
-								TypeDescription td = meta.getTypeMapping().getTypeDescription(ptype);
+								TypeDescription<?> td = meta.getTypeMapping().getTypeDescription(ptype);
 								if (td==null) {
 									// type not defined
 									throw new XmpUnknownValueTypeException("Type not defined : "+ptype);
@@ -566,7 +567,6 @@ public class XMPDocumentBuilder {
 			}
 
 			Attribute attr = new Attribute(null, reader.get()
-					.getAttributePrefix(i), reader.get()
 					.getAttributeLocalName(i), reader.get()
 					.getAttributeValue(i));
 
@@ -579,7 +579,7 @@ public class XMPDocumentBuilder {
 		}
 		if (!rdfAboutFound) {
 			// create rdf:about if not found
-			Attribute attr = new Attribute(null,"rdf","about","");
+			Attribute attr = new Attribute(XmpConstants.RDF_NAMESPACE,"about","");
 			schema.setAttribute(attr);
 		}
 	}
@@ -595,11 +595,11 @@ public class XMPDocumentBuilder {
 	private boolean addAttributeAsProperty(XMPMetadata metadata, XMPSchema schema, Attribute attr) {
 		boolean added = false;
 		String schemaNamespace = schema.getNamespace();
-		String prefix = attr.getPrefix() != null ? attr.getPrefix() : schema.getPrefix();
-		String type = metadata.getNsMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName(), prefix));
+		String prefix = /*attr.getPrefix() != null ? attr.getPrefix() :*/ schema.getPrefix();
+		String type = metadata.getNsMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName()));
 
 		if (type != null) {
-			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, prefix, attr.getLocalName(), attr.getValue(), type);
+			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(null, prefix, attr.getLocalName(), attr.getValue(), type);
 			schema.addProperty(prop);
 			added = true;
 		}
@@ -665,8 +665,8 @@ public class XMPDocumentBuilder {
 		}
 
 		for (int i = 1; i < cptNS; i++) {
-			schema.setAttribute(new Attribute(XMPSchema.NS_NAMESPACE,
-					"xmlns", reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i)));
+			schema.setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+					reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i)));
 		}
 		treatDescriptionAttributes(metadata, schema);
 		while (reader.get().nextTag() == XMLStreamReader.START_ELEMENT) {
@@ -735,8 +735,8 @@ public class XMPDocumentBuilder {
 		ArrayList<Attribute> list = new ArrayList<Attribute>();
 		while (it.hasNext()) {
 			tmp = it.next();
-			if (tmp.getPrefix() != null) {
-				if (tmp.getPrefix().equals("xmlns")) {
+			if (tmp.getNamespace() != null) {
+				if (tmp.getNamespace().equals(XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
 					list.add(tmp);
 				}
 			}
@@ -768,7 +768,7 @@ public class XMPDocumentBuilder {
 	}
 
 	private void parseSimpleProperty(XMPMetadata metadata,	QName propertyName, 
-			TypeDescription description, ComplexPropertyContainer container)	
+			TypeDescription<AbstractSimpleProperty> description, ComplexPropertyContainer container)	
 					throws XmpUnknownPropertyTypeException, XmpPropertyFormatException,	XMLStreamException {
 		try {
 			AbstractSimpleProperty prop = null;
@@ -776,11 +776,10 @@ public class XMPDocumentBuilder {
 			int cpt = reader.get().getAttributeCount();
 			for (int i = 0; i < cpt; i++) {
 				attributes.add(new Attribute(null, reader.get()
-						.getAttributePrefix(i), reader.get()
 						.getAttributeLocalName(i), reader.get()
 						.getAttributeValue(i)));
 			}
-			prop = metadata.getTypeMapping().instanciateSimpleProperty(metadata, null, propertyName.getPrefix(), 
+			prop = metadata.getTypeMapping().instanciateSimpleProperty( null, propertyName.getPrefix(), 
 					propertyName.getLocalPart(), reader.get().getElementText(),description.getType());
 			if (prop != null) {
 				container.addProperty(prop);
@@ -831,7 +830,7 @@ public class XMPDocumentBuilder {
 
 
 	private void parseSimplePropertyArray(XMPMetadata metadata, QName name, String ctype,
-			TypeDescription td, ComplexPropertyContainer container)
+			TypeDescription<AbstractSimpleProperty> td, ComplexPropertyContainer container)
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
@@ -904,12 +903,12 @@ public class XMPDocumentBuilder {
 		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
 		// found type, manage it
 		if (type.equals("Lang Alt")) {
-			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getTypeDescription("Text"), schema.getContainer());
+			parseSimplePropertyArray(metadata, propertyName, ArrayProperty.ALTERNATIVE_ARRAY, typeMapping.getSimpleDescription("Text"), schema.getContainer());
 		} else if (typeMapping.isSimpleType(type)) {
-			TypeDescription<?> tclass = typeMapping.getTypeDescription(type);
+			TypeDescription<AbstractSimpleProperty> tclass = typeMapping.getSimpleDescription(type);
 			parseSimpleProperty(metadata, propertyName, tclass, schema.getContainer());
 		} else if (typeMapping.isStructuredType(type)) {
-			TypeDescription<AbstractStructuredType> tclass = (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(type);
+			TypeDescription<AbstractStructuredType> tclass = typeMapping.getStructuredDescription(type);
 			StructuredPropertyParser parser = new StructuredPropertyParser(
 					this, tclass);
 			parseStructuredProperty(metadata, parser, schema.getContainer());
@@ -928,12 +927,12 @@ public class XMPDocumentBuilder {
 						metadata, 
 						propertyName, 
 						arrayType, 
-						typeMapping.getTypeDescription(typeInArray),
+						typeMapping.getSimpleDescription(typeInArray),
 						schema.getContainer());
 			} else if (typeMapping.isStructuredType(typeInArray)) {
 				// array of structured
 				StructuredPropertyParser parser = new StructuredPropertyParser(
-						this, (TypeDescription<AbstractStructuredType>)typeMapping.getTypeDescription(typeInArray));
+						this, typeMapping.getStructuredDescription(typeInArray));
 				parseStructuredPropertyArray(metadata, propertyName, arrayType, parser, schema.getContainer());
 			} else {
 				// invalid case

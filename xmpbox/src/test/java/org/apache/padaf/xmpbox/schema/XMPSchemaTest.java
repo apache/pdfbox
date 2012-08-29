@@ -29,6 +29,7 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
@@ -157,7 +158,7 @@ public class XMPSchemaTest {
 
 	@Test(expected = BadFieldValueException.class)
 	public void testBadRdfAbout() throws Exception {
-		schem.setAbout(new Attribute(null, "bill", "about", ""));
+		schem.setAbout(new Attribute(null, "about", ""));
 	}
 
 	@Test
@@ -263,13 +264,13 @@ public class XMPSchemaTest {
 
 		// In real cases, rdf ns will be declared before !
 		schem.setAttribute(new Attribute("http://www.w3.org/2000/xmlns/",
-				"xmlns", "rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
+				"rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
 
 		String aboutVal = "aboutTest";
 		schem.setAboutAsSimple(aboutVal);
 		Assert.assertEquals(aboutVal, schem.getAboutValue());
 
-		Attribute about = new Attribute(null, "rdf", "about", "YEP");
+		Attribute about = new Attribute(XmpConstants.RDF_NAMESPACE, "about", "YEP");
 		schem.setAbout(about);
 		Assert.assertEquals(about, schem.getAboutAttribute());
 
@@ -358,7 +359,6 @@ public class XMPSchemaTest {
 	@Test
 	public void testAltProperties() throws Exception {
 		String altProp = "AltProp";
-		String qaltProp = "nsSchem:"+altProp;
 
 		String defaultLang = "x-default";
 		String defaultVal = "Default Language";
@@ -475,7 +475,7 @@ public class XMPSchemaTest {
 		boolean boolVal = true;
 		BooleanType bool = new BooleanType(parent, null, schem.getPrefix(),
 				boolname, boolVal);
-		Attribute att = new Attribute(null, "rdf", "test", "vgh");
+		Attribute att = new Attribute(XmpConstants.RDF_NAMESPACE, "test", "vgh");
 		schem.setAttribute(att);
 		schem.setBooleanProperty(bool);
 

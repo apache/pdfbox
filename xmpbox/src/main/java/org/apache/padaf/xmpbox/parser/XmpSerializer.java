@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.parser;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -85,16 +86,10 @@ public class XmpSerializer {
 
 	protected Element createSchemaElement (Document doc, XMPSchema schema) {
 		// prepare schema
-		Element selem = doc.createElement("rdf:Description");
-		selem.setAttribute("rdf:about", schema.getAboutValue()); 
-		selem.setAttributeNS(XMPSchema.NS_NAMESPACE, "xmlns:"+schema.getPrefix(), schema.getNamespace());
+		Element selem = doc.createElementNS(XmpConstants.RDF_NAMESPACE,"rdf:Description");
+		selem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+schema.getPrefix(), schema.getNamespace());
 		// the other attributes
-//		List<Attribute> attributes = schema.getAllAttributes();
 		fillElementWithAttributes(selem, schema.getAllAttributes());
-//		for (Attribute attribute : attributes) {
-//			selem.setAttribute(attribute.getQualifiedName(), attribute.getValue());
-//		}
-//		selem.setAttribute("rdf:about", schema.getClass().getName()); // TODO remove already done 6 lines before
 		// the content
 		List<AbstractField> fields = schema.getAllProperties();
 		xxxxxxx(doc, selem, fields);
@@ -142,7 +137,17 @@ public class XmpSerializer {
 	
 	protected void fillElementWithAttributes (Element target, List<Attribute> attributes) {
 		for (Attribute attribute : attributes) {
-			target.setAttribute(attribute.getQualifiedName(), attribute.getValue());
+			if (target.getNamespaceURI().equals(attribute.getNamespace())) {
+				target.setAttribute(attribute.getLocalName(), attribute.getValue());
+			} else if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespace())) {
+				target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+attribute.getLocalName(), attribute.getValue());
+			} else if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
+				target.setAttribute("rdf"+":"+attribute.getLocalName(), attribute.getValue());
+//			} else if (attribute.getLocalName().equals("about")) {
+//				target.setAttribute("rdf:about", attribute.getValue());
+			} else {
+				target.setAttribute(attribute.getQualifiedName(), attribute.getValue());
+			}
 		}
 	}
 	
@@ -157,7 +162,7 @@ public class XmpSerializer {
 		}
 		// meta element
 		Element xmpmeta = doc.createElementNS("adobe:ns:meta/", "x:xmpmeta");
-		xmpmeta.setAttributeNS(XMPSchema.NS_NAMESPACE, "xmlns:x","adobe:ns:meta/");
+		xmpmeta.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:x","adobe:ns:meta/");
 		doc.appendChild(xmpmeta);
 		// ending xpacket
 		if (withXpacket) {

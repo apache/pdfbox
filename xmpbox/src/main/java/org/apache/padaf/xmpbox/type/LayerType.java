@@ -39,7 +39,7 @@ public class LayerType extends AbstractStructuredType {
 	
 	public LayerType(XMPMetadata metadata) {
 		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
-		setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
+		setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
 	}
 	
 	/**
