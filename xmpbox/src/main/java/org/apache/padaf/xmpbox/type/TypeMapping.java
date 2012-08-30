@@ -27,7 +27,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
+import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
+import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
+import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
+import org.apache.padaf.xmpbox.schema.XMPBasicJobTicketSchema;
+import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
+import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
+import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.schema.XMPSchemaFactory;
+import org.apache.padaf.xmpbox.schema.XmpSchemaException;
 import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
 
 public final class TypeMapping {
@@ -48,7 +62,12 @@ public final class TypeMapping {
 
 	private Map<String,TypeDescription<AbstractStructuredType>> STRUCTURED_NAMESPACES;
 	
+	private Map<String, String> schemaUriToPrefered;
+
 	private XMPMetadata metadata;
+
+	private Map<String, XMPSchemaFactory> schemaMap;
+
 
 	public TypeMapping(XMPMetadata metadata) {
 		this.metadata = metadata;
@@ -105,6 +124,20 @@ public final class TypeMapping {
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAProperty",null,PDFAPropertyType.class));
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAType",null,PDFATypeType.class));
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFASchema",null,PDFASchemaType.class));
+		
+		// schema
+		schemaUriToPrefered = new HashMap<String, String>();
+		schemaMap = new HashMap<String, XMPSchemaFactory>();
+		addNameSpace("http://ns.adobe.com/xap/1.0/", XMPBasicSchema.class);
+		addNameSpace(DublinCoreSchema.DCURI, DublinCoreSchema.class);
+		addNameSpace("http://www.aiim.org/pdfa/ns/extension/", PDFAExtensionSchema.class);
+		addNameSpace("http://ns.adobe.com/xap/1.0/mm/", XMPMediaManagementSchema.class);
+		addNameSpace("http://ns.adobe.com/pdf/1.3/", AdobePDFSchema.class);
+		addNameSpace("http://www.aiim.org/pdfa/ns/id/", PDFAIdentificationSchema.class);
+		addNameSpace("http://ns.adobe.com/xap/1.0/rights/",     XMPRightsManagementSchema.class);
+		addNameSpace(PhotoshopSchema.PHOTOSHOPURI,      PhotoshopSchema.class);
+		addNameSpace(XMPBasicJobTicketSchema.JOB_TICKET_URI,XMPBasicJobTicketSchema.class);
+
 	}
 
 	private void addToBasicMaps (TypeDescription<AbstractSimpleProperty> td) {
@@ -336,4 +369,88 @@ public final class TypeMapping {
 		return propMap;
 	}
 
+	private void addNameSpace(String ns, Class<? extends XMPSchema> classSchem) {
+		schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem,	ReflectHelper.initializePropMapping(ns, classSchem)));
+		try {
+			schemaUriToPrefered.put(ns, classSchem.getField("PREFERED_PREFIX").get(null).toString());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		}
+	}
+
+	public void addNewNameSpace(String ns,String prefered) {
+		PropMapping mapping = new PropMapping(ns);
+		schemaMap.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
+		schemaUriToPrefered.put(ns, prefered);
+	}
+
+	/**
+	 * Return the specialized schema class representation if it's known (create
+	 * and add it to metadata). In other cases, return null
+	 * 
+	 * @param metadata
+	 *            Metadata to link the new schema
+	 * @param namespace
+	 *            The namespace URI
+	 * @return Schema representation
+	 * @throws XmpSchemaException
+	 *             When Instancing specified Object Schema failed
+	 */
+	public XMPSchema getAssociatedSchemaObject(XMPMetadata metadata, String namespace, String prefix) throws XmpSchemaException {
+		if (schemaMap.containsKey(namespace)) {
+			XMPSchemaFactory factory = schemaMap.get(namespace);
+			return factory.createXMPSchema(metadata, prefix);
+		} else {
+			XMPSchemaFactory factory = getSchemaFactory(namespace);
+			return factory!=null?factory.createXMPSchema(metadata, prefix):null;
+		}
+	}
+
+	public XMPSchemaFactory getSchemaFactory(String namespace) {
+		return schemaMap.get(namespace);
+	}
+
+	/**
+	 * Say if a specific namespace is known
+	 * 
+	 * @param namespace
+	 *            The namespace URI checked
+	 * @return True if namespace URI is known
+	 */
+	public boolean isContainedNamespace(String namespace) {
+		boolean found = schemaMap.containsKey(namespace);
+		if (!found) {
+			found = isStructuredTypeNamespace(namespace);
+		}
+		return found;
+	}
+
+	/**
+	 * Give type of specified property in specified schema (given by its
+	 * namespaceURI)
+	 * 
+	 * @param namespace
+	 *            The namespaceURI to explore
+	 * @param prop
+	 *            the property Qualified Name
+	 * @return Property type declared for namespace specified, null if unknown
+	 */
+	public String getSpecifiedPropertyType(String namespace, QName prop) {
+		XMPSchemaFactory factory =getSchemaFactory(namespace);
+		if (factory!=null) {
+			// found in schema
+			return factory.getPropertyType(prop.getLocalPart());
+		} else {
+			TypeDescription<AbstractStructuredType> td = getStructuredTypeName(prop.getPrefix());
+			return td==null?null:td.getType();
+		}
+	}
+
+	
 }
