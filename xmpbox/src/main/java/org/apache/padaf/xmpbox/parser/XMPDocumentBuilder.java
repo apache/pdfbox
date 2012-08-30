@@ -40,7 +40,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
-import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchemaFactory;
@@ -153,20 +152,6 @@ public class XMPDocumentBuilder {
 					"Did not find initial rdf:RDF");
 			expectName(XmpConstants.RDF_NAMESPACE, "RDF");
 
-			// TODO GBL GBA maybe not remove
-			metadata.getNsMapping().resetComplexBasicTypesDeclarationInEntireXMPLevel();
-			// add all namespaces which could declare nsURI of a basicValueType
-			// all others declarations are ignored
-			int nsCount = reader.get().getNamespaceCount();
-			// TODO MUTUALIZE namespace list loading
-			for (int i = 0; i < nsCount; i++) {
-				if (metadata.getTypeMapping().isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
-					metadata.getNsMapping().setComplexBasicTypesDeclarationForLevelXMP(
-							reader.get().getNamespaceURI(i), 
-							reader.get().getNamespacePrefix(i));
-				}
-			}
-
 			// now work on each rdf:Description
 			int type = reader.get().nextTag();
 			while (type == XMLStreamReader.START_ELEMENT) {
@@ -224,12 +209,12 @@ public class XMPDocumentBuilder {
 						String prefix = st.getPrefix();
 						ArrayProperty properties = st.getProperty();
 						ArrayProperty valueTypes = st.getValueType();
-						XMPSchemaFactory xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
+						XMPSchemaFactory xsf = meta.getTypeMapping().getSchemaFactory(namespaceUri);
 						// retrieve namespaces
 						if (xsf==null) {
 							// create namespace with no field
-							meta.getSchemaMapping().addNewNameSpace(namespaceUri,prefix);
-							xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
+							meta.getTypeMapping().addNewNameSpace(namespaceUri,prefix);
+							xsf = meta.getTypeMapping().getSchemaFactory(namespaceUri);
 						}
 						// populate value type
 						if (valueTypes!=null) {
@@ -598,8 +583,8 @@ public class XMPDocumentBuilder {
 	private boolean addAttributeAsProperty(XMPMetadata metadata, XMPSchema schema, Attribute attr) {
 		boolean added = false;
 		String schemaNamespace = schema.getNamespace();
-		String prefix = /*attr.getPrefix() != null ? attr.getPrefix() :*/ schema.getPrefix();
-		String type = metadata.getNsMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName()));
+		String prefix = schema.getPrefix();
+		String type = metadata.getTypeMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName()));
 
 		if (type != null) {
 			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(null, prefix, attr.getLocalName(), attr.getValue(), type);
@@ -634,30 +619,23 @@ public class XMPDocumentBuilder {
 			throws XmpParsingException, XMLStreamException, XmpSchemaException,
 			XmpUnknownValueTypeException, XmpExpectedRdfAboutAttribute,
 			BadFieldValueException {
-		NSMapping nsMap = metadata.getNsMapping();
-		nsMap.resetComplexBasicTypesDeclarationInSchemaLevel();
+		TypeMapping sm = metadata.getTypeMapping();
 		int cptNS = reader.get().getNamespaceCount();
 		HashMap<String, String> namespaces = new HashMap<String, String>();
-		// TODO MUTUALIZE namespace list loading
 		for (int i = 0; i < cptNS; i++) {
 			namespaces.put(reader.get().getNamespacePrefix(i), reader.get()
 					.getNamespaceURI(i));
-			if (metadata.getTypeMapping().isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
-				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
-						.get().getNamespaceURI(i), reader.get()
-						.getNamespacePrefix(i));
-			}
 		}
 		int c = 0;
 		String namespaceUri = reader.get().getNamespaceURI(c);
 		String namespacePrefix = reader.get().getNamespacePrefix(c);
 		c++;
-		XMPSchema schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
+		XMPSchema schema = sm.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
 		while (c<reader.get().getNamespaceCount() && schema==null) {
 			// try next
 			namespaceUri = reader.get().getNamespaceURI(c);
 			namespacePrefix = reader.get().getNamespacePrefix(c);
-			schema = nsMap.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
+			schema = sm.getAssociatedSchemaObject(metadata, namespaceUri, namespacePrefix);
 			c++;
 		}
 
@@ -731,18 +709,18 @@ public class XMPDocumentBuilder {
 	 */
 	private String getPropertyDeclarationInNamespaces(XMPSchema schema,
 			QName prop) throws XmpParsingException {
-		NSMapping nsMap = schema.getMetadata().getNsMapping();
+		TypeMapping sm = schema.getMetadata().getTypeMapping();
 		Iterator<Entry<String, String>> it = schema.getAllNamespacesWithPrefix().entrySet().iterator();
 		String type;
 		StringBuilder unknownNS = new StringBuilder();
 		while (it.hasNext()) {
 			Entry<String,String> entry = it.next();
 			String namespace = entry.getKey();
-			if (!nsMap.isContainedNamespace(namespace)) {
+			if (!sm.isContainedNamespace(namespace)) {
 				unknownNS.append(" '").append(namespace).append("' ");
 				continue;
 			}
-			type = nsMap.getSpecifiedPropertyType(namespace, prop);
+			type = sm.getSpecifiedPropertyType(namespace, prop);
 			if (type != null) {
 				return type;
 			}
@@ -871,7 +849,7 @@ public class XMPDocumentBuilder {
 			XmpUnexpectedTypeException, XMLStreamException,
 			XmpUnknownPropertyTypeException {
 		XMPMetadata metadata = schema.getMetadata();
-		NSMapping nsMap = metadata.getNsMapping();
+//		NSMapping nsMap = metadata.getNsMapping();
 		TypeMapping typeMapping = metadata.getTypeMapping();
 		QName propertyName = reader.get().getName();
 		if (parsingExtension) {
@@ -880,16 +858,6 @@ public class XMPDocumentBuilder {
 				// XXX skip to end of element
 				skipCurrentElement();
 				return;
-			}
-		}
-		nsMap.resetComplexBasicTypesDeclarationInPropertyLevel();
-		int cptNs = reader.get().getNamespaceCount();
-		// TODO MUTUALIZE namespace list loading
-		for (int i = 0; i < cptNs; i++) {
-			if (typeMapping.isStructuredTypeNamespace(reader.get().getNamespaceURI(i))) {
-				nsMap.setComplexBasicTypesDeclarationForLevelSchema(reader
-						.get().getNamespaceURI(i), reader.get()
-						.getNamespacePrefix(i));
 			}
 		}
 		String type = getPropertyDeclarationInNamespaces(schema, propertyName);
@@ -909,10 +877,6 @@ public class XMPDocumentBuilder {
 			int pos = type.indexOf(' ');
 			String arrayType = typeMapping.getArrayType(type);
 			String typeInArray = type.substring(pos+1);
-//			if (typeMapping.is)
-//		TypeDescription<AbstractStructuredType> tclass = typeMapping.getTypeDescription(typeInArray);
-//			Class<? extends AbstractField> tcn = tclass.getTypeClass();
-
 			if (typeMapping.isSimpleType(typeInArray)) {
 				// array of simple
 				parseSimplePropertyArray(

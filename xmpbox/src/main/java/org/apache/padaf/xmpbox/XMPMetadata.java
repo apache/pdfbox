@@ -28,11 +28,9 @@ import java.util.Map;
 import org.apache.padaf.xmpbox.parser.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
-import org.apache.padaf.xmpbox.schema.NSMapping;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.schema.PhotoshopSchema;
-import org.apache.padaf.xmpbox.schema.SchemaMapping;
 import org.apache.padaf.xmpbox.schema.XMPBasicJobTicketSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
@@ -66,12 +64,7 @@ public class XMPMetadata {
 
 	private List<XMPSchema> schemas;
 
-
 	private TypeMapping typeMapping;
-
-	private NSMapping nsMapping;
-
-	private SchemaMapping schemaMapping;
 
 	/**
 	 * Contructor of an empty default XMPMetaData
@@ -79,7 +72,6 @@ public class XMPMetadata {
 	 * @throws CreateXMPMetadataException
 	 *             If DOM Document associated could not be created
 	 */
-	// TODO GBL GBA make protected
 	protected XMPMetadata() {
 		this (
 				XmpConstants.DEFAULT_XPACKET_BEGIN,
@@ -108,8 +100,6 @@ public class XMPMetadata {
 			String xpacketBytes, String xpacketEncoding) {
 		this.schemas = new ArrayList<XMPSchema>();
 		this.typeMapping = new TypeMapping(this);
-		this.nsMapping = new NSMapping(this);
-		this.schemaMapping = new SchemaMapping(this);
 
 		this.xpacketBegin = xpacketBegin;
 		this.xpacketId = xpacketId;
@@ -128,18 +118,6 @@ public class XMPMetadata {
 
 	public TypeMapping getTypeMapping () {
 		return this.typeMapping;
-	}
-
-	public NSMapping getNsMapping () {
-		return this.nsMapping;
-	}
-
-	public SchemaMapping getSchemaMapping () {
-		return this.schemaMapping;
-	}
-
-	public void setSchemaMapping (SchemaMapping sm) {
-		this.schemaMapping = sm;
 	}
 
 	/**
