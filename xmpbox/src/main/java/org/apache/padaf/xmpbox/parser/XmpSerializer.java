@@ -22,6 +22,7 @@ package org.apache.padaf.xmpbox.parser;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,6 +39,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.type.AbstractComplexProperty;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
@@ -71,7 +73,7 @@ public class XmpSerializer {
 			// fill document
 			Element rdf = createRdfElement(doc,metadata, withXpacket);
 			for (XMPSchema schema : metadata.getAllSchemas()) {
-				rdf.appendChild(createSchemaElement(doc, schema));
+				rdf.appendChild(serializeSchema(doc, schema));
 			}
 			// save
 			save(doc, os, "UTF-8");
@@ -84,21 +86,20 @@ public class XmpSerializer {
 
 	}
 
-	protected Element createSchemaElement (Document doc, XMPSchema schema) {
+	protected Element serializeSchema (Document doc, XMPSchema schema) {
 		// prepare schema
 		Element selem = doc.createElementNS(XmpConstants.RDF_NAMESPACE,"rdf:Description");
 		selem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+schema.getPrefix(), schema.getNamespace());
 		// the other attributes
-		fillElementWithAttributes(selem, schema.getAllAttributes());
+		fillElementWithAttributes(selem, schema);
 		// the content
 		List<AbstractField> fields = schema.getAllProperties();
-		xxxxxxx(doc, selem, fields);
+		serializeFields(doc, selem, fields);
 		// return created schema
 		return selem;
 	}
 
-	// TODO GBL rename method
-	public void xxxxxxx (Document doc, Element parent, List<AbstractField> fields) {
+	public void serializeFields (Document doc, Element parent, List<AbstractField> fields) {
 		for (AbstractField field : fields) {
 			if (field instanceof AbstractSimpleProperty) {
 				AbstractSimpleProperty simple = (AbstractSimpleProperty)field;
@@ -110,13 +111,13 @@ public class XmpSerializer {
 				Element asimple = doc.createElement(array.getPrefix()+":"+array.getPropertyName());
 				parent.appendChild(asimple);
 				// attributes
-				fillElementWithAttributes(asimple, array.getAllAttributes());
+				fillElementWithAttributes(asimple, array);
 				// the array definition
 				Element econtainer = doc.createElement("rdf"+":"+array.getArrayType()); 
 				asimple.appendChild(econtainer);
 				// for each element of the array
 				List<AbstractField> innerFields = array.getAllProperties();
-				xxxxxxx(doc, econtainer, innerFields);
+				serializeFields(doc, econtainer, innerFields);
 			} else if (field instanceof AbstractStructuredType) {
 				AbstractStructuredType structured = (AbstractStructuredType)field;
 				// element li
@@ -127,7 +128,7 @@ public class XmpSerializer {
 				estructured.appendChild(econtainer);
 				// all properties
 				List<AbstractField> innerFields = structured.getAllProperties();
-				xxxxxxx(doc, econtainer, innerFields);
+				serializeFields(doc, econtainer, innerFields);
 			} else {
 				System.err.println(">> TODO >> "+field.getClass());
 			}
@@ -135,19 +136,19 @@ public class XmpSerializer {
 		
 	}
 	
-	protected void fillElementWithAttributes (Element target, List<Attribute> attributes) {
+	private void fillElementWithAttributes (Element target, AbstractComplexProperty property ) {
+		List<Attribute> attributes = property.getAllAttributes();
 		for (Attribute attribute : attributes) {
 			if (target.getNamespaceURI().equals(attribute.getNamespace())) {
 				target.setAttribute(attribute.getLocalName(), attribute.getValue());
-			} else if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespace())) {
-				target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+attribute.getLocalName(), attribute.getValue());
 			} else if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
 				target.setAttribute("rdf"+":"+attribute.getLocalName(), attribute.getValue());
-//			} else if (attribute.getLocalName().equals("about")) {
-//				target.setAttribute("rdf:about", attribute.getValue());
 			} else {
 				target.setAttribute(attribute.getQualifiedName(), attribute.getValue());
 			}
+		}
+		for (Map.Entry<String, String> ns : property.getAllNamespacesWithPrefix().entrySet()) {
+			target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+ns.getValue(), ns.getKey());
 		}
 	}
 	

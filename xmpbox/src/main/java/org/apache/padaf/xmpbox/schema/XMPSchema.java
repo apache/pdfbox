@@ -69,8 +69,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public XMPSchema(XMPMetadata metadata, String namespaceName, String namespaceURI) {
 		super(metadata, namespaceURI, namespaceName);
-		getContainer().setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, namespaceName, namespaceURI));
-
+		addNamespace(namespaceURI, namespaceName);
 	}
 
 	/**
@@ -99,7 +98,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return The RDF 'about' attribute.
 	 */
 	public Attribute getAboutAttribute() {
-		return getContainer().getAttribute(RDFABOUT);
+		return getAttribute(RDFABOUT);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return The RDF 'about' value.
 	 */
 	public String getAboutValue() {
-		Attribute prop = getContainer().getAttribute(RDFABOUT);
+		Attribute prop = getAttribute(RDFABOUT);
 		if (prop != null) {
 			return prop.getValue();
 		}
@@ -126,7 +125,7 @@ public class XMPSchema extends AbstractStructuredType {
 	public void setAbout(Attribute about) throws BadFieldValueException {
 		if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace())) {
 			if (RDFABOUT.equals(about.getLocalName())) {
-				getContainer().setAttribute(about);
+				setAttribute(about);
 				return;
 			}
 		}
@@ -143,9 +142,9 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public void setAboutAsSimple(String about) {
 		if (about == null) {
-			getContainer().removeAttribute(RDFABOUT);
+			removeAttribute(RDFABOUT);
 		} else {
-			getContainer().setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "about", about));
+			setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "about", about));
 
 		}
 	}
@@ -1142,13 +1141,13 @@ public class XMPSchema extends AbstractStructuredType {
 			throw new IOException("Can only merge schemas of the same type.");
 		}
 
-		Iterator<Attribute> itAtt = xmpSchema.getContainer().getAllAttributes()
+		Iterator<Attribute> itAtt = xmpSchema.getAllAttributes()
 				.iterator();
 		Attribute att;
 		while (itAtt.hasNext()) {
 			att = itAtt.next();
 			if (att.getNamespace().equals(getNamespace())) {
-				getContainer().setAttribute(att);
+				setAttribute(att);
 			}
 		}
 
@@ -1253,25 +1252,6 @@ public class XMPSchema extends AbstractStructuredType {
 			return list;
 		}
 		return null;
-	}
-
-	/**
-	 * Get All attributes defined for this schema
-	 * 
-	 * @return Attributes list defined for this schema
-	 */
-	public List<Attribute> getAllAttributes() {
-		return getContainer().getAllAttributes();
-	}
-
-	/**
-	 * Set a new attribute for this schema
-	 * 
-	 * @param attr
-	 *            The new Attribute to set
-	 */
-	public void setAttribute(Attribute attr) {
-		getContainer().setAttribute(attr);
 	}
 
 	protected AbstractSimpleProperty instanciateSimple (String param, Object value) {

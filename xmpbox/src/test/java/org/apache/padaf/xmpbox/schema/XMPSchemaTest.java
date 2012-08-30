@@ -263,8 +263,7 @@ public class XMPSchemaTest {
 		Assert.assertEquals("nsURI", schem.getNamespace());
 
 		// In real cases, rdf ns will be declared before !
-		schem.setAttribute(new Attribute("http://www.w3.org/2000/xmlns/",
-				"rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
+		schem.addNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#","rdf");
 
 		String aboutVal = "aboutTest";
 		schem.setAboutAsSimple(aboutVal);
