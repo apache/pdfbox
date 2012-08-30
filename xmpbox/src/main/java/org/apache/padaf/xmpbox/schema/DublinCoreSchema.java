@@ -39,7 +39,7 @@ import org.apache.padaf.xmpbox.type.TextType;
  */
 public class DublinCoreSchema extends XMPSchema {
 
-	public static final String PREFERRED_DC_PREFIX = "dc";
+	public static final String PREFERED_PREFIX = "dc";
 
 	public static final String DCURI = "http://purl.org/dc/elements/1.1/";
 
@@ -95,7 +95,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public DublinCoreSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_DC_PREFIX, DCURI);
+		super(metadata, PREFERED_PREFIX, DCURI);
 	}
 
 	/**

@@ -33,7 +33,7 @@ import org.apache.padaf.xmpbox.type.PropertyType;
  */
 public class PDFAExtensionSchema extends XMPSchema {
 
-    public static final String PDFAEXTENSION = "pdfaExtension";
+    public static final String PREFERED_PREFIX = "pdfaExtension";
     public static final String PDFAEXTENSIONURI = "http://www.aiim.org/pdfa/ns/extension/";
 
 
@@ -49,7 +49,7 @@ public class PDFAExtensionSchema extends XMPSchema {
      *            The metadata to attach this schema XMPMetadata
      */
     public PDFAExtensionSchema(XMPMetadata metadata) {
-        this(metadata,PDFAEXTENSION);
+        this(metadata,PREFERED_PREFIX);
     }
 
     public PDFAExtensionSchema(XMPMetadata metadata, String prefix) {
@@ -62,7 +62,7 @@ public class PDFAExtensionSchema extends XMPSchema {
      * @return prefix value
      */
     public String getPrefixValue() {
-        return PDFAEXTENSION;
+        return PREFERED_PREFIX;
 
     }
 

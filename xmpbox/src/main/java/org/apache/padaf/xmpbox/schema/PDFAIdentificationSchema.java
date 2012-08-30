@@ -38,7 +38,7 @@ import org.apache.padaf.xmpbox.type.TextType;
  */
 public class PDFAIdentificationSchema extends XMPSchema {
 
-	public static final String IDPREFIX = "pdfaid";
+	public static final String PREFERED_PREFIX = "pdfaid";
 
 	public static final String IDURI = "http://www.aiim.org/pdfa/ns/id/";
 
@@ -65,7 +65,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public PDFAIdentificationSchema(XMPMetadata metadata) {
-		super(metadata, IDPREFIX, IDURI);
+		super(metadata, PREFERED_PREFIX, IDURI);
 	}
 
 	public PDFAIdentificationSchema(XMPMetadata metadata, String prefix) {
@@ -122,7 +122,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The amendment identifier value to set
 	 */
 	public void setAmd(String value) {
-		TextType amd = new TextType(getMetadata(), null, IDPREFIX, AMD, value);
+		TextType amd = new TextType(getMetadata(), null, PREFERED_PREFIX, AMD, value);
 		addProperty(amd);
 	}
 
@@ -146,7 +146,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public void setConformance(String value) throws BadFieldValueException {
 		if (value.equals("A") || value.equals("B")) {
-			TextType conf = new TextType(getMetadata(), null, IDPREFIX, CONFORMANCE, value);
+			TextType conf = new TextType(getMetadata(), null, PREFERED_PREFIX, CONFORMANCE, value);
 			addProperty(conf);
 
 		} else {

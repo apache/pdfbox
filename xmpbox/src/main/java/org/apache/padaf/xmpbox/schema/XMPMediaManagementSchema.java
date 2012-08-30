@@ -42,7 +42,7 @@ import org.apache.padaf.xmpbox.type.VersionType;
  */
 public class XMPMediaManagementSchema extends XMPSchema {
 
-	public static final String PREFERRED_XMPMM_PREFIX = "xmpMM";
+	public static final String PREFERED_PREFIX = "xmpMM";
 
 	public static final String XMPMMURI = "http://ns.adobe.com/xap/1.0/mm/";
 
@@ -53,7 +53,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPMediaManagementSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_XMPMM_PREFIX, XMPMMURI);
+		super(metadata, PREFERED_PREFIX, XMPMMURI);
 
 	}
 

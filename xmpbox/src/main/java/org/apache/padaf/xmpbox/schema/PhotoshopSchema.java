@@ -39,14 +39,14 @@ import org.apache.padaf.xmpbox.type.URIType;
 public class PhotoshopSchema extends XMPSchema {
 
 	public PhotoshopSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_PHOTOSHOP_PREFIX, PHOTOSHOPURI);
+		super(metadata, PREFERED_PREFIX, PHOTOSHOPURI);
 	}
 
 	public PhotoshopSchema(XMPMetadata metadata, String ownPrefix) {
 		super(metadata, ownPrefix, PHOTOSHOPURI);
 	}
 				
-	public static final String PREFERRED_PHOTOSHOP_PREFIX = "photoshop";
+	public static final String PREFERED_PREFIX = "photoshop";
 
 	public static final String PHOTOSHOPURI = "http://ns.adobe.com/photoshop/1.0/";
 

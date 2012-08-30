@@ -38,7 +38,7 @@ import org.apache.padaf.xmpbox.type.URLType;
  * 
  */
 public class XMPRightsManagementSchema extends XMPSchema {
-	public static final String PREFERRED_XMPRIGHTS_PREFIX = "xmpRights";
+	public static final String PREFERED_PREFIX = "xmpRights";
 
 	public static final String XMPRIGHTSURI = "http://ns.adobe.com/xap/1.0/rights/";
 
@@ -64,7 +64,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPRightsManagementSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_XMPRIGHTS_PREFIX, XMPRIGHTSURI);
+		super(metadata, PREFERED_PREFIX, XMPRIGHTSURI);
 	}
 
 	/**
