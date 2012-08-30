@@ -71,7 +71,7 @@ public class DoubleSameTypeSchemaTest {
 		// We can't use metadata.getDublinCoreSchema() due to specification of
 		// XMPBox (see Javadoc of XMPMetadata)
 		Assert.assertEquals(format, ((DublinCoreSchema) metadata.getSchema(
-				DublinCoreSchema.PREFERRED_DC_PREFIX, DublinCoreSchema.DCURI))
+				DublinCoreSchema.PREFERED_PREFIX, DublinCoreSchema.DCURI))
 				.getFormat());
 		Assert.assertEquals(coverage, ((DublinCoreSchema) metadata.getSchema(
 				ownPrefix, DublinCoreSchema.DCURI)).getCoverage());

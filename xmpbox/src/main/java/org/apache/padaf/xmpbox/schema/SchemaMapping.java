@@ -30,10 +30,15 @@ import org.apache.padaf.xmpbox.type.ReflectHelper;
 
 public final class SchemaMapping {
 
-	private static Map<String, XMPSchemaFactory> nsMaps;
+	private Map<String, XMPSchemaFactory> nsMaps;
+	
+	private Map<String, String> uriToPrefered;
+	
+	private XMPMetadata metadata;
 
-	static {
+	private void initialize () {
 		nsMaps = new HashMap<String, XMPSchemaFactory>();
+		uriToPrefered = new HashMap<String, String>();
 		addNameSpace("http://ns.adobe.com/xap/1.0/", XMPBasicSchema.class);
 		addNameSpace(DublinCoreSchema.DCURI, DublinCoreSchema.class);
 		addNameSpace("http://www.aiim.org/pdfa/ns/extension/", PDFAExtensionSchema.class);
@@ -46,7 +51,9 @@ public final class SchemaMapping {
 
 	}
 
-	public SchemaMapping () {
+	public SchemaMapping (XMPMetadata meta) {
+		this.metadata = meta;
+		this.initialize();
 	}
 	
 	
@@ -60,13 +67,25 @@ public final class SchemaMapping {
 	 * @throws XmpSchemaException
 	 *             When could not read property name in Schema Class given
 	 */
-	private static void addNameSpace(String ns, Class<? extends XMPSchema> classSchem) {
+	private void addNameSpace(String ns, Class<? extends XMPSchema> classSchem) {
 		nsMaps.put(ns, new XMPSchemaFactory(ns, classSchem,	ReflectHelper.initializePropMapping(ns, classSchem)));
+		try {
+			uriToPrefered.put(ns, classSchem.getField("PREFERED_PREFIX").get(null).toString());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
+		}
 	}
 
-	public void addNewNameSpace(String ns) {
+	public void addNewNameSpace(String ns,String prefered) {
 		PropMapping mapping = new PropMapping(ns);
 		nsMaps.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
+		uriToPrefered.put(ns, prefered);
 	}
 	
 	

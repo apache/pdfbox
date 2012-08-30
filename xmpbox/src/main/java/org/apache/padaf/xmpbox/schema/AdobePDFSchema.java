@@ -34,7 +34,7 @@ import org.apache.padaf.xmpbox.type.TextType;
  */
 public class AdobePDFSchema extends XMPSchema {
 
-	public static final String PREFERRED_PDF_PREFIX = "pdf";
+	public static final String PREFERED_PREFIX = "pdf";
 
 	public static final String PDFURI = "http://ns.adobe.com/pdf/1.3/";
 
@@ -54,7 +54,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public AdobePDFSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_PDF_PREFIX, PDFURI);
+		super(metadata, PREFERED_PREFIX, PDFURI);
 	}
 
 	/**

@@ -36,7 +36,7 @@ import org.apache.padaf.xmpbox.type.PropertyType;
 
 public class XMPBasicJobTicketSchema extends XMPSchema {
 
-    public static final String PREFERED_JOB_TICKET_PREFIX = "xmpBJ";
+    public static final String PREFERED_PREFIX = "xmpBJ";
 
     public static final String JOB_TICKET_URI = "http://ns.adobe.com/xap/1.0/bj/"; 
 
@@ -47,7 +47,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata) {
-        this(metadata, PREFERED_JOB_TICKET_PREFIX);
+        this(metadata, PREFERED_PREFIX);
     }
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {

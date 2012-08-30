@@ -46,7 +46,7 @@ import org.apache.padaf.xmpbox.type.URLType;
  */
 public class XMPBasicSchema extends XMPSchema {
 
-	public static final String PREFERRED_XMP_PREFIX = "xmp";
+	public static final String PREFERED_PREFIX = "xmp";
 
 	public static final String XMPBASICURI = "http://ns.adobe.com/xap/1.0/";
 
@@ -92,7 +92,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPBasicSchema(XMPMetadata metadata) {
-		super(metadata, PREFERRED_XMP_PREFIX, XMPBASICURI);
+		super(metadata, PREFERED_PREFIX, XMPBASICURI);
 
 	}
 

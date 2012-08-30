@@ -118,14 +118,14 @@ public class XMPDocumentBuilder {
 	BadFieldValueException {
 
 		XMPDocumentBuilder preproc = new XMPDocumentBuilder();
-		XMPMetadata xmpPreproc = preproc.doParsingParsing(xmp,true);
+		XMPMetadata xmpPreproc = preproc.doParsingParsing(xmp,true,null);
 		populateSchemaMapping(xmpPreproc);
 
 
-		return doParsingParsing(xmp,false);
+		return doParsingParsing(xmp,false,xmpPreproc);
 	}
 
-	public XMPMetadata doParsingParsing(byte[] xmp, boolean parseExtension) throws XmpParsingException,
+	public XMPMetadata doParsingParsing(byte[] xmp, boolean parseExtension, XMPMetadata _metadata) throws XmpParsingException,
 	XmpSchemaException, XmpUnknownValueTypeException,
 	XmpExpectedRdfAboutAttribute, XmpXpacketEndException,
 	BadFieldValueException {
@@ -139,7 +139,9 @@ public class XMPDocumentBuilder {
 			// expect xpacket processing instruction
 			expectNext(XMLStreamReader.PROCESSING_INSTRUCTION,
 					"Did not find initial xpacket processing instruction");
-			XMPMetadata metadata = parseInitialXpacket(reader.get().getPIData());
+			XMPMetadata meta = parseInitialXpacket(reader.get().getPIData());
+			XMPMetadata metadata = _metadata!=null?_metadata:meta;
+			metadata.clearSchemas();
 
 			// expect x:xmpmeta
 			expectNextTag(XMLStreamReader.START_ELEMENT,
@@ -207,9 +209,9 @@ public class XMPDocumentBuilder {
 		for (XMPSchema xmpSchema : schems) {
 			if (xmpSchema.getNamespace().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
 				// ensure the prefix is the preferred one (cannot use other definition)
-				if (!xmpSchema.getPrefix().equals(PDFAExtensionSchema.PDFAEXTENSION)) {
+				if (!xmpSchema.getPrefix().equals(PDFAExtensionSchema.PREFERED_PREFIX)) {
 					throw new XmpUnexpectedNamespacePrefixException("Found invalid prefix for PDF/A extension, found '"+
-							xmpSchema.getPrefix()+"', should be '"+PDFAExtensionSchema.PDFAEXTENSION+"'"
+							xmpSchema.getPrefix()+"', should be '"+PDFAExtensionSchema.PREFERED_PREFIX+"'"
 							);
 				}
 				// create schema and types
@@ -219,13 +221,14 @@ public class XMPDocumentBuilder {
 					if (af instanceof PDFASchemaType) {
 						PDFASchemaType st = (PDFASchemaType)af;
 						String namespaceUri = st.getNamespaceURI();
+						String prefix = st.getPrefix();
 						ArrayProperty properties = st.getProperty();
 						ArrayProperty valueTypes = st.getValueType();
 						XMPSchemaFactory xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
 						// retrieve namespaces
 						if (xsf==null) {
 							// create namespace with no field
-							meta.getSchemaMapping().addNewNameSpace(namespaceUri);
+							meta.getSchemaMapping().addNewNameSpace(namespaceUri,prefix);
 							xsf = meta.getSchemaMapping().getSchemaFactory(namespaceUri);
 						}
 						// populate value type
