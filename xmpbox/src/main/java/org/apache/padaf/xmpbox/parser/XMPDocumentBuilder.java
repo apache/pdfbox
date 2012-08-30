@@ -29,10 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -668,8 +668,7 @@ public class XMPDocumentBuilder {
 		}
 
 		for (int i = 1; i < cptNS; i++) {
-			schema.setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
-					reader.get().getNamespacePrefix(i), reader.get().getNamespaceURI(i)));
+			schema.addNamespace(reader.get().getNamespaceURI(i), reader.get().getNamespacePrefix(i));
 		}
 		treatDescriptionAttributes(metadata, schema);
 		while (reader.get().nextTag() == XMLStreamReader.START_ELEMENT) {
@@ -733,22 +732,12 @@ public class XMPDocumentBuilder {
 	private String getPropertyDeclarationInNamespaces(XMPSchema schema,
 			QName prop) throws XmpParsingException {
 		NSMapping nsMap = schema.getMetadata().getNsMapping();
-		Iterator<Attribute> it = schema.getAllAttributes().iterator();
-		Attribute tmp;
-		ArrayList<Attribute> list = new ArrayList<Attribute>();
-		while (it.hasNext()) {
-			tmp = it.next();
-			if (tmp.getNamespace() != null) {
-				if (tmp.getNamespace().equals(XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
-					list.add(tmp);
-				}
-			}
-		}
-		it = list.iterator();
+		Iterator<Entry<String, String>> it = schema.getAllNamespacesWithPrefix().entrySet().iterator();
 		String type;
 		StringBuilder unknownNS = new StringBuilder();
 		while (it.hasNext()) {
-			String namespace = it.next().getValue();
+			Entry<String,String> entry = it.next();
+			String namespace = entry.getKey();
 			if (!nsMap.isContainedNamespace(namespace)) {
 				unknownNS.append(" '").append(namespace).append("' ");
 				continue;

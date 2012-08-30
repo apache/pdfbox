@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
 
 /**
@@ -97,7 +99,11 @@ public abstract class AbstractField {
 	 * @param value
 	 *            The Attribute property to add
 	 */
-	public void setAttribute(Attribute value) {
+	public final void setAttribute(Attribute value) {
+		// TODO remove when test are OK
+		if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(value.getNamespace())) {
+			throw new Error ("Should not call setAttribute for this "+value.getValue());
+		}
 		if (attributes.containsKey(value.getQualifiedName())) {
 			// if same name in element, attribute will be replaced
 			attributes.remove(value.getQualifiedName());
@@ -116,7 +122,7 @@ public abstract class AbstractField {
 	 *            the full qualified name of the attribute concerned
 	 * @return true if attribute is present
 	 */
-	public boolean containsAttribute(String qualifiedName) {
+	public final boolean containsAttribute(String qualifiedName) {
 		return attributes.containsKey(qualifiedName);
 	}
 
@@ -127,7 +133,7 @@ public abstract class AbstractField {
 	 *            the full qualified name of the attribute wanted
 	 * @return The attribute property
 	 */
-	public Attribute getAttribute(String qualifiedName) {
+	public final Attribute getAttribute(String qualifiedName) {
 		return attributes.get(qualifiedName);
 	}
 
@@ -136,7 +142,7 @@ public abstract class AbstractField {
 	 * 
 	 * @return Attributes list
 	 */
-	public List<Attribute> getAllAttributes() {
+	public final List<Attribute> getAllAttributes() {
 		return new ArrayList<Attribute>(attributes.values());
 	}
 
@@ -146,7 +152,7 @@ public abstract class AbstractField {
 	 * @param qualifiedName
 	 *            the full qualified name of the attribute wanted
 	 */
-	public void removeAttribute(String qualifiedName) {
+	public final void removeAttribute(String qualifiedName) {
 		if (containsAttribute(qualifiedName)) {
 			attributes.remove(qualifiedName);
 		}

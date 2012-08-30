@@ -21,7 +21,9 @@
 
 package org.apache.padaf.xmpbox.type;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
@@ -29,12 +31,28 @@ public abstract class AbstractComplexProperty extends AbstractField {
 
 	private ComplexPropertyContainer container;
 	
+	private Map<String,String> namespaceToPrefix;
+
+	
 	public AbstractComplexProperty(XMPMetadata metadata, String namespaceURI,
 			String prefix, String propertyName) {
 		super(metadata, namespaceURI, prefix, propertyName);
 		container = new ComplexPropertyContainer();
+		this.namespaceToPrefix = new HashMap<String, String>();
 	}
 
+	public void addNamespace (String namespace, String prefix) {
+		this.namespaceToPrefix.put(namespace, prefix);
+	}
+	
+	public String getNamespacePrefix (String namespace) {
+		return this.namespaceToPrefix.get(namespace);
+	}
+	
+	public Map<String, String> getAllNamespacesWithPrefix () {
+		return this.namespaceToPrefix;
+	}
+	
 	/**
 	 * Add a property to the current structure
 	 * 

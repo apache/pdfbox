@@ -28,7 +28,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
 	
-	
 	protected static final  String STRUCTURE_ARRAY_NAME = "li"; 
 
 	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
@@ -36,17 +35,12 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 		super(metadata, namespaceURI, fieldPrefix, STRUCTURE_ARRAY_NAME);
 	}
 
-	
 	protected void addSimpleProperty (String propertyName, Object value) {
 		TypeMapping tm = getMetadata().getTypeMapping();
 		AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), null,getPrefix(),propertyName, value);
 		addProperty(asp);
 	}
 
-
-
-
-	
 	protected String getPropertyValueAsString (String fieldName) {
 		AbstractSimpleProperty absProp = (AbstractSimpleProperty)getProperty(fieldName);
 		if (absProp == null) {
@@ -64,7 +58,6 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 			return null;
 		}
 	}
-
 
 
 }
