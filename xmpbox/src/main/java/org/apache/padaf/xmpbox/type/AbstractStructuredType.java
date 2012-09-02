@@ -60,4 +60,12 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 	}
 
 
+	public TextType createTextType (String propertyName, String value) {
+		return getMetadata().getTypeMapping().createText(getNamespace(), getPrefix(), propertyName, value);
+	}
+
+	public ArrayProperty createArrayProperty (String propertyName, String type) {
+		return getMetadata().getTypeMapping().createArrayProperty(getNamespace(), getPrefix(), propertyName, type);
+	}
+	
 }

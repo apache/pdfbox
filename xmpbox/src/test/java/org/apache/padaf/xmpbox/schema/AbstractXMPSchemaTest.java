@@ -306,7 +306,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		TextType tt = new TextType(metadata, null,schema.getPrefix(), property,
+		TextType tt = metadata.getTypeMapping().createText(null,schema.getPrefix(), property,
 				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, TextType.class);
 		Method getMethod = schemaClass.getMethod(getName);
@@ -321,7 +321,7 @@ public abstract class AbstractXMPSchemaTest {
 		String setName = setMethod(property);
 		String getName = getMethod(property);
 
-		URIType tt = new URIType(metadata, null,schema.getPrefix(), property,
+		URIType tt = metadata.getTypeMapping().createURI(null,schema.getPrefix(), property,
 				(String)value);
 		Method setMethod = schemaClass.getMethod(setName, URIType.class);
 		Method getMethod = schemaClass.getMethod(getName);

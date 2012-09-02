@@ -429,8 +429,7 @@ public class PhotoshopSchema extends XMPSchema {
 	
 	public void addTextLayers(String layerName, String layerText) {
 		if (seqLayer == null) {
-			seqLayer = new ArrayProperty(getMetadata(), null, getPrefix(), TEXT_LAYERS,
-					ArrayProperty.ORDERED_ARRAY);
+			seqLayer = createArrayProperty(TEXT_LAYERS, ArrayProperty.ORDERED_ARRAY);
 			addProperty(seqLayer);
 		}
 		LayerType layer = new LayerType(getMetadata());

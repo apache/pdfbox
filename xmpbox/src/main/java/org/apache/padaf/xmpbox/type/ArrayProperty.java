@@ -21,6 +21,11 @@
 
 package org.apache.padaf.xmpbox.type;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.padaf.xmpbox.XMPMetadata;
 
 /**
@@ -62,6 +67,21 @@ public class ArrayProperty extends AbstractComplexProperty {
 
 	public String getArrayType() {
 		return arrayType;
+	}
+
+
+	public List<String> getElementsAsString() {
+		List<String> retval = null;
+		retval = new ArrayList<String>();
+		Iterator<AbstractField> it = getContainer()
+				.getAllProperties().iterator();
+		AbstractSimpleProperty tmp;
+		while (it.hasNext()) {
+			tmp = (AbstractSimpleProperty) it.next();
+			retval.add(tmp.getStringValue());
+		}
+		retval = Collections.unmodifiableList(retval);
+		return retval;
 	}
 
 	

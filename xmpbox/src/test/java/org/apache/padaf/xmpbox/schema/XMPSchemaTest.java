@@ -38,6 +38,7 @@ import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +64,8 @@ public class XMPSchemaTest {
 		String bagName = "BAGTEST";
 		String value1 = "valueOne";
 		String value2 = "valueTwo";
-		schem.addBagValue(bagName, new TextType(parent, null,"rdf", "li", value1));
+		schem.addBagValue(bagName, schem.getMetadata()
+				.getTypeMapping().createText(null, "rdf", "li", value1));
 		schem.addQualifiedBagValue(bagName, value2);
 
 		List<String> values = schem.getUnqualifiedBagValueList(bagName);
@@ -88,10 +90,12 @@ public class XMPSchemaTest {
 
 	@Test
 	public void testArrayList() throws Exception {
-		ArrayProperty newSeq = new ArrayProperty(parent, null, "nsSchem",
+		XMPMetadata meta = XMPMetadata.createXMPMetadata();
+		ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem",
 				"seqType", ArrayProperty.ORDERED_ARRAY);
-		TextType li1 = new TextType(parent,null, "rdf", "li", "valeur1");
-		TextType li2 = new TextType(parent,null, "rdf", "li", "valeur2");
+		TypeMapping tm = meta.getTypeMapping();
+		TextType li1 = tm.createText(null, "rdf", "li", "valeur1");
+		TextType li2 =tm.createText(null, "rdf", "li", "valeur2");
 		newSeq.getContainer().addProperty(li1);
 		newSeq.getContainer().addProperty(li2);
 		schem.addProperty(newSeq);
@@ -110,7 +114,7 @@ public class XMPSchemaTest {
 	@Test
 	public void testSeqManagement() throws Exception {
 		Calendar date = Calendar.getInstance();
-		BooleanType bool = new BooleanType(parent, null, "rdf", "li", "True");
+		BooleanType bool = parent.getTypeMapping().createBoolean( null, "rdf", "li", true);
 		String textVal = "seqValue";
 		String seqName = "SEQNAME";
 
@@ -180,7 +184,7 @@ public class XMPSchemaTest {
 		String val = "value";
 		String val2 = "value2";
 		schem.setTextPropertyValueAsSimple(prop, val);
-		TextType text = new TextType(parent,null, schem.getPrefix(), prop, "value2");
+		TextType text = schem.getMetadata().getTypeMapping().createText(null, schem.getPrefix(), prop, "value2");
 		schem.setTextProperty(text);
 		Assert.assertEquals(val2, schem.getUnqualifiedTextPropertyValue(prop));
 		Assert.assertEquals(text, schem.getUnqualifiedTextProperty(prop));
@@ -278,7 +282,7 @@ public class XMPSchemaTest {
 		schem.setTextPropertyValue(textProp, textPropVal);
 		Assert.assertEquals(textPropVal, schem.getUnqualifiedTextPropertyValue(textProp));
 
-		TextType text = new TextType(parent,null, "nsSchem", "textType", "GRINGO");
+		TextType text = parent.getTypeMapping().createText(null, "nsSchem", "textType", "GRINGO");
 		schem.setTextProperty(text);
 		Assert.assertEquals(text, schem.getUnqualifiedTextProperty("textType"));
 
@@ -287,7 +291,7 @@ public class XMPSchemaTest {
 		schem.setDatePropertyValue(date, dateVal);
 		Assert.assertEquals(dateVal, schem.getDatePropertyValue(date));
 
-		DateType dateType = new DateType(parent, null, "nsSchem", "dateType",
+		DateType dateType = parent.getTypeMapping().createDate( null, "nsSchem", "dateType",
 				Calendar.getInstance());
 		schem.setDateProperty(dateType);
 		Assert
@@ -299,7 +303,7 @@ public class XMPSchemaTest {
 		schem.setBooleanPropertyValue(bool, boolVal);
 		Assert.assertEquals(boolVal, schem.getBooleanPropertyValue(bool));
 
-		BooleanType boolType = new BooleanType(parent, null,"nsSchem", "boolType",
+		BooleanType boolType = parent.getTypeMapping().createBoolean( null,"nsSchem", "boolType",
 				false);
 		schem.setBooleanProperty(boolType);
 		Assert.assertEquals(boolType, schem
@@ -310,7 +314,7 @@ public class XMPSchemaTest {
 		schem.setIntegerPropertyValue(intProp, intPropVal);
 		Assert.assertEquals(intPropVal, schem.getIntegerPropertyValue(intProp));
 
-		IntegerType intType = new IntegerType(parent, null, "nsSchem", "intType", 5);
+		IntegerType intType = parent.getTypeMapping().createInteger( null, "nsSchem", "intType", 5);
 		schem.setIntegerProperty(intType);
 		Assert.assertEquals(intType, schem
 				.getIntegerProperty("intType"));
@@ -472,7 +476,7 @@ public class XMPSchemaTest {
 	public void testListAndContainerAccessor() throws Exception {
 		String boolname = "bool";
 		boolean boolVal = true;
-		BooleanType bool = new BooleanType(parent, null, schem.getPrefix(),
+		BooleanType bool = parent.getTypeMapping().createBoolean( null, schem.getPrefix(),
 				boolname, boolVal);
 		Attribute att = new Attribute(XmpConstants.RDF_NAMESPACE, "test", "vgh");
 		schem.setAttribute(att);

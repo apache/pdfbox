@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.type;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -452,5 +453,88 @@ public final class TypeMapping {
 		}
 	}
 
+	public BooleanType createBoolean (String namespaceURI, String prefix,
+			String propertyName, boolean value) {
+		return new BooleanType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public DateType createDate (String namespaceURI, String prefix,
+			String propertyName, Calendar value) {
+		return new DateType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public IntegerType createInteger (String namespaceURI, String prefix,
+			String propertyName, int value) {
+		return new IntegerType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public RealType createReal (String namespaceURI, String prefix,
+			String propertyName, float value) {
+		return new RealType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public TextType createText (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new TextType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public ProperNameType createProperName (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new ProperNameType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+	
+	public URIType createURI (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new URIType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public URLType createURL (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new URLType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public RenditionClassType createRenditionClass (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new RenditionClassType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public PartType createPart (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new PartType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public MIMEType createMIMEType (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new MIMEType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public LocaleType createLocale (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new LocaleType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public GUIDType createGUID (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new GUIDType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public ChoiceType createChoice (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new ChoiceType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public AgentNameType createAgentName (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new AgentNameType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public XPathType createXPath (String namespaceURI, String prefix,
+			String propertyName, String value) {
+		return new XPathType(metadata, namespaceURI, prefix,propertyName, value);
+	}
+
+	public ArrayProperty createArrayProperty (String namespace, String prefix, String propertyName, String type) {
+		return new ArrayProperty(metadata, namespace, prefix, propertyName, type);
+	}
 	
 }

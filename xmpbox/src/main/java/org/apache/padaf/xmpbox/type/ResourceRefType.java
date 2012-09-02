@@ -294,7 +294,7 @@ public class ResourceRefType extends AbstractStructuredType {
 	public void addAlternatePath(String value) {
         ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq==null) {
-        	seq = new ArrayProperty(getMetadata(), null,
+        	seq = getMetadata().getTypeMapping().createArrayProperty(null,
                     PREFERRED_PREFIX, ALTERNATE_PATHS,
                     ArrayProperty.ORDERED_ARRAY);
         	addProperty(seq);
@@ -321,7 +321,7 @@ public class ResourceRefType extends AbstractStructuredType {
 	public List<String> getAlternatePaths() {
         ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq!=null) {
-        	return TypeUtil.getArrayListToString(seq);
+        	return seq.getElementsAsString();
         } else {
         	return null;
         }

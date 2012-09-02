@@ -77,7 +77,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setKeywords(String value) {
 		TextType keywords;
-		keywords = new TextType(getMetadata(), null,getPrefix(), KEYWORDS, value);
+		keywords = createTextType ( KEYWORDS, value);
 		addProperty(keywords);
 	}
 
@@ -99,7 +99,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setPDFVersion(String value) {
 		TextType version;
-		version = new TextType(getMetadata(), null,getPrefix(), PDF_VERSION, value);
+		version = createTextType ( PDF_VERSION, value);
 		addProperty(version);
 
 	}
@@ -122,7 +122,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public void setProducer(String value) {
 		TextType producer;
-		producer = new TextType(getMetadata(),null, getPrefix(), PRODUCER, value);
+		producer = createTextType ( PRODUCER, value);
 		addProperty(producer);
 	}
 

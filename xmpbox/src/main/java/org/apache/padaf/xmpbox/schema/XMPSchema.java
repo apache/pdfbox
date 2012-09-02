@@ -43,7 +43,6 @@ import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeMapping;
-import org.apache.padaf.xmpbox.type.TypeUtil;
 
 /**
  * This class represents a metadata schema that can be stored in an XMP
@@ -124,7 +123,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public void setAbout(Attribute about) throws BadFieldValueException {
 		if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace())) {
-			if (RDFABOUT.equals(about.getLocalName())) {
+			if (RDFABOUT.equals(about.getName())) {
 				setAttribute(about);
 				return;
 			}
@@ -631,12 +630,11 @@ public class XMPSchema extends AbstractStructuredType {
 
 	private void internalAddBagValue(String qualifiedBagName, String bagValue) {
 		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
-		TextType li = new TextType(getMetadata(),null, "rdf", "li", bagValue);
+		TextType li = createTextType ( "li", bagValue);
 		if (bag != null) {
 			bag.getContainer().addProperty(li);
 		} else {
-			ArrayProperty newBag = new ArrayProperty(getMetadata(),null, 
-					getPrefix(), qualifiedBagName,
+			ArrayProperty newBag = createArrayProperty(qualifiedBagName,
 					ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(li);
 			addProperty(newBag);
@@ -656,33 +654,6 @@ public class XMPSchema extends AbstractStructuredType {
 	}
 
 	/**
-	 * Generic String List Builder for arrays contents
-	 * 
-	 * @param qualifiedArrayName
-	 *            the full qualified name of property concerned
-	 * @return String list which represents content of array property
-	 */
-	private List<String> getArrayListToString(String qualifiedArrayName) {
-		ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
-		return TypeUtil.getArrayListToString(array);
-	}
-
-	/**
-	 * Get all the values of the bag property, using the current prefix. This
-	 * will return a list of java.lang.String objects, this is a read-only list.
-	 * 
-	 * @param simpleName
-	 *            the local name of property concerned
-	 * 
-	 * 
-	 * @return All values of the bag property in a list.
-	 */
-	// TODO remove
-	public List<String> getBagValueListAsSimple(String simpleName) {
-		return getUnqualifiedBagValueList(simpleName);
-	}
-
-	/**
 	 * Get all the values of the bag property. This will return a list of
 	 * java.lang.String objects, this is a read-only list.
 	 * 
@@ -692,8 +663,12 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return All values of the bag property in a list.
 	 */
 	public List<String> getUnqualifiedBagValueList(String bagName) {
-		String qualifiedBagName = bagName;
-		return getArrayListToString(qualifiedBagName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(bagName);
+		if (array!=null) {
+			return array.getElementsAsString();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -765,13 +740,11 @@ public class XMPSchema extends AbstractStructuredType {
 	public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue) {
 		String qualifiedSeqName = simpleSeqName;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
-		TextType li = new TextType(getMetadata(),null, "rdf", "li", seqValue);
+		TextType li = createTextType ( "li", seqValue);
 		if (seq != null) {
 			seq.getContainer().addProperty(li);
 		} else {
-			ArrayProperty newSeq = new ArrayProperty(getMetadata(),null,
-					getPrefix(), simpleSeqName,
-					ArrayProperty.ORDERED_ARRAY);
+			ArrayProperty newSeq = createArrayProperty(simpleSeqName, ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(li);
 			addProperty(newSeq);
 		}
@@ -792,9 +765,7 @@ public class XMPSchema extends AbstractStructuredType {
 		if (bag != null) {
 			bag.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newBag = new ArrayProperty(getMetadata(),null,
-					getPrefix(),qualifiedSeqName,
-					ArrayProperty.UNORDERED_ARRAY);
+			ArrayProperty newBag = createArrayProperty(qualifiedSeqName, ArrayProperty.UNORDERED_ARRAY);
 			newBag.getContainer().addProperty(seqValue);
 			addProperty(newBag);
 		}
@@ -815,9 +786,7 @@ public class XMPSchema extends AbstractStructuredType {
 		if (seq != null) {
 			seq.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newSeq = new ArrayProperty(getMetadata(),null,
-					getPrefix(), seqName,
-					ArrayProperty.ORDERED_ARRAY);
+			ArrayProperty newSeq = createArrayProperty(seqName,	ArrayProperty.ORDERED_ARRAY);
 			newSeq.getContainer().addProperty(seqValue);
 			addProperty(newSeq);
 		}
@@ -833,8 +802,12 @@ public class XMPSchema extends AbstractStructuredType {
 	 *         property does not exist.
 	 */
 	public List<String> getUnqualifiedSequenceValueList(String seqName) {
-		String qualifiedSeqName = seqName;
-		return getArrayListToString(qualifiedSeqName);
+		ArrayProperty array = (ArrayProperty) getAbstractProperty(seqName);
+		if (array!=null) {
+			return array.getElementsAsString();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -892,8 +865,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The date to add to the sequence property.
 	 */
 	public void addUnqualifiedSequenceDateValue(String seqName, Calendar date) {
-		addUnqualifiedSequenceValue(seqName, new DateType(getMetadata(),null, "rdf", "li",
-				date));
+		addUnqualifiedSequenceValue(seqName, getMetadata().getTypeMapping().createDate(null, "rdf", "li", date));
 	}
 
 	/**
@@ -1014,8 +986,7 @@ public class XMPSchema extends AbstractStructuredType {
 						} else {
 							prop.getContainer().removeProperty(tmp);
 							TextType langValue;
-							langValue = new TextType(getMetadata(), null,"rdf", "li",
-									value);
+							langValue = createTextType ( "li",value);
 
 							langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI,
 									"lang", language));
@@ -1027,18 +998,16 @@ public class XMPSchema extends AbstractStructuredType {
 				}
 				// if no definition found, we add a new one
 				TextType langValue;
-				langValue = new TextType(getMetadata(),null, "rdf", "li", value);
+				langValue = createTextType ( "li", value);
 				langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, "lang",
 						language));
 				prop.getContainer().addProperty(langValue);
 				reorganizeAltOrder(prop.getContainer());
 			}
 		} else {
-			prop = new ArrayProperty(getMetadata(), null, 
-					getPrefix(), name,
-					ArrayProperty.ALTERNATIVE_ARRAY);
+			prop = createArrayProperty( name,ArrayProperty.ALTERNATIVE_ARRAY);
 			TextType langValue;
-			langValue = new TextType(getMetadata(),null, "rdf", "li", value);
+			langValue = createTextType ( "li", value);
 			langValue
 			.setAttribute(new Attribute(XMLConstants.XML_NS_URI, "lang", language));
 			prop.getContainer().addProperty(langValue);

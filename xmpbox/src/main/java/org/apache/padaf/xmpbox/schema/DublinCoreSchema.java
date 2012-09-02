@@ -132,7 +132,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setCoverage(String text) {
-		addProperty(new TextType(getMetadata(), null, getPrefix(), COVERAGE, text));
+		addProperty(createTextType ( COVERAGE, text));
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setFormat(String mimeType) {
-		addProperty(new TextType(getMetadata(), null, getPrefix(), FORMAT, mimeType));
+		addProperty(createTextType ( FORMAT, mimeType));
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setIdentifier(String text) {
-		addProperty(new TextType(getMetadata(), null, getPrefix(), IDENTIFIER, text));
+		addProperty(createTextType ( IDENTIFIER, text));
 	}
 
 	/**
@@ -326,7 +326,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            Value to set
 	 */
 	public void setSource(String text) {
-		addProperty(new TextType(getMetadata(), null, getPrefix(), SOURCE, text));
+		addProperty(createTextType ( SOURCE, text));
 	}
 
 	/**

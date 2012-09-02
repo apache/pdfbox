@@ -124,8 +124,7 @@ public class XMPBasicSchema extends XMPSchema {
 	public void addThumbnails(Integer height, Integer width, String format,
 			String img) {
 		if (altThumbs == null) {
-			altThumbs = new ArrayProperty(getMetadata(), null, getPrefix(), THUMBNAILS,
-					ArrayProperty.ALTERNATIVE_ARRAY);
+			altThumbs = createArrayProperty( THUMBNAILS, ArrayProperty.ALTERNATIVE_ARRAY);
 			addProperty(altThumbs);
 		}
 		ThumbnailType thumb = new ThumbnailType(getMetadata());

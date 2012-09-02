@@ -67,8 +67,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     public void addJob (JobType job) {
     	// create bag if not existing
         if (bagJobs == null) {
-            bagJobs = new ArrayProperty(getMetadata(), null, getPrefix(), JOB_REF,
-                    ArrayProperty.UNORDERED_ARRAY);
+            bagJobs = createArrayProperty(JOB_REF, ArrayProperty.UNORDERED_ARRAY);
             addProperty(bagJobs);
         }
         // add job
