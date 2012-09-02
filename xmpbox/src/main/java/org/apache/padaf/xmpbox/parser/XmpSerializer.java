@@ -140,11 +140,11 @@ public class XmpSerializer {
 		List<Attribute> attributes = property.getAllAttributes();
 		for (Attribute attribute : attributes) {
 			if (target.getNamespaceURI().equals(attribute.getNamespace())) {
-				target.setAttribute(attribute.getLocalName(), attribute.getValue());
+				target.setAttribute(attribute.getName(), attribute.getValue());
 			} else if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
-				target.setAttribute("rdf"+":"+attribute.getLocalName(), attribute.getValue());
+				target.setAttribute("rdf"+":"+attribute.getName(), attribute.getValue());
 			} else {
-				target.setAttribute(attribute.getQualifiedName(), attribute.getValue());
+				target.setAttribute(attribute.getName(), attribute.getValue());
 			}
 		}
 		for (Map.Entry<String, String> ns : property.getAllNamespacesWithPrefix().entrySet()) {

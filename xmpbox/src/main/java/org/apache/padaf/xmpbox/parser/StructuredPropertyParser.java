@@ -198,8 +198,10 @@ public class StructuredPropertyParser {
 						String arrayType = metadata.getTypeMapping().getArrayType(ptype);
 						String typeInArray = ptype.substring(pos+1);
 						TypeDescription<AbstractStructuredType> tclass = metadata.getTypeMapping().getStructuredDescription(typeInArray);
-						ArrayProperty cp = new ArrayProperty(metadata,null,
-								eltName.getPrefix(), eltName.getLocalPart(),
+						ArrayProperty cp = property.getMetadata().getTypeMapping().createArrayProperty(
+								null,
+								eltName.getPrefix(), 
+								eltName.getLocalPart(),
 								arrayType);
 						property.getContainer().addProperty(cp);
 

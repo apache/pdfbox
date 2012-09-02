@@ -37,8 +37,7 @@ public class AttributeTest {
 		Attribute att = new Attribute(nsUri, localName, value);
 
 		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getLocalName());
-		Assert.assertEquals(localName, att.getQualifiedName());
+		Assert.assertEquals(localName, att.getName());
 		Assert.assertEquals(value, att.getValue());
 
 		String nsUri2 = "nsUri2";
@@ -47,12 +46,11 @@ public class AttributeTest {
 		String value2 = "value2";
 
 		att.setNsURI(nsUri2);
-		att.setLocalName(localName2);
+		att.setName(localName2);
 		att.setValue(value2);
 
 		Assert.assertEquals(nsUri2, att.getNamespace());
-		Assert.assertEquals(localName2, att.getLocalName());
-		Assert.assertEquals(localName2, att.getQualifiedName());
+		Assert.assertEquals(localName2, att.getName());
 		Assert.assertEquals(value2, att.getValue());
 
 	}
@@ -66,12 +64,10 @@ public class AttributeTest {
 		Attribute att = new Attribute(nsUri, localName, value);
 
 		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getLocalName());
-		Assert.assertEquals(localName, att.getQualifiedName());
+		Assert.assertEquals(localName, att.getName());
 
 		att = new Attribute(nsUri, localName, value);
 		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getLocalName());
-		Assert.assertEquals(localName, att.getQualifiedName());
+		Assert.assertEquals(localName, att.getName());
 	}
 }

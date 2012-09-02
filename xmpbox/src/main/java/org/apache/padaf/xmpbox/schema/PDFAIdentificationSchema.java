@@ -122,7 +122,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The amendment identifier value to set
 	 */
 	public void setAmd(String value) {
-		TextType amd = new TextType(getMetadata(), null, PREFERED_PREFIX, AMD, value);
+		TextType amd = createTextType ( AMD, value);
 		addProperty(amd);
 	}
 
@@ -146,7 +146,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public void setConformance(String value) throws BadFieldValueException {
 		if (value.equals("A") || value.equals("B")) {
-			TextType conf = new TextType(getMetadata(), null, PREFERED_PREFIX, CONFORMANCE, value);
+			TextType conf = createTextType ( CONFORMANCE, value);
 			addProperty(conf);
 
 		} else {
@@ -187,7 +187,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 			return null;
 		} else {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(PART)) {
+				if (attribute.getName().equals(PART)) {
 					return Integer.valueOf(attribute.getValue());
 				}
 			}
@@ -250,7 +250,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 		TextType tmp = getAmdProperty();
 		if (tmp==null) {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(AMD)) {
+				if (attribute.getName().equals(AMD)) {
 					return attribute.getValue();
 				}
 			}
@@ -284,7 +284,7 @@ public class PDFAIdentificationSchema extends XMPSchema {
 		TextType tt = getConformanceProperty();
 		if (tt==null) {
 			for (Attribute attribute : getAllAttributes()) {
-				if (attribute.getQualifiedName().equals(CONFORMANCE)) {
+				if (attribute.getName().equals(CONFORMANCE)) {
 					return attribute.getValue();
 				}
 			}

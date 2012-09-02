@@ -67,7 +67,7 @@ public class LayerType extends AbstractStructuredType {
 	 *            the value of LayerName property to set
 	 */
 	public void setLayerName(String image) {
-		this.addProperty(new TextType(getMetadata(), null,getPrefix(), LAYER_NAME, image));
+		this.addProperty(createTextType ( LAYER_NAME, image));
 	}
 	
 	/**
@@ -95,7 +95,7 @@ public class LayerType extends AbstractStructuredType {
 	 *            the value of LayerText property to set
 	 */
 	public void setLayerText(String image) {
-		this.addProperty(new TextType(getMetadata(), null,getPrefix(), LAYER_TEXT, image));
+		this.addProperty(createTextType ( LAYER_TEXT, image));
 	}
 
 }

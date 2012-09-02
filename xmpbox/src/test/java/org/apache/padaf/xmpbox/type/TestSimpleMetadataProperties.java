@@ -106,12 +106,12 @@ public class TestSimpleMetadataProperties {
 		int integerv = 1;
 		float realv = Float.parseFloat("1.69");
 		String textv = "TEXTCONTENT";
-		BooleanType bool = new BooleanType(parent, null, "test", "booleen", boolv);
-		DateType date = new DateType(parent, null,"test", "date", datev);
-		IntegerType integer = new IntegerType(parent, null, "test", "integer",
+		BooleanType bool = parent.getTypeMapping().createBoolean(null, "test", "booleen", boolv);
+		DateType date =  parent.getTypeMapping().createDate( null,"test", "date", datev);
+		IntegerType integer =parent.getTypeMapping().createInteger( null, "test", "integer",
 				integerv);
-		RealType real = new RealType(parent, null, "test", "real", realv);
-		TextType text = new TextType(parent, null,"test", "text", textv);
+		RealType real = parent.getTypeMapping().createReal( null, "test", "real", realv);
+		TextType text = parent.getTypeMapping().createText( null,"test", "text", textv);
 
 //		Assert.assertEquals(bool.getNamespace(), bool.getElement()
 //				.getNamespaceURI());
@@ -188,12 +188,12 @@ public class TestSimpleMetadataProperties {
 	@Test
 	public void testObjectCreationWithNamespace() throws Exception {
 		String ns = "http://www.test.org/pdfa/";
-		BooleanType bool = new BooleanType(parent, ns, "test", "booleen", true);
-		DateType date = new DateType(parent, ns, "test", "date", Calendar
+		BooleanType bool = parent.getTypeMapping().createBoolean( ns, "test", "booleen", true);
+		DateType date = parent.getTypeMapping().createDate( ns, "test", "date", Calendar
 				.getInstance());
-		IntegerType integer = new IntegerType(parent, ns, "test", "integer", 1);
-		RealType real = new RealType(parent, ns, "test", "real", (float) 1.6);
-		TextType text = new TextType(parent, ns, "test", "text", "TEST");
+		IntegerType integer = parent.getTypeMapping().createInteger( ns, "test", "integer", 1);
+		RealType real = parent.getTypeMapping().createReal( ns, "test", "real", (float) 1.6);
+		TextType text = parent.getTypeMapping().createText( ns, "test", "text", "TEST");
 
 		Assert.assertEquals(ns, bool.getNamespace());
 		Assert.assertEquals(ns, date.getNamespace());
@@ -240,19 +240,19 @@ public class TestSimpleMetadataProperties {
 		// System.out.println(value.getQualifiedName());
 
 		Assert.assertEquals(value, integer.getAttribute(value
-				.getQualifiedName()));
-		Assert.assertTrue(integer.containsAttribute(value.getQualifiedName()));
+				.getName()));
+		Assert.assertTrue(integer.containsAttribute(value.getName()));
 
 		// Replacement check
 
 		integer.setAttribute(value2);
 		Assert.assertEquals(value2, integer.getAttribute(value2
-				.getQualifiedName()));
+				.getName()));
 
-		integer.removeAttribute(value2.getQualifiedName());
+		integer.removeAttribute(value2.getName());
 		Assert
 				.assertFalse(integer.containsAttribute(value2
-						.getQualifiedName()));
+						.getName()));
 
 		// Attribute with namespace Creation checking
 		Attribute valueNS = new Attribute("http://www.tefst2.org/test/",

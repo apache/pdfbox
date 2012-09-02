@@ -56,7 +56,6 @@ public class BooleanType extends AbstractSimpleProperty {
 		super(metadata, namespaceURI, prefix, propertyName, value);
 	}
 
-
 	/**
 	 * return the property value
 	 * 

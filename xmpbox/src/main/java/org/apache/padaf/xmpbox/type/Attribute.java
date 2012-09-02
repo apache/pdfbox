@@ -29,7 +29,11 @@ package org.apache.padaf.xmpbox.type;
  */
 public class Attribute {
 
-	private String nsURI, localName, value;
+	private String nsURI;
+
+	private String name;
+
+	private String value;
 
 	/**
 	 * Constructor of a new Attribute
@@ -45,7 +49,7 @@ public class Attribute {
 	 */
 	public Attribute(String nsURI, String localName, String value) {
 		this.nsURI = nsURI;
-		this.localName = localName;
+		this.name = localName;
 		this.value = value;
 	}
 
@@ -54,8 +58,8 @@ public class Attribute {
 	 * 
 	 * @return local name of this attribute
 	 */
-	public String getLocalName() {
-		return localName;
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -64,8 +68,8 @@ public class Attribute {
 	 * @param lname
 	 *            the local name to set
 	 */
-	public void setLocalName(String lname) {
-		localName = lname;
+	public void setName(String lname) {
+		name = lname;
 	}
 
 	/**
@@ -85,16 +89,6 @@ public class Attribute {
 	 */
 	public void setNsURI(String nsURI) {
 		this.nsURI = nsURI;
-	}
-
-	/**
-	 * Get the attribute qualified Name (prefix+localName)
-	 * 
-	 * @return the full qualified name of this attribute
-	 */
-	public String getQualifiedName() {
-		// TODO remove that method
-		return localName;
 	}
 
 	/**

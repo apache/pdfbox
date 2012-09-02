@@ -58,7 +58,7 @@ public class XMPMetaDataTest {
 		tmp.addUnqualifiedSequenceValue("SeqContainer", "Value3");
 
 		tmp
-				.addProperty(new TextType(metadata, null,"test", "simpleProperty",
+				.addProperty(metadata.getTypeMapping().createText(null,"test", "simpleProperty",
 						"YEP"));
 
 		tmp2 = new XMPSchema(metadata, "space", "http://www.space.org/schem/");

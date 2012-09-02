@@ -584,10 +584,10 @@ public class XMPDocumentBuilder {
 		boolean added = false;
 		String schemaNamespace = schema.getNamespace();
 		String prefix = schema.getPrefix();
-		String type = metadata.getTypeMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getLocalName()));
+		String type = metadata.getTypeMapping().getSpecifiedPropertyType(schemaNamespace, new QName(schemaNamespace, attr.getName()));
 
 		if (type != null) {
-			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(null, prefix, attr.getLocalName(), attr.getValue(), type);
+			AbstractSimpleProperty prop = metadata.getTypeMapping().instanciateSimpleProperty(null, prefix, attr.getName(), attr.getValue(), type);
 			schema.addProperty(prop);
 			added = true;
 		}
@@ -776,7 +776,7 @@ public class XMPDocumentBuilder {
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
-		ArrayProperty cp = new ArrayProperty(metadata,null,
+		ArrayProperty cp = metadata.getTypeMapping().createArrayProperty(null,
 				name.getPrefix(), name.getLocalPart(),
 				ctype);
 		container.addProperty(cp);
@@ -804,7 +804,7 @@ public class XMPDocumentBuilder {
 					throws XmpUnexpectedTypeException, XmpParsingException,
 					XMLStreamException, XmpUnknownPropertyTypeException,
 					XmpPropertyFormatException {
-		ArrayProperty cp = new ArrayProperty(metadata,null,
+		ArrayProperty cp =  metadata.getTypeMapping().createArrayProperty(null,
 				name.getPrefix(), name.getLocalPart(),
 				ctype);
 		container.addProperty(cp);

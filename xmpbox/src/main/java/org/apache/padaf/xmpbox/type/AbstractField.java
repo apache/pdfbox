@@ -41,7 +41,11 @@ public abstract class AbstractField {
 
 	private XMPMetadata metadata;
 
-	private String namespaceURI, prefix, propertyName;
+	private String namespaceURI;
+	
+	private String prefix;
+	
+	private String propertyName;
 	
 	private Map<String, Attribute> attributes;
 
@@ -104,14 +108,14 @@ public abstract class AbstractField {
 		if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(value.getNamespace())) {
 			throw new Error ("Should not call setAttribute for this "+value.getValue());
 		}
-		if (attributes.containsKey(value.getQualifiedName())) {
+		if (attributes.containsKey(value.getName())) {
 			// if same name in element, attribute will be replaced
-			attributes.remove(value.getQualifiedName());
+			attributes.remove(value.getName());
 		}
 		if (value.getNamespace() == null) {
-			attributes.put(value.getQualifiedName(), value);
+			attributes.put(value.getName(), value);
 		} else {
-			attributes.put(value.getQualifiedName(), value);
+			attributes.put(value.getName(), value);
 		}
 	}
 
