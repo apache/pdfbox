@@ -25,36 +25,28 @@ import java.util.Calendar;
 
 import javax.xml.XMLConstants;
 
-import org.apache.padaf.xmpbox.schema.PropertyExtensionDefinition;
-import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 
 
-@SchemaExtensionDefinition(schema = "Birth-Certificate Schema", valueType_description = "/org/apache/padaf/xmpbox/valueTypeDescription.xml", property_descriptions = "propertiesDescription.xml")
 @StructuredType(preferedPrefix="adn",namespace="http://test.apache.com/xap/adn/")
 public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 
 	@PropertyType(propertyType = "Text")
-	@PropertyExtensionDefinition(propertyCategory = "external")
 	public static final String FIRST_NAME = "firstname";
 
 	@PropertyType(propertyType = "seq Text")
-	@PropertyExtensionDefinition(propertyCategory = "external")
 	public static final String LAST_NAME = "lastname";
 
 	@PropertyType(propertyType = "Text")
-	@PropertyExtensionDefinition(propertyCategory = "external")
 	public static final String BIRTH_PLACE = "birth-place";
 
 	@PropertyType(propertyType = "Date")
-	@PropertyExtensionDefinition(propertyCategory = "external")
 	public static final String BIRTH_DATE = "birth-date";
 
 	@PropertyType(propertyType = "Text")
-	@PropertyExtensionDefinition(propertyCategory = "external")
 	public static final String BIRTH_COUNTRY = "birth-country";
 
 //	@PropertyType(propertyType = "mailaddress")
