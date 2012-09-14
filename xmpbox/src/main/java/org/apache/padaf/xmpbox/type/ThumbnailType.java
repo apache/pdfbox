@@ -30,11 +30,8 @@ import org.apache.padaf.xmpbox.XmpConstants;
  * 
  * @author eric
  */
+@StructuredType(preferedPrefix="xmpGImg",namespace="http://ns.adobe.com/xap/1.0/g/img/")
 public class ThumbnailType extends AbstractStructuredType {
-	
-	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/g/img/";
-	
-	public static final String PREFERRED_PREFIX = "xmpGImg";
 	
 	@PropertyType(propertyType = "Choice")
 	public static final String FORMAT = "format";
@@ -60,7 +57,7 @@ public class ThumbnailType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public ThumbnailType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
+		super(metadata);
 		setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
 	}
 

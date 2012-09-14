@@ -28,6 +28,7 @@ import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,13 +69,15 @@ public class DoubleSameTypeSchemaTest {
 		dc2.addCreator(creators.get(0));
 		dc2.addCreator(creators.get(1));
 
+		StructuredType stDub = DublinCoreSchema.class.getAnnotation(StructuredType.class);
+		
 		// We can't use metadata.getDublinCoreSchema() due to specification of
 		// XMPBox (see Javadoc of XMPMetadata)
 		Assert.assertEquals(format, ((DublinCoreSchema) metadata.getSchema(
-				DublinCoreSchema.PREFERED_PREFIX, DublinCoreSchema.DCURI))
+				stDub.preferedPrefix(), stDub.namespace()))
 				.getFormat());
 		Assert.assertEquals(coverage, ((DublinCoreSchema) metadata.getSchema(
-				ownPrefix, DublinCoreSchema.DCURI)).getCoverage());
+				ownPrefix, stDub.namespace())).getCoverage());
 
 		List<XMPSchema> schems = metadata.getAllSchemas();
 		DublinCoreSchema dc;

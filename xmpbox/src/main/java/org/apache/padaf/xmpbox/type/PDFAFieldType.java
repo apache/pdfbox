@@ -23,11 +23,8 @@ package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="pdfaField",namespace="http://www.aiim.org/pdfa/ns/field#")
 public class PDFAFieldType extends AbstractStructuredType {
-
-    public static final String ELEMENT_NS = "http://www.aiim.org/pdfa/ns/field#";
-
-    public static final String PREFERED_PREFIX = "pdfaField";
 
 	@PropertyType(propertyType = "Text")
 	public static final String NAME = "name";
@@ -39,7 +36,7 @@ public class PDFAFieldType extends AbstractStructuredType {
 	public static final String DESCRIPTION = "description";
 
 	public PDFAFieldType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
+		super(metadata);
 	}
 
 	public String getName () {

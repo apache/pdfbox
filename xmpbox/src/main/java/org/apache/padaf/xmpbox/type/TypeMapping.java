@@ -62,7 +62,7 @@ public final class TypeMapping {
 	private Map<Class<? extends AbstractField>,TypeDescription<AbstractStructuredType>> STRUCTURED_CLASSES;
 
 	private Map<String,TypeDescription<AbstractStructuredType>> STRUCTURED_NAMESPACES;
-	
+
 	private Map<String, String> schemaUriToPrefered;
 
 	private XMPMetadata metadata;
@@ -125,19 +125,19 @@ public final class TypeMapping {
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAProperty",null,PDFAPropertyType.class));
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFAType",null,PDFATypeType.class));
 		addToStructuredMaps(new TypeDescription<AbstractStructuredType>("PDFASchema",null,PDFASchemaType.class));
-		
+
 		// schema
 		schemaUriToPrefered = new HashMap<String, String>();
 		schemaMap = new HashMap<String, XMPSchemaFactory>();
-		addNameSpace("http://ns.adobe.com/xap/1.0/", XMPBasicSchema.class);
-		addNameSpace(DublinCoreSchema.DCURI, DublinCoreSchema.class);
-		addNameSpace("http://www.aiim.org/pdfa/ns/extension/", PDFAExtensionSchema.class);
-		addNameSpace("http://ns.adobe.com/xap/1.0/mm/", XMPMediaManagementSchema.class);
-		addNameSpace("http://ns.adobe.com/pdf/1.3/", AdobePDFSchema.class);
-		addNameSpace("http://www.aiim.org/pdfa/ns/id/", PDFAIdentificationSchema.class);
-		addNameSpace("http://ns.adobe.com/xap/1.0/rights/",     XMPRightsManagementSchema.class);
-		addNameSpace(PhotoshopSchema.PHOTOSHOPURI,      PhotoshopSchema.class);
-		addNameSpace(XMPBasicJobTicketSchema.JOB_TICKET_URI,XMPBasicJobTicketSchema.class);
+		addNameSpace(XMPBasicSchema.class);
+		addNameSpace(DublinCoreSchema.class);
+		addNameSpace(PDFAExtensionSchema.class);
+		addNameSpace(XMPMediaManagementSchema.class);
+		addNameSpace(AdobePDFSchema.class);
+		addNameSpace(PDFAIdentificationSchema.class);
+		addNameSpace(XMPRightsManagementSchema.class);
+		addNameSpace(PhotoshopSchema.class);
+		addNameSpace(XMPBasicJobTicketSchema.class);
 
 	}
 
@@ -151,27 +151,21 @@ public final class TypeMapping {
 		DERIVED_CLASSES.put(td.getTypeClass(), td);
 	}
 
-	public void addToStructuredMaps (TypeDescription<AbstractStructuredType> td) {
-		try {
-			String ns = (String)td.getTypeClass().getField("ELEMENT_NS").get(null);
-			Class<? extends AbstractStructuredType> clz = td.getTypeClass();
-			if (clz!=null) {
-				PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
-				td.setProperties(pm);
-			} else {
-				PropMapping pm = initializePropMapping(ns, null);
-				td.setProperties(pm);
-			}
-			addToStructuredMaps(td, ns);
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
-		} catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("Failed to init structured maps for "+td.getTypeClass(), e);
+	private void addToStructuredMaps (TypeDescription<AbstractStructuredType> td) {
+		Class<? extends AbstractStructuredType> clz = td.getTypeClass();
+		StructuredType st = clz.getAnnotation(StructuredType.class);
+		if (st==null) {
+			System.err.println(">> "+clz);
 		}
+		String ns = st.namespace();
+//		if (clz!=null) {
+			PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
+			td.setProperties(pm);
+//		} else {
+//			PropMapping pm = initializePropMapping(ns, null);
+//			td.setProperties(pm);
+//		}
+		addToStructuredMaps(td, ns);
 	}
 
 	public void addToStructuredMaps (TypeDescription<AbstractStructuredType> td, String ns) {
@@ -240,7 +234,7 @@ public final class TypeMapping {
 		return STRUCTURED_TYPES.get(type);
 	}
 
-	
+
 	public AbstractStructuredType instanciateStructuredType (TypeDescription<AbstractStructuredType> td) throws BadFieldValueException {
 		try {
 			Class<? extends AbstractStructuredType> propertyTypeClass = td.getTypeClass();
@@ -361,28 +355,21 @@ public final class TypeMapping {
 		return STRUCTURED_TYPES.containsKey(type);
 	}
 
-	private static PropMapping initializePropMapping(String ns,
-			DefinedStructuredType dst) {
-		PropMapping propMap = new PropMapping(ns);
-		for (Entry<String, String> entry: dst.getDefinedProperties().entrySet()) {
-			propMap.addNewProperty(entry.getKey(), entry.getValue());
-		}
-		return propMap;
-	}
+//	private static PropMapping initializePropMapping(String ns,
+//			DefinedStructuredType dst) {
+//		PropMapping propMap = new PropMapping(ns);
+//		for (Entry<String, String> entry: dst.getDefinedProperties().entrySet()) {
+//			propMap.addNewProperty(entry.getKey(), entry.getValue());
+//		}
+//		return propMap;
+//	}
 
-	private void addNameSpace(String ns, Class<? extends XMPSchema> classSchem) {
+	private void addNameSpace(Class<? extends XMPSchema> classSchem) {
+		StructuredType st = classSchem.getAnnotation(StructuredType.class);
+		String ns = st.namespace();
+		String pp = st.preferedPrefix();
 		schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem,	ReflectHelper.initializePropMapping(ns, classSchem)));
-		try {
-			schemaUriToPrefered.put(ns, classSchem.getField("PREFERED_PREFIX").get(null).toString());
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
-		} catch (NoSuchFieldException e) {
-			throw new IllegalArgumentException("Failed to init '"+ns+"'", e);
-		}
+		schemaUriToPrefered.put(ns, pp);
 	}
 
 	public void addNewNameSpace(String ns,String prefered) {
@@ -457,32 +444,32 @@ public final class TypeMapping {
 			String propertyName, boolean value) {
 		return new BooleanType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public DateType createDate (String namespaceURI, String prefix,
 			String propertyName, Calendar value) {
 		return new DateType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public IntegerType createInteger (String namespaceURI, String prefix,
 			String propertyName, int value) {
 		return new IntegerType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public RealType createReal (String namespaceURI, String prefix,
 			String propertyName, float value) {
 		return new RealType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public TextType createText (String namespaceURI, String prefix,
 			String propertyName, String value) {
 		return new TextType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public ProperNameType createProperName (String namespaceURI, String prefix,
 			String propertyName, String value) {
 		return new ProperNameType(metadata, namespaceURI, prefix,propertyName, value);
 	}
-	
+
 	public URIType createURI (String namespaceURI, String prefix,
 			String propertyName, String value) {
 		return new URIType(metadata, namespaceURI, prefix,propertyName, value);
@@ -536,5 +523,5 @@ public final class TypeMapping {
 	public ArrayProperty createArrayProperty (String namespace, String prefix, String propertyName, String type) {
 		return new ArrayProperty(metadata, namespace, prefix, propertyName, type);
 	}
-	
+
 }

@@ -45,6 +45,10 @@ public class ArrayProperty extends AbstractComplexProperty {
 	
 	private String arrayType;
 
+	private String namespace;
+	
+	private String prefix;
+
 	/**
 	 * Contructor of a complex property
 	 * 
@@ -61,8 +65,10 @@ public class ArrayProperty extends AbstractComplexProperty {
 	 */
 	public ArrayProperty(XMPMetadata metadata, String namespace,
 			String prefix, String propertyName, String type) {
-		super(metadata, namespace, prefix, propertyName);
+		super(metadata, propertyName);
 		this.arrayType = type;
+		this.namespace = namespace;
+		this.prefix = prefix;
 	}
 
 	public String getArrayType() {
@@ -82,6 +88,24 @@ public class ArrayProperty extends AbstractComplexProperty {
 		}
 		retval = Collections.unmodifiableList(retval);
 		return retval;
+	}
+
+	/**
+	 * Get the namespace URI of this entity
+	 * 
+	 * @return the namespace URI
+	 */
+	public final String getNamespace() {
+		return namespace;
+	}
+
+	/**
+	 * Get the prefix of this entity
+	 * 
+	 * @return the prefix specified
+	 */
+	public String getPrefix() {
+		return prefix;
 	}
 
 	

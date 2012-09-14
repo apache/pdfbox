@@ -33,6 +33,7 @@ import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.type.URLType;
@@ -44,11 +45,8 @@ import org.apache.padaf.xmpbox.type.URLType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="xmp",namespace="http://ns.adobe.com/xap/1.0/")
 public class XMPBasicSchema extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "xmp";
-
-	public static final String XMPBASICURI = "http://ns.adobe.com/xap/1.0/";
 
 	@PropertyType(propertyType = "bag Xpath")
 	public static final String ADVISORY = "Advisory";
@@ -92,7 +90,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPBasicSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, XMPBASICURI);
+		super(metadata);
 
 	}
 
@@ -105,7 +103,7 @@ public class XMPBasicSchema extends XMPSchema {
 	 *            The prefix to assign
 	 */
 	public XMPBasicSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, XMPBASICURI);
+		super(metadata, ownPrefix);
 
 	}
 

@@ -33,17 +33,19 @@ import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.LayerType;
 import org.apache.padaf.xmpbox.type.ProperNameType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URIType;
 
+@StructuredType(preferedPrefix="photoshop",namespace="http://ns.adobe.com/photoshop/1.0/")
 public class PhotoshopSchema extends XMPSchema {
 
 	public PhotoshopSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, PHOTOSHOPURI);
+		super(metadata);
 	}
 
 	public PhotoshopSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, PHOTOSHOPURI);
+		super(metadata, ownPrefix);
 	}
 				
 	public static final String PREFERED_PREFIX = "photoshop";

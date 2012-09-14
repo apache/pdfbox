@@ -34,9 +34,8 @@ public abstract class AbstractComplexProperty extends AbstractField {
 	private Map<String,String> namespaceToPrefix;
 
 	
-	public AbstractComplexProperty(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName) {
-		super(metadata, namespaceURI, prefix, propertyName);
+	public AbstractComplexProperty(XMPMetadata metadata, String propertyName) {
+		super(metadata, propertyName);
 		container = new ComplexPropertyContainer();
 		this.namespaceToPrefix = new HashMap<String, String>();
 	}

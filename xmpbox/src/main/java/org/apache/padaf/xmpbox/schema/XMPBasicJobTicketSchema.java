@@ -30,12 +30,10 @@ import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.JobType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 
+@StructuredType(preferedPrefix="xmpBJ",namespace="http://ns.adobe.com/xap/1.0/bj/")
 public class XMPBasicJobTicketSchema extends XMPSchema {
-
-    public static final String PREFERED_PREFIX = "xmpBJ";
-
-    public static final String JOB_TICKET_URI = "http://ns.adobe.com/xap/1.0/bj/"; 
 
     @PropertyType(propertyType = "bag Job")
     public static final String JOB_REF = "JobRef";
@@ -44,16 +42,18 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata) {
-        this(metadata, PREFERED_PREFIX);
+        this(metadata,null);
     }
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
-        super(metadata, ownPrefix, JOB_TICKET_URI);
-        addNamespace(JobType.ELEMENT_NS, JobType.PREFERED_PREFIX);
+        super(metadata, ownPrefix);
+        // TODO why add this ns ?
+        StructuredType st = JobType.class.getAnnotation(StructuredType.class);
+        addNamespace(st.namespace(), st.preferedPrefix());
     }
 
     public void addJob(String id , String name, String url) {
-    	addJob(id,name,url,JobType.PREFERED_PREFIX);
+    	addJob(id,name,url,null);
     }
     
     public void addJob(String id , String name, String url, String fieldPrefix) {

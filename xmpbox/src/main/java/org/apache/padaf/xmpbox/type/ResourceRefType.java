@@ -26,12 +26,9 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="stRef",namespace="http://ns.adobe.com/xap/1.0/sType/ResourceRef#")
 public class ResourceRefType extends AbstractStructuredType {
 
-	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/ResourceRef#";
-
-	public static final String PREFERRED_PREFIX = "stRef";
-	
 	@PropertyType(propertyType = "URI")
 	public static final String DOCUMENT_ID = "documentID";
 
@@ -91,8 +88,8 @@ public class ResourceRefType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public ResourceRefType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		addNamespace(ELEMENT_NS, PREFERRED_PREFIX);
+		super(metadata);
+		addNamespace(getNamespace(), getPreferedPrefix());
 		
 	}
 	
@@ -295,7 +292,7 @@ public class ResourceRefType extends AbstractStructuredType {
         ArrayProperty seq = (ArrayProperty) getFirstEquivalentProperty(ALTERNATE_PATHS, ArrayProperty.class);
         if (seq==null) {
         	seq = getMetadata().getTypeMapping().createArrayProperty(null,
-                    PREFERRED_PREFIX, ALTERNATE_PATHS,
+                    getPreferedPrefix(), ALTERNATE_PATHS,
                     ArrayProperty.ORDERED_ARRAY);
         	addProperty(seq);
         }

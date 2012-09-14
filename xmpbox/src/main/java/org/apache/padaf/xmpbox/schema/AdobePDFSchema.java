@@ -24,6 +24,7 @@ package org.apache.padaf.xmpbox.schema;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 /**
@@ -32,11 +33,8 @@ import org.apache.padaf.xmpbox.type.TextType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="pdf",namespace="http://ns.adobe.com/pdf/1.3/")
 public class AdobePDFSchema extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "pdf";
-
-	public static final String PDFURI = "http://ns.adobe.com/pdf/1.3/";
 
 	@PropertyType(propertyType = "Text")
 	public static final String KEYWORDS = "Keywords";
@@ -54,7 +52,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public AdobePDFSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, PDFURI);
+		super(metadata);
 	}
 
 	/**
@@ -66,7 +64,7 @@ public class AdobePDFSchema extends XMPSchema {
 	 *            The prefix to assign
 	 */
 	public AdobePDFSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, PDFURI);
+		super(metadata, ownPrefix);
 	}
 
 	/**

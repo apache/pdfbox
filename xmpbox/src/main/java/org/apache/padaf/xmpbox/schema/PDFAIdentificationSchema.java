@@ -27,6 +27,7 @@ import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 
@@ -36,11 +37,8 @@ import org.apache.padaf.xmpbox.type.TextType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="pdfaid",namespace="http://www.aiim.org/pdfa/ns/id/")
 public class PDFAIdentificationSchema extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "pdfaid";
-
-	public static final String IDURI = "http://www.aiim.org/pdfa/ns/id/";
 
 	@PropertyType(propertyType = "Integer")
 	public static final String PART = "part";
@@ -65,11 +63,11 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public PDFAIdentificationSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, IDURI);
+		super(metadata);
 	}
 
 	public PDFAIdentificationSchema(XMPMetadata metadata, String prefix) {
-		super(metadata, prefix, IDURI);
+		super(metadata, prefix);
 	}
 
 	/**

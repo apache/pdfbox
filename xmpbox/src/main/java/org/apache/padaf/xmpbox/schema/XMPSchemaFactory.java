@@ -121,7 +121,7 @@ public class XMPSchemaFactory {
 
 		if (schemaClass == XMPSchema.class) {
 			argsClass = new Class[] { XMPMetadata.class, String.class, String.class };
-			schemaArgs = new Object[] { metadata, nsName, namespace };
+			schemaArgs = new Object[] { metadata, namespace, nsName };
 		} else if (prefix != null && !"".equals(prefix)) {
 			argsClass = new Class[] { XMPMetadata.class, String.class };
 			schemaArgs = new Object[] { metadata, prefix };

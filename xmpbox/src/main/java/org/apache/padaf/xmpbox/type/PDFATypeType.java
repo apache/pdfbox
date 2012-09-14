@@ -23,14 +23,10 @@ package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="pdfaType",namespace="http://www.aiim.org/pdfa/ns/type#")
 public class PDFATypeType extends AbstractStructuredType {
 
-    public static final String ELEMENT_NS = "http://www.aiim.org/pdfa/ns/type#";
-
-    public static final String PREFERED_PREFIX = "pdfaType";
-
-
-	@PropertyType(propertyType = "Text")
+ 	@PropertyType(propertyType = "Text")
 	public static final String TYPE = "type";
 
 	@PropertyType(propertyType = "URI")
@@ -46,7 +42,7 @@ public class PDFATypeType extends AbstractStructuredType {
 	public static final String FIELD = "field";
 
 	public PDFATypeType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
+		super(metadata);
 	}
 
 	public String getNamespaceURI() {
@@ -59,7 +55,7 @@ public class PDFATypeType extends AbstractStructuredType {
 		return tt == null ? null : tt.getStringValue();
 	}
 
-	public String getPrefix() {
+	public String getPrefixValue() {
 		TextType tt = (TextType) getProperty(PREFIX);
 		return tt == null ? null : tt.getStringValue();
 	}

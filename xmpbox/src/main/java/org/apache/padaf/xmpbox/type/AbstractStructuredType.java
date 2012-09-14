@@ -29,12 +29,63 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
 	
 	protected static final  String STRUCTURE_ARRAY_NAME = "li"; 
+	
+	private String namespace;
+	
+	private String preferedPrefix;
+	
+	private String prefix;
 
-	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
-			String fieldPrefix) {
-		super(metadata, namespaceURI, fieldPrefix, STRUCTURE_ARRAY_NAME);
+	public AbstractStructuredType(XMPMetadata metadata) {
+		this(metadata,null,null);
 	}
 
+	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI) {
+		this(metadata,namespaceURI,null);
+	}
+	
+	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
+			String fieldPrefix) {
+		super(metadata, STRUCTURE_ARRAY_NAME);
+		StructuredType st = this.getClass().getAnnotation(StructuredType.class);
+		if (st!=null) {
+			// init with annotation
+			this.namespace = st.namespace();
+			this.preferedPrefix = st.preferedPrefix();
+		} else {
+			// init with parameters
+			if (namespaceURI==null) {
+				throw new IllegalArgumentException("Both StructuredType annotation and namespace parameter cannot be null");
+			}
+			this.namespace = namespaceURI;
+			this.preferedPrefix = fieldPrefix;
+		}
+		this.prefix = fieldPrefix==null?this.preferedPrefix:fieldPrefix;
+	}
+
+	
+	/**
+	 * Get the namespace URI of this entity
+	 * 
+	 * @return the namespace URI
+	 */
+	public final String getNamespace() {
+		return namespace;
+	}
+
+	/**
+	 * Get the prefix of this entity
+	 * 
+	 * @return the prefix specified
+	 */
+	public final String getPrefix() {
+		return prefix;
+	}
+
+	public final String getPreferedPrefix() {
+		return prefix;
+	}
+	
 	protected void addSimpleProperty (String propertyName, Object value) {
 		TypeMapping tm = getMetadata().getTypeMapping();
 		AbstractSimpleProperty asp = tm.instanciateSimpleField(getClass(), null,getPrefix(),propertyName, value);
