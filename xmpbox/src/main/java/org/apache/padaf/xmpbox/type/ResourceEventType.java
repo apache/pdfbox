@@ -25,12 +25,9 @@ import java.util.Calendar;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="stEvt",namespace="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#")
 public class ResourceEventType extends AbstractStructuredType {
 
-	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#";
-
-	public static final String PREFERRED_PREFIX = "stEvt";
-	
 	@PropertyType(propertyType="Choice")
 	public static final String ACTION = "action";
 
@@ -62,8 +59,8 @@ public class ResourceEventType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public ResourceEventType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		addNamespace(ELEMENT_NS, PREFERRED_PREFIX);
+		super(metadata);
+		addNamespace(getNamespace(), getPreferedPrefix());
 	}
 	
 	

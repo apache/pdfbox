@@ -48,7 +48,7 @@ public class XMPMetaDataTest {
 	public void init() throws Exception {
 		metadata = XMPMetadata.createXMPMetadata();
 		String tmpNsURI = "http://www.test.org/schem/";
-		tmp = new XMPSchema(metadata, "test", tmpNsURI);
+		tmp = new XMPSchema(metadata, tmpNsURI, "test");
 		tmp.addQualifiedBagValue("BagContainer", "Value1");
 		tmp.addQualifiedBagValue("BagContainer", "Value2");
 		tmp.addQualifiedBagValue("BagContainer", "Value3");
@@ -61,7 +61,7 @@ public class XMPMetaDataTest {
 				.addProperty(metadata.getTypeMapping().createText(null,"test", "simpleProperty",
 						"YEP"));
 
-		tmp2 = new XMPSchema(metadata, "space", "http://www.space.org/schem/");
+		tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace1");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace2");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace3");

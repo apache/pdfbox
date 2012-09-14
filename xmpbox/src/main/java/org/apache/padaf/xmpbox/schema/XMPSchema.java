@@ -66,11 +66,20 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The URI of the namespace, ie "http://ns.adobe.com/pdf/1.3/"
 	 * 
 	 */
-	public XMPSchema(XMPMetadata metadata, String namespaceName, String namespaceURI) {
-		super(metadata, namespaceURI, namespaceName);
-		addNamespace(namespaceURI, namespaceName);
+	public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix) {
+		super(metadata, namespaceURI, prefix);
+		addNamespace(getNamespace(), getPrefix());
 	}
 
+	public XMPSchema(XMPMetadata metadata) {
+		this(metadata, null, null);
+	}
+
+	public XMPSchema(XMPMetadata metadata, String prefix) {
+		this(metadata, null, prefix);
+	}
+
+	
 	/**
 	 * Retrieve a generic simple type property
 	 * 

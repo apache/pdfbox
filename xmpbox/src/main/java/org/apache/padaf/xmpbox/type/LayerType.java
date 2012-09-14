@@ -24,11 +24,8 @@ package org.apache.padaf.xmpbox.type;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.XmpConstants;
 
+@StructuredType(preferedPrefix="photoshop",namespace="http://ns.adobe.com/photoshop/1.0/")
 public class LayerType extends AbstractStructuredType {
-
-	public static final String PREFERED_PREFIX = "photoshop";
-	
-	public static final String ELEMENT_NS = "http://ns.adobe.com/photoshop/1.0/";
 	
 	@PropertyType(propertyType="Text")
 	public static final String LAYER_NAME = "LayerName";
@@ -38,7 +35,7 @@ public class LayerType extends AbstractStructuredType {
 
 	
 	public LayerType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERED_PREFIX);
+		super(metadata);
 		setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
 	}
 	

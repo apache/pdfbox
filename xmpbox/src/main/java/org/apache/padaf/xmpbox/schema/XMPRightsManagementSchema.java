@@ -27,6 +27,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URLType;
 
@@ -37,10 +38,8 @@ import org.apache.padaf.xmpbox.type.URLType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="xmpRights",namespace="http://ns.adobe.com/xap/1.0/rights/")
 public class XMPRightsManagementSchema extends XMPSchema {
-	public static final String PREFERED_PREFIX = "xmpRights";
-
-	public static final String XMPRIGHTSURI = "http://ns.adobe.com/xap/1.0/rights/";
 
 	@PropertyType(propertyType = "URL")
 	public static final String CERTIFICATE = "Certificate";
@@ -64,7 +63,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPRightsManagementSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, XMPRIGHTSURI);
+		super(metadata);
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 *            The prefix to assign
 	 */
 	public XMPRightsManagementSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, XMPRIGHTSURI);
+		super(metadata, ownPrefix);
 	}
 
 	/**

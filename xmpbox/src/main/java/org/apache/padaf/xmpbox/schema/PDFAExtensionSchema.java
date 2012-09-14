@@ -24,6 +24,7 @@ package org.apache.padaf.xmpbox.schema;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 
 /**
  * Representation of a PDF/A Extension schema description schema
@@ -31,11 +32,8 @@ import org.apache.padaf.xmpbox.type.PropertyType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="pdfaExtension",namespace="http://www.aiim.org/pdfa/ns/extension/")
 public class PDFAExtensionSchema extends XMPSchema {
-
-    public static final String PREFERED_PREFIX = "pdfaExtension";
-    public static final String PDFAEXTENSIONURI = "http://www.aiim.org/pdfa/ns/extension/";
-
 
     @PropertyType(propertyType = "bag PDFASchema")
     public static final String SCHEMAS = "schemas";
@@ -49,31 +47,13 @@ public class PDFAExtensionSchema extends XMPSchema {
      *            The metadata to attach this schema XMPMetadata
      */
     public PDFAExtensionSchema(XMPMetadata metadata) {
-        this(metadata,PREFERED_PREFIX);
+        super(metadata);
     }
 
     public PDFAExtensionSchema(XMPMetadata metadata, String prefix) {
-        super(metadata, prefix, PDFAEXTENSIONURI);
+        super(metadata, prefix);
     }
 
-    /**
-     * Give the prefix of the PDF/A Extension schema
-     * 
-     * @return prefix value
-     */
-    public String getPrefixValue() {
-        return PREFERED_PREFIX;
-
-    }
-
-    /**
-     * Give the namespace URI of the PDF/A Extension schema
-     * 
-     * @return namespace URI
-     */
-    public String getNamespaceValue() {
-        return PDFAEXTENSIONURI;
-    }
 
 	/**
 	 * 

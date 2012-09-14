@@ -31,6 +31,11 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public abstract class AbstractSimpleProperty extends AbstractField {
 
+	
+	private String namespace;
+	
+	private String prefix;
+
 	/**
 	 * Property specific type constructor (namespaceURI is given)
 	 * 
@@ -47,8 +52,10 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 	 */
 	public AbstractSimpleProperty(XMPMetadata metadata, String namespaceURI,
 			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName);
+		super(metadata, propertyName);
 		setValue(value);
+		this.namespace = namespaceURI;
+		this.prefix = prefix;
 
 	}
 
@@ -77,5 +84,23 @@ public abstract class AbstractSimpleProperty extends AbstractField {
 		sb.append(getStringValue()).append("]");
 		return sb.toString();
 	}
-	
+
+	/**
+	 * Get the namespace URI of this entity
+	 * 
+	 * @return the namespace URI
+	 */
+	public final String getNamespace() {
+		return namespace;
+	}
+
+	/**
+	 * Get the prefix of this entity
+	 * 
+	 * @return the prefix specified
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
 }

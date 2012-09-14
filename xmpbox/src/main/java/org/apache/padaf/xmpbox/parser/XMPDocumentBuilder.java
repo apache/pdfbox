@@ -56,6 +56,7 @@ import org.apache.padaf.xmpbox.type.PDFAFieldType;
 import org.apache.padaf.xmpbox.type.PDFAPropertyType;
 import org.apache.padaf.xmpbox.type.PDFASchemaType;
 import org.apache.padaf.xmpbox.type.PDFATypeType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.pdfbox.io.IOUtils;
@@ -191,12 +192,13 @@ public class XMPDocumentBuilder {
 	private void populateSchemaMapping (XMPMetadata meta) 
 			throws XmpRequiredPropertyException,XmpUnknownValueTypeException,XmpUnexpectedNamespacePrefixException {
 		List<XMPSchema> schems = meta.getAllSchemas();
+		StructuredType stPdfaExt = PDFAExtensionSchema.class.getAnnotation(StructuredType.class);
 		for (XMPSchema xmpSchema : schems) {
-			if (xmpSchema.getNamespace().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
+			if (xmpSchema.getNamespace().equals(stPdfaExt.namespace())) {
 				// ensure the prefix is the preferred one (cannot use other definition)
-				if (!xmpSchema.getPrefix().equals(PDFAExtensionSchema.PREFERED_PREFIX)) {
+				if (!xmpSchema.getPrefix().equals(stPdfaExt.preferedPrefix())) {
 					throw new XmpUnexpectedNamespacePrefixException("Found invalid prefix for PDF/A extension, found '"+
-							xmpSchema.getPrefix()+"', should be '"+PDFAExtensionSchema.PREFERED_PREFIX+"'"
+							xmpSchema.getPrefix()+"', should be '"+stPdfaExt.preferedPrefix()+"'"
 							);
 				}
 				// create schema and types
@@ -206,7 +208,7 @@ public class XMPDocumentBuilder {
 					if (af instanceof PDFASchemaType) {
 						PDFASchemaType st = (PDFASchemaType)af;
 						String namespaceUri = st.getNamespaceURI();
-						String prefix = st.getPrefix();
+						String prefix = st.getPrefixValue();
 						ArrayProperty properties = st.getProperty();
 						ArrayProperty valueTypes = st.getValueType();
 						XMPSchemaFactory xsf = meta.getTypeMapping().getSchemaFactory(namespaceUri);
@@ -223,7 +225,7 @@ public class XMPDocumentBuilder {
 									PDFATypeType type = (PDFATypeType)af2;
 									String ttype= type.getType();
 									String tns = type.getNamespaceURI();
-									String tprefix = type.getPrefix();
+									String tprefix = type.getPrefixValue();
 									String tdescription = type.getDescription();
 									ArrayProperty fields = type.getFields();
 									if (ttype==null || tns==null || tprefix==null || tdescription==null) {
@@ -852,8 +854,9 @@ public class XMPDocumentBuilder {
 //		NSMapping nsMap = metadata.getNsMapping();
 		TypeMapping typeMapping = metadata.getTypeMapping();
 		QName propertyName = reader.get().getName();
+		StructuredType stPdfaExt = PDFAExtensionSchema.class.getAnnotation(StructuredType.class);
 		if (parsingExtension) {
-			if (!propertyName.getNamespaceURI().equals(PDFAExtensionSchema.PDFAEXTENSIONURI)) {
+			if (!propertyName.getNamespaceURI().equals(stPdfaExt.namespace())) {
 				// this schema won't be parsed as extension, skip
 				// XXX skip to end of element
 				skipCurrentElement();

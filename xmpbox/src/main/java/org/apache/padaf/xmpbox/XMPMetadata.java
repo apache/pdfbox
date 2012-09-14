@@ -37,6 +37,7 @@ import org.apache.padaf.xmpbox.schema.XMPMediaManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.schema.XmpSchemaException;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 
 /**
@@ -211,6 +212,11 @@ public class XMPMetadata {
 		return null;
 	}
 
+	public XMPSchema getSchema (Class<? extends XMPSchema> clz) {
+		StructuredType st = clz.getAnnotation(StructuredType.class);
+		return getSchema(st.namespace());
+	}
+	
 	public void clearSchemas () {
 		schemas.clear();
 	}
@@ -249,7 +255,7 @@ public class XMPMetadata {
 	 * @return The schema added in order to work on it
 	 */
 	public XMPSchema createAndAddDefaultSchema(String nsPrefix, String nsURI) {
-		XMPSchema schem = new XMPSchema(this, nsPrefix, nsURI);
+		XMPSchema schem = new XMPSchema(this, nsURI,nsPrefix);
 		schem.setAboutAsSimple("");
 		addSchema(schem);
 		return schem;
@@ -307,7 +313,7 @@ public class XMPMetadata {
 	 * @return The PDFAExtension schema or null if not declared
 	 */
 	public PDFAExtensionSchema getPDFExtensionSchema() {
-		return (PDFAExtensionSchema) getSchema(PDFAExtensionSchema.PDFAEXTENSIONURI);
+		return (PDFAExtensionSchema) getSchema(PDFAExtensionSchema.class);
 	}
 
 	/**
@@ -329,7 +335,7 @@ public class XMPMetadata {
 	 * @return The PDFAIdentificationSchema schema or null if not declared
 	 */
 	public PDFAIdentificationSchema getPDFIdentificationSchema() {
-		return (PDFAIdentificationSchema) getSchema(PDFAIdentificationSchema.IDURI);
+		return (PDFAIdentificationSchema) getSchema(PDFAIdentificationSchema.class);
 	}
 
 	/**
@@ -365,7 +371,7 @@ public class XMPMetadata {
 	 * @return The DublinCoreSchema schema or null if not declared
 	 */
 	public DublinCoreSchema getDublinCoreSchema() {
-		return (DublinCoreSchema) getSchema(DublinCoreSchema.DCURI);
+		return (DublinCoreSchema) getSchema(DublinCoreSchema.class);
 	}
 
 	/**
@@ -374,7 +380,7 @@ public class XMPMetadata {
 	 * @return The XMPBasicJobTicketSchema schema or null if not declared
 	 */
 	public XMPBasicJobTicketSchema getBasicJobTicketSchema() {
-		return (XMPBasicJobTicketSchema) getSchema(XMPBasicJobTicketSchema.JOB_TICKET_URI);
+		return (XMPBasicJobTicketSchema) getSchema(XMPBasicJobTicketSchema.class);
 	}
 
 
@@ -384,7 +390,7 @@ public class XMPMetadata {
 	 * @return The XMPRightsManagementSchema schema or null if not declared
 	 */
 	public XMPRightsManagementSchema getXMPRightsManagementSchema() {
-		return (XMPRightsManagementSchema) getSchema(XMPRightsManagementSchema.XMPRIGHTSURI);
+		return (XMPRightsManagementSchema) getSchema(XMPRightsManagementSchema.class);
 	}
 
 	/**
@@ -415,7 +421,7 @@ public class XMPMetadata {
 	 * @return The XMPBasicSchema schema or null if not declared
 	 */
 	public XMPBasicSchema getXMPBasicSchema() {
-		return (XMPBasicSchema) getSchema(XMPBasicSchema.XMPBASICURI);
+		return (XMPBasicSchema) getSchema(XMPBasicSchema.class);
 	}
 
 	/**
@@ -449,7 +455,7 @@ public class XMPMetadata {
 	 * @return The XMPMediaManagementSchema schema or null if not declared
 	 */
 	public XMPMediaManagementSchema getXMPMediaManagementSchema() {
-		return (XMPMediaManagementSchema) getSchema(XMPMediaManagementSchema.XMPMMURI);
+		return (XMPMediaManagementSchema) getSchema(XMPMediaManagementSchema.class);
 	}
 
 	/**
@@ -471,7 +477,7 @@ public class XMPMetadata {
 	 * @return The AdobePDFSchema schema or null if not declared
 	 */
 	public AdobePDFSchema getAdobePDFSchema() {
-		return (AdobePDFSchema) getSchema(AdobePDFSchema.PDFURI);
+		return (AdobePDFSchema) getSchema(AdobePDFSchema.class);
 	}
 
 	/**

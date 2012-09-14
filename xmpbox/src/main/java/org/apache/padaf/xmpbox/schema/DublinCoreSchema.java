@@ -28,6 +28,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.MIMEType;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 
 
@@ -37,11 +38,8 @@ import org.apache.padaf.xmpbox.type.TextType;
  * @author a183132
  * 
  */
+@StructuredType(preferedPrefix="dc",namespace="http://purl.org/dc/elements/1.1/")
 public class DublinCoreSchema extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "dc";
-
-	public static final String DCURI = "http://purl.org/dc/elements/1.1/";
 
 	@PropertyType(propertyType = "bag Text")
 	public static final String CONTRIBUTOR = "contributor";
@@ -95,7 +93,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public DublinCoreSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, DCURI);
+		super(metadata);
 	}
 
 	/**
@@ -107,7 +105,7 @@ public class DublinCoreSchema extends XMPSchema {
 	 *            The prefix to assign
 	 */
 	public DublinCoreSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, DCURI);
+		super(metadata, ownPrefix);
 	}
 
 	/**

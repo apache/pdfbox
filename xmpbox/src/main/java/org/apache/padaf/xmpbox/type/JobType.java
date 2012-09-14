@@ -23,12 +23,9 @@ package org.apache.padaf.xmpbox.type;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="stJob",namespace="http://ns.adobe.com/xap/1.0/sType/Job#")
 public class JobType extends AbstractStructuredType {
 
-    public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/Job#";
-
-    public static final String PREFERED_PREFIX = "stJob";
-    
     @PropertyType(propertyType="Text")
     public static final String ID = "id";
 
@@ -40,12 +37,12 @@ public class JobType extends AbstractStructuredType {
 
 
     public JobType(XMPMetadata metadata) {
-    	this(metadata, PREFERED_PREFIX);
+    	this(metadata, null);
     }
 
     public JobType(XMPMetadata metadata, String fieldPrefix) {
-        super(metadata, ELEMENT_NS, fieldPrefix);
-        addNamespace(ELEMENT_NS, fieldPrefix);
+        super(metadata, fieldPrefix);
+        addNamespace(getNamespace(), getPrefix());
     }
 
     public void setId(String id) {

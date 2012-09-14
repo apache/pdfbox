@@ -29,6 +29,7 @@ import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.RenditionClassType;
 import org.apache.padaf.xmpbox.type.ResourceRefType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.URIType;
 import org.apache.padaf.xmpbox.type.VersionType;
@@ -40,11 +41,8 @@ import org.apache.padaf.xmpbox.type.VersionType;
  * @author gbailleul
  * 
  */
+@StructuredType(preferedPrefix="xmpMM",namespace="http://ns.adobe.com/xap/1.0/mm/")
 public class XMPMediaManagementSchema extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "xmpMM";
-
-	public static final String XMPMMURI = "http://ns.adobe.com/xap/1.0/mm/";
 
 	/**
 	 * Constructor of XMPMediaManagement Schema with preferred prefix
@@ -53,7 +51,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 *            The metadata to attach this schema
 	 */
 	public XMPMediaManagementSchema(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, XMPMMURI);
+		super(metadata);
 
 	}
 
@@ -66,7 +64,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 *            The prefix to assign
 	 */
 	public XMPMediaManagementSchema(XMPMetadata metadata, String ownPrefix) {
-		super(metadata, ownPrefix, XMPMMURI);
+		super(metadata, ownPrefix);
 
 	}
 

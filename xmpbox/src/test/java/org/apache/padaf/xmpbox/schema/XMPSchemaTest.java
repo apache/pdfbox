@@ -50,7 +50,7 @@ public class XMPSchemaTest {
 	@Before
 	public void resetDocument() throws Exception {
 		parent = XMPMetadata.createXMPMetadata();
-		schem = new XMPSchema(parent, "nsSchem", "nsURI");
+		schem = new XMPSchema(parent, "nsURI", "nsSchem");
 
 	}
 
@@ -441,14 +441,12 @@ public class XMPSchemaTest {
 		String valAltSchem2 = "altvalSchem2";
 		String langAltSchem2 = "fr-fr";
 
-		XMPSchema schem1 = new XMPSchema(parent, "test",
-				"http://www.test.org/schem/");
+		XMPSchema schem1 = new XMPSchema(parent,"http://www.test.org/schem/", "test");
 		schem1.addQualifiedBagValue(bagName, valBagSchem1);
 		schem1.addUnqualifiedSequenceValue(seqName, valSeqSchem1);
 		schem1.setUnqualifiedLanguagePropertyValue(altName, langAltSchem1, valAltSchem1);
 
-		XMPSchema schem2 = new XMPSchema(parent, "test",
-				"http://www.test.org/schem/");
+		XMPSchema schem2 = new XMPSchema(parent, "http://www.test.org/schem/", "test");
 		schem2.addQualifiedBagValue(bagName, valBagSchem2);
 		schem2.addUnqualifiedSequenceValue(seqName, valSeqSchem2);
 		schem2.setUnqualifiedLanguagePropertyValue(altName, langAltSchem2, valAltSchem2);

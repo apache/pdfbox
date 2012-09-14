@@ -41,9 +41,9 @@ public abstract class AbstractField {
 
 	private XMPMetadata metadata;
 
-	private String namespaceURI;
+//	private String namespaceURI;
 	
-	private String prefix;
+//	private String prefix;
 	
 	private String propertyName;
 	
@@ -61,31 +61,10 @@ public abstract class AbstractField {
 	 * @param propertyName
 	 *            the local name to set for this field
 	 */
-	public AbstractField(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName) {
-		this.prefix = prefix;
+	public AbstractField(XMPMetadata metadata, String propertyName) {
 		this.metadata = metadata;
-		this.namespaceURI = namespaceURI;
 		this.propertyName = propertyName;
 		attributes = new HashMap<String, Attribute>();
-	}
-
-	/**
-	 * Get the namespace URI of this entity
-	 * 
-	 * @return the namespace URI
-	 */
-	public final String getNamespace() {
-		return namespaceURI;
-	}
-
-	/**
-	 * Get the prefix of this entity
-	 * 
-	 * @return the prefix specified
-	 */
-	public String getPrefix() {
-		return prefix;
 	}
 
 	/**
@@ -166,6 +145,15 @@ public abstract class AbstractField {
 	public final XMPMetadata getMetadata() {
 		return metadata;
 	}
+
+	public abstract String getNamespace();
+
+	/**
+	 * Get the prefix of this entity
+	 * 
+	 * @return the prefix specified
+	 */
+	public abstract String getPrefix();
 
 	
 }

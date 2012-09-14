@@ -30,14 +30,12 @@ import org.apache.padaf.xmpbox.schema.SchemaExtensionDefinition;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.StructuredType;
 
 
 @SchemaExtensionDefinition(schema = "Birth-Certificate Schema", valueType_description = "/org/apache/padaf/xmpbox/valueTypeDescription.xml", property_descriptions = "propertiesDescription.xml")
+@StructuredType(preferedPrefix="adn",namespace="http://test.apache.com/xap/adn/")
 public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
-
-	public static final String PREFERED_PREFIX = "adn";
-
-	public static final String NAMESPACE = "http://test.apache.com/xap/adn/";
 
 	@PropertyType(propertyType = "Text")
 	@PropertyExtensionDefinition(propertyCategory = "external")
@@ -64,7 +62,7 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 //	public static final String MAIL_ADR = "mail";
 
 	public BirthCertificateSchemaWithXMLDescriptions(XMPMetadata metadata) {
-		super(metadata, PREFERED_PREFIX, NAMESPACE);
+		super(metadata);
 		this.setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "madn",
 				"http://test.withfield.com/vt/"));
 		this.setAboutAsSimple("");

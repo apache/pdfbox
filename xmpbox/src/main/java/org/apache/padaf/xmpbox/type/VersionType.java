@@ -25,12 +25,9 @@ import java.util.Calendar;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 
+@StructuredType(preferedPrefix="stVer",namespace="http://ns.adobe.com/xap/1.0/sType/Version#")
 public class VersionType extends AbstractStructuredType {
 
-	public static final String ELEMENT_NS = "http://ns.adobe.com/xap/1.0/sType/Version#";
-
-	public static final String PREFERRED_PREFIX = "stVer";
-	
 	@PropertyType(propertyType="Text")
 	public static final String COMMENTS = "comments";
 
@@ -59,8 +56,8 @@ public class VersionType extends AbstractStructuredType {
 	 *            The local Name of this thumbnail type
 	 */
 	public VersionType(XMPMetadata metadata) {
-		super(metadata, ELEMENT_NS, PREFERRED_PREFIX);
-		addNamespace(ELEMENT_NS,PREFERRED_PREFIX);
+		super(metadata);
+		addNamespace(getNamespace(),getPreferedPrefix());
 	}
 	
 	
