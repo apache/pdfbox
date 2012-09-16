@@ -156,7 +156,10 @@ public class PDPixelMap extends PDXObjectImage
         }
         finally
         {
-            os.close();
+            if (os != null)
+            {
+                os.close();
+            }
         }
     }
     /**
