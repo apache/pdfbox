@@ -20,6 +20,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,10 +32,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
@@ -78,7 +80,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public class NonSequentialPDFParser extends PDFParser
 {
-
+	
     public static final String SYSPROP_PARSEMINIMAL = 
         "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.parseMinimal";
     public static final String SYSPROP_EOFLOOKUPRANGE = 
@@ -86,15 +88,15 @@ public class NonSequentialPDFParser extends PDFParser
         
     private static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream( new byte[0] );
     
-    private static final int    DEFAULT_TRAIL_BYTECOUNT = 2048;
-    private static final char[] EOF_MARKER              = new char[] { '%','%','E','O','F' };
-    private static final char[] STARTXREF_MARKER        = new char[] { 's','t','a','r','t','x','r','e','f' };
-    private static final char[] OBJ_MARKER              = new char[] { 'o','b','j' };
-    
+  	protected static final int    DEFAULT_TRAIL_BYTECOUNT = 2048;
+  	protected static final char[] EOF_MARKER              = new char[] { '%','%','E','O','F' };
+  	protected static final char[] STARTXREF_MARKER        = new char[] { 's','t','a','r','t','x','r','e','f' };
+  	protected static final char[] OBJ_MARKER              = new char[] { 'o','b','j' };
+
     private final File pdfFile;
     private final RandomAccessBufferedFileInputStream raStream;
     
-    private SecurityHandler securityHandler = null;
+    protected SecurityHandler securityHandler = null;
     
     private String keyStoreFilename = null;
     private String alias            = null;
@@ -113,87 +115,128 @@ public class NonSequentialPDFParser extends PDFParser
     private boolean allPagesParsed   = false;
         
     private static final Log LOG = LogFactory.getLog( NonSequentialPDFParser.class );
-    
-    // ------------------------------------------------------------------------
-    /** 
-     * Constructs parser for given file using memory buffer. 
-     * 
-     * @param filename the filename of the pdf to be parsed
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser( String filename ) throws IOException
-    {
-        this( new File( filename ), null );
-    }
-    
-    /** 
-     * Constructs parser for given file using given buffer for temporary storage. 
-     * 
-     * @param file the pdf to be parsed
-     * @param raBuf the buffer to be used for parsing
-     *  
-     * @throws IOException If something went wrong.
-     */
-    /** 
-     * Constructs parser for given file using given buffer for temporary storage. 
-     * 
-     * @param file the pdf to be parsed
-     * @param raBuf the buffer to be used for parsing
-     *  
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser( File file, RandomAccess raBuf ) throws IOException
-    {
-        this(file, raBuf, "");
-    }
-    
-    /** 
-     * Constructs parser for given file using given buffer for temporary storage. 
-     * 
-     * @param file the pdf to be parsed
-     * @param raBuf the buffer to be used for parsing
-     *  
-     * @throws IOException If something went wrong.
-     */
-    /** 
-     * Constructs parser for given file using given buffer for temporary storage. 
-     * 
-     * @param file the pdf to be parsed
-     * @param raBuf the buffer to be used for parsing
-     * @param decryptionPassword password to be used for decryption
-     *  
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser( File file, RandomAccess raBuf, String decryptionPassword ) throws IOException
-    {
-        super( EMPTY_INPUT_STREAM, null, false );
-            
-        String eofLookupRangeStr = System.getProperty( SYSPROP_EOFLOOKUPRANGE );
-        if ( eofLookupRangeStr != null )
-        {
-            try
-            {
-                setEOFLookupRange( Integer.parseInt( eofLookupRangeStr ) );
-            } 
-            catch ( NumberFormatException nfe )
-            {
-                LOG.warn( "System property " + SYSPROP_EOFLOOKUPRANGE + 
-                        " does not contain an integer value, but: '" + eofLookupRangeStr + "'" );
-            }
-        }
-    
-        pdfFile = file;
-        raStream = new RandomAccessBufferedFileInputStream( pdfFile );
-    
-        setDocument( ( raBuf == null ) ? new COSDocument( new RandomAccessBuffer(), false ) :
-                                         new COSDocument( raBuf, false ) );
-    
-        pdfSource = new PushBackInputStream( raStream, 4096 );
-        
-        password = decryptionPassword;
-    }
-        
+
+  	/**
+  	 * <code>true</code> if the NonSequentialPDFParser is initialized by a InputStream, in this case
+  	 * a temporary file is created. At the end of the {@linkplain #parse()} method,the temporary file will
+  	 * be deleted.
+  	 */
+  	private boolean isTmpPDFFile = false;
+  	
+  	public static final String TMP_FILE_PREFIX = "tmpPDF";
+  	
+  	// ------------------------------------------------------------------------
+  	/** 
+  	 * Constructs parser for given file using memory buffer. 
+  	 * 
+  	 * @param filename the filename of the pdf to be parsed
+  	 * 
+  	 * @throws IOException If something went wrong.
+  	 */
+  	public NonSequentialPDFParser( String filename ) throws IOException
+  	{
+  		this( new File( filename ), null );
+  	}
+
+  	/** 
+  	 * Constructs parser for given file using given buffer for temporary storage. 
+  	 * 
+  	 * @param file the pdf to be parsed
+  	 * @param raBuf the buffer to be used for parsing
+  	 *  
+  	 * @throws IOException If something went wrong.
+  	 */
+  	/** 
+  	 * Constructs parser for given file using given buffer for temporary storage. 
+  	 * 
+  	 * @param file the pdf to be parsed
+  	 * @param raBuf the buffer to be used for parsing
+  	 *  
+  	 * @throws IOException If something went wrong.
+  	 */
+  	public NonSequentialPDFParser( File file, RandomAccess raBuf ) throws IOException
+  	{
+  		this(file, raBuf, "");
+  	}
+
+  	/** 
+  	 * Constructs parser for given file using given buffer for temporary storage. 
+  	 * 
+  	 * @param file the pdf to be parsed
+  	 * @param raBuf the buffer to be used for parsing
+  	 *  
+  	 * @throws IOException If something went wrong.
+  	 */
+  	/** 
+  	 * Constructs parser for given file using given buffer for temporary storage. 
+  	 * 
+  	 * @param file the pdf to be parsed
+  	 * @param raBuf the buffer to be used for parsing
+  	 * @param decryptionPassword password to be used for decryption
+  	 *  
+  	 * @throws IOException If something went wrong.
+  	 */
+  	public NonSequentialPDFParser( File file, RandomAccess raBuf, String decryptionPassword ) throws IOException
+  	{
+  		super( EMPTY_INPUT_STREAM, null, false );
+  		pdfFile = file;
+  		raStream = new RandomAccessBufferedFileInputStream( pdfFile );
+  		init(file, raBuf, decryptionPassword);
+  	}
+
+  	private void init(File file, RandomAccess raBuf, String decryptionPassword) throws IOException {
+  		String eofLookupRangeStr = System.getProperty( SYSPROP_EOFLOOKUPRANGE );
+  		if ( eofLookupRangeStr != null )
+  		{
+  			try
+  			{
+  				setEOFLookupRange( Integer.parseInt( eofLookupRangeStr ) );
+  			} 
+  			catch ( NumberFormatException nfe )
+  			{
+  				LOG.warn( "System property " + SYSPROP_EOFLOOKUPRANGE + 
+  						" does not contain an integer value, but: '" + eofLookupRangeStr + "'" );
+  			}
+  		}
+
+  		setDocument( ( raBuf == null ) ? new COSDocument( new RandomAccessBuffer(), false ) :	new COSDocument( raBuf, false ) );
+
+  		pdfSource = new PushBackInputStream( raStream, 4096 );
+
+  		password = decryptionPassword;
+  	}
+
+  	public NonSequentialPDFParser(InputStream input) throws IOException
+  	{
+  		super( EMPTY_INPUT_STREAM, null, false );
+  		pdfFile = createTmpFile(input);
+  		raStream = new RandomAccessBufferedFileInputStream( pdfFile );
+  		init(pdfFile, null, ""); 
+  	}
+
+  	/**
+  	 * Create a temporary file with the input stream.
+  	 * If the creation succeed, the {@linkplain #isTmpPDFFile} is set to true.
+  	 * This Temporary file will be deleted at end of the parse method
+  	 * @param input
+  	 * @return
+  	 * @throws IOException
+  	 */
+  	private File createTmpFile(InputStream input) throws IOException {
+  		File tmpFile = null;
+  		FileOutputStream fos = null;
+  		try {
+  			tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
+  			fos = new FileOutputStream(tmpFile);
+  			IOUtils.copy(input, fos);
+  			isTmpPDFFile = true;
+  			return tmpFile;
+  		} finally {
+  			IOUtils.closeQuietly(input);
+  			IOUtils.closeQuietly(fos);
+  		}
+  	}
+
     // ------------------------------------------------------------------------
     /** 
      *  Sets how many trailing bytes of PDF file are searched for
@@ -228,7 +271,7 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @throws IOException
      */
-    private void initialParse() throws IOException
+    protected void initialParse() throws IOException
     {
         final long startxrefOff = getStartxrefOffset();
             
@@ -275,45 +318,44 @@ public class NonSequentialPDFParser extends PDFParser
         COSBase trailerEncryptItem = document.getTrailer().getItem( COSName.ENCRYPT );
         if ( trailerEncryptItem != null ) 
         {
-            if ( trailerEncryptItem instanceof COSObject )
-            {
-                COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
-                parseObjectDynamically( trailerEncryptObj, true );
-            }
-            
-            try
-            {
-                PDEncryptionDictionary encParameters = new PDEncryptionDictionary( document.getEncryptionDictionary() );
-                      
-                DecryptionMaterial decryptionMaterial = null;
-                if( keyStoreFilename != null )
-                {
-                    KeyStore ks = KeyStore.getInstance( "PKCS12" );
-                    ks.load( new FileInputStream( keyStoreFilename ), password.toCharArray() );
-                    
-                    decryptionMaterial = new PublicKeyDecryptionMaterial( ks, alias, password );
-                }
-                else
-                {
-                    decryptionMaterial = new StandardDecryptionMaterial( password );
-                }
-                      
-                securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler( encParameters.getFilter() );
-                securityHandler.prepareForDecryption( encParameters, document.getDocumentID(), decryptionMaterial );
-                      
-                AccessPermission permission = securityHandler.getCurrentAccessPermission();
-                if ( ! permission.canExtractContent() )
-                {
-                    LOG.warn( "PDF file '" + pdfFile.getPath() + "' does not allow extracting content." );
-                }
-                  
-            }
-            catch ( Exception e )
-            {
-                throw new IOException( "Error (" + e.getClass().getSimpleName() + 
-                        ") while creating security handler for decryption: " +
-                                                   e.getMessage() /*, e // TODO: remove remark with Java 1.6 */);
-            }
+    			if ( trailerEncryptItem instanceof COSObject )
+    			{
+    				COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
+    				parseObjectDynamically( trailerEncryptObj, true );
+    			}
+    			try
+    	    {
+    	        PDEncryptionDictionary encParameters = new PDEncryptionDictionary( document.getEncryptionDictionary() );
+    	              
+    	        DecryptionMaterial decryptionMaterial = null;
+    	        if( keyStoreFilename != null )
+    	        {
+    	            KeyStore ks = KeyStore.getInstance( "PKCS12" );
+    	            ks.load( new FileInputStream( keyStoreFilename ), password.toCharArray() );
+    	            
+    	            decryptionMaterial = new PublicKeyDecryptionMaterial( ks, alias, password );
+    	        }
+    	        else
+    	        {
+    	            decryptionMaterial = new StandardDecryptionMaterial( password );
+    	        }
+    	              
+    	        securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler( encParameters.getFilter() );
+    	        securityHandler.prepareForDecryption( encParameters, document.getDocumentID(), decryptionMaterial );
+    	              
+    	        AccessPermission permission = securityHandler.getCurrentAccessPermission();
+    	        if ( ! permission.canExtractContent() )
+    	        {
+    	            LOG.warn( "PDF file '" + pdfFile.getPath() + "' does not allow extracting content." );
+    	        }
+    	          
+    	    }
+    	    catch ( Exception e )
+    	    {
+    	        throw new IOException( "Error (" + e.getClass().getSimpleName() + 
+    	                ") while creating security handler for decryption: " +
+    	                                           e.getMessage() /*, e // TODO: remove remark with Java 1.6 */);
+    	    }
         }
     
         // ---- parse catalog or root object
@@ -341,6 +383,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
         }
         initialParseDone = true;
+        
     }
     
     // ------------------------------------------------------------------------
@@ -370,7 +413,7 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /** Sets {@link #pdfSource} to start next parsing at given file offset. */
-    private final void setPdfSource( long fileOffset ) throws IOException
+    protected final void setPdfSource( long fileOffset ) throws IOException
     {
         
         pdfSource.seek( fileOffset );
@@ -386,7 +429,7 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /** Enable handling of alternative pdfSource implementation. */
-    private final void releasePdfSourceInputStream() throws IOException
+    protected final void releasePdfSourceInputStream() throws IOException
     {
         //        if ( pdfSource != null )
         //            pdfSource.close();
@@ -404,7 +447,7 @@ public class NonSequentialPDFParser extends PDFParser
     /** Looks for and parses startxref. We first look for last '%%EOF' marker
      *  (within last {@link #DEFAULT_TRAIL_BYTECOUNT} bytes (or range set via
      *  {@link #setEOFLookupRange(int)}) and go back to find <code>startxref</code>. */
-    private final long getStartxrefOffset() throws IOException
+    protected final long getStartxrefOffset() throws IOException
     {
         byte[] buf; 
         long   skipBytes;
@@ -475,7 +518,7 @@ public class NonSequentialPDFParser extends PDFParser
      *  
      *  @return  start offset of pattern within buffer or <code>-1</code> if pattern could not be found 
      */
-    private final int lastIndexOf( final char[] pattern, final byte[] buf, final int endOff )
+    protected int lastIndexOf( final char[] pattern, final byte[] buf, final int endOff )
     {
         final int lastPatternChOff = pattern.length - 1;
         
@@ -510,7 +553,7 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @throws IOException if pattern could not be read
      */
-    private final void readPattern( final char[] pattern ) throws IOException
+    protected final void readPattern( final char[] pattern ) throws IOException
     {
         skipSpaces();
         
@@ -596,7 +639,9 @@ public class NonSequentialPDFParser extends PDFParser
             } 
             catch ( IOException ioe ) 
             {}
-                    
+
+      			deleteTempFile();
+
             if ( exceptionOccurred && ( document != null ) )
             {
                 try 
@@ -609,6 +654,23 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }   
 
+  	protected File getPdfFile() {
+  		return this.pdfFile;
+  	}
+
+  	/**
+  	 * Remove the temporary file.
+  	 * A temporary file is created if this class is instantiated with an InputStream
+  	 */
+  	protected void deleteTempFile() {
+  		if (isTmpPDFFile) {
+  			try {
+  				if (!pdfFile.delete()) LOG.warn("Temporary file '" + pdfFile.getName() + "' can't be deleted");
+  			} catch (SecurityException e) {
+  				LOG.warn("Temporary file '" + pdfFile.getName() + "' can't be deleted", e);
+  			}
+  		}
+  	}
     // ------------------------------------------------------------------------
     /** 
      * Returns security handler of the document or <code>null</code> if document
@@ -638,7 +700,6 @@ public class NonSequentialPDFParser extends PDFParser
         PDDocument pdDocument = super.getPDDocument();
         if ( securityHandler != null )
             pdDocument.setSecurityHandler( securityHandler );
-        
         return pdDocument;
     }
 
@@ -949,7 +1010,7 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    private COSBase parseObjectDynamically( COSObject obj, boolean requireExistingNotCompressedObj )
+    protected final COSBase parseObjectDynamically( COSObject obj, boolean requireExistingNotCompressedObj )
     throws IOException
     {
         return parseObjectDynamically( obj.getObjectNumber().intValue(),
@@ -974,7 +1035,7 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    private COSBase parseObjectDynamically( int objNr, int objGenNr, boolean requireExistingNotCompressedObj )
+    protected COSBase parseObjectDynamically( int objNr, int objGenNr, boolean requireExistingNotCompressedObj )
     throws IOException
     {
         // ---- create object key and get object (container) from pool
@@ -986,7 +1047,7 @@ public class NonSequentialPDFParser extends PDFParser
             // not previously parsed
             // ---- read offset or object stream object number from xref table
             Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get( objKey );
-            
+
             // sanity test to circumvent loops with broken documents
             if ( requireExistingNotCompressedObj &&
                     ( ( offsetOrObjstmObNr == null ) || ( offsetOrObjstmObNr <= 0 ) ) )
@@ -1145,7 +1206,7 @@ public class NonSequentialPDFParser extends PDFParser
     
     // ------------------------------------------------------------------------
     /** Decrypts given COSString. */
-    private final void decrypt( COSString str, long objNr, long objGenNr )
+    protected final void decrypt( COSString str, long objNr, long objGenNr )
     throws IOException
     {
         try 
