@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +61,7 @@ public class XrefTrailerResolver
      */
     private class XrefTrailerObj
     {
-        private COSDictionary trailer = null;
+        protected COSDictionary trailer = null;
         private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
         
         /**
@@ -77,6 +79,22 @@ public class XrefTrailerResolver
     /** Log instance. */
     private static final Log LOG = LogFactory.getLog( XrefTrailerResolver.class );
 
+    public final COSDictionary getFirstTrailer() {
+    	if (bytePosToXrefMap.isEmpty()) return null;
+    	
+    	Set<Long> offsets = bytePosToXrefMap.keySet();
+    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+    	return bytePosToXrefMap.get(sortedOffset.first()).trailer;
+    }
+    
+    public final COSDictionary getLastTrailer() {
+    	if (bytePosToXrefMap.isEmpty()) return null;
+    	
+    	Set<Long> offsets = bytePosToXrefMap.keySet();
+    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+    	return bytePosToXrefMap.get(sortedOffset.last()).trailer;
+    }
+    
     /**
      * Signals that a new XRef object (table or stream) starts.
      * @param startBytePos the offset to start at
