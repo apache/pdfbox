@@ -339,6 +339,18 @@ public interface PreflightConstants {
 	 * CID too long
 	 */
 	String ERROR_SYNTAX_CID_RANGE = "1.0.10";
+	/**
+	 * Hexa string shall contain even number of non white space char
+	 */
+	String ERROR_SYNTAX_HEXA_STRING_EVEN_NUMBER = "1.0.11";
+	/**
+	 * Hexa string contain non hexadecimal characters
+	 */
+	String ERROR_SYNTAX_HEXA_STRING_INVALID= "1.0.12";	
+	/**
+	 * An object is missing from the document (offset is negative)
+	 */
+	String ERROR_SYNTAX_NEGATIVE_OFFSET = "1.0.13";
 
 	String ERROR_SYNTAX_HEADER = "1.1";
 	
@@ -444,6 +456,10 @@ public interface PreflightConstants {
 	 * Errors in the Outlines dictionary
 	 */
 	String ERROR_SYNTAX_TRAILER_OUTLINES_INVALID = "1.4.9";
+	/**
+	 * Last %%EOF sequence is followed by data
+	 */
+	String ERROR_SYNTAX_TRAILER_EOF = "1.4.10";
 
 	// -----------------------------------------------------------
 	// ---- GRAPHIC ERRORS 2.x...

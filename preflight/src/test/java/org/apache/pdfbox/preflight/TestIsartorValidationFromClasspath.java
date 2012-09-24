@@ -37,6 +37,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.AfterClass;
@@ -90,13 +91,21 @@ public class TestIsartorValidationFromClasspath {
 		try {
 			System.out.println(path);
 			InputStream input = this.getClass().getResourceAsStream(path);
-			PreflightParser parser = new PreflightParser(new org.apache.pdfbox.preflight.utils.ByteArrayDataSource(input));
-			parser.parse();
-			document = (PreflightDocument)parser.getPDDocument();
-			document.validate();
-			ValidationResult result = document.getResult();
+
+			ValidationResult result = null;
+			try {
+				PreflightParser parser = new PreflightParser(new org.apache.pdfbox.preflight.utils.ByteArrayDataSource(input));
+				parser.parse();
+				document = (PreflightDocument)parser.getPDDocument();
+				document.validate();
+				result = document.getResult();
+			} catch (SyntaxValidationException e) {
+				result = e.getResult();
+			}
+
 			Assert.assertFalse(path + " : Isartor file should be invalid ("	+ path + ")", result.isValid());
 			Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
+
 			// could contain more than one error
 			boolean found = false;
 			for (ValidationError error : result.getErrorsList()) {
@@ -104,8 +113,7 @@ public class TestIsartorValidationFromClasspath {
 					found = true;
 				}
 				if (isartorResultFile != null) {
-					String log = path.replace(".pdf", "") + "#" 
-							+error.getErrorCode()+"#"+error.getDetails()+"\n";
+					String log = path.replace(".pdf", "") + "#" + error.getErrorCode()+"#"+error.getDetails()+"\n";
 					isartorResultFile.write(log.getBytes());
 				}
 			}
@@ -145,7 +153,7 @@ public class TestIsartorValidationFromClasspath {
 		IOUtils.closeQuietly(expected);
 		// prepare config
 		List<Object[]> data = new ArrayList<Object[]>();
-        InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
+		InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
 		if (is != null)
 		{
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));

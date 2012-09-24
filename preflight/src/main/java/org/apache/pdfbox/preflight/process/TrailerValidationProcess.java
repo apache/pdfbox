@@ -53,7 +53,6 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
-import org.apache.pdfbox.preflight.utils.PdfElementParser;
 
 public class TrailerValidationProcess extends AbstractProcess {
 
@@ -89,26 +88,14 @@ public class TrailerValidationProcess extends AbstractProcess {
 	 * @param result
 	 */
 	protected void checkTrailersForLinearizedPDF14(PreflightContext ctx) {
-		List<String> lTrailers = ctx.getPdfExtractor().getAllTrailers();
-
-		if (lTrailers.isEmpty()) {
+		COSDictionary first = ctx.getXrefTableResolver().getFirstTrailer();
+		if (first == null) {
 			addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER, "There are no trailer in the PDF file"));
-		} else {
-			String firstTrailer = lTrailers.get(0);
-			String lastTrailer = lTrailers.get(lTrailers.size() - 1);
-
-			COSDictionary first = null;
-			COSDictionary last = null;
+		} else {	
+			COSDictionary last = ctx.getXrefTableResolver().getLastTrailer();
 			COSDocument cosDoc = null;
 			try {
 				cosDoc = new COSDocument();
-
-				PdfElementParser parser1 = new PdfElementParser(cosDoc, firstTrailer.getBytes());
-				first = parser1.parseAsDictionary();
-
-				PdfElementParser parser2 = new PdfElementParser(cosDoc, lastTrailer.getBytes());
-				last = parser2.parseAsDictionary();
-
 				checkMainTrailer(ctx, first);
 				if (!compareIds(first, last, cosDoc)) {
 					addValidationError(ctx, new ValidationError(
@@ -194,7 +181,7 @@ public class TrailerValidationProcess extends AbstractProcess {
 		if (idFirst == null || idLast == null) {
 			return false;
 		}
-		
+
 		// ---- cast two COSBase to COSArray.
 		COSArray af = COSUtils.getAsArray(idFirst, cosDocument);
 		COSArray al = COSUtils.getAsArray(idLast, cosDocument);
@@ -260,7 +247,7 @@ public class TrailerValidationProcess extends AbstractProcess {
 				id = true;
 			}
 		}
-		
+
 		COSDocument cosDocument = ctx.getDocument().getDocument();
 		// PDF/A Trailer dictionary must contain the ID key
 		if (!id) {

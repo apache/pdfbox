@@ -24,15 +24,16 @@ package org.apache.pdfbox.preflight;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import javax.activation.DataSource;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdfparser.XrefTrailerResolver;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
-import org.apache.pdfbox.preflight.javacc.extractor.ExtractorTokenManager;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public class PreflightContext {
@@ -50,13 +51,18 @@ public class PreflightContext {
 	 * The datasource to load the document from
 	 */
 	protected DataSource source = null;
+//
+//	/**
+//	 * JavaCC Token Manager used to get some content of the PDF file as string (ex
+//	 * : Trailers)
+//	 */
+//	protected ExtractorTokenManager pdfExtractor = null;
 
-	/**
-	 * JavaCC Token Manager used to get some content of the PDF file as string (ex
-	 * : Trailers)
-	 */
-	protected ExtractorTokenManager pdfExtractor = null;
-
+  /** Contains all Xref/trailer objects and resolves them into single
+   *  object using startxref reference. 
+   */
+	private XrefTrailerResolver xrefTableResolver;
+	
 	/**
 	 * This wrapper contains the ICCProfile used by the PDF file.
 	 */
@@ -103,21 +109,21 @@ public class PreflightContext {
 		this.metadata = metadata;
 	}
 	
-	/**
-	 * @return the value of the pdfExtractor attribute.
-	 */
-	public ExtractorTokenManager getPdfExtractor() {
-		return pdfExtractor;
-	}
-
-	/**
-	 * Initialize the pdfExtractor attribute.
-	 * 
-	 * @param pdfExtractor
-	 */
-	public void setPdfExtractor(ExtractorTokenManager pdfExtractor) {
-		this.pdfExtractor = pdfExtractor;
-	}
+//	/**
+//	 * @return the value of the pdfExtractor attribute.
+//	 */
+//	public ExtractorTokenManager getPdfExtractor() {
+//		return pdfExtractor;
+//	}
+//
+//	/**
+//	 * Initialize the pdfExtractor attribute.
+//	 * 
+//	 * @param pdfExtractor
+//	 */
+//	public void setPdfExtractor(ExtractorTokenManager pdfExtractor) {
+//		this.pdfExtractor = pdfExtractor;
+//	}
 
 	/**
 	 * @return the PDFBox object representation of the document
@@ -125,6 +131,14 @@ public class PreflightContext {
 	public PreflightDocument getDocument() {
 		return document;
 	}
+
+	public XrefTrailerResolver getXrefTableResolver() {
+  	return xrefTableResolver;
+  }
+
+	public void setXrefTableResolver(XrefTrailerResolver xrefTableResolver) {
+  	this.xrefTableResolver = xrefTableResolver;
+  }
 
 	/**
 	 * Initialize the PDFBox object which present the PDF File.
