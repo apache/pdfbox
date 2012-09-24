@@ -30,6 +30,7 @@ import javax.activation.FileDataSource;
 
 import junit.framework.Assert;
 
+import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,13 +52,25 @@ public class TestInvalidDirectory {
 
 	@Test
 	public void validate () throws Exception {
+		PreflightDocument document = null;
+
 		System.out.println(target);
-		PreflightParser parser = new PreflightParser(new FileDataSource(target));
-		parser.parse();
-		PreflightDocument document = (PreflightDocument) parser.getPDDocument();
-		document.validate();
-		Assert.assertFalse(document.getResult().isValid());
-		document.close();
+		ValidationResult result = null;
+		try {
+			PreflightParser parser = new PreflightParser(new FileDataSource(target));
+			parser.parse();
+			document = (PreflightDocument)parser.getPDDocument();
+			document.validate();
+			result = document.getResult();
+		} catch (SyntaxValidationException e) {
+			result = e.getResult();
+		} finally {
+			if (document != null) {
+				document.close();
+			}
+		}
+		Assert.assertFalse("Test of " + target, result.isValid());
+
 	}
 
 	@Parameters

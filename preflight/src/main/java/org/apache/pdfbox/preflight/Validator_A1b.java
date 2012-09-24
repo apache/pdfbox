@@ -25,6 +25,7 @@ import javax.activation.FileDataSource;
 
 import org.apache.pdfbox.Version;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 
 
@@ -48,16 +49,20 @@ public class Validator_A1b {
 			System.exit(1);
 		}
 
+		ValidationResult result = null;
 		FileDataSource fd = new FileDataSource(args[0]);
-		
 		PreflightParser parser = new PreflightParser(fd);
-		parser.parse();
-		PreflightDocument document = (PreflightDocument)parser.getPDDocument();
-		document.validate();
-
-		ValidationResult result = document.getResult();
-		if (result.isValid()) {
+		try {
+			parser.parse();
+			PreflightDocument document = parser.getPreflightDocument();
+			document.validate();
+			result = document.getResult();
 			document.close();
+		} catch (SyntaxValidationException e) {
+			result = e.getResult();
+		}
+
+		if (result.isValid()) {
 			System.out.println("The file " + args[0] + " is a valid PDF/A-1b file");
 			System.exit(0);
 		} else {
@@ -66,7 +71,6 @@ public class Validator_A1b {
 				System.out.println(error.getErrorCode() + " : " + error.getDetails());
 			}
 
-			document.close();
 			System.exit(-1);
 		}
 	}

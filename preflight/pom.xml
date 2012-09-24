@@ -235,6 +235,18 @@
         <scope>test</scope>
     </dependency>
   -->
+      <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>1.44</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <version>1.44</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <reporting>
