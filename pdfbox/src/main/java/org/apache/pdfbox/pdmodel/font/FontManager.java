@@ -33,9 +33,9 @@ public class FontManager
 {
 
     // HashMap with all known fonts
-    private static HashMap envFonts = new HashMap();
+    private static HashMap<String,java.awt.Font> envFonts = new HashMap<String,java.awt.Font>();
     // the standard font
-    private static String standardFont = null;
+    private final static String standardFont = "helvetica";
     private static Properties fontMapping = new Properties(); 
     
     static {
@@ -51,9 +51,8 @@ public class FontManager
             throw new RuntimeException( "Error loading font mapping" );
         }
         loadFonts();
-        loadFontMapping();
         loadBasefontMapping();
-        setStandardFont();
+        loadFontMapping();
     }
     
     private FontManager() 
@@ -67,11 +66,7 @@ public class FontManager
      */
     public static java.awt.Font getStandardFont() 
     {
-        if (standardFont != null)
-        {
-            return getAwtFont(standardFont);
-        }
-        return null;
+        return getAwtFont(standardFont);
     }
     
     /**
@@ -87,7 +82,7 @@ public class FontManager
         String fontname = normalizeFontname(font);
         if (envFonts.containsKey(fontname))
         {
-            return (java.awt.Font)envFonts.get(fontname);
+            return envFonts.get(fontname);
         }
         return null;
     }
@@ -127,19 +122,6 @@ public class FontManager
         }
     }
 
-    private static void setStandardFont() 
-    {
-        // One of the following fonts will be the standard-font 
-        if (envFonts.containsKey("arial"))
-        {
-            standardFont = "arial";
-        }
-        else if (envFonts.containsKey("timesnewroman"))
-        {
-            standardFont = "timesnewroman";
-        }
-    }
-    
     /**
      * Normalize the fontname.
      *
@@ -215,7 +197,7 @@ public class FontManager
         while (addedMapping) 
         {
             int counter = 0;
-            Enumeration keys = fontMapping.keys();
+            Enumeration<Object> keys = fontMapping.keys();
             while (keys.hasMoreElements()) 
             {
                 String key = (String)keys.nextElement();
@@ -236,14 +218,61 @@ public class FontManager
      */
     private static void loadBasefontMapping() 
     {
-        addFontMapping("Times-Roman","TimesNewRoman");
-        addFontMapping("Times-Bold","TimesNewRoman,Bold");
-        addFontMapping("Times-Italic","TimesNewRoman,Italic");
-        addFontMapping("Times-BoldItalic","TimesNewRoman,Bold,Italic");
-        addFontMapping("Helvetica-Oblique","Helvetica,Italic");
-        addFontMapping("Helvetica-BoldOblique","Helvetica,Bold,Italic");
-        addFontMapping("Courier-Oblique","Courier,Italic");
-        addFontMapping("Courier-BoldOblique","Courier,Bold,Italic");
+        // use well known substitutions if the environments doesn't provide native fonts for the 14 standard fonts
+        // Times-Roman -> Serif
+        if (!addFontMapping("Times-Roman","TimesNewRoman"))
+        {
+            addFontMapping("Times-Roman","Serif");
+        }
+        if (!addFontMapping("Times-Bold","TimesNewRoman,Bold"))
+        {
+            addFontMapping("Times-Bold","Serif.bold");
+        }
+        if (!addFontMapping("Times-Italic","TimesNewRoman,Italic"))
+        {
+            addFontMapping("Times-Italic","Serif.italic");
+        }
+        if (!addFontMapping("Times-BoldItalic","TimesNewRoman,Bold,Italic"))
+        {
+            addFontMapping("Times-BoldItalic","Serif.bolditalic");
+        }
+        // Helvetica -> SansSerif
+        if (!addFontMapping("Helvetica","Helvetica"))
+        {
+            addFontMapping("Helvetica","SansSerif");
+        }
+        if (!addFontMapping("Helvetica-Bold","Helvetica,Bold"))
+        {
+            addFontMapping("Helvetica-Bold","SansSerif.bold");
+        }
+        if (!addFontMapping("Helvetica-Oblique","Helvetica,Italic"))
+        {
+            addFontMapping("Helvetica-Oblique","SansSerif.italic");
+        }
+        if (!addFontMapping("Helvetica-BoldOblique","Helvetica,Bold,Italic"))
+        {
+            addFontMapping("Helvetica-BoldOblique","SansSerif.bolditalic");
+        }
+        // Courier -> Monospaced
+        if (!addFontMapping("Courier","Courier"))
+        {
+            addFontMapping("Courier","Monospaced");
+        }
+        if (!addFontMapping("Courier-Bold","Courier,Bold"))
+        {
+            addFontMapping("Courier-Bold","Monospaced.bold");
+        }
+        if (!addFontMapping("Courier-Oblique","Courier,Italic"))
+        {
+            addFontMapping("Courier-Oblique","Monospaced.italic");
+        }
+        if (!addFontMapping("Courier-BoldOblique","Courier,Bold,Italic"))
+        {
+            addFontMapping("Courier-BoldOblique","Monospaced.bolditalic");
+        }
+        // some well known (??) substitutions found on fedora linux
+        addFontMapping("Symbol","StandardSymbolsL");
+        addFontMapping("ZapfDingbats","Dingbats");
     }
 
     /**
