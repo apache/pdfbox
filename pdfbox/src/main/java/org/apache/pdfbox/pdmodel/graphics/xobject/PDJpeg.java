@@ -40,6 +40,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.IIOException;
 import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -57,6 +58,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.ImageIOUtil;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * An image class for JPegs.
@@ -226,9 +230,21 @@ public class PDJpeg extends PDXObjectImage
             if (cs instanceof PDDeviceCMYK 
                     || (cs instanceof PDICCBased && cs.getNumberOfComponents() == 4))
             {
+                // JPEGs may contain CMYK, YCbCr or YCCK decoded image data
+                int transform = getApp14AdobeTransform(img);
                 // create BufferedImage based on the converted color values
-                bi = convertCMYK2RGB(readImage(img), cs);
-
+                if (transform == 0)
+                {
+                    bi = convertCMYK2RGB(readImage(img), cs);
+                }
+                else if (transform == 1)
+                {
+                    // TODO YCbCr
+                }
+                else if (transform == 2)
+                {
+                    bi = convertYCCK2RGB(readImage(img));
+                }
             }
             else if (cs instanceof PDSeparation)
             {
@@ -340,24 +356,77 @@ public class PDJpeg extends PDXObjectImage
         return newImage;
     }
 
+    private int getApp14AdobeTransform(byte[] bytes) 
+    {
+        int transformType = 0;
+        ImageReader reader = null;
+        ImageInputStream input = null;
+        try 
+        {
+            input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            if (readers == null || !readers.hasNext()) 
+            {
+                input.close();
+                throw new RuntimeException("No ImageReaders found");
+            }
+            reader = (ImageReader) readers.next();
+            reader.setInput(input);
+            IIOMetadata meta = reader.getImageMetadata(0);
+            if (meta != null)
+            {
+                Node tree = meta.getAsTree("javax_imageio_jpeg_image_1.0");
+                NodeList children = tree.getChildNodes();
+                for (int i=0;i<children.getLength();i++)
+                {
+                    Node markerSequence = children.item(i);
+                    if ("markerSequence".equals(markerSequence.getNodeName()))
+                    {
+                        NodeList markerSequenceChildren = markerSequence.getChildNodes();
+                        for (int j=0;j<markerSequenceChildren.getLength();j++)
+                        {
+                            Node child = markerSequenceChildren.item(j);
+                            if ("app14Adobe".equals(child.getNodeName()) && child.hasAttributes())
+                            {
+                                NamedNodeMap attribs = child.getAttributes();
+                                Node transformNode = attribs.getNamedItem("transform");
+                                transformType = Integer.parseInt(transformNode.getNodeValue());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch(IOException exception)
+        {
+            
+        }
+        finally
+        {
+            if (reader != null)
+            {
+                reader.dispose();
+            }
+        }
+        return transformType;
+    }
+    
     private Raster readImage(byte[] bytes) throws IOException 
     {
         ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes));
         Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
         if (readers == null || !readers.hasNext()) 
         {
+            input.close();
             throw new RuntimeException("No ImageReaders found");
         }
-
         // read the raster information only
         // avoid to access the meta information
         ImageReader reader = (ImageReader) readers.next();
         reader.setInput(input);
         Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
-        if (input != null) 
-        {
-            input.close();
-        }
+        input.close();
         reader.dispose();
         return raster;
     }
@@ -392,18 +461,39 @@ public class PDJpeg extends PDXObjectImage
                 rgbIndex +=3;
             }
         }
-        // create a RGB color model
-        ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), 
-                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-        // create the target raster
-        WritableRaster writeableRaster = cm.createCompatibleWritableRaster(width, height);
-        // get the data buffer of the raster
-        DataBufferByte buffer = (DataBufferByte)writeableRaster.getDataBuffer();
-        byte[] bufferData = buffer.getData();
-        // copy all the converted data to the raster buffer
-        System.arraycopy( rgb, 0,bufferData, 0,rgb.length );
-        // create an image using the converted color values
-        return new BufferedImage(cm, writeableRaster, true, null);
+        return createRGBBufferedImage(ColorSpace.getInstance(ColorSpace.CS_sRGB), rgb, width, height);
+    }
+
+    // YCbCrK jpegs are not supported by JAI, so that we have to do the conversion on our own
+    private BufferedImage convertYCCK2RGB(Raster raster) throws IOException 
+    {
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        byte[] rgb = new byte[width * height * 3]; 
+        int rgbIndex = 0;
+        for (int i = 0; i < height; i++) 
+        {
+            for (int j = 0; j < width; j++)
+            {
+                float[] srcColorValues = raster.getPixel(j,i, (float[])null);
+                float k = srcColorValues[3];
+                float y = srcColorValues[0];
+                float c1=srcColorValues[1];
+                float c2=srcColorValues[2];
+
+                double val = y + 1.402 * ( c2 - 128 ) - k;
+                rgb[rgbIndex] = val < 0.0 ? (byte)0 : (val>255.0? (byte)0xff : (byte)(val+0.5));
+                
+                val = y - 0.34414 * ( c1 - 128 ) - 0.71414 * ( c2 - 128 ) - k;
+                rgb[rgbIndex+1] = val<0.0? (byte)0: val>255.0? (byte)0xff: (byte)(val+0.5);
+
+                val = y + 1.772 * ( c1 - 128 ) - k;
+                rgb[rgbIndex+2] = val<0.0? (byte)0: val>255.0? (byte)0xff: (byte)(val+0.5);
+                
+                rgbIndex +=3;
+            }
+        }
+        return createRGBBufferedImage(ColorSpace.getInstance(ColorSpace.CS_sRGB), rgb, width, height);
     }
 
     // Separation and DeviceN colorspaces are using a tint transform function to convert color values 
@@ -414,7 +504,7 @@ public class PDJpeg extends PDXObjectImage
         int numberOfOutputValues = function.getNumberOfOutputParameters();
         int width = raster.getWidth();
         int height = raster.getHeight();
-        byte[] sourceBuffer = new byte[width * height * numberOfOutputValues]; 
+        byte[] rgb = new byte[width * height * numberOfOutputValues]; 
         int bufferIndex = 0;
         for (int i = 0; i < height; i++) 
         {
@@ -432,24 +522,28 @@ public class PDJpeg extends PDXObjectImage
                 // convert values from 0..1 to 0..255
                 for (int k = 0; k < numberOfOutputValues; k++)
                 {
-                    sourceBuffer[bufferIndex+k] = (byte)(convertedValues[k] * 255); 
+                    rgb[bufferIndex+k] = (byte)(convertedValues[k] * 255); 
                 }
                 bufferIndex +=numberOfOutputValues;
             }
         }
-        // create a target color model
-        ColorModel cm = new ComponentColorModel(colorspace, 
-                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+        return createRGBBufferedImage(colorspace, rgb, width, height);
+    }
+
+    private BufferedImage createRGBBufferedImage(ColorSpace cs, byte[] rgb, int width, int height) 
+    {
+        // create a RGB color model
+        ColorModel cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
         // create the target raster
         WritableRaster writeableRaster = cm.createCompatibleWritableRaster(width, height);
         // get the data buffer of the raster
         DataBufferByte buffer = (DataBufferByte)writeableRaster.getDataBuffer();
         byte[] bufferData = buffer.getData();
         // copy all the converted data to the raster buffer
-        System.arraycopy( sourceBuffer, 0,bufferData, 0,sourceBuffer.length );
+        System.arraycopy( rgb, 0,bufferData, 0,rgb.length );
         // create an image using the converted color values
         return new BufferedImage(cm, writeableRaster, true, null);
     }
-
+    
 }
 
