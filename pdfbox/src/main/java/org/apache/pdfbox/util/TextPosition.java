@@ -99,6 +99,10 @@ public class TextPosition
         {
             rot += 360;
         }
+        else if (rot >= 360)
+        {
+            rot -= 360;
+        }
 
         this.maxTextHeight = maxFontH;
         this.pageHeight = page.findMediaBox().getHeight();
@@ -236,6 +240,10 @@ public class TextPosition
         if(this.rot < 0)
         {
             rot += 360;
+        }
+        else if (rot >= 360)
+        {
+            rot -= 360;
         }
 
         this.maxTextHeight = maxFontH;
