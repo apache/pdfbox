@@ -183,6 +183,13 @@ public class PDFTextStripper extends PDFStreamEngine
     private TextNormalize normalize = null;
 
     /**
+     * True if we started a paragraph but haven't ended it
+     * yet.
+     */
+    private boolean inParagraph;
+
+
+    /**
      * Instantiate a new PDFTextStripper object. This object will load
      * properties from PDFTextStripper.properties and will not do
      * anything special to convert the text to a more encoding-specific
@@ -1724,7 +1731,13 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void writeParagraphStart() throws IOException
     {
+        if (inParagraph) 
+        {
+            writeParagraphEnd();
+            inParagraph = false;
+        }
         output.write(getParagraphStart());
+        inParagraph = true;
     }
 
     /**
@@ -1734,6 +1747,7 @@ public class PDFTextStripper extends PDFStreamEngine
     protected void writeParagraphEnd() throws IOException
     {
         output.write(getParagraphEnd());
+        inParagraph = false;
     }
 
     /**
