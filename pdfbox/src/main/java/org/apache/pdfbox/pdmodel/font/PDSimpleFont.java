@@ -527,14 +527,15 @@ public abstract class PDSimpleFont extends PDFont
                     {
                         fontWidthOfSpace = getFontWidth(spaceMapping);
                     }
-                    else
-                    {
-                        fontWidthOfSpace = getAverageFontWidth();
-                    }
                 }
                 else
                 {
                     fontWidthOfSpace = getFontWidth( SPACE_BYTES, 0, 1 );
+                }
+                // use the average font width as fall back
+                if (fontWidthOfSpace <= 0)
+                {
+                    fontWidthOfSpace = getAverageFontWidth();
                 }
             }
             catch (Exception e) 
