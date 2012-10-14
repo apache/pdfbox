@@ -51,6 +51,9 @@ public class CMap
     private final Map<String,Integer> char2CIDMappings = new HashMap<String,Integer>();
     private final List<CIDRange> cidRanges = new LinkedList<CIDRange>();
 
+    private static final String SPACE = " ";
+    private int spaceMapping = -1;
+    
     /**
      * Creates a new instance of CMap.
      */
@@ -132,13 +135,19 @@ public class CMap
      *
      * @return The string that matches the lookup.
      */
-    public String lookupCID(int cid) {
-        if (cid2charMappings.containsKey(cid)) {
+    public String lookupCID(int cid) 
+    {
+        if (cid2charMappings.containsKey(cid)) 
+        {
             return cid2charMappings.get(cid);
-        } else {
-            for (CIDRange range : cidRanges) {
+        } 
+        else 
+        {
+            for (CIDRange range : cidRanges) 
+            {
                 int ch = range.unmap(cid);
-                if (ch != -1) {
+                if (ch != -1) 
+                {
                     return Character.toString((char) ch);
                 }
             }
@@ -150,18 +159,27 @@ public class CMap
      * This will perform a lookup into the CID map.
      *
      * @param code The code used to lookup.
+     * @param offset the offset into the array.
+     * @param length the length of the subarray.
      *
      * @return The CID that matches the lookup.
      */
-    public int lookupCID(byte[] code, int offset, int length) {
-        if (isInCodeSpaceRanges(code,offset,length)) {
+    public int lookupCID(byte[] code, int offset, int length) 
+    {
+        if (isInCodeSpaceRanges(code,offset,length)) 
+        {
             int codeAsInt = getCodeFromArray(code, offset, length);
-            if (char2CIDMappings.containsKey(codeAsInt)) {
+            if (char2CIDMappings.containsKey(codeAsInt)) 
+            {
                 return char2CIDMappings.get(codeAsInt);
-            } else {
-                for (CIDRange range : cidRanges) {
+            } 
+            else 
+            {
+                for (CIDRange range : cidRanges) 
+                {
                     int ch = range.map((char)codeAsInt);
-                    if (ch != -1) {
+                    if (ch != -1) 
+                    {
                         return ch;
                     }
                 }
@@ -202,13 +220,17 @@ public class CMap
         
         int srcLength = src.length;
         int intSrc = getCodeFromArray(src, 0, srcLength);
+        if ( SPACE.equals(dest) )
+        {
+            spaceMapping = intSrc;
+        }
         if( srcLength == 1 )
         {
             singleByteMappings.put( intSrc, dest );
         }
         else if( srcLength == 2 )
         {
-            doubleByteMappings.put( intSrc , dest );
+            doubleByteMappings.put( intSrc, dest );
         }
         else
         {
@@ -233,11 +255,13 @@ public class CMap
     /**
      * This will add a CID Range.
      *
-     * @param src The CID Range to be added.
-     * @param dest The starting cid.
+     * @param from starting charactor of the CID range.
+     * @param to ending character of the CID range.
+     * @param cid the cid to be started with.
      *
      */
-    public void addCIDRange(char from, char to, int cid) {
+    public void addCIDRange(char from, char to, int cid) 
+    {
         cidRanges.add(0, new CIDRange(from, to, cid));
     }
 
@@ -314,7 +338,7 @@ public class CMap
      *
      * 0 represents a horizontal and 1 represents a vertical orientation.
      * 
-     * @return
+     * @return the wmode
      */
     public int getWMode() 
     {
@@ -449,5 +473,15 @@ public class CMap
     public void setSupplement(int newSupplement) 
     {
         supplement = newSupplement;
+    }
+    
+    /** 
+     * Returns the mapping for the space character.
+     * 
+     * @return the mapped code for the space character
+     */
+    public int getSpaceMapping()
+    {
+        return spaceMapping;
     }
 }

@@ -73,8 +73,6 @@ public class PDFStreamEngine
      */
     private final Set<String> unsupportedOperators = new HashSet<String>();
     
-    private static final byte[] SPACE_BYTES = { (byte)32 };
-
     private PDGraphicsState graphicsState = null;
 
     private Matrix textMatrix = null;
@@ -354,7 +352,7 @@ public class PDFStreamEngine
         {   
             // to avoid crash as described in PDFBOX-614
             // lets see what the space displacement should be
-            spaceWidthText = (font.getFontWidth( SPACE_BYTES, 0, 1 )*glyphSpaceToTextSpaceFactor);
+            spaceWidthText = (font.getSpaceWitdh()*glyphSpaceToTextSpaceFactor);
         }
         catch (Throwable exception)
         {

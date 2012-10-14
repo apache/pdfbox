@@ -86,7 +86,7 @@ public abstract class PDFont implements COSObjectable
     protected CMap cmap = null;
 
     /**
-     * The CMap holding the ToUnicode mapping 
+     * The CMap holding the ToUnicode mapping.
      */
     protected CMap toUnicodeCmap = null;
     
@@ -128,8 +128,8 @@ public abstract class PDFont implements COSObjectable
         return metrics;
     }
 
-    protected final static String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
-    private final static String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
+    protected static final String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
+    private static final String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
 
     private static void addAdobeFontMetric(
             Map<String, FontMetric> metrics, String name )
@@ -459,7 +459,7 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * Set the encoding object from the fonts dictionary.
-     * @param encoding the given encoding.
+     * @param encodingValue the given encoding.
      */
     protected void setEncoding(COSBase encodingValue)
     {
@@ -537,8 +537,9 @@ public abstract class PDFont implements COSObjectable
     public int encodeToCID( byte[] c, int offset, int length ) throws IOException
     {
         int code = -1;
-        if (encode(c, offset, length) != null) {
-        	code = getCodeFromArray( c, offset, length );
+        if (encode(c, offset, length) != null) 
+        {
+            code = getCodeFromArray( c, offset, length );
         }
         return code;
     }
@@ -779,7 +780,7 @@ public abstract class PDFont implements COSObjectable
     /**
      * Set the widths of the characters code.
      *
-     * @param widths The widths of the character codes.
+     * @param widthsList The widths of the character codes.
      */
     public void setWidths( List<Float> widthsList )
     {
@@ -883,11 +884,17 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * Sets hasToUnicode to the given value.
-     * @param hasToUnicode the given value for hasToUnicode
+     * @param hasToUnicodeValue the given value for hasToUnicode
      */
     protected void setHasToUnicode(boolean hasToUnicodeValue)
     {
         hasToUnicode = hasToUnicodeValue;
     }
-
+    
+    /**
+     * Determines the width of the space character.
+     * @return the width of the space character
+     */
+    public abstract float getSpaceWitdh();
+    
 }
