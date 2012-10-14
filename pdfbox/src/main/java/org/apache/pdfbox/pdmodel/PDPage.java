@@ -708,8 +708,17 @@ public class PDPage implements COSObjectable, Printable
         //TODO The following reduces accuracy. It should really be a Dimension2D.Float.
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
         BufferedImage retval = null;
-        float rotation = (float)Math.toRadians(findRotation());
-        if (rotation != 0)
+        int rotationAngle = findRotation();
+        // normalize the rotation angle
+        if (rotationAngle < 0)
+        {
+            rotationAngle += 360;
+        }
+        else if (rotationAngle >= 360)
+        {
+            rotationAngle -= 360;
+        }
+        if (rotationAngle != 0)
         {
             retval = new BufferedImage( heightPx, widthPx, imageType );
         }
@@ -720,10 +729,27 @@ public class PDPage implements COSObjectable, Printable
         Graphics2D graphics = (Graphics2D)retval.getGraphics();
         graphics.setBackground( TRANSPARENT_WHITE );
         graphics.clearRect( 0, 0, retval.getWidth(), retval.getHeight() );
-        if (rotation != 0)
+        if (rotationAngle != 0)
         {
-            graphics.translate(retval.getWidth(), 0.0f);
-            graphics.rotate(rotation);
+            int translateX = 0;
+            int translateY = 0;
+            switch(rotationAngle) 
+            {
+                case 90:
+                    translateX = retval.getWidth();
+                    break;
+                case 270:
+                    translateY = retval.getHeight();
+                    break;
+                case 180:
+                    translateX = retval.getWidth();
+                    translateY = retval.getHeight();
+                    break;
+                default:
+                    break;
+            }
+            graphics.translate(translateX,translateY);
+            graphics.rotate((float)Math.toRadians(rotationAngle));
         }
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
@@ -801,6 +827,7 @@ public class PDPage implements COSObjectable, Printable
 
     /**
      * @deprecated Use the {@link PDPageable} adapter class
+     * {@inheritDoc}
      */
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
         throws PrinterException
