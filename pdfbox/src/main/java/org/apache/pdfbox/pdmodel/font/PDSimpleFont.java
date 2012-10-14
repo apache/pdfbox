@@ -513,7 +513,7 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * {@inheritDoc}
      */
-    public float getSpaceWitdh()
+    public float getSpaceWidth()
     {
         if (fontWidthOfSpace == -1f)
         {

@@ -895,6 +895,6 @@ public abstract class PDFont implements COSObjectable
      * Determines the width of the space character.
      * @return the width of the space character
      */
-    public abstract float getSpaceWitdh();
+    public abstract float getSpaceWidth();
     
 }
