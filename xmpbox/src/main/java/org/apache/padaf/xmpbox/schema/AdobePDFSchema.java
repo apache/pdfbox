@@ -141,10 +141,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public TextType getKeywordsProperty() {
 		AbstractField tmp = getProperty(KEYWORDS);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return (TextType) tmp;
-			}
+		if (tmp instanceof TextType) {
+			return (TextType) tmp;
 		}
 		return null;
 	}
@@ -156,10 +154,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public String getKeywords() {
 		AbstractField tmp = getProperty(KEYWORDS);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return ((TextType) tmp).getStringValue();
-			}
+		if (tmp instanceof TextType) {
+			return ((TextType) tmp).getStringValue();
 		}
 		return null;
 	}
@@ -171,10 +167,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public TextType getPDFVersionProperty() {
 		AbstractField tmp = getProperty(PDF_VERSION);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return (TextType) tmp;
-			}
+		if (tmp instanceof TextType) {
+			return (TextType) tmp;
 		}
 		return null;
 	}
@@ -186,10 +180,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public String getPDFVersion() {
 		AbstractField tmp = getProperty(PDF_VERSION);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return ((TextType) tmp).getStringValue();
-			}
+		if (tmp instanceof TextType) {
+			return ((TextType) tmp).getStringValue();
 		}
 		return null;
 	}
@@ -201,10 +193,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public TextType getProducerProperty() {
 		AbstractField tmp = getProperty(PRODUCER);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return (TextType) tmp;
-			}
+		if (tmp instanceof TextType) {
+			return (TextType) tmp;
 		}
 		return null;
 	}
@@ -216,10 +206,8 @@ public class AdobePDFSchema extends XMPSchema {
 	 */
 	public String getProducer() {
 		AbstractField tmp = getProperty(PRODUCER);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return ((TextType) tmp).getStringValue();
-			}
+		if (tmp instanceof TextType) {
+			return ((TextType) tmp).getStringValue();
 		}
 		return null;
 	}

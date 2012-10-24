@@ -25,9 +25,8 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.parser.TransformException;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.xml.XmpSerializationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -61,7 +60,7 @@ public class XMPMetaDataTest {
 				.addProperty(metadata.getTypeMapping().createText(null,"test", "simpleProperty",
 						"YEP"));
 
-		tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space");
+		tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space","space");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace1");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace2");
 		tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace3");
@@ -93,14 +92,14 @@ public class XMPMetaDataTest {
 	 * }
 	 */
 
-	@Test(expected = org.apache.padaf.xmpbox.parser.TransformException.class)
-	public void testTransformerExceptionMessage() throws TransformException {
-		throw new TransformException("TEST");
+	@Test(expected = org.apache.padaf.xmpbox.xml.XmpSerializationException.class)
+	public void testTransformerExceptionMessage() throws XmpSerializationException {
+		throw new XmpSerializationException("TEST");
 	}
 
-	@Test(expected = org.apache.padaf.xmpbox.parser.TransformException.class)
-	public void testTransformerExceptionWithCause() throws TransformException {
-		throw new TransformException("TEST", new Throwable());
+	@Test(expected = org.apache.padaf.xmpbox.xml.XmpSerializationException.class)
+	public void testTransformerExceptionWithCause() throws XmpSerializationException {
+		throw new XmpSerializationException("TEST", new Throwable());
 	}
 
 	@Test

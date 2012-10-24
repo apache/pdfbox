@@ -49,10 +49,6 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 	@PropertyType(propertyType = "Text")
 	public static final String BIRTH_COUNTRY = "birth-country";
 
-//	@PropertyType(propertyType = "mailaddress")
-//	@PropertyExtensionDefinition(propertyCategory = "external")
-//	public static final String MAIL_ADR = "mail";
-
 	public BirthCertificateSchemaWithXMLDescriptions(XMPMetadata metadata) {
 		super(metadata);
 		this.setAttribute(new Attribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "madn",
@@ -90,63 +86,5 @@ public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 				.getStringValue();
 	}
 
-//	public void setMailaddr(String name, String domain) {
-//		ComplexPropertyContainer field = new ComplexPropertyContainer(getMetadata(),null,
-//				getLocalPrefix(), MAIL_ADR);
-//		field.setAttribute(new Attribute(null, "rdf", "parseType", "Resource"));
-//		TextType namePart = new TextType(getMetadata(), null, "madn", "name", name);
-//		TextType domainPart = new TextType(getMetadata(), null, "madn", "domain", domain);
-//		field.addProperty(namePart);
-//		field.addProperty(domainPart);
-//		addProperty(field);
-//
-//	}
 
-//	private ComplexPropertyContainer getMailField() {
-//		AbstractField afield = this.getPropertyAsSimple(MAIL_ADR);
-//		if (afield == null) {
-//			return null;
-//		}
-//		if (afield instanceof ComplexPropertyContainer) {
-//			return (ComplexPropertyContainer) afield;
-//		} else {
-//			throw new IllegalArgumentException(MAIL_ADR
-//					+ " property found but not seems to be a field");
-//		}
-//	}
-
-//	private TextType getTextType(String nameProp) {
-//		ComplexPropertyContainer field = getMailField();
-//		Iterator<AbstractField> it = field.getAllProperties().iterator();
-//		AbstractField aProp;
-//		while (it.hasNext()) {
-//			aProp = it.next();
-//			if (aProp.getPropertyName().equals(nameProp)) {
-//				if (aProp instanceof TextType) {
-//					return (TextType) aProp;
-//				} else {
-//					throw new IllegalArgumentException(
-//							nameProp
-//									+ " property found but not seems to be in expected type");
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
-//	public String getMailName() {
-//		TextType name = getTextType("name");
-//		if (name != null) {
-//			return name.getStringValue();
-//		}
-//		return null;
-//	}
-//
-//	public String getMailDomain() {
-//		TextType name = getTextType("domain");
-//		if (name != null) {
-//			return name.getStringValue();
-//		}
-//		return null;
-//	}
 }

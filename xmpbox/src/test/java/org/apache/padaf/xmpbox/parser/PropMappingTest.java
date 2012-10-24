@@ -50,7 +50,6 @@ public class PropMappingTest {
 		propMap.addNewProperty(name, type);
 		Assert.assertEquals(1, propMap.getPropertiesName().size());
 		Assert.assertEquals(name, propMap.getPropertiesName().get(0));
-//		Assert.assertNull(propMap.getPropertyAttributes(name));
 		Assert.assertEquals(type, propMap.getPropertyType(name));
 
 	}
@@ -61,6 +60,5 @@ public class PropMappingTest {
 		String type = "PropType";
 
 		propMap.addNewProperty(name, type);
-//		Assert.assertEquals(attr, propMap.getPropertyAttributes(name));
 	}
 }

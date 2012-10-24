@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.padaf.xmpbox.parser.CreateXMPMetadataException;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
@@ -212,6 +211,7 @@ public class XMPMetadata {
 		return null;
 	}
 
+	
 	public XMPSchema getSchema (Class<? extends XMPSchema> clz) {
 		StructuredType st = clz.getAnnotation(StructuredType.class);
 		return getSchema(st.namespace());

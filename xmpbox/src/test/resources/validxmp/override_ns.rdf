@@ -21,11 +21,13 @@
                <rdf:li xml:lang="x-default">TechNote 0001: PDF/A-1 and Namespaces</rdf:li>
             </rdf:Alt>
          </dc:title>
+         <!--
          <dc:creator>
             <rdf:Seq>
                <rdf:li>PDF/A Competence Center</rdf:li>
             </rdf:Seq>
          </dc:creator>
+         -->
       </rdf:Description>
       <rdf:Description rdf:about=""
             xmlns:pdfx="http://ns.adobe.com/pdfx/1.3/">

@@ -19,41 +19,67 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.xml;
 
 /**
- * This exception is thrown when a predefined schema have a wrong namespace URI
+ * Exception thrown when Parsing failed
  * 
  * @author a183132
  * 
  */
-public class XmpUnexpectedNamespaceURIException extends XmpParsingException {
+public class XmpParsingException extends Exception {
 
+	public enum ErrorType {
+		Undefined,
+		Configuration,
+		XpacketBadStart,
+		XpacketBadEnd,
+		NoRootElement,
+		NoSchema, // undefined schema
+		InvalidPdfaSchema,
+		NoType, // undefined type
+		InvalidType,
+		Format, // weird things in serialized document
+		NoValueType,
+		RequiredProperty,
+		InvalidPrefix, // unexpected namespace prefix used
+	}
+	
+	private ErrorType errorType;
+	
 	/**
-	 * serial version id
+	 * serial version uid
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8843096358184702908L;
 
 	/**
-	 * Create an instance of XmpUnexpectedNamespaceURI
+	 * Create an instance of XmpParsingException
 	 * 
 	 * @param message
 	 *            a description of the encountered problem
 	 * @param cause
 	 *            the cause of the exception
 	 */
-	public XmpUnexpectedNamespaceURIException(String message, Throwable cause) {
+	public XmpParsingException(ErrorType error, String message, Throwable cause) {
 		super(message, cause);
+		this.errorType = error;
 	}
 
 	/**
-	 * Create an instance of XmpUnexpectedNamespaceURI
+	 * Create an instance of XmpParsingException
 	 * 
 	 * @param message
 	 *            a description of the encountered problem
 	 */
-	public XmpUnexpectedNamespaceURIException(String message) {
+	public XmpParsingException(ErrorType error, String message) {
 		super(message);
+		this.errorType = error;
 	}
 
+	public ErrorType getErrorType() {
+		return errorType;
+	}
+
+	
+	
 }

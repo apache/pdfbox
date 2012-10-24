@@ -200,9 +200,17 @@ public class ComplexPropertyContainer /*extends AbstractField*/ {
 	 * @return True if these properties are equals
 	 */
 	public boolean isSameProperty(AbstractField prop1, AbstractField prop2) {
-		if (prop1.getClass().equals(prop2.getClass())
-				&& prop1.getPropertyName().equals(prop2.getPropertyName())) {
-			return prop1.equals(prop2);
+
+		if (prop1.getClass().equals(prop2.getClass())) {
+			String pn1 = prop1.getPropertyName();
+			String pn2 = prop2.getPropertyName();
+			if (pn1==null) {
+				return pn2==null;
+			} else {
+				if (pn1.equals(pn2)) {
+					return prop1.equals(prop2);
+				}
+			}
 		}
 		return false;
 	}

@@ -86,7 +86,6 @@ public class DoubleSameTypeSchemaTest {
 			Assert.assertTrue(dc.getCreators().containsAll(creators));
 		}
 
-		// SaveMetadataHelper.serialize(metadata, true, System.out);
 
 	}
 }

@@ -43,7 +43,7 @@ public abstract class AbstractComplexProperty extends AbstractField {
 	public void addNamespace (String namespace, String prefix) {
 		this.namespaceToPrefix.put(namespace, prefix);
 	}
-	
+		
 	public String getNamespacePrefix (String namespace) {
 		return this.namespaceToPrefix.get(namespace);
 	}

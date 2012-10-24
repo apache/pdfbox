@@ -259,7 +259,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param url
 	 *            WebStatemen url property to set
 	 */
-	public void setWebStatementProperty(TextType url) {
+	public void setWebStatementProperty(URLType url) {
 		addProperty(url);
 	}
 
@@ -344,7 +344,7 @@ public class XMPRightsManagementSchema extends XMPSchema {
 	 * @param url
 	 *            certificate url property to set
 	 */
-	public void setCertificateProperty(TextType url) {
+	public void setCertificateProperty(URLType url) {
 		addProperty(url);
 	}
 }

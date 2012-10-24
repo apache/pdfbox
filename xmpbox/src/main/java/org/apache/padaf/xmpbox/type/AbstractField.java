@@ -72,10 +72,14 @@ public abstract class AbstractField {
 	 * 
 	 * @return the local Name
 	 */
-	public String getPropertyName() {
+	public final String getPropertyName() {
 		return propertyName;
 	}
 
+	public final void setPropertyName (String value) {
+		this.propertyName = value;
+	}
+	
 	/**
 	 * Set a new attribute for this entity
 	 * 
@@ -83,10 +87,6 @@ public abstract class AbstractField {
 	 *            The Attribute property to add
 	 */
 	public final void setAttribute(Attribute value) {
-		// TODO remove when test are OK
-		if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(value.getNamespace())) {
-			throw new Error ("Should not call setAttribute for this "+value.getValue());
-		}
 		if (attributes.containsKey(value.getName())) {
 			// if same name in element, attribute will be replaced
 			attributes.remove(value.getName());

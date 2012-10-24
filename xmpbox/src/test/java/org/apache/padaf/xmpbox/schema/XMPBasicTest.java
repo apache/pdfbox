@@ -52,9 +52,9 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 
 		data.add(wrapProperty("Advisory", "bag Xpath", new String[] { "xpath1",
 				"xpath2" }));
-//		data.add(wrapProperty("BaseURL", "URL", "URL"));
+		data.add(wrapProperty("BaseURL", "URL", "URL"));
 		data.add(wrapProperty("CreateDate", "Date", Calendar.getInstance()));
-//		data.add(wrapProperty("CreatorTool", "Text", "CreatorTool"));
+		data.add(wrapProperty("CreatorTool", "AgentName", "CreatorTool"));
 		data.add(wrapProperty("Identifier", "bag Text", new String[] { "id1",
 				"id2" }));
 		data.add(wrapProperty("Label", "Text", "label"));
@@ -63,7 +63,6 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 		data.add(wrapProperty("Nickname", "Text", "nick name"));
 		data.add(wrapProperty("Rating", "Integer", 7));
 
-		// TODO TEST test Thumbnail when implemented in the XMPBasicSchema
 		data.add(wrapProperty("Thumbnails", "Alt Thumbnail", null));
 
 		return data;

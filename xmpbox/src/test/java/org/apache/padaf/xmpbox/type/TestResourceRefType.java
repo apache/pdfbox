@@ -54,8 +54,7 @@ public class TestResourceRefType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	// TODO TEST test on arrays
-//    	result.add(new Object [] {ResourceRefType.class,"alternatePaths","seq URI"});
+//     	result.add(new Object [] {ResourceRefType.class,"alternatePaths","seq URI"});
     	result.add(new Object [] {ResourceRefType.class,"documentID","URI"});
     	result.add(new Object [] {ResourceRefType.class,"filePath","URI"});
     	result.add(new Object [] {ResourceRefType.class,"fromPart","Part"});

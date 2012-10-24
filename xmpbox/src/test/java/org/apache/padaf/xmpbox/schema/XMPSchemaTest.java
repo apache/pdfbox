@@ -77,15 +77,6 @@ public class XMPSchemaTest {
 		Assert.assertEquals(1, values2.size());
 		Assert.assertEquals(value2, values2.get(0));
 
-		/*
-		 * System.out.println("Bag Management :");
-		 * parent.getFuturOwner().appendChild(schem.getElement()); try {
-		 * XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8"); } catch
-		 * (TransformerException e) {
-		 * 
-		 * e.printStackTrace(); } System.out.println("------------------");
-		 */
-
 	}
 
 	@Test
@@ -131,15 +122,6 @@ public class XMPSchemaTest {
 		Assert.assertEquals(DateConverter.toISO8601(date), values.get(0));
 		Assert.assertEquals(bool.getStringValue(), values.get(1));
 		Assert.assertEquals(textVal, values.get(2));
-
-		/*
-		 * System.out.println("Seq Management :");
-		 * parent.getFuturOwner().appendChild(schem.getElement()); try {
-		 * XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8"); } catch
-		 * (TransformerException e) {
-		 * 
-		 * e.printStackTrace(); } System.out.println("------------------");
-		 */
 
 		schem.removeUnqualifiedSequenceDateValue(seqName, date);
 		Assert.assertEquals(0, schem.getUnqualifiedSequenceDateValueList(seqName).size());
@@ -213,7 +195,6 @@ public class XMPSchemaTest {
 
 		String seqdate = "SeqDate";
 
-//		String prefSchem = schem.getPrefix() + ":";
 		String prefSchem = "";
 
 		schem.setBooleanPropertyValueAsSimple(bool, boolVal);
@@ -348,15 +329,6 @@ public class XMPSchemaTest {
 			ok = true;
 		}
 
-		/*
-		 * System.out.println("Simple Properties Management :");
-		 * parent.getFuturOwner().appendChild(schem.getElement()); try {
-		 * XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8"); } catch
-		 * (TransformerException e) {
-		 * 
-		 * e.printStackTrace(); } System.out.println("------------------");
-		 */
-
 	}
 
 	@Test
@@ -403,15 +375,6 @@ public class XMPSchemaTest {
 		languages = schem.getUnqualifiedLanguagePropertyLanguagesValue(altProp);
 		Assert.assertFalse(languages.contains(frLang));
 		schem.setUnqualifiedLanguagePropertyValue(altProp, frLang, frVal);
-
-		/*
-		 * System.out.println("Alternatives lang Management :");
-		 * parent.getFuturOwner().appendChild(schem.getElement()); try {
-		 * XMLUtil.save(parent.getFuturOwner(), System.out, "UTF-8"); } catch
-		 * (TransformerException e) {
-		 * 
-		 * e.printStackTrace(); } System.out.println("------------------");
-		 */
 
 	}
 

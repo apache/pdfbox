@@ -33,6 +33,10 @@ public final class XmpConstants {
 	public static final String DEFAULT_XPACKET_BYTES = null;
 	
 	public static final String DEFAULT_XPACKET_END = "w";
+	
+	public static final String DEFAULT_RDF_PREFIX = "rdf";
+
+	public static final String DEFAULT_RDF_LOCAL_NAME = "RDF";
 
 	private XmpConstants () {
 		// hide constructor

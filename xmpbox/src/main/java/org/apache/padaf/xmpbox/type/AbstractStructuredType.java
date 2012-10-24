@@ -37,16 +37,25 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 	private String prefix;
 
 	public AbstractStructuredType(XMPMetadata metadata) {
-		this(metadata,null,null);
+		this(metadata,null,null,null);
 	}
 
 	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI) {
-		this(metadata,namespaceURI,null);
+		this(metadata, namespaceURI,null,null);
+		StructuredType st = this.getClass().getAnnotation(StructuredType.class);
+		if (st!=null) {
+			// init with annotation
+			this.namespace = st.namespace();
+			this.preferedPrefix = st.preferedPrefix();
+		} else {
+			throw new IllegalArgumentException(" StructuredType annotation cannot be null");
+		}
+		this.prefix = this.preferedPrefix;
 	}
 	
 	public AbstractStructuredType(XMPMetadata metadata, String namespaceURI,
-			String fieldPrefix) {
-		super(metadata, STRUCTURE_ARRAY_NAME);
+			String fieldPrefix, String propertyName) {
+		super(metadata, propertyName);
 		StructuredType st = this.getClass().getAnnotation(StructuredType.class);
 		if (st!=null) {
 			// init with annotation
@@ -73,6 +82,10 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 		return namespace;
 	}
 
+	public final void setNamespace (String ns) {
+		this.namespace = ns;
+	}
+	
 	/**
 	 * Get the prefix of this entity
 	 * 
@@ -82,6 +95,10 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 		return prefix;
 	}
 
+	public final void setPrefix (String pf) {
+		this.prefix = pf;
+	}
+	
 	public final String getPreferedPrefix() {
 		return prefix;
 	}

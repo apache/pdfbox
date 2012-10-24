@@ -19,41 +19,39 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.xml;
 
 /**
- * This exception is thrown when a predefined schema have a wrong namespace URI
+ * Exception when Parsing cannot be made
  * 
  * @author a183132
  * 
  */
-public class XmpUnexpectedNamespacePrefixException extends XmpParsingException {
+public class XmpSerializationException extends Exception {
+
+	private static final long serialVersionUID = -3495894314480173555L;
 
 	/**
-	 * serial version id
+	 * Create an instance of TransformException
+	 * 
+	 * @param message
+	 *            a description of the encountered problem
 	 */
-	private static final long serialVersionUID = 1L;
+	public XmpSerializationException(String message) {
+		super(message);
+	}
 
 	/**
-	 * Create an instance of XmpUnexpectedNamespaceURI
+	 * Create an instance of TransformException
 	 * 
 	 * @param message
 	 *            a description of the encountered problem
 	 * @param cause
 	 *            the cause of the exception
 	 */
-	public XmpUnexpectedNamespacePrefixException(String message, Throwable cause) {
+	public XmpSerializationException(String message, Throwable cause) {
 		super(message, cause);
-	}
 
-	/**
-	 * Create an instance of XmpUnexpectedNamespaceURI
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 */
-	public XmpUnexpectedNamespacePrefixException(String message) {
-		super(message);
 	}
 
 }

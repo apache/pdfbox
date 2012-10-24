@@ -429,7 +429,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 *            OriginalDocumentId value to set
 	 */
 	public void setOriginalDocumentID(String url) {
-		URIType tt = (URIType)instanciateSimple(ORIGINALDOCUMENTID, url);
+		TextType tt = (TextType)instanciateSimple(ORIGINALDOCUMENTID, url);
 		setOriginalDocumentIDProperty(tt);
 	}
 
@@ -439,7 +439,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	 * @param tt
 	 *            OriginalDocumentId property to set
 	 */
-	public void setOriginalDocumentIDProperty(URIType tt) {
+	public void setOriginalDocumentIDProperty(TextType tt) {
 		addProperty(tt);
 	}
 
@@ -606,16 +606,11 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	@PropertyType(propertyType = "seq Version")
 	public static final String VERSIONS = "Versions";
 
-	/**
-	 * Add a version value
-	 * 
-	 * @param version
-	 *            version value to set
-	 */
-	public void addVersions(VersionType version) {
-		addUnqualifiedSequenceValue(VERSIONS, version);
-	}
 
+	public void addVersions(String value) {
+		addQualifiedBagValue(VERSIONS, value);
+	}
+	
 	/**
 	 * Get Versions property
 	 * 
@@ -625,6 +620,11 @@ public class XMPMediaManagementSchema extends XMPSchema {
 		return (ArrayProperty) getProperty(VERSIONS);
 	}
 
+	public List<String> getVersions() {
+		return getUnqualifiedBagValueList(VERSIONS);
+	}
+
+	
 	// --------------------------------------- History
 	// ----------------------------
 

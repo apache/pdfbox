@@ -58,7 +58,7 @@ public class TypeDescription<T> {
 		return properties;
 	}
 
-	protected void setProperties(PropMapping properties) {
+	public void setProperties(PropMapping properties) {
 		this.properties = properties;
 	}
 		

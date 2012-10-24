@@ -41,7 +41,7 @@ public class TestAbstractStructuredType {
 
 		public MyStructuredType(XMPMetadata metadata, String namespaceURI,
 				String fieldPrefix) {
-			super(metadata, namespaceURI, fieldPrefix);
+			super(metadata, namespaceURI, fieldPrefix,"structuredPN");
 		}
 
 	}
