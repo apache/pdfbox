@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
+import org.apache.padaf.xmpbox.xml.DomXmpParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -58,32 +58,11 @@ public class TestXMPWithDefinedSchemas {
 	@Test
 	public void main() throws Exception {
 		
-//		String path = "/home/yu/Dev/PDF/invalides/Notepad++_A1b.xmp";
-//		String path = "/home/yu/Dev/PDF/invalides/Notepad++_A1b.short.xmp";
-//		String path = "/home/yu/Dev/PDF/invalides/history2.rdf";
-//		String path = "/home/yu/Dev/PDF/invalides/ghost2.xmp";
-//		String path = "/home/yu/Dev/PDF/invalides/override_ns.rdf";
-	
 		InputStream is = this.getClass().getResourceAsStream(path);
 		
-		
-		XMPDocumentBuilder builder = new XMPDocumentBuilder();
+		DomXmpParser builder = new DomXmpParser();
 		XMPMetadata rxmp = builder.parse(is);
 		
-//		List<XMPSchema> schemas = rxmp.getAllSchemas();
-//		for (XMPSchema schema : schemas) {
-//			System.out.println("> "+schema.getNamespaceValue());
-//			List<AbstractField> fields = schema.getAllProperties();
-//			for (AbstractField af : fields) {
-//				if (af instanceof AbstractSimpleProperty) {
-//					AbstractSimpleProperty asp = (AbstractSimpleProperty)af;
-//					System.out.println(">   "+asp.getPropertyName()+" : "+asp.toString());
-//				} else if (af instanceof AbstractStructuredType) {
-//					AbstractStructuredType ast = (AbstractStructuredType)af;
-//					System.out.println(">   "+ast.getPropertyName()+" : "+ast.toString());
-//				}
-//			}
-//		}
 	}
 
 	

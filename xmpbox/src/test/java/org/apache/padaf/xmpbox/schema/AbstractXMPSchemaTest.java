@@ -31,6 +31,7 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.type.AgentNameType;
 import org.apache.padaf.xmpbox.type.BooleanType;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
@@ -38,6 +39,7 @@ import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.type.URIType;
+import org.apache.padaf.xmpbox.type.URLType;
 import org.junit.Test;
 
 public abstract class AbstractXMPSchemaTest {
@@ -95,7 +97,7 @@ public abstract class AbstractXMPSchemaTest {
 			// do nothing
 		} else if (type.equals("seq Date")) {
 			// do nothing
-		} else if (type.equals("seq Versions")) {
+		} else if (type.equals("seq Version")) {
 			// do nothing
 		} else if (type.equals("Lang Alt")) {
 			// do nothing
@@ -106,6 +108,8 @@ public abstract class AbstractXMPSchemaTest {
 		} else if (type.equals("URL")) {
 			testGetSetTextValue();
 		} else if (type.equals("URI")) {
+			testGetSetTextValue();
+		} else if (type.equals("AgentName")) {
 			testGetSetTextValue();
 		} else {
 			throw new Exception("Unknown type : " + type);
@@ -118,6 +122,10 @@ public abstract class AbstractXMPSchemaTest {
 			testGetSetTextProperty();
 		} else if (type.equals("URI")) {
 			testGetSetURIProperty();
+		} else if (type.equals("URL")) {
+			testGetSetURLProperty();
+		} else if (type.equals("AgentName")) {
+			testGetSetAgentNameProperty();
 		} else if (type.equals("Boolean")) {
 			testGetSetBooleanProperty();
 		} else if (type.equals("Integer")) {
@@ -125,6 +133,8 @@ public abstract class AbstractXMPSchemaTest {
 		} else if (type.equals("Date")) {
 			testGetSetDateProperty();
 		} else if (type.equals("seq Text")) {
+			testGetSetTextListValue("seq");
+		} else if (type.equals("seq Version")) {
 			testGetSetTextListValue("seq");
 		} else if (type.equals("bag Text")) {
 			testGetSetTextListValue("bag");
@@ -156,19 +166,14 @@ public abstract class AbstractXMPSchemaTest {
 						// do not check method existence
 					} else {
 						// type test
-						// TODO TEST use getMethod()
 						String spt = retrievePropertyType(field.get(schema).toString());
-//						String getNameProperty = getMethod(field.get(schema).toString());
 						String getNameProperty = "get" + prepareName(
 								field.get(schema).toString(), spt) + "Property";
-//								+ firstUpper(field.get(schema).toString())+ "Property";
 						Method getMethod = schemaClass.getMethod(getNameProperty);
 						Assert.assertNull(getNameProperty
 								+ " should return null when testing "
 								+ property, getMethod.invoke(schema));
 						// value test
-//						String getNameValue = "get"
-//								+ firstUpper(field.get(schema).toString());
 						String getNameValue = "get" + prepareName(
 								field.get(schema).toString(), spt);
 						getMethod = schemaClass.getMethod(getNameValue);
@@ -332,6 +337,35 @@ public abstract class AbstractXMPSchemaTest {
 
 	}
 
+	protected void testGetSetURLProperty() throws Exception {
+		String setName = setMethod(property);
+		String getName = getMethod(property);
+
+		URLType tt = metadata.getTypeMapping().createURL(null,schema.getPrefix(), property,
+				(String)value);
+		Method setMethod = schemaClass.getMethod(setName, URLType.class);
+		Method getMethod = schemaClass.getMethod(getName);
+
+		setMethod.invoke(schema, tt);
+		String found = ((TextType) getMethod.invoke(schema)).getStringValue();
+		Assert.assertEquals(value, found);
+
+	}
+
+	protected void testGetSetAgentNameProperty() throws Exception {
+		String setName = setMethod(property);
+		String getName = getMethod(property);
+
+		AgentNameType tt = metadata.getTypeMapping().createAgentName(null,schema.getPrefix(), property,
+				(String)value);
+		Method setMethod = schemaClass.getMethod(setName, AgentNameType.class);
+		Method getMethod = schemaClass.getMethod(getName);
+
+		setMethod.invoke(schema, tt);
+		String found = ((AgentNameType) getMethod.invoke(schema)).getStringValue();
+		Assert.assertEquals(value, found);
+
+	}
 	
 	protected void testGetSetTextListValue(String tp) throws Exception {
 		String setName = addToValueMethod(property);
@@ -377,12 +411,6 @@ public abstract class AbstractXMPSchemaTest {
 		Method setMethod = schemaClass.getMethod(addName, Integer.class,
 				Integer.class, String.class, String.class);
 		Method getMethod = schemaClass.getMethod(getName);
-		/*
-		 * <xapGImg:height>162</xapGImg:height>
-		 * <xapGImg:width>216</xapGImg:width>
-		 * <xapGImg:format>JPEG</xapGImg:format>
-		 * <xapGImg:image>/9j/4AAQSkZJRgABAgEASABIAAD</xapGImg:image>
-		 */
 		Integer height = 162;
 		Integer width = 400;
 		String format = "JPEG";

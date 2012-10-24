@@ -66,19 +66,22 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The URI of the namespace, ie "http://ns.adobe.com/pdf/1.3/"
 	 * 
 	 */
-	public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix) {
-		super(metadata, namespaceURI, prefix);
+	public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix, String name) {
+		super(metadata, namespaceURI, prefix,name);
 		addNamespace(getNamespace(), getPrefix());
 	}
 
 	public XMPSchema(XMPMetadata metadata) {
-		this(metadata, null, null);
+		this(metadata, null, null,null);
 	}
 
 	public XMPSchema(XMPMetadata metadata, String prefix) {
-		this(metadata, null, prefix);
+		this(metadata, null, prefix,null);
 	}
 
+	public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix) {
+		this(metadata, namespaceURI, prefix,null);
+	}
 	
 	/**
 	 * Retrieve a generic simple type property
@@ -1077,7 +1080,6 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public List<String> getUnqualifiedLanguagePropertyLanguagesValue(String name) {
 		List<String> retval = new ArrayList<String>();
-
 		AbstractField property = getAbstractProperty(name);
 		if (property != null) {
 			if (property instanceof ArrayProperty) {

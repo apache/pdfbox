@@ -23,9 +23,6 @@ package org.apache.padaf.xmpbox.type;
 
 import java.lang.reflect.Field;
 
-import org.apache.padaf.xmpbox.schema.XmpSchemaException;
-
-
 public final class ReflectHelper {
 
 	private ReflectHelper () {

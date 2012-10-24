@@ -178,11 +178,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public Integer getPart() {
 		AbstractField tmp = getPartProperty();
-		if (tmp != null) {
-			if (tmp instanceof IntegerType) {
-				return ((IntegerType) tmp).getValue();
-			}
-			return null;
+		if (tmp instanceof IntegerType) {
+			return ((IntegerType) tmp).getValue();
 		} else {
 			for (Attribute attribute : getAllAttributes()) {
 				if (attribute.getName().equals(PART)) {
@@ -190,7 +187,6 @@ public class PDFAIdentificationSchema extends XMPSchema {
 				}
 			}
 			return null;
-			
 		}
 	}
 
@@ -201,10 +197,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public IntegerType getPartProperty() {
 		AbstractField tmp = getProperty(PART);
-		if (tmp != null) {
-			if (tmp instanceof IntegerType) {
-				return (IntegerType) tmp;
-			}
+		if (tmp instanceof IntegerType) {
+			return (IntegerType) tmp;
 		}
 		return null;
 	}
@@ -216,10 +210,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public String getAmendment() {
 		AbstractField tmp = getProperty(AMD);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return ((TextType) tmp).getStringValue();
-			}
+		if (tmp instanceof TextType) {
+			return ((TextType) tmp).getStringValue();
 		}
 		return null;
 	}
@@ -231,10 +223,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public TextType getAmdProperty() {
 		AbstractField tmp = getProperty(AMD);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return (TextType) tmp;
-			}
+		if (tmp instanceof TextType) {
+			return (TextType) tmp;
 		}
 		return null;
 	}
@@ -265,10 +255,8 @@ public class PDFAIdentificationSchema extends XMPSchema {
 	 */
 	public TextType getConformanceProperty() {
 		AbstractField tmp = getProperty(CONFORMANCE);
-		if (tmp != null) {
-			if (tmp instanceof TextType) {
-				return (TextType) tmp;
-			}
+		if (tmp instanceof TextType) {
+			return (TextType) tmp;
 		}
 		return null;
 	}

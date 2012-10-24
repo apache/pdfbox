@@ -17,32 +17,44 @@
 			<xmpMM:DocumentID>uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7</xmpMM:DocumentID>
 			<xmpMM:Versions xmlns:stVer="http://ns.adobe.com/xap/1.0/sType/Version#" xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
 				<rdf:Seq>
-<!-- 					<rdf:li> -->
-<!-- 						<rdf:Description> -->
-<!-- 							<stVer:comments>a text value</stVer:comments> -->
-<!-- 							<stVer:modifier>g bailleul</stVer:modifier> -->
-<!-- 							<stVer:event> -->
-<!-- 								<rdf:Description> -->
-<!-- 									<stEvt:action>copied</stEvt:action> -->
-<!-- 									<stEvt:softwareAgent>a la mano</stEvt:softwareAgent>									 -->
-<!-- 								</rdf:Description> -->
-<!-- 							</stVer:event> -->
-<!-- 						</rdf:Description> -->
-<!-- 					</rdf:li> -->
 					<rdf:li>
 						<rdf:Description>
-							<stVer:comments>a text value</stVer:comments>
-							<stVer:modifier>g bailleul</stVer:modifier>
-							<stVer:event rdf:parseType="Resource" >
-								<stEvt:action>copied</stEvt:action>
-								<stEvt:softwareAgent>a la mano</stEvt:softwareAgent>									
+							<stVer:comments>a text value 1</stVer:comments>
+							<stVer:modifier>g bailleul 1</stVer:modifier>
+							<stVer:event>
+								<rdf:Description>
+									<stEvt:action>copied 1</stEvt:action>
+									<stEvt:softwareAgent>a la mano 1</stEvt:softwareAgent>									
+								</rdf:Description>
 							</stVer:event>
 						</rdf:Description>
 					</rdf:li>
-<!-- 					<rdf:li rdf:parseType="Resource"> -->
+					<rdf:li rdf:parseType="Resource">
 <!-- 							<stVer:comments>a text value</stVer:comments> -->
 <!-- 							<stVer:modifier>g bailleul</stVer:modifier> -->
-<!-- 					</rdf:li> -->
+					</rdf:li>
+					<rdf:li>
+						<rdf:Description>
+							<stVer:comments>a text value 2</stVer:comments>
+							<stVer:modifier>g bailleul 2</stVer:modifier>
+							<stVer:event rdf:parseType="Resource" >
+								<stEvt:action>copied 2</stEvt:action>
+								<stEvt:softwareAgent>a la mano 2</stEvt:softwareAgent>									
+							</stVer:event>
+						</rdf:Description>
+					</rdf:li>
+					<rdf:li>
+						<rdf:Description>
+							<stVer:comments>a text value 3</stVer:comments>
+							<stVer:modifier>g bailleul 3</stVer:modifier>
+							<stVer:event>
+								<rdf:Description>
+									<stEvt:action>copied 3</stEvt:action>
+									<stEvt:softwareAgent>a la mano 3</stEvt:softwareAgent>									
+								</rdf:Description>
+							</stVer:event>
+						</rdf:Description>
+					</rdf:li>
 				</rdf:Seq>
 			</xmpMM:Versions>
 		</rdf:Description>

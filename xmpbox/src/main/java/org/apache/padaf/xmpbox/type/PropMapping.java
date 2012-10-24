@@ -95,6 +95,7 @@ public class PropMapping {
 	 * @return Type of property or null
 	 */
 	public String getPropertyType(String name) {
+//		System.err.println("## >> getPropertyType in "+namespace+" >> "+name);
 		return types.get(name);
 	}
 

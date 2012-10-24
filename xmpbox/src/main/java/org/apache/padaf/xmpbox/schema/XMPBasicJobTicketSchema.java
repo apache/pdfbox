@@ -47,9 +47,6 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
 
     public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
         super(metadata, ownPrefix);
-        // TODO why add this ns ?
-        StructuredType st = JobType.class.getAnnotation(StructuredType.class);
-        addNamespace(st.namespace(), st.preferedPrefix());
     }
 
     public void addJob(String id , String name, String url) {
@@ -65,6 +62,14 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     }
 
     public void addJob (JobType job) {
+    	String prefix = getNamespacePrefix(job.getNamespace());
+    	if (prefix!=null) {
+    		// use same prefix for all jobs
+    		job.setPrefix(prefix);
+    	} else {
+    		// add prefix
+    		addNamespace(job.getNamespace(), job.getPrefix());
+    	}
     	// create bag if not existing
         if (bagJobs == null) {
             bagJobs = createArrayProperty(JOB_REF, ArrayProperty.UNORDERED_ARRAY);

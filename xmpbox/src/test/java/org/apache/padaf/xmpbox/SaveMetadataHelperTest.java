@@ -21,7 +21,6 @@
 
 package org.apache.padaf.xmpbox;
 
-import org.apache.padaf.xmpbox.parser.XmpSerializer;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.junit.Test;
@@ -35,16 +34,11 @@ public class SaveMetadataHelperTest {
 		dc.addContributor("contributor1");
 		dc.addContributor("contributor2");
 		dc.addDescription("x-default", "Description");
-//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//		SaveMetadataHelper.serialize(dc, bos);
-//		byte[] tmp = SaveMetadataHelper.serialize(dc);
-//		Assert.assertArrayEquals(bos.toByteArray(), tmp);
 	}
 
 	@Test
 	public void testMetadataParsing() throws Exception {
 		XMPMetadata meta = XMPMetadata.createXMPMetadata();
-		XmpSerializer serializer = new XmpSerializer();
 
 		DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
 		dc.setCoverage("coverage");

@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,7 +18,7 @@
  * 
  ****************************************************************************/
 
-package org.apache.padaf.xmpbox.parser;
+package org.apache.padaf.xmpbox.xml;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -53,54 +53,49 @@ import org.w3c.dom.ProcessingInstruction;
 public class XmpSerializer {
 
 	private DocumentBuilder documentBuilder = null;
-	
-	public XmpSerializer () throws TransformException {
+
+	private boolean parseTypeResourceForLi = true;
+
+	public XmpSerializer () throws XmpSerializationException {
 		// xml init
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        try {
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+		try {
 			documentBuilder = builderFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			throw new TransformException("Failed to init XmpSerializer", e);
-		}
-		
-	}
-	
-	
-	public void serialize(XMPMetadata metadata, OutputStream os, boolean withXpacket) throws TransformException {
-		// TODO rewrite serialization
-		try {
-			Document doc = documentBuilder.newDocument();
-			// fill document
-			Element rdf = createRdfElement(doc,metadata, withXpacket);
-			for (XMPSchema schema : metadata.getAllSchemas()) {
-				rdf.appendChild(serializeSchema(doc, schema));
-			}
-			// save
-			save(doc, os, "UTF-8");
-		} catch (Exception e) {
-			// TODO supprimer
-			throw new TransformException(
-					"Failed to create Document to contain Schema representation ",
-					e);
+			throw new XmpSerializationException("Failed to init XmpSerializer", e);
 		}
 
+	}
+
+
+	public void serialize(XMPMetadata metadata, OutputStream os, boolean withXpacket) throws TransformerException {
+		Document doc = documentBuilder.newDocument();
+		// fill document
+		Element rdf = createRdfElement(doc,metadata, withXpacket);
+		for (XMPSchema schema : metadata.getAllSchemas()) {
+			rdf.appendChild(serializeSchema(doc, schema));
+		}
+		// save
+		save(doc, os, "UTF-8");
 	}
 
 	protected Element serializeSchema (Document doc, XMPSchema schema) {
 		// prepare schema
 		Element selem = doc.createElementNS(XmpConstants.RDF_NAMESPACE,"rdf:Description");
+		selem.setAttributeNS(XmpConstants.RDF_NAMESPACE, "rdf:about",schema.getAboutValue());
 		selem.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:"+schema.getPrefix(), schema.getNamespace());
 		// the other attributes
 		fillElementWithAttributes(selem, schema);
 		// the content
 		List<AbstractField> fields = schema.getAllProperties();
-		serializeFields(doc, selem, fields);
+		serializeFields(doc, selem, fields, true);
 		// return created schema
 		return selem;
 	}
 
-	public void serializeFields (Document doc, Element parent, List<AbstractField> fields) {
+	public void serializeFields (Document doc, Element parent, List<AbstractField> fields, boolean wrapWithProperty) {
 		for (AbstractField field : fields) {
+
 			if (field instanceof AbstractSimpleProperty) {
 				AbstractSimpleProperty simple = (AbstractSimpleProperty)field;
 				Element esimple = doc.createElement(simple.getPrefix()+":"+simple.getPropertyName());
@@ -108,6 +103,7 @@ public class XmpSerializer {
 				parent.appendChild(esimple);
 			} else if (field instanceof ArrayProperty) {
 				ArrayProperty array = (ArrayProperty)field;
+				// property
 				Element asimple = doc.createElement(array.getPrefix()+":"+array.getPropertyName());
 				parent.appendChild(asimple);
 				// attributes
@@ -117,25 +113,40 @@ public class XmpSerializer {
 				asimple.appendChild(econtainer);
 				// for each element of the array
 				List<AbstractField> innerFields = array.getAllProperties();
-				serializeFields(doc, econtainer, innerFields);
+				serializeFields(doc, econtainer, innerFields, false);
 			} else if (field instanceof AbstractStructuredType) {
 				AbstractStructuredType structured = (AbstractStructuredType)field;
+				List<AbstractField> innerFields = structured.getAllProperties();
+				// property name attribute
+				Element listParent = parent;
+				if (wrapWithProperty) {
+					Element nstructured = doc.createElement(structured.getPrefix()+":"+structured.getPropertyName());
+					parent.appendChild(nstructured);
+					listParent = nstructured;
+				}
+
 				// element li
 				Element estructured = doc.createElement("rdf"+":"+"li");
-				parent.appendChild(estructured);
-				// element description
-				Element econtainer = doc.createElement("rdf"+":"+"Description");
-				estructured.appendChild(econtainer);
-				// all properties
-				List<AbstractField> innerFields = structured.getAllProperties();
-				serializeFields(doc, econtainer, innerFields);
+				listParent.appendChild(estructured);
+				if (parseTypeResourceForLi) {
+					estructured.setAttribute("rdf:parseType", "Resource");
+					// all properties
+					serializeFields(doc, estructured, innerFields, true);
+				} else {
+					// element description
+					Element econtainer = doc.createElement("rdf"+":"+"Description");
+					estructured.appendChild(econtainer);
+					// all properties
+					serializeFields(doc, econtainer, innerFields, true);
+				}
 			} else {
+				// XXX finish serialization classes
 				System.err.println(">> TODO >> "+field.getClass());
 			}
 		}
-		
+
 	}
-	
+
 	private void fillElementWithAttributes (Element target, AbstractComplexProperty property ) {
 		List<Attribute> attributes = property.getAllAttributes();
 		for (Attribute attribute : attributes) {
@@ -151,7 +162,7 @@ public class XmpSerializer {
 			target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE+":"+ns.getValue(), ns.getKey());
 		}
 	}
-	
+
 	protected Element createRdfElement (Document doc, XMPMetadata metadata, boolean withXpacket) {
 		// starting xpacket
 		if (withXpacket) {
@@ -174,41 +185,41 @@ public class XmpSerializer {
 		}
 		// rdf element
 		Element rdf = doc.createElementNS(XmpConstants.RDF_NAMESPACE, "rdf:RDF");
-//		rdf.setAttributeNS(XMPSchema.NS_NAMESPACE, qualifiedName, value)
+		//		rdf.setAttributeNS(XMPSchema.NS_NAMESPACE, qualifiedName, value)
 		xmpmeta.appendChild(rdf);
 		// return the rdf element where all will be put
 		return rdf;
 	}
-  
-    /**
-     * Save the XML document to an output stream.
-     * 
-     * @param doc
-     *            The XML document to save.
-     * @param outStream
-     *            The stream to save the document to.
-     * @param encoding
-     *            The encoding to save the file as.
-     * 
-     * @throws TransformerException
-     *             If there is an error while saving the XML.
-     */
-    private void save(Node doc, OutputStream outStream, String encoding)
-    throws TransformerException {
-        Transformer transformer = TransformerFactory.newInstance()
-        .newTransformer();
-        // human readable
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        // indent elements
-        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-        // encoding
-        transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-        "yes");
-        // initialize StreamResult with File object to save to file
-        Result result = new StreamResult(outStream);
-        DOMSource source = new DOMSource(doc);
-        // save
-        transformer.transform(source, result);
-    }	
+
+	/**
+	 * Save the XML document to an output stream.
+	 * 
+	 * @param doc
+	 *            The XML document to save.
+	 * @param outStream
+	 *            The stream to save the document to.
+	 * @param encoding
+	 *            The encoding to save the file as.
+	 * 
+	 * @throws TransformerException
+	 *             If there is an error while saving the XML.
+	 */
+	private void save(Node doc, OutputStream outStream, String encoding)
+			throws TransformerException {
+		Transformer transformer = TransformerFactory.newInstance()
+				.newTransformer();
+		// human readable
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		// indent elements
+		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		// encoding
+		transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
+				"yes");
+		// initialize StreamResult with File object to save to file
+		Result result = new StreamResult(outStream);
+		DOMSource source = new DOMSource(doc);
+		// save
+		transformer.transform(source, result);
+	}	
 }
