@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;

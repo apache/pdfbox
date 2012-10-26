@@ -72,8 +72,7 @@ public abstract class AbstractStructuredTypeTester {
 	
 	@Test
 	public void testSettingValue() throws Exception {
-		TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
-		Object value = TypeTestingHelper.getJavaValue(td);
+		Object value = TypeTestingHelper.getJavaValue(type);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
 		// check other properties not modified
@@ -89,21 +88,19 @@ public abstract class AbstractStructuredTypeTester {
 
 	@Test
 	public void testPropertyType() throws Exception {
-		TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
-		Object value = TypeTestingHelper.getJavaValue(td);
+		Object value = TypeTestingHelper.getJavaValue(type);
 		getStructured().addSimpleProperty(fieldName, value);
 		Assert.assertNotNull(getStructured().getProperty(fieldName));
 		// check property type
 		AbstractSimpleProperty asp = (AbstractSimpleProperty) getStructured().getProperty(fieldName);
-		Assert.assertEquals(td.getTypeClass(),asp.getClass());
+		Assert.assertEquals(type.getImplementingClass(),asp.getClass());
 	}
 
     @Test
     public void testSetter () throws Exception {
     	String setter = TypeTestingHelper.calculateSimpleSetter(fieldName);
-    	TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
-    	Object value = TypeTestingHelper.getJavaValue(td);
-    	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
+    	Object value = TypeTestingHelper.getJavaValue(type);
+    	Method set = clz.getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(type)} );
     	set.invoke(getStructured(), new Object [] {value});
     	// check property set
     	Assert.assertEquals(value, ((AbstractSimpleProperty)getStructured().getProperty(fieldName)).getValue());
@@ -111,7 +108,7 @@ public abstract class AbstractStructuredTypeTester {
     	Method get = clz.getMethod(TypeTestingHelper.calculateSimpleGetter(fieldName), new Class[0]);
     	Object result = get.invoke(getStructured(), new Object [0]);
 //    	Assert.assertEquals(getJavaType(td),result.getClass());
-    	Assert.assertTrue(TypeTestingHelper.getJavaType(td).isAssignableFrom(result.getClass()));
+    	Assert.assertTrue(TypeTestingHelper.getJavaType(type).isAssignableFrom(result.getClass()));
     	Assert.assertEquals(value, result);
     	
     }

@@ -44,6 +44,7 @@ import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 
 /**
  * This class represents a metadata schema that can be stored in an XMP
@@ -161,18 +162,8 @@ public class XMPSchema extends AbstractStructuredType {
 		}
 	}
 
-	/**
-	 * Set a simple specified type property on the schema.
-	 * 
-	 * @param type
-	 *            the property type
-	 * @param qualifiedName
-	 *            the qualified name to specify for the new property
-	 * @param propertyValue
-	 *            The value (must be an object understandable by specified type)
-	 */
 	private void setSpecifiedSimpleTypeProperty(
-			Class<? extends AbstractSimpleProperty> type, String qualifiedName,
+			Types type, String qualifiedName,
 			Object propertyValue) {
 		if (propertyValue == null) {
 			// Search in properties to erase
@@ -191,7 +182,7 @@ public class XMPSchema extends AbstractStructuredType {
 				TypeMapping tm = getMetadata().getTypeMapping();
 				specifiedTypeProperty = tm.instanciateSimpleProperty(
 						null, getPrefix(), qualifiedName,
-						propertyValue, tm.getType(type));
+						propertyValue, type);
 			} catch (Exception e) {
 				throw new IllegalArgumentException(
 						"Failed to create property with the specified type given in parameters",
@@ -213,6 +204,7 @@ public class XMPSchema extends AbstractStructuredType {
 		}
 	}
 
+	
 	/**
 	 * Add a SimpleProperty to this schema
 	 * 
@@ -256,7 +248,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            will remove the property.
 	 */
 	public void setTextPropertyValue(String qualifiedName, String propertyValue) {
-		setSpecifiedSimpleTypeProperty(TextType.class, qualifiedName,
+		setSpecifiedSimpleTypeProperty(Types.Text, qualifiedName,
 				propertyValue);
 	}
 
@@ -400,7 +392,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The date to set, or null to clear.
 	 */
 	public void setDatePropertyValue(String qualifiedName, Calendar date) {
-		setSpecifiedSimpleTypeProperty(DateType.class, qualifiedName, date);
+		setSpecifiedSimpleTypeProperty(Types.Date, qualifiedName, date);
 
 	}
 
@@ -494,7 +486,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The boolean to set, or null to clear.
 	 */
 	public void setBooleanPropertyValue(String qualifiedName, Boolean bool) {
-		setSpecifiedSimpleTypeProperty(BooleanType.class, qualifiedName, bool);
+		setSpecifiedSimpleTypeProperty(Types.Boolean, qualifiedName, bool);
 	}
 
 	/**
@@ -583,7 +575,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The int to set, or null to clear.
 	 */
 	public void setIntegerPropertyValue(String qualifiedName, Integer intValue) {
-		setSpecifiedSimpleTypeProperty(IntegerType.class, qualifiedName,
+		setSpecifiedSimpleTypeProperty(Types.Integer, qualifiedName,
 				intValue);
 	}
 

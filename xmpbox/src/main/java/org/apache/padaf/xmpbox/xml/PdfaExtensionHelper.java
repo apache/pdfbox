@@ -8,7 +8,6 @@ import org.apache.padaf.xmpbox.schema.PDFAExtensionSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchemaFactory;
 import org.apache.padaf.xmpbox.type.AbstractField;
-import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Cardinality;
@@ -20,7 +19,6 @@ import org.apache.padaf.xmpbox.type.PDFATypeType;
 import org.apache.padaf.xmpbox.type.PropMapping;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
-import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
@@ -118,32 +116,24 @@ public final class PdfaExtensionHelper {
 												if (fName==null || fDescription==null || fValueType==null) {
 													throw new XmpParsingException(ErrorType.RequiredProperty,"Missing field in field definition");
 												}
-												TypeDescription<AbstractSimpleProperty> vtd  = null;
 												try {
 													Types fValue = Types.valueOf(fValueType);
-													vtd = tm.getSimpleDescription(fValue);
-													if (vtd!=null) {
-														// a type is found
-														Types ftype = vtd.getType();
-														structuredType.addProperty(fName, TypeMapping.createPropertyType(ftype,Cardinality.Simple));
-													} else {
-														throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : "+fValueType);
-													}
+													structuredType.addProperty(fName, TypeMapping.createPropertyType(fValue,Cardinality.Simple));
 												} catch (IllegalArgumentException e) {
-													throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : "+fValueType);
+													throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : "+fValueType,e);
 													// TODO could fValueType be a structured type ?
 												}
 											} // else TODO
 										}
 									}
 									// add the structured type to list
-									TypeDescription<AbstractStructuredType> td = new TypeDescription<AbstractStructuredType>(Types.DefinedType, null, DefinedStructuredType.class);
+//									TypeDescription<AbstractStructuredType> td = new TypeDescription<AbstractStructuredType>(tm,Types.DefinedType);
 									PropMapping pm = new PropMapping(structuredType.getNamespace());
 									for (Map.Entry<String, PropertyType> entry : structuredType.getDefinedProperties().entrySet()) {
 										pm.addNewProperty(entry.getKey(), entry.getValue());
 									}
-									td.setProperties(pm);
-									tm.addToDefinedStructuredTypes(ttype, td,tns);
+//									td.setProperties(pm);
+									tm.addToDefinedStructuredTypes(ttype, tns,pm);
 								}
 							}	
 						}
@@ -164,7 +154,7 @@ public final class PdfaExtensionHelper {
 								PropertyType pt = transformValueType(tm,ptype);
 								if (pt.type()==null) {
 									throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : "+ptype);
-								} else if (pt.type().isSimple() || tm.isStructuredType(pt.type()) || pt.type()==Types.DefinedType) {
+								} else if (pt.type().isSimple() || pt.type().isStructured() || pt.type()==Types.DefinedType) {
 									xsf.getPropertyDefinition().addNewProperty(pname, pt);
 								} else {
 									throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : "+ptype);
@@ -204,7 +194,8 @@ public final class PdfaExtensionHelper {
 			type = pos<0?Types.valueOf(valueType):Types.valueOf(vt);
 		} catch (IllegalArgumentException e) {
 			if (tm.isDefinedType(vt)) {
-				type = tm.getDefinedDescription(vt).getType();
+//				type = tm.getDefinedDescription(vt).getType();
+				type = Types.DefinedType;
 			}
 		}
 		return TypeMapping.createPropertyType(type, card);
