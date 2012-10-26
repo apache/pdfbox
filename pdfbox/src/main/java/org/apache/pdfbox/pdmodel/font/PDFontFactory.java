@@ -77,12 +77,16 @@ public class PDFontFactory
         PDFont retval = null;
 
         COSName type = (COSName)dic.getDictionaryObject( COSName.TYPE );
-        if( !type.equals( COSName.FONT ) )
+        if( type != null && !type.equals( COSName.FONT ) )
         {
             throw new IOException( "Cannot create font if /Type is not /Font.  Actual=" +type );
         }
 
         COSName subType = (COSName)dic.getDictionaryObject( COSName.SUBTYPE );
+        if (subType == null) {
+        	throw new IOException( "Cannot create font if /SubType is not /Font.  Actual=" +type );
+        }
+        
         if( subType.equals( COSName.TYPE1) )
         {
             retval = new PDType1Font( dic );
