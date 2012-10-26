@@ -29,49 +29,49 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="stRef",namespace="http://ns.adobe.com/xap/1.0/sType/ResourceRef#")
 public class ResourceRefType extends AbstractStructuredType {
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String DOCUMENT_ID = "documentID";
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String FILE_PATH = "filePath";
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String INSTANCE_ID = "instanceID";
 	
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String LAST_MODIFY_DATE = "lastModifyDate";
 	
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String MANAGE_TO = "manageTo";
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String MANAGE_UI = "manageUI";
 	
-	@PropertyType(propertyType = "AgentName")
+	@PropertyType(type = Types.AgentName, card = Cardinality.Simple)
 	public static final String MANAGER = "manager";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String MANAGER_VARIANT = "managerVariant";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String PART_MAPPING = "partMapping";
 	
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String RENDITION_PARAMS = "renditionParams";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String VERSION_ID = "versionID";
 
-	@PropertyType(propertyType = "Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String MASK_MARKERS = "maskMarkers";
 	
-	@PropertyType(propertyType = "RenditionClass")
+	@PropertyType(type = Types.RenditionClass, card = Cardinality.Simple)
 	public static final String RENDITION_CLASS = "renditionClass";
 	
-	@PropertyType(propertyType = "Part")
+	@PropertyType(type = Types.Part, card = Cardinality.Simple)
 	public static final String FROM_PART = "fromPart";
 	
-	@PropertyType(propertyType = "Part")
+	@PropertyType(type = Types.Part, card = Cardinality.Simple)
 	public static final String TO_PART = "toPart";
 	
 	public static final String ALTERNATE_PATHS = "alternatePaths";
@@ -293,11 +293,11 @@ public class ResourceRefType extends AbstractStructuredType {
         if (seq==null) {
         	seq = getMetadata().getTypeMapping().createArrayProperty(null,
                     getPreferedPrefix(), ALTERNATE_PATHS,
-                    ArrayProperty.ORDERED_ARRAY);
+                    Cardinality.Seq);
         	addProperty(seq);
         }
 		TypeMapping tm = getMetadata().getTypeMapping();
-        TextType tt = (TextType)tm.instanciateSimpleProperty(null, "rdf", "li", value, "Text");
+        TextType tt = (TextType)tm.instanciateSimpleProperty(null, "rdf", "li", value, Types.Text);
         seq.addProperty(tt);
 	}
 

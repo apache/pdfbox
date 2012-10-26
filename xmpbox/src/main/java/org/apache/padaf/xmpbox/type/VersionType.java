@@ -28,19 +28,19 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="stVer",namespace="http://ns.adobe.com/xap/1.0/sType/Version#")
 public class VersionType extends AbstractStructuredType {
 
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String COMMENTS = "comments";
 
-	@PropertyType(propertyType="ResourceEvent")
+	@PropertyType(type = Types.ResourceEvent, card = Cardinality.Simple)
 	public static final String EVENT = "event";
 
-	@PropertyType(propertyType="ProperName") 
+	@PropertyType(type = Types.ProperName, card = Cardinality.Simple) 
 	public static final String MODIFIER = "modifier";
 	
-	@PropertyType(propertyType="Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String MODIFY_DATE = "modifyDate";
 	
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String VERSION = "version";
 
 

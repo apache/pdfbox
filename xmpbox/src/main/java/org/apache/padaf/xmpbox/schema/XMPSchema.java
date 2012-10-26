@@ -38,6 +38,7 @@ import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.BooleanType;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
@@ -647,7 +648,7 @@ public class XMPSchema extends AbstractStructuredType {
 			bag.getContainer().addProperty(li);
 		} else {
 			ArrayProperty newBag = createArrayProperty(qualifiedBagName,
-					ArrayProperty.UNORDERED_ARRAY);
+					Cardinality.Bag);
 			newBag.getContainer().addProperty(li);
 			addProperty(newBag);
 		}
@@ -756,7 +757,7 @@ public class XMPSchema extends AbstractStructuredType {
 		if (seq != null) {
 			seq.getContainer().addProperty(li);
 		} else {
-			ArrayProperty newSeq = createArrayProperty(simpleSeqName, ArrayProperty.ORDERED_ARRAY);
+			ArrayProperty newSeq = createArrayProperty(simpleSeqName, Cardinality.Seq);
 			newSeq.getContainer().addProperty(li);
 			addProperty(newSeq);
 		}
@@ -777,7 +778,7 @@ public class XMPSchema extends AbstractStructuredType {
 		if (bag != null) {
 			bag.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newBag = createArrayProperty(qualifiedSeqName, ArrayProperty.UNORDERED_ARRAY);
+			ArrayProperty newBag = createArrayProperty(qualifiedSeqName, Cardinality.Bag);
 			newBag.getContainer().addProperty(seqValue);
 			addProperty(newBag);
 		}
@@ -798,7 +799,7 @@ public class XMPSchema extends AbstractStructuredType {
 		if (seq != null) {
 			seq.getContainer().addProperty(seqValue);
 		} else {
-			ArrayProperty newSeq = createArrayProperty(seqName,	ArrayProperty.ORDERED_ARRAY);
+			ArrayProperty newSeq = createArrayProperty(seqName,	Cardinality.Seq);
 			newSeq.getContainer().addProperty(seqValue);
 			addProperty(newSeq);
 		}
@@ -1017,7 +1018,7 @@ public class XMPSchema extends AbstractStructuredType {
 				reorganizeAltOrder(prop.getContainer());
 			}
 		} else {
-			prop = createArrayProperty( name,ArrayProperty.ALTERNATIVE_ARRAY);
+			prop = createArrayProperty( name,Cardinality.Alt);
 			TextType langValue;
 			langValue = createTextType ( "li", value);
 			langValue

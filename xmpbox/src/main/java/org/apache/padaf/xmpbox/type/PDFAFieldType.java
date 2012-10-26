@@ -26,13 +26,13 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="pdfaField",namespace="http://www.aiim.org/pdfa/ns/field#")
 public class PDFAFieldType extends AbstractStructuredType {
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String NAME = "name";
 
-	@PropertyType(propertyType = "Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String VALUETYPE = "valueType";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String DESCRIPTION = "description";
 
 	public PDFAFieldType(XMPMetadata metadata) {

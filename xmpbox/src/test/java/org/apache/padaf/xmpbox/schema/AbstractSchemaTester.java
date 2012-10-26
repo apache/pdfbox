@@ -32,6 +32,7 @@ import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.padaf.xmpbox.type.TypeTestingHelper;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.xml.DomXmpParser;
 import org.junit.Test;
 
@@ -42,7 +43,7 @@ public abstract class AbstractSchemaTester {
 	
 	protected String fieldName;
 	
-	protected String type;
+	protected Types type;
 	
 	protected Cardinality cardinality;
 
@@ -50,6 +51,7 @@ public abstract class AbstractSchemaTester {
 	
 	protected DomXmpParser builder;
 	
+	// TODO supprimer
 	protected enum Cardinality {Simple, Bag, Seq, Alt}
 	
 	public void before () throws Exception {
@@ -64,7 +66,7 @@ public abstract class AbstractSchemaTester {
 		return getSchema().getClass();
 	}
 	
-	public AbstractSchemaTester (String fieldName, String type, Cardinality card) {
+	public AbstractSchemaTester (String fieldName, Types type, Cardinality card) {
 		this.fieldName = fieldName;
 		this.type = type;
 		this.cardinality = card;

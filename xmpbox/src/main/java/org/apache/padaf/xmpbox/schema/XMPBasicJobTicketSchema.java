@@ -28,14 +28,17 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.JobType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 
 @StructuredType(preferedPrefix="xmpBJ",namespace="http://ns.adobe.com/xap/1.0/bj/")
 public class XMPBasicJobTicketSchema extends XMPSchema {
 
-    @PropertyType(propertyType = "bag Job")
+    @PropertyType(type = Types.Job, card = Cardinality.Bag)
     public static final String JOB_REF = "JobRef";
 
     private ArrayProperty bagJobs;
@@ -72,7 +75,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
     	}
     	// create bag if not existing
         if (bagJobs == null) {
-            bagJobs = createArrayProperty(JOB_REF, ArrayProperty.UNORDERED_ARRAY);
+            bagJobs = createArrayProperty(JOB_REF, Cardinality.Bag);
             addProperty(bagJobs);
         }
         // add job

@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.xml.DomXmpParser;
 import org.junit.Assert;
@@ -64,6 +65,31 @@ public class DeserializationTest {
 
 		xdb.parse(fis);
 		
+	}
+
+	@Test
+	public void testEmptyLi2 () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/validxmp/emptyli.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+
+		XMPMetadata meta = xdb.parse(fis);
+		DublinCoreSchema dc = meta.getDublinCoreSchema();
+		dc.getCreatorsProperty();
+	}
+
+	@Test
+	public void testGetTitle () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/validxmp/emptyli.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+
+		XMPMetadata meta = xdb.parse(fis);
+		DublinCoreSchema dc = meta.getDublinCoreSchema();
+		String s = dc.getTitle(null);
+		Assert.assertEquals("title value", s);
 	}
 
 	

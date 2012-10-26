@@ -33,10 +33,10 @@ public class TestAbstractStructuredType {
 
 	private static class MyStructuredType extends AbstractStructuredType {
 		
-		@PropertyType(propertyType="Text")
+		@PropertyType(type = Types.Text, card = Cardinality.Simple)
 		public static final String MYTEXT ="my-text";
 
-		@PropertyType(propertyType="Date")
+		@PropertyType(type = Types.Date, card = Cardinality.Simple)
 		public static final String MYDATE ="my-date";
 
 		public MyStructuredType(XMPMetadata metadata, String namespaceURI,

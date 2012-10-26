@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.PropertyType;
 
 
 /**
@@ -89,8 +90,8 @@ public class XMPSchemaFactory {
 	 *            The property name
 	 * @return null if propery name is unknown
 	 */
-	public String getPropertyType(String name) {
-		String result = propDef.getPropertyType(name);
+	public PropertyType getPropertyType(String name) {
+		PropertyType result = propDef.getPropertyType(name);
 		if (result == null) {
 			for (PropMapping mapping : importedPropertyMapping) {
 				result = mapping.getPropertyType(name);

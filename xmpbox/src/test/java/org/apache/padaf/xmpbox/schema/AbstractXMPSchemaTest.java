@@ -33,11 +33,14 @@ import junit.framework.Assert;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AgentNameType;
 import org.apache.padaf.xmpbox.type.BooleanType;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.type.URIType;
 import org.apache.padaf.xmpbox.type.URLType;
 import org.junit.Test;
@@ -48,7 +51,7 @@ public abstract class AbstractXMPSchemaTest {
 
 	protected String property;
 
-	protected String type;
+	protected PropertyType type;
 
 	protected XMPSchema schema;
 
@@ -56,61 +59,53 @@ public abstract class AbstractXMPSchemaTest {
 
 	protected Object value;
 
-	public AbstractXMPSchemaTest(String property, String type, Object value) {
+	public AbstractXMPSchemaTest(String property, PropertyType type, Object value) {
 		this.property = property;
 		this.value = value;
 		this.type = type;
 	}
 
-	public static Object[] wrapProperty(String name, String type, Object value) {
-		if (type.equals("Boolean")) {
-			Assert.assertTrue(value instanceof Boolean);
-		} else if (type.equals("Text")) {
-			Assert.assertTrue(value instanceof String);
-		} else if (type.equals("Integer")) {
-			Assert.assertTrue(value instanceof Integer);
-		} else if (type.equals("Date")) {
-			Assert.assertTrue(value instanceof Calendar);
-		} else if (type.equals("URL")) {
-			Assert.assertTrue(value instanceof String);
-		}
-		return new Object[] { name, type, value };
+	public static Object[] wrapProperty(String name, Types type, Object value) {
+		return wrapProperty(name, type, Cardinality.Simple, value);
+	}
+	
+	public static Object[] wrapProperty(String name, Types type, Cardinality card, Object value) {
+//		if (type==Types.Boolean) {
+//			Assert.assertTrue(value instanceof Boolean);
+//		} else if (type==Types.Text) {
+//			Assert.assertTrue(value instanceof String);
+//		} else if (type==Types.Integer) {
+//			Assert.assertTrue(value instanceof Integer);
+//		} else if (type==Types.Date) {
+//			Assert.assertTrue(value instanceof Calendar);
+//		} else if (type==Types.URL) {
+//			Assert.assertTrue(value instanceof String);
+//		}
+		return new Object[] { name, TypeMapping.createPropertyType(type, card), value };
 	}
 
 	@Test
 	public void testGetSetValue() throws Exception {
-		if (type.equals("Text")) {
+		if (type.type()==Types.Text && type.card()==Cardinality.Simple) {
 			testGetSetTextValue();
-		} else if (type.equals("Boolean")) {
+		} else if (type.type()==Types.Boolean && type.card()==Cardinality.Simple) {
 			testGetSetBooleanValue();
-		} else if (type.equals("Integer")) {
+		} else if (type.type()==Types.Integer && type.card()==Cardinality.Simple) {
 			testGetSetIntegerValue();
-		} else if (type.equals("Date")) {
+		} else if (type.type()==Types.Date && type.card()==Cardinality.Simple) {
 			testGetSetDateValue();
-		} else if (type.equals("seq Text")) {
-			// do nothing
-		} else if (type.equals("bag Text")) {
-			// do nothing
-		} else if (type.equals("bag ProperName")) {
-			// do nothing
-		} else if (type.equals("bag Xpath")) {
-			// do nothing
-		} else if (type.equals("seq Date")) {
-			// do nothing
-		} else if (type.equals("seq Version")) {
-			// do nothing
-		} else if (type.equals("Lang Alt")) {
-			// do nothing
-		} else if (type.equals("Alt Thumbnail")) {
-			// do nothing
-		} else if (type.equals("ResourceRef")) {
-			// do nothing
-		} else if (type.equals("URL")) {
+		} else if (type.type()==Types.URI && type.card()==Cardinality.Simple) {
 			testGetSetTextValue();
-		} else if (type.equals("URI")) {
+		} else if (type.type()==Types.URL && type.card()==Cardinality.Simple) {
 			testGetSetTextValue();
-		} else if (type.equals("AgentName")) {
+		} else if (type.type()==Types.AgentName && type.card()==Cardinality.Simple) {
 			testGetSetTextValue();
+		} else if (type.type()==Types.LangAlt && type.card()==Cardinality.Simple) {
+			// do nothing
+		} else if (type.type()==Types.ResourceRef && type.card()==Cardinality.Simple) {
+			// do nothing
+		} else if (type.card()!=Cardinality.Simple) {
+			// do nothing
 		} else {
 			throw new Exception("Unknown type : " + type);
 		}
@@ -118,35 +113,35 @@ public abstract class AbstractXMPSchemaTest {
 
 	@Test
 	public void testGetSetProperty() throws Exception {
-		if (type.equals("Text")) {
+		if (type.type()==Types.Text && type.card()==Cardinality.Simple) {
 			testGetSetTextProperty();
-		} else if (type.equals("URI")) {
+		} else if (type.type()==Types.URI && type.card()==Cardinality.Simple) {
 			testGetSetURIProperty();
-		} else if (type.equals("URL")) {
+		} else if (type.type()==Types.URL && type.card()==Cardinality.Simple) {
 			testGetSetURLProperty();
-		} else if (type.equals("AgentName")) {
+		} else if (type.type()==Types.AgentName && type.card()==Cardinality.Simple) {
 			testGetSetAgentNameProperty();
-		} else if (type.equals("Boolean")) {
+		} else if (type.type()==Types.Boolean && type.card()==Cardinality.Simple) {
 			testGetSetBooleanProperty();
-		} else if (type.equals("Integer")) {
+		} else if (type.type()==Types.Integer && type.card()==Cardinality.Simple) {
 			testGetSetIntegerProperty();
-		} else if (type.equals("Date")) {
+		} else if (type.type()==Types.Date && type.card()==Cardinality.Simple) {
 			testGetSetDateProperty();
-		} else if (type.equals("seq Text")) {
+		} else if (type.type()==Types.Text && type.card()==Cardinality.Seq) {
 			testGetSetTextListValue("seq");
-		} else if (type.equals("seq Version")) {
+		} else if (type.type()==Types.Version && type.card()==Cardinality.Seq) {
 			testGetSetTextListValue("seq");
-		} else if (type.equals("bag Text")) {
+		} else if (type.type()==Types.Text && type.card()==Cardinality.Bag) {
 			testGetSetTextListValue("bag");
-		} else if (type.equals("bag ProperName")) {
+		} else if (type.type()==Types.ProperName && type.card()==Cardinality.Bag) {
 			testGetSetTextListValue("bag");
-		} else if (type.equals("bag Xpath")) {
+		} else if (type.type()==Types.XPath && type.card()==Cardinality.Bag) {
 			testGetSetTextListValue("bag");
-		} else if (type.equals("seq Date")) {
+		} else if (type.type()==Types.Date && type.card()==Cardinality.Seq) {
 			testGetSetDateListValue("seq");
-		} else if (type.equals("Lang Alt")) {
+		} else if (type.type()==Types.LangAlt && type.card()==Cardinality.Simple) {
 			testGetSetLangAltValue();
-		} else if (type.equals("Alt Thumbnail")) {
+		} else if (type.type()==Types.Thumbnail && type.card()==Cardinality.Alt) {
 			testGetSetThumbnail();
 		} else {
 			throw new Exception("Unknown type : " + type);
@@ -156,17 +151,17 @@ public abstract class AbstractXMPSchemaTest {
 			if (field.isAnnotationPresent(PropertyType.class)) {
 				if (!field.get(schema).equals(property)) {
 					PropertyType pt = field.getAnnotation(PropertyType.class);
-					if (pt.propertyType().equals("Lang Alt")) {
+					if (pt.type()==Types.LangAlt) {
 						// do not check method existence
-					} else if (pt.propertyType().equals("Alt Thumbnail")) {
+					} else if (pt.type()==Types.Thumbnail && pt.card()==Cardinality.Alt) {
 						// do not check method existence
-					} else if (pt.propertyType().equals("ResourceRef")) {
+					} else if (pt.type()==Types.ResourceRef) {
 						// do not check method existence
-					} else if (pt.propertyType().equals("seq Version")) {
+					} else if (pt.type()==Types.Version && pt.card()==Cardinality.Seq) {
 						// do not check method existence
 					} else {
 						// type test
-						String spt = retrievePropertyType(field.get(schema).toString());
+						PropertyType spt = retrievePropertyType(field.get(schema).toString());
 						String getNameProperty = "get" + prepareName(
 								field.get(schema).toString(), spt) + "Property";
 						Method getMethod = schemaClass.getMethod(getNameProperty);
@@ -188,13 +183,13 @@ public abstract class AbstractXMPSchemaTest {
 		}
 	}
 
-	protected String retrievePropertyType (String prop) throws IllegalArgumentException,IllegalAccessException {
+	protected PropertyType retrievePropertyType (String prop) throws IllegalArgumentException,IllegalAccessException {
 		Field [] fields = schemaClass.getFields();
 		for (Field field : fields) {
 			if (field.isAnnotationPresent(PropertyType.class)) {
 				PropertyType pt = field.getAnnotation(PropertyType.class);
 				if (field.get(schema).equals(prop)) {
-					return pt.propertyType();
+					return pt;
 				}
 			}
 		}
@@ -208,7 +203,7 @@ public abstract class AbstractXMPSchemaTest {
 		return sb.toString();
 	}
 
-	protected String prepareName (String prop, String type) {
+	protected String prepareName (String prop, PropertyType type) {
 		String fu = firstUpper(prop);
 		StringBuilder sb = new StringBuilder(fu.length()+1);
 		sb.append(fu);
@@ -216,10 +211,9 @@ public abstract class AbstractXMPSchemaTest {
 			// do nothing
 		} else if (fu.endsWith("y")) {
 			// do nothing
+		} else if (type.card()!=Cardinality.Simple) {
+			sb.append("s");
 		}
-		else if (type.startsWith("bag ")) sb.append("s");
-		else if (type.startsWith("seq ")) sb.append("s");
-		else if (type.startsWith("alt ")) sb.append("s");
 		return sb.toString();
 	}
 	

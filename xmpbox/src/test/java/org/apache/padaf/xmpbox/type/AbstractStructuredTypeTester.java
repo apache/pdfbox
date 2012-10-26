@@ -37,7 +37,7 @@ public abstract class AbstractStructuredTypeTester {
 	
 	protected String fieldName;
 	
-	protected String type;
+	protected Types type;
 	
 	protected Class<? extends AbstractStructuredType> clz;
 	
@@ -51,7 +51,7 @@ public abstract class AbstractStructuredTypeTester {
 		typeMapping = xmp.getTypeMapping();
 	}
 	
-	public AbstractStructuredTypeTester (Class<? extends AbstractStructuredType> clz, String fieldName, String type) {
+	public AbstractStructuredTypeTester (Class<? extends AbstractStructuredType> clz, String fieldName, Types type) {
 		this.clz = clz;
 		this.fieldName = fieldName;
 		this.type = type;

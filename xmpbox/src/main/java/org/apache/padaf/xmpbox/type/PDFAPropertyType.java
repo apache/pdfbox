@@ -26,16 +26,16 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="pdfaProperty",namespace="http://www.aiim.org/pdfa/ns/property#")
 public class PDFAPropertyType extends AbstractStructuredType {
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String NAME = "name";
 
-	@PropertyType(propertyType = "Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String VALUETYPE = "valueType";
 	
-	@PropertyType(propertyType = "Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String CATEGORY = "category";
 	
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String DESCRIPTION = "description";
 
 

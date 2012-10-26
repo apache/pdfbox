@@ -26,10 +26,13 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.MIMEType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 
 
 /**
@@ -41,49 +44,49 @@ import org.apache.padaf.xmpbox.type.TextType;
 @StructuredType(preferedPrefix="dc",namespace="http://purl.org/dc/elements/1.1/")
 public class DublinCoreSchema extends XMPSchema {
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String CONTRIBUTOR = "contributor";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String COVERAGE = "coverage";
 
-	@PropertyType(propertyType = "seq Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Seq)
 	public static final String CREATOR = "creator";
 
-	@PropertyType(propertyType = "seq Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Seq)
 	public static final String DATE = "date";
 
-	@PropertyType(propertyType = "Lang Alt")
+	@PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
 	public static final String DESCRIPTION = "description";
 
-	@PropertyType(propertyType = "MIMEType")
+	@PropertyType(type = Types.MIMEType, card = Cardinality.Simple)
 	public static final String FORMAT = "format";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String IDENTIFIER = "identifier";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String LANGUAGE = "language";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String PUBLISHER = "publisher";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String RELATION = "relation";
 
-	@PropertyType(propertyType = "Lang Alt")
+	@PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
 	public static final String RIGHTS = "rights";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String SOURCE = "source";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String SUBJECT = "subject";
 
-	@PropertyType(propertyType = "Lang Alt")
+	@PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
 	public static final String TITLE = "title";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String TYPE = "type";
 
 	/**

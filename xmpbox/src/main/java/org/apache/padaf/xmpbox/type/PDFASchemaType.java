@@ -26,19 +26,19 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="pdfaSchema",namespace="http://www.aiim.org/pdfa/ns/schema#")
 public class PDFASchemaType extends AbstractStructuredType {
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String SCHEMA = "schema";
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String NAMESPACE_URI = "namespaceURI";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String PREFIX = "prefix";
 
-	@PropertyType(propertyType = "seq PDFAProperty")
+	@PropertyType(type = Types.PDFAProperty, card = Cardinality.Seq)
 	public static final String PROPERTY = "property";
 
-	@PropertyType(propertyType = "seq PDFAType")
+	@PropertyType(type = Types.PDFAType, card = Cardinality.Seq)
 	public static final String VALUE_TYPE = "valueType";
 
 	public PDFASchemaType(XMPMetadata metadata) {

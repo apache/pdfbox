@@ -25,10 +25,12 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.Types;
 
 
 /**
@@ -40,13 +42,13 @@ import org.apache.padaf.xmpbox.type.TextType;
 @StructuredType(preferedPrefix="pdfaid",namespace="http://www.aiim.org/pdfa/ns/id/")
 public class PDFAIdentificationSchema extends XMPSchema {
 
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String PART = "part";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String AMD = "amd";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String CONFORMANCE = "conformance";
 
 	/*

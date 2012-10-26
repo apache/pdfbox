@@ -40,7 +40,7 @@ public class TestResourceEventType extends AbstractStructuredTypeTester{
 		structured = new ResourceEventType(xmp);
 	}
 	
-	public TestResourceEventType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestResourceEventType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -54,12 +54,12 @@ public class TestResourceEventType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {ResourceEventType.class,"action","Choice"});
-    	result.add(new Object [] {ResourceEventType.class,"changed","Text"});
-    	result.add(new Object [] {ResourceEventType.class,"instanceID","GUID"});
-    	result.add(new Object [] {ResourceEventType.class,"parameters","Text"});
-    	result.add(new Object [] {ResourceEventType.class,"softwareAgent","AgentName"});
-    	result.add(new Object [] {ResourceEventType.class,"when","Date"});
+    	result.add(new Object [] {ResourceEventType.class,"action",Types.Choice});
+    	result.add(new Object [] {ResourceEventType.class,"changed",Types.Text});
+    	result.add(new Object [] {ResourceEventType.class,"instanceID",Types.GUID});
+    	result.add(new Object [] {ResourceEventType.class,"parameters",Types.Text});
+    	result.add(new Object [] {ResourceEventType.class,"softwareAgent",Types.AgentName});
+    	result.add(new Object [] {ResourceEventType.class,"when",Types.Date});
     	
     	return result;
     	

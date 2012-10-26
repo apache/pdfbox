@@ -40,7 +40,7 @@ public class PropMapping {
 
 	private String namespace;
 
-	private Map<String, String> types;
+	private Map<String, PropertyType> types;
 
 
 	/**
@@ -51,7 +51,7 @@ public class PropMapping {
 	 */
 	public PropMapping(String namespace) {
 		this.namespace = namespace;
-		types = new HashMap<String, String>();
+		types = new HashMap<String, PropertyType>();
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class PropMapping {
 	 *            A list of attribute (put null while attribute management is
 	 *            not implemented)
 	 */
-	public void addNewProperty(String name, String type) {
+	public void addNewProperty(String name, PropertyType type) {
 		types.put(name, type);
 	}
 
@@ -94,8 +94,7 @@ public class PropMapping {
 	 *            The name of the property concerned
 	 * @return Type of property or null
 	 */
-	public String getPropertyType(String name) {
-//		System.err.println("## >> getPropertyType in "+namespace+" >> "+name);
+	public PropertyType getPropertyType(String name) {
 		return types.get(name);
 	}
 

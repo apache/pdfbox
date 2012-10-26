@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -43,7 +44,7 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester {
 		schema = xmp.createAndAddPhotoshopSchema();
 	}
 
-	public PhotoshopSchemaTest(String fieldName, String type, Cardinality card) {
+	public PhotoshopSchemaTest(String fieldName, Types type, Cardinality card) {
 		super(fieldName, type, card);
 	}
 
@@ -51,31 +52,25 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester {
 	public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {"AncestorID","URI",Cardinality.Simple});
-//    	result.add(new Object [] {"LayerName","Text",Cardinality.Simple}); TODO TEST missing in schema
-//    	result.add(new Object [] {"LayerText","Text",Cardinality.Simple}); TODO TEST missing in schema
-    	result.add(new Object [] {"AuthorsPosition","Text",Cardinality.Simple});
-    	result.add(new Object [] {"CaptionWriter","ProperName",Cardinality.Simple});
-    	result.add(new Object [] {"Category","Text",Cardinality.Simple});
-    	result.add(new Object [] {"City","Text",Cardinality.Simple});
-    	result.add(new Object [] {"ColorMode","Integer",Cardinality.Simple});
-    	result.add(new Object [] {"Country","Text",Cardinality.Simple});
-    	result.add(new Object [] {"Credit","Text",Cardinality.Simple});
-    	result.add(new Object [] {"DateCreated","Date",Cardinality.Simple});
-    	// DocumentAncestors TODO TEST bag Ancestor
-    	result.add(new Object [] {"Headline","Text",Cardinality.Simple});
-    	result.add(new Object [] {"History","Text",Cardinality.Simple});
-    	result.add(new Object [] {"ICCProfile","Text",Cardinality.Simple});
-    	result.add(new Object [] {"Instructions","Text",Cardinality.Simple});
-    	result.add(new Object [] {"Source","Text",Cardinality.Simple});
-    	result.add(new Object [] {"State","Text",Cardinality.Simple});
-    	result.add(new Object [] {"SupplementalCategories","Text",Cardinality.Bag});
-    	// Layer TODO TEST structured type
-    	result.add(new Object [] {"TransmissionReference","Text",Cardinality.Simple});
-    	result.add(new Object [] {"Urgency","Integer",Cardinality.Simple});
+    	result.add(new Object [] {"AncestorID",Types.URI,Cardinality.Simple});
+    	result.add(new Object [] {"AuthorsPosition",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"CaptionWriter",Types.ProperName,Cardinality.Simple});
+    	result.add(new Object [] {"Category",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"City",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"ColorMode",Types.Integer,Cardinality.Simple});
+    	result.add(new Object [] {"Country",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"Credit",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"DateCreated",Types.Date,Cardinality.Simple});
+    	result.add(new Object [] {"Headline",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"History",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"ICCProfile",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"Instructions",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"Source",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"State",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"SupplementalCategories",Types.Text,Cardinality.Bag});
+    	result.add(new Object [] {"TransmissionReference",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"Urgency",Types.Integer,Cardinality.Simple});
 
-    	// TODO TEST camera raw
-    	
     	return result;
 	}
 

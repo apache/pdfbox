@@ -37,13 +37,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
  */
 public class ArrayProperty extends AbstractComplexProperty {
 
-	public static final String UNORDERED_ARRAY = "Bag";
-
-	public static final String ORDERED_ARRAY = "Seq";
-	
-	public static final String ALTERNATIVE_ARRAY = "Alt";
-	
-	private String arrayType;
+	private Cardinality arrayType;
 
 	private String namespace;
 	
@@ -64,14 +58,14 @@ public class ArrayProperty extends AbstractComplexProperty {
 	 *            type of complexProperty (Bag, Seq, Alt)
 	 */
 	public ArrayProperty(XMPMetadata metadata, String namespace,
-			String prefix, String propertyName, String type) {
+			String prefix, String propertyName, Cardinality type) {
 		super(metadata, propertyName);
 		this.arrayType = type;
 		this.namespace = namespace;
 		this.prefix = prefix;
 	}
 
-	public String getArrayType() {
+	public Cardinality getArrayType() {
 		return arrayType;
 	}
 

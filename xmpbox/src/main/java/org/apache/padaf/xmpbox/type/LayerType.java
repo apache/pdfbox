@@ -27,10 +27,10 @@ import org.apache.padaf.xmpbox.XmpConstants;
 @StructuredType(preferedPrefix="photoshop",namespace="http://ns.adobe.com/photoshop/1.0/")
 public class LayerType extends AbstractStructuredType {
 	
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String LAYER_NAME = "LayerName";
 
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String LAYER_TEXT = "LayerText";
 
 	

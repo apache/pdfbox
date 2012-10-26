@@ -26,9 +26,12 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BooleanType;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.type.URLType;
 
 
@@ -41,19 +44,19 @@ import org.apache.padaf.xmpbox.type.URLType;
 @StructuredType(preferedPrefix="xmpRights",namespace="http://ns.adobe.com/xap/1.0/rights/")
 public class XMPRightsManagementSchema extends XMPSchema {
 
-	@PropertyType(propertyType = "URL")
+	@PropertyType(type = Types.URL, card = Cardinality.Simple)
 	public static final String CERTIFICATE = "Certificate";
 
-	@PropertyType(propertyType = "Boolean")
+	@PropertyType(type = Types.Boolean, card = Cardinality.Simple)
 	public static final String MARKED = "Marked";
 
-	@PropertyType(propertyType = "bag ProperName")
+	@PropertyType(type = Types.ProperName, card = Cardinality.Bag)
 	public static final String OWNER = "Owner";
 
-	@PropertyType(propertyType = "Lang Alt")
+	@PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
 	public static final String USAGETERMS = "UsageTerms";
 
-	@PropertyType(propertyType = "URL")
+	@PropertyType(type = Types.URL, card = Cardinality.Simple)
 	public static final String WEBSTATEMENT = "WebStatement";
 
 	/**

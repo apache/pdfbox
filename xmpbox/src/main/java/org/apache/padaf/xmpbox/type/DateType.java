@@ -108,7 +108,7 @@ public class DateType extends AbstractSimpleProperty {
     public void setValue(Object value) {
         if (!isGoodType(value)) {
             throw new IllegalArgumentException(
-            "Value given is not allowed for the Date type.");
+            "Value given is not allowed for the Date type : "+value.getClass());
         } else {
             // if string object
             if (value instanceof String) {

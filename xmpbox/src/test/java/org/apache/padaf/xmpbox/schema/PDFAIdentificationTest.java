@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,13 +46,13 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest {
 	@Parameters
 	public static Collection<Object[]> initializeParameters() throws Exception {
 		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(wrapProperty("part", "Integer", 1));
-		data.add(wrapProperty("amd", "Text", "2005"));
-		data.add(wrapProperty("conformance", "Text", "B"));
+		data.add(wrapProperty("part", Types.Integer, 1));
+		data.add(wrapProperty("amd", Types.Text, "2005"));
+		data.add(wrapProperty("conformance", Types.Text, "B"));
 		return data;
 	}
 
-	public PDFAIdentificationTest(String property, String type, Object value) {
+	public PDFAIdentificationTest(String property, PropertyType type, Object value) {
 		super(property, type, value);
 	}
 

@@ -35,6 +35,7 @@ import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
 import org.apache.padaf.xmpbox.type.BooleanType;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.TextType;
@@ -83,7 +84,7 @@ public class XMPSchemaTest {
 	public void testArrayList() throws Exception {
 		XMPMetadata meta = XMPMetadata.createXMPMetadata();
 		ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem",
-				"seqType", ArrayProperty.ORDERED_ARRAY);
+				"seqType", Cardinality.Seq);
 		TypeMapping tm = meta.getTypeMapping();
 		TextType li1 = tm.createText(null, "rdf", "li", "valeur1");
 		TextType li2 =tm.createText(null, "rdf", "li", "valeur2");

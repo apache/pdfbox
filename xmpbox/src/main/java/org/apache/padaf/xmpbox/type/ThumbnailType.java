@@ -33,16 +33,16 @@ import org.apache.padaf.xmpbox.XmpConstants;
 @StructuredType(preferedPrefix="xmpGImg",namespace="http://ns.adobe.com/xap/1.0/g/img/")
 public class ThumbnailType extends AbstractStructuredType {
 	
-	@PropertyType(propertyType = "Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String FORMAT = "format";
 
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String HEIGHT = "height";
 	
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String WIDTH = "width";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String IMAGE = "image";
 
 	/**

@@ -55,7 +55,7 @@ public final class ReflectHelper {
 									+ classSchem.getName(), e);
 				}
 				PropertyType propType = field.getAnnotation(PropertyType.class);
-				propMap.addNewProperty(propName, propType.propertyType());
+				propMap.addNewProperty(propName, propType);
 			}
 		}
 		return propMap;

@@ -40,7 +40,7 @@ public class TestLayerType extends AbstractStructuredTypeTester{
 		structured = new LayerType(xmp);
 	}
 	
-	public TestLayerType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestLayerType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -54,8 +54,8 @@ public class TestLayerType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {LayerType.class,"LayerName","Text"});
-    	result.add(new Object [] {LayerType.class,"LayerText","Text"});
+    	result.add(new Object [] {LayerType.class,"LayerName",Types.Text});
+    	result.add(new Object [] {LayerType.class,"LayerText",Types.Text});
     	
     	return result;
     	

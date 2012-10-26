@@ -40,7 +40,7 @@ public class TestThumbnailType extends AbstractStructuredTypeTester{
 		structured = new ThumbnailType(xmp);
 	}
 	
-	public TestThumbnailType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestThumbnailType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -54,10 +54,10 @@ public class TestThumbnailType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {ThumbnailType.class,"format","Choice"});
-    	result.add(new Object [] {ThumbnailType.class,"height","Integer"});
-    	result.add(new Object [] {ThumbnailType.class,"width","Integer"});
-    	result.add(new Object [] {ThumbnailType.class,"image","Text"});
+    	result.add(new Object [] {ThumbnailType.class,"format",Types.Choice});
+    	result.add(new Object [] {ThumbnailType.class,"height",Types.Integer});
+    	result.add(new Object [] {ThumbnailType.class,"width",Types.Integer});
+    	result.add(new Object [] {ThumbnailType.class,"image",Types.Text});
     	
     	return result;
     	

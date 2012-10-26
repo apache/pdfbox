@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.type.Cardinality;
+import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -35,7 +38,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class XMPBasicTest extends AbstractXMPSchemaTest {
 
-	public XMPBasicTest(String prop, String type, Object val) {
+	public XMPBasicTest(String prop, PropertyType type, Object val) {
 		super(prop, type, val);
 	}
 
@@ -50,20 +53,20 @@ public class XMPBasicTest extends AbstractXMPSchemaTest {
 	public static Collection<Object[]> initializeParameters() throws Exception {
 		List<Object[]> data = new ArrayList<Object[]>();
 
-		data.add(wrapProperty("Advisory", "bag Xpath", new String[] { "xpath1",
+		data.add(wrapProperty("Advisory", Types.XPath, Cardinality.Bag, new String[] { "xpath1",
 				"xpath2" }));
-		data.add(wrapProperty("BaseURL", "URL", "URL"));
-		data.add(wrapProperty("CreateDate", "Date", Calendar.getInstance()));
-		data.add(wrapProperty("CreatorTool", "AgentName", "CreatorTool"));
-		data.add(wrapProperty("Identifier", "bag Text", new String[] { "id1",
+		data.add(wrapProperty("BaseURL", Types.URL, "URL"));
+		data.add(wrapProperty("CreateDate", Types.Date, Calendar.getInstance()));
+		data.add(wrapProperty("CreatorTool", Types.AgentName, "CreatorTool"));
+		data.add(wrapProperty("Identifier", Types.Text, Cardinality.Bag, new String[] { "id1",
 				"id2" }));
-		data.add(wrapProperty("Label", "Text", "label"));
-		data.add(wrapProperty("MetadataDate", "Date", Calendar.getInstance()));
-		data.add(wrapProperty("ModifyDate", "Date", Calendar.getInstance()));
-		data.add(wrapProperty("Nickname", "Text", "nick name"));
-		data.add(wrapProperty("Rating", "Integer", 7));
+		data.add(wrapProperty("Label", Types.Text, "label"));
+		data.add(wrapProperty("MetadataDate", Types.Date, Calendar.getInstance()));
+		data.add(wrapProperty("ModifyDate", Types.Date, Calendar.getInstance()));
+		data.add(wrapProperty("Nickname", Types.Text, "nick name"));
+		data.add(wrapProperty("Rating", Types.Integer, 7));
 
-		data.add(wrapProperty("Thumbnails", "Alt Thumbnail", null));
+		data.add(wrapProperty("Thumbnails", Types.Thumbnail, Cardinality.Alt, null));
 
 		return data;
 	}
