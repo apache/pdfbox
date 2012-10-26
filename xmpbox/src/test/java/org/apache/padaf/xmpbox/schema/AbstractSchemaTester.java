@@ -29,7 +29,7 @@ import junit.framework.Assert;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
-import org.apache.padaf.xmpbox.type.TypeDescription;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.TypeMapping;
 import org.apache.padaf.xmpbox.type.TypeTestingHelper;
 import org.apache.padaf.xmpbox.type.Types;
@@ -50,9 +50,6 @@ public abstract class AbstractSchemaTester {
 	protected TypeMapping typeMapping = null;
 	
 	protected DomXmpParser builder;
-	
-	// TODO supprimer
-	protected enum Cardinality {Simple, Bag, Seq, Alt}
 	
 	public void before () throws Exception {
 		builder = new DomXmpParser();
@@ -96,8 +93,7 @@ public abstract class AbstractSchemaTester {
 	public void testSettingValue() throws Exception {
 		if (cardinality!=Cardinality.Simple) return;
 		// only test simple properties
-		TypeDescription<AbstractSimpleProperty> td =typeMapping.getSimpleDescription(type);
-		Object value = TypeTestingHelper.getJavaValue(td);
+		Object value = TypeTestingHelper.getJavaValue(type);
 		AbstractSimpleProperty property = getSchema().instanciateSimple(fieldName, value);
 		getSchema().addProperty(property);
 		String qn = getPropertyQualifiedName(fieldName);
@@ -117,8 +113,7 @@ public abstract class AbstractSchemaTester {
 	public void testSettingValueInArray() throws Exception {
 		if (cardinality==Cardinality.Simple) return;
 		// only test array properties
-		TypeDescription<AbstractSimpleProperty> td =typeMapping.getSimpleDescription(type);
-		Object value = TypeTestingHelper.getJavaValue(td);
+		Object value = TypeTestingHelper.getJavaValue(type);
 		AbstractSimpleProperty property = getSchema().instanciateSimple(fieldName, value);
 		switch (cardinality) {
 		case Seq:
@@ -148,12 +143,11 @@ public abstract class AbstractSchemaTester {
     public void testPropertySetterSimple () throws Exception {
 		if (cardinality!=Cardinality.Simple) return;
     	String setter = TypeTestingHelper.calculateSimpleSetter(fieldName)+"Property";
-    	TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
-    	Object value = TypeTestingHelper.getJavaValue(td);
+    	Object value = TypeTestingHelper.getJavaValue(type);
     	AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(
     			getSchema().getNamespace(), 
     			getSchema().getPrefix(), fieldName, value, type);
-    	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {td.getTypeClass()} );
+    	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {type.getImplementingClass()} );
     	set.invoke(getSchema(), new Object [] {asp});
     	// check property set
     	AbstractSimpleProperty stored = (AbstractSimpleProperty)getSchema().getProperty(fieldName);
@@ -162,7 +156,7 @@ public abstract class AbstractSchemaTester {
     	String getter = TypeTestingHelper.calculateSimpleGetter(fieldName)+"Property";
     	Method get = getSchemaClass().getMethod(getter, new Class[0]);
     	Object result = get.invoke(getSchema(), new Object [0]);
-    	Assert.assertTrue(td.getTypeClass().isAssignableFrom(result.getClass()));
+    	Assert.assertTrue(type.getImplementingClass().isAssignableFrom(result.getClass()));
     	Assert.assertEquals(asp, result);
     }
 
@@ -171,9 +165,9 @@ public abstract class AbstractSchemaTester {
 		if (cardinality==Cardinality.Simple) return;
 		// add value
     	String setter = "add"+TypeTestingHelper.calculateFieldNameForMethod(fieldName);
-    	TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
-    	Object value1 = TypeTestingHelper.getJavaValue(td);
-    	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(td)} );
+//    	TypeDescription<AbstractSimpleProperty> td = typeMapping.getSimpleDescription(type);
+    	Object value1 = TypeTestingHelper.getJavaValue(type);
+    	Method set = getSchemaClass().getMethod(setter, new Class<?>[] {TypeTestingHelper.getJavaType(type)} );
     	set.invoke(getSchema(), new Object [] {value1});
     	// retrieve complex property
     	String getter = TypeTestingHelper.calculateArrayGetter(fieldName)+"Property";
@@ -184,12 +178,12 @@ public abstract class AbstractSchemaTester {
     	// check size is ok (1)
     	Assert.assertEquals(1,cp.getContainer().getAllProperties().size());
     	// add a new one
-    	Object value2 = TypeTestingHelper.getJavaValue(td);
+    	Object value2 = TypeTestingHelper.getJavaValue(type);
     	set.invoke(getSchema(), new Object [] {value2});
     	Assert.assertEquals(2,cp.getContainer().getAllProperties().size());
     	// remove the first
     	String remover = "remove"+TypeTestingHelper.calculateFieldNameForMethod(fieldName);
-    	Method remove = getSchemaClass().getMethod(remover, new Class<?>[] {TypeTestingHelper.getJavaType(td)});
+    	Method remove = getSchemaClass().getMethod(remover, new Class<?>[] {TypeTestingHelper.getJavaType(type)});
     	remove.invoke(getSchema(), value1);
     	Assert.assertEquals(1,cp.getContainer().getAllProperties().size());
     	

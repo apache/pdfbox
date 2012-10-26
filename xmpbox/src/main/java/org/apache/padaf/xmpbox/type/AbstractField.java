@@ -41,10 +41,6 @@ public abstract class AbstractField {
 
 	private XMPMetadata metadata;
 
-//	private String namespaceURI;
-	
-//	private String prefix;
-	
 	private String propertyName;
 	
 	private Map<String, Attribute> attributes;

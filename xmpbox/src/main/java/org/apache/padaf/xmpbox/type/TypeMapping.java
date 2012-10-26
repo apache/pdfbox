@@ -43,33 +43,18 @@ import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchemaFactory;
 import org.apache.padaf.xmpbox.schema.XmpSchemaException;
-import org.apache.padaf.xmpbox.type.TypeDescription.BasicType;
-import org.apache.padaf.xmpbox.xml.XmpParsingException;
-import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 
 public final class TypeMapping {
 
+	private Map<Types, PropMapping> structuredMappings;
 
+	// ns -> type
+	private Map<String, Types> structuredNamespaces;
 
-	private Map<Types,TypeDescription<AbstractSimpleProperty>> basicTypes;
-
-	private Map<Class<? extends AbstractField>,TypeDescription<AbstractSimpleProperty>> basicClasses;
-
-	private Map<Types,TypeDescription<AbstractSimpleProperty>> derivedTypes;
-
-	private Map<Class<? extends AbstractField>,TypeDescription<AbstractSimpleProperty>> derivedClasses;
-
-	private Map<Types, TypeDescription<AbstractStructuredType>> structuredTypes;
-
-	private Map<Class<? extends AbstractField>,TypeDescription<AbstractStructuredType>> structuredClasses;
-
-	private Map<String,TypeDescription<AbstractStructuredType>> structuredNamespaces;
-
-	private Map<String, String> schemaUriToPrefered;
+	// ns -> type
+	private Map<String, String> definedStructuredNamespaces;
 	
-	private Map<String, TypeDescription<AbstractStructuredType>> definedStructuredTypes;
-	
-	private Map<String, TypeDescription<AbstractStructuredType>> definedStructuredNamespaces;
+	private Map<String, PropMapping> definedStructuredMappings;
 
 	private XMPMetadata metadata;
 
@@ -91,53 +76,25 @@ public final class TypeMapping {
 	};
 
 	private void initialize () {
-		// basic
-		basicTypes = new HashMap<Types,TypeDescription<AbstractSimpleProperty>>();
-		basicClasses = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractSimpleProperty>>();
-		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>(Types.Text,BasicType.Text,TextType.class));
-		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>(Types.Date,BasicType.Date,DateType.class));
-		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>(Types.Boolean,BasicType.Boolean,BooleanType.class));
-		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>(Types.Integer,BasicType.Integer,IntegerType.class));
-		addToBasicMaps(new TypeDescription<AbstractSimpleProperty>(Types.Real,BasicType.Real,RealType.class));
-
-		// derived
-		derivedTypes = new HashMap<Types,TypeDescription<AbstractSimpleProperty>>();
-		derivedClasses = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractSimpleProperty>>();
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.AgentName,BasicType.Text,AgentNameType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.Choice,BasicType.Text,ChoiceType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.GUID,BasicType.Text,GUIDType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.LangAlt,BasicType.Text,TextType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.Locale,BasicType.Text,LocaleType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.MIMEType,BasicType.Text,MIMEType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.ProperName,BasicType.Text,ProperNameType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.RenditionClass,BasicType.Text,RenditionClassType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.URL,BasicType.Text,URLType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.URI,BasicType.Text,URIType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.XPath,BasicType.Text,XPathType.class));
-		addToDerivedMaps(new TypeDescription<AbstractSimpleProperty>(Types.Part,BasicType.Text,PartType.class));
-
 		// structured types
-		structuredTypes = new HashMap<Types, TypeDescription<AbstractStructuredType>>();
-		structuredClasses = new HashMap<Class<? extends AbstractField>, TypeDescription<AbstractStructuredType>>();
-		structuredNamespaces = new HashMap<String, TypeDescription<AbstractStructuredType>>();
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.Thumbnail,null,ThumbnailType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.Layer,null,LayerType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.ResourceEvent,null,ResourceEventType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.Job,null,JobType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.ResourceRef,null,ResourceRefType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.Version,null,VersionType.class));
-		// PDF/A structured types
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.PDFAField,null,PDFAFieldType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.PDFAProperty,null,PDFAPropertyType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.PDFAType,null,PDFATypeType.class));
-		addToStructuredMaps(new TypeDescription<AbstractStructuredType>(Types.PDFASchema,null,PDFASchemaType.class));
-
+		structuredMappings = new HashMap<Types, PropMapping>();
+		structuredNamespaces = new HashMap<String, Types>();
+		for (Types type : Types.values()) {
+			if (type.isStructured()) {
+				Class<?> clz = type.getImplementingClass();
+				StructuredType st = clz.getAnnotation(StructuredType.class);
+				String ns = st.namespace();
+				PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
+				structuredNamespaces.put(ns, type);
+				structuredMappings.put(type, pm);
+			}
+		}
+		
 		// define structured types
-		definedStructuredTypes = new HashMap<String, TypeDescription<AbstractStructuredType>>();
-		definedStructuredNamespaces = new HashMap<String, TypeDescription<AbstractStructuredType>>();
+		definedStructuredNamespaces = new HashMap<String, String>();
+		definedStructuredMappings = new HashMap<String, PropMapping>();
 		
 		// schema
-		schemaUriToPrefered = new HashMap<String, String>();
 		schemaMap = new HashMap<String, XMPSchemaFactory>();
 		addNameSpace(XMPBasicSchema.class);
 		addNameSpace(DublinCoreSchema.class);
@@ -151,83 +108,26 @@ public final class TypeMapping {
 
 	}
 
-	private void addToBasicMaps (TypeDescription<AbstractSimpleProperty> td) {
-		basicTypes.put(td.getType(),td);
-		basicClasses.put(td.getTypeClass(), td);
+	public void addToDefinedStructuredTypes (String typeName, String ns, PropMapping pm) {
+		definedStructuredNamespaces.put(ns, typeName);
+		definedStructuredMappings.put(typeName, pm);
 	}
 
-	public void addToDerivedMaps (TypeDescription<AbstractSimpleProperty> td) {
-		derivedTypes.put(td.getType(),td);
-		derivedClasses.put(td.getTypeClass(), td);
-	}
-
-	private void addToStructuredMaps (TypeDescription<AbstractStructuredType> td) {
-		Class<? extends AbstractStructuredType> clz = td.getTypeClass();
-		StructuredType st = clz.getAnnotation(StructuredType.class);
-		String ns = st.namespace();
-		PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
-		td.setProperties(pm);
-		addToStructuredMaps(td, ns);
-	}
-
-	public void addToStructuredMaps (TypeDescription<AbstractStructuredType> td, String ns) {
-		structuredTypes.put(td.getType(),td);
-		structuredClasses.put(td.getTypeClass(), td);
-		structuredNamespaces.put(ns, td);
-	}
-
-	public void addToDefinedStructuredTypes (String typeName, TypeDescription<AbstractStructuredType> td, String ns) {
-		definedStructuredTypes.put(typeName, td);
-		definedStructuredNamespaces.put(ns, td);
-	}
-
-	public Types getType (Class<?> clz) {
-		// search in basic
-		TypeDescription<AbstractSimpleProperty> td = basicClasses.get(clz);
-		// search in derived
-		if (td==null) {
-			td = derivedClasses.get(clz);
-		}
-		// return simple
-		if (td!=null) {
-			return td.getType();
-		} else {
-			// search in structured
-			TypeDescription<AbstractStructuredType> td2 = structuredClasses.get(clz);
-			// return type if exists
-			return (td2!=null)?td2.getType():null;
-		}
-	}
-
-	public TypeDescription<AbstractSimpleProperty> getSimpleDescription (Types type) {
-		if (basicTypes.containsKey(type)) {
-			return basicTypes.get(type);
-		} else if (derivedTypes.containsKey(type)) {
-			return derivedTypes.get(type);
-		} else {
-			return null;
-		}
-	}
-
-	public TypeDescription<AbstractStructuredType> getStructuredDescription (Types type) {
-		return structuredTypes.get(type);
-	}
-
-	public TypeDescription<AbstractStructuredType> getDefinedDescription (String name) {
-		return this.definedStructuredTypes.get(name);
-	}
-
-	public TypeDescription<AbstractStructuredType> getDefinedDescriptionByNamespace (String namespace) {
+	public String getDefinedDescriptionByNamespace (String namespace) {
 		return this.definedStructuredNamespaces.get(namespace);
 	}
 
-	public AbstractStructuredType instanciateStructuredType (TypeDescription<AbstractStructuredType> td, String propertyName) throws BadFieldValueException {
+	public PropMapping getDefinedPropMapping (String name) {
+		return this.definedStructuredMappings.get(name);
+	}
+	
+	public AbstractStructuredType instanciateStructuredType (Types type, String typeName, String propertyName) throws BadFieldValueException {
 		try {
-			Class<? extends AbstractStructuredType> propertyTypeClass = td.getTypeClass();
-			if (propertyTypeClass.equals(DefinedStructuredType.class)) {
-				PropMapping pm = td.getProperties();
+			if (type==Types.DefinedType) {
+				PropMapping pm = definedStructuredMappings.get(typeName);
 				return new DefinedStructuredType(metadata, pm.getConcernedNamespace(), null, propertyName);
 			} else {
+				Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(AbstractStructuredType.class);
 				Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {
 						XMPMetadata.class});
 				AbstractStructuredType tmp = construct.newInstance(metadata);
@@ -235,17 +135,17 @@ public final class TypeMapping {
 				return tmp;
 			}
 		} catch (InvocationTargetException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (IllegalArgumentException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (InstantiationException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (IllegalAccessException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (SecurityException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (NoSuchMethodException e) {
-			throw new BadFieldValueException("Failed to instanciate structured type : "+td.getType(),e);
+			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} 
 	}
 
@@ -260,8 +160,7 @@ public final class TypeMapping {
 		};
 		// type 
 		try {
-			TypeDescription<AbstractSimpleProperty> description = getSimpleDescription(type);
-			Class<? extends AbstractSimpleProperty> clz = (Class<? extends AbstractSimpleProperty>)description.getTypeClass();
+			Class<? extends AbstractSimpleProperty> clz = type.getImplementingClass().asSubclass(AbstractSimpleProperty.class);
 			Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(simplePropertyConstParams);
 			return cons.newInstance(params);
 		} catch (NoSuchMethodError e) {
@@ -288,10 +187,6 @@ public final class TypeMapping {
 		return instanciateSimpleProperty(nsuri, prefix, propertyName, value, type);
 	}
 
-	public TypeDescription<AbstractStructuredType> getStructuredTypeName (String namespace) {
-		return structuredNamespaces.get(namespace);
-	}
-
 	/**
 	 * Check if a namespace used reference a complex basic types (like
 	 * Thumbnails)
@@ -308,50 +203,35 @@ public final class TypeMapping {
 		return definedStructuredNamespaces.containsKey(namespace);
 	}
 
-	public boolean isArrayOfSimpleType (PropertyType type) {
-		if (type.card()==Cardinality.Simple) {
-			return false;
-		}
-		// else is Alt/Bag/Seq
-		return type.type().isSimple();
-	}
-
-	public boolean isArrayType (PropertyType type) {
-		return type.card()!=Cardinality.Simple;
-	}
-
-	public String getTypeInArray (String type) {
-		int pos = type.indexOf(' ');
-		if (pos<0) {
-			// not array
-			return null;
-		} else {
-			return type.substring(pos+1);
-		}
-	}
-
-	public boolean isStructuredType(Types type) {
-		return structuredTypes.containsKey(type);
-	}
+//	public String getTypeInArray (String type) {
+//		int pos = type.indexOf(' ');
+//		if (pos<0) {
+//			// not array
+//			return null;
+//		} else {
+//			return type.substring(pos+1);
+//		}
+//	}
 
 	public boolean isDefinedType (String name) {
-		return this.definedStructuredTypes.containsKey(name);
+		return this.definedStructuredMappings.containsKey(name);
 	}
 
 	private void addNameSpace(Class<? extends XMPSchema> classSchem) {
 		StructuredType st = classSchem.getAnnotation(StructuredType.class);
 		String ns = st.namespace();
-		String pp = st.preferedPrefix();
 		schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem,	ReflectHelper.initializePropMapping(ns, classSchem)));
-		schemaUriToPrefered.put(ns, pp);
 	}
 
 	public void addNewNameSpace(String ns,String prefered) {
 		PropMapping mapping = new PropMapping(ns);
 		schemaMap.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
-		schemaUriToPrefered.put(ns, prefered);
 	}
 
+	public PropMapping getStructuredPropMapping (Types type) {
+		return structuredMappings.get(type);
+	}
+	
 	/**
 	 * Return the specialized schema class representation if it's known (create
 	 * and add it to metadata). In other cases, return null
@@ -404,19 +284,18 @@ public final class TypeMapping {
 			return  factory.getPropertyType(name.getLocalPart());
 		} else {
 			// try in structured
-			TypeDescription<AbstractStructuredType> td = getStructuredTypeName(name.getNamespaceURI());
-			if (td==null) {
+			Types st = structuredNamespaces.get(name.getNamespaceURI());
+			if (st!=null) {
+				return  createPropertyType(st,Cardinality.Simple);
+			} else {
 				// try in defined
-				TypeDescription<AbstractStructuredType> td2 = definedStructuredNamespaces.get(name.getNamespaceURI());
-				if (td2==null) {
+				String dt = definedStructuredNamespaces.get(name.getNamespaceURI());
+				if (dt==null) {
 					// not found
-//					return null;
 					throw new BadFieldValueException("No descriptor found for "+name);
 				} else {
-					return createPropertyType(td2.getType(),Cardinality.Simple);
+					return createPropertyType(Types.DefinedType,Cardinality.Simple);
 				}
-			} else {
-				return  createPropertyType(td.getType(),Cardinality.Simple);
 			}
 		}
 	}
@@ -509,7 +388,7 @@ public final class TypeMapping {
 		return new PropertyType() {
 
 			public Class<? extends Annotation> annotationType() {
-				return PropertyType.class;
+				return null;
 			}
 
 			public Types type() {

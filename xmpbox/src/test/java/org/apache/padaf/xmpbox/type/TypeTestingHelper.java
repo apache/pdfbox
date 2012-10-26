@@ -60,36 +60,36 @@ public final class TypeTestingHelper {
     }
 
     
-    public static Class<?> getJavaType (TypeDescription td) {
-    	if (td.getTypeClass()==TextType.class) {
+    public static Class<?> getJavaType (Types type) {
+    	if (type.getImplementingClass()==TextType.class) {
     		return String.class;
-    	} else if (td.getTypeClass()==DateType.class) {
+    	} else if (type.getImplementingClass()==DateType.class) {
     		return Calendar.class;
-    	} else if (td.getTypeClass()==IntegerType.class) {
+    	} else if (type.getImplementingClass()==IntegerType.class) {
     		return Integer.class;
-    	} else if (TextType.class.isAssignableFrom(td.getTypeClass())) {
+    	} else if (TextType.class.isAssignableFrom(type.getImplementingClass())) {
     		return String.class;
     	} else {
-    		throw new IllegalArgumentException("TODO : type not expected in test : "+td.getTypeClass());
+    		throw new IllegalArgumentException("TODO : type not expected in test : "+type.getImplementingClass());
     	}
     }
     
-    public static Object getJavaValue (TypeDescription td) {
-    	if (td.getTypeClass()==TextType.class) {
+    public static Object getJavaValue (Types type) {
+    	if (type.getImplementingClass()==TextType.class) {
     		return UUID.randomUUID().toString();
-    	} else if (td.getTypeClass()==DateType.class) {
+    	} else if (type.getImplementingClass()==DateType.class) {
     		// use random because test are too fast (generate same calendar twice)
     		Calendar calendar = Calendar.getInstance();
     		Random rand = new Random();
     		calendar.setTimeInMillis(rand.nextLong());
     		return calendar;
-    	} else if (td.getTypeClass()==IntegerType.class) {
+    	} else if (type.getImplementingClass()==IntegerType.class) {
     		return new Integer(14);
-    	} else if (TextType.class.isAssignableFrom(td.getTypeClass())) {
+    	} else if (TextType.class.isAssignableFrom(type.getImplementingClass())) {
     		// all derived from TextType
     		return UUID.randomUUID().toString();
     	} else {
-    		throw new IllegalArgumentException("TODO : type not expected in test : "+td.getTypeClass());
+    		throw new IllegalArgumentException("TODO : type not expected in test : "+type.getImplementingClass());
     	}
     }
 
