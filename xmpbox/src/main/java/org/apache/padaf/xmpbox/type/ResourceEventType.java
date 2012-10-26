@@ -28,22 +28,22 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="stEvt",namespace="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#")
 public class ResourceEventType extends AbstractStructuredType {
 
-	@PropertyType(propertyType="Choice")
+	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
 	public static final String ACTION = "action";
 
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String CHANGED = "changed";
 
-	@PropertyType(propertyType="GUID")
+	@PropertyType(type = Types.GUID, card = Cardinality.Simple)
 	public static final String INSTANCE_ID = "instanceID";
 	
-	@PropertyType(propertyType="Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String PARAMETERS = "parameters";
 	
-	@PropertyType(propertyType="AgentName")
+	@PropertyType(type = Types.AgentName, card = Cardinality.Simple)
 	public static final String SOFTWARE_AGENT = "softwareAgent";
 
-	@PropertyType(propertyType="Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String WHEN = "when";
 	
 

@@ -26,6 +26,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.type.Cardinality;
+import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,27 +47,27 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest {
 	@Parameters
 	public static Collection<Object[]> initializeParameters() throws Exception {
 		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(wrapProperty("DocumentID", "URI",
+		data.add(wrapProperty("DocumentID", Types.URI,
 				"uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"));
-		data.add(wrapProperty("Manager", "AgentName", "Raoul"));
-		data.add(wrapProperty("ManageTo", "URI", "uuid:36"));
-		data.add(wrapProperty("ManageUI", "URI", "uuid:3635"));
+		data.add(wrapProperty("Manager", Types.AgentName, "Raoul"));
+		data.add(wrapProperty("ManageTo", Types.URI, "uuid:36"));
+		data.add(wrapProperty("ManageUI", Types.URI, "uuid:3635"));
 //		data.add(wrapProperty("ManageFrom", "ResourceRef", "uuid:36"));
-		data.add(wrapProperty("InstanceID", "URI", "uuid:42"));
-		data.add(wrapProperty("OriginalDocumentID", "Text", "uuid:142"));
+		data.add(wrapProperty("InstanceID", Types.URI, "uuid:42"));
+		data.add(wrapProperty("OriginalDocumentID", Types.Text, "uuid:142"));
 //		data.add(wrapProperty("RenditionClass", "Text", "myclass"));
-		data.add(wrapProperty("RenditionParams", "Text", "my params"));
-		data.add(wrapProperty("VersionID", "Text", "14"));
-		data.add(wrapProperty("Versions", "seq Version", new String[] { "1", "2",
+		data.add(wrapProperty("RenditionParams", Types.Text, "my params"));
+		data.add(wrapProperty("VersionID", Types.Text, "14"));
+		data.add(wrapProperty("Versions", Types.Version, Cardinality.Seq, new String[] { "1", "2",
 				"3" }));
-		data.add(wrapProperty("History", "seq Text", new String[] { "action 1",
+		data.add(wrapProperty("History", Types.Text, Cardinality.Seq,new String[] { "action 1",
 				"action 2", "action 3" }));
-		data.add(wrapProperty("Ingredients", "bag Text", new String[] {
+		data.add(wrapProperty("Ingredients", Types.Text,Cardinality.Bag, new String[] {
 				"resource1", "resource2" }));
 		return data;
 	}
 
-	public XMPMediaManagementTest(String property, String type, Object value) {
+	public XMPMediaManagementTest(String property, PropertyType type, Object value) {
 		super(property, type, value);
 	}
 

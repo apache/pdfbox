@@ -40,7 +40,7 @@ public class TestResourceRefType extends AbstractStructuredTypeTester{
 		structured = new ResourceRefType(xmp);
 	}
 	
-	public TestResourceRefType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestResourceRefType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -55,21 +55,21 @@ public class TestResourceRefType extends AbstractStructuredTypeTester{
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
 //     	result.add(new Object [] {ResourceRefType.class,"alternatePaths","seq URI"});
-    	result.add(new Object [] {ResourceRefType.class,"documentID","URI"});
-    	result.add(new Object [] {ResourceRefType.class,"filePath","URI"});
-    	result.add(new Object [] {ResourceRefType.class,"fromPart","Part"});
-    	result.add(new Object [] {ResourceRefType.class,"instanceID","URI"});
-    	result.add(new Object [] {ResourceRefType.class,"lastModifyDate","Date"});
-    	result.add(new Object [] {ResourceRefType.class,"manager","AgentName"});
-    	result.add(new Object [] {ResourceRefType.class,"managerVariant","Text"});
-    	result.add(new Object [] {ResourceRefType.class,"manageTo","URI"});
-    	result.add(new Object [] {ResourceRefType.class,"manageUI","URI"});
-    	result.add(new Object [] {ResourceRefType.class,"maskMarkers","Choice"});
-    	result.add(new Object [] {ResourceRefType.class,"partMapping","Text"});
-    	result.add(new Object [] {ResourceRefType.class,"renditionClass","RenditionClass"});
-    	result.add(new Object [] {ResourceRefType.class,"renditionParams","Text"});
-    	result.add(new Object [] {ResourceRefType.class,"toPart","Part"});
-    	result.add(new Object [] {ResourceRefType.class,"versionID","Text"});
+    	result.add(new Object [] {ResourceRefType.class,"documentID",Types.URI});
+    	result.add(new Object [] {ResourceRefType.class,"filePath",Types.URI});
+    	result.add(new Object [] {ResourceRefType.class,"fromPart",Types.Part});
+    	result.add(new Object [] {ResourceRefType.class,"instanceID",Types.URI});
+    	result.add(new Object [] {ResourceRefType.class,"lastModifyDate",Types.Date});
+    	result.add(new Object [] {ResourceRefType.class,"manager",Types.AgentName});
+    	result.add(new Object [] {ResourceRefType.class,"managerVariant",Types.Text});
+    	result.add(new Object [] {ResourceRefType.class,"manageTo",Types.URI});
+    	result.add(new Object [] {ResourceRefType.class,"manageUI",Types.URI});
+    	result.add(new Object [] {ResourceRefType.class,"maskMarkers",Types.Choice});
+    	result.add(new Object [] {ResourceRefType.class,"partMapping",Types.Text});
+    	result.add(new Object [] {ResourceRefType.class,"renditionClass",Types.RenditionClass});
+    	result.add(new Object [] {ResourceRefType.class,"renditionParams",Types.Text});
+    	result.add(new Object [] {ResourceRefType.class,"toPart",Types.Part});
+    	result.add(new Object [] {ResourceRefType.class,"versionID",Types.Text});
     	
     	return result;
     	

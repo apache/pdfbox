@@ -23,9 +23,11 @@ package org.apache.padaf.xmpbox.schema;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.Types;
 
 /**
  * Representation of Adobe PDF Schema
@@ -36,13 +38,13 @@ import org.apache.padaf.xmpbox.type.TextType;
 @StructuredType(preferedPrefix="pdf",namespace="http://ns.adobe.com/pdf/1.3/")
 public class AdobePDFSchema extends XMPSchema {
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String KEYWORDS = "Keywords";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String PDF_VERSION = "PDFVersion";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String PRODUCER = "Producer";
 
 	/**

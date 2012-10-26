@@ -27,7 +27,7 @@ public class TypeDescription<T> {
 
 	public enum BasicType {	Text, Date, Integer, Boolean, Real}
 
-	private String type;
+	private Types type;
 	
 	private BasicType basic;
 	
@@ -35,14 +35,14 @@ public class TypeDescription<T> {
 	
 	private PropMapping properties = null;
 
-	public TypeDescription(String type, BasicType basic,Class<? extends T> clz) {
+	public TypeDescription(Types type, BasicType basic,Class<? extends T> clz) {
 		super();
 		this.type = type;
 		this.basic = basic;
 		this.clz = clz;
 	}
 	
-	public String getType() {
+	public Types getType() {
 		return type;
 	}
 
@@ -62,4 +62,8 @@ public class TypeDescription<T> {
 		this.properties = properties;
 	}
 		
+	public String toString () {
+		return "[TypeDescription,type="+type+",clz="+clz+"]";
+	}
+	
 }

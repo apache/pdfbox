@@ -28,6 +28,7 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.LayerType;
@@ -35,6 +36,8 @@ import org.apache.padaf.xmpbox.type.ProperNameType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.type.URIType;
 
 @StructuredType(preferedPrefix="photoshop",namespace="http://ns.adobe.com/photoshop/1.0/")
@@ -52,66 +55,66 @@ public class PhotoshopSchema extends XMPSchema {
 
 	public static final String PHOTOSHOPURI = "http://ns.adobe.com/photoshop/1.0/";
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String ANCESTORID = "AncestorID";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String AUTHORS_POSITION = "AuthorsPosition";
 
-	@PropertyType(propertyType = "ProperName")
+	@PropertyType(type = Types.ProperName, card = Cardinality.Simple)
 	public static final String CAPTION_WRITER = "CaptionWriter";
 	
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String CATEGORY = "Category";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String CITY = "City";
 
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String COLOR_MODE = "ColorMode";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String COUNTRY = "Country";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String CREDIT = "Credit";
 
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String DATE_CREATED = "DateCreated";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String DOCUMENT_ANCESTORS = "DocumentAncestors";
 	
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String HEADLINE = "Headline";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String HISTORY = "History";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String ICC_PROFILE = "ICCProfile";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String INSTRUCTIONS = "Instructions";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String SOURCE = "Source";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String STATE = "State";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String SUPPLEMENTAL_CATEGORIES = "SupplementalCategories";
 
-	@PropertyType(propertyType = "seq Layer")
+	@PropertyType(type = Types.Layer, card = Cardinality.Seq)
 	public static final String TEXT_LAYERS = "TextLayers";
 	
 	private ArrayProperty seqLayer;
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String TRANSMISSION_REFERENCE = "TransmissionReference";
 
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String URGENCY = "Urgency";
 
 	public URIType getAncestorIDProperty() {
@@ -431,7 +434,7 @@ public class PhotoshopSchema extends XMPSchema {
 	
 	public void addTextLayers(String layerName, String layerText) {
 		if (seqLayer == null) {
-			seqLayer = createArrayProperty(TEXT_LAYERS, ArrayProperty.ORDERED_ARRAY);
+			seqLayer = createArrayProperty(TEXT_LAYERS, Cardinality.Seq);
 			addProperty(seqLayer);
 		}
 		LayerType layer = new LayerType(getMetadata());

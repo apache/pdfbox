@@ -26,11 +26,14 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.AgentNameType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.RenditionClassType;
 import org.apache.padaf.xmpbox.type.ResourceRefType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.type.URIType;
 import org.apache.padaf.xmpbox.type.VersionType;
 
@@ -70,7 +73,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 
 	// -------------------------------- ResourceRef --------------------
 
-	@PropertyType(propertyType = "ResourceRef")
+	@PropertyType(type = Types.ResourceRef, card = Cardinality.Simple)
 	public static final String DERIVED_FROM = "DerivedFrom";
 
 	/**
@@ -97,7 +100,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- DocumentID
 	// ----------------------------
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String DOCUMENTID = "DocumentID";
 
 	/**
@@ -143,7 +146,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- Manager
 	// ----------------------------
 
-	@PropertyType(propertyType = "AgentName")
+	@PropertyType(type = Types.AgentName, card = Cardinality.Simple)
 	public static final String MANAGER = "Manager";
 
 	/**
@@ -189,7 +192,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- ManageTo
 	// ----------------------------
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String MANAGETO = "ManageTo";
 
 	/**
@@ -235,7 +238,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- ManageUI
 	// ----------------------------
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String MANAGEUI = "ManageUI";
 
 	/**
@@ -281,7 +284,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- ManagerVariant
 	// ----------------------------
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String MANAGERVARIANT = "ManagerVariant";
 
 	/**
@@ -327,7 +330,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- InstanceID
 	// ----------------------------
 
-	@PropertyType(propertyType = "URI")
+	@PropertyType(type = Types.URI, card = Cardinality.Simple)
 	public static final String INSTANCEID = "InstanceID";
 
 	/**
@@ -373,7 +376,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- ManageFrom
 	// ----------------------------
 
-	@PropertyType(propertyType = "ResourceRef")
+	@PropertyType(type = Types.ResourceRef, card = Cardinality.Simple)
 	public static final String MANAGED_FROM = "ManagedFrom";
 	
 //	/**
@@ -419,7 +422,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- OriginalDocumentID
 	// ----------------------------
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String ORIGINALDOCUMENTID = "OriginalDocumentID";
 
 	/**
@@ -465,7 +468,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- RenditionClass
 	// ----------------------------
 
-	@PropertyType(propertyType = "RenditionClass")
+	@PropertyType(type = Types.RenditionClass, card = Cardinality.Simple)
 	public static final String RENDITIONCLASS = "RenditionClass";
 
 	/**
@@ -511,7 +514,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- RenditionParams
 	// ----------------------------
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String RENDITIONPARAMS = "RenditionParams";
 
 	/**
@@ -557,7 +560,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- VersionID
 	// ----------------------------
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String VERSIONID = "VersionID";
 
 	/**
@@ -603,7 +606,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- Versions
 	// ----------------------------
 
-	@PropertyType(propertyType = "seq Version")
+	@PropertyType(type = Types.Version, card = Cardinality.Seq)
 	public static final String VERSIONS = "Versions";
 
 
@@ -628,7 +631,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- History
 	// ----------------------------
 
-	@PropertyType(propertyType = "seq ResourceEvent")
+	@PropertyType(type = Types.ResourceEvent, card = Cardinality.Seq)
 	public static final String HISTORY = "History";
 
 	/**
@@ -662,7 +665,7 @@ public class XMPMediaManagementSchema extends XMPSchema {
 	// --------------------------------------- Ingredients
 	// ----------------------------
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String INGREDIENTS = "Ingredients";
 
 	/**

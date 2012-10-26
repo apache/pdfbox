@@ -28,25 +28,25 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 
 public class DefinedStructuredType extends AbstractStructuredType {
 
-	private Map<String, String> definedProperties = null;
+	private Map<String, PropertyType> definedProperties = null;
 	
 	public DefinedStructuredType(XMPMetadata metadata, String namespaceURI,
 			String fieldPrefix, String propertyName) {
 		super(metadata, namespaceURI, fieldPrefix, propertyName);
-		this.definedProperties = new HashMap<String, String>();
+		this.definedProperties = new HashMap<String, PropertyType>();
 	}
 
 	public DefinedStructuredType(XMPMetadata metadata) {
 		super(metadata);
-		this.definedProperties = new HashMap<String, String>();
+		this.definedProperties = new HashMap<String, PropertyType>();
 	}
 
 	
-	public void addProperty (String name, String type) {
+	public void addProperty (String name, PropertyType type) {
 		definedProperties.put(name, type);
 	}
 
-	public Map<String, String> getDefinedProperties() {
+	public Map<String, PropertyType> getDefinedProperties() {
 		return definedProperties;
 	}
 

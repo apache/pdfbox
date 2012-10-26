@@ -24,11 +24,15 @@ import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AbstractSimpleProperty;
 import org.apache.padaf.xmpbox.type.AbstractStructuredType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.ComplexPropertyContainer;
 import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.TypeDescription;
 import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
@@ -153,7 +157,7 @@ public class DomXmpParser {
 				String prefix = property.getPrefix();
 				String name = property.getLocalName();
 				String namespace = property.getNamespaceURI();
-				String type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+				PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
 				// create the container 
 				if (!tm.isDefinedSchema(namespace)) {
 					throw new XmpParsingException(ErrorType.NoSchema,"This namespace is not a schema or a structured type : "+namespace);
@@ -169,18 +173,29 @@ public class DomXmpParser {
 				try {
 					if (type==null) {
 						if (strictParsing) {
-							throw new XmpParsingException(ErrorType.NoType, "No type defined for {"+namespace+"}"+name);
+							throw new XmpParsingException(ErrorType.InvalidType, "No type defined for {"+namespace+"}"+name);
 						} else {
 							// use it as string
-							manageSimpleType (xmp, property, "Text", container);
+							manageSimpleType (xmp, property, Types.Text, container);
 						}
-					} else if (type.equals("Lang Alt")) {
+					} else if (type.type()==Types.LangAlt) {
 						manageLangAlt (xmp, property, container);
-					} else if (tm.isSimpleType(type)) {
-						manageSimpleType (xmp, property, type, container);
 					} else if (tm.isArrayType(type)) {
 						manageArray(xmp,property,type,container);
-					} else if (tm.isStructuredType(type)) {
+					} else if (type.type().isSimple()) {
+						manageSimpleType (xmp, property, type.type(), container);
+					} else if (tm.isStructuredType(type.type())) {
+						if (DomHelper.isParseTypeResource(property)) {
+							AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
+							ast.setPrefix(prefix);
+							container.addProperty(ast);
+						} else {
+							Element inner = DomHelper.getFirstChildElement(property);
+							AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
+							ast.setPrefix(prefix);
+							container.addProperty(ast);
+						}
+					} else if (type.type()==Types.DefinedType) {
 						if (DomHelper.isParseTypeResource(property)) {
 							AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
 							ast.setPrefix(prefix);
@@ -205,7 +220,7 @@ public class DomXmpParser {
 		}
 	}
 
-	private void manageSimpleType (XMPMetadata xmp, Element property, String type, ComplexPropertyContainer container) throws XmpParsingException {
+	private void manageSimpleType (XMPMetadata xmp, Element property, Types type, ComplexPropertyContainer container) throws XmpParsingException {
 		TypeMapping tm = xmp.getTypeMapping();
 		String prefix = property.getPrefix();
 		String name = property.getLocalName();
@@ -216,28 +231,29 @@ public class DomXmpParser {
 				name, 
 				property.getTextContent(),
 				type);
+		loadAttributes(sp, property);
 		container.addProperty(sp);
 	}
 
-	private void manageArray (XMPMetadata xmp, Element property, String type, ComplexPropertyContainer container) throws XmpParsingException, BadFieldValueException {
+	private void manageArray (XMPMetadata xmp, Element property, PropertyType type, ComplexPropertyContainer container) throws XmpParsingException, BadFieldValueException {
 		//		nsFinder.push(property);
 		try {
 			TypeMapping tm = xmp.getTypeMapping();
 			String prefix = property.getPrefix();
 			String name = property.getLocalName();
 			String namespace = property.getNamespaceURI();
-			String at = tm.getArrayType(type);
+//			Cardinality at = tm.getArrayType(type);
 			Element bagOrSeq = DomHelper.getUniqueElementChild(property);
 			// ensure this is the good type of array
 			if (bagOrSeq==null) {
 				// not an array
-				throw new XmpParsingException(ErrorType.Format,"Invalid array definition, expecting "+at+" and found nothing");
+				throw new XmpParsingException(ErrorType.Format,"Invalid array definition, expecting "+type.card()+" and found nothing");
 			}
-			if (!bagOrSeq.getLocalName().equals(at)) {
+			if (!bagOrSeq.getLocalName().equals(type.card().name())) {
 				// not the good array type
-				throw new XmpParsingException(ErrorType.Format,"Invalid array type, expecting "+at+" and found "+bagOrSeq.getLocalName());
+				throw new XmpParsingException(ErrorType.Format,"Invalid array type, expecting "+type.card()+" and found "+bagOrSeq.getLocalName());
 			}
-			ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, at);
+			ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
 			container.addProperty(array);
 			List<Element> lis=  DomHelper.getElementChildren(bagOrSeq);
 
@@ -255,7 +271,7 @@ public class DomXmpParser {
 	}
 
 	private void manageLangAlt (XMPMetadata xmp, Element property, ComplexPropertyContainer container) throws XmpParsingException, BadFieldValueException {
-		manageArray(xmp,property,"Alt Lang",container);
+		manageArray(xmp,property,TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Alt),container);
 	}
 
 
@@ -268,9 +284,9 @@ public class DomXmpParser {
 				String prefix = property.getPrefix();
 				String name = property.getLocalName();
 				String namespace = property.getNamespaceURI();
-				String dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property));
-				TypeDescription<AbstractStructuredType> td = tm.getStructuredDescription(dtype);
-				String ptype = td.getProperties().getPropertyType(name);
+				PropertyType dtype = checkPropertyDefinition(xmp, DomHelper.getQName(property));
+				TypeDescription<AbstractStructuredType> td = tm.getStructuredDescription(dtype.type());
+				PropertyType ptype = td.getProperties().getPropertyType(name);
 				// create property
 				nsFinder.push(property);
 				try {
@@ -279,15 +295,15 @@ public class DomXmpParser {
 							throw new XmpParsingException(ErrorType.NoType, "No type defined for {"+namespace+"}"+name);
 						} else {
 							// use it as string
-							manageSimpleType (xmp, property, "Text", parentContainer);
+							manageSimpleType (xmp, property, Types.Text, parentContainer);
 						}
-					} else if (ptype.equals("Lang Alt")) {
+					} else if (ptype.type()==Types.LangAlt) {
 						manageLangAlt (xmp, property, parentContainer);
-					} else if (tm.isSimpleType(ptype)) {
-						manageSimpleType (xmp, property, ptype, parentContainer);
 					} else if (tm.isArrayType(ptype)) {
 						manageArray(xmp,property,ptype,parentContainer);
-					} else if (tm.isStructuredType(ptype)) {
+					} else if (ptype.type().isSimple()) {
+						manageSimpleType (xmp, property, ptype.type(), parentContainer);
+					} else if (tm.isStructuredType(ptype.type())) {
 						if (DomHelper.isParseTypeResource(property)) {
 							AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
 							ast.setPrefix(prefix);
@@ -331,7 +347,8 @@ public class DomXmpParser {
 						descriptor.getPrefix(), 
 						descriptor.getLocalPart(), 
 						text,
-						"Text");
+						Types.Text);
+				loadAttributes(sp, liElement);
 				return sp;
 			}
 		} finally {
@@ -339,6 +356,17 @@ public class DomXmpParser {
 		}
 	}
 
+	private void loadAttributes (AbstractSimpleProperty sp, Element element) {
+		NamedNodeMap nnm = element.getAttributes();
+		for (int i=0; i < nnm.getLength() ; i++) {
+			Attr attr = (Attr)nnm.item(i);
+			if (!XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix())) {
+				Attribute attribute = new Attribute(XMLConstants.XML_NS_URI,attr.getLocalName(), attr.getValue());
+				sp.setAttribute(attribute);
+			}
+		}
+	}
+	
 	private AbstractStructuredType parseLiDescription (XMPMetadata xmp, QName descriptor, Element liElement) throws XmpParsingException, BadFieldValueException {
 		//		nsFinder.push(liElement);
 		try {
@@ -350,42 +378,32 @@ public class DomXmpParser {
 			}
 			// Instantiate abstract structured type with hint from first element
 			Element first = elements.get(0);
-			String ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
-			AbstractStructuredType ast = instanciateStructured(tm, ctype, descriptor.getLocalPart());
+			PropertyType ctype = checkPropertyDefinition(xmp, DomHelper.getQName(first));
+			AbstractStructuredType ast = instanciateStructured(tm, ctype.type(), descriptor.getLocalPart(),first.getNamespaceURI());
 			ast.setNamespace(descriptor.getNamespaceURI());
 			ast.setPrefix(descriptor.getPrefix());
 
-			TypeDescription<AbstractStructuredType> td = tm.getStructuredDescription(ctype);
+			TypeDescription<AbstractStructuredType> td = tm.getStructuredDescription(ctype.type());
+			if (td==null) {
+				td = tm.getDefinedDescriptionByNamespace(first.getNamespaceURI());
+			}
 			PropMapping pm = td.getProperties();
 			for (Element element : elements) {
 				String prefix = element.getPrefix();
 				String name = element.getLocalName();
 				String namespace = element.getNamespaceURI();
-				String type = pm.getPropertyType(name);
-				if (tm.isSimpleType(type)) {
+				PropertyType type = pm.getPropertyType(name);
+				if (type.type().isSimple()) {
 					AbstractSimpleProperty sp = tm.instanciateSimpleProperty(
 							namespace, 
 							prefix, 
 							name, 
 							element.getTextContent(),
-							type);
+							type.type());
+					loadAttributes(sp,element);
 					ast.getContainer().addProperty(sp);
-				} else if (tm.isStructuredType(type)) {
-					// create a new structured type
-					AbstractStructuredType inner = instanciateStructured(tm, type, name);
-					inner.setNamespace(namespace);
-					inner.setPrefix(prefix);
-					ast.getContainer().addProperty(inner);
-					ComplexPropertyContainer cpc = inner.getContainer();
-					if (DomHelper.isParseTypeResource(element)) {
-						parseDescriptionInner(xmp, element, cpc);
-					} else {
-						Element descElement = DomHelper.getFirstChildElement(element);
-						parseDescriptionInner(xmp,descElement,cpc);
-					}
-				} else if (tm.getArrayType(type)!=null) {
-					String at = tm.getArrayType(type);
-					ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, at);
+				} else if (tm.isArrayType(type)) {
+					ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
 					ast.getContainer().addProperty(array);
 
 
@@ -396,6 +414,19 @@ public class DomXmpParser {
 						if (ast2!=null) {
 							array.addProperty(ast2);
 						}
+					}
+				} else if (tm.isStructuredType(type.type())) {
+					// create a new structured type
+					AbstractStructuredType inner = instanciateStructured(tm, type.type(), name,null);
+					inner.setNamespace(namespace);
+					inner.setPrefix(prefix);
+					ast.getContainer().addProperty(inner);
+					ComplexPropertyContainer cpc = inner.getContainer();
+					if (DomHelper.isParseTypeResource(element)) {
+						parseDescriptionInner(xmp, element, cpc);
+					} else {
+						Element descElement = DomHelper.getFirstChildElement(element);
+						parseDescriptionInner(xmp,descElement,cpc);
 					}
 				} else {
 					throw new XmpParsingException(ErrorType.NoType, "Unidentified element to parse "+element+" (type="+type+")");
@@ -529,13 +560,16 @@ public class DomXmpParser {
 		// end of document
 	}
 
-	private AbstractStructuredType instanciateStructured (TypeMapping tm, String type, String name) throws BadFieldValueException {
+	private AbstractStructuredType instanciateStructured (TypeMapping tm, Types type, String name, String structuredNamespace) throws BadFieldValueException {
 		TypeDescription<AbstractStructuredType> td = null;
 		td = tm.getStructuredDescription(type);
+		if (td==null) {
+			td = tm.getDefinedDescriptionByNamespace(structuredNamespace);
+		}
 		return tm.instanciateStructuredType(td,name);
 	}
 
-	private String checkPropertyDefinition (XMPMetadata xmp, QName prop) throws XmpParsingException {
+	private PropertyType checkPropertyDefinition (XMPMetadata xmp, QName prop) throws XmpParsingException {
 		TypeMapping tm = xmp.getTypeMapping();
 		// test if namespace is set in xml
 		if (!nsFinder.containsNamespace(prop.getNamespaceURI())) {
@@ -543,15 +577,20 @@ public class DomXmpParser {
 		}
 		// test if namespace is defined
 		if (!tm.isDefinedSchema(prop.getNamespaceURI())) {
-			if (!tm.isStructuredTypeNamespace(prop.getNamespaceURI())) {
+			if (tm.isStructuredTypeNamespace(prop.getNamespaceURI())) {
+				// structured exists
+			} else if (tm.isDefinedTypeNamespace(prop.getNamespaceURI())) {
+				// defined
+			} else { 
+				// not existing
 				throw new XmpParsingException(ErrorType.NoSchema, "Cannot find a definition for the namespace "+prop.getNamespaceURI());
-			} // else structured exists
+			} 
 		}
-		String type = xmp.getTypeMapping().getSpecifiedPropertyType(prop);
-		if (type==null) {
-			throw new XmpParsingException(ErrorType.InvalidType,"No descriptor found for "+prop);
+		try {
+			return tm.getSpecifiedPropertyType(prop);
+		} catch (BadFieldValueException e) {
+			throw new XmpParsingException(ErrorType.InvalidType,"Failed to retreive property definition",e);
 		}
-		return type;
 	}
 
 

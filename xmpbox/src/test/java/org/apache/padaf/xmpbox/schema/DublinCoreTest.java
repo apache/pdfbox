@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -43,7 +44,7 @@ public class DublinCoreTest extends AbstractSchemaTester {
 		schema = xmp.createAndAddDublinCoreSchema();
 	}
 
-	public DublinCoreTest(String fieldName, String type, Cardinality card) {
+	public DublinCoreTest(String fieldName, Types type, Cardinality card) {
 		super(fieldName, type, card);
 	}
 
@@ -51,18 +52,18 @@ public class DublinCoreTest extends AbstractSchemaTester {
 	public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {"contributor","ProperName",Cardinality.Bag});
-    	result.add(new Object [] {"coverage","Text",Cardinality.Simple});
-    	result.add(new Object [] {"creator","ProperName",Cardinality.Seq});
-    	result.add(new Object [] {"date","Date",Cardinality.Seq});
-    	result.add(new Object [] {"format","MIMEType",Cardinality.Simple});
-    	result.add(new Object [] {"identifier","Text",Cardinality.Simple});
-    	result.add(new Object [] {"language","Locale",Cardinality.Bag});
-    	result.add(new Object [] {"publisher","ProperName",Cardinality.Bag});
-    	result.add(new Object [] {"relation","Text",Cardinality.Bag});
-    	result.add(new Object [] {"source","Text",Cardinality.Simple});
-    	result.add(new Object [] {"subject","Text",Cardinality.Bag});
-    	result.add(new Object [] {"type","Text",Cardinality.Bag});
+    	result.add(new Object [] {"contributor", Types.ProperName,Cardinality.Bag});
+    	result.add(new Object [] {"coverage",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"creator",Types.ProperName,Cardinality.Seq});
+    	result.add(new Object [] {"date",Types.Date,Cardinality.Seq});
+    	result.add(new Object [] {"format",Types.MIMEType,Cardinality.Simple});
+    	result.add(new Object [] {"identifier",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"language",Types.Locale,Cardinality.Bag});
+    	result.add(new Object [] {"publisher",Types.ProperName,Cardinality.Bag});
+    	result.add(new Object [] {"relation",Types.Text,Cardinality.Bag});
+    	result.add(new Object [] {"source",Types.Text,Cardinality.Simple});
+    	result.add(new Object [] {"subject",Types.Text,Cardinality.Bag});
+    	result.add(new Object [] {"type",Types.Text,Cardinality.Bag});
    	
     	return result;
 	}

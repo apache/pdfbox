@@ -27,7 +27,6 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 
 public abstract class AbstractStructuredType extends AbstractComplexProperty {
 
-	
 	protected static final  String STRUCTURE_ARRAY_NAME = "li"; 
 	
 	private String namespace;
@@ -132,7 +131,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty {
 		return getMetadata().getTypeMapping().createText(getNamespace(), getPrefix(), propertyName, value);
 	}
 
-	public ArrayProperty createArrayProperty (String propertyName, String type) {
+	public ArrayProperty createArrayProperty (String propertyName, Cardinality type) {
 		return getMetadata().getTypeMapping().createArrayProperty(getNamespace(), getPrefix(), propertyName, type);
 	}
 	

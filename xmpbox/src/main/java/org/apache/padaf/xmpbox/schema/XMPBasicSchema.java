@@ -30,12 +30,15 @@ import org.apache.padaf.xmpbox.type.AbstractField;
 import org.apache.padaf.xmpbox.type.AgentNameType;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.DateType;
 import org.apache.padaf.xmpbox.type.IntegerType;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 import org.apache.padaf.xmpbox.type.URLType;
 
 
@@ -48,37 +51,37 @@ import org.apache.padaf.xmpbox.type.URLType;
 @StructuredType(preferedPrefix="xmp",namespace="http://ns.adobe.com/xap/1.0/")
 public class XMPBasicSchema extends XMPSchema {
 
-	@PropertyType(propertyType = "bag Xpath")
+	@PropertyType(type = Types.XPath, card = Cardinality.Bag)
 	public static final String ADVISORY = "Advisory";
 
-	@PropertyType(propertyType = "URL")
+	@PropertyType(type = Types.URL, card = Cardinality.Simple)
 	public static final String BASEURL = "BaseURL";
 
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String CREATEDATE = "CreateDate";
 
-	@PropertyType(propertyType = "AgentName")
+	@PropertyType(type = Types.AgentName, card = Cardinality.Simple)
 	public static final String CREATORTOOL = "CreatorTool";
 
-	@PropertyType(propertyType = "bag Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Bag)
 	public static final String IDENTIFIER = "Identifier";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String LABEL = "Label";
 
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String METADATADATE = "MetadataDate";
 
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String MODIFYDATE = "ModifyDate";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String NICKNAME = "Nickname";
 
-	@PropertyType(propertyType = "Integer")
+	@PropertyType(type = Types.Integer, card = Cardinality.Simple)
 	public static final String RATING = "Rating";
 
-	@PropertyType(propertyType = "Alt Thumbnail")
+	@PropertyType(type = Types.Thumbnail, card = Cardinality.Alt)
 	public static final String THUMBNAILS = "Thumbnails";
 
 	private ArrayProperty altThumbs;
@@ -122,7 +125,7 @@ public class XMPBasicSchema extends XMPSchema {
 	public void addThumbnails(Integer height, Integer width, String format,
 			String img) {
 		if (altThumbs == null) {
-			altThumbs = createArrayProperty( THUMBNAILS, ArrayProperty.ALTERNATIVE_ARRAY);
+			altThumbs = createArrayProperty( THUMBNAILS, Cardinality.Alt);
 			addProperty(altThumbs);
 		}
 		ThumbnailType thumb = new ThumbnailType(getMetadata());

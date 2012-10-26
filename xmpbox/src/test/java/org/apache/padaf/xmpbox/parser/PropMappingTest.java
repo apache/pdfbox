@@ -42,23 +42,5 @@ public class PropMappingTest {
 		Assert.assertEquals(nsURI, propMap.getConcernedNamespace());
 	}
 
-	@Test
-	public void testPropMapAdding() {
-		String name = "propName";
-		String type = "PropType";
 
-		propMap.addNewProperty(name, type);
-		Assert.assertEquals(1, propMap.getPropertiesName().size());
-		Assert.assertEquals(name, propMap.getPropertiesName().get(0));
-		Assert.assertEquals(type, propMap.getPropertyType(name));
-
-	}
-
-	@Test
-	public void testPropMapAttr() {
-		String name = "propName";
-		String type = "PropType";
-
-		propMap.addNewProperty(name, type);
-	}
 }

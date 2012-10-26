@@ -40,7 +40,7 @@ public class TestJobType extends AbstractStructuredTypeTester{
 		structured = new JobType(xmp,"job");
 	}
 	
-	public TestJobType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestJobType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -54,9 +54,9 @@ public class TestJobType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {JobType.class,"id","Text"});
-    	result.add(new Object [] {JobType.class,"name","Text"});
-    	result.add(new Object [] {JobType.class,"url","URL"});
+    	result.add(new Object [] {JobType.class,"id",Types.Text});
+    	result.add(new Object [] {JobType.class,"name",Types.Text});
+    	result.add(new Object [] {JobType.class,"url",Types.URL});
     	
     	return result;
     	

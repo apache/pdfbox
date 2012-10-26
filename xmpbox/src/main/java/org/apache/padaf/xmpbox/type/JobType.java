@@ -26,13 +26,13 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 @StructuredType(preferedPrefix="stJob",namespace="http://ns.adobe.com/xap/1.0/sType/Job#")
 public class JobType extends AbstractStructuredType {
 
-    @PropertyType(propertyType="Text")
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String ID = "id";
 
-    @PropertyType(propertyType="Text")
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String NAME = "name";
 
-    @PropertyType(propertyType="URL")
+    @PropertyType(type = Types.URL, card = Cardinality.Simple)
     public static final String URL = "url";
 
 

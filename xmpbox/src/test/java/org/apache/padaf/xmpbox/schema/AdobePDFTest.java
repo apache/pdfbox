@@ -21,12 +21,16 @@
 
 package org.apache.padaf.xmpbox.schema;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.type.Cardinality;
+import org.apache.padaf.xmpbox.type.PropertyType;
+import org.apache.padaf.xmpbox.type.Types;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,14 +51,14 @@ public class AdobePDFTest extends AbstractXMPSchemaTest {
 	@Parameters
 	public static Collection<Object[]> initializeParameters() throws Exception {
 		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(wrapProperty("Keywords", "Text", "kw1 kw2 kw3"));
-		data.add(wrapProperty("PDFVersion", "Text", "1.4"));
-		data.add(wrapProperty("Producer", "Text", "testcase"));
-
+		data.add(wrapProperty("Keywords", Types.Text, "kw1 kw2 kw3"));
+		data.add(wrapProperty("PDFVersion", Types.Text, "1.4"));
+		data.add(wrapProperty("Producer", Types.Text, "testcase"));
+	
 		return data;
 	}
 
-	public AdobePDFTest(String property, String type, Object value) {
+	public AdobePDFTest(String property, PropertyType type, Object value) {
 		super(property, type, value);
 	}
 

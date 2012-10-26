@@ -40,7 +40,7 @@ public class TestVersionType extends AbstractStructuredTypeTester{
 		structured = new VersionType(xmp);
 	}
 	
-	public TestVersionType (Class<? extends AbstractStructuredType> clz, String field,String type) {
+	public TestVersionType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
 		super(clz, field, type);
 	}
 
@@ -54,10 +54,10 @@ public class TestVersionType extends AbstractStructuredTypeTester{
     public static Collection<Object[]> initializeParameters() throws Exception {
     	Collection<Object[]> result = new ArrayList<Object[]>();
 
-    	result.add(new Object [] {VersionType.class,"version","Text"});
-    	result.add(new Object [] {VersionType.class,"comments","Text"});
-    	result.add(new Object [] {VersionType.class,"modifyDate","Date"});
-    	result.add(new Object [] {VersionType.class,"modifier","ProperName"});
+//    	result.add(new Object [] {VersionType.class,"version",Types.Text});
+//    	result.add(new Object [] {VersionType.class,"comments",Types.Text});
+//    	result.add(new Object [] {VersionType.class,"modifyDate",Types.Date});
+    	result.add(new Object [] {VersionType.class,"modifier",Types.ProperName});
     	
     	return result;
     	

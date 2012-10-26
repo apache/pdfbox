@@ -23,8 +23,11 @@ package org.apache.padaf.xmpbox.schema;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.type.ArrayProperty;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 
 /**
  * Representation of a PDF/A Extension schema description schema
@@ -35,7 +38,7 @@ import org.apache.padaf.xmpbox.type.StructuredType;
 @StructuredType(preferedPrefix="pdfaExtension",namespace="http://www.aiim.org/pdfa/ns/extension/")
 public class PDFAExtensionSchema extends XMPSchema {
 
-    @PropertyType(propertyType = "bag PDFASchema")
+    @PropertyType(type = Types.PDFASchema, card = Cardinality.Bag)
     public static final String SCHEMAS = "schemas";
 
 

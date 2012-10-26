@@ -27,26 +27,29 @@ import javax.xml.XMLConstants;
 
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.padaf.xmpbox.type.Attribute;
+import org.apache.padaf.xmpbox.type.Cardinality;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
+import org.apache.padaf.xmpbox.type.TypeMapping;
+import org.apache.padaf.xmpbox.type.Types;
 
 
 @StructuredType(preferedPrefix="adn",namespace="http://test.apache.com/xap/adn/")
 public class BirthCertificateSchemaWithXMLDescriptions extends XMPSchema {
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String FIRST_NAME = "firstname";
 
-	@PropertyType(propertyType = "seq Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Seq)
 	public static final String LAST_NAME = "lastname";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String BIRTH_PLACE = "birth-place";
 
-	@PropertyType(propertyType = "Date")
+	@PropertyType(type = Types.Date, card = Cardinality.Simple)
 	public static final String BIRTH_DATE = "birth-date";
 
-	@PropertyType(propertyType = "Text")
+	@PropertyType(type = Types.Text, card = Cardinality.Simple)
 	public static final String BIRTH_COUNTRY = "birth-country";
 
 	public BirthCertificateSchemaWithXMLDescriptions(XMPMetadata metadata) {
