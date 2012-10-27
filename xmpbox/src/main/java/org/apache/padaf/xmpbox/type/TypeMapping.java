@@ -23,6 +23,7 @@ package org.apache.padaf.xmpbox.type;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -46,15 +47,15 @@ import org.apache.padaf.xmpbox.schema.XmpSchemaException;
 
 public final class TypeMapping {
 
-	private Map<Types, PropMapping> structuredMappings;
+	private Map<Types, PropertiesDescription> structuredMappings;
 
 	// ns -> type
 	private Map<String, Types> structuredNamespaces;
 
 	// ns -> type
 	private Map<String, String> definedStructuredNamespaces;
-	
-	private Map<String, PropMapping> definedStructuredMappings;
+
+	private Map<String, PropertiesDescription> definedStructuredMappings;
 
 	private XMPMetadata metadata;
 
@@ -77,23 +78,23 @@ public final class TypeMapping {
 
 	private void initialize () {
 		// structured types
-		structuredMappings = new HashMap<Types, PropMapping>();
+		structuredMappings = new HashMap<Types, PropertiesDescription>();
 		structuredNamespaces = new HashMap<String, Types>();
 		for (Types type : Types.values()) {
 			if (type.isStructured()) {
-				Class<?> clz = type.getImplementingClass();
+				Class<? extends AbstractStructuredType> clz = type.getImplementingClass().asSubclass(AbstractStructuredType.class);
 				StructuredType st = clz.getAnnotation(StructuredType.class);
 				String ns = st.namespace();
-				PropMapping pm = ReflectHelper.initializePropMapping(ns, clz);
+				PropertiesDescription pm = initializePropMapping(clz);
 				structuredNamespaces.put(ns, type);
 				structuredMappings.put(type, pm);
 			}
 		}
-		
+
 		// define structured types
 		definedStructuredNamespaces = new HashMap<String, String>();
-		definedStructuredMappings = new HashMap<String, PropMapping>();
-		
+		definedStructuredMappings = new HashMap<String, PropertiesDescription>();
+
 		// schema
 		schemaMap = new HashMap<String, XMPSchemaFactory>();
 		addNameSpace(XMPBasicSchema.class);
@@ -108,32 +109,24 @@ public final class TypeMapping {
 
 	}
 
-	public void addToDefinedStructuredTypes (String typeName, String ns, PropMapping pm) {
+	public void addToDefinedStructuredTypes (String typeName, String ns, PropertiesDescription pm) {
 		definedStructuredNamespaces.put(ns, typeName);
 		definedStructuredMappings.put(typeName, pm);
 	}
 
-	public String getDefinedDescriptionByNamespace (String namespace) {
-		return this.definedStructuredNamespaces.get(namespace);
+	public PropertiesDescription getDefinedDescriptionByNamespace (String namespace) {
+		String dt = definedStructuredNamespaces.get(namespace);
+		return this.definedStructuredMappings.get(dt);
 	}
 
-	public PropMapping getDefinedPropMapping (String name) {
-		return this.definedStructuredMappings.get(name);
-	}
-	
-	public AbstractStructuredType instanciateStructuredType (Types type, String typeName, String propertyName) throws BadFieldValueException {
+	public AbstractStructuredType instanciateStructuredType (Types type, String propertyName) throws BadFieldValueException {
 		try {
-			if (type==Types.DefinedType) {
-				PropMapping pm = definedStructuredMappings.get(typeName);
-				return new DefinedStructuredType(metadata, pm.getConcernedNamespace(), null, propertyName);
-			} else {
-				Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(AbstractStructuredType.class);
-				Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {
-						XMPMetadata.class});
-				AbstractStructuredType tmp = construct.newInstance(metadata);
-				tmp.setPropertyName(propertyName);
-				return tmp;
-			}
+			Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(AbstractStructuredType.class);
+			Constructor<? extends AbstractStructuredType> construct = propertyTypeClass.getConstructor(new Class<?> [] {
+					XMPMetadata.class});
+			AbstractStructuredType tmp = construct.newInstance(metadata);
+			tmp.setPropertyName(propertyName);
+			return tmp;
 		} catch (InvocationTargetException e) {
 			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} catch (IllegalArgumentException e) {
@@ -148,6 +141,12 @@ public final class TypeMapping {
 			throw new BadFieldValueException("Failed to instanciate structured type : "+type,e);
 		} 
 	}
+
+	public AbstractStructuredType instanciateDefinedType (String propertyName, String namespace)  {
+		return new DefinedStructuredType(metadata, namespace, null, propertyName);
+	}
+
+
 
 	public AbstractSimpleProperty instanciateSimpleProperty (String nsuri, String prefix, String name, Object value, Types type) {
 		// constructor parameters
@@ -180,8 +179,9 @@ public final class TypeMapping {
 		}
 	}
 
+
 	public  AbstractSimpleProperty instanciateSimpleField (Class<?> clz, String nsuri, String prefix,String propertyName, Object value) {
-		PropMapping pm = ReflectHelper.initializePropMapping(null, clz);
+		PropertiesDescription pm = initializePropMapping(clz);
 		PropertyType simpleType = pm.getPropertyType(propertyName);
 		Types type = simpleType.type();
 		return instanciateSimpleProperty(nsuri, prefix, propertyName, value, type);
@@ -203,15 +203,15 @@ public final class TypeMapping {
 		return definedStructuredNamespaces.containsKey(namespace);
 	}
 
-//	public String getTypeInArray (String type) {
-//		int pos = type.indexOf(' ');
-//		if (pos<0) {
-//			// not array
-//			return null;
-//		} else {
-//			return type.substring(pos+1);
-//		}
-//	}
+	//	public String getTypeInArray (String type) {
+	//		int pos = type.indexOf(' ');
+	//		if (pos<0) {
+	//			// not array
+	//			return null;
+	//		} else {
+	//			return type.substring(pos+1);
+	//		}
+	//	}
 
 	public boolean isDefinedType (String name) {
 		return this.definedStructuredMappings.containsKey(name);
@@ -220,18 +220,18 @@ public final class TypeMapping {
 	private void addNameSpace(Class<? extends XMPSchema> classSchem) {
 		StructuredType st = classSchem.getAnnotation(StructuredType.class);
 		String ns = st.namespace();
-		schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem,	ReflectHelper.initializePropMapping(ns, classSchem)));
+		schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem,	initializePropMapping(classSchem)));
 	}
 
 	public void addNewNameSpace(String ns,String prefered) {
-		PropMapping mapping = new PropMapping(ns);
+		PropertiesDescription mapping = new PropertiesDescription();
 		schemaMap.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
 	}
 
-	public PropMapping getStructuredPropMapping (Types type) {
+	public PropertiesDescription getStructuredPropMapping (Types type) {
 		return structuredMappings.get(type);
 	}
-	
+
 	/**
 	 * Return the specialized schema class representation if it's known (create
 	 * and add it to metadata). In other cases, return null
@@ -269,6 +269,10 @@ public final class TypeMapping {
 		return schemaMap.containsKey(namespace);
 	}
 
+	public boolean isDefinedNamespace (String namespace) {
+		return isDefinedSchema(namespace) || isStructuredTypeNamespace(namespace)||isDefinedTypeNamespace(namespace);
+	}
+
 	/**
 	 * Give type of specified property in specified schema (given by its
 	 * namespaceURI)
@@ -300,6 +304,26 @@ public final class TypeMapping {
 		}
 	}
 
+	public PropertiesDescription initializePropMapping(Class<?> classSchem) {
+		PropertiesDescription propMap = new PropertiesDescription();
+		Field [] fields = classSchem.getFields();
+		String propName = null;
+		for (Field field : fields) {
+			if (field.isAnnotationPresent(PropertyType.class)) {
+				try {
+					propName = (String) field.get(propName);
+				} catch (Exception e) {
+					throw new IllegalArgumentException(
+							"couldn't read one type declaration, please check accessibility and declaration of fields annoted in "
+									+ classSchem.getName(), e);
+				}
+				PropertyType propType = field.getAnnotation(PropertyType.class);
+				propMap.addNewProperty(propName, propType);
+			}
+		}
+		return propMap;
+	}
+	
 	public BooleanType createBoolean (String namespaceURI, String prefix,
 			String propertyName, boolean value) {
 		return new BooleanType(metadata, namespaceURI, prefix,propertyName, value);

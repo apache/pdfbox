@@ -16,7 +16,7 @@ import org.apache.padaf.xmpbox.type.PDFAFieldType;
 import org.apache.padaf.xmpbox.type.PDFAPropertyType;
 import org.apache.padaf.xmpbox.type.PDFASchemaType;
 import org.apache.padaf.xmpbox.type.PDFATypeType;
-import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.PropertiesDescription;
 import org.apache.padaf.xmpbox.type.PropertyType;
 import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.padaf.xmpbox.type.TypeMapping;
@@ -127,12 +127,10 @@ public final class PdfaExtensionHelper {
 										}
 									}
 									// add the structured type to list
-//									TypeDescription<AbstractStructuredType> td = new TypeDescription<AbstractStructuredType>(tm,Types.DefinedType);
-									PropMapping pm = new PropMapping(structuredType.getNamespace());
+									PropertiesDescription pm = new PropertiesDescription();
 									for (Map.Entry<String, PropertyType> entry : structuredType.getDefinedProperties().entrySet()) {
 										pm.addNewProperty(entry.getKey(), entry.getValue());
 									}
-//									td.setProperties(pm);
 									tm.addToDefinedStructuredTypes(ttype, tns,pm);
 								}
 							}	
@@ -184,7 +182,6 @@ public final class PdfaExtensionHelper {
 			} else if ("alt".equals(scard)) {
 				card = Cardinality.Alt;
 			} else {
-//				throw new XmpParsingException(ErrorType.NoValueType, "Invalid type definition : "+valueType);
 				return null;
 			}
 		}
@@ -194,7 +191,6 @@ public final class PdfaExtensionHelper {
 			type = pos<0?Types.valueOf(valueType):Types.valueOf(vt);
 		} catch (IllegalArgumentException e) {
 			if (tm.isDefinedType(vt)) {
-//				type = tm.getDefinedDescription(vt).getType();
 				type = Types.DefinedType;
 			}
 		}

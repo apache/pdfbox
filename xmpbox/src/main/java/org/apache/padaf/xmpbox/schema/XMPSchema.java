@@ -55,8 +55,6 @@ import org.apache.padaf.xmpbox.type.Types;
  */
 public class XMPSchema extends AbstractStructuredType {
 
-	public static final String RDFABOUT = "about";
-
 	/**
 	 * Create a new blank schema that can be populated.
 	 * 
@@ -111,7 +109,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return The RDF 'about' attribute.
 	 */
 	public Attribute getAboutAttribute() {
-		return getAttribute(RDFABOUT);
+		return getAttribute(XmpConstants.ABOUT_NAME);
 	}
 
 	/**
@@ -120,7 +118,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return The RDF 'about' value.
 	 */
 	public String getAboutValue() {
-		Attribute prop = getAttribute(RDFABOUT);
+		Attribute prop = getAttribute(XmpConstants.ABOUT_NAME);
 		if (prop != null) {
 			return prop.getValue();
 		}
@@ -137,7 +135,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public void setAbout(Attribute about) throws BadFieldValueException {
 		if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace())) {
-			if (RDFABOUT.equals(about.getName())) {
+			if (XmpConstants.ABOUT_NAME.equals(about.getName())) {
 				setAttribute(about);
 				return;
 			}
@@ -155,9 +153,9 @@ public class XMPSchema extends AbstractStructuredType {
 	 */
 	public void setAboutAsSimple(String about) {
 		if (about == null) {
-			removeAttribute(RDFABOUT);
+			removeAttribute(XmpConstants.ABOUT_NAME);
 		} else {
-			setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "about", about));
+			setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, XmpConstants.ABOUT_NAME, about));
 
 		}
 	}
@@ -635,7 +633,7 @@ public class XMPSchema extends AbstractStructuredType {
 
 	private void internalAddBagValue(String qualifiedBagName, String bagValue) {
 		ArrayProperty bag = (ArrayProperty) getAbstractProperty(qualifiedBagName);
-		TextType li = createTextType ( "li", bagValue);
+		TextType li = createTextType ( XmpConstants.LIST_NAME, bagValue);
 		if (bag != null) {
 			bag.getContainer().addProperty(li);
 		} else {
@@ -745,7 +743,7 @@ public class XMPSchema extends AbstractStructuredType {
 	public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue) {
 		String qualifiedSeqName = simpleSeqName;
 		ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
-		TextType li = createTextType ( "li", seqValue);
+		TextType li = createTextType ( XmpConstants.LIST_NAME, seqValue);
 		if (seq != null) {
 			seq.getContainer().addProperty(li);
 		} else {
@@ -870,7 +868,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 *            The date to add to the sequence property.
 	 */
 	public void addUnqualifiedSequenceDateValue(String seqName, Calendar date) {
-		addUnqualifiedSequenceValue(seqName, getMetadata().getTypeMapping().createDate(null, "rdf", "li", date));
+		addUnqualifiedSequenceValue(seqName, getMetadata().getTypeMapping().createDate(null, XmpConstants.DEFAULT_RDF_LOCAL_NAME, XmpConstants.LIST_NAME, date));
 	}
 
 	/**
@@ -916,16 +914,16 @@ public class XMPSchema extends AbstractStructuredType {
 		boolean xdefaultFound = false;
 		// If alternatives contains x-default in first value
 		if (it.hasNext()) {
-			if (it.next().getAttribute("lang").getValue().equals(
-					"x-default")) {
+			if (it.next().getAttribute(XmpConstants.LANG_NAME).getValue().equals(
+					XmpConstants.X_DEFAULT)) {
 				return;
 			}
 		}
 		// Find the xdefault definition
 		while (it.hasNext() && !xdefaultFound) {
 			xdefault = it.next();
-			if (xdefault.getAttribute("lang").getValue()
-					.equals("x-default")) {
+			if (xdefault.getAttribute(XmpConstants.LANG_NAME).getValue()
+					.equals(XmpConstants.X_DEFAULT)) {
 				alt.removeProperty(xdefault);
 				xdefaultFound = true;
 			}
@@ -982,7 +980,7 @@ public class XMPSchema extends AbstractStructuredType {
 				while (itCplx.hasNext()) {
 					tmp = itCplx.next();
 					// System.err.println(tmp.getAttribute("xml:lang").getStringValue());
-					if (tmp.getAttribute("lang").getValue()
+					if (tmp.getAttribute(XmpConstants.LANG_NAME).getValue()
 							.equals(language)) {
 						// the same language has been found
 						if (value == null) {
@@ -991,10 +989,10 @@ public class XMPSchema extends AbstractStructuredType {
 						} else {
 							prop.getContainer().removeProperty(tmp);
 							TextType langValue;
-							langValue = createTextType ( "li",value);
+							langValue = createTextType ( XmpConstants.LIST_NAME,value);
 
 							langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI,
-									"lang", language));
+									XmpConstants.LANG_NAME, language));
 							prop.getContainer().addProperty(langValue);
 						}
 						reorganizeAltOrder(prop.getContainer());
@@ -1003,8 +1001,8 @@ public class XMPSchema extends AbstractStructuredType {
 				}
 				// if no definition found, we add a new one
 				TextType langValue;
-				langValue = createTextType ( "li", value);
-				langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, "lang",
+				langValue = createTextType ( XmpConstants.LIST_NAME, value);
+				langValue.setAttribute(new Attribute(XMLConstants.XML_NS_URI, XmpConstants.LANG_NAME,
 						language));
 				prop.getContainer().addProperty(langValue);
 				reorganizeAltOrder(prop.getContainer());
@@ -1012,9 +1010,9 @@ public class XMPSchema extends AbstractStructuredType {
 		} else {
 			prop = createArrayProperty( name,Cardinality.Alt);
 			TextType langValue;
-			langValue = createTextType ( "li", value);
+			langValue = createTextType ( XmpConstants.LIST_NAME, value);
 			langValue
-			.setAttribute(new Attribute(XMLConstants.XML_NS_URI, "lang", language));
+			.setAttribute(new Attribute(XMLConstants.XML_NS_URI, XmpConstants.LANG_NAME, language));
 			prop.getContainer().addProperty(langValue);
 			addProperty(prop);
 		}
@@ -1032,7 +1030,7 @@ public class XMPSchema extends AbstractStructuredType {
 	 * @return The value of the language property.
 	 */
 	public String getUnqualifiedLanguagePropertyValue(String name, String expectedLanguage) {
-		String language = (expectedLanguage!=null)?expectedLanguage:"x-default";
+		String language = (expectedLanguage!=null)?expectedLanguage:XmpConstants.X_DEFAULT;
 		AbstractField property = getAbstractProperty(name);
 		if (property != null) {
 			if (property instanceof ArrayProperty) {
@@ -1043,7 +1041,7 @@ public class XMPSchema extends AbstractStructuredType {
 				Attribute text;
 				while (langsDef.hasNext()) {
 					tmp = langsDef.next();
-					text = tmp.getAttribute("lang");
+					text = tmp.getAttribute(XmpConstants.LANG_NAME);
 					if (text != null) {
 						if (text.getValue().equals(language)) {
 							return ((TextType) tmp).getStringValue();
@@ -1083,11 +1081,11 @@ public class XMPSchema extends AbstractStructuredType {
 				Attribute text;
 				while (langsDef.hasNext()) {
 					tmp = langsDef.next();
-					text = tmp.getAttribute("lang");
+					text = tmp.getAttribute(XmpConstants.LANG_NAME);
 					if (text != null) {
 						retval.add(text.getValue());
 					} else {
-						retval.add("x-default");
+						retval.add(XmpConstants.X_DEFAULT);
 					}
 				}
 				return retval;

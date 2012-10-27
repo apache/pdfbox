@@ -37,6 +37,20 @@ public final class XmpConstants {
 	public static final String DEFAULT_RDF_PREFIX = "rdf";
 
 	public static final String DEFAULT_RDF_LOCAL_NAME = "RDF";
+	
+	public static final String LIST_NAME = "li";
+	
+	public static final String LANG_NAME = "lang";
+	
+	public static final String ABOUT_NAME = "about";
+	
+	public static final String DESCRIPTION_NAME = "Description";
+	
+	public static final String RESOURCE_NAME = "Resource";
+	
+	public static final String PARSE_TYPE = "parseType";
+	
+	public static final String X_DEFAULT = "x-default";
 
 	private XmpConstants () {
 		// hide constructor

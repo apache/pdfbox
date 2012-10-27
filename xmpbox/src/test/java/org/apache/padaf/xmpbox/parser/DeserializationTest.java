@@ -30,6 +30,8 @@ import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.xml.DomXmpParser;
+import org.apache.padaf.xmpbox.xml.XmpParsingException;
+import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +46,7 @@ public class DeserializationTest {
 	}
 
 
-	
+
 	@Test
 	public void testStructuredRecursive () throws Exception {
 		InputStream fis = DomXmpParser.class
@@ -53,7 +55,7 @@ public class DeserializationTest {
 		DomXmpParser xdb = new DomXmpParser();
 
 		xdb.parse(fis);
-		
+
 	}
 
 	@Test
@@ -64,7 +66,7 @@ public class DeserializationTest {
 		DomXmpParser xdb = new DomXmpParser();
 
 		xdb.parse(fis);
-		
+
 	}
 
 	@Test
@@ -92,7 +94,7 @@ public class DeserializationTest {
 		Assert.assertEquals("title value", s);
 	}
 
-	
+
 	@Test
 	public void testAltBagSeq() throws Exception {
 		InputStream fis = DomXmpParser.class
@@ -152,6 +154,133 @@ public class DeserializationTest {
 		Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
 
+	}
+
+
+	@Test
+	public void testWithNoXPacketStart () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/noxpacket.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.XpacketBadStart, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testWithNoXPacketEnd () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/noxpacketend.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testWithNoRDFElement () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/noroot.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.Format, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testWithTwoRDFElement () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/tworoot.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.Format, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testWithInvalidRDFElementPrefix () throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/invalidroot2.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.Format, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testWithRDFRootAsText() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/invalidroot.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.Format, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testUndefinedSchema() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/undefinedschema.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.NoSchema, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testUndefinedPropertyWithDefinedSchema() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/undefinedpropertyindefinedschema.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.NoType, e.getErrorType());
+		}
+	}
+
+	@Test
+	public void testUndefinedStructuredWithDefinedSchema() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/invalidxmp/undefinedstructuredindefinedschema.xml");
+
+		DomXmpParser xdb = new DomXmpParser();
+		try {
+			xdb.parse(fis);
+			Assert.fail("Should fail during parse");
+		} catch (XmpParsingException e) {
+			Assert.assertEquals(ErrorType.NoValueType, e.getErrorType());
+		}
 	}
 
 }

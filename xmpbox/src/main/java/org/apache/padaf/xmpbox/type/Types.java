@@ -62,6 +62,10 @@ public enum Types {
 		return basic==Structured;
 	}
 	
+	public boolean isDefined() {
+		return this==DefinedType;
+	}
+	
 	public Types getBasic () {
 		return basic;
 	}

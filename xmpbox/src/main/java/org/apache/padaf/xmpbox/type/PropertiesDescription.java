@@ -36,9 +36,7 @@ import java.util.Map;
  *         Attribute management pre-implemented in order to give clues to make
  *         an attribute management system
  */
-public class PropMapping {
-
-	private String namespace;
+public class PropertiesDescription {
 
 	private Map<String, PropertyType> types;
 
@@ -49,18 +47,8 @@ public class PropMapping {
 	 * @param namespace
 	 *            namespace URI concerned by this PropMapping
 	 */
-	public PropMapping(String namespace) {
-		this.namespace = namespace;
+	public PropertiesDescription() {
 		types = new HashMap<String, PropertyType>();
-	}
-
-	/**
-	 * Give the NS URI associated to this Property Description
-	 * 
-	 * @return the namespace URI concerned by this PropMapping
-	 */
-	public String getConcernedNamespace() {
-		return namespace;
 	}
 
 	/**
@@ -98,8 +86,4 @@ public class PropMapping {
 		return types.get(name);
 	}
 
-	public boolean containsKey (String name) {
-		return types.containsKey(name);
-	}
-	
 }

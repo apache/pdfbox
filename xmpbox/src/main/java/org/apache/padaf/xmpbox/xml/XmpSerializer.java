@@ -109,7 +109,7 @@ public class XmpSerializer {
 				// attributes
 				fillElementWithAttributes(asimple, array);
 				// the array definition
-				Element econtainer = doc.createElement("rdf"+":"+array.getArrayType()); 
+				Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX+":"+array.getArrayType()); 
 				asimple.appendChild(econtainer);
 				// for each element of the array
 				List<AbstractField> innerFields = array.getAllProperties();
@@ -126,7 +126,7 @@ public class XmpSerializer {
 				}
 
 				// element li
-				Element estructured = doc.createElement("rdf"+":"+"li");
+				Element estructured = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX+":"+XmpConstants.LIST_NAME);
 				listParent.appendChild(estructured);
 				if (parseTypeResourceForLi) {
 					estructured.setAttribute("rdf:parseType", "Resource");
@@ -134,7 +134,7 @@ public class XmpSerializer {
 					serializeFields(doc, estructured, innerFields, true);
 				} else {
 					// element description
-					Element econtainer = doc.createElement("rdf"+":"+"Description");
+					Element econtainer = doc.createElement(XmpConstants.DEFAULT_RDF_PREFIX+":"+"Description");
 					estructured.appendChild(econtainer);
 					// all properties
 					serializeFields(doc, econtainer, innerFields, true);
@@ -153,7 +153,7 @@ public class XmpSerializer {
 			if (target.getNamespaceURI().equals(attribute.getNamespace())) {
 				target.setAttribute(attribute.getName(), attribute.getValue());
 			} else if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
-				target.setAttribute("rdf"+":"+attribute.getName(), attribute.getValue());
+				target.setAttribute(XmpConstants.DEFAULT_RDF_PREFIX+":"+attribute.getName(), attribute.getValue());
 			} else {
 				target.setAttribute(attribute.getName(), attribute.getValue());
 			}
