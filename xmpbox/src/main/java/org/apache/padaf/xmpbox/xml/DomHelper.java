@@ -58,12 +58,12 @@ public final class DomHelper {
 	}
 
 	public static boolean isRdfDescription (Element element) {
-		return ("rdf".equals(element.getPrefix()) && "Description".equals(element.getLocalName()));
+		return (XmpConstants.DEFAULT_RDF_PREFIX.equals(element.getPrefix()) && XmpConstants.DESCRIPTION_NAME.equals(element.getLocalName()));
 	}
 
 	public static boolean isParseTypeResource (Element element) {
-		Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, "parseType");
-		if (parseType!=null && "Resource".equals(parseType.getValue())) {
+		Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, XmpConstants.PARSE_TYPE);
+		if (parseType!=null && XmpConstants.RESOURCE_NAME.equals(parseType.getValue())) {
 			// parseType resourc
 			return true;
 		}

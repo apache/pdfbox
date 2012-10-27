@@ -22,11 +22,9 @@
 package org.apache.padaf.xmpbox.schema;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.PropertiesDescription;
 import org.apache.padaf.xmpbox.type.PropertyType;
 
 
@@ -42,11 +40,9 @@ public class XMPSchemaFactory {
 	
 	private Class<? extends XMPSchema> schemaClass;
 	
-	private PropMapping propDef;
+	private PropertiesDescription propDef;
 	
 	private String nsName;
-	
-	private List<PropMapping> importedPropertyMapping = new ArrayList<PropMapping>();
 	
 	/**
 	 * Factory Constructor for basic known schemas
@@ -59,21 +55,12 @@ public class XMPSchemaFactory {
 	 *            Properties Types list associated
 	 */
 	public XMPSchemaFactory(String namespace,
-			Class<? extends XMPSchema> schemaClass, PropMapping propDef) {
+			Class<? extends XMPSchema> schemaClass, PropertiesDescription propDef) {
 		this.namespace = namespace;
 		this.schemaClass = schemaClass;
 		this.propDef = propDef;
 	}
 
-	public void importXMPSchemaFactory(XMPSchemaFactory externalFactory) 
-	throws XmpSchemaException {
-		if (!this.namespace.equals(externalFactory.namespace)) {
-			throw new XmpSchemaException("Unable to import a XMPSchemaFactory if the namespace is different." +
-					" - expected : " + this.namespace + " - import : " + externalFactory.namespace);
-		}
-		this.importedPropertyMapping.add(externalFactory.propDef);
-	}
-	
 	/**
 	 * Get namespace URI treated by this factory
 	 * 
@@ -91,16 +78,7 @@ public class XMPSchemaFactory {
 	 * @return null if propery name is unknown
 	 */
 	public PropertyType getPropertyType(String name) {
-		PropertyType result = propDef.getPropertyType(name);
-		if (result == null) {
-			for (PropMapping mapping : importedPropertyMapping) {
-				result = mapping.getPropertyType(name);
-				if (result != null) {
-					break;
-				}
-			}
-		}
-		return result;
+		return propDef.getPropertyType(name);
 	}
 
 	/**
@@ -145,7 +123,7 @@ public class XMPSchemaFactory {
 		}
 	}
 
-	public PropMapping getPropertyDefinition () {
+	public PropertiesDescription getPropertyDefinition () {
 		return this.propDef;
 	}
 

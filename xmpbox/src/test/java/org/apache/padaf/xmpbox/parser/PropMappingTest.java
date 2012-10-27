@@ -23,23 +23,18 @@ package org.apache.padaf.xmpbox.parser;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.type.PropMapping;
+import org.apache.padaf.xmpbox.type.PropertiesDescription;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PropMappingTest {
 
-	protected PropMapping propMap;
+	protected PropertiesDescription propMap;
 	protected String nsURI = "http://www.test.org/PropMap#";
 
 	@Before
 	public void init() {
-		propMap = new PropMapping(nsURI);
-	}
-
-	@Test
-	public void testURI() {
-		Assert.assertEquals(nsURI, propMap.getConcernedNamespace());
+		propMap = new PropertiesDescription();
 	}
 
 

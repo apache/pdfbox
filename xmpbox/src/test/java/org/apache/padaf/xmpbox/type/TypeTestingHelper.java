@@ -70,7 +70,7 @@ public final class TypeTestingHelper {
     	} else if (TextType.class.isAssignableFrom(type.getImplementingClass())) {
     		return String.class;
     	} else {
-    		throw new IllegalArgumentException("TODO : type not expected in test : "+type.getImplementingClass());
+    		throw new IllegalArgumentException("Type not expected in test : "+type.getImplementingClass());
     	}
     }
     
@@ -89,7 +89,7 @@ public final class TypeTestingHelper {
     		// all derived from TextType
     		return UUID.randomUUID().toString();
     	} else {
-    		throw new IllegalArgumentException("TODO : type not expected in test : "+type.getImplementingClass());
+    		throw new IllegalArgumentException("Type not expected in test : "+type.getImplementingClass());
     	}
     }
 
