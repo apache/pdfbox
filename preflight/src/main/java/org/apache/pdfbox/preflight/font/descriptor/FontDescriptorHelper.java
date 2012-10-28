@@ -23,12 +23,10 @@ package org.apache.pdfbox.preflight.font.descriptor;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DESCRIPTOR_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_CATEGORY_PROPERTY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_STREAM;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_UNKOWN;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_XPACKET;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_ASCENT;
@@ -48,13 +46,9 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.parser.XmpExpectedRdfAboutAttribute;
-import org.apache.padaf.xmpbox.parser.XmpParsingException;
-import org.apache.padaf.xmpbox.parser.XmpSchemaException;
-import org.apache.padaf.xmpbox.parser.XmpUnknownValueTypeException;
-import org.apache.padaf.xmpbox.parser.XmpXpacketEndException;
-import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.xml.DomXmpParser;
+import org.apache.padaf.xmpbox.xml.XmpParsingException;
+import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -160,7 +154,7 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 
 				try {
 
-					XMPDocumentBuilder xmpBuilder = new XMPDocumentBuilder();
+					DomXmpParser xmpBuilder = new DomXmpParser();
 					XMPMetadata xmpMeta = xmpBuilder.parse(mdAsBytes);
 
 					FontMetaDataValidation fontMDval = new FontMetaDataValidation();
@@ -169,18 +163,14 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 					fontMDval.analyseRights(xmpMeta, fontDescriptor, ve);
 					this.fContainer.push(ve);
 
-				} catch (XmpUnknownValueTypeException e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage()));
 				} catch (XmpParsingException e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT, e.getMessage()));
-				} catch (XmpSchemaException e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT, e.getMessage()));
-				} catch (XmpExpectedRdfAboutAttribute e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_MISSING,e.getMessage()));
-				} catch (BadFieldValueException e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_CATEGORY_PROPERTY_INVALID,e.getMessage()));
-				} catch (XmpXpacketEndException e) {
-					this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_XPACKET, "Unable to parse font metadata due to : "  + e.getMessage()));
+					if (e.getErrorType()==ErrorType.NoValueType) {
+						this.fContainer.push(new ValidationError(ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage()));
+					} else if (e.getErrorType()==ErrorType.XpacketBadEnd) {
+						this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_XPACKET, "Unable to parse font metadata due to : "  + e.getMessage()));
+					} else {
+						this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT, e.getMessage()));
+					}
 				}
 			}
 		} catch (IllegalStateException e) {

@@ -27,8 +27,6 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * Class which all elements within an rdf:RDF have the same value for their
@@ -55,34 +53,17 @@ public class RDFAboutAttributeConcordanceValidation {
           "Schemas not found in the given metadata representation");
     }
     String about = schemas.get(0).getAboutValue();
-    // rdf:description must have an about attribute, it has been checked during
-    // parsing
-    Element e;
+    // rdf:description must have an rdf:about attribute
     for (XMPSchema xmpSchema : schemas) {
-      e = xmpSchema.getElement();
-      checkRdfAbout(about, e);
+      checkRdfAbout(about, xmpSchema);
     }
 
   }
 
-  private void checkRdfAbout(String about, Element e)
+  private void checkRdfAbout(String about, XMPSchema xmpSchema)
       throws DifferentRDFAboutException {
-    // System.out.println(e.getTagName());
-    // TODO check if it need to test the 2 possibilities
-    if (!e.getAttribute("rdf:about").equals(about)) {
+    if (!about.equals(xmpSchema.getAboutValue())) {
       throw new DifferentRDFAboutException();
-    }
-    if (!e.getAttribute("about").equals(about)) {
-      throw new DifferentRDFAboutException();
-    }
-    if (e.hasChildNodes()) {
-      NodeList children = e.getChildNodes();
-      int size = children.getLength();
-      for (int i = 0; i < size; i++) {
-        if (children.item(i) instanceof Element) {
-          checkRdfAbout(about, (Element) children.item(i));
-        }
-      }
     }
   }
 
