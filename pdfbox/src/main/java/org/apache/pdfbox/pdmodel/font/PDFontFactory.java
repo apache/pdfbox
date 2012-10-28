@@ -77,12 +77,16 @@ public class PDFontFactory
         PDFont retval = null;
 
         COSName type = (COSName)dic.getDictionaryObject( COSName.TYPE );
-        if( !type.equals( COSName.FONT ) )
+        if( type != null && !COSName.FONT.equals( type ) )
         {
             throw new IOException( "Cannot create font if /Type is not /Font.  Actual=" +type );
         }
 
         COSName subType = (COSName)dic.getDictionaryObject( COSName.SUBTYPE );
+        if (subType == null) 
+        {
+            throw new IOException( "Cannot create font as /SubType is not set." );
+        }
         if( subType.equals( COSName.TYPE1) )
         {
             retval = new PDType1Font( dic );
@@ -113,8 +117,7 @@ public class PDFontFactory
         }
         else
         {
-            LOG.warn("Substituting TrueType for unknown font subtype=" + 
-                    dic.getDictionaryObject( COSName.SUBTYPE ).toString());
+            LOG.warn("Substituting TrueType for unknown font subtype=" + subType.getName());
             retval = new PDTrueTypeFont( dic );
         }
         return retval;
