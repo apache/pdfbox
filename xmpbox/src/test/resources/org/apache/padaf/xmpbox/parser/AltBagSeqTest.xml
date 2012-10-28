@@ -1,0 +1,188 @@
+<!-- ! Licensed to the Apache Software Foundation (ASF) under one or more 
+	! contributor license agreements. See the NOTICE file distributed with ! 
+	this work for additional information regarding copyright ownership. ! The 
+	ASF licenses this file to You under the Apache License, Version 2.0 ! (the 
+	"License"); you may not use this file except in compliance with ! the License. 
+	You may obtain a copy of the License at ! ! http://www.apache.org/licenses/LICENSE-2.0 
+	! ! Unless required by applicable law or agreed to in writing, software ! 
+	distributed under the License is distributed on an "AS IS" BASIS, ! WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ! See the 
+	License for the specific language governing permissions and ! limitations 
+	under the License. ! -->
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		<rdf:Description rdf:about=""
+			xmlns:dc="http://purl.org/dc/elements/1.1/">
+			<dc:format>application/pdf</dc:format>
+			<dc:description>
+				<rdf:Alt>
+					<rdf:li>sujet</rdf:li>
+				</rdf:Alt>
+			</dc:description>
+			<dc:title>
+				<rdf:Alt>
+					<rdf:li>titre</rdf:li>
+				</rdf:Alt>
+			</dc:title>
+			<dc:subject>
+				<rdf:Bag>
+					<rdf:li>sujet</rdf:li>
+				</rdf:Bag>
+			</dc:subject>
+			<dc:creator>
+				<rdf:Seq>
+					<rdf:li>createur</rdf:li>
+				</rdf:Seq>
+			</dc:creator>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+			<pdf:Producer>producer</pdf:Producer>
+			<pdf:Keywords>mots clefs</pdf:Keywords>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+			<xmp:CreateDate>2010-03-10T14:14:45+01:00</xmp:CreateDate>
+			<xmp:ModifyDate>2010-03-10T14:14:45+01:00</xmp:ModifyDate>
+			<xmp:CreatorTool>Outil de creation</xmp:CreatorTool>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/">
+			<pdfaid:conformance>B</pdfaid:conformance>
+			<pdfaid:part>1</pdfaid:part>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+			xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
+			xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#">
+			<pdfaExtension:schemas>
+				<rdf:Bag>
+					<rdf:li rdf:parseType="Resource">
+						<pdfaSchema:property>
+							<rdf:Seq>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>nom</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Nom de la personne concernée par la
+										demande</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>prenom</pdfaProperty:name>
+									<pdfaProperty:valueType>seq Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Prenom de la personne concernée par
+										la demande</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>dateNaissance</pdfaProperty:name>
+									<pdfaProperty:valueType>Date</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Date de naissance de la personne
+										concernée par la demande</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>codePays</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Code du pays de la personne concernée</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>pays</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Pays de la personne concernée</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>cdp</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Code postal de la personne concernée</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>ville</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Nom de la ville de la personne
+										concernée</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>dpt</pdfaProperty:name>
+									<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Departement de la personne concernée</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>bagTest</pdfaProperty:name>
+									<pdfaProperty:valueType>bag Text</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Test bag</pdfaProperty:description>
+								</rdf:li>
+								<rdf:li rdf:parseType="Resource">
+									<pdfaProperty:name>LangAltTest</pdfaProperty:name>
+									<pdfaProperty:valueType>Lang Alt</pdfaProperty:valueType>
+									<pdfaProperty:category>external</pdfaProperty:category>
+									<pdfaProperty:description>Test Lang alt</pdfaProperty:description>
+								</rdf:li>
+							</rdf:Seq>
+						</pdfaSchema:property>
+						<pdfaSchema:schema>Schema Acte de naissance</pdfaSchema:schema>
+						<pdfaSchema:namespaceURI>http://test.apache.com/xap/adn/</pdfaSchema:namespaceURI>
+						<pdfaSchema:prefix>adn</pdfaSchema:prefix>
+					</rdf:li>
+				</rdf:Bag>
+			</pdfaExtension:schemas>
+		</rdf:Description>
+		<rdf:Description rdf:about=""
+			xmlns:adn="http://test.apache.com/xap/adn/">
+			<adn:cdp>59183</adn:cdp>
+			<adn:nom>Spécimen</adn:nom>
+			<adn:dateNaissance>1985-01-05</adn:dateNaissance>
+			<adn:ville>Dunkerque</adn:ville>
+			<adn:dpt>59</adn:dpt>
+			<adn:codePays>FR</adn:codePays>
+			<adn:pays>France</adn:pays>
+			<adn:prenom>
+				<rdf:Seq>
+					<rdf:li>Natacha</rdf:li>
+					<rdf:li>Marguerite</rdf:li>
+					<rdf:li>Suzanne</rdf:li>
+				</rdf:Seq>
+			</adn:prenom>
+			<adn:bagTest>
+				<rdf:Bag>
+					<rdf:li>bagval1</rdf:li>
+					<rdf:li>bagval2</rdf:li>
+				</rdf:Bag>
+			</adn:bagTest>
+			<adn:LangAltTest>
+				<rdf:Alt>
+					<rdf:li xml:lang="x-default">Default information</rdf:li>
+					<rdf:li xml:lang="fr-FR">Infos français</rdf:li>
+				</rdf:Alt>
+			</adn:LangAltTest>
+		</rdf:Description>
+	</rdf:RDF>
+</x:xmpmeta>
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+                                                                                                   
+<?xpacket end="w"?>
