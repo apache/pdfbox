@@ -110,4 +110,10 @@ public class Attribute {
 		this.value = value;
 	}
 
+	public String toString () {
+		StringBuilder sb = new StringBuilder(80);
+		sb.append("[attr:{").append(nsURI).append("}").append(name).append("=").append(value).append("]");
+		return sb.toString();
+	}
+	
 }

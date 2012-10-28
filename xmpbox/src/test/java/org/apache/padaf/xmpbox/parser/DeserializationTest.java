@@ -28,6 +28,8 @@ import java.util.List;
 import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
+import org.apache.padaf.xmpbox.schema.XMPSchema;
+import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.xml.DomXmpParser;
 import org.apache.padaf.xmpbox.xml.XmpParsingException;
@@ -283,4 +285,17 @@ public class DeserializationTest {
 		}
 	}
 
+	@Test
+	public void testRdfAboutFound() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/validxmp/emptyli.xml");
+		DomXmpParser xdb = new DomXmpParser();
+		XMPMetadata meta = xdb.parse(fis);
+		List<XMPSchema> schemas = meta.getAllSchemas();
+		for (XMPSchema xmpSchema : schemas) {
+			Assert.assertNotNull(xmpSchema.getAboutAttribute());
+		}
+	}
+
+	
 }
