@@ -162,6 +162,7 @@ public class DomXmpParser {
 				XMPSchema schema = xmp.getSchema(namespace);
 				if (schema==null) {
 					schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, property.getPrefix());
+					loadAttributes(schema, description);
 				}
 				ComplexPropertyContainer container = schema.getContainer();
 				// create property
@@ -314,7 +315,7 @@ public class DomXmpParser {
 		}
 	}
 
-	private void loadAttributes (AbstractSimpleProperty sp, Element element) {
+	private void loadAttributes (AbstractField sp, Element element) {
 		NamedNodeMap nnm = element.getAttributes();
 		for (int i=0; i < nnm.getLength() ; i++) {
 			Attr attr = (Attr)nnm.item(i);
