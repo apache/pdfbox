@@ -29,7 +29,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
@@ -69,7 +68,7 @@ public class TestSynchronizedMetadataValidation {
     try {
       doc = new PDDocument();
       dico = doc.getDocumentInformation();
-      metadata = new XMPDocumentBuilder().createXMPMetadata();
+      metadata = XMPMetadata.createXMPMetadata();
     } catch (IOException e) {
       throw new Exception("Failed to create temporary test PDF/XMP Document");
     }
