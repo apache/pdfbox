@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.padaf.xmpbox.XMPMetadata;
 import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
+import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
@@ -62,13 +63,15 @@ public class PDFAIdentificationValidation {
     }
 
     // According to the PDF/A specification, the prefix must be pdfaid for this schema.
-    if (!id.getPrefix().equals(PDFAIdentificationSchema.IDPREFIX)) {
-      if (metadata.getSchema(PDFAIdentificationSchema.IDPREFIX, XMPBasicSchema.XMPBASICURI) == null) {
+    StructuredType stBasic = XMPBasicSchema.class.getAnnotation(StructuredType.class);
+    StructuredType stPdfaIdent = PDFAIdentificationSchema.class.getAnnotation(StructuredType.class);
+    if (!id.getPrefix().equals(stPdfaIdent.preferedPrefix())) {
+      if (metadata.getSchema(stPdfaIdent.preferedPrefix(), stBasic.namespace()) == null) {
         ve.add(unexpectedPrefixFoundError(id.getPrefix(),
-            PDFAIdentificationSchema.IDPREFIX, PDFAIdentificationSchema.class.getName()));
+                        stPdfaIdent.preferedPrefix(), PDFAIdentificationSchema.class.getName()));
       } else {
         id = (PDFAIdentificationSchema) metadata.getSchema(
-            PDFAIdentificationSchema.IDPREFIX, PDFAIdentificationSchema.IDURI);
+            stPdfaIdent.preferedPrefix(), stPdfaIdent.namespace());
       }
     }
     checkConformanceLevel(ve, id.getConformance());

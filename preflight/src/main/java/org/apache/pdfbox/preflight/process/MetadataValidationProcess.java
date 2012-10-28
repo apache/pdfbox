@@ -28,20 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.PDFAExtentionSchemaPreprocessor;
-import org.apache.padaf.xmpbox.parser.XMPDocumentBuilder;
-import org.apache.padaf.xmpbox.parser.XmpExpectedRdfAboutAttribute;
-import org.apache.padaf.xmpbox.parser.XmpParsingException;
-import org.apache.padaf.xmpbox.parser.XmpPropertyFormatException;
-import org.apache.padaf.xmpbox.parser.XmpRequiredPropertyException;
-import org.apache.padaf.xmpbox.parser.XmpSchemaException;
-import org.apache.padaf.xmpbox.parser.XmpUnexpectedNamespacePrefixException;
-import org.apache.padaf.xmpbox.parser.XmpUnexpectedNamespaceURIException;
-import org.apache.padaf.xmpbox.parser.XmpUnknownPropertyException;
-import org.apache.padaf.xmpbox.parser.XmpUnknownSchemaException;
-import org.apache.padaf.xmpbox.parser.XmpUnknownValueTypeException;
-import org.apache.padaf.xmpbox.parser.XmpXpacketEndException;
-import org.apache.padaf.xmpbox.type.BadFieldValueException;
+import org.apache.padaf.xmpbox.xml.DomXmpParser;
+import org.apache.padaf.xmpbox.xml.XmpParsingException;
+import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -70,24 +59,11 @@ public class MetadataValidationProcess extends AbstractProcess {
 			PDDocument document = ctx.getDocument();
 
 			byte[] tmp = getXpacket(document.getDocument());
-			XMPDocumentBuilder builder;
-			try {
-				builder = new XMPDocumentBuilder();
-				builder.addPreprocessor(new PDFAExtentionSchemaPreprocessor());
-			} catch (XmpSchemaException e1) {
-				throw new ValidationException(e1.getMessage(), e1);
-			}
+			DomXmpParser builder;
+			builder = new DomXmpParser();
 			XMPMetadata metadata;
-			try {
-				metadata = builder.parse(tmp);
-				ctx.setMetadata(metadata);
-			} catch (XmpSchemaException e) {
-				throw new ValidationException(
-						"Parser: Internal Problem (failed to instanciate Schema object)", e);
-			} catch (XmpXpacketEndException e) {
-				throw new ValidationException("Unable to parse font metadata due to : "
-						+ e.getMessage(), e);
-			}
+			metadata = builder.parse(tmp);
+			ctx.setMetadata(metadata);
 
 			// 6.7.5 no deprecated attribute in xpacket processing instruction
 			if (metadata.getXpacketBytes() != null) {
@@ -125,42 +101,36 @@ public class MetadataValidationProcess extends AbstractProcess {
 				addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_MAIN,
 						"Unexpected error"));
 			}
-		} catch (XmpPropertyFormatException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT, e.getMessage()));
-		} catch (BadFieldValueException e) {
-			addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_CATEGORY_PROPERTY_INVALID ,e.getMessage()));
-		}
-		catch (XmpExpectedRdfAboutAttribute e) {
-			addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_MISSING ,e.getMessage()));
-		} catch (XmpUnknownPropertyException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_PROPERTY_UNKNOWN, e.getMessage()));
-		} catch (XmpUnknownSchemaException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e
-					.getMessage()));
-		} catch (XmpUnexpectedNamespaceURIException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_WRONG_NS_URI, e.getMessage()));
-		} catch (XmpUnexpectedNamespacePrefixException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e
-					.getMessage()));
-		} catch (XmpRequiredPropertyException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_PROPERTY_MISSING, e.getMessage()));
-		} catch (XmpUnknownValueTypeException e) {
-			addValidationError(ctx, new ValidationError(
-					PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE, e
-					.getMessage()));
 		} catch (XmpParsingException e) {
-			
-			addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e
-					.getMessage()));
-		}
-
-		catch (IOException e) {
+			if (e.getErrorType()==ErrorType.NoValueType) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE, e
+						.getMessage()));
+			} else if (e.getErrorType()==ErrorType.RequiredProperty) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_PROPERTY_MISSING, e.getMessage()));
+			} else if (e.getErrorType()==ErrorType.InvalidPrefix) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e
+						.getMessage()));
+			} else if (e.getErrorType()==ErrorType.InvalidType) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_PROPERTY_UNKNOWN, e.getMessage()));
+			} else if (e.getErrorType()==ErrorType.XpacketBadEnd) {
+				throw new ValidationException("Unable to parse font metadata due to : "
+						+ e.getMessage(), e);
+			} else if (e.getErrorType()==ErrorType.NoSchema) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e
+						.getMessage()));
+			} else if (e.getErrorType()==ErrorType.InvalidPdfaSchema) {
+				addValidationError(ctx, new ValidationError(
+						PreflightConstants.ERROR_METADATA_WRONG_NS_URI, e.getMessage()));
+			} else {
+				addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e
+						.getMessage()));
+			}
+		} catch (IOException e) {
 			throw new ValidationException("Failed while validating", e);
 		}
 	}

@@ -29,7 +29,7 @@ import java.util.List;
 
 
 import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.parser.DateConverter;
+import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
 import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
