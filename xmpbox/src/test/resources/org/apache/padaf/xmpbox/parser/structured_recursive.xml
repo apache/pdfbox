@@ -1,0 +1,62 @@
+<!-- ! Licensed to the Apache Software Foundation (ASF) under one or more 
+	! contributor license agreements. See the NOTICE file distributed with ! 
+	this work for additional information regarding copyright ownership. ! The 
+	ASF licenses this file to You under the Apache License, Version 2.0 ! (the 
+	"License"); you may not use this file except in compliance with ! the License. 
+	You may obtain a copy of the License at ! ! http://www.apache.org/licenses/LICENSE-2.0 
+	! ! Unless required by applicable law or agreed to in writing, software ! 
+	distributed under the License is distributed on an "AS IS" BASIS, ! WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ! See the 
+	License for the specific language governing permissions and ! limitations 
+	under the License. ! -->
+<?xpacket begin='ï»¿' id='W5M0MpCehiHzreSzNTczkc9d'?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/">
+	<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+		<rdf:Description rdf:about=""
+			xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">
+			<xmpMM:DocumentID>uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7</xmpMM:DocumentID>
+			<xmpMM:Versions xmlns:stVer="http://ns.adobe.com/xap/1.0/sType/Version#" xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
+				<rdf:Seq>
+<!-- 					<rdf:li> -->
+<!-- 						<rdf:Description> -->
+<!-- 							<stVer:comments>a text value</stVer:comments> -->
+<!-- 							<stVer:modifier>g bailleul</stVer:modifier> -->
+<!-- 							<stVer:event> -->
+<!-- 								<rdf:Description> -->
+<!-- 									<stEvt:action>copied</stEvt:action> -->
+<!-- 									<stEvt:softwareAgent>a la mano</stEvt:softwareAgent>									 -->
+<!-- 								</rdf:Description> -->
+<!-- 							</stVer:event> -->
+<!-- 						</rdf:Description> -->
+<!-- 					</rdf:li> -->
+					<rdf:li>
+						<rdf:Description>
+							<stVer:comments>a text value</stVer:comments>
+							<stVer:modifier>g bailleul</stVer:modifier>
+							<stVer:event rdf:parseType="Resource" >
+								<stEvt:action>copied</stEvt:action>
+								<stEvt:softwareAgent>a la mano</stEvt:softwareAgent>									
+							</stVer:event>
+						</rdf:Description>
+					</rdf:li>
+<!-- 					<rdf:li rdf:parseType="Resource"> -->
+<!-- 							<stVer:comments>a text value</stVer:comments> -->
+<!-- 							<stVer:modifier>g bailleul</stVer:modifier> -->
+<!-- 					</rdf:li> -->
+				</rdf:Seq>
+			</xmpMM:Versions>
+		</rdf:Description>
+<!-- 		<rdf:Description rdf:about="" -->
+<!-- 			xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"> -->
+<!-- 			<pdfaid:part>1</pdfaid:part> -->
+<!-- 			<pdfaid:conformance>B</pdfaid:conformance> -->
+<!-- 			<pdfaid:amd>1:2005</pdfaid:amd> -->
+<!-- 		</rdf:Description> -->
+<!-- 		<rdf:Description rdf:about="" -->
+<!-- 			xmlns:pdf="http://ns.adobe.com/pdf/1.3/"> -->
+<!-- 			<pdf:Producer>PDFlib Personalization Server 7.0.2p5 (Win32)</pdf:Producer> -->
+<!-- 		</rdf:Description> -->
+	</rdf:RDF>
+</x:xmpmeta>
+<?xpacket end='r'?>
+
