@@ -45,6 +45,7 @@ public class TestXMPWithDefinedSchemas {
 		data.add(new Object [] {"/validxmp/ghost2.xmp"});
 		data.add(new Object [] {"/validxmp/history2.rdf"});
 		data.add(new Object [] {"/validxmp/Notepad++_A1b.xmp"});
+		data.add(new Object [] {"/validxmp/metadata.rdf"});
 		return data;
 	}
 
