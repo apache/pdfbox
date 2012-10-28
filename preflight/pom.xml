@@ -252,7 +252,7 @@
       <artifactId>activation</artifactId>
       <version>1.1.1</version>
       <type>jar</type>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
     
   </dependencies>
