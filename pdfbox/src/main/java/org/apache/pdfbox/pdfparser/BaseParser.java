@@ -925,12 +925,9 @@ public abstract class BaseParser
                     }
                     default:
                     {
-                        retval.append( '\\' );
+                        // dropping the backslash
+                        // see 7.3.4.2 Literal Strings for further information
                         retval.append( next );
-                        //another problem with PDF's, sometimes the \ doesn't really
-                        //mean escape like the PDF spec says it does, sometimes is should be literal
-                        //which is what we will assume here.
-                        //throw new IOException( "Unexpected break sequence '" + next + "' " + pdfSource );
                     }
                 }
             }
