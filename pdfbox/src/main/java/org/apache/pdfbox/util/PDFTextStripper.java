@@ -1777,8 +1777,8 @@ public class PDFTextStripper extends PDFStreamEngine
      * the list, simply override that method (if sub-classing)
      * or explicitly supply your own list using
      * {@link #setListItemPatterns(List)}.
-     * @param pw
-     * @return
+     * @param pw position
+     * @return the matching pattern
      */
     protected Pattern matchListItemPattern(PositionWrapper pw) 
     {
@@ -1808,16 +1808,16 @@ public class PDFTextStripper extends PDFStreamEngine
 
     };
 
-    private List<Pattern> liPatterns = null;
+    private List<Pattern> listOfPatterns = null;
     /**
      * use to supply a different set of regular expression
      * patterns for matching list item starts.
      *
-     * @param patterns
+     * @param patterns list of patterns
      */
     protected void setListItemPatterns(List<Pattern> patterns)
     {
-            liPatterns = patterns;
+            listOfPatterns = patterns;
     }
 
 
@@ -1842,16 +1842,16 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected List<Pattern> getListItemPatterns()
     {
-        if(liPatterns == null)
+        if(listOfPatterns == null)
         {
-            liPatterns = new ArrayList<Pattern>();
+            listOfPatterns = new ArrayList<Pattern>();
             for(String expression : LIST_ITEM_EXPRESSIONS)
             {
                 Pattern p = Pattern.compile(expression);
-                liPatterns.add(p);
+                listOfPatterns.add(p);
             }
         }
-        return liPatterns;
+        return listOfPatterns;
     }
 
     /**
@@ -1864,16 +1864,16 @@ public class PDFTextStripper extends PDFStreamEngine
      * should be strict in general, and all will be
      * used with case sensitivity on.
      * </p>
-     * @param s
-     * @param patterns
-     * @return
+     * @param string the string to be searched 
+     * @param patterns list of patterns
+     * @return matching pattern
      */
-    protected static final Pattern matchPattern(String s, List<Pattern> patterns)
+    protected static final Pattern matchPattern(String string, List<Pattern> patterns)
     {
         Pattern matchedPattern = null;
         for(Pattern p : patterns)
         {
-            if(p.matcher(s).matches())
+            if(p.matcher(string).matches())
             {
                 return p;
             }
@@ -1890,26 +1890,12 @@ public class PDFTextStripper extends PDFStreamEngine
     private void writeLine(List<String> line, boolean isRtlDominant)throws IOException
     {
         int numberOfStrings = line.size();
-        if (isRtlDominant) 
+        for(int i=0; i<numberOfStrings; i++)
         {
-            for(int i=numberOfStrings-1; i>=0; i--)
+            writeString(line.get(i));
+            if (i < numberOfStrings-1)
             {
-                if (i < numberOfStrings-1)
-                {
-                    writeWordSeparator();
-                }
-                writeString(line.get(i));
-            }
-        }
-        else 
-        {
-            for(int i=0; i<numberOfStrings; i++)
-            {
-                writeString(line.get(i));
-                if (!isRtlDominant && i < numberOfStrings-1)
-                {
-                    writeWordSeparator();
-                }
+                writeWordSeparator();
             }
         }
     }
@@ -1925,33 +1911,46 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         LinkedList<String> normalized = new LinkedList<String>();
         StringBuilder lineBuilder = new StringBuilder();
-        for(TextPosition text : line)
+        // concatenate the pieces of text in opposite order if RTL is dominant
+        if (isRtlDominant)
         {
-            if (text instanceof WordSeparator) 
+            int numberOfPositions = line.size();
+            for(int i = numberOfPositions-1;i>=0;i--)
             {
-                String lineStr = lineBuilder.toString();
-                if (hasRtl) 
+                TextPosition text = line.get(i);
+                if (text instanceof WordSeparator) 
                 {
-                    lineStr = normalize.makeLineLogicalOrder(lineStr,isRtlDominant);
+                    normalized.add(normalize.normalizePres(lineBuilder.toString()));
+                    lineBuilder = new StringBuilder();
                 }
-                lineStr = normalize.normalizePres(lineStr);
-                normalized.add(lineStr);
-                lineBuilder = new StringBuilder();
+                else 
+                {
+                    lineBuilder.append(text.getCharacter());
+                }
             }
-            else 
+            if (lineBuilder.length() > 0) 
             {
-                lineBuilder.append(text.getCharacter());
+                normalized.add(normalize.normalizePres(lineBuilder.toString()));
             }
         }
-        if (lineBuilder.length() > 0) 
+        else
         {
-            String lineStr = lineBuilder.toString();
-            if (hasRtl) 
+            for(TextPosition text : line)
             {
-                lineStr = normalize.makeLineLogicalOrder(lineStr,isRtlDominant);
+                if (text instanceof WordSeparator) 
+                {
+                    normalized.add(normalize.normalizePres(lineBuilder.toString()));
+                    lineBuilder = new StringBuilder();
+                }
+                else 
+                {
+                    lineBuilder.append(text.getCharacter());
+                }
             }
-            lineStr = normalize.normalizePres(lineStr);
-            normalized.add(lineStr);
+            if (lineBuilder.length() > 0) 
+            {
+                normalized.add(normalize.normalizePres(lineBuilder.toString()));
+            }
         }
         return normalized;
     }
