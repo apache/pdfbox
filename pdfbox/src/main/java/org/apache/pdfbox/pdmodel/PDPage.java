@@ -718,7 +718,8 @@ public class PDPage implements COSObjectable, Printable
         {
             rotationAngle -= 360;
         }
-        if (rotationAngle != 0)
+        // swap width and height
+        if (rotationAngle == 90 || rotationAngle == 270)
         {
             retval = new BufferedImage( heightPx, widthPx, imageType );
         }
