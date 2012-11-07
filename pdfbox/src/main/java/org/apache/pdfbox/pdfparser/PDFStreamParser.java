@@ -257,7 +257,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = parseCOSString();
+                    retval = parseCOSString(false);
                 }
                 break;
             }
@@ -267,7 +267,7 @@ public class PDFStreamParser extends BaseParser
                 break;
             }
             case '(': // string
-                retval = parseCOSString();
+                retval = parseCOSString(false);
                 break;
             case '/':   // name
                 retval = parseCOSName();
