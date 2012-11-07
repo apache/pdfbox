@@ -19,8 +19,8 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
+import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
@@ -74,6 +74,7 @@ public class COSString extends COSBase
      */
     public static final byte[] FF_ESCAPE = new byte[]{ 92, 102 }; //"\\f".getBytes( "ISO-8859-1" );
 
+
     private ByteArrayOutputStream out = null;
     private String str = null;
 
@@ -83,6 +84,8 @@ public class COSString extends COSBase
      */
     private boolean forceHexForm = false;
 
+    private boolean isDictionary = false;
+
     /**
      * Constructor.
      */
@@ -90,6 +93,12 @@ public class COSString extends COSBase
     {
         out = new ByteArrayOutputStream();
     }
+
+    public COSString (boolean isDictionary) {
+        this();
+        this.isDictionary = isDictionary;
+    }
+
 
     /**
      * Explicit constructor for ease of manual PDF construction.
@@ -173,9 +182,9 @@ public class COSString extends COSBase
 
     public void setForceHexForm(boolean v)
     {
-      forceHexForm = v;
+        forceHexForm = v;
     }
-    
+
     /**
      * This will create a COS string from a string of hex characters.
      *
@@ -216,7 +225,7 @@ public class COSString extends COSBase
                     retval.append('?');
                 } else {
                     IOException exception =
-                        new IOException("Invalid hex string: " + hex);
+                            new IOException("Invalid hex string: " + hex);
                     exception.initCause(e);
                     throw exception;
                 }
@@ -273,9 +282,19 @@ public class COSString extends COSBase
         }
         try
         {
-            retval = new String( getBytes(), start, data.length-start, encoding );
+            if (isDictionary && encoding.equals("ISO-8859-1")) {
+                byte [] tmp = getBytes();
+                PdfDocEncoding pde = new PdfDocEncoding();
+                StringBuilder sb = new StringBuilder(tmp.length);
+                for (byte b : tmp) {
+                    sb.append(pde.getCharacter((b+256)%256));
+                }
+                retval = sb.toString();
+            } else {
+                retval = new String( getBytes(), start, data.length-start, encoding );
+            }
         }
-        catch( UnsupportedEncodingException e )
+        catch( IOException e )
         {
             //should never happen
             e.printStackTrace();
@@ -365,43 +384,43 @@ public class COSString extends COSBase
                 int b = (bytes[i]+256)%256;
                 switch( b )
                 {
-                    case '(':
-                    case ')':
-                    case '\\':
-                    {
-                        output.write(ESCAPE);
-                        output.write((byte)b);
-                        break;
-                    }
-                    case 10: //LF
-                    {
-                        output.write( LF_ESCAPE );
-                        break;
-                    }
-                    case 13: // CR
-                    {
-                        output.write( CR_ESCAPE );
-                        break;
-                    }
-                    case '\t':
-                    {
-                        output.write( HT_ESCAPE );
-                        break;
-                    }
-                    case '\b':
-                    {
-                        output.write( BS_ESCAPE );
-                        break;
-                    }
-                    case '\f':
-                    {
-                        output.write( FF_ESCAPE );
-                        break;
-                    }
-                    default:
-                    {
-                        output.write( (byte)b );
-                    }
+                case '(':
+                case ')':
+                case '\\':
+                {
+                    output.write(ESCAPE);
+                    output.write((byte)b);
+                    break;
+                }
+                case 10: //LF
+                {
+                    output.write( LF_ESCAPE );
+                    break;
+                }
+                case 13: // CR
+                {
+                    output.write( CR_ESCAPE );
+                    break;
+                }
+                case '\t':
+                {
+                    output.write( HT_ESCAPE );
+                    break;
+                }
+                case '\b':
+                {
+                    output.write( BS_ESCAPE );
+                    break;
+                }
+                case '\f':
+                {
+                    output.write( FF_ESCAPE );
+                    break;
+                }
+                default:
+                {
+                    output.write( (byte)b );
+                }
                 }
             }
             output.write(STRING_CLOSE);
@@ -442,7 +461,7 @@ public class COSString extends COSBase
         {
             COSString strObj = (COSString) obj;
             return this.getString().equals(strObj.getString()) 
-                && this.forceHexForm == strObj.forceHexForm;
+                    && this.forceHexForm == strObj.forceHexForm;
         }
         return false;
     }

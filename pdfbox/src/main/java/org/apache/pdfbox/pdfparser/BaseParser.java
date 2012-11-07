@@ -787,10 +787,10 @@ public abstract class BaseParser
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected COSString parseCOSString() throws IOException
+    protected COSString parseCOSString(boolean isDictionary) throws IOException
     {
         char nextChar = (char)pdfSource.read();
-        COSString retval = new COSString();
+        COSString retval = new COSString(isDictionary);
         char openBrace;
         char closeBrace;
         if( nextChar == '(' )
@@ -1221,7 +1221,7 @@ public abstract class BaseParser
             }
             else
             {
-                retval = parseCOSString();
+                retval = parseCOSString(true);
             }
             break;
         }
@@ -1231,7 +1231,7 @@ public abstract class BaseParser
             break;
         }
         case '(':
-            retval = parseCOSString();
+            retval = parseCOSString(true);
             break;
         case '/':   // name
             retval = parseCOSName();

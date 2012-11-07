@@ -476,7 +476,7 @@ public class PreflightParser extends NonSequentialPDFParser {
 	 * Check that the hexa string contains only an even number of Hexadecimal characters.
 	 * Once it is done, reset the offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
 	 */
-	protected COSString parseCOSString() throws IOException
+	protected COSString parseCOSString(boolean isDictionary) throws IOException
 	{
 		// offset reminder
 		long offset = pdfSource.getOffset();
@@ -502,7 +502,7 @@ public class PreflightParser extends NonSequentialPDFParser {
 
 		// reset the offset to parse the COSString
 		pdfSource.seek(offset);
-		COSString result = super.parseCOSString();
+		COSString result = super.parseCOSString(isDictionary);
 
 		if ( result.getString().length() > MAX_STRING_LENGTH) {
 			addValidationError(new ValidationError(ERROR_SYNTAX_HEXA_STRING_TOO_LONG, "Hexa string is too long"));
