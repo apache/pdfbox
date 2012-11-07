@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -56,6 +57,11 @@ public class CompositeImage
     /**
      * This method applies the specified transparency mask to a given image and returns a new BufferedImage
      * whose alpha values are computed from the transparency mask (smask) image.
+     * 
+     * @param decodeArray the decode array
+     * @return the masked image
+     * @throws IOException if something went wrong
+     * 
      */
     public BufferedImage createMaskedImage(COSArray decodeArray) throws IOException
     {
@@ -71,7 +77,6 @@ public class CompositeImage
 
         final int baseImageWidth = baseImage.getWidth();
         final int baseImageHeight = baseImage.getHeight();
-
         BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < baseImageWidth; x++)
         {
@@ -101,4 +106,32 @@ public class CompositeImage
         }
         return result;
     }
+
+    /**
+     * This method applies the specified stencil mask to a given image and returns a new BufferedImage
+     * whose alpha values are computed from the stencil mask (smask) image.
+     * 
+     * @return the stencil masked image 
+     */
+    public BufferedImage createStencilMaskedImage()
+    {
+        final int baseImageWidth = baseImage.getWidth();
+        final int baseImageHeight = baseImage.getHeight();
+        WritableRaster maskRaster = smaskImage.getRaster();
+        BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);
+        int[] alpha = new int[1];
+        for (int x = 0; x < baseImageWidth; x++)
+        {
+            for (int y = 0; y < baseImageHeight; y++)
+            {
+                maskRaster.getPixel(x, y, alpha);
+                // We need to remove any alpha value in the main image.
+                int rgbOnly = 0x00FFFFFF & baseImage.getRGB(x, y);
+                int alphaOnly = alpha[0] == 0 ? 0xFF000000 : 0;
+                result.setRGB(x, y, rgbOnly | alphaOnly);
+            }
+        }
+        return result;
+    }
+
 }
