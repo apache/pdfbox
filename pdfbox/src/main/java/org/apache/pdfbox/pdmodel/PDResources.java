@@ -50,7 +50,7 @@ public class PDResources implements COSObjectable
 {
     private COSDictionary resources;
     private Map<String,PDFont> fonts = null;
-    private Map<PDFont, String> fontMappings = null;
+    private Map<PDFont, String> fontMappings = new HashMap<PDFont, String>();
     private Map<String,PDColorSpace> colorspaces = null;
     private Map<String,PDXObject> xobjects = null;
     private Map<PDXObject,String> xobjectMappings = null;
@@ -200,7 +200,7 @@ public class PDResources implements COSObjectable
         }
         return fonts;
     }
-
+    
     /**
      * This will get the map of PDXObjects that are in the resource dictionary.
      * This will never return null.
@@ -513,23 +513,29 @@ public class PDResources implements COSObjectable
      */
     public String addFont(PDFont font) 
     {
+        return addFont(font, MapUtil.getNextUniqueKey( fonts, "F" ));
+    }
+
+    public String addFont(PDFont font, String fontKey) 
+    {
         if (fonts == null) 
         {
             fonts = getFonts();
             fontMappings = reverseMap(fonts, PDFont.class);
             setFonts(fonts);
         }
+        
         String fontMapping = fontMappings.get( font );
         if( fontMapping == null )
         {
-            fontMapping = MapUtil.getNextUniqueKey( fonts, "F" );
+        		fontMapping = fontKey;
             fontMappings.put( font, fontMapping );
             fonts.put( fontMapping, font );
             addFontToDictionary(font, fontMapping);
         }
         return fontMapping;
     }
-
+    
     private void addFontToDictionary(PDFont font, String fontName)
     {
         COSDictionary fontsDictionary = (COSDictionary)resources.getDictionaryObject(COSName.FONT);
