@@ -437,7 +437,7 @@ public class PDAppearance
             if( retval == null )
             {
                 retval = (PDFont)formResources.getFonts().get( fontName );
-                streamResources.getFonts().put( fontName, retval );
+                streamResources.addFont(retval, fontName);
             }
         }
         return retval;

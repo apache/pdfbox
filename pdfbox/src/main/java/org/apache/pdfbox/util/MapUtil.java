@@ -42,7 +42,7 @@ public class MapUtil
     public static final String getNextUniqueKey( Map map, String prefix )
     {
         int counter = 0;
-        while( map.get( prefix+counter ) != null )
+        while( map != null && map.get( prefix+counter ) != null )
         {
             counter++;
         }
