@@ -294,7 +294,7 @@ public class PDJpeg extends PDXObjectImage
             {
             	maskImage = (PDXObjectImage)PDXObject.createXObject(mask);
                 CompositeImage compositeImage = new CompositeImage(bi, maskImage.getRGBImage());
-                BufferedImage rgbImage = compositeImage.createStencilMaskedImage();
+                BufferedImage rgbImage = compositeImage.createStencilMaskedImage(maskImage.getDecode());
                 image = rgbImage;
             }	
         }

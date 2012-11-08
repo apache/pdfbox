@@ -111,11 +111,20 @@ public class CompositeImage
      * This method applies the specified stencil mask to a given image and returns a new BufferedImage
      * whose alpha values are computed from the stencil mask (smask) image.
      * 
+     * @param decodeArray the decode array
      * @return the stencil masked image 
      */
-    public BufferedImage createStencilMaskedImage()
+    public BufferedImage createStencilMaskedImage(COSArray decodeArray)
     {
-        final int baseImageWidth = baseImage.getWidth();
+    	// default: 0 (black) == opaque
+        int alphaValue = 0;
+        if (decodeArray != null)
+        {
+        	// invert the stencil mask: 1 (white) == opaque
+            alphaValue = decodeArray.getInt(0) > decodeArray.getInt(1) ? 1 : 0;
+        }
+
+    	final int baseImageWidth = baseImage.getWidth();
         final int baseImageHeight = baseImage.getHeight();
         WritableRaster maskRaster = smaskImage.getRaster();
         BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);
@@ -127,7 +136,7 @@ public class CompositeImage
                 maskRaster.getPixel(x, y, alpha);
                 // We need to remove any alpha value in the main image.
                 int rgbOnly = 0x00FFFFFF & baseImage.getRGB(x, y);
-                int alphaOnly = alpha[0] == 0 ? 0xFF000000 : 0;
+                int alphaOnly = alpha[0] == alphaValue ? 0xFF000000 : 0;
                 result.setRGB(x, y, rgbOnly | alphaOnly);
             }
         }
