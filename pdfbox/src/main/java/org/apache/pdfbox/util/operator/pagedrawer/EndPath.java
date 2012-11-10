@@ -41,6 +41,6 @@ public class EndPath extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
         PageDrawer drawer = (PageDrawer)context;
-        drawer.getLinePath().reset();
+        drawer.endPath();
     }
 }

@@ -39,7 +39,7 @@ public class ClipEvenOddRule extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(ClipEvenOddRule.class);
+    private static final Log LOG = LogFactory.getLog(ClipEvenOddRule.class);
 
     /**
      * process : W* : set clipping path using even odd rule.
@@ -54,11 +54,11 @@ public class ClipEvenOddRule extends OperatorProcessor
         try 
         {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.setClippingPath(GeneralPath.WIND_EVEN_ODD);
+            drawer.setClippingWindingRule(GeneralPath.WIND_EVEN_ODD);
         } 
         catch (Exception e) 
         {
-            log.warn(e, e);
+            LOG.warn(e, e);
         }
     }
 }
