@@ -39,7 +39,7 @@ public class ClipNonZeroRule extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(ClipNonZeroRule.class);
+    private static final Log LOG = LogFactory.getLog(ClipNonZeroRule.class);
 
     /**
      * process : W : Set the clipping path using non zero winding rule.
@@ -54,11 +54,11 @@ public class ClipNonZeroRule extends OperatorProcessor
         try 
         {
             PageDrawer drawer = (PageDrawer)context;
-            drawer.setClippingPath(GeneralPath.WIND_NON_ZERO);
+            drawer.setClippingWindingRule(GeneralPath.WIND_NON_ZERO);
         } 
         catch (Exception e) 
         {
-            log.warn(e, e);
+            LOG.warn(e, e);
         }
     }
 }

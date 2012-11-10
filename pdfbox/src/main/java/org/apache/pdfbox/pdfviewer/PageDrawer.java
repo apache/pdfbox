@@ -73,6 +73,12 @@ public class PageDrawer extends PDFStreamEngine
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
 
     private Graphics2D graphics;
+    
+    /**
+     * clipping winding rule used for the clipping path.
+     */
+    private int clippingWindingRule = -1;
+
     /**
      * Size of the page.
      */
@@ -406,27 +412,52 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @param windingRule The winding rule this path will use.
      * 
+     * @deprecated use {@link #setClippingWindingRule(int)} instead
+     * 
      */
     public void setClippingPath(int windingRule)
     {
-        PDGraphicsState graphicsState = getGraphicsState();
-        GeneralPath clippingPath = (GeneralPath)getLinePath().clone();
-        clippingPath.setWindingRule(windingRule);
-        // If there is already set a clipping path, we have to intersect the new with the existing one
-        if (graphicsState.getCurrentClippingPath() != null) 
+        setClippingWindingRule(windingRule);
+    }
+    
+    /**
+     * Set the clipping winding rule.
+     *
+     * @param windingRule The winding rule which will be used for clipping.
+     * 
+     */
+    public void setClippingWindingRule(int windingRule)
+    {
+        clippingWindingRule = windingRule;
+    }
+
+    /**
+     * Set the clipping Path.
+     *
+     */
+    public void endPath()
+    {
+        if (clippingWindingRule > -1)
         {
-            Area currentArea = new Area(getGraphicsState().getCurrentClippingPath());
-            Area newArea = new Area(clippingPath);
-            currentArea.intersect(newArea);
-            graphicsState.setCurrentClippingPath(currentArea);
-        }
-        else 
-        {
-            graphicsState.setCurrentClippingPath(clippingPath);
+            PDGraphicsState graphicsState = getGraphicsState();
+            GeneralPath clippingPath = (GeneralPath)getLinePath().clone();
+            clippingPath.setWindingRule(clippingWindingRule);
+            // If there is already set a clipping path, we have to intersect the new with the existing one
+            if (graphicsState.getCurrentClippingPath() != null) 
+            {
+                Area currentArea = new Area(getGraphicsState().getCurrentClippingPath());
+                Area newArea = new Area(clippingPath);
+                currentArea.intersect(newArea);
+                graphicsState.setCurrentClippingPath(currentArea);
+            }
+            else 
+            {
+                graphicsState.setCurrentClippingPath(clippingPath);
+            }
+            clippingWindingRule = -1;
         }
         getLinePath().reset();
     }
-    
     /**
      * Draw the AWT image. Called by Invoke.
      * Moved into PageDrawer so that Invoke doesn't have to reach in here for Graphics as that breaks extensibility.
