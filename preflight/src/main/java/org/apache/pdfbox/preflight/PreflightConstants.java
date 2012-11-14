@@ -348,9 +348,9 @@ public interface PreflightConstants {
 	 */
 	String ERROR_SYNTAX_HEXA_STRING_INVALID= "1.0.12";	
 	/**
-	 * An object is missing from the document (offset is negative)
+	 * An object is missing from the document
 	 */
-	String ERROR_SYNTAX_NEGATIVE_OFFSET = "1.0.13";
+	String ERROR_SYNTAX_MISSING_OFFSET = "1.0.13";
 
 	String ERROR_SYNTAX_HEADER = "1.1";
 	
