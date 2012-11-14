@@ -554,8 +554,8 @@ public class PreflightParser extends NonSequentialPDFParser {
 			Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get( objKey );
 
 			// sanity test to circumvent loops with broken documents
-			if ( requireExistingNotCompressedObj &&	( ( offsetOrObjstmObNr == null ) || ( offsetOrObjstmObNr <= 0 ) ) )	{   
-				addValidationError(new ValidationError(ERROR_SYNTAX_NEGATIVE_OFFSET, "Object must be defined and must not be compressed object: " +	objKey.getNumber() + ":" + objKey.getGeneration()));
+			if ( requireExistingNotCompressedObj &&	( ( offsetOrObjstmObNr == null ) ) )	{   
+				addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET, "Object must be defined and must not be compressed object: " +	objKey.getNumber() + ":" + objKey.getGeneration()));
 				throw new SyntaxValidationException( "Object must be defined and must not be compressed object: " +	objKey.getNumber() + ":" + objKey.getGeneration(), validationResult);
 			}
 
