@@ -45,7 +45,7 @@ public class PositionWrapper
      * Returns the underlying TextPosition object.
      * @return the text position
      */
-    protected TextPosition getTextPosition()
+    public TextPosition getTextPosition()
     {
         return position;
     }
