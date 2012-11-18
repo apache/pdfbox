@@ -16,8 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,7 +161,26 @@ public class PDCcitt extends PDXObjectImage
             //So a safe but slower approach was taken.
             invertBitmap(bufferData);
         }
-        return image;
+        
+        /*
+         * If we have an image mask we need to add an alpha channel to the data
+         */
+        if(hasMask())
+        {
+	        byte map[] = new byte[] {(byte)0x00, (byte)0xff};
+	    	IndexColorModel  cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+	    	 raster = cm.createCompatibleWritableRaster( image.getWidth(), image.getHeight() );
+	         buffer = (DataBufferByte)raster.getDataBuffer();
+	        bufferData = buffer.getData();
+	
+	        byte array[] = ((DataBufferByte)image.getData().getDataBuffer()).getData();
+	        System.arraycopy( array, 0,bufferData, 0,
+	                (array.length<bufferData.length?array.length: bufferData.length) );
+	        BufferedImage indexed = new BufferedImage(cm, raster, false, null);
+	        image = indexed;
+        }
+        
+        return applyMasks(image);
     }
 
     private void invertBitmap(byte[] bufferData)

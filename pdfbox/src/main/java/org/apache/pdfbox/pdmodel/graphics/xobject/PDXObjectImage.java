@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -116,6 +119,76 @@ public abstract class PDXObjectImage extends PDXObject
         {
             return (PDXObjectImage)PDXObject.createXObject(smask);
         }
+    }
+    
+    public BufferedImage applyMasks(BufferedImage baseImage) throws IOException
+    {
+    	if (getImageMask())
+    	{
+    		return imageMask(baseImage);
+    	}
+    	if(getMask() != null)
+    	{
+    		return mask(baseImage);
+    	}
+    	PDXObjectImage smask = getSMaskImage();
+    	if(smask != null)
+    	{
+    		BufferedImage smaskBI = smask.getRGBImage();
+    		COSArray decodeArray = smask.getDecode();
+    		CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
+    		BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+        	return rgbImage;
+    	}
+    	return baseImage;
+    }
+    
+    public boolean hasMask() throws IOException
+    {
+    	return getImageMask() || getMask() != null || getSMaskImage() != null;
+    }
+    
+    
+    public BufferedImage imageMask(BufferedImage baseImage) throws IOException 
+    {
+    	BufferedImage stencilMask = new BufferedImage(baseImage.getWidth(), baseImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
+        if (getStencilColor() != null)
+        {
+            graphics.setColor(getStencilColor().getJavaColor());
+        }
+        else
+        {
+            // this might happen when using ExractImages, see PDFBOX-1145
+            LOG.debug("no stencil color for PixelMap found, using Color.BLACK instead.");
+            graphics.setColor(Color.BLACK);
+        }
+        
+        graphics.fillRect(0, 0, baseImage.getWidth(), baseImage.getHeight());
+        // assume default values ([0,1]) for the DecodeArray
+        // TODO DecodeArray == [1,0]
+        graphics.setComposite(AlphaComposite.DstIn);
+        graphics.drawImage(baseImage, null, 0, 0);
+        return stencilMask;
+    }
+    
+    public BufferedImage mask(BufferedImage baseImage) 
+    	throws IOException
+    {
+    	PDXObjectImage maskImageRef = (PDXObjectImage)PDXObject.createXObject(getMask());
+    	BufferedImage maskImage = maskImageRef.getRGBImage();
+   	 	if(maskImage == null)
+   	 	{
+	   		 LOG.warn("masking getRGBImage returned NULL");
+	   		 return baseImage;
+   	 	}
+   	 
+	   	 BufferedImage newImage = new BufferedImage( maskImage.getWidth(), maskImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+	   	 Graphics2D graphics = (Graphics2D)newImage.getGraphics();
+	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
+	   	 graphics.setComposite(AlphaComposite.DstIn);
+	   	 graphics.drawImage(maskImage, null, 0, 0);
+	   	 return newImage;
     }
 
     /**

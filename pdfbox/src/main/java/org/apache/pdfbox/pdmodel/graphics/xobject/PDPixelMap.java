@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -352,47 +351,8 @@ public class PDPixelMap extends PDXObjectImage
             System.arraycopy( array, 0,bufferData, 0,
                     (array.length<bufferData.length?array.length: bufferData.length) );
             image = new BufferedImage(cm, raster, false, null);
-
-            // If there is a 'soft mask' image then we use that as a transparency mask.
-            PDXObjectImage smask = getSMaskImage();
-            if (smask != null)
-            {
-                BufferedImage smaskBI = smask.getRGBImage();
-
-                COSArray decodeArray = smask.getDecode();
-
-                CompositeImage compositeImage = new CompositeImage(image, smaskBI);
-                BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
-
-                return rgbImage;
-            }
-            else if (getImageMask())
-            {
-                BufferedImage stencilMask = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
-                if (getStencilColor() != null)
-                {
-                    graphics.setColor(getStencilColor().getJavaColor());
-                }
-                else
-                {
-                    // this might happen when using ExractImages, see PDFBOX-1145
-                    LOG.debug("no stencil color for PixelMap found, using Color.BLACK instead.");
-                    graphics.setColor(Color.BLACK);
-                }
-                
-                graphics.fillRect(0, 0, width, height);
-                // assume default values ([0,1]) for the DecodeArray
-                // TODO DecodeArray == [1,0]
-                graphics.setComposite(AlphaComposite.DstIn);
-                graphics.drawImage(image, null, 0, 0);
-                return stencilMask;
-            }
-            else
-            {
-                // if there is no mask, use the unaltered image.
-                return image;
-            }
+           
+            return applyMasks(image);  
         }
         catch (Exception exception)
         {
@@ -402,8 +362,10 @@ public class PDPixelMap extends PDXObjectImage
             return null;
         }
     }
+    
+ 
 
-    /**
+	/**
      * Writes the image as .png.
      *
      * {@inheritDoc}

@@ -43,7 +43,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -278,32 +277,8 @@ public class PDJpeg extends PDXObjectImage
             ByteArrayInputStream bai = new ByteArrayInputStream(newImage);
             bi = ImageIO.read(bai);
         }
-
         // If there is a 'soft mask' or 'mask' image then we use that as a transparency mask.
-        PDXObjectImage maskImage = getSMaskImage();
-        if (maskImage != null)
-        {
-            CompositeImage compositeImage = new CompositeImage(bi, maskImage.getRGBImage());
-            BufferedImage rgbImage = compositeImage.createMaskedImage(maskImage.getDecode());
-            image = rgbImage;
-        }
-        else
-        {
-            COSBase mask = getMask();
-            if (mask != null && mask instanceof COSDictionary)
-            {
-            	maskImage = (PDXObjectImage)PDXObject.createXObject(mask);
-                CompositeImage compositeImage = new CompositeImage(bi, maskImage.getRGBImage());
-                BufferedImage rgbImage = compositeImage.createStencilMaskedImage(maskImage.getDecode());
-                image = rgbImage;
-            }	
-        }
-        if (image == null)
-        {
-            // But if there is no soft mask, use the unaltered image.
-            image = bi;
-        }
-        return image;
+        return applyMasks(bi);   
     }
 
     /**
