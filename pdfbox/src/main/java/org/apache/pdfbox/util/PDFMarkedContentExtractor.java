@@ -190,7 +190,7 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
             //
             boolean suppressCharacter = false;
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
-            for( int i=0; i<sameTextCharacters.size() && textCharacter != null; i++ )
+            for( int i=0; i<sameTextCharacters.size(); i++ )
             {
                 TextPosition character = (TextPosition)sameTextCharacters.get( i );
                 String charCharacter = character.getCharacter();
@@ -206,6 +206,7 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
                                 tolerance ) )
                 {
                     suppressCharacter = true;
+                    break;
                 }
             }
             if( !suppressCharacter )
