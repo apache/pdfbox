@@ -16,16 +16,21 @@
  */
 package org.apache.fontbox.encoding;
 
+
 /**
- * This is an interface to a text encoder.
+ * This is the MacRomanEncoding.
  *
  * @author Ben Litchfield
- * @version $Revision: 1.1 $
  * 
- * @deprecated no longer needed by fontbox
  */
 public class MacRomanEncoding extends Encoding
 {
+    /**
+     * Singleton instance of this class.
+     *
+     */
+    public static final MacRomanEncoding INSTANCE = new MacRomanEncoding();
+    
     /**
      * Constructor.
      */

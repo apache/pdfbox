@@ -630,7 +630,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     private long unicodeRange2;
     private long unicodeRange3;
     private long unicodeRange4;
-    private String achVendId;
+    private String achVendId = "XXXX";
     private int fsSelection;
     private int firstCharIndex;
     private int lastCharIndex;
