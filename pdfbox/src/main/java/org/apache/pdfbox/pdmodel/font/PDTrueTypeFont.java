@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import org.apache.fontbox.ttf.NamingTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TTFSubFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -437,7 +440,20 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
                 catch( FontFormatException f )
                 {
-                    log.info("Can't read the embedded font " + fd.getFontName() );
+                    try
+                    {
+                        // as a workaround we try to rebuild the embedded subsfont
+                        byte[] fontData = rebuildTTF(fd, ff2Stream.createInputStream());
+                        if (fontData != null)
+                        {
+                            ByteArrayInputStream bais = new ByteArrayInputStream(fontData);
+                            awtFont = Font.createFont( Font.TRUETYPE_FONT,bais);
+                        }
+                    } 
+                    catch (FontFormatException e)
+                    {
+                        log.info("Can't read the embedded font " + fd.getFontName() );
+                    }
                 }
                 if (awtFont == null)
                 {
@@ -480,6 +496,25 @@ public class PDTrueTypeFont extends PDSimpleFont
             }
         }
         return awtFont;
+    }
+
+    private byte[] rebuildTTF(PDFontDescriptorDictionary fd, InputStream inputStream) throws IOException
+    {
+        // this is one possible case of an incomplete subfont which leads to a font exception
+        if (getFontEncoding() instanceof WinAnsiEncoding)
+        {
+            TTFParser ttfParser = new TTFParser(true);
+            TrueTypeFont ttf = ttfParser.parseTTF(inputStream);
+            TTFSubFont ttfSub = new TTFSubFont(ttf, "PDFBox-Rebuild");
+            for (int i=getFirstChar();i<=getLastChar();i++)
+            {
+                ttfSub.addCharCode(i);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ttfSub.writeToStream(baos);
+            return baos.toByteArray();
+        }
+        return null;
     }
 
     private InputStream getExternalTTFData() throws IOException
