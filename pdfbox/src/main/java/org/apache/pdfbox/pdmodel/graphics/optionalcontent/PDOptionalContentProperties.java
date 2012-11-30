@@ -320,33 +320,38 @@ public class PDOptionalContentProperties implements COSObjectable
         }
 
         boolean found = false;
-        for (COSBase o : on)
+        if (enable)
         {
-            COSDictionary group = toDictionary(o);
-            String name = group.getString(COSName.NAME);
-            if (!enable && name.equals(groupName))
+            for (COSBase o : off)
             {
-                //disable group
-                on.remove(group);
-                off.add(group);
-                found = true;
-                break;
+                COSDictionary group = toDictionary(o);
+                String name = group.getString(COSName.NAME);
+                if (name.equals(groupName))
+                {
+                    //enable group
+                    off.remove(group);
+                    on.add(group);
+                    found = true;
+                    break;
+                }
             }
         }
-        for (COSBase o : off)
+        else
         {
-            COSDictionary group = toDictionary(o);
-            String name = group.getString(COSName.NAME);
-            if (enable && name.equals(groupName))
+            for (COSBase o : on)
             {
-                //enable group
-                off.remove(group);
-                on.add(group);
-                found = true;
-                break;
+                COSDictionary group = toDictionary(o);
+                String name = group.getString(COSName.NAME);
+                if (name.equals(groupName))
+                {
+                    //disable group
+                    on.remove(group);
+                    off.add(group);
+                    found = true;
+                    break;
+                }
             }
         }
-
         if (!found)
         {
             PDOptionalContentGroup ocg = getGroup(groupName);
