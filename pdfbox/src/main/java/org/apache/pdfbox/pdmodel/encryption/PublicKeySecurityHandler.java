@@ -184,6 +184,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
 	                  {
 	                      foundRecipient = true;
 	                      envelopedData = ri.getContent(material.getPrivateKey(), "BC");
+	                      break;
 	                  }
 	              }
 	              recipientFieldsBytes[i] = recipientBytes;
