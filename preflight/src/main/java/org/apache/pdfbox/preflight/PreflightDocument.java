@@ -71,12 +71,7 @@ public class PreflightDocument extends PDDocument {
 	 * @throws IOException
 	 */
 	public PreflightDocument(Format format, PreflightConfiguration cfg) throws IOException {
-		super();
-		this.specification = format;
-		this.config = cfg;
-		if (this.config == null) {
-			initConfiguration(format);
-		}
+		this(new COSDocument(), format, cfg);
 	}
 
 	/**
@@ -91,6 +86,7 @@ public class PreflightDocument extends PDDocument {
 	public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration cfg) {
 		super(doc);
 		this.specification = format;
+		this.config = cfg;
 		if (this.config == null) {
 			initConfiguration(format);
 		}
