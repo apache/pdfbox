@@ -35,16 +35,17 @@ public class AnnotationValidationProcess extends AbstractProcess {
 	public void validate(PreflightContext context) throws ValidationException {
 		PreflightPath vPath = context.getValidationPath();
 		if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class)) {
-		 throw new ValidationException("Annotation validation process needs at least one COSDictionary object");
+			throw new ValidationException("Annotation validation process needs at least one COSDictionary object");
 		}
 
 		COSDictionary annotDict = (COSDictionary)vPath.peek();
 
 		PreflightConfiguration config = context.getConfig();
 		AnnotationValidatorFactory factory = config.getAnnotFact();
-	    AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
-	    if (annotValidator != null)
-	    	annotValidator.validate();
+		AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
+		if (annotValidator != null) {
+			annotValidator.validate();
+		}
 	}
 
 }
