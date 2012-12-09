@@ -213,6 +213,7 @@ public class PDJpeg extends PDXObjectImage
     {   
         if (image != null)
         {
+            // use the cached image
             return image;
         }
         
@@ -278,7 +279,8 @@ public class PDJpeg extends PDXObjectImage
             bi = ImageIO.read(bai);
         }
         // If there is a 'soft mask' or 'mask' image then we use that as a transparency mask.
-        return applyMasks(bi);   
+        image = applyMasks(bi);
+        return image;
     }
 
     /**
