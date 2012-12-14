@@ -52,6 +52,13 @@ public final class DomHelper {
 		return (Element)nl.item(pos);
 	}
 
+	/**
+	 * Return the first child element of the element parameter.
+	 * If there is no child, null is returned
+	 * @param description
+	 * @return
+	 * @throws XmpParsingException
+	 */
 	public static Element getFirstChildElement (Element description) throws XmpParsingException {
 		NodeList nl = description.getChildNodes();
 		for (int i=0; i < nl.getLength(); i++) {
@@ -59,7 +66,7 @@ public final class DomHelper {
 				return (Element)nl.item(i);
 			}
 		}
-		throw new XmpParsingException(ErrorType.Undefined,"Does not contain element");
+		return null;
 	}
 
 
