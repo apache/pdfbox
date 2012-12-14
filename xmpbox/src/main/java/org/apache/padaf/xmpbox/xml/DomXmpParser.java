@@ -150,7 +150,7 @@ public class DomXmpParser {
 		List<Element> dataDescriptions = new ArrayList<Element>(descriptions.size());
 		for (Element description : descriptions) {
 			Element first = DomHelper.getFirstChildElement(description);
-			if ("pdfaExtension".equals(first.getPrefix())) {
+			if (first!=null && "pdfaExtension".equals(first.getPrefix())) {
 				PdfaExtensionHelper.validateNaming(xmp, description);
 				parseDescriptionRoot(xmp, description);
 			} else {
@@ -224,9 +224,11 @@ public class DomXmpParser {
 					container.addProperty(ast);
 				} else {
 					Element inner = DomHelper.getFirstChildElement(property);
-					AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
-					ast.setPrefix(prefix);
-					container.addProperty(ast);
+					if (inner!=null) {
+						AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
+						ast.setPrefix(prefix);
+						container.addProperty(ast);
+					}
 				}
 			} else if (type.type()==Types.DefinedType) {
 				if (DomHelper.isParseTypeResource(property)) {
@@ -380,8 +382,6 @@ public class DomXmpParser {
 			} else if (type.card().isArray()) {
 				ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
 				ast.getContainer().addProperty(array);
-
-
 				Element bagOrSeq = DomHelper.getUniqueElementChild(element);
 				List<Element> lis=  DomHelper.getElementChildren(bagOrSeq);
 				for (Element element2 : lis) {
@@ -410,7 +410,9 @@ public class DomXmpParser {
 					parseDescriptionInner(xmp, element, cpc);
 				} else {
 					Element descElement = DomHelper.getFirstChildElement(element);
-					parseDescriptionInner(xmp,descElement,cpc);
+					if (descElement!=null) {
+						parseDescriptionInner(xmp,descElement,cpc);
+					}
 				}
 			} else {
 				throw new XmpParsingException(ErrorType.NoType, "Unidentified element to parse "+element+" (type="+type+")");
