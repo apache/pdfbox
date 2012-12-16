@@ -111,6 +111,9 @@ public class TestIsartorValidationFromClasspath {
 			for (ValidationError error : result.getErrorsList()) {
 				if (error.getErrorCode().equals(this.expectedError)) {
 					found = true;
+					if (isartorResultFile == null) {
+						break;
+					}
 				}
 				if (isartorResultFile != null) {
 					String log = path.replace(".pdf", "") + "#" + error.getErrorCode()+"#"+error.getDetails()+"\n";
