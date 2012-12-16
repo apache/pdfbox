@@ -100,6 +100,9 @@ public abstract class AbstractInvalidFileTester {
                 for (ValidationError error : result.getErrorsList()) {
                     if (error.getErrorCode().equals(this.expectedError)) {
                         found = true;
+                        if (outputResult == null) {
+                            break;
+                        }
                     }
                     if (outputResult != null) {
                         String log = path.getName().replace(".pdf", "") + "#" 
