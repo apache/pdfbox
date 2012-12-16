@@ -200,8 +200,13 @@ public class TrailerValidationProcess extends AbstractProcess {
 				// strings
 				if (!oneIsEquals)
 					oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
+				else
+					break;
 			}
 			isEqual = isEqual && oneIsEquals;
+			if (!isEqual) {
+				break;
+			}
 		}
 		return isEqual;
 	}
