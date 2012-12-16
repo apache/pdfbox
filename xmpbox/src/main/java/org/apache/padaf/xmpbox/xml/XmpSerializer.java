@@ -150,10 +150,10 @@ public class XmpSerializer {
 	private void fillElementWithAttributes (Element target, AbstractComplexProperty property ) {
 		List<Attribute> attributes = property.getAllAttributes();
 		for (Attribute attribute : attributes) {
-			if (target.getNamespaceURI().equals(attribute.getNamespace())) {
-				target.setAttribute(attribute.getName(), attribute.getValue());
-			} else if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
+			if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace())) {
 				target.setAttribute(XmpConstants.DEFAULT_RDF_PREFIX+":"+attribute.getName(), attribute.getValue());
+			} else if (target.getNamespaceURI().equals(attribute.getNamespace())) {
+					target.setAttribute(attribute.getName(), attribute.getValue());
 			} else {
 				target.setAttribute(attribute.getName(), attribute.getValue());
 			}
