@@ -50,7 +50,11 @@ public class CIDType0Container extends FontContainer {
 				 */
 				if (mapping.getSID()==cid) {
 					cidFound = true;
+					break;
 				}
+			}
+			if (cidFound) {
+			    break;
 			}
 		}
 
