@@ -652,7 +652,7 @@ public class PDPageContentStream
         else if( colorSpace.getType() == ColorSpace.TYPE_CMYK )
         {
             color.getColorComponents( colorComponents );
-            setStrokingColor( colorComponents[0], colorComponents[2], colorComponents[2], colorComponents[3] );
+            setStrokingColor( colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3] );
         }
         else
         {
@@ -681,7 +681,7 @@ public class PDPageContentStream
         else if( colorSpace.getType() == ColorSpace.TYPE_CMYK )
         {
             color.getColorComponents( colorComponents );
-            setNonStrokingColor( colorComponents[0], colorComponents[2], colorComponents[2], colorComponents[3] );
+            setNonStrokingColor( colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3] );
         }
         else
         {
