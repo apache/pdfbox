@@ -123,6 +123,10 @@ public class DomXmpParser {
 			xmp = parseInitialXpacket((ProcessingInstruction)node);
 			node = node.getNextSibling();
 		}
+		// forget other processing instruction
+		while (node instanceof ProcessingInstruction) {
+			node = node.getNextSibling();
+		}
 		// expect root element
 		Element root = null;
 		if (!(node instanceof Element)) {
@@ -173,6 +177,36 @@ public class DomXmpParser {
 		TypeMapping tm = xmp.getTypeMapping();
 		try {
 			List<Element> properties = DomHelper.getElementChildren(description);
+			// parse attributes as properties
+			NamedNodeMap nnm = description.getAttributes();
+			for (int i=0; i < nnm.getLength(); i++) {
+				Attr attr = (Attr)nnm.item(i);
+				if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix())) {
+					// do nothing
+				} else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()) && XmpConstants.ABOUT_NAME.equals(attr.getLocalName())) {
+//					// do nothing
+//					if (schema instanceof XMPSchema) {
+//						((XMPSchema)sp).setAboutAsSimple(attr.getValue());
+//					}
+				} else {
+					String namespace = attr.getNamespaceURI();
+					XMPSchema schema = xmp.getSchema(namespace);
+					if (schema==null) {
+						schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, attr.getPrefix());
+						loadAttributes(schema, description);
+					}
+					ComplexPropertyContainer container = schema.getContainer();
+					AbstractSimpleProperty sp = tm.instanciateSimpleProperty(
+							namespace, 
+							schema.getPrefix(), 
+							attr.getLocalName(), 
+							attr.getValue(),
+							Types.Text);
+					container.addProperty(sp);
+				}
+				
+			}
+			// parse children elements as properties
 			for (Element property : properties) {
 				String namespace = property.getNamespaceURI();
 				PropertyType type = checkPropertyDefinition(xmp, DomHelper.getQName(property));
@@ -342,7 +376,14 @@ public class DomXmpParser {
 		NamedNodeMap nnm = element.getAttributes();
 		for (int i=0; i < nnm.getLength() ; i++) {
 			Attr attr = (Attr)nnm.item(i);
-			if (!XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix())) {
+			if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix())) {
+				// do nothing
+			} else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()) && XmpConstants.ABOUT_NAME.equals(attr.getLocalName())) {
+				// set about
+				if (sp instanceof XMPSchema) {
+					((XMPSchema)sp).setAboutAsSimple(attr.getValue());
+				}
+			} else {
 				Attribute attribute = new Attribute(XMLConstants.XML_NS_URI,attr.getLocalName(), attr.getValue());
 				sp.setAttribute(attribute);
 			}

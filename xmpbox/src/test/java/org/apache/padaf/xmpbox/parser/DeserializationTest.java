@@ -27,13 +27,15 @@ import java.util.List;
 
 import org.apache.padaf.xmpbox.DateConverter;
 import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
 import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
+import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.padaf.xmpbox.schema.XMPSchema;
-import org.apache.padaf.xmpbox.type.Attribute;
 import org.apache.padaf.xmpbox.type.ThumbnailType;
 import org.apache.padaf.xmpbox.xml.DomXmpParser;
 import org.apache.padaf.xmpbox.xml.XmpParsingException;
 import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
+import org.apache.padaf.xmpbox.xml.XmpSerializer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +43,13 @@ import org.junit.Test;
 public class DeserializationTest {
 
 	protected ByteArrayOutputStream bos;
+	
+	protected XmpSerializer serializer;
 
 	@Before
-	public void init() {
+	public void init() throws Exception {
 		bos = new ByteArrayOutputStream();
+		serializer = new XmpSerializer();
 	}
 
 
@@ -295,6 +300,24 @@ public class DeserializationTest {
 		for (XMPSchema xmpSchema : schemas) {
 			Assert.assertNotNull(xmpSchema.getAboutAttribute());
 		}
+	}
+
+	@Test
+	public void testWihtAttributesAsProperties() throws Exception {
+		InputStream fis = DomXmpParser.class
+				.getResourceAsStream("/validxmp/attr_as_props.xml");
+		DomXmpParser xdb = new DomXmpParser();
+		XMPMetadata meta = xdb.parse(fis);
+
+		AdobePDFSchema pdf = meta.getAdobePDFSchema();
+		Assert.assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
+		
+		DublinCoreSchema dc = meta.getDublinCoreSchema();
+		Assert.assertEquals("application/pdf", dc.getFormat());
+
+		XMPBasicSchema basic = meta.getXMPBasicSchema();
+		Assert.assertNotNull(basic.getCreateDate());
+		
 	}
 
 	
