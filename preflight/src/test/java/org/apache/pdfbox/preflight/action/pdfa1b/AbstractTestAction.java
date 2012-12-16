@@ -105,6 +105,7 @@ public abstract class AbstractTestAction {
 				for (ValidationError err : errors) {
 					if (err.getErrorCode().equals(expectedCode)) {
 						found = true;
+						break;
 					}
 				}
 				assertTrue(found);
