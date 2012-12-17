@@ -309,11 +309,9 @@ public abstract class SecurityHandler
                 
                 try {
                     byte buffer[] = new byte[4096];
-                    long count = 0L;
                     for(int n = 0; -1 != (n = cipherStream.read(buffer));)
                     {
                         output.write(buffer, 0, n);
-                        count += n;
                     }
                 }
                 finally {
@@ -454,10 +452,14 @@ public abstract class SecurityHandler
     {
         for( Map.Entry<COSName, COSBase> entry : dictionary.entrySet() )
         {
+            COSBase value = entry.getValue();
+            // within a dictionary only strings and streams have to be decrypted
+            if (!(value instanceof COSString) && !(value instanceof COSStream))
+                continue;
             //if we are a signature dictionary and contain a Contents entry then
             //we don't decrypt it.
             if( !(entry.getKey().getName().equals( "Contents" ) &&
-                  entry.getValue() instanceof COSString &&
+                  value instanceof COSString &&
                   potentialSignatures.contains( dictionary )))
             {
                 decrypt( entry.getValue(), objNum, genNum );
