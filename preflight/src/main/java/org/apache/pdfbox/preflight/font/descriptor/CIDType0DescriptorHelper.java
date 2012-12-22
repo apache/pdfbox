@@ -63,7 +63,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
 			 */
 			COSStream stream = ff3.getStream();
 			if (stream == null) {
-				this.fContainer.push(new ValidationError(	ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing"));
+				this.fContainer.push(new ValidationError(	ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing for " + fontDescriptor.getFontName()));
 				this.fContainer.notEmbedded();
 			} else {
 				/*
@@ -72,7 +72,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
 				 */
 				String st = stream.getNameAsString(COSName.SUBTYPE);
 				if (!(FONT_DICTIONARY_VALUE_TYPE0C.equals(st) || FONT_DICTIONARY_VALUE_TYPE1C.equals(st))) {
-					this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,	"The FontFile3 stream doesn't have the right Subtype"));
+					this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,	"The FontFile3 stream doesn't have the right Subtype for " + fontDescriptor.getFontName()));
 				}
 
 				checkCIDSet(fontDescriptor);

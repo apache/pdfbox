@@ -50,6 +50,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelper;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
@@ -242,8 +243,9 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 			}
 
 			if (!RenderingIntents.contains(riArgument0)) {
-				throwContentStreamException("Unexpected value '" + arguments.get(0)
+				registerError("Unexpected value '" + arguments.get(0)
 						+ "' for ri operand. ", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+				return;
 			}
 		}
 	}
@@ -257,7 +259,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		if ("q".equals(operator.getOperation())) {
 			int numberOfGraphicStates = this.getGraphicsStack().size();
 			if (numberOfGraphicStates > MAX_GRAPHIC_STATES) {
-				throwContentStreamException("Too many graphic states", ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES);
+				registerError("Too many graphic states", ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES);
+				return;
 			}
 		}
 	}
@@ -318,8 +321,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 				}
 
 				if (cs == null) {
-					throwContentStreamException("The ColorSpace is unknown",
-							ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+					registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+					return;
 				}
 			}
 
@@ -348,25 +351,28 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 
 		if ("rg".equals(operation) || "RG".equals(operation)) {
 			if (!validColorSpace(cs, ColorSpaceType.RGB)) {
-				throwContentStreamException("The operator \"" + operation
+				registerError("The operator \"" + operation
 						+ "\" can't be used with CMYK Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
+				return;
 			}
 		}
 
 		if ("k".equals(operation) || "K".equals(operation)) {
 			if (!validColorSpace(cs, ColorSpaceType.CMYK)) {
-				throwContentStreamException("The operator \"" + operation
+				registerError("The operator \"" + operation
 						+ "\" can't be used with RGB Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
+				return;
 			}
 		}
 
 		if ("g".equals(operation) || "G".equals(operation)) {
 			if (!validColorSpace(cs, ColorSpaceType.ALL)) {
-				throwContentStreamException("The operator \"" + operation
+				registerError("The operator \"" + operation
 						+ "\" can't be used without Color Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
+				return;
 			}
 		}
 
@@ -376,9 +382,10 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 				|| "b*".equals(operation)) {
 			if (!validColorSpace(cs, ColorSpaceType.ALL)) {
 				// The default fill color needs an OutputIntent
-				throwContentStreamException("The operator \"" + operation
+				registerError("The operator \"" + operation
 						+ "\" can't be used without Color Profile",
 						ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
+				return;
 			}
 		}
 	}
@@ -504,8 +511,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		} else if (arguments.get(0) instanceof COSName) {
 			colorSpaceName = ((COSName) arguments.get(0)).getName();
 		} else {
-			throwContentStreamException("The operand doesn't have the expected type",
-					ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+			registerError("The operand doesn't have the expected type",	ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+			return;
 		}
 
 		ColorSpaceHelper csHelper = null;
@@ -528,7 +535,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 		}
 
 		if (cs == null) {
-			throwContentStreamException("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+			registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+			return;
 		}
 
 		if (csHelper == null) {
@@ -542,17 +550,13 @@ public abstract class ContentStreamEngine extends PDFStreamEngine {
 	}
 
 	/**
-	 * Build a ContentStreamException using the given parameters
+	 * Add a validation error into the PreflightContext
 	 * 
-	 * @param msg
-	 *          exception details
-	 * @param errorCode
-	 *          the error code.
-	 * @throws ContentStreamException
+	 * @param msg exception details
+	 * @param errorCode the error code.
 	 */
-	protected void throwContentStreamException(String msg, String errorCode) throws ContentStreamException {
-		ContentStreamException cex = new ContentStreamException(msg);
-		cex.setErrorCode(errorCode);
-		throw cex;
+	protected void registerError(String msg, String errorCode) {
+			ValidationError error = new ValidationError(errorCode, msg);
+			this.context.addValidationError(error);
 	}
 }

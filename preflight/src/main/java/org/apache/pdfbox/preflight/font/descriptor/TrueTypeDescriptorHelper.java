@@ -50,13 +50,13 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
 		PDStream fontFile = fontDescriptor.getFontFile2();
 		COSStream stream =  (fontFile == null ? null : fontFile.getStream());
 		if (stream == null) {
-			this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile2 is missing"));
+			this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile2 is missing for " + fontDescriptor.getFontName()));
 			this.fContainer.notEmbedded();
 			return null;
 		}
 
 		if (stream.getInt(COSName.LENGTH1) <= 0) {
-			this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile entry /Length1 is invalid"));
+			this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile entry /Length1 is invalid for " + fontDescriptor.getFontName()));
 			return null;
 		}
 
