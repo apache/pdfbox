@@ -144,8 +144,9 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			processor.setContext(this);
 			processor.process(operator, arguments);
 		} else {
-			throwContentStreamException("The operator \"" + operation
+			registerError("The operator \"" + operation
 					+ "\" isn't supported.", ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP);
+			return;
 		}
 
 		/*
@@ -207,35 +208,35 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 		 */
 		if ("\"".equals(operator.getOperation())) {
 			if (arguments.size() != 3) {
-				throwContentStreamException("Invalid argument for the operator : "
-						+ operator.getOperation(),
-						ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				registerError("Invalid argument for the operator : "
+						+ operator.getOperation(), ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				return;
 			}
 			Object arg0 = arguments.get(0);
 			Object arg1 = arguments.get(1);
 			Object arg2 = arguments.get(2);
 			if (!(arg0 instanceof COSInteger || arg0 instanceof COSFloat) || 
 					!(arg1 instanceof COSInteger || arg1 instanceof COSFloat) ) {
-				throwContentStreamException("Invalid argument for the operator : "
-						+ operator.getOperation(),
-						ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);				
+				registerError("Invalid argument for the operator : "
+						+ operator.getOperation(), ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				return;
 			}
 
 			if (arg2 instanceof COSString) {
 				validText(((COSString) arg2).getBytes());
 			} else {
-				throwContentStreamException("Invalid argument for the operator : "
-						+ operator.getOperation(),
-						ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				registerError("Invalid argument for the operator : "
+						+ operator.getOperation(), ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				return;
 			}
 		} else {
 			Object objStr = arguments.get(0);
 			if (objStr instanceof COSString) {
 				validText(((COSString) objStr).getBytes());
 			} else if (!(objStr instanceof COSInteger)) {
-				throwContentStreamException("Invalid argument for the operator : "
-						+ operator.getOperation(),
-						ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				registerError("Invalid argument for the operator : "
+						+ operator.getOperation(), ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				return;
 			}
 		}
 	}
@@ -259,8 +260,9 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			} else if (object instanceof COSString) {
 				validText(((COSString) object).getBytes());
 			} else if (!(object instanceof COSInteger || object instanceof COSFloat)) {
-				throwContentStreamException("Invalid argument for the operator : "
+				registerError("Invalid argument for the operator : "
 						+ operator.getOperation(),	ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
+				return;
 			}
 		}
 	}
@@ -282,10 +284,10 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 		PDTextState textState = getGraphicsState().getTextState();
 		final int renderingMode = textState.getRenderingMode();
 		final PDFont font = textState.getFont();
-
 		if (font == null) {
 			// Unable to decode the Text without Font
-			throwContentStreamException("Text operator can't be process without Font", ERROR_FONTS_UNKNOWN_FONT_REF);
+			registerError("Text operator can't be process without Font", ERROR_FONTS_UNKNOWN_FONT_REF);
+			return;
 		}
 
 		FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
@@ -294,10 +296,15 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 			return ;
 		} else if (fontContainer == null) {
 			// Font Must be embedded if the RenderingMode isn't 3
-			throwContentStreamException(font.getBaseFont() + " is unknown wasn't found by the FontHelperValdiator", ERROR_FONTS_UNKNOWN_FONT_REF);	
-		} else if (!fontContainer.isValid() && ! fontContainer.errorsAleadyMerged()) {
+			registerError(font.getBaseFont() + " is unknown wasn't found by the FontHelperValdiator", ERROR_FONTS_UNKNOWN_FONT_REF);
+			return;
+		} else if (!fontContainer.isValid() && !fontContainer.errorsAleadyMerged()) {
 			context.addValidationErrors(fontContainer.getAllErrors());
 			fontContainer.setErrorsAleadyMerged(true);
+			return;
+		} if (!fontContainer.isValid() && fontContainer.errorsAleadyMerged()) {
+			// font already computed
+			return;
 		}
 
 
@@ -314,15 +321,14 @@ public class ContentStreamWrapper extends ContentStreamEngine {
 					codeLength++;
 					cid = font.encodeToCID(string, i, codeLength);
 				}
-			} catch (IOException e) {
-				throwContentStreamException("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR);
-			}
-
-			try {
 				fontContainer.checkGlyphWith(cid);
+			} catch (IOException e) {
+				registerError("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR);
+				return;
 			} catch (GlyphException e) {
 				if (renderingMode != 3) {
-					throwContentStreamException(e.getMessage(), e.getErrorCode());
+					registerError(e.getMessage(), e.getErrorCode());
+					return;
 				}
 			}
 		}

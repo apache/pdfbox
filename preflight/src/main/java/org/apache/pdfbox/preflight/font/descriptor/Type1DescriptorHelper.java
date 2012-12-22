@@ -82,7 +82,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container> 
 		if (ff1 != null) {
 			COSStream stream = ff1.getStream();
 			if (stream == null) {
-				this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing"));
+				this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing for " + fontDescriptor.getFontName()));
 				this.fContainer.notEmbedded();
 				return null;
 			}
@@ -91,7 +91,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container> 
 			boolean hasLength2 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH2)) > 0;
 			boolean hasLength3 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH3)) >= 0;
 			if (!(hasLength1 && hasLength2 && hasLength3)) {
-				this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is invalid"));
+				this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is invalid for " + fontDescriptor.getFontName()));
 				return null;
 			}
 

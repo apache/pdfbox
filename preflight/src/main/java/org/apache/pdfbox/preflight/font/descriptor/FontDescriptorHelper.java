@@ -69,7 +69,7 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 	protected PDFont font;
 
 	protected PDFontDescriptorDictionary fontDescriptor;
-	
+
 	public FontDescriptorHelper(PreflightContext context, PDFont font, T fontContainer) {
 		super();
 		this.fContainer = fontContainer;
@@ -82,7 +82,7 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 		// Only a PDFontDescriptorDictionary provides a way to embedded the font program.
 		if(fd != null && fd instanceof PDFontDescriptorDictionary) {
 			fontDescriptor = (PDFontDescriptorDictionary)fd;
-			
+
 			if (checkMandatoryFields(fontDescriptor.getCOSDictionary())) {
 				if (hasOnlyOneFontFile(fontDescriptor)) {
 					PDStream fontFile = extractFontFile(fontDescriptor);
@@ -91,7 +91,12 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 						checkFontFileMetaData(fontDescriptor, fontFile);
 					}
 				} else {
-					this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,	"They are more than one FontFile"));
+					if (fontFileNotEmbedded(fontDescriptor)) {
+						this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "FontFile entry is missing from FontDescriptor for " + fontDescriptor.getFontName()));
+						this.fContainer.notEmbedded();
+					} else {
+						this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,	"They are more than one FontFile for " + fontDescriptor.getFontName()));
+					}
 				}
 			}
 		} else {
@@ -130,6 +135,13 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 		return (ff1 != null ^ ff2 != null ^ ff3 != null);
 	}
 
+	protected boolean fontFileNotEmbedded(PDFontDescriptorDictionary fontDescriptor) {
+		PDStream ff1 = fontDescriptor.getFontFile();
+		PDStream ff2 = fontDescriptor.getFontFile2();
+		PDStream ff3 = fontDescriptor.getFontFile3();
+		return (ff1 == null && ff2 == null && ff3 == null);
+	}
+
 	protected abstract void processFontFile(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile);
 
 	/**
@@ -142,7 +154,7 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 		PDMetadata metadata = null;
 		try {
 			metadata = fontFile.getMetadata();
-			
+
 			if (metadata != null) {
 				// Filters are forbidden in a XMP stream
 				if (metadata.getFilters() != null && !metadata.getFilters().isEmpty()) {
@@ -177,7 +189,7 @@ public abstract class FontDescriptorHelper <T extends FontContainer> {
 			this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_UNKOWN,	"The Metadata entry doesn't reference a stream object"));
 		}
 	}
-	
+
 	protected final byte[] getMetaDataStreamAsBytes(PDMetadata metadata) {
 		byte[] result = null;
 		ByteArrayOutputStream bos = null;
