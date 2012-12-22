@@ -351,6 +351,10 @@ public interface PreflightConstants {
 	 * An object is missing from the document
 	 */
 	String ERROR_SYNTAX_MISSING_OFFSET = "1.0.13";
+	/**
+	 * An object has an invalid offset
+	 */
+	String ERROR_SYNTAX_INVALID_OFFSET = "1.0.14";
 
 	String ERROR_SYNTAX_HEADER = "1.1";
 	

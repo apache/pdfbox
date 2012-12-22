@@ -562,6 +562,8 @@ public class PreflightParser extends NonSequentialPDFParser {
 			if ( offsetOrObjstmObNr == null )	{
 				// not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
 				pdfObject.setObject( COSNull.NULL );
+			} else if ( offsetOrObjstmObNr == 0 )	{
+				addValidationError(new ValidationError(ERROR_SYNTAX_INVALID_OFFSET, "Object {" +	objKey.getNumber() + ":" + objKey.getGeneration()+"} has an offset of 0"));
 			}	else if ( offsetOrObjstmObNr > 0 )	{
 				// offset of indirect object in file
 				// ---- go to object start
