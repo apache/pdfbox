@@ -188,6 +188,8 @@ public class DomXmpParser {
 //					if (schema instanceof XMPSchema) {
 //						((XMPSchema)sp).setAboutAsSimple(attr.getValue());
 //					}
+				} else if (attr.getPrefix()==null && XmpConstants.ABOUT_NAME.equals(attr.getLocalName())) {
+					// do nothing
 				} else {
 					String namespace = attr.getNamespaceURI();
 					XMPSchema schema = xmp.getSchema(namespace);
@@ -271,6 +273,9 @@ public class DomXmpParser {
 					container.addProperty(ast);
 				} else {
 					Element inner = DomHelper.getFirstChildElement(property);
+					if (inner==null) {
+						throw new XmpParsingException(ErrorType.Format, "property should contain child element : "+property);
+					}
 					AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
 					ast.setPrefix(prefix);
 					container.addProperty(ast);
