@@ -321,7 +321,22 @@ public class PDType1CFont extends PDSimpleFont
         CFFParser cffParser = new CFFParser();
         List<CFFFont> fonts = cffParser.parse(cffBytes);
 
-        this.cffFont = (CFFFont)fonts.get(0);
+        String baseFontName = getBaseFont();
+        if (fonts.size() > 1 && baseFontName != null)
+        {
+            for (CFFFont font: fonts) 
+            {
+                if (baseFontName.equals(font.getName())) 
+                {
+                    this.cffFont = font;
+                    break;
+                }
+            }
+        }
+        if (this.cffFont == null) 
+        {
+            this.cffFont = (CFFFont)fonts.get(0);
+        }
 
         CFFEncoding encoding = this.cffFont.getEncoding();
         PDFEncoding pdfEncoding = new PDFEncoding(encoding);
@@ -358,13 +373,13 @@ public class PDType1CFont extends PDSimpleFont
             }
         }
 
-        Map nameToCharacter;
+        Map<String,String> nameToCharacter;
         try
         {
             // TODO remove access by reflection
             Field nameToCharacterField = Encoding.class.getDeclaredField("NAME_TO_CHARACTER");
             nameToCharacterField.setAccessible(true);
-            nameToCharacter = (Map)nameToCharacterField.get(null);
+            nameToCharacter = (Map<String,String>)nameToCharacterField.get(null);
         }
         catch( Exception e )
         {
