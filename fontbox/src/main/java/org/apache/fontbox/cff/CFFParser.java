@@ -59,6 +59,45 @@ public class CFFParser
     public List<CFFFont> parse(byte[] bytes) throws IOException
     {
         input = new CFFDataInput(bytes);
+        
+    	String firstTag = readTagName(input);
+    	if (firstTag.equals("OTTO")) 
+    	{
+    		// this is OpenType font containing CFF data
+    		// so find CFF tag
+    		short numTables = input.readShort();
+    		short searchRange = input.readShort();
+    		short entrySelector = input.readShort();
+    		short rangeShift = input.readShort();
+    		
+    		boolean cffFound = false;
+    		for (int q=0; q<numTables; q++) 
+    		{
+    			String tagName = readTagName(input);
+    			long checksum = readLong(input);
+    			long offset = readLong(input);
+    			long length = readLong(input);
+    			if (tagName.equals("CFF ")) 
+    			{
+    				cffFound = true;
+    				byte[] bytes2 = new byte[(int)length];
+    				System.arraycopy(bytes, (int)offset, bytes2, 0, bytes2.length);
+    				input = new CFFDataInput(bytes2);
+    				break;
+    			}
+    		}
+    		
+    		if (!cffFound) 
+    		{
+    			throw new IOException("CFF tag not found in this OpenType font.");
+    		}
+    		
+    	} 
+    	else 
+    	{
+    		input.setPosition(0);
+    	}
+        
         header = readHeader(input);
         nameIndex = readIndexData(input);
         topDictIndex = readIndexData(input);
@@ -74,15 +113,26 @@ public class CFFParser
         }
         return fonts;
     }
+    
+    private static String readTagName(CFFDataInput input) throws IOException 
+    {
+    	byte[] b=input.readBytes(4);
+    	return new String(b);
+    }
+
+    private static long readLong(CFFDataInput input) throws IOException 
+    {
+    	return (input.readCard16()<<16) | input.readCard16();
+    }
 
     private static Header readHeader(CFFDataInput input) throws IOException
     {
-        Header header = new Header();
-        header.major = input.readCard8();
-        header.minor = input.readCard8();
-        header.hdrSize = input.readCard8();
-        header.offSize = input.readOffSize();
-        return header;
+        Header cffHeader = new Header();
+        cffHeader.major = input.readCard8();
+        cffHeader.minor = input.readCard8();
+        cffHeader.hdrSize = input.readCard8();
+        cffHeader.offSize = input.readOffSize();
+        return cffHeader;
     }
 
     private static IndexData readIndexData(CFFDataInput input)
