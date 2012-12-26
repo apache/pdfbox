@@ -192,7 +192,7 @@ public class PDPixelMap extends PDXObjectImage
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
-                LOG.error("getColorSpace() returned NULL.  Predictor = " + getPredictor());
+                LOG.error("getColorSpace() returned NULL.");
                 return null;
             }
 
@@ -390,6 +390,7 @@ public class PDPixelMap extends PDXObjectImage
      *
      * @return The decoding parameters.
      *
+     * @deprecated Use {@link org.apache.pdfbox.pdmodel.common.PDStream#getDecodeParms() } instead
      */
     public COSDictionary getDecodeParams()
     {
@@ -430,6 +431,9 @@ public class PDPixelMap extends PDXObjectImage
      * Default value: 1.
      *
      * @return predictor algorithm code
+     * 
+     * @deprecated see {@link org.apache.pdfbox.filter.FlateFilter}
+     * 
      */
     public int getPredictor()
     {

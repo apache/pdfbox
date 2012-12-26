@@ -67,7 +67,7 @@ public class CCITTFaxDecodeFilter implements Filter
         }
         else if (decodeP instanceof COSArray)
         {
-            decodeParms =  (COSDictionary)((COSArray)decodeP).get(filterIndex);
+            decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(filterIndex);
         }
         int length = options.getInt(COSName.LENGTH, -1);
         byte[] compressed = null;

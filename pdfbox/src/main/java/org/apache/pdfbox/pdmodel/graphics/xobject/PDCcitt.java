@@ -131,7 +131,7 @@ public class PDCcitt extends PDXObjectImage
                     index++;
                 }
             }
-            decodeParms =  (COSDictionary)((COSArray)decodeP).get(index);
+            decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(index);
         }
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
