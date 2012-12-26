@@ -28,7 +28,6 @@ import java.util.List;
 public class Type2CharStringParser
 {
 
-    private DataInput input = null;
     private int hstemCount = 0;
     private int vstemCount = 0;
     private List<Object> sequence = null;
@@ -36,48 +35,122 @@ public class Type2CharStringParser
     /**
      * The given byte array will be parsed and converted to a Type2 sequence.
      * @param bytes the given mapping as byte array
+     * @param globalSubrIndex index containing all global subroutines
+     * @param localSubrIndex index containing all local subroutines
+     * 
      * @return the Type2 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes) throws IOException
+    public List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex) throws IOException
     {
-        input = new DataInput(bytes);
-
-        hstemCount = 0;
-        vstemCount = 0;
-
-        sequence = new ArrayList<Object>();
+    	return parse(bytes, globalSubrIndex, localSubrIndex, true);
+    }
+    
+    private List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex, boolean init) throws IOException
+    {
+        if (init) 
+        {
+	        hstemCount = 0;
+	        vstemCount = 0;
+	        sequence = new ArrayList<Object>();
+        }
+        DataInput input = new DataInput(bytes);
+        boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.getCount() > 0;
+        boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.getCount() > 0;
 
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();
-
-            if (b0 >= 0 && b0 <= 27)
+            if (b0 == 10 && localSubroutineIndexProvided) 
+            { // process subr command
+            	Integer operand=(Integer)sequence.remove(sequence.size()-1);
+            	//get subrbias
+                int bias = 0;
+                int nSubrs = localSubrIndex.getCount();
+                
+                if (nSubrs < 1240)
+                {
+                    bias = 107;
+                }
+                else if (nSubrs < 33900) 
+                {
+                    bias = 1131;
+                }
+                else 
+                {
+                    bias = 32768;
+                }
+                int subrNumber = bias+operand;
+                if (subrNumber < localSubrIndex.getCount())
+                {
+                    byte[] subrBytes = localSubrIndex.getBytes(subrNumber);
+                    parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+                    Object lastItem=sequence.get(sequence.size()-1);
+                    if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0] == 11)
+                    {
+                        sequence.remove(sequence.size()-1); // remove "return" command
+                    }
+                }
+            	
+            } 
+            else if (b0 == 29 && globalSubroutineIndexProvided) 
+            { // process globalsubr command
+                Integer operand=(Integer)sequence.remove(sequence.size()-1);
+                //get subrbias
+                int bias = 0;
+                int nSubrs = globalSubrIndex.getCount();
+                
+                if (nSubrs < 1240)
+                {
+                    bias = 107;
+                }
+                else if (nSubrs < 33900) 
+                {
+                    bias = 1131;
+                }
+                else 
+                {
+                    bias = 32768;
+                }
+                
+                int subrNumber = bias+operand;
+                if (subrNumber < globalSubrIndex.getCount())
+                {
+                    byte[] subrBytes = globalSubrIndex.getBytes(subrNumber);
+                    parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+                    Object lastItem=sequence.get(sequence.size()-1);
+                    if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0]==11) 
+                    {
+                        sequence.remove(sequence.size()-1); // remove "return" command
+                    }
+                }
+                	
+            } 
+            else if (b0 >= 0 && b0 <= 27)
             {
-                sequence.add(readCommand(b0));
+                sequence.add(readCommand(b0, input));
             } 
             else if (b0 == 28)
             {
-                sequence.add(readNumber(b0));
+                sequence.add(readNumber(b0, input));
             } 
             else if (b0 >= 29 && b0 <= 31)
             {
-                sequence.add(readCommand(b0));
+                sequence.add(readCommand(b0, input));
             } 
             else if (b0 >= 32 && b0 <= 255)
             {
-                sequence.add(readNumber(b0));
+                sequence.add(readNumber(b0, input));
             }
             else
             {
                 throw new IllegalArgumentException();
             }
         }
-
         return sequence;
     }
 
-    private CharStringCommand readCommand(int b0) throws IOException
+    private CharStringCommand readCommand(int b0, DataInput input) throws IOException
     {
 
         if (b0 == 1 || b0 == 18)
@@ -111,7 +184,7 @@ public class Type2CharStringParser
         return new CharStringCommand(b0);
     }
 
-    private Integer readNumber(int b0) throws IOException
+    private Integer readNumber(int b0, DataInput input) throws IOException
     {
 
         if (b0 == 28)
@@ -141,11 +214,10 @@ public class Type2CharStringParser
         {
             int b1 = input.readUnsignedByte();
             int b2 = input.readUnsignedByte();
-            int b3 = input.readUnsignedByte();
-            int b4 = input.readUnsignedByte();
-
             // The lower bytes are representing the digits after 
             // the decimal point and aren't needed in this context
+            input.readUnsignedByte();
+            input.readUnsignedByte();
             return Integer.valueOf((short)(b1 << 8 | b2));
         } 
         else

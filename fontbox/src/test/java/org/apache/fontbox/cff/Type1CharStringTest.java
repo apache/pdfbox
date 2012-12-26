@@ -42,7 +42,8 @@ public class Type1CharStringTest
                 new int[] { 12, 0 }, new int[] { 31 });
 
         byte[] encodedCommands = new Type1CharStringFormatter().format(commands);
-        List<Object> decodedCommands = new Type1CharStringParser().parse(encodedCommands);
+        List<Object> decodedCommands = new Type1CharStringParser()
+                .parse(encodedCommands, new IndexData(0));
 
         assertEquals(1 + 2 + 1, encodedCommands.length);
 
@@ -61,7 +62,7 @@ public class Type1CharStringTest
 
         byte[] encodedNumbers = new Type1CharStringFormatter().format(numbers);
         List<Object> decodedNumbers = new Type1CharStringParser()
-                .parse(encodedNumbers);
+                .parse(encodedNumbers, new IndexData(0));
 
         assertEquals(5 + 2 * 2 + 3 * 1 + 2 * 2 + 5, encodedNumbers.length);
 

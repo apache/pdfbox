@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.fontbox.cff.IndexData;
 import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.cff.Type1FontUtil;
 import org.apache.pdfbox.encoding.Encoding;
@@ -281,7 +282,8 @@ public final class Type1Parser {
 		stream.read(descBinary, 0, sizeOfCharString);
 		byte[] description = Type1FontUtil.charstringDecrypt(descBinary, lenIV);
 		Type1CharStringParser t1p = new Type1CharStringParser();
-		List<Object> operations = t1p.parse(description);
+		// TODO provide the local subroutine indexes
+		List<Object> operations = t1p.parse(description, new IndexData(0));
 		type1Font.addGlyphDescription(label, new GlyphDescription(operations));
 
 		readToken(stream); // skip "ND" or "|-" token

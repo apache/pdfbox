@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.cff;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,23 +34,33 @@ public class CharStringConverter extends CharStringHandler
     private int nominalWidthX = 0;
     private List<Object> sequence = null;
     private int pathCount = 0;
-    private IndexData globalSubrIndex = null;
-    private IndexData localSubrIndex = null;
 
     /**
      * Constructor.
      * 
      * @param defaultWidth default width
      * @param nominalWidth nominal width
+     * 
+     * @deprecated Use {@link CharStringConverter#CharStringConverter(int, int)} instead
      */
     public CharStringConverter(int defaultWidth, int nominalWidth, IndexData fontGlobalSubrIndex, IndexData fontLocalSubrIndex)
     {
         defaultWidthX = defaultWidth;
         nominalWidthX = nominalWidth;
-        globalSubrIndex = fontGlobalSubrIndex;
-        localSubrIndex = fontLocalSubrIndex;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param defaultWidth default width
+     * @param nominalWidth nominal width
+     * 
+     */
+    public CharStringConverter(int defaultWidth, int nominalWidth)
+    {
+        defaultWidthX = defaultWidth;
+        nominalWidthX = nominalWidth;
+    }
     /**
      * Converts a sequence of Type1/Type2 commands into a sequence of CharStringCommands.
      * @param commandSequence the type1/type2 sequence
@@ -145,44 +154,6 @@ public class CharStringConverter extends CharStringHandler
         {
             drawAlternatingCurve(numbers, true);
         } 
-        else if ("callsubr".equals(name))
-        {
-            //get subrbias
-            int bias = 0;
-            int nSubrs = localSubrIndex.getCount();
-            
-            if (nSubrs < 1240)
-            {
-                bias = 107;
-            }
-            else if (nSubrs < 33900) 
-            {
-                bias = 1131;
-            }
-            else 
-            {
-                bias = 32768;
-            }
-           
-            List<Integer> result = null;
-            int subrNumber = bias+numbers.get(numbers.size()-1);
-            if (subrNumber < localSubrIndex.getCount())
-            {
-                Type2CharStringParser parser = new Type2CharStringParser();
-                byte[] bytes = localSubrIndex.getBytes(subrNumber);
-                List<Object> parsed = null;
-                try {
-                    parsed = parser.parse(bytes);
-                    parsed.addAll(0,numbers.subList(0, numbers.size()-1));
-                    result = handleSequence(parsed);
-                } 
-                catch (IOException e) 
-                {
-                    e.printStackTrace();
-                }
-            }
-            return result;
-        }
         else if ("return".equals(name))
         {
             return numbers;
@@ -276,42 +247,6 @@ public class CharStringConverter extends CharStringHandler
         {
             drawCurve(numbers, true);
         } 
-        else if ("callgsubr".equals(name))
-        {
-            //get subrbias
-            int bias = 0;
-            int nSubrs = globalSubrIndex.getCount();
-            
-            if (nSubrs < 1240)
-            {
-                bias = 107;
-            }
-            else if (nSubrs < 33900)
-            {
-                bias = 1131;
-            }
-            else 
-            {
-                bias = 32768;
-            }
-            List<Integer> result = null;
-            int subrNumber = bias+numbers.get(numbers.size()-1);
-            if (subrNumber < nSubrs)
-            {
-                Type2CharStringParser parser = new Type2CharStringParser();
-                byte[] bytes = globalSubrIndex.getBytes(subrNumber);
-                List<Object> parsed = null;
-                try {
-                    parsed = parser.parse(bytes);
-                    parsed.addAll(0,numbers.subList(0, numbers.size()-1));
-                    result = handleSequence(parsed);
-                } catch (IOException e) 
-                {
-                    e.printStackTrace();
-                }
-            }
-            return result;
-        }
         else
         {
             addCommand(numbers, command);
