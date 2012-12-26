@@ -34,18 +34,61 @@ public class Type1CharStringParser
     /**
      * The given byte array will be parsed and converted to a Type1 sequence.
      * @param bytes the given mapping as byte array
+     * @param localSubrIndex index containing all local subroutines
+     * 
      * @return the Type1 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes) throws IOException
+    public List<Object> parse(byte[] bytes, IndexData localSubrIndex) throws IOException
     {
+        return parse(bytes, localSubrIndex, true);
+    }
+    
+    private List<Object> parse(byte[] bytes, IndexData localSubrIndex, boolean init) throws IOException
+    {
+        if (init) 
+        {
+            sequence = new ArrayList<Object>();
+        }
         input = new DataInput(bytes);
-        sequence = new ArrayList<Object>();
+        boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.getCount() > 0;
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();
 
-            if (b0 >= 0 && b0 <= 31)
+            if (b0 == 10 && localSubroutineIndexProvided) 
+            { // process subr command
+                Integer operand=(Integer)sequence.remove(sequence.size()-1);
+                //get subrbias
+                int bias = 0;
+                int nSubrs = localSubrIndex.getCount();
+                
+                if (nSubrs < 1240)
+                {
+                    bias = 107;
+                }
+                else if (nSubrs < 33900) 
+                {
+                    bias = 1131;
+                }
+                else 
+                {
+                    bias = 32768;
+                }
+                int subrNumber = bias+operand;
+                if (subrNumber < localSubrIndex.getCount())
+                {
+                    byte[] subrBytes = localSubrIndex.getBytes(subrNumber);
+                    parse(subrBytes, localSubrIndex, false);
+                    Object lastItem = sequence.get(sequence.size()-1);
+                    if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0] == 11)
+                    {
+                        sequence.remove(sequence.size()-1); // remove "return" command
+                    }
+                }
+                
+            } 
+            else if (b0 >= 0 && b0 <= 31)
             {
                 sequence.add(readCommand(b0));
             } 

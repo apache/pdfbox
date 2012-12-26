@@ -248,12 +248,12 @@ public class CFFFont
 		byte[] glyphDesc = this.getCharStringsDict().get(".notdef");
 		if (((Number)getProperty("CharstringType")).intValue() == 2 ) {
 			Type2CharStringParser parser = new Type2CharStringParser();
-			List<Object> lSeq = parser.parse(glyphDesc);
+			List<Object> lSeq = parser.parse(glyphDesc, getGlobalSubrIndex(), getLocalSubrIndex());
 			csr = new CharStringRenderer(false);
 			csr.render(lSeq);
 		} else {
 			Type1CharStringParser parser = new Type1CharStringParser();
-			List<Object> lSeq = parser.parse(glyphDesc);
+			List<Object> lSeq = parser.parse(glyphDesc, getLocalSubrIndex());
 			csr = new CharStringRenderer();
 			csr.render(lSeq);
 		}
@@ -313,8 +313,7 @@ public class CFFFont
 	{
 		Number defaultWidthX = (Number) getProperty("defaultWidthX");
 		Number nominalWidthX = (Number) getProperty("nominalWidthX");
-		return new CharStringConverter(defaultWidthX.intValue(), nominalWidthX
-				.intValue(), getGlobalSubrIndex(), getLocalSubrIndex());
+		return new CharStringConverter(defaultWidthX.intValue(), nominalWidthX.intValue());
 	}
 
 	/**
@@ -400,7 +399,7 @@ public class CFFFont
 		public List<Object> toType2Sequence() throws IOException
 		{
 			Type2CharStringParser parser = new Type2CharStringParser();
-			return parser.parse(getBytes());
+			return parser.parse(getBytes(), getGlobalSubrIndex(), getLocalSubrIndex());
 		}
 
 		/**
