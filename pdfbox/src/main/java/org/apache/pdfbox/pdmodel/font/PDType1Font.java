@@ -341,12 +341,27 @@ public class PDType1Font extends PDSimpleFont
                                 StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
                                 // ignore the first token
                                 st.nextElement();
-                                int index = Integer.parseInt(st.nextToken());
-                                String name = st.nextToken();
-                                if(encoding == null)
-                                    log.warn("Unable to get character encoding.  Encoding defintion found without /Encoding line.");
-                                else
-                                    encoding.addCharacterEncoding(index, name.replace("/", ""));
+                                try
+                                {
+                                    int index = Integer.parseInt(st.nextToken());
+                                    String name = st.nextToken();
+                                    if(encoding == null)
+                                    {
+                                        log.warn("Unable to get character encoding. Encoding defintion found without /Encoding line.");
+                                    }
+                                    else
+                                    {
+                                        encoding.addCharacterEncoding(index, name.replace("/", ""));
+                                    }
+                                }
+                                catch(NumberFormatException exception)
+                                {
+                                    // there are (tex?)-some fonts containing postscript code like the following, 
+                                    // which has to be ignored, see PDFBOX-1481
+                                    // dup dup 161 10 getinterval 0 exch putinterval ....
+                                    log.debug("Malformed encoding definition ignored (line="+line+")");
+                                }
+                                continue;
                             }
                         }
                         // according to the pdf reference, all font matrices should be same, except for type 3 fonts.
