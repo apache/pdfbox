@@ -262,7 +262,7 @@ public class PreflightParser extends NonSequentialPDFParser {
 			}
 
 			String secondLine = reader.readLine(); 
-			byte[] secondLineAsBytes = secondLine.getBytes(encoding);
+			byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
 			if (secondLine != null && secondLineAsBytes.length >= 5) {
 				for (int i = 0; i < secondLineAsBytes.length; ++i ) {
 					byte b = secondLineAsBytes[i]; 
