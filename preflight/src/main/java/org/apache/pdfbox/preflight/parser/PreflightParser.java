@@ -21,11 +21,13 @@
 
 package org.apache.pdfbox.preflight.parser;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_ARRAY_TOO_LONG;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CROSS_REF;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_HEXA_STRING_EVEN_NUMBER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_HEXA_STRING_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_HEXA_STRING_TOO_LONG;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_INVALID_OFFSET;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_MISSING_OFFSET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NAME_TOO_LONG;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NUMERIC_RANGE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER;
@@ -253,16 +255,17 @@ public class PreflightParser extends NonSequentialPDFParser {
 	protected void checkPdfHeader() {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(getPdfFile()), "ISO-8859-1"));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(getPdfFile()), encoding));
 			String firstLine = reader.readLine();
 			if (firstLine == null || (firstLine != null && !firstLine.matches("%PDF-1\\.[1-9]"))) {
 				addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER, "First line must match %PDF-1.\\d"));	
 			}
 
 			String secondLine = reader.readLine(); 
-			if (secondLine != null && secondLine.getBytes().length >= 5) {
-				for (int i = 0; i < secondLine.getBytes().length; ++i ) {
-					byte b = secondLine.getBytes()[i]; 
+			byte[] secondLineAsBytes = secondLine.getBytes(encoding);
+			if (secondLine != null && secondLineAsBytes.length >= 5) {
+				for (int i = 0; i < secondLineAsBytes.length; ++i ) {
+					byte b = secondLineAsBytes[i]; 
 					if (i == 0 && ((char)b != '%')) {
 						addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER, "Second line must contains at least 4 bytes greater than 127"));
 						break;
