@@ -30,7 +30,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -46,6 +48,7 @@ public class RadialShadingContext implements PaintContext
     private ColorModel colorModel;
     private PDFunction function;
     private ColorSpace shadingColorSpace;
+    private PDFunction shadingTinttransform;
 
     private float[] coords;
     private float[] domain;
@@ -63,7 +66,7 @@ public class RadialShadingContext implements PaintContext
     /**
      * Log instance.
      */
-    private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
+    private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -110,6 +113,14 @@ public class RadialShadingContext implements PaintContext
             {
                 // we have to create an instance of the shading colorspace if it isn't RGB
                 shadingColorSpace = cs.getJavaColorSpace();
+                if (cs instanceof PDDeviceN)
+                {
+                    shadingTinttransform = ((PDDeviceN)cs).getTintTransform();
+                }
+                else if (cs instanceof PDSeparation)
+                {
+                    shadingTinttransform = ((PDSeparation)cs).getTintTransform();
+                }
             }
         } 
         catch (IOException exception) 
@@ -184,6 +195,8 @@ public class RadialShadingContext implements PaintContext
     {
         colorModel = null;
         function = null;
+        shadingColorSpace = null;
+        shadingTinttransform = null;
     }
 
     /**
@@ -265,19 +278,23 @@ public class RadialShadingContext implements PaintContext
                 }
                 input[0] = (float)(domain[0] + (d1d0*inputValue));
                 float[] values = null;
+                int index = (j * w + i) * 3;
                 try 
                 {
                     values = function.eval(input);
-                } 
+                    // convert color values from shading colorspace to RGB 
+                    if (shadingColorSpace != null)
+                    {
+                        if (shadingTinttransform != null)
+                        {
+                            values = shadingTinttransform.eval(values);
+                        }
+                        values = shadingColorSpace.toRGB(values);
+                    }
+                }
                 catch (IOException exception) 
                 {
                     LOG.error("error while processing a function", exception);
-                }
-                int index = (j * w + i) * 3;
-                // convert color values from shading colorspace to RGB 
-                if (shadingColorSpace != null)
-                {
-                    values = shadingColorSpace.toRGB(values);
                 }
                 data[index] = (int)(values[0]*255);
                 data[index+1] = (int)(values[1]*255);
