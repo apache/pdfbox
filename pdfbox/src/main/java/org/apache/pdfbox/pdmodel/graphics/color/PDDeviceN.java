@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 
@@ -48,13 +49,14 @@ public class PDDeviceN extends PDColorSpace
     private static final Log LOG = LogFactory.getLog(PDDeviceN.class);
 
     private static final int COLORANT_NAMES = 1;
-
     private static final int ALTERNATE_CS = 2;
-
     private static final int TINT_TRANSFORM = 3;
-
     private static final int DEVICEN_ATTRIBUTES = 4;
 
+    private PDFunction tintTransform = null;
+    private PDColorSpace alternateCS = null;
+    private PDDeviceNAttributes deviceNAttributes = null;
+    
     /**
      * The name of this color space.
      */
@@ -69,22 +71,25 @@ public class PDDeviceN extends PDColorSpace
     {
         array = new COSArray();
         array.add( COSName.DEVICEN );
-        array.add( COSName.getPDFName( "" ) );
+        // add some placeholder
+        array.add( COSNull.NULL );
+        array.add( COSNull.NULL );
+        array.add( COSNull.NULL );
     }
 
     /**
      * Constructor.
      *
-     * @param separation The array containing all separation information.
+     * @param csAttributes The array containing all colorspace information.
      */
-    public PDDeviceN( COSArray separation )
+    public PDDeviceN( COSArray csAttributes )
     {
-        array = separation;
+        array = csAttributes;
     }
 
     /**
-     * This will return the name of the color space.  For a PDSeparation object
-     * this will always return "Separation"
+     * This will return the name of the color space.  For a PDDeviceN object
+     * this will always return "DeviceN"
      *
      * @return The name of the color space.
      */
@@ -116,8 +121,7 @@ public class PDDeviceN extends PDColorSpace
     {
         try
         {
-            PDColorSpace alt = getAlternateColorSpace();
-            return alt.getJavaColorSpace();
+            return getAlternateColorSpace().getJavaColorSpace();
         }
         catch (IOException ioexception)
         {
@@ -151,7 +155,7 @@ public class PDDeviceN extends PDColorSpace
      *
      * @return A list of colorants
      */
-    public List<COSBase> getColorantNames()
+    public List<String> getColorantNames()
     {
         COSArray names = (COSArray)array.getObject( COLORANT_NAMES );
         return COSArrayList.convertCOSNameCOSArrayToList( names );
@@ -162,7 +166,7 @@ public class PDDeviceN extends PDColorSpace
      *
      * @param names The list of colorant names.
      */
-    public void setColorantNames( List<COSBase> names )
+    public void setColorantNames( List<String> names )
     {
         COSArray namesArray = COSArrayList.convertStringListToCOSNameCOSArray( names );
         array.set( COLORANT_NAMES, namesArray );
@@ -177,8 +181,12 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDColorSpace getAlternateColorSpace() throws IOException
     {
-        COSBase alternate = array.getObject( ALTERNATE_CS );
-        return PDColorSpaceFactory.createColorSpace( alternate );
+        if ( alternateCS == null )
+        {
+            COSBase alternate = array.getObject( ALTERNATE_CS );
+            alternateCS = PDColorSpaceFactory.createColorSpace( alternate );
+        }
+        return alternateCS;
     }
 
     /**
@@ -188,6 +196,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public void setAlternateColorSpace( PDColorSpace cs )
     {
+        alternateCS = cs;
         COSBase space = null;
         if( cs != null )
         {
@@ -205,7 +214,11 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDFunction getTintTransform() throws IOException
     {
-        return  PDFunction.create( array.getObject( TINT_TRANSFORM ) );
+        if ( tintTransform == null )
+        {
+            tintTransform = PDFunction.create( array.getObject( TINT_TRANSFORM ) );
+        }
+        return tintTransform;
     }
 
     /**
@@ -215,6 +228,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public void setTintTransform( PDFunction tint )
     {
+        tintTransform = tint;
         array.set( TINT_TRANSFORM, tint );
     }
 
@@ -226,13 +240,11 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDDeviceNAttributes getAttributes()
     {
-        PDDeviceNAttributes retval = null;
-        if( array.size() <= DEVICEN_ATTRIBUTES )
+        if ( deviceNAttributes == null )
         {
-            retval = new PDDeviceNAttributes();
-            setAttributes( retval );
+            deviceNAttributes = new PDDeviceNAttributes((COSDictionary)array.getObject(DEVICEN_ATTRIBUTES));
         }
-        return retval;
+        return deviceNAttributes;
     }
 
     /**
@@ -243,6 +255,7 @@ public class PDDeviceN extends PDColorSpace
      */
     public void setAttributes( PDDeviceNAttributes attributes )
     {
+        deviceNAttributes = attributes;
         if( attributes == null )
         {
             array.remove( DEVICEN_ATTRIBUTES );
@@ -250,7 +263,7 @@ public class PDDeviceN extends PDColorSpace
         else
         {
             //make sure array is large enough
-            while( array.size() <= DEVICEN_ATTRIBUTES )
+            while( array.size() <= DEVICEN_ATTRIBUTES + 1 )
             {
                 array.add( COSNull.NULL );
             }
