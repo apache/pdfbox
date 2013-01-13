@@ -172,6 +172,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void write(int b) throws IOException
     {
+        // end of buffer reached?
         if (currentBufferPointer >= BUFFER_SIZE) 
         {
             if (pointer + BUFFER_SIZE >= Integer.MAX_VALUE) 
@@ -185,6 +186,15 @@ public class RandomAccessBuffer implements RandomAccess
         if (pointer > this.size)
         {
             this.size = pointer;
+        }
+        // end of buffer reached now?
+        if (currentBufferPointer >= BUFFER_SIZE) 
+        {
+            if (pointer + BUFFER_SIZE >= Integer.MAX_VALUE) 
+            {
+                throw new IOException("RandomAccessBuffer overflow");
+            }
+            expandBuffer();
         }
     }
 

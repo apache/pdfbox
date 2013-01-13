@@ -210,4 +210,16 @@ public class TestRandomAccessBuffer extends TestCase
         }
         assertEquals(25, result);
     }
+    
+    public void testPDFBOX1490() throws Exception
+    {
+        // create a buffer filled with 16383 * "0" 
+        byte[] byteArray = new byte[ BUFFER_SIZE-1];
+        RandomAccessBuffer buffer = new RandomAccessBuffer();
+        buffer.write(byteArray,0, byteArray.length);
+        // fill the first buffer until the end
+        buffer.write(0);
+        // seek the current == last position in the first buffer chunk
+        buffer.seek(buffer.getPosition());
+    }
 }
