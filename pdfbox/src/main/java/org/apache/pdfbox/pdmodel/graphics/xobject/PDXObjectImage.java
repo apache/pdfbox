@@ -175,20 +175,30 @@ public abstract class PDXObjectImage extends PDXObject
     public BufferedImage mask(BufferedImage baseImage) 
     	throws IOException
     {
-    	PDXObjectImage maskImageRef = (PDXObjectImage)PDXObject.createXObject(getMask());
-    	BufferedImage maskImage = maskImageRef.getRGBImage();
-   	 	if(maskImage == null)
-   	 	{
-	   		 LOG.warn("masking getRGBImage returned NULL");
-	   		 return baseImage;
-   	 	}
-   	 
-	   	 BufferedImage newImage = new BufferedImage( maskImage.getWidth(), maskImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-	   	 Graphics2D graphics = (Graphics2D)newImage.getGraphics();
-	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
-	   	 graphics.setComposite(AlphaComposite.DstIn);
-	   	 graphics.drawImage(maskImage, null, 0, 0);
-	   	 return newImage;
+        COSBase mask = getMask();
+        if (mask instanceof COSStream)
+        {
+        	PDXObjectImage maskImageRef = (PDXObjectImage)PDXObject.createXObject((COSStream)mask);
+        	BufferedImage maskImage = maskImageRef.getRGBImage();
+       	 	if(maskImage == null)
+       	 	{
+    	   		 LOG.warn("masking getRGBImage returned NULL");
+    	   		 return baseImage;
+       	 	}
+       	 
+    	   	 BufferedImage newImage = new BufferedImage( maskImage.getWidth(), maskImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    	   	 Graphics2D graphics = (Graphics2D)newImage.getGraphics();
+    	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
+    	   	 graphics.setComposite(AlphaComposite.DstIn);
+    	   	 graphics.drawImage(maskImage, null, 0, 0);
+    	   	 return newImage;
+        }
+        else
+        {
+            // TODO Colour key masking
+            LOG.warn("Colour key masking isn't supported");
+            return baseImage;
+        }
     }
 
     /**
