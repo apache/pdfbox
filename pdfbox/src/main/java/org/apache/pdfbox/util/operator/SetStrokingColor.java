@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.PDFOperator;
@@ -90,6 +91,10 @@ public class SetStrokingColor extends OperatorProcessor
             else if (colorSpace instanceof PDPattern)
             {
                 newOperator = new SetStrokingPattern();
+            }
+            else if (colorSpace instanceof PDIndexed)
+            {
+                newOperator = new SetStrokingIndexed();
             }
 
             if (newOperator != null) 

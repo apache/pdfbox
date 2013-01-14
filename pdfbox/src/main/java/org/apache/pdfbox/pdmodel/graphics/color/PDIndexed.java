@@ -54,10 +54,17 @@ public class PDIndexed extends PDColorSpace
 
     private COSArray array;
 
+    private PDColorSpace baseColorspace = null;
+    private ColorModel baseColorModel = null;
+    
     /**
      * The lookup data as byte array.
      */
     private byte[] lookupData;
+
+    private byte[] indexedColorValues;
+    private int indexNumOfComponents;
+    private int maxIndex;
     
     /**
      * Constructor, default DeviceRGB, hival 255.
@@ -113,7 +120,7 @@ public class PDIndexed extends PDColorSpace
      */
     protected ColorSpace createColorSpace() throws IOException
     {
-        throw new IOException( "Not implemented" );
+        return getBaseColorSpace().getJavaColorSpace();
     }
 
     /**
@@ -127,40 +134,31 @@ public class PDIndexed extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        int size = getHighValue();
-        byte[] index = getLookupData();
-        PDColorSpace baseColorSpace = getBaseColorSpace();
-        ColorModel cm = null;
-        if( baseColorSpace instanceof PDDeviceRGB )
+        return createColorModel(bpc, -1);
+    }
+
+    /**
+     * Create a Java color model for this colorspace including the given mask value.
+     *
+     * @param bpc The number of bits per component.
+     * @param mask the mask value, -1 indicates no mask
+     *
+     * @return A color model that can be used for Java AWT operations.
+     *
+     * @throws IOException If there is an error creating the color model.
+     */
+    public ColorModel createColorModel( int bpc, int mask ) throws IOException
+    {
+        ColorModel colorModel = getBaseColorModel(bpc);
+        calculateIndexedColorValues(colorModel, bpc);
+        if (mask > -1)
         {
-            cm = new IndexColorModel(bpc, size+1, index,0,false);
+            return new IndexColorModel(bpc, maxIndex+1, indexedColorValues, 0, colorModel.hasAlpha(), mask);
         }
         else
         {
-            ColorModel baseColorModel = baseColorSpace.createColorModel(bpc);
-            if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
-            {
-                throw new IOException( "Not implemented" );
-            }
-            byte[] r = new byte[size+1];
-            byte[] g = new byte[size+1];
-            byte[] b = new byte[size+1];
-            byte[] a = baseColorModel.hasAlpha() ? new byte[size+1] : null;
-            byte[] inData = new byte[baseColorModel.getNumComponents()];
-            for( int i = 0; i <= size; i++ )
-            {
-                System.arraycopy(index, i * inData.length, inData, 0, inData.length);
-                r[i] = (byte)baseColorModel.getRed(inData);
-                g[i] = (byte)baseColorModel.getGreen(inData);
-                b[i] = (byte)baseColorModel.getBlue(inData);
-                if(a != null)
-                {
-                    a[i] = (byte)baseColorModel.getAlpha(inData);
-                }
-            }
-            cm = a == null ? new IndexColorModel(bpc, size+1, r, g, b) : new IndexColorModel(bpc, size+1, r, g, b, a);
+            return new IndexColorModel(bpc, maxIndex+1, indexedColorValues, 0, colorModel.hasAlpha());
         }
-        return cm;
     }
 
     /**
@@ -172,8 +170,12 @@ public class PDIndexed extends PDColorSpace
      */
     public PDColorSpace getBaseColorSpace() throws IOException
     {
-        COSBase base = array.getObject( 1 );
-        return PDColorSpaceFactory.createColorSpace( base );
+        if (baseColorspace == null)
+        {
+            COSBase base = array.getObject( 1 );
+            baseColorspace = PDColorSpaceFactory.createColorSpace( base );
+        }
+        return baseColorspace;
     }
 
     /**
@@ -184,6 +186,7 @@ public class PDIndexed extends PDColorSpace
     public void setBaseColorSpace( PDColorSpace base )
     {
         array.set( 1, base.getCOSObject() );
+        baseColorspace = base;
     }
 
     /**
@@ -285,4 +288,74 @@ public class PDIndexed extends PDColorSpace
         COSString string = new COSString( data );
         array.set( 3, string );
     }
+
+    /**
+     * Returns the components of the color for the given index.
+     * @param index the index of the color value
+     * @return COSArray with the color components
+     * @throws IOException If the tint function is not supported
+     */
+    public float[] calculateColorValues(int index) throws IOException
+    {
+        // TODO bpc != 8 ??
+        calculateIndexedColorValues(getBaseColorModel(8), 8);
+        float[] colorValues = null;
+        if (index < maxIndex)
+        {
+            int bufferIndex = index * indexNumOfComponents;
+            colorValues = new float[indexNumOfComponents];
+            for (int i=0; i < indexNumOfComponents; i++)
+            {
+                colorValues[i] = (float)indexedColorValues[bufferIndex+i];
+            }
+        }
+        return colorValues;
+    }
+    
+    private ColorModel getBaseColorModel(int bpc) throws IOException
+    {
+        if (baseColorModel == null)
+        {
+            baseColorModel = getBaseColorSpace().createColorModel(bpc);
+        }
+        return baseColorModel;
+    }
+    
+    private void calculateIndexedColorValues(ColorModel colorModel, int bpc) throws IOException
+    {
+        if (indexedColorValues == null)
+        {
+            // number of possible color values in the target color space
+            int numberOfColorValues = 1 << bpc;
+            // number of indexed color values
+            int highValue = getHighValue();
+            // choose the correct size, sometimes there are more indexed values than needed
+            // and sometimes there are fewer indexed value than possible
+            maxIndex = Math.min(numberOfColorValues-1, highValue);
+            byte[] index = getLookupData();
+            if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
+            {
+                throw new IOException( "Not implemented" );
+            }
+            boolean hasAlpha = baseColorModel.hasAlpha();
+            indexNumOfComponents = 3 + ( hasAlpha ? 1 : 0);
+            int buffersize = (maxIndex+1) * indexNumOfComponents;
+            indexedColorValues = new byte[buffersize];
+            byte[] inData = new byte[baseColorModel.getNumComponents()];
+            int bufferIndex = 0;
+            for( int i = 0; i <= maxIndex; i++ )
+            {
+                System.arraycopy(index, i * inData.length, inData, 0, inData.length);
+                indexedColorValues[bufferIndex] = (byte)colorModel.getRed(inData);
+                indexedColorValues[bufferIndex+1] = (byte)colorModel.getGreen(inData);
+                indexedColorValues[bufferIndex+2] = (byte)colorModel.getBlue(inData);
+                if(hasAlpha)
+                {
+                    indexedColorValues[bufferIndex+3] = (byte)colorModel.getAlpha(inData);
+                }
+                bufferIndex += indexNumOfComponents;
+            }
+        }
+    }
+
 }

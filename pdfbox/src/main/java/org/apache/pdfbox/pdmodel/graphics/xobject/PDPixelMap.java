@@ -200,50 +200,14 @@ public class PDPixelMap extends PDXObjectImage
             if (colorspace instanceof PDIndexed)
             {
                 PDIndexed csIndexed = (PDIndexed)colorspace;
-                // the base color space uses 8 bit per component, as the indexed color values
-                // of an indexed color space are always in a range from 0 to 255
-                ColorModel baseColorModel = csIndexed.getBaseColorSpace().createColorModel(8);
-                // number of possible color values in the target color space
-                int numberOfColorValues = 1 << bpc;
-                // number of indexed color values
-                int highValue = csIndexed.getHighValue();
-                // choose the correct size, sometimes there are more indexed values than needed
-                // and sometimes there are fewer indexed value than possible
-                int size = Math.min(numberOfColorValues-1, highValue);
-                byte[] index = csIndexed.getLookupData();
-                boolean hasAlpha = baseColorModel.hasAlpha();
                 COSBase maskArray = getMask();
-                if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
-                {
-                    throw new IOException( "Not implemented" );
-                }
-                // the IndexColorModel uses RGB-based color values
-                // which leads to 3 color components and a optional alpha channel
-                int numberOfComponents = 3 + (hasAlpha ? 1 : 0);
-                int buffersize = (size+1) * numberOfComponents;
-                byte[] colorValues = new byte[buffersize];
-                byte[] inData = new byte[baseColorModel.getNumComponents()];
-                int bufferIndex = 0;
-                for( int i = 0; i <= size; i++ )
-                {
-                    System.arraycopy(index, i * inData.length, inData, 0, inData.length);
-                    // convert the indexed color values to RGB 
-                    colorValues[bufferIndex] = (byte)baseColorModel.getRed(inData);
-                    colorValues[bufferIndex+1] = (byte)baseColorModel.getGreen(inData);
-                    colorValues[bufferIndex+2] = (byte)baseColorModel.getBlue(inData);
-                    if( hasAlpha )
-                    {
-                        colorValues[bufferIndex+3] = (byte)baseColorModel.getAlpha(inData);
-                    }
-                    bufferIndex += numberOfComponents;
-                }
                 if (maskArray != null && maskArray instanceof COSArray)
                 {
-                    cm = new IndexColorModel(bpc, size+1, colorValues, 0, hasAlpha, ((COSArray)maskArray).getInt(0));
+                    cm = csIndexed.createColorModel(bpc, ((COSArray)maskArray).getInt(0));
                 }
                 else
                 {
-                    cm = new IndexColorModel(bpc, size+1, colorValues, 0, hasAlpha);
+                    cm = csIndexed.createColorModel(bpc);
                 }
             }
             else if (colorspace instanceof PDSeparation)
