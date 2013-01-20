@@ -242,11 +242,16 @@ public class PDDeviceN extends PDColorSpace
     {
         if ( deviceNAttributes == null )
         {
+        	if (array.size() > DEVICEN_ATTRIBUTES) { // the DeviceN contains an attributes dictionary
             deviceNAttributes = new PDDeviceNAttributes((COSDictionary)array.getObject(DEVICEN_ATTRIBUTES));
+        	} else {
+        		// create the Attributes dictionary
+        		setAttributes(new PDDeviceNAttributes());
+        	}
         }
         return deviceNAttributes;
     }
-
+    
     /**
      * This will set the color space attributes.  If null is passed in then
      * all attribute will be removed.
@@ -271,6 +276,15 @@ public class PDDeviceN extends PDColorSpace
         }
     }
 
+    /**
+     * Returns true if the DeviceN color space has an attributes dictionary
+     * @return
+     */
+    public boolean  hasAttributes()
+    {
+    	return array.size() > DEVICEN_ATTRIBUTES;
+    }
+    
     /**
      * Returns the components of the color in the alternate colorspace for the given tint value.
      * @param tintValues a list containing the tint values
