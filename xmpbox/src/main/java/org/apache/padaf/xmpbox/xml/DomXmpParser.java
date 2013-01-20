@@ -184,10 +184,7 @@ public class DomXmpParser {
 				if (XMLConstants.XMLNS_ATTRIBUTE.equals(attr.getPrefix())) {
 					// do nothing
 				} else if (XmpConstants.DEFAULT_RDF_PREFIX.equals(attr.getPrefix()) && XmpConstants.ABOUT_NAME.equals(attr.getLocalName())) {
-//					// do nothing
-//					if (schema instanceof XMPSchema) {
-//						((XMPSchema)sp).setAboutAsSimple(attr.getValue());
-//					}
+					// do nothing
 				} else if (attr.getPrefix()==null && XmpConstants.ABOUT_NAME.equals(attr.getLocalName())) {
 					// do nothing
 				} else {
@@ -198,12 +195,13 @@ public class DomXmpParser {
 						loadAttributes(schema, description);
 					}
 					ComplexPropertyContainer container = schema.getContainer();
+					PropertyType type = checkPropertyDefinition(xmp, new QName(attr.getNamespaceURI(), attr.getLocalName()));
 					AbstractSimpleProperty sp = tm.instanciateSimpleProperty(
 							namespace, 
 							schema.getPrefix(), 
 							attr.getLocalName(), 
 							attr.getValue(),
-							Types.Text);
+							type.type());
 					container.addProperty(sp);
 				}
 				
