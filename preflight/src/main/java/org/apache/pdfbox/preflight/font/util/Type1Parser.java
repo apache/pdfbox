@@ -37,6 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.fontbox.cff.IndexData;
 import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.cff.Type1FontUtil;
+import org.apache.log4j.Logger;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
 import org.apache.pdfbox.encoding.PdfDocEncoding;
@@ -44,6 +45,9 @@ import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
 public final class Type1Parser {
+
+	public static final Logger LOGGER = Logger.getLogger(Type1Parser.class);
+	
 	protected static final char NAME_START = '/';
 	protected static final String NOTDEF = NAME_START + ".notdef";
 	protected static final int DEFAULT_LEN_IV = 4;
@@ -256,7 +260,30 @@ public final class Type1Parser {
 		goToBeginOfCharStringElements(stream);
 		
 		while (numberOfElements > 0) {
-			readCharStringElement(stream, lenIV);
+			byte[] labelToken = readToken(stream);
+			String label = new String(labelToken, TOKEN_ENCODING);
+ 
+			if (label.equals("end")){
+				// TODO thrown exception ? add an error/warning in the PreflightContext ??	
+				LOGGER.warn("[Type 1] Invalid number of elements in the CharString");
+				break;
+			}
+			
+			byte[] sizeOfCharStringToken = readToken(stream);
+			int sizeOfCharString = Integer.parseInt(new String(sizeOfCharStringToken,TOKEN_ENCODING));
+
+			readToken(stream); // skip "RD" or "-|" token
+			skipSingleBlankSeparator(stream); // "RD" or "-|" are followed by a space
+
+			byte[] descBinary = new byte[sizeOfCharString];
+			stream.read(descBinary, 0, sizeOfCharString);
+			byte[] description = Type1FontUtil.charstringDecrypt(descBinary, lenIV);
+			Type1CharStringParser t1p = new Type1CharStringParser();
+			// TODO provide the local subroutine indexes
+			List<Object> operations = t1p.parse(description, new IndexData(0));
+			type1Font.addGlyphDescription(label, new GlyphDescription(operations));
+
+			readToken(stream); // skip "ND" or "|-" token
 			--numberOfElements;
 		}
 	}
@@ -266,27 +293,6 @@ public final class Type1Parser {
 		do {
 			token = readToken(stream);
 		} while(isNotBeginKeyWord(token));
-	}
-
-	private void readCharStringElement(PeekInputStream stream, int lenIV) throws IOException {
-		byte[] labelToken = readToken(stream);
-		String label = new String(labelToken, TOKEN_ENCODING);
-
-		byte[] sizeOfCharStringToken = readToken(stream);
-		int sizeOfCharString = Integer.parseInt(new String(sizeOfCharStringToken,TOKEN_ENCODING));
-
-		readToken(stream); // skip "RD" or "-|" token
-		skipSingleBlankSeparator(stream); // "RD" or "-|" are followed by a space
-
-		byte[] descBinary = new byte[sizeOfCharString];
-		stream.read(descBinary, 0, sizeOfCharString);
-		byte[] description = Type1FontUtil.charstringDecrypt(descBinary, lenIV);
-		Type1CharStringParser t1p = new Type1CharStringParser();
-		// TODO provide the local subroutine indexes
-		List<Object> operations = t1p.parse(description, new IndexData(0));
-		type1Font.addGlyphDescription(label, new GlyphDescription(operations));
-
-		readToken(stream); // skip "ND" or "|-" token
 	}
 	
 	private boolean isNotBeginKeyWord(byte[] token) throws IOException {
