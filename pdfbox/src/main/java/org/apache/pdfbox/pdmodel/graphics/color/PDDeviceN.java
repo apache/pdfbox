@@ -240,14 +240,8 @@ public class PDDeviceN extends PDColorSpace
      */
     public PDDeviceNAttributes getAttributes()
     {
-        if ( deviceNAttributes == null )
-        {
-        	if (array.size() > DEVICEN_ATTRIBUTES) { // the DeviceN contains an attributes dictionary
+        if ( deviceNAttributes == null  && array.size() > DEVICEN_ATTRIBUTES) { // the DeviceN contains an attributes dictionary
             deviceNAttributes = new PDDeviceNAttributes((COSDictionary)array.getObject(DEVICEN_ATTRIBUTES));
-        	} else {
-        		// create the Attributes dictionary
-        		setAttributes(new PDDeviceNAttributes());
-        	}
         }
         return deviceNAttributes;
     }
@@ -274,15 +268,6 @@ public class PDDeviceN extends PDColorSpace
             }
             array.set( DEVICEN_ATTRIBUTES, attributes.getCOSDictionary() );
         }
-    }
-
-    /**
-     * Returns true if the DeviceN color space has an attributes dictionary
-     * @return
-     */
-    public boolean  hasAttributes()
-    {
-    	return array.size() > DEVICEN_ATTRIBUTES;
     }
     
     /**
