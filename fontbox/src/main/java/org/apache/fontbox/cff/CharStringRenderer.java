@@ -21,6 +21,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class represents a renderer for a charstring.
  * @author Villu Ruusmann
@@ -29,7 +32,9 @@ import java.util.List;
 public class CharStringRenderer extends CharStringHandler
 {
     // TODO CharStringRenderer as abstract Class with two inherited classes according to the Charsstring type....
-    private boolean isCharstringType1 = true;
+	private static final Log LOG = LogFactory.getLog(CharStringRenderer.class);
+	
+	private boolean isCharstringType1 = true;
     private boolean isFirstCommand = true;
 
     private GeneralPath path = null;
@@ -264,12 +269,15 @@ public class CharStringRenderer extends CharStringHandler
             {
                 closePath();
             }
-            if (numbers.size() == 1 )
+            if (numbers.size() % 2 == 1 )
             {
                 setWidth(numbers.get(0));
+                if (numbers.size() > 1)
+                {
+                	LOG.debug("endChar: too many numbers left, using the first one, see PDFBOX-1501 for details");
+                }
             }
         }
-
         if (isFirstCommand)
         {
             isFirstCommand = false;
