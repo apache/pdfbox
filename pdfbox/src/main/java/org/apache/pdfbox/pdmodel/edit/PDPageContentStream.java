@@ -355,6 +355,10 @@ public class PDPageContentStream
      */
     public void drawXObject( PDXObject xobject, AffineTransform transform ) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: drawXObject is not allowed within a text block." );
+        }
         String xObjectPrefix = null;
         if( xobject instanceof PDXObjectImage )
         {
@@ -437,6 +441,10 @@ public class PDPageContentStream
     */
     public void setTextMatrix(AffineTransform matrix) throws IOException
     {
+        if( !inTextMode )
+        {
+            throw new IOException( "Error: must call beginText() before setTextMatrix");
+        }
         appendMatrix(matrix);
         appendRawCommands(SET_TEXT_MATRIX);
     }
@@ -904,6 +912,10 @@ public class PDPageContentStream
      */
     public void addRect( float x, float y, float width, float height ) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addRect is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x ) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y ) );
@@ -926,6 +938,10 @@ public class PDPageContentStream
      */
     public void fillRect( float x, float y, float width, float height ) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: fillRect is not allowed within a text block." );
+        }
         addRect(x, y, width, height);
         fill(PathIterator.WIND_NON_ZERO);
     }
@@ -943,6 +959,10 @@ public class PDPageContentStream
      */
     public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addBezier312 is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x1) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y1) );
@@ -969,6 +989,10 @@ public class PDPageContentStream
      */
     public void addBezier32(float x2, float y2, float x3, float y3) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addBezier32 is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x2) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y2) );
@@ -991,6 +1015,10 @@ public class PDPageContentStream
      */
     public void addBezier31(float x1, float y1, float x3, float y3) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addBezier31 is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x1) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y1) );
@@ -1012,7 +1040,10 @@ public class PDPageContentStream
      */
     public void moveTo( float x, float y) throws IOException
     {
-        // moveTo
+        if( inTextMode )
+        {
+            throw new IOException( "Error: moveTo is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y) );
@@ -1029,7 +1060,10 @@ public class PDPageContentStream
      */
     public void lineTo( float x, float y) throws IOException
     {
-        // moveTo
+        if( inTextMode )
+        {
+            throw new IOException( "Error: lineTo is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( x) );
         appendRawCommands( SPACE );
         appendRawCommands( formatDecimal.format( y) );
@@ -1047,6 +1081,10 @@ public class PDPageContentStream
      */
     public void addLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addLine is not allowed within a text block." );
+        }
         // moveTo
         moveTo(xStart, yStart);
         // lineTo
@@ -1064,6 +1102,10 @@ public class PDPageContentStream
      */
     public void drawLine( float xStart, float yStart, float xEnd, float yEnd ) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: drawLine is not allowed within a text block." );
+        }
         addLine(xStart, yStart, xEnd, yEnd);
         // stroke
         stroke();
@@ -1077,6 +1119,10 @@ public class PDPageContentStream
      */
     public void addPolygon(float[] x, float[] y) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: addPolygon is not allowed within a text block." );
+        }
         if (x.length != y.length)
         {
             throw new IOException( "Error: some points are missing coordinate" );
@@ -1103,6 +1149,10 @@ public class PDPageContentStream
      */
     public void drawPolygon(float[] x, float[] y) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: drawPolygon is not allowed within a text block." );
+        }
         addPolygon(x, y);
         stroke();
     }
@@ -1115,6 +1165,10 @@ public class PDPageContentStream
      */
     public void fillPolygon(float[] x, float[] y) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: fillPolygon is not allowed within a text block." );
+        }
         addPolygon(x, y);
         fill(PathIterator.WIND_NON_ZERO);
     }
@@ -1126,6 +1180,10 @@ public class PDPageContentStream
      */
     public void stroke() throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: stroke is not allowed within a text block." );
+        }
         appendRawCommands( STROKE );
     }
 
@@ -1136,6 +1194,10 @@ public class PDPageContentStream
      */
     public void closeAndStroke() throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: closeAndStroke is not allowed within a text block." );
+        }
         appendRawCommands( CLOSE_STROKE );
     }
 
@@ -1148,6 +1210,10 @@ public class PDPageContentStream
      */
     public void fill(int windingRule) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: fill is not allowed within a text block." );
+        }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
             appendRawCommands( FILL_NON_ZERO );
@@ -1170,6 +1236,10 @@ public class PDPageContentStream
      */
     public void closeSubPath() throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: closeSubPath is not allowed within a text block." );
+        }
         appendRawCommands( CLOSE_SUBPATH );
     }
 
@@ -1182,6 +1252,10 @@ public class PDPageContentStream
      */
     public void clipPath(int windingRule) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: clipPath is not allowed within a text block." );
+        }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
             appendRawCommands( CLIP_PATH_NON_ZERO );
@@ -1206,6 +1280,10 @@ public class PDPageContentStream
      */
     public void setLineWidth(float lineWidth) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: setLineWidth is not allowed within a text block." );
+        }
         appendRawCommands( formatDecimal.format( lineWidth ) );
         appendRawCommands( SPACE );
         appendRawCommands( LINE_WIDTH );
@@ -1218,6 +1296,10 @@ public class PDPageContentStream
      */
     public void setLineJoinStyle(int lineJoinStyle) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: setLineJoinStyle is not allowed within a text block." );
+        }
         if (lineJoinStyle >= 0 && lineJoinStyle <= 2)
         {
             appendRawCommands( Integer.toString( lineJoinStyle ) );
@@ -1238,6 +1320,10 @@ public class PDPageContentStream
      */
     public void setLineCapStyle(int lineCapStyle) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: setLineCapStyle is not allowed within a text block." );
+        }
         if (lineCapStyle >= 0 && lineCapStyle <= 2)
         {
             appendRawCommands( Integer.toString( lineCapStyle ) );
@@ -1258,6 +1344,10 @@ public class PDPageContentStream
      */
     public void setLineDashPattern(float[] pattern, float phase) throws IOException
     {
+        if( inTextMode )
+        {
+            throw new IOException( "Error: setLineDashPattern is not allowed within a text block." );
+        }
         appendRawCommands( "[" );
         for (float value : pattern)
         {
