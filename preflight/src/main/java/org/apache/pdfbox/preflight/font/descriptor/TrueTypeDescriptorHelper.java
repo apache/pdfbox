@@ -83,7 +83,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
 				// TODO check the WIdth consistency too				
 			}
 		} catch (IOException e) {
-			this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED, "The FontFile can't be read"));
+			this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED, "The FontFile can't be read for " + this.font.getBaseFont()));
 		} finally {
 			IOUtils.closeQuietly(bis);
 		}
