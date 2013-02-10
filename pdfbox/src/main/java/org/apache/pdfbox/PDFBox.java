@@ -23,65 +23,129 @@ package org.apache.pdfbox;
  *
  * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-687">PDFBOX-687</a>
  */
-public class PDFBox {
+public class PDFBox 
+{
 
-    public static void main(String[] args) {
-        if (args.length > 0) {
+    /**
+     * Main method.
+     * 
+     * @param args command line arguments
+     */
+    public static void main(String[] args) 
+    {
+        if (args.length > 0) 
+        {
             String command = args[0];
             String[] arguments = new String[args.length - 1];
             System.arraycopy(args, 1, arguments, 0, arguments.length);
             boolean exitAfterCallingMain = true;
-            try {
-                if (command.equals("ConvertColorspace")) {
+            try 
+            {
+                if (command.equals("ConvertColorspace")) 
+                {
                     ConvertColorspace.main(arguments);
-                } else if (command.equals("Decrypt")) {
+                } 
+                else if (command.equals("Decrypt")) 
+                {
                     Decrypt.main(arguments);
-                } else if (command.equals("Encrypt")) {
+                } 
+                else if (command.equals("Encrypt")) 
+                {
                     Encrypt.main(arguments);
-                } else if (command.equals("ExtractText")) {
+                } 
+                else if (command.equals("ExtractText")) 
+                {
                     ExtractText.main(arguments);
-                } else if (command.equals("Overlay")) {
+                } 
+                else if (command.equals("ExtractImages")) 
+                {
+                    ExtractImages.main(arguments);
+                } 
+                else if (command.equals("Overlay")) 
+                {
                     Overlay.main(arguments);
-                } else if (command.equals("PrintPDF")) {
+                } 
+                else if (command.equals("OverlayPDF")) 
+                {
+                    OverlayPDF.main(arguments);
+                } 
+                else if (command.equals("PrintPDF")) 
+                {
                     PrintPDF.main(arguments);
-                } else if (command.equals("PDFDebugger")) {
+                } 
+                else if (command.equals("PDFDebugger")) 
+                {
                     PDFDebugger.main(arguments);
                     exitAfterCallingMain = false;
-                } else if (command.equals("PDFMerger")) {
+                } 
+                else if (command.equals("PDFMerger")) 
+                {
                     PDFMerger.main(arguments);
-                } else if (command.equals("PDFReader")) {
+                } 
+                else if (command.equals("PDFReader")) 
+                {
                     PDFReader.main(arguments);
                     exitAfterCallingMain = false;
-                } else if (command.equals("PDFSplit")) {
+                } 
+                else if (command.equals("PDFSplit")) 
+                {
                     PDFSplit.main(arguments);
-                } else if (command.equals("PDFToImage")) {
+                } 
+                else if (command.equals("PDFToImage")) 
+                {
                     PDFToImage.main(arguments);
-                } else if (command.equals("TextToPDF")) {
+                } 
+                else if (command.equals("TextToPDF")) 
+                {
                     TextToPDF.main(arguments);
-                } else if (command.equals("WriteDecodedDoc")) {
+                } 
+                else if (command.equals("WriteDecodedDoc")) 
+                {
                     WriteDecodedDoc.main(arguments);
                 }
-                else {
+                else 
+                {
                     showMessageAndExit();
                 }
-                if (exitAfterCallingMain) {
+                if (exitAfterCallingMain) 
+                {
                     System.exit(0);
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 System.err.println(
                         command + " failed with the following exception:");
                 e.printStackTrace();
                 System.exit(1);
             }
         }
-        else {
+        else 
+        {
             showMessageAndExit();
         }
     }
 
-    private static void showMessageAndExit() {
-        System.err.println(
-                "usage: java pdfbox-app-x.y.z.jar <command> <args..>");
+    private static void showMessageAndExit() 
+    {
+        System.err.println("PDFDBox version: \""+Version.getVersion()+ "\"");
+        System.err.println("\nUsage: java pdfbox-app-x.y.z.jar <command> <args..>");
+        System.err.println("\nPossible commands are:\n");
+        System.err.println("  ConvertColorspace");
+        System.err.println("  Decrypt");
+        System.err.println("  Encrypt"); 
+        System.err.println("  ExtractText"); 
+        System.err.println("  ExtractImages"); 
+        System.err.println("  Overlay");
+        System.err.println("  OverlayPDF"); 
+        System.err.println("  PrintPDF");
+        System.err.println("  PDFDebugger"); 
+        System.err.println("  PDFMerger");
+        System.err.println("  PDFReader");
+        System.err.println("  PDFSplit");
+        System.err.println("  PDFToImage"); 
+        System.err.println("  TextToPDF");
+        System.err.println("  WriteDecodedDoc"); 
         System.exit(1);
     }
 }
