@@ -167,6 +167,7 @@ public class PDFSplit
                 if (startPage != null)
                 {
                     splitter.setStartPage(Integer.parseInt( startPage ));
+                    startEndPageSet = true;
                     if (split == null)
                     {
                         splitter.setSplitAtPage(numberOfPages);
@@ -175,6 +176,7 @@ public class PDFSplit
                 if (endPage != null)
                 {
                     splitter.setEndPage(Integer.parseInt( endPage ));
+                    startEndPageSet = true;
                     if (split == null)
                     {
                         splitter.setSplitAtPage(Integer.parseInt( endPage ));
