@@ -24,7 +24,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -39,9 +38,7 @@ public class RadialShadingPaint implements Paint
 
     private PDShadingType3 shading;
     private Matrix currentTransformationMatrix;
-    private Matrix shadingMatrix;
     private int pageHeight;
-    private float clippingHeight;
     
     /**
      * Constructor.
@@ -50,28 +47,12 @@ public class RadialShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageSizeValue size of the current page
      */
-    public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeightValue, Matrix shMatrix) 
+    public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeightValue) 
     {
         shading = shadingType3;
         currentTransformationMatrix = ctm;
         pageHeight = pageHeightValue;
-        shadingMatrix = shMatrix;
     }
-    /**
-     * Constructor.
-     * 
-     * @param shadingType3 the shading resources
-     * @param ctm current transformation matrix
-     * @param pageSizeValue size of the current page
-     */
-    public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeightValue, float clipHeight) 
-    {
-        shading = shadingType3;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
-        clippingHeight = clipHeight;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -86,7 +67,7 @@ public class RadialShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
     {
-        return new RadialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight, shadingMatrix, clippingHeight);
+        return new RadialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
     }
 
 }
