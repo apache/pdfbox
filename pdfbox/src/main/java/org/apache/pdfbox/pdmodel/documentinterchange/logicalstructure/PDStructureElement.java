@@ -37,8 +37,8 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
  */
 public class PDStructureElement extends PDStructureNode
 {
+    
     public static final String TYPE = "StructElem";
-
 
     /**
      * Constructor with required values.
@@ -490,7 +490,7 @@ public class PDStructureElement extends PDStructureNode
     }
 
     /**
-     * Increments th revision number
+     * Increments th revision number.
      */
     public void incrementRevisionNumber()
     {
@@ -606,15 +606,14 @@ public class PDStructureElement extends PDStructureNode
     public String getStandardStructureType()
     {
         String type = this.getStructureType();
-        String mappedType;
-        while (true)
+        Map<String,Object> roleMap = getRoleMap();
+        if (roleMap.containsKey(type))
         {
-            mappedType = this.getRoleMap().get(type);
-            if ((mappedType == null) || type.equals(mappedType))
+            Object mappedValue = getRoleMap().get(type);
+            if (mappedValue instanceof String)
             {
-                break;
+                type = (String)mappedValue;
             }
-            type = mappedType;
         }
         return type;
     }
@@ -742,7 +741,7 @@ public class PDStructureElement extends PDStructureNode
      * 
      * @return the role map
      */
-    private Map<String, String> getRoleMap()
+    private Map<String, Object> getRoleMap()
     {
         PDStructureTreeRoot root = this.getStructureTreeRoot();
         if (root != null)
