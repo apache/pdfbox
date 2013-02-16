@@ -38,10 +38,10 @@ import org.apache.pdfbox.cos.COSString;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.10 $
  */
-public class COSDictionaryMap implements Map
+public class COSDictionaryMap<K,V> implements Map<K,V>
 {
     private COSDictionary map;
-    private Map actuals;
+    private Map<K,V> actuals;
 
     /**
      * Constructor for this map.
@@ -49,7 +49,7 @@ public class COSDictionaryMap implements Map
      * @param actualsMap The map with standard java objects as values.
      * @param dicMap The map with COSBase objects as values.
      */
-    public COSDictionaryMap( Map actualsMap, COSDictionary dicMap )
+    public COSDictionaryMap( Map<K,V> actualsMap, COSDictionary dicMap )
     {
         actuals = actualsMap;
         map = dicMap;
@@ -91,7 +91,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Object get(Object key)
+    public V get(Object key)
     {
         return actuals.get( key );
     }
@@ -99,7 +99,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Object put(Object key, Object value)
+    public V put(K key, V value)
     {
         COSObjectable object = (COSObjectable)value;
 
@@ -110,7 +110,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Object remove(Object key)
+    public V remove(Object key)
     {
         map.removeItem( COSName.getPDFName( (String)key ) );
         return actuals.remove( key );
@@ -119,7 +119,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public void putAll(Map t)
+    public void putAll(Map<? extends K, ? extends V> t)
     {
         throw new RuntimeException( "Not yet implemented" );
     }
@@ -136,7 +136,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Set keySet()
+    public Set<K> keySet()
     {
         return actuals.keySet();
     }
@@ -144,7 +144,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Collection values()
+    public Collection<V> values()
     {
         return actuals.values();
     }
@@ -152,7 +152,7 @@ public class COSDictionaryMap implements Map
     /**
      * {@inheritDoc}
      */
-    public Set entrySet()
+    public Set<Map.Entry<K, V>> entrySet()
     {
         return Collections.unmodifiableSet(actuals.entrySet());
     }
@@ -165,7 +165,7 @@ public class COSDictionaryMap implements Map
         boolean retval = false;
         if( o instanceof COSDictionaryMap )
         {
-            COSDictionaryMap other = (COSDictionaryMap)o;
+            COSDictionaryMap<K,V> other = (COSDictionaryMap)o;
             retval = other.map.equals( this.map );
         }
         return retval;
@@ -195,9 +195,9 @@ public class COSDictionaryMap implements Map
      *
      * @return A proper COSDictionary
      */
-    public static COSDictionary convert( Map someMap )
+    public static COSDictionary convert( Map<?,?> someMap )
     {
-        Iterator iter = someMap.keySet().iterator();
+        Iterator<?> iter = someMap.keySet().iterator();
         COSDictionary dic = new COSDictionary();
         while( iter.hasNext() )
         {
@@ -216,12 +216,12 @@ public class COSDictionaryMap implements Map
      * @return A standard java map.
      * @throws IOException If there is an error during the conversion.
      */
-    public static COSDictionaryMap convertBasicTypesToMap( COSDictionary map ) throws IOException
+    public static COSDictionaryMap<String, Object> convertBasicTypesToMap( COSDictionary map ) throws IOException
     {
-        COSDictionaryMap retval = null;
+        COSDictionaryMap<String, Object> retval = null;
         if( map != null )
         {
-            Map actualMap = new HashMap();
+            Map<String, Object> actualMap = new HashMap<String, Object>();
             for( COSName key : map.keySet() )
             {
                 COSBase cosObj = map.getDictionaryObject( key );
@@ -252,7 +252,7 @@ public class COSDictionaryMap implements Map
                 }
                 actualMap.put( key.getName(), actualObject );
             }
-            retval = new COSDictionaryMap( actualMap, map );
+            retval = new COSDictionaryMap<String, Object>( actualMap, map );
         }
 
         return retval;
