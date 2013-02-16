@@ -43,7 +43,7 @@ public class TestPDPageContentStream extends TestCase {
         PDPage page = new PDPage();
         doc.addPage(page);
 
-        PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
+        PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, true);
         // pass a non-stroking color in CMYK color space
         contentStream.setNonStrokingColor(
                 new Color(colorSpace, new float[]{0.1f, 0.2f, 0.3f, 0.4f}, 1.0f));
