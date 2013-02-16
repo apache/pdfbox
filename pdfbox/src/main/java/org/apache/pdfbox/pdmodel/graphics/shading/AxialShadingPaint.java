@@ -24,6 +24,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -38,6 +39,7 @@ public class AxialShadingPaint implements Paint
 
     private PDShadingType2 shading;
     private Matrix currentTransformationMatrix;
+    private Matrix shadingMatrix;
     private int pageHeight;
     
     /**
@@ -47,12 +49,14 @@ public class AxialShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageSizeValue size of the current page
      */
-    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeightValue) 
+    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeightValue, Matrix shMatrix) 
     {
         shading = shadingType2;
         currentTransformationMatrix = ctm;
+        shadingMatrix = shMatrix;
         pageHeight = pageHeightValue;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -67,7 +71,7 @@ public class AxialShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
     {
-        return new AxialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+        return new AxialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight, shadingMatrix);
     }
 
 }

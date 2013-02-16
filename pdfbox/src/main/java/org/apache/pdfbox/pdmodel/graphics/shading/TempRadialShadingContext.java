@@ -21,7 +21,6 @@ import java.awt.Point;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -31,6 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
@@ -45,7 +47,7 @@ import org.apache.pdfbox.util.Matrix;
  * @version $Revision: $
  * 
  */
-public class RadialShadingContext implements PaintContext 
+public class TempRadialShadingContext implements PaintContext 
 {
 
     private ColorModel colorModel;
@@ -53,12 +55,7 @@ public class RadialShadingContext implements PaintContext
     private ColorSpace shadingColorSpace;
     private PDFunction shadingTinttransform;
 
-    private AffineTransform transformAT = null;
-    private Matrix currentCTM = null;
-    private int currentPageHeight;
-    private float maximumHeight;
-    private float clippingHeight;
-
+//    private float[] coords;
     private float[] domain;
     private boolean[] extend;
     private float x0;
@@ -67,9 +64,24 @@ public class RadialShadingContext implements PaintContext
     private float y1;
     private float r0;
     private float r1;
+//    private double x1x0; 
+//    private double y1y0;
+//    private double r1r0;
+//    private double x1x0pow2;
+//    private double y1y0pow2;
+//    private double r1r0pow2;
+//    private double x0pow2;
+//    private double y0pow2;
+//    private double r0pow2;
 
     private float d1d0;
     private double denom;
+//    private AffineTransform currentXForm = null;
+//    private AffineTransform matrix = null;
+    private AffineTransform transformAT = null;
+    private Matrix currentCTM = null;
+    private int currentPageHeight;
+    private float maximumHeight;
     
     /**
      * Log instance.
@@ -86,53 +98,42 @@ public class RadialShadingContext implements PaintContext
      * @param pageHeight height of the current page
      * 
      */
-    public RadialShadingContext(PDShadingType3 shadingType3, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, int pageHeight, Matrix shMatrix, float clipHeight) 
+    public TempRadialShadingContext(PDShadingType3 shadingType3, ColorModel colorModelValue, 
+            AffineTransform xform, Matrix ctm, int pageHeight, Matrix shadingMatrix) 
     {
         float[] coords = shadingType3.getCoords().toFloatArray();
-        x0 = coords[0];
-        y0 = coords[1];
-        r0 = coords[2];
-        x1 = coords[3];
-        y1 = coords[4];
-        r1 = coords[5];
-        if (clipHeight > 0)
-        {
-            maximumHeight = 0;
-            clippingHeight = clipHeight;
-        }
-        else
-        {
-            maximumHeight = Math.max((y1+r1),(y0+r0)) - Math.min((y1-r1), (y0-r0));
-            clippingHeight = 0;
-        }
-        // transformation
-//        if (shMatrix != null)
+//        if (ctm != null)
 //        {
-//            transformAT = xform;
-//            transformAT.translate(0, -maximumHeight);
-//            transformAT.concatenate(shMatrix.createAffineTransform());
-//        }
-//        else if (currentCTM != null)
-//        {
-//            transformAT = ctm.createAffineTransform();
-//            transformAT.translate(0, -clippingHeight);
-//            transformAT.concatenate(xform);
+//            // the shading is used in combination with the sh-operator
+//            float[] coordsTemp = new float[coords.length]; 
+//            // transform the coords from shading to user space
+//            ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 1);
+//            ctm.createAffineTransform().transform(coords, 3, coordsTemp, 3, 1);
+//            // move the 0,0-reference
+//            coordsTemp[1] = pageHeight - coordsTemp[1];
+//            coordsTemp[4] = pageHeight - coordsTemp[4];
+//            // transform the coords from user to device space
+//            xform.transform(coordsTemp, 0, coords, 0, 1);
+//            xform.transform(coordsTemp, 3, coords, 3, 1);
 //        }
 //        else
 //        {
-//            transformAT = xform;
-//            transformAT.translate(0, -clipHeight);
+//            // the shading is used as pattern colorspace in combination
+//            // with a fill-, stroke- or showText-operator
+//            float translateY = (float)xform.getTranslateY();
+//            // move the 0,0-reference including the y-translation from user to device space
+////            coords[1] = pageHeight + translateY - coords[1];
+////            coords[4] = pageHeight + translateY - coords[4];
 //        }
-        try
-        {
-            transformAT = xform.createInverse();
-        } 
-        catch (NoninvertibleTransformException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // matrix
+//        if (shadingMatrix != null)
+//        {
+//            matrix = ctm.createAffineTransform();
+//        }
+//        currentCTM = ctm;
+//        currentXForm = xform;
+        transformAT = xform;
+        transformAT.concatenate(ctm.createAffineTransform());
         currentPageHeight = pageHeight;
         // colorSpace 
         try 
@@ -206,6 +207,13 @@ public class RadialShadingContext implements PaintContext
             extend = new boolean[]{false,false};
         }
         // calculate some constants to be used in getRaster
+        x0 = coords[0];
+        y0 = coords[1];
+        r0 = coords[2];
+        x1 = coords[3];
+        y1 = coords[4];
+        r1 = coords[5];
+        maximumHeight = Math.max((y1+r1),(y0+r0)) - Math.min((y1-r1), (y0-r0));
         denom = Math.pow(r1-r0,2) - Math.pow(x1-x0,2) - Math.pow(y1-y0,2);
         d1d0 = domain[1]-domain[0];
         // TODO take a possible Background value into account
@@ -220,7 +228,6 @@ public class RadialShadingContext implements PaintContext
         function = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
-        currentCTM = null;
     }
 
     /**
@@ -236,14 +243,24 @@ public class RadialShadingContext implements PaintContext
      */
     public Raster getRaster(int x, int y, int w, int h) 
     {
+        System.out.println("x="+x+",y="+y+",w="+w+",h="+h);
+        System.out.println("x0="+x0+",x1="+x1);
+        System.out.println("y0="+y0+",y1="+y1);
+        System.out.println("r0="+r0+",r1="+r1);
+//        System.out.println("matrix="+matrix);
+//        System.out.println("ctm="+currentCTM);
+//        System.out.println("xform="+currentXForm);
+        System.out.println("==================================================");
+        // create writable raster
+        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         float[] input = new float[1];
-        float inputValue = 0;
+        float inputValue;
         int[] data = new int[w * h * 3];
         for (int j = 0; j < h; j++) 
         {
             for (int i = 0; i < w; i++) 
             {
-                float[] inputValues = calculateInputValues( x+i, y+j);
+                float[] inputValues = calculateInputValues(x + i, y + j);
                 // choose 1 of the 2 values
                 if (inputValues[0] >= domain[0] && inputValues[0] <= domain[1])
                 {
@@ -265,46 +282,37 @@ public class RadialShadingContext implements PaintContext
                     {
                         inputValue = inputValues[1];
                     }
-                    // both are not in the domain
+                    // TODO
+                    // both are not in the domain -> choose the first as I don't know it better
                     else
                     {
-                        if (!extend[0] && !extend[1])
-                        {
-                            // TODO background
-                            continue;
-                        }
-                        boolean extended = false;
-                        // extend
-                        if (extend[0])
-                        {
-                            if((r0 + inputValues[0]*(r1-r0)) >= 0 && inputValues[0] < 0)
-                            {
-                                inputValue = domain[0];
-                                extended = true;
-                            }
-                            else if ((r0 + inputValues[1]*(r1-r0)) >= 0 && inputValues[1] < 0)
-                            {
-                                inputValue = domain[0];
-                                extended = true;
-                            }
-                        }
-                        if (!extended && extend[1])
-                        {
-                            if((r0 + inputValues[0]*(r1-r0)) >= 0 && inputValues[0] > 0)
-                            {
-                                inputValue = domain[1];
-                                extended = true;
-                            }
-                            else if((r0 + inputValues[1]*(r1-r0)) >= 0 && inputValues[1] > 0)
-                            {
-                                inputValue = domain[1];
-                                extended = true;
-                            }
-                        }
-                        if (!extended)
-                        {
-                            continue;
-                        }
+                        inputValue = inputValues[0];
+                    }
+                }
+                // input value is out of range
+                if (inputValue < domain[0])
+                {
+                    // the shading has to be extended if extend[0] == true
+                    if (extend[0])
+                    {
+                        inputValue = domain[0];
+                    }
+                    else 
+                    {
+                        continue;
+                    }
+                }
+                // input value is out of range
+                else if (inputValue > domain[1])
+                {
+                    // the shading has to be extended if extend[1] == true
+                    if (extend[1])
+                    {
+                        inputValue = domain[1];
+                    }
+                    else 
+                    {
+                        continue;
                     }
                 }
                 input[0] = (float)(domain[0] + (d1d0*inputValue));
@@ -332,8 +340,6 @@ public class RadialShadingContext implements PaintContext
                 data[index+2] = (int)(values[2]*255);
             }
         }
-        // create writable raster
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         raster.setPixels(0, 0, w, h, data);
         return raster;
     }
@@ -359,28 +365,40 @@ public class RadialShadingContext implements PaintContext
          *  the corresponding value of s can be determined by solving the quadratic 
          *  constraint equation:
          *  
-         *  [x - xc(s)]2 + [y - yc(s)]2 = [r(s)]2
+         *  [x - xc(s)]^2 + [y - yc(s)]^2 = [r(s)]^2
          *  
          *  The following code calculates the 2 possible values of s
          */
         
-//        float[] srcPoint = new float[] {x, currentPageHeight + maximumHeight + clippingHeight - y };
-      float[] srcPoint = new float[] {x, currentPageHeight - y };
-//        float[] srcPoint = new float[] {x,y};
-        float[] dstPoint = new float[2];
-        transformAT.transform(srcPoint, 0, dstPoint, 0, 1);
-        // -p/2
-        float p = r0*(r1-r0) + (dstPoint[0]-x0)*(x1-x0) + (dstPoint[1]-y0)*(y1-y0);
-        p /= -denom;
+        Point srcPoint = new Point(x,(int)(currentPageHeight + maximumHeight - y));
+        Point dstPoint = new Point();
+        try
+        {
+//            matrix.inverseTransform(srcPoint, dstPoint);
+//            currentXForm.inverseTransform(dstPoint,srcPoint);
+            transformAT.inverseTransform(srcPoint, dstPoint);
+        } catch (NoninvertibleTransformException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        double xDouble = dstPoint.getX();
+        double yDouble = dstPoint.getY();
+        float[] values = new float[2];
+        // p/2
+        float p = r0*(r1-r0);
+        p += (xDouble-x0)*(x1-x0);
+        p += (yDouble-y0)*(y1-y0);
+        p /= denom;
         // q
-        float q = (float)(Math.pow(r0,2) - Math.pow((dstPoint[0]-x0),2) -Math.pow((dstPoint[1]-y0),2)); 
-        q /= denom;
+        double q = (Math.pow(r0,2) - Math.pow((xDouble-x0),2) -Math.pow((yDouble-y0),2)); 
+        q /=denom;
         // root
-        float root = (float)Math.sqrt(Math.pow(p , 2) - q);
+        double root = Math.sqrt(Math.pow(p , 2) - q);
         // results
-        if (denom > 0)
-            return new float[]{(p - root), (p + root)};
-        else
-            return new float[]{(p + root), (p - root)};
+        values[0] = (float)((-1)*p + root);
+        values[1] = (float)((-1)*p - root);
+        System.out.println("x="+xDouble+",y="+yDouble+" -> v0="+values[0]+",v1="+values[1]);
+        return values;
     }
 }
