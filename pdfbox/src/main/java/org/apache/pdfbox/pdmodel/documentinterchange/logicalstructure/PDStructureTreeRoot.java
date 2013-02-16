@@ -100,7 +100,8 @@ public class PDStructureTreeRoot extends PDStructureNode
      * 
      * @return the role map
      */
-    public Map<String, Object> getRoleMap()
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getRoleMap()
     {
         COSBase rm = this.getCOSDictionary().getDictionaryObject(COSName.ROLE_MAP);
         if (rm instanceof COSDictionary)
@@ -114,7 +115,7 @@ public class PDStructureTreeRoot extends PDStructureNode
                 e.printStackTrace();
             }
         }
-        return new Hashtable<String, Object>();
+        return new Hashtable<String, String>();
     }
 
     /**

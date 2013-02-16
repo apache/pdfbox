@@ -309,7 +309,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
         }
         else
         {
-            set( index, null );
+            set ( index, null );
         }
     }   
 
@@ -551,7 +551,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      *
      *  @return the COSArray as List
      */
-    public List<?> toList()
+    public List<COSBase> toList()
     {
         ArrayList<COSBase> retList = new ArrayList<COSBase>(size());
         for (int i = 0; i < size(); i++)
