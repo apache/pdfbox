@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.common.filespecification;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 
 /**
@@ -36,7 +37,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
     public PDComplexFileSpecification()
     {
         fs = new COSDictionary();
-        fs.setName( "Type", "Filespec" );
+        fs.setItem( COSName.TYPE, COSName.FILESPEC );
     }
 
     /**
@@ -70,13 +71,56 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
+     * <p>Preferred method for getting the filename.
+     * It will determinate the recommended file name.</p>
+     * <p>First of all we try to get the unicode filename if it exist.
+     * If it doesn't exist we take a look at the DOS, MAC UNIX filenames.
+     * If no one exist the required F entry will be returned.</p>
+     *
+     * @return The preferred file name.
+     */
+    public String getFilename()
+    {
+        if (getUnicodeFile() != null)
+        {
+            return getUnicodeFile();
+        }
+        else if (getFileDos() != null)
+        {
+            return getFileDos();
+        }
+        else if (getFileMac() != null)
+        {
+            return getFileMac();
+        }
+        else if (getFileUnix() != null)
+        {
+            return getFileUnix();
+        }
+        else
+        {
+            return getFile();
+        }
+    }
+
+    /**
+     * This will get the unicode file name.
+     *
+     * @return The file name.
+     */
+    public String getUnicodeFile()
+    {
+        return fs.getString(COSName.UF);
+    }
+
+    /**
      * This will get the file name.
      *
      * @return The file name.
      */
     public String getFile()
     {
-        return fs.getString( "F" );
+        return fs.getString( COSName.F );
     }
 
     /**
@@ -86,7 +130,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setFile( String file )
     {
-        fs.setString( "F", file );
+        fs.setString( COSName.F, file );
     }
 
     /**
@@ -96,7 +140,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public String getFileDos()
     {
-        return fs.getString( "DOS" );
+        return fs.getString( COSName.DOS );
     }
 
     /**
@@ -106,7 +150,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setFileDos( String file )
     {
-        fs.setString( "DOS", file );
+        fs.setString( COSName.DOS, file );
     }
 
     /**
@@ -116,7 +160,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public String getFileMac()
     {
-        return fs.getString( "Mac" );
+        return fs.getString( COSName.MAC );
     }
 
     /**
@@ -126,7 +170,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setFileMac( String file )
     {
-        fs.setString( "Mac", file );
+        fs.setString( COSName.MAC, file );
     }
 
     /**
@@ -136,7 +180,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public String getFileUnix()
     {
-        return fs.getString( "Unix" );
+        return fs.getString( COSName.UNIX );
     }
 
     /**
@@ -146,7 +190,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setFileUnix( String file )
     {
-        fs.setString( "Unix", file );
+        fs.setString( COSName.UNIX, file );
     }
 
     /**
@@ -157,7 +201,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setVolatile( boolean fileIsVolatile )
     {
-        fs.setBoolean( "V", fileIsVolatile );
+        fs.setBoolean( COSName.V, fileIsVolatile );
     }
 
     /**
@@ -167,7 +211,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public boolean isVolatile()
     {
-        return fs.getBoolean( "V", false );
+        return fs.getBoolean( COSName.V, false );
     }
 
     /**
@@ -193,15 +237,15 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setEmbeddedFile( PDEmbeddedFile file )
     {
-        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( "EF" );
+        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( COSName.EF );
         if( ef == null && file != null )
         {
             ef = new COSDictionary();
-            fs.setItem( "EF", ef );
+            fs.setItem( COSName.EF, ef );
         }
         if( ef != null )
         {
-            ef.setItem( "F", file );
+            ef.setItem( COSName.F, file );
         }
     }
 
@@ -228,15 +272,15 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setEmbeddedFileDos( PDEmbeddedFile file )
     {
-        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( "DOS" );
+        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( COSName.DOS );
         if( ef == null && file != null )
         {
             ef = new COSDictionary();
-            fs.setItem( "EF", ef );
+            fs.setItem( COSName.EF, ef );
         }
         if( ef != null )
         {
-            ef.setItem( "DOS", file );
+            ef.setItem( COSName.DOS, file );
         }
     }
 
@@ -263,15 +307,15 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setEmbeddedFileMac( PDEmbeddedFile file )
     {
-        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( "Mac" );
+        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( COSName.MAC );
         if( ef == null && file != null )
         {
             ef = new COSDictionary();
-            fs.setItem( "EF", ef );
+            fs.setItem( COSName.EF, ef );
         }
         if( ef != null )
         {
-            ef.setItem( "Mac", file );
+            ef.setItem( COSName.MAC, file );
         }
     }
 
@@ -298,15 +342,16 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public void setEmbeddedFileUnix( PDEmbeddedFile file )
     {
-        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( "Unix" );
+        COSDictionary ef = (COSDictionary)fs.getDictionaryObject( COSName.UNIX );
         if( ef == null && file != null )
         {
             ef = new COSDictionary();
-            fs.setItem( "EF", ef );
+            fs.setItem( COSName.EF, ef );
         }
         if( ef != null )
         {
-            ef.setItem( "Unix", file );
+            ef.setItem( COSName.UNIX, file );
         }
     }
 }
+

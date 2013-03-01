@@ -19,7 +19,9 @@ package org.apache.pdfbox.cos;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -315,10 +317,11 @@ public class COSDocument extends COSBase
     /** Signals that the document is decrypted completely.
      *  Needed e.g. by {@link NonSequentialPDFParser} to circumvent
      *  additional decryption later on. */
-    public void setDecrypted() {
-    		isDecrypted = true;
+    public void setDecrypted()
+    {
+        isDecrypted = true;
     }
-    
+
     /**
      * This will tell if this is an encrypted document.
      *
@@ -326,9 +329,10 @@ public class COSDocument extends COSBase
      */
     public boolean isEncrypted()
     {
-	  	  if ( isDecrypted )
-	  	  		return false;
-  	  
+        if ( isDecrypted )
+        {
+            return false;
+        }
         boolean encrypted = false;
         if( trailer != null )
         {
@@ -369,39 +373,63 @@ public class COSDocument extends COSBase
     }
 
     /**
-     * This will return the last signature dictionary.
-     * @return the last signature dictionary 
-     * 
-     * @throws IOException if something went wrong
+     * This will return a list of signature dictionaries as COSDictionary.
+     *
+     * @return list of signature dictionaries as COSDictionary
+     * @throws IOException if no document catalog can be found
      */
-    public COSDictionary getLastSignatureDictionary() throws IOException 
+    public List<COSDictionary> getSignatureDictionaries() throws IOException
     {
-      if (signDictionary == null)
-      {
+        List<COSDictionary> signatureFields = getSignatureFields(false);
+        List<COSDictionary> signatures = new LinkedList<COSDictionary>();
+        for ( COSDictionary dict : signatureFields )
+        {
+            COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
+            if (dictionaryObject != null)
+            {
+                signatures.add((COSDictionary)dictionaryObject);
+            }
+        }
+        return signatures;
+    }
+
+    /**
+     * This will return a list of signature fields.
+     *
+     * @return list of signature dictionaries as COSDictionary
+     * @throws IOException if no document catalog can be found
+     */
+    public List<COSDictionary> getSignatureFields(boolean onlyEmptyFields) throws IOException
+    {
         COSObject documentCatalog = getCatalog();
         if (documentCatalog != null)
         {
-          COSDictionary acroForm = (COSDictionary)documentCatalog.getDictionaryObject(COSName.ACRO_FORM);
-          if (acroForm !=null)
-          {
-            COSArray fields = (COSArray)acroForm.getDictionaryObject(COSName.FIELDS);
-            for ( Object object : fields )
+            COSDictionary acroForm = (COSDictionary)documentCatalog.getDictionaryObject(COSName.ACRO_FORM);
+            if (acroForm != null)
             {
-              COSObject dict = (COSObject)object;
-              if(dict.getItem(COSName.FT).equals(COSName.SIG))
-              {
-                COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
-                
-                if (dictionaryObject != null) 
+                COSArray fields = (COSArray)acroForm.getDictionaryObject(COSName.FIELDS);
+                if (fields != null)
                 {
-                  signDictionary = (COSDictionary)dictionaryObject;
+                    // Some fields may contain twice references to a single field. 
+                    // This will prevent such double entries.
+                    HashMap<COSObjectKey, COSDictionary> signatures = new HashMap<COSObjectKey, COSDictionary>();
+                    for ( Object object : fields )
+                    {
+                        COSObject dict = (COSObject)object;
+                        if (COSName.SIG.equals(dict.getItem(COSName.FT)))
+                        {
+                            COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
+                            if (dictionaryObject == null || (dictionaryObject != null && !onlyEmptyFields))
+                            {
+                                signatures.put(new COSObjectKey(dict), (COSDictionary)dict.getObject());
+                            }
+                        }
+                    }
+                    return new LinkedList<COSDictionary>(signatures.values());
                 }
-              }
             }
-          }
         }
-      }
-      return signDictionary;
+        return Collections.emptyList();
     }
     
     /**
@@ -579,7 +607,7 @@ public class COSDocument extends COSBase
                 COSObjectKey key = new COSObjectKey( next );
                 if ( objectPool.get(key) == null || objectPool.get(key).getObject() == null ||
                      // xrefTable stores negated objNr of objStream for objects in objStreams
-                     (xrefTable.containsKey( key ) && xrefTable.get( key ) == - objStream.getObjectNumber().longValue()) )  
+                     (xrefTable.containsKey(key) && xrefTable.get(key) == -objStream.getObjectNumber().longValue()) )
                 {
                     COSObject obj = getObjectFromPool(key);
                     obj.setObject(next.getObject());
@@ -667,5 +695,19 @@ public class COSDocument extends COSBase
     public long getStartXref()
     {
       return startXref;
+    }
+
+    /**
+     * Determines it the trailer is a XRef stream or not.
+     * 
+     * @return true if the trailer is a XRef stream
+     */
+    public boolean isXRefStream()
+    {
+        if (trailer != null)
+        {
+            return COSName.XREF.equals(trailer.getItem(COSName.TYPE));
+        }
+        return false;
     }
 }

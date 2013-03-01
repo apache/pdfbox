@@ -142,6 +142,22 @@ public class COSStream extends COSDictionary
     }
 
     /**
+     * This will get the length of the encoded stream.
+     * 
+     * @return the length of the encoded stream as long
+     *
+     * @throws IOException 
+     */
+    public long getFilteredLength() throws IOException
+    {
+        if (filteredStream == null)
+        {
+            doEncode();
+        }
+        return filteredStream.getLength();
+    }
+    
+    /**
      * This will get the logical content stream with none of the filters.
      *
      * @return the bytes of the logical (decoded) stream

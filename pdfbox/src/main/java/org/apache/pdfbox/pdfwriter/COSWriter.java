@@ -55,6 +55,7 @@ import org.apache.pdfbox.cos.ICOSVisitor;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
+import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -429,7 +430,7 @@ public class COSWriter implements ICOSVisitor
 
         while( objectsToWrite.size() > 0 )
         {
-            COSBase nextObject = (COSBase)objectsToWrite.removeFirst();
+            COSBase nextObject = objectsToWrite.removeFirst();
             objectsToWriteSet.remove(nextObject);
             doWriteObject( nextObject );
         }
@@ -444,7 +445,7 @@ public class COSWriter implements ICOSVisitor
 
         while( objectsToWrite.size() > 0 )
         {
-            COSBase nextObject = (COSBase)objectsToWrite.removeFirst();
+            COSBase nextObject = objectsToWrite.removeFirst();
             objectsToWriteSet.remove(nextObject);
             doWriteObject( nextObject );
         }
@@ -504,7 +505,7 @@ public class COSWriter implements ICOSVisitor
             {
                 COSDictionary dict = (COSDictionary)obj;
                 COSName item = (COSName)dict.getItem(COSName.TYPE);
-                if(COSName.SIG.equals(item)) 
+                if (COSName.SIG.equals(item) || COSName.DOC_TIME_STAMP.equals(item))
                 {
                     reachedSignature = true;
                 }
@@ -575,21 +576,7 @@ public class COSWriter implements ICOSVisitor
         // Remove a checksum if present
         trailer.removeItem( COSName.DOC_CHECKSUM );
         
-        /**
-        COSObject catalog = doc.getCatalog();
-        if (catalog != null)
-        {
-            trailer.setItem(COSName.getPDFName("Root"), catalog);
-        }
-        */
         trailer.accept(this);
-
-        getStandardOutput().write(STARTXREF);
-        getStandardOutput().writeEOL();
-        getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
-        getStandardOutput().writeEOL();
-        getStandardOutput().write(EOF);
-        getStandardOutput().writeEOL();
     }
 
     /**
@@ -605,64 +592,142 @@ public class COSWriter implements ICOSVisitor
      */
     protected void doWriteXRef(COSDocument doc) throws IOException
     {
-        // sort xref, needed only if object keys not regenerated
-        Collections.sort(getXRefEntries());
-        COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1 );
-
-        // remember the position where x ref is written
-        setStartxref(getStandardOutput().getPos());
-        //
-        getStandardOutput().write(XREF);
-        getStandardOutput().writeEOL();
-        // write start object number and object count for this x ref section
-        // we assume starting from scratch
-        writeXrefRange(0, lastEntry.getKey().getNumber() + 1);
-        // write initial start object with ref to first deleted object and magic generation number
-        writeXrefEntry(COSWriterXRefEntry.getNullEntry());
-        // write entry for every object
-        long lastObjectNumber = 0;
-        for (Iterator<COSWriterXRefEntry> i = getXRefEntries().iterator(); i.hasNext();)
+        if (doc.isXRefStream())
         {
-            COSWriterXRefEntry entry = i.next();
-            while( lastObjectNumber<entry.getKey().getNumber()-1 )
+            // sort xref, needed only if object keys not regenerated
+            Collections.sort(getXRefEntries());
+            COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1 );
+    
+            // remember the position where x ref is written
+            setStartxref(getStandardOutput().getPos());
+            //
+            getStandardOutput().write(XREF);
+            getStandardOutput().writeEOL();
+            // write start object number and object count for this x ref section
+            // we assume starting from scratch
+            writeXrefRange(0, lastEntry.getKey().getNumber() + 1);
+            // write initial start object with ref to first deleted object and magic generation number
+            writeXrefEntry(COSWriterXRefEntry.getNullEntry());
+            // write entry for every object
+            long lastObjectNumber = 0;
+            for (Iterator<COSWriterXRefEntry> i = getXRefEntries().iterator(); i.hasNext();)
             {
-              writeXrefEntry(COSWriterXRefEntry.getNullEntry());
+                COSWriterXRefEntry entry = i.next();
+                while( lastObjectNumber<entry.getKey().getNumber()-1 )
+                {
+                  writeXrefEntry(COSWriterXRefEntry.getNullEntry());
+                }
+                lastObjectNumber = entry.getKey().getNumber();
+                writeXrefEntry(entry);
             }
-            lastObjectNumber = entry.getKey().getNumber();
-            writeXrefEntry(entry);
+        }
+        else
+        {
+
+            COSDictionary trailer = doc.getTrailer();
+            trailer.setLong(COSName.PREV, doc.getStartXref());
+            addXRefEntry(COSWriterXRefEntry.getNullEntry());
+
+            // sort xref, needed only if object keys not regenerated
+            Collections.sort(getXRefEntries());
+
+            // remember the position where x ref was written
+            setStartxref(getStandardOutput().getPos());
+
+            getStandardOutput().write(XREF);
+            getStandardOutput().writeEOL();
+            // write start object number and object count for this x ref section
+            // we assume starting from scratch
+
+            Integer[] xRefRanges = getXRefRanges(getXRefEntries());
+            int xRefLength = xRefRanges.length;
+            int x = 0;
+            int j = 0;
+            while (x < xRefLength && (xRefLength % 2) == 0)
+            {
+                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+
+                for ( int i = 0; i < xRefRanges[x + 1]; ++i )
+                {
+                    writeXrefEntry(xRefEntries.get(j++));
+                }
+                x += 2;
+            }
         }
     }
 
-    private void doWriteXRefInc(COSDocument doc) throws IOException
+    private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException, COSVisitorException
     {
-        COSDictionary trailer = doc.getTrailer();
-        trailer.setLong(COSName.PREV, doc.getStartXref());
-        addXRefEntry(COSWriterXRefEntry.getNullEntry());
-
-        // sort xref, needed only if object keys not regenerated
-        Collections.sort(getXRefEntries());
-      
-        // remember the position where x ref was written
-        setStartxref(getStandardOutput().getPos());
-
-        getStandardOutput().write(XREF);
-        getStandardOutput().writeEOL();
-        // write start object number and object count for this x ref section
-        // we assume starting from scratch
-
-        Integer[] xRefRanges = getXRefRanges(getXRefEntries());
-        int xRefLength = xRefRanges.length;
-        int x = 0;
-        int j = 0;
-        while(x < xRefLength && (xRefLength % 2) == 0)
+        if (doc.isXRefStream() || hybridPrev != -1)
         {
-            writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+            // the file uses XrefStreams, so we need to update
+            // it with an xref stream. We create a new one and fill it
+            // with data available here
+            // first set an entry for the null entry in the xref table
+            // this is probably not necessary
+            // addXRefEntry(COSWriterXRefEntry.getNullEntry());
 
-            for(int i = 0; i < xRefRanges[x + 1]; ++i)
+            // create a new XRefStrema object
+            PDFXRefStream pdfxRefStream = new PDFXRefStream();
+
+            // add all entries from the incremental update.
+            List<COSWriterXRefEntry> xRefEntries2 = getXRefEntries();
+            for ( COSWriterXRefEntry cosWriterXRefEntry : xRefEntries2 )
             {
-                writeXrefEntry(xRefEntries.get(j++));
+                pdfxRefStream.addEntry(cosWriterXRefEntry);
             }
-            x += 2;
+
+            COSDictionary trailer = doc.getTrailer();
+            //            trailer.setLong(COSName.PREV, hybridPrev == -1 ? prev : hybridPrev);
+            trailer.setLong(COSName.PREV, doc.getStartXref());
+
+            pdfxRefStream.addTrailerInfo(trailer);
+            // the size is the highest object number+1. we add one more
+            // for the xref stream object we are going to write
+            pdfxRefStream.setSize(getNumber() + 2);
+
+            setStartxref(getStandardOutput().getPos());
+            COSStream stream2 = pdfxRefStream.getStream();
+            doWriteObject(stream2);
+        }
+
+        if (!doc.isXRefStream() || hybridPrev != -1)
+        {
+            COSDictionary trailer = doc.getTrailer();
+            trailer.setLong(COSName.PREV, doc.getStartXref());
+            if (hybridPrev != -1)
+            {
+                COSName xrefStm = COSName.XREF_STM;
+                trailer.removeItem(xrefStm);
+                trailer.setLong(xrefStm, getStartxref());
+            }
+            addXRefEntry(COSWriterXRefEntry.getNullEntry());
+    
+            // sort xref, needed only if object keys not regenerated
+            Collections.sort(getXRefEntries());
+          
+            // remember the position where x ref was written
+            setStartxref(getStandardOutput().getPos());
+    
+            getStandardOutput().write(XREF);
+            getStandardOutput().writeEOL();
+            // write start object number and object count for this x ref section
+            // we assume starting from scratch
+    
+            Integer[] xRefRanges = getXRefRanges(getXRefEntries());
+            int xRefLength = xRefRanges.length;
+            int x = 0;
+            int j = 0;
+            while(x < xRefLength && (xRefLength % 2) == 0)
+            {
+                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+    
+                for(int i = 0; i < xRefRanges[x + 1]; ++i)
+                {
+                    writeXrefEntry(xRefEntries.get(j++));
+                }
+                x += 2;
+            }
         }
     }
 
@@ -1054,15 +1119,39 @@ public class COSWriter implements ICOSVisitor
                 doWriteHeader(doc);
             }
             doWriteBody(doc);
+            
+            // get the previous trailer
+            COSDictionary trailer = doc.getTrailer();
+            long hybridPrev = -1;
+
+            if (trailer != null)
+            {
+                hybridPrev = trailer.getLong(COSName.XREF_STM);
+            }
+            
             if(incrementalUpdate)
             {
-                doWriteXRefInc(doc);
+                doWriteXRefInc(doc, hybridPrev);
             }
             else
             {
                 doWriteXRef(doc);
             }
-            doWriteTrailer(doc);
+            
+            // the trailer section should only be used for xref tables not for xref streams
+            if (!doc.isXRefStream() || hybridPrev != -1)
+            {
+                doWriteTrailer(doc);
+            }
+            
+            // write endof
+            getStandardOutput().write(STARTXREF);
+            getStandardOutput().writeEOL();
+            getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
+            getStandardOutput().writeEOL();
+            getStandardOutput().write(EOF);
+            getStandardOutput().writeEOL();
+            
             if(incrementalUpdate)
             {
                 doWriteSignature(doc);
@@ -1205,42 +1294,61 @@ public class COSWriter implements ICOSVisitor
     public Object visitFromStream(COSStream obj) throws COSVisitorException
     {
         InputStream input = null;
-
         try
         {
-            if(willEncrypt)
+            if (willEncrypt)
             {
-                document.getSecurityHandler().encryptStream(
-                    obj,
-                    currentObjectKey.getNumber(),
-                    currentObjectKey.getGeneration());
+                document.getSecurityHandler().encryptStream(obj, currentObjectKey.getNumber()
+                        , currentObjectKey.getGeneration());
             }
 
-            input = obj.getFilteredStream();
-            // set the length of the stream and write stream dictionary
-            COSObject lengthObject = new COSObject( null );
+            COSObject lengthObject = null;
+            // check if the length object is required to be direct, like in
+            // a cross reference stream dictionary
+            COSBase lengthEntry = obj.getDictionaryObject(COSName.LENGTH);
+            String type = obj.getNameAsString(COSName.TYPE);
+            if (lengthEntry != null && lengthEntry.isDirect() || "XRef".equals(type))
+            {
+                // the length might be the non encoded length,
+                // set the real one as direct object
+                COSInteger cosInteger = COSInteger.get(obj.getFilteredLength());
+                cosInteger.setDirect(true);
+                obj.setItem(COSName.LENGTH, cosInteger);
 
-            obj.setItem(COSName.LENGTH, lengthObject);
+            }
+            else
+            {
+                // make the length an implicit indirect object
+                // set the length of the stream and write stream dictionary
+                lengthObject = new COSObject(null);
+
+                obj.setItem(COSName.LENGTH, lengthObject);
+            }
+            input = obj.getFilteredStream();
             //obj.accept(this);
             // write the stream content
-            visitFromDictionary( obj );
+            visitFromDictionary(obj);
             getStandardOutput().write(STREAM);
             getStandardOutput().writeCRLF();
             byte[] buffer = new byte[1024];
             int amountRead = 0;
             int totalAmountWritten = 0;
-            while( (amountRead = input.read(buffer,0,1024)) != -1 )
+            while ((amountRead = input.read(buffer, 0, 1024)) != -1)
             {
-                getStandardOutput().write( buffer, 0, amountRead );
+                getStandardOutput().write(buffer, 0, amountRead);
                 totalAmountWritten += amountRead;
             }
-            lengthObject.setObject( COSInteger.get( totalAmountWritten ) );
+            // set the length as an indirect object
+            if (lengthObject != null)
+            {
+                lengthObject.setObject(COSInteger.get(totalAmountWritten));
+            }
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();
             return null;
         }
-        catch( Exception e )
+        catch (Exception e)
         {
             throw new COSVisitorException(e);
         }
@@ -1392,3 +1500,4 @@ public class COSWriter implements ICOSVisitor
         cosDoc.accept(this);
     }
 }
+

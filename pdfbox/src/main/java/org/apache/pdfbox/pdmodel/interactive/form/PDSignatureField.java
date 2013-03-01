@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSeedValue;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class PDSignatureField extends PDField
     {
         super(theAcroForm,field);
         // dirty hack to avoid npe caused through getWidget() method
-        getDictionary().setName( COSName.TYPE, "Annot" );
+        getDictionary().setItem( COSName.TYPE, COSName.ANNOT );
         getDictionary().setName( COSName.SUBTYPE, PDAnnotationWidget.SUB_TYPE);
     }
 
@@ -57,22 +58,23 @@ public class PDSignatureField extends PDField
      *
      * @param theAcroForm The acroForm for this field.
      * @throws IOException If there is an error while resolving partial name for the signature field
+     *         or getting the widget object.
      */
     public PDSignatureField( PDAcroForm theAcroForm) throws IOException
     {
         super( theAcroForm );
-        getDictionary().setName("FT", "Sig");
+        getDictionary().setItem(COSName.FT, COSName.SIG);
         getWidget().setLocked(true);
         getWidget().setPrinted(true);
         setPartialName(generatePartialName());
-        getDictionary().setName( COSName.TYPE, "Annot" );
+        getDictionary().setItem( COSName.TYPE, COSName.ANNOT );
         getDictionary().setName( COSName.SUBTYPE, PDAnnotationWidget.SUB_TYPE);
     }
     
     /**
-     * Generate a unique name for the signature
+     * Generate a unique name for the signature.
      * @return
-     * @throws IOException
+     * @throws IOException If there is an error while getting the list of fields.
      */
     private String generatePartialName() throws IOException
     {
@@ -93,8 +95,9 @@ public class PDSignatureField extends PDField
       }
 
       while(sigNames.contains(fieldName+i))
+      {
         ++i;
-      
+      }
       return fieldName+i;
     }
     
@@ -140,17 +143,17 @@ public class PDSignatureField extends PDField
     }
     
     /**
-     * Add a signature dictionary to the signature field
+     * Add a signature dictionary to the signature field.
      * 
      * @param value is the PDSignature 
      */
     public void setSignature(PDSignature value) 
     {
-      getDictionary().setItem("V", value);
+      getDictionary().setItem(COSName.V, value);
     }
     
     /**
-     * Get the signature dictionary 
+     * Get the signature dictionary.
      * 
      * @return the signature dictionary
      * 
@@ -159,7 +162,42 @@ public class PDSignatureField extends PDField
     {
       COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
       if (dictionary == null)
-        return null;
+      {
+          return null;
+      }
       return new PDSignature((COSDictionary)dictionary);
+    }
+
+    /**
+     * <p>(Optional; PDF 1.5) A seed value dictionary containing information
+     * that constrains the properties of a signature that is applied to the
+     * field.</p>
+     *
+     * @return the seed value dictionary as PDSeedValue
+     */
+    public PDSeedValue getSeedValue()
+    {
+      COSDictionary dict = (COSDictionary)getDictionary().getDictionaryObject(COSName.SV);
+      PDSeedValue sv = null;
+      if (dict != null)
+      {
+          sv = new PDSeedValue(dict);
+      }
+      return sv;
+    }
+
+    /**
+     * <p>(Optional; PDF 1.) A seed value dictionary containing information
+     * that constrains the properties of a signature that is applied to the
+     * field.</p>
+     *
+     * @param sv is the seed value dictionary as PDSeedValue
+     */
+    public void setSeedValue(PDSeedValue sv)
+    {
+      if (sv != null)
+      {
+          getDictionary().setItem(COSName.SV, sv.getCOSObject());
+      }
     }
 }
