@@ -121,6 +121,21 @@ public class PDSignature implements COSObjectable
     return dictionary;
   }
 
+  /**
+   * Set the dictionary type.
+   *
+   * @param type is the dictionary type.
+   */
+  public void setType(COSName type)
+  {
+    dictionary.setItem(COSName.TYPE, type);
+  }
+  
+  /**
+   * Set the filter.
+   * 
+   * @param filter the filter to be used
+   */
   public void setFilter(COSName filter)
   {
     dictionary.setItem(COSName.FILTER, filter);
@@ -136,56 +151,123 @@ public class PDSignature implements COSObjectable
     dictionary.setItem(COSName.SUBFILTER, subfilter);
   }
 
+  /**
+   * Sets the name.
+   * @param name the name to be used
+   */
   public void setName(String name)
   {
     dictionary.setString(COSName.NAME, name);
   }
 
+  /**
+   * Sets the location.
+   * @param location the location to be used
+   */
   public void setLocation(String location)
   {
     dictionary.setString(COSName.LOCATION, location);
   }
 
+  /**
+   * Sets the reason.
+   * 
+   * @param reason the reason to be used
+   */
   public void setReason(String reason)
   {
     dictionary.setString(COSName.REASON, reason);
   }
 
+  /**
+   * Sets the contact info.
+   * 
+   * @param contactInfo the contact info to be used
+   */
+  public void setContactInfo(String contactInfo)
+  {
+    dictionary.setString(COSName.CONTACT_INFO, contactInfo);
+  }
+
+  /**
+   * Set the sign date.
+   * 
+   * @param cal the date to be used as sign date
+   */
   public void setSignDate(Calendar cal)
   {
-    dictionary.setDate("M", cal);
+    dictionary.setDate(COSName.M, cal);
   }
 
+  /**
+   * Returns the filter.
+   * @return the filter
+   */
   public String getFilter()
   {
-    return ((COSName)dictionary.getItem(COSName.FILTER)).getName();
+    return dictionary.getNameAsString(COSName.FILTER);
   }
 
+  /**
+   * Returns the subfilter.
+   * 
+   * @return the subfilter
+   */
   public String getSubFilter()
   {
-    return ((COSName)dictionary.getItem(COSName.SUBFILTER)).getName();
+    return dictionary.getNameAsString(COSName.SUBFILTER);
   }
 
+  /**
+   * Returns the name.
+   * 
+   * @return the name
+   */
   public String getName()
   {
     return dictionary.getString(COSName.NAME);
   }
 
+  /**
+   * Returns the location.
+   * 
+   * @return the location
+   */
   public String getLocation()
   {
     return dictionary.getString(COSName.LOCATION);
   }
 
+  /**
+   * Returns the reason.
+   * 
+   * @return the reason
+   */
   public String getReason()
   {
     return dictionary.getString(COSName.REASON);
   }
 
+  /**
+   * Returns the contact info.
+   * 
+   * @return teh contact info
+   */
+  public String getContactInfo()
+  {
+    return dictionary.getString(COSName.CONTACT_INFO);
+  }
+
+  /**
+   * Returns the sign date.
+   * 
+   * @return the sign date
+   */
   public Calendar getSignDate()
   {
     try
     {
-      return dictionary.getDate("M");
+      return dictionary.getDate(COSName.M);
     }
     catch (IOException e)
     {
@@ -193,32 +275,39 @@ public class PDSignature implements COSObjectable
     }
   }
 
+  /**
+   * Sets the byte range.
+   * 
+   * @param range the byte range to be used
+   */
   public void setByteRange(int[] range) 
   {
     if (range.length!=4)
+    {
       return;
-
+    }
     COSArray ary = new COSArray();
     for ( int i : range )
     {
       ary.add(COSInteger.get(i));
     }
     
-    dictionary.setItem("ByteRange", ary);
+    dictionary.setItem(COSName.BYTERANGE, ary);
   }
 
   /**
-   * Read out the byterange from the file
+   * Read out the byterange from the file.
    * 
    * @return a integer array with the byterange
    */
   public int[] getByteRange()
   {
-    COSArray byteRange = (COSArray)dictionary.getDictionaryObject("ByteRange");
+    COSArray byteRange = (COSArray)dictionary.getDictionaryObject(COSName.BYTERANGE);
     int[] ary = new int[byteRange.size()];
     for (int i = 0; i<ary.length;++i)
+    {
       ary[i] = byteRange.getInt(i);
-    
+    }
     return ary;
   }
   
@@ -263,23 +352,34 @@ public class PDSignature implements COSObjectable
     {
       // Filter < and (
       if(buffer[0]==0x3C || buffer[0]==0x28)
+      {
         byteOS.write(buffer, 1, c);
+      }
       // Filter > and )
       else if(buffer[c-1]==0x3E || buffer[c-1]==0x29)
+      {
         byteOS.write(buffer, 0, c-1);
-      else 
+      }
+      else
+      {
         byteOS.write(buffer, 0, c);
+      }
     }
     fis.close();
     
     return COSString.createFromHexString(byteOS.toString()).getBytes();
   }
   
+  /**
+   * Sets the contents.
+   * 
+   * @param bytes contents to be used
+   */
   public void setContents(byte[] bytes)
   {
     COSString string = new COSString(bytes);
     string.setForceHexForm(true);
-    dictionary.setItem("Contents", string);
+    dictionary.setItem(COSName.CONTENTS, string);
   }
   
   /**
@@ -291,18 +391,20 @@ public class PDSignature implements COSObjectable
    */
   public byte[] getSignedContent(InputStream pdfFile) throws IOException
   {
-    COSFilterInputStream fis=null;
-    
-    try 
-    {
-    fis = new COSFilterInputStream(pdfFile,getByteRange());
-    return fis.toByteArray();
-    } 
-    finally 
-    {
-      if (fis != null)
-        fis.close();
-    }
+      COSFilterInputStream fis=null;
+      
+      try 
+      {
+          fis = new COSFilterInputStream(pdfFile,getByteRange());
+          return fis.toByteArray();
+      }
+      finally
+      {
+          if (fis != null)
+          {
+              fis.close();
+          }
+      }
   }
   
   /**
@@ -314,17 +416,45 @@ public class PDSignature implements COSObjectable
    */
   public byte[] getSignedContent(byte[] pdfFile) throws IOException
   {
-    COSFilterInputStream fis=null;
-    
-    try 
-    {
-    fis = new COSFilterInputStream(pdfFile,getByteRange());
-    return fis.toByteArray();
-    } 
-    finally 
-    {
-      if (fis != null)
-        fis.close();
-    }
+      COSFilterInputStream fis=null;
+      try 
+      {
+          fis = new COSFilterInputStream(pdfFile,getByteRange());
+          return fis.toByteArray();
+      } 
+      finally 
+      {
+          if (fis != null)
+          {
+              fis.close();
+          }
+      }
+  }
+
+  /**
+   * PDF signature build dictionary. Provides informations about the signature handler.
+   *
+   * @return the pdf signature build dictionary.
+   */
+  public PDPropBuild getPropBuild()
+  {
+      PDPropBuild propBuild = null;
+      COSDictionary propBuildDic = (COSDictionary)dictionary.getDictionaryObject(COSName.PROP_BUILD);
+      if (propBuildDic != null)
+      {
+          propBuild = new PDPropBuild(propBuildDic);
+      }
+      return propBuild;
+  }
+
+  /**
+   * PDF signature build dictionary. Provides informations about the signature handler.
+   *
+   * @param propBuild the prop build
+   */
+      public void setPropBuild(PDPropBuild propBuild)
+  {
+    dictionary.setItem(COSName.PROP_BUILD, propBuild);
   }
 }
+

@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,12 +63,14 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlersManager;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
@@ -110,7 +113,7 @@ public class PDDocument implements Pageable
     
     /**
      * This will hold a flag which tells us if we should remove all security
-     * from this documents
+     * from this documents.
      */
     private boolean allSecurityToBeRemoved = false;
     
@@ -261,7 +264,16 @@ public class PDDocument implements Pageable
         rootPages.updateCount();
     }
 
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException, SignatureException
+    /**
+     * Add a signature.
+     * 
+     * @param sigObject is the PDSignature model
+     * @param signatureInterface is a interface which provides signing capabilities
+     * @throws IOException if there is an error creating required fields
+     * @throws SignatureException if something went wrong
+     */
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) 
+            throws IOException, SignatureException
     {
         SignatureOptions defaultOptions = new SignatureOptions();
         defaultOptions.setPage(1);
@@ -273,10 +285,12 @@ public class PDDocument implements Pageable
      *
      * @param sigObject is the PDSignature model
      * @param signatureInterface is a interface which provides signing capabilities
-     * @param options 
+     * @param options signature options
      * @throws IOException if there is an error creating required fields
+     * @throws SignatureException if something went wrong
      */
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options) throws IOException, SignatureException
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options)
+            throws IOException, SignatureException
     {
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
@@ -325,7 +339,6 @@ public class PDDocument implements Pageable
         {
             page = kids.get(options.getPage()-1);
         }
-      
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDAcroForm acroForm = root.getAcroForm();
@@ -349,17 +362,52 @@ public class PDDocument implements Pageable
          */
 
         // Create Annotation / Field for signature
-        PDSignatureField signatureField = new PDSignatureField(acroForm);
-        signatureField.setSignature(sigObject);              // append the signature object
-        signatureField.getWidget().setPage(page);            // backward linking
-      
+        List<PDAnnotation> annotations = page.getAnnotations();
+
+        List<PDField> fields = acroForm.getFields();
+        PDSignatureField signatureField = null;
+        for ( PDField pdField : fields )
+        {
+            if (pdField instanceof PDSignatureField)
+            {
+                PDSignature signature = ((PDSignatureField)pdField).getSignature();
+                if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
+                {
+                    signatureField = (PDSignatureField)pdField;
+                }
+            }
+        }
+        if (signatureField == null)
+        {
+            signatureField = new PDSignatureField(acroForm);
+            signatureField.setSignature(sigObject);              // append the signature object
+            signatureField.getWidget().setPage(page);            // backward linking
+        }
+        
         // Set the AcroForm Fields
-        List acroFormFields = acroForm.getFields();
+        List<PDField> acroFormFields = acroForm.getFields();
         COSDictionary acroFormDict = acroForm.getDictionary();
         acroFormDict.setDirect(true);
         acroFormDict.setInt(COSName.SIG_FLAGS, 3);
-        acroFormFields.add(signatureField);
-
+        
+        boolean checkFields = false;
+        for ( PDField field : acroFormFields )
+        {
+            if (field instanceof PDSignatureField)
+            {
+                if (((PDSignatureField)field).getCOSObject().equals(signatureField.getCOSObject()))
+                {
+                    checkFields = true;
+                    signatureField.getCOSObject().setNeedToBeUpdate(true);
+                    break;
+                }
+            }
+        }
+        if (!checkFields)
+        {
+            acroFormFields.add(signatureField);
+        }
+        
         // Get the object from the visual signature
         COSDocument visualSignature = options.getVisualSignature();
 
@@ -418,7 +466,8 @@ public class PDDocument implements Pageable
                         COSDictionary cosBaseDict = (COSDictionary)base;
               
                         // Appearance Dictionary auslesen und setzen
-                        PDAppearanceDictionary ap = new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
+                        PDAppearanceDictionary ap = 
+                                new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
                         ap.getDictionary().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
               
@@ -434,27 +483,103 @@ public class PDDocument implements Pageable
         
             if (annotNotFound || sigFieldNotFound )
             {
-                throw new SignatureException(SignatureException.VISUAL_SIGNATURE_INVALID, "Could not read all needed objects from template");
+                throw new SignatureException(SignatureException.VISUAL_SIGNATURE_INVALID, 
+                        "Could not read all needed objects from template");
             }
         }
       
         // Get the annotations of the page and append the signature-annotation to it
-        List annotations = page.getAnnotations();
         if (annotations == null) 
         {
             annotations = new COSArrayList();
             page.setAnnotations(annotations);
         }
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
-        if (!(annotations instanceof COSArrayList) 
-                || !(acroFormFields instanceof COSArrayList) 
-                || !((COSArrayList)annotations).toList().equals(((COSArrayList)acroFormFields).toList()))
+        if (!((annotations instanceof COSArrayList) 
+                && (acroFormFields instanceof COSArrayList) 
+                && (((COSArrayList)annotations).toList().equals(((COSArrayList)acroFormFields).toList())))
+                && !checkFields)
         {
             annotations.add(signatureField.getWidget());
         }
         page.getCOSObject().setNeedToBeUpdate(true);
     }
 
+    /**
+     * This will add a signaturefield to the document.
+     * @param sigFields are the PDSignatureFields that should be added to the document
+     * @param signatureInterface is a interface which provides signing capabilities
+     * @param options signature options
+     * @throws IOException if there is an error creating required fields
+     * @throws SignatureException 
+     */
+    public void addSignatureField(List<PDSignatureField> sigFields,
+                                  SignatureInterface signatureInterface,
+                                  SignatureOptions options) throws IOException, SignatureException
+    {
+        PDDocumentCatalog catalog = getDocumentCatalog();
+        catalog.getCOSObject().setNeedToBeUpdate(true);
+
+        PDAcroForm acroForm = catalog.getAcroForm();
+        if (acroForm == null)
+        {
+            acroForm = new PDAcroForm(this);
+            catalog.setAcroForm(acroForm);
+        }
+        else
+        {
+            acroForm.getCOSObject().setNeedToBeUpdate(true);
+        }
+
+        COSDictionary acroFormDict = acroForm.getDictionary();
+        acroFormDict.setDirect(true);
+        acroFormDict.setNeedToBeUpdate(true);
+        if (acroFormDict.getInt(COSName.SIG_FLAGS) < 1)
+        {
+            acroFormDict.setInt(COSName.SIG_FLAGS, 1); // 1 if at least one signature field is available
+        }
+
+        List<PDField> field = acroForm.getFields();
+
+        for ( PDSignatureField sigField : sigFields )
+        {
+            PDSignature sigObject = sigField.getSignature();
+            sigField.getCOSObject().setNeedToBeUpdate(true);
+
+            // Check if the field already exist
+            boolean checkFields = false;
+            for ( Object obj : field )
+            {
+                if (obj instanceof PDSignatureField)
+                {
+                    if (((PDSignatureField)obj).getCOSObject().equals(sigField.getCOSObject()))
+                    {
+                        checkFields=true;
+                        sigField.getCOSObject().setNeedToBeUpdate(true);
+                        break;
+                    }
+                }
+            }
+            
+            if (!checkFields)
+            {
+                field.add(sigField);
+            }
+
+            // Check if we need to add a signature
+            if (sigField.getSignature() != null)
+            {
+                sigField.getCOSObject().setNeedToBeUpdate(true);
+                if (options == null)
+                {
+
+                }
+                addSignature(sigField.getSignature(), signatureInterface, options);
+            }
+        }
+    }
+
+    
     /**
      * Remove the page from the document.
      *
@@ -468,8 +593,7 @@ public class PDDocument implements Pageable
         boolean retval = parent.getKids().remove( page );
         if( retval )
         {
-            //do a recursive updateCount starting at the root
-            //of the document
+            //do a recursive updateCount starting at the root of the document
             getDocumentCatalog().getPages().updateCount();
         }
         return retval;
@@ -608,13 +732,14 @@ public class PDDocument implements Pageable
         {
             COSDictionary trailer = document.getTrailer();
             COSBase dictionary = trailer.getDictionaryObject( COSName.ROOT );
-            if (dictionary instanceof COSDictionary) {
-                documentCatalog =
-                    new PDDocumentCatalog(this, (COSDictionary) dictionary);
-            } else {
+            if (dictionary instanceof COSDictionary) 
+            {
+                documentCatalog = new PDDocumentCatalog(this, (COSDictionary) dictionary);
+            } 
+            else 
+            {
                 documentCatalog = new PDDocumentCatalog(this);
             }
-
         }
         return documentCatalog;
     }
@@ -664,15 +789,72 @@ public class PDDocument implements Pageable
         encParameters = encDictionary;
     }
 
-    public PDSignature getSignatureDictionary() throws IOException 
+    /**
+     * This will return the last signature.
+     *
+     * @return the last signature as <code>PDSignature</code>.
+     * @throws IOException if no document catalog can be found.
+     * @deprecated use {@link #getLastSignatureDictionary()} instead.
+     */
+    @Deprecated
+    public PDSignature getSignatureDictionary() throws IOException
     {
-      COSDictionary signatureDictionary = document.getLastSignatureDictionary();
+        return getLastSignatureDictionary();
+    }
 
-      if (signatureDictionary!= null)
-      {
-        return new PDSignature(signatureDictionary);
-      }
-      return null;
+    /**
+     * This will return the last signature.
+     *
+     * @return the last signature as <code>PDSignature</code>.
+     * @throws IOException if no document catalog can be found.
+     */
+    public PDSignature getLastSignatureDictionary() throws IOException
+    {
+        List<PDSignature> signatureDictionaries = getSignatureDictionaries();
+        int size = signatureDictionaries.size();
+        if (size > 0)
+        {
+            return signatureDictionaries.get(size - 1);
+        }
+        return null;
+    }
+    
+    /**
+     * Retrieve all signature fields from the document.
+     *
+     * @return a <code>List</code> of <code>PDSignatureField</code>s
+     * @throws IOException if no document catalog can be found.
+     */
+    public List<PDSignatureField> getSignatureFields() throws IOException
+    {
+        List<PDSignatureField> fields = new LinkedList<PDSignatureField>();
+        PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
+        if (acroForm != null)
+        {
+            List<COSDictionary> signatureDictionary = document.getSignatureFields(false);
+            for ( COSDictionary dict : signatureDictionary )
+            {
+                fields.add(new PDSignatureField(acroForm, dict));
+            }
+        }
+        return fields;
+    }
+
+    /**
+     * Retrieve all signature dictionaries from the document.
+     *
+     * @return a <code>List</code> of <code>PDSignature</code>s
+     * @throws IOException if no document catalog can be found.
+     */
+    public List<PDSignature> getSignatureDictionaries() throws IOException
+    {
+        List<COSDictionary> signatureDictionary = document.getSignatureDictionaries();
+        List<PDSignature> signatures = new LinkedList<PDSignature>();
+        for ( COSDictionary dict : signatureDictionary )
+        {
+            signatures.add(new PDSignature(dict));
+        }
+        return signatures;
     }
     
     /**
@@ -691,40 +873,7 @@ public class PDDocument implements Pageable
     @Deprecated
     public boolean isUserPassword( String password ) throws IOException, CryptographyException
     {
-            return false;
-        /*boolean retval = false;
-        if( password == null )
-        {
-            password = "";
-        }
-        PDFEncryption encryptor = new PDFEncryption();
-        PDEncryptionDictionary encryptionDictionary = getEncryptionDictionary();
-        if( encryptionDictionary == null )
-        {
-            throw new IOException( "Error: Document is not encrypted" );
-        }
-        else
-        {
-            if( encryptionDictionary instanceof PDStandardEncryption )
-            {
-                COSString documentID = (COSString)document.getDocumentID().get(0);
-                PDStandardEncryption standard = (PDStandardEncryption)encryptionDictionary;
-                retval = encryptor.isUserPassword(
-                    password.getBytes("ISO-8859-1"),
-                    standard.getUserKey(),
-                    standard.getOwnerKey(),
-                    standard.getPermissions(),
-                    documentID.getBytes(),
-                    standard.getRevision(),
-                    standard.getLength()/8 );
-            }
-            else
-            {
-                throw new IOException( "Error: Encyption dictionary is not 'Standard'" +
-                    encryptionDictionary.getClass().getName() );
-            }
-        }
-        return retval;*/
+        return false;
     }
 
     /**
@@ -743,40 +892,7 @@ public class PDDocument implements Pageable
     @Deprecated
     public boolean isOwnerPassword( String password ) throws IOException, CryptographyException
     {
-            return false;
-        /*boolean retval = false;
-        if( password == null )
-        {
-            password = "";
-        }
-        PDFEncryption encryptor = new PDFEncryption();
-        PDEncryptionDictionary encryptionDictionary = getEncryptionDictionary();
-        if( encryptionDictionary == null )
-        {
-            throw new IOException( "Error: Document is not encrypted" );
-        }
-        else
-        {
-            if( encryptionDictionary instanceof PDStandardEncryption )
-            {
-                COSString documentID = (COSString)document.getDocumentID().get( 0 );
-                PDStandardEncryption standard = (PDStandardEncryption)encryptionDictionary;
-                retval = encryptor.isOwnerPassword(
-                    password.getBytes("ISO-8859-1"),
-                    standard.getUserKey(),
-                    standard.getOwnerKey(),
-                    standard.getPermissions(),
-                    documentID.getBytes(),
-                    standard.getRevision(),
-                    standard.getLength()/8 );
-            }
-            else
-            {
-                throw new IOException( "Error: Encyption dictionary is not 'Standard'" +
-                    encryptionDictionary.getClass().getName() );
-            }
-        }
-        return retval;*/
+        return false;
     }
 
     /**
@@ -1166,11 +1282,26 @@ public class PDDocument implements Pageable
         }
     }
 
+    /** 
+     * Save the pdf as incremental.
+     * 
+     * @param fileName the filename to be used
+     * @throws IOException if something went wrong
+     * @throws COSVisitorException  if something went wrong
+     */
     public void saveIncremental( String fileName ) throws IOException, COSVisitorException
     {
         saveIncremental( new FileInputStream( fileName ) , new FileOutputStream( fileName , true) );
     }
     
+    /** 
+     * Save the pdf as incremental.
+     * 
+     * @param input 
+     * @param output
+     * @throws IOException if something went wrong
+     * @throws COSVisitorException  if something went wrong
+     */
     public void saveIncremental( FileInputStream input, OutputStream output ) throws IOException, COSVisitorException
     {
         //update the count in case any pages have been added behind the scenes.
@@ -1225,17 +1356,19 @@ public class PDDocument implements Pageable
      * default printer job returned by  {@link PrinterJob#getPrinterJob()}.
      *
      * @deprecated Use the {@link PDPageable} adapter class
-     * @param i page index, zero-based
+     * @param pageIndex page index, zero-based
      * @return page format
-     * @throws IndexOutOfBoundsException if the page index is invalid
      */
     @Deprecated
     public PageFormat getPageFormat(int pageIndex)
     {
-        try {
+        try 
+        {
             PrinterJob printerJob = PrinterJob.getPrinterJob();
             return new PDPageable(this, printerJob).getPageFormat(pageIndex);
-        } catch (PrinterException e) {
+        } 
+        catch (PrinterException e) 
+        {
             throw new RuntimeException(e);
         }
     } 
@@ -1305,12 +1438,17 @@ public class PDDocument implements Pageable
         print(printJob, true);
     }
 
-    private void print(PrinterJob job, boolean silent) throws PrinterException {
-        if (job == null) {
+    private void print(PrinterJob job, boolean silent) throws PrinterException 
+    {
+        if (job == null) 
+        {
             throw new PrinterException("The given printer job is null.");
-        } else {
+        } 
+        else 
+        {
             job.setPageable(new PDPageable(this, job));
-            if (silent || job.printDialog()) {
+            if (silent || job.printDialog()) 
+            {
                 job.print();
             }
         }
@@ -1406,26 +1544,37 @@ public class PDDocument implements Pageable
     /**
      * Sets security handler if none is set already.
      * 
-     * @param _sHandler  security handler to be assigned to document
+     * @param secHandler security handler to be assigned to document
      * @return  <code>true</code> if security handler was set, <code>false</code>
      *          otherwise (a security handler was already set)
      */
-    public boolean setSecurityHandler( SecurityHandler _sHandler )
+    public boolean setSecurityHandler(SecurityHandler secHandler)
     {
         if ( securityHandler == null )
         {
-            securityHandler = _sHandler;
+            securityHandler = secHandler;
             return true;
         }
         return false;
     }
 
-    public boolean isAllSecurityToBeRemoved() {
+    /**
+     * Indicates if all security is removed or not when writing the pdf.
+     * @return returns true if all security shall be removed otherwise false
+     */
+    public boolean isAllSecurityToBeRemoved()
+    {
         return allSecurityToBeRemoved;
     }
 
-    public void setAllSecurityToBeRemoved(boolean allSecurityToBeRemoved) {
-        this.allSecurityToBeRemoved = allSecurityToBeRemoved;
+    /**
+     * Activates/Deactivates the removal of all security when writing the pdf.
+     *  
+     * @param removeAllSecurity remove all security if set to true
+     */
+    public void setAllSecurityToBeRemoved(boolean removeAllSecurity)
+    {
+        allSecurityToBeRemoved = removeAllSecurity;
     }
-
 }
+

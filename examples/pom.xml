@@ -43,6 +43,12 @@
       <artifactId>pdfbox</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>1.44</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <build>

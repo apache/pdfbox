@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -887,16 +888,59 @@ public class PDFParser extends BaseParser
         private static void resolveConflicts(COSDocument document, List<ConflictObj> conflictList) throws IOException
         {
             Iterator<ConflictObj> conflicts = conflictList.iterator();
-            while(conflicts.hasNext())
+            if (conflicts.hasNext())
             {
-                ConflictObj o = conflicts.next();
-                Long offset = new Long(o.offset);
-                if(document.getXrefTable().containsValue(offset))
+                Collection<Long> values = document.getXrefTable().values();
+                do
                 {
-                    COSObject pdfObject = document.getObjectFromPool(o.objectKey);
-                    pdfObject.setObject(o.object.getObject());
+                    ConflictObj o = conflicts.next();
+                    Long offset = new Long(o.offset);
+                    if (tolerantConflicResolver(values, offset, 4))
+                    {
+                        COSObject pdfObject = document.getObjectFromPool(o.objectKey);
+                        if (pdfObject.getObjectNumber() != null 
+                                && pdfObject.getObjectNumber().equals(o.object.getObjectNumber()))
+                        {
+                            pdfObject.setObject(o.object.getObject());
+                        }
+                        else
+                        {
+                            LOG.debug("Conflict object ["+o.objectKey+"] at offset "+offset
+                                    +" found in the xref table, but the object numbers differ. Ignoring this object."
+                                    + " The document is maybe malformed.");
+                        }
+                    }
+                }
+                while (conflicts.hasNext());
+            }
+        }
+    }
+    
+    /**
+     * Check if the given object offset can be find in the xref table. If not, we try to search the table
+     * again with the given tolerance and check the given bytes before and after the xref table offset.
+     *
+     * @param values are the unsorted values from the xref table
+     * @param offset is the offset that should be found in the xref table
+     * @param tolerance is the allowed tolerance in bytes.
+     * @return true if the offset was found inside the xref table
+     */
+    private static boolean tolerantConflicResolver(Collection<Long> values, long offset, int tolerance)
+    {
+        if (values.contains(offset))
+        {
+            return true;
+        }
+        else
+        {
+            for ( Long integer : values )
+            {
+                if (Math.abs(integer - offset) <= tolerance)
+                {
+                    return true;
                 }
             }
         }
+        return false;
     }
 }

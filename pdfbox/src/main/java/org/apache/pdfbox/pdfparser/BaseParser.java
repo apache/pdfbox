@@ -54,7 +54,9 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public abstract class BaseParser
 {
 
-    /** system property allowing to define size of push back buffer */
+    /**
+     * system property allowing to define size of push back buffer.
+     */
     public static final String PROP_PUSHBACK_SIZE = "org.apache.pdfbox.baseParser.pushBackSize";
 
     /**
@@ -526,10 +528,12 @@ public abstract class BaseParser
                     // if 'endstream' was not found fall back to scanning
                     if ( ! foundEndstream )
                     {
-                        LOG.warn( "Specified stream length " + length + " is wrong. Fall back to reading stream until 'endstream'." );
+                        LOG.warn("Specified stream length " + length 
+                                + " is wrong. Fall back to reading stream until 'endstream'.");
                         
                         // push back all read stream bytes
-                        out.flush();    // we got a buffered stream wrapper around filteredStream thus first flush to underlying stream
+                        // we got a buffered stream wrapper around filteredStream thus first flush to underlying stream
+                        out.flush();
                         InputStream writtenStreamBytes = stream.getFilteredStream();
                         ByteArrayOutputStream     bout = new ByteArrayOutputStream( length );
                         
@@ -783,6 +787,7 @@ public abstract class BaseParser
     /**
      * This will parse a PDF string.
      *
+     * @param isDictionary indicates if the stream is a dictionary or not
      * @return The parsed PDF string.
      *
      * @throws IOException If there is an error reading from the stream.
@@ -989,8 +994,20 @@ public abstract class BaseParser
             }
             else
             {
-                // character is neither a hex char nor end of string not EOS nor whitespace
-                throw new IOException( "Not allowed character in hex string; char code: " + c );
+                // if invalid chars was found
+                if (sBuf.length()%2!=0)
+                {
+                    sBuf.deleteCharAt(strmBuf.length-1);
+                }
+                
+                // read till the closing bracket was found
+                do 
+                {
+                    c = pdfSource.read();
+                } while ( c != '>' );
+                
+                // exit loop
+                break;
             }
         }
         return COSString.createFromHexString( sBuf.toString(), forceParsing );
