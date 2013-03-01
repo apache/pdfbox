@@ -73,6 +73,8 @@ public class PDPage implements COSObjectable, Printable
 
     private COSDictionary page;
 
+    private PDResources pageResources;
+    
     /**
      * A page size of LETTER or 8.5x11.
      */
@@ -224,13 +226,15 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDResources getResources()
     {
-        PDResources retval = null;
-        COSDictionary resources = (COSDictionary)page.getDictionaryObject( COSName.RESOURCES );
-        if( resources != null )
+        if (pageResources == null)
         {
-            retval = new PDResources( resources );
+            COSDictionary resources = (COSDictionary)page.getDictionaryObject( COSName.RESOURCES );
+            if (resources != null)
+            {
+                pageResources = new PDResources( resources );
+            }
         }
-        return retval;
+        return pageResources;
     }
 
     /**
@@ -257,6 +261,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public void setResources( PDResources resources )
     {
+        pageResources = resources;
         page.setItem( COSName.RESOURCES, resources );
     }
 
@@ -611,7 +616,7 @@ public class PDPage implements COSObjectable, Printable
      *
      * @return A list of article threads on this page.
      */
-    public List getThreadBeads()
+    public List<PDThreadBead> getThreadBeads()
     {
         COSArray beads = (COSArray)page.getDictionaryObject( COSName.B );
         if( beads == null )
@@ -630,7 +635,7 @@ public class PDPage implements COSObjectable, Printable
             }
             pdObjects.add( bead );
         }
-        return new COSArrayList(pdObjects, beads);
+        return new COSArrayList<PDThreadBead>(pdObjects, beads);
 
     }
 
@@ -792,15 +797,15 @@ public class PDPage implements COSObjectable, Printable
      *
      * @throws IOException If there is an error while creating the annotations.
      */
-    public List getAnnotations() throws IOException
+    public List<PDAnnotation> getAnnotations() throws IOException
     {
-        COSArrayList retval = null;
+        COSArrayList<PDAnnotation> retval = null;
         COSArray annots = (COSArray)page.getDictionaryObject(COSName.ANNOTS);
         if (annots == null)
         {
             annots = new COSArray();
             page.setItem(COSName.ANNOTS, annots);
-            retval = new COSArrayList(new ArrayList(), annots);
+            retval = new COSArrayList<PDAnnotation>(new ArrayList<PDAnnotation>(), annots);
         }
         else
         {
@@ -811,7 +816,7 @@ public class PDPage implements COSObjectable, Printable
                 COSBase item = annots.getObject(i);
                 actuals.add( PDAnnotation.createAnnotation( item ) );
             }
-            retval = new COSArrayList(actuals, annots);
+            retval = new COSArrayList<PDAnnotation>(actuals, annots);
         }
         return retval;
     }
