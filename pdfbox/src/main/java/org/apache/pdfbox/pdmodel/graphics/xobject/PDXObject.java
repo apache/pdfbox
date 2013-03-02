@@ -44,7 +44,7 @@ public abstract class PDXObject implements COSObjectable
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDXObject.class);
+    private static final Log LOG = LogFactory.getLog(PDXObject.class);
 
     private PDStream xobject;
 
@@ -134,16 +134,16 @@ public abstract class PDXObject implements COSObjectable
                 // See if filters are DCT or JPX otherwise treat as Bitmap-like
                 // There might be a problem with several filters, but that's ToDo until
                 // I find an example
-                List filters = image.getFilters();
-                if( filters != null && filters.contains( COSName.DCT_DECODE.getName() ) )
+                List<COSName> filters = image.getFilters();
+                if( filters != null && filters.contains( COSName.DCT_DECODE ) )
                 {
                     return new PDJpeg(image);
                 }
-                else if ( filters != null && filters.contains( COSName.CCITTFAX_DECODE.getName() ) )
+                else if ( filters != null && filters.contains( COSName.CCITTFAX_DECODE ) )
                 {
                     return new PDCcitt(image);
                 }
-                else if( filters != null && filters.contains(COSName.JPX_DECODE.getName()))
+                else if( filters != null && filters.contains(COSName.JPX_DECODE))
                 {
                     //throw new IOException( "JPXDecode has not been implemented for images" );
                     //JPX Decode is not really supported right now, but if we are just doing
@@ -163,7 +163,7 @@ public abstract class PDXObject implements COSObjectable
             }
             else
             {
-                log.warn( "Skipping unknown XObject subtype '" + subtype + "'" );
+                LOG.warn( "Skipping unknown XObject subtype '" + subtype + "'" );
             }
         }
         return retval;
