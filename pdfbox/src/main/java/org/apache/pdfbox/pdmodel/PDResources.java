@@ -111,32 +111,48 @@ public class PDResources implements COSObjectable
         if (fonts != null)
         {
             fonts.clear();
+            fonts = null;
+        }
+        if (fontMappings != null)
+        {
+            fontMappings.clear();
+            fontMappings = null;
         }
         if (colorspaces != null)
         {
             colorspaces.clear();
+            colorspaces = null;
         }
         if (xobjects != null)
         {
             xobjects.clear();
+            xobjects = null;
+        }
+        if (xobjectMappings != null)
+        {
+            xobjectMappings.clear();
+            xobjectMappings = null;
         }
         if (images != null)
         {
             images.clear();
+            images = null;
         }
         if (graphicsStates != null)
         {
             graphicsStates.clear();
+            graphicsStates = null;
         }
         if (patterns != null)
         {
             patterns.clear();
+            patterns = null;
         }
         if (shadings != null)
         {
             shadings.clear();
+            shadings = null;
         }
-        resources = null;
     }
     /**
      * This will get the map of fonts.  This will never return null.  The keys are string
@@ -280,7 +296,14 @@ public class PDResources implements COSObjectable
     public void setFonts( Map<String,PDFont> fontsValue )
     {
         fonts = fontsValue;
-        resources.setItem( COSName.FONT, COSDictionaryMap.convert( fontsValue ) );
+        if (fontsValue != null)
+        {
+            resources.setItem( COSName.FONT, COSDictionaryMap.convert( fontsValue ) );
+        }
+        else
+        {
+            resources.removeItem(COSName.FONT);
+        }
     }
 
     /**
@@ -291,7 +314,14 @@ public class PDResources implements COSObjectable
     public void setXObjects( Map<String,PDXObject> xobjectsValue )
     {
         xobjects = xobjectsValue;
-        resources.setItem( COSName.XOBJECT, COSDictionaryMap.convert( xobjectsValue ) );
+        if (xobjectsValue != null)
+        {
+            resources.setItem( COSName.XOBJECT, COSDictionaryMap.convert( xobjectsValue ) );
+        }
+        else
+        {
+            resources.removeItem(COSName.XOBJECT);
+        }
     }
 
     /**
@@ -339,7 +369,14 @@ public class PDResources implements COSObjectable
     public void setColorSpaces( Map<String,PDColorSpace> csValue )
     {
         colorspaces = csValue;
-        resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( csValue ) );
+        if (csValue != null)
+        {
+            resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( csValue ) );
+        }
+        else
+        {
+            resources.removeItem(COSName.COLORSPACE);
+        }
     }
 
     /**
@@ -375,15 +412,22 @@ public class PDResources implements COSObjectable
     public void setGraphicsStates( Map<String,PDExtendedGraphicsState> states )
     {
         graphicsStates = states;
-        Iterator<String> iter = states.keySet().iterator();
-        COSDictionary dic = new COSDictionary();
-        while( iter.hasNext() )
+        if (states != null)
         {
-            String name = (String)iter.next();
-            PDExtendedGraphicsState state = states.get( name );
-            dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
+            Iterator<String> iter = states.keySet().iterator();
+            COSDictionary dic = new COSDictionary();
+            while( iter.hasNext() )
+            {
+                String name = (String)iter.next();
+                PDExtendedGraphicsState state = states.get( name );
+                dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
+            }
+            resources.setItem( COSName.EXT_G_STATE, dic );
         }
-        resources.setItem( COSName.EXT_G_STATE, dic );
+        else
+        {
+            resources.removeItem(COSName.EXT_G_STATE);
+        }
     }
 
     /**
@@ -448,15 +492,22 @@ public class PDResources implements COSObjectable
     public void setPatterns( Map<String,PDPatternResources> patternsValue )
     {
         patterns = patternsValue;
-        Iterator<String> iter = patternsValue.keySet().iterator();
-        COSDictionary dic = new COSDictionary();
-        while( iter.hasNext() )
+        if (patternsValue != null)
         {
-            String name = iter.next();
-            PDPatternResources pattern = patternsValue.get( name );
-            dic.setItem( COSName.getPDFName( name ), pattern.getCOSObject() );
+            Iterator<String> iter = patternsValue.keySet().iterator();
+            COSDictionary dic = new COSDictionary();
+            while( iter.hasNext() )
+            {
+                String name = iter.next();
+                PDPatternResources pattern = patternsValue.get( name );
+                dic.setItem( COSName.getPDFName( name ), pattern.getCOSObject() );
+            }
+            resources.setItem( COSName.PATTERN, dic );
         }
-        resources.setItem( COSName.PATTERN, dic );
+        else
+        {
+            resources.removeItem(COSName.PATTERN);
+        }
     }
 
     /**
@@ -494,19 +545,26 @@ public class PDResources implements COSObjectable
     public void setShadings( Map<String,PDShadingResources> shadingsValue )
     {
         shadings = shadingsValue;
-        Iterator<String> iter = shadingsValue.keySet().iterator();
-        COSDictionary dic = new COSDictionary();
-        while( iter.hasNext() )
+        if (shadingsValue != null)
         {
-            String name = iter.next();
-            PDShadingResources shading = shadingsValue.get( name );
-            dic.setItem( COSName.getPDFName( name ), shading.getCOSObject() );
+            Iterator<String> iter = shadingsValue.keySet().iterator();
+            COSDictionary dic = new COSDictionary();
+            while( iter.hasNext() )
+            {
+                String name = iter.next();
+                PDShadingResources shading = shadingsValue.get( name );
+                dic.setItem( COSName.getPDFName( name ), shading.getCOSObject() );
+            }
+            resources.setItem( COSName.SHADING, dic );
         }
-        resources.setItem( COSName.SHADING, dic );
+        else
+        {
+            resources.removeItem(COSName.SHADING);
+        }
     }
 
     /**
-     * Adds the given font to the resources of the current the page.
+     * Adds the given font to the resources of the current page.
      * 
      * @param font the font to be added
      * @return the font name to be used within the content stream.
@@ -516,6 +574,13 @@ public class PDResources implements COSObjectable
         return addFont(font, MapUtil.getNextUniqueKey( fonts, "F" ));
     }
 
+    /**
+     * Adds the given font to the resources of the current page using the given font key.
+     * 
+     * @param font the font to be added
+     * @param fontKey key to used to map to the given font
+     * @return the font name to be used within the content stream.
+     */
     public String addFont(PDFont font, String fontKey) 
     {
         if (fonts == null) 
@@ -528,7 +593,7 @@ public class PDResources implements COSObjectable
         String fontMapping = fontMappings.get( font );
         if( fontMapping == null )
         {
-        		fontMapping = fontKey;
+            fontMapping = fontKey;
             fontMappings.put( font, fontMapping );
             fonts.put( fontMapping, font );
             addFontToDictionary(font, fontMapping);
@@ -570,8 +635,8 @@ public class PDResources implements COSObjectable
 
     private void addXObjectToDictionary(PDXObject xobject, String xobjectName)
     {
-        COSDictionary fontsDictionary = (COSDictionary)resources.getDictionaryObject(COSName.XOBJECT);
-        fontsDictionary.setItem(xobjectName, xobject);
+        COSDictionary xobjectsDictionary = (COSDictionary)resources.getDictionaryObject(COSName.XOBJECT);
+        xobjectsDictionary.setItem(xobjectName, xobject);
     }
 
     private <T> Map<T, String> reverseMap(Map<String, T> map, Class<T> keyClass)
