@@ -262,7 +262,14 @@ public class PDPage implements COSObjectable, Printable
     public void setResources( PDResources resources )
     {
         pageResources = resources;
-        page.setItem( COSName.RESOURCES, resources );
+        if (resources != null)
+        {
+            page.setItem( COSName.RESOURCES, resources );
+        }
+        else
+        {
+            page.removeItem( COSName.RESOURCES );
+        }
     }
 
     /**
