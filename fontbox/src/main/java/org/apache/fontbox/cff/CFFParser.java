@@ -865,14 +865,14 @@ public class CFFParser
         @Override
         public int getFd(int glyph)
         {
+            Map<String, byte[]> charString = owner.getCharStringsDict();
+            Set<String> keys = charString.keySet();
             // ---- search the position of the given glyph
-            for (Mapping mapping: this.owner.getMappings())
+            for (Mapping mapping: owner.getMappings())
             {
-                if (mapping.getSID() == glyph)
+                if (mapping.getSID() == glyph && charString.containsKey(mapping.getName()))
                 {
                     int index = 0;
-                    Map<String, byte[]> charString = this.owner.getCharStringsDict();
-                    Set<String> keys = charString.keySet();
                     for (String str : keys)
                     {
                         if (mapping.getName().equals(str))
