@@ -21,6 +21,7 @@ import org.apache.pdfbox.pdfviewer.PageWrapper;
 import org.apache.pdfbox.pdfviewer.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageable;
 import org.apache.pdfbox.util.ExtensionFileFilter;
 import org.apache.pdfbox.util.ImageIOUtil;
 
@@ -31,6 +32,7 @@ import javax.swing.KeyStroke;
 
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -134,7 +136,12 @@ public class PDFReader extends javax.swing.JFrame
                 {
                     if (document != null) 
                     {
-                        document.print();
+                        PDPageable pageable = new PDPageable(document);
+                        PrinterJob job = pageable.getPrinterJob();
+                        if (job.printDialog())
+                        {
+                            job.print();
+                        }
                     }
                 }
                 catch( PrinterException e )

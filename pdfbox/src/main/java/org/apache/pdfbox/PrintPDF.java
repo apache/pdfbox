@@ -21,6 +21,7 @@ import java.awt.print.PrinterJob;
 import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPageable;
 
 import java.io.File;
 
@@ -120,13 +121,10 @@ public class PrintPDF
                 }
             }
 
-            if( silentPrint )
+            printJob.setPageable(new PDPageable(document, printJob));
+            if( silentPrint || printJob.printDialog())
             {
-                document.silentPrint( printJob );
-            }
-            else
-            {
-                document.print( printJob );
+                printJob.print();
             }
         }
         finally
