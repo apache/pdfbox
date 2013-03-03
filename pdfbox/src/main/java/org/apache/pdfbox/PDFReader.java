@@ -138,6 +138,7 @@ public class PDFReader extends javax.swing.JFrame
                     {
                         PDPageable pageable = new PDPageable(document);
                         PrinterJob job = pageable.getPrinterJob();
+                        job.setPageable(pageable);
                         if (job.printDialog())
                         {
                             job.print();
