@@ -27,10 +27,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.xml.DomXmpParser;
-import org.apache.padaf.xmpbox.xml.XmpParsingException;
-import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -49,6 +45,10 @@ import org.apache.pdfbox.preflight.metadata.RDFAboutAttributeConcordanceValidati
 import org.apache.pdfbox.preflight.metadata.SynchronizedMetaDataValidation;
 import org.apache.pdfbox.preflight.metadata.XpacketParsingException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
+import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
 
 
 public class MetadataValidationProcess extends AbstractProcess {
