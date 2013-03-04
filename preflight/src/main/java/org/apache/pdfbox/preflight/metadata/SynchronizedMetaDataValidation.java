@@ -28,18 +28,18 @@ import java.util.Iterator;
 import java.util.List;
 
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.DateConverter;
-import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
-import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
-import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
-import org.apache.padaf.xmpbox.type.AbstractField;
-import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.xmpbox.DateConverter;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.type.AbstractField;
+import org.apache.xmpbox.type.TextType;
 
 /**
  * Class which check if document information available in a document are

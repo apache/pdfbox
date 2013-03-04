@@ -24,7 +24,7 @@ package org.apache.pdfbox.preflight;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
+import org.apache.xmpbox.XMPMetadata;
 
 /**
  * Object returned by the validate method of the PDFValidator. This object

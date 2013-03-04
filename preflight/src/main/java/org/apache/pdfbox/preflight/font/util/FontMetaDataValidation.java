@@ -25,18 +25,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
-import org.apache.padaf.xmpbox.schema.XMPRightsManagementSchema;
-import org.apache.padaf.xmpbox.type.AbstractField;
-import org.apache.padaf.xmpbox.type.BooleanType;
-import org.apache.padaf.xmpbox.type.ArrayProperty;
-import org.apache.padaf.xmpbox.type.TextType;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.FontValidator;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPRightsManagementSchema;
+import org.apache.xmpbox.type.AbstractField;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BooleanType;
+import org.apache.xmpbox.type.TextType;
 
 /**
  * Class used to validate the MetaData entry of the Font File Stream dictionary.

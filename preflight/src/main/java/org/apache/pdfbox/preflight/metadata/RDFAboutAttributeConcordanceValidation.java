@@ -24,9 +24,9 @@ package org.apache.pdfbox.preflight.metadata;
 import java.util.List;
 
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.XMPSchema;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.XMPSchema;
 
 /**
  * Class which all elements within an rdf:RDF have the same value for their

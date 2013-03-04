@@ -29,12 +29,12 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_WRON
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.PDFAIdentificationSchema;
-import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
-import org.apache.padaf.xmpbox.type.StructuredType;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.type.StructuredType;
 
 /**
  * Class which check if PDF/A Identification Schema contains good information

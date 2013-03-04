@@ -45,10 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.xml.DomXmpParser;
-import org.apache.padaf.xmpbox.xml.XmpParsingException;
-import org.apache.padaf.xmpbox.xml.XmpParsingException.ErrorType;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -60,6 +56,10 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.FontMetaDataValidation;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
+import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
 
 public abstract class FontDescriptorHelper <T extends FontContainer> {
 

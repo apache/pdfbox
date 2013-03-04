@@ -28,15 +28,15 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.apache.padaf.xmpbox.XMPMetadata;
-import org.apache.padaf.xmpbox.schema.AdobePDFSchema;
-import org.apache.padaf.xmpbox.schema.DublinCoreSchema;
-import org.apache.padaf.xmpbox.schema.XMPBasicSchema;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
