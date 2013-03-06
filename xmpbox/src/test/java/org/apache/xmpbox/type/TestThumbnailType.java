@@ -24,52 +24,47 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.type.AbstractStructuredType;
-import org.apache.xmpbox.type.ThumbnailType;
-import org.apache.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestThumbnailType extends AbstractStructuredTypeTester{
+public class TestThumbnailType extends AbstractStructuredTypeTester
+{
 
-	protected ThumbnailType structured = null;
-	
-	@Before
-	public void before () throws Exception {
-		super.before();
-		structured = new ThumbnailType(xmp);
-	}
-	
-	public TestThumbnailType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
-		super(clz, field, type);
-	}
+    protected ThumbnailType structured = null;
 
-	@Override
-	protected AbstractStructuredType getStructured() {
-		return structured;
-	}
-
-	
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
-
-    	result.add(new Object [] {ThumbnailType.class,"format",Types.Choice});
-    	result.add(new Object [] {ThumbnailType.class,"height",Types.Integer});
-    	result.add(new Object [] {ThumbnailType.class,"width",Types.Integer});
-    	result.add(new Object [] {ThumbnailType.class,"image",Types.Text});
-    	
-    	return result;
-    	
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        structured = new ThumbnailType(xmp);
     }
 
+    public TestThumbnailType(Class<? extends AbstractStructuredType> clz, String field, Types type)
+    {
+        super(clz, field, type);
+    }
 
-    
-	
-	
-    
-	
+    @Override
+    protected AbstractStructuredType getStructured()
+    {
+        return structured;
+    }
+
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        result.add(new Object[] { ThumbnailType.class, "format", Types.Choice });
+        result.add(new Object[] { ThumbnailType.class, "height", Types.Integer });
+        result.add(new Object[] { ThumbnailType.class, "width", Types.Integer });
+        result.add(new Object[] { ThumbnailType.class, "image", Types.Text });
+
+        return result;
+
+    }
+
 }

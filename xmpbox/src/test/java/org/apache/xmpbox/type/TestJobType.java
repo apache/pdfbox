@@ -24,51 +24,46 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.type.AbstractStructuredType;
-import org.apache.xmpbox.type.JobType;
-import org.apache.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestJobType extends AbstractStructuredTypeTester{
+public class TestJobType extends AbstractStructuredTypeTester
+{
 
-	protected JobType structured = null;
-	
-	@Before
-	public void before () throws Exception {
-		super.before();
-		structured = new JobType(xmp,"job");
-	}
-	
-	public TestJobType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
-		super(clz, field, type);
-	}
+    protected JobType structured = null;
 
-	@Override
-	protected AbstractStructuredType getStructured() {
-		return structured;
-	}
-
-	
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
-
-    	result.add(new Object [] {JobType.class,"id",Types.Text});
-    	result.add(new Object [] {JobType.class,"name",Types.Text});
-    	result.add(new Object [] {JobType.class,"url",Types.URL});
-    	
-    	return result;
-    	
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        structured = new JobType(xmp, "job");
     }
 
+    public TestJobType(Class<? extends AbstractStructuredType> clz, String field, Types type)
+    {
+        super(clz, field, type);
+    }
 
-    
-	
-	
-    
-	
+    @Override
+    protected AbstractStructuredType getStructured()
+    {
+        return structured;
+    }
+
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        result.add(new Object[] { JobType.class, "id", Types.Text });
+        result.add(new Object[] { JobType.class, "name", Types.Text });
+        result.add(new Object[] { JobType.class, "url", Types.URL });
+
+        return result;
+
+    }
+
 }

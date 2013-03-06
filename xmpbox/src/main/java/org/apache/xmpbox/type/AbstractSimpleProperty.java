@@ -29,78 +29,80 @@ import org.apache.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public abstract class AbstractSimpleProperty extends AbstractField {
+public abstract class AbstractSimpleProperty extends AbstractField
+{
 
-	
-	private String namespace;
-	
-	private String prefix;
+    private String namespace;
 
-	/**
-	 * Property specific type constructor (namespaceURI is given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespaceURI
-	 *            the specified namespace URI associated to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            the value to give
-	 */
-	public AbstractSimpleProperty(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, propertyName);
-		setValue(value);
-		this.namespace = namespaceURI;
-		this.prefix = prefix;
+    private String prefix;
 
-	}
+    /**
+     * Property specific type constructor (namespaceURI is given)
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespaceURI
+     *            the specified namespace URI associated to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param value
+     *            the value to give
+     */
+    public AbstractSimpleProperty(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
+            Object value)
+    {
+        super(metadata, propertyName);
+        setValue(value);
+        this.namespace = namespaceURI;
+        this.prefix = prefix;
 
-	/**
-	 * Check and set new property value (in Element and in its Object
-	 * Representation)
-	 * 
-	 * @param value
-	 *            Object value to set
-	 */
-	public abstract void setValue(Object value);
-	
-	/**
-	 * Return the property value
-	 * 
-	 * @return a string
-	 */
-	public abstract String getStringValue();
+    }
 
-	public abstract Object getValue();
+    /**
+     * Check and set new property value (in Element and in its Object Representation)
+     * 
+     * @param value
+     *            Object value to set
+     */
+    public abstract void setValue(Object value);
 
-	
-	public String toString () {
-		StringBuilder sb = new StringBuilder ();
-		sb.append("[").append(this.getClass().getSimpleName()).append(":");
-		sb.append(getStringValue()).append("]");
-		return sb.toString();
-	}
+    /**
+     * Return the property value
+     * 
+     * @return a string
+     */
+    public abstract String getStringValue();
 
-	/**
-	 * Get the namespace URI of this entity
-	 * 
-	 * @return the namespace URI
-	 */
-	public final String getNamespace() {
-		return namespace;
-	}
+    public abstract Object getValue();
 
-	/**
-	 * Get the prefix of this entity
-	 * 
-	 * @return the prefix specified
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(this.getClass().getSimpleName()).append(":");
+        sb.append(getStringValue()).append("]");
+        return sb.toString();
+    }
+
+    /**
+     * Get the namespace URI of this entity
+     * 
+     * @return the namespace URI
+     */
+    public final String getNamespace()
+    {
+        return namespace;
+    }
+
+    /**
+     * Get the prefix of this entity
+     * 
+     * @return the prefix specified
+     */
+    public String getPrefix()
+    {
+        return prefix;
+    }
 
 }

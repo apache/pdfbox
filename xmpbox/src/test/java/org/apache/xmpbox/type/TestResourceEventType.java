@@ -24,54 +24,49 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.type.AbstractStructuredType;
-import org.apache.xmpbox.type.ResourceEventType;
-import org.apache.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestResourceEventType extends AbstractStructuredTypeTester{
+public class TestResourceEventType extends AbstractStructuredTypeTester
+{
 
-	protected ResourceEventType structured = null;
-	
-	@Before
-	public void before () throws Exception {
-		super.before();
-		structured = new ResourceEventType(xmp);
-	}
-	
-	public TestResourceEventType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
-		super(clz, field, type);
-	}
+    protected ResourceEventType structured = null;
 
-	@Override
-	protected AbstractStructuredType getStructured() {
-		return structured;
-	}
-
-	
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
-
-    	result.add(new Object [] {ResourceEventType.class,"action",Types.Choice});
-    	result.add(new Object [] {ResourceEventType.class,"changed",Types.Text});
-    	result.add(new Object [] {ResourceEventType.class,"instanceID",Types.GUID});
-    	result.add(new Object [] {ResourceEventType.class,"parameters",Types.Text});
-    	result.add(new Object [] {ResourceEventType.class,"softwareAgent",Types.AgentName});
-    	result.add(new Object [] {ResourceEventType.class,"when",Types.Date});
-    	
-    	return result;
-    	
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        structured = new ResourceEventType(xmp);
     }
 
+    public TestResourceEventType(Class<? extends AbstractStructuredType> clz, String field, Types type)
+    {
+        super(clz, field, type);
+    }
 
-    
-	
-	
-    
-	
+    @Override
+    protected AbstractStructuredType getStructured()
+    {
+        return structured;
+    }
+
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        result.add(new Object[] { ResourceEventType.class, "action", Types.Choice });
+        result.add(new Object[] { ResourceEventType.class, "changed", Types.Text });
+        result.add(new Object[] { ResourceEventType.class, "instanceID", Types.GUID });
+        result.add(new Object[] { ResourceEventType.class, "parameters", Types.Text });
+        result.add(new Object[] { ResourceEventType.class, "softwareAgent", Types.AgentName });
+        result.add(new Object[] { ResourceEventType.class, "when", Types.Date });
+
+        return result;
+
+    }
+
 }

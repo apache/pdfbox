@@ -24,52 +24,48 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.type.AbstractStructuredType;
-import org.apache.xmpbox.type.Types;
-import org.apache.xmpbox.type.VersionType;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestVersionType extends AbstractStructuredTypeTester{
+public class TestVersionType extends AbstractStructuredTypeTester
+{
 
-	protected VersionType structured = null;
-	
-	@Before
-	public void before () throws Exception {
-		super.before();
-		structured = new VersionType(xmp);
-	}
-	
-	public TestVersionType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
-		super(clz, field, type);
-	}
+    protected VersionType structured = null;
 
-	@Override
-	protected AbstractStructuredType getStructured() {
-		return structured;
-	}
-
-	
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
-
-//    	result.add(new Object [] {VersionType.class,"version",Types.Text});
-//    	result.add(new Object [] {VersionType.class,"comments",Types.Text});
-//    	result.add(new Object [] {VersionType.class,"modifyDate",Types.Date});
-    	result.add(new Object [] {VersionType.class,"modifier",Types.ProperName});
-    	
-    	return result;
-    	
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        structured = new VersionType(xmp);
     }
 
+    public TestVersionType(Class<? extends AbstractStructuredType> clz, String field, Types type)
+    {
+        super(clz, field, type);
+    }
 
-    
-	
-	
-    
-	
+    @Override
+    protected AbstractStructuredType getStructured()
+    {
+        return structured;
+    }
+
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        // result.add(new Object [] {VersionType.class,"version",Types.Text});
+        // result.add(new Object [] {VersionType.class,"comments",Types.Text});
+        // result.add(new Object []
+        // {VersionType.class,"modifyDate",Types.Date});
+        result.add(new Object[] { VersionType.class, "modifier", Types.ProperName });
+
+        return result;
+
+    }
+
 }

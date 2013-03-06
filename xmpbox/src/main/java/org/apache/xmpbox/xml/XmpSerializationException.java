@@ -27,31 +27,34 @@ package org.apache.xmpbox.xml;
  * @author a183132
  * 
  */
-public class XmpSerializationException extends Exception {
+public class XmpSerializationException extends Exception
+{
 
-	private static final long serialVersionUID = -3495894314480173555L;
+    private static final long serialVersionUID = -3495894314480173555L;
 
-	/**
-	 * Create an instance of TransformException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 */
-	public XmpSerializationException(String message) {
-		super(message);
-	}
+    /**
+     * Create an instance of TransformException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     */
+    public XmpSerializationException(String message)
+    {
+        super(message);
+    }
 
-	/**
-	 * Create an instance of TransformException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 * @param cause
-	 *            the cause of the exception
-	 */
-	public XmpSerializationException(String message, Throwable cause) {
-		super(message, cause);
+    /**
+     * Create an instance of TransformException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     * @param cause
+     *            the cause of the exception
+     */
+    public XmpSerializationException(String message, Throwable cause)
+    {
+        super(message, cause);
 
-	}
+    }
 
 }

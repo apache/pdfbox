@@ -27,59 +27,55 @@ package org.apache.xmpbox.xml;
  * @author a183132
  * 
  */
-public class XmpParsingException extends Exception {
+public class XmpParsingException extends Exception
+{
 
-	public enum ErrorType {
-		Undefined,
-		Configuration,
-		XpacketBadStart,
-		XpacketBadEnd,
-		NoRootElement,
-		NoSchema, // undefined schema
-		InvalidPdfaSchema,
-		NoType, // undefined type
-		InvalidType,
-		Format, // weird things in serialized document
-		NoValueType,
-		RequiredProperty,
-		InvalidPrefix, // unexpected namespace prefix used
-	}
-	
-	private ErrorType errorType;
-	
-	/**
-	 * serial version uid
-	 */
-	private static final long serialVersionUID = -8843096358184702908L;
+    public enum ErrorType
+    {
+        Undefined, Configuration, XpacketBadStart, XpacketBadEnd, NoRootElement, NoSchema, // undefined
+                                                                                           // schema
+        InvalidPdfaSchema, NoType, // undefined type
+        InvalidType, Format, // weird things in serialized document
+        NoValueType, RequiredProperty, InvalidPrefix, // unexpected namespace
+                                                      // prefix used
+    }
 
-	/**
-	 * Create an instance of XmpParsingException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 * @param cause
-	 *            the cause of the exception
-	 */
-	public XmpParsingException(ErrorType error, String message, Throwable cause) {
-		super(message, cause);
-		this.errorType = error;
-	}
+    private ErrorType errorType;
 
-	/**
-	 * Create an instance of XmpParsingException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 */
-	public XmpParsingException(ErrorType error, String message) {
-		super(message);
-		this.errorType = error;
-	}
+    /**
+     * serial version uid
+     */
+    private static final long serialVersionUID = -8843096358184702908L;
 
-	public ErrorType getErrorType() {
-		return errorType;
-	}
+    /**
+     * Create an instance of XmpParsingException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     * @param cause
+     *            the cause of the exception
+     */
+    public XmpParsingException(ErrorType error, String message, Throwable cause)
+    {
+        super(message, cause);
+        this.errorType = error;
+    }
 
-	
-	
+    /**
+     * Create an instance of XmpParsingException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     */
+    public XmpParsingException(ErrorType error, String message)
+    {
+        super(message);
+        this.errorType = error;
+    }
+
+    public ErrorType getErrorType()
+    {
+        return errorType;
+    }
+
 }

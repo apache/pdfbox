@@ -29,64 +29,69 @@ import org.apache.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class IntegerType extends AbstractSimpleProperty {
+public class IntegerType extends AbstractSimpleProperty
+{
 
+    private int integerValue;
 
-	private int integerValue;
-	
-	/**
-	 * Property Integer type constructor (namespaceURI is given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespaceURI
-	 *            the namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public IntegerType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
+    /**
+     * Property Integer type constructor (namespaceURI is given)
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespaceURI
+     *            the namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param value
+     *            The value to set
+     */
+    public IntegerType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
 
-	}
+    }
 
-	/**
-	 * return the property value
-	 * 
-	 * @return the property value
-	 */
-	public Integer getValue() {
-		return integerValue;
-	}
+    /**
+     * return the property value
+     * 
+     * @return the property value
+     */
+    public Integer getValue()
+    {
+        return integerValue;
+    }
 
-	/**
-	 * Set the property value
-	 * 
-	 * @param value
-	 *            The value to set
-	 */
-	public void setValue(Object value) {
-		if (value instanceof Integer) {
-			integerValue = ((Integer)value).intValue();
-		} else if (value instanceof String) {
-			integerValue = Integer.valueOf((String)value);
-			// NumberFormatException is thrown (sub of InvalidArgumentException)
-		} else {
-			// invalid type of value
-			throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
-		}
-	}
+    /**
+     * Set the property value
+     * 
+     * @param value
+     *            The value to set
+     */
+    public void setValue(Object value)
+    {
+        if (value instanceof Integer)
+        {
+            integerValue = ((Integer) value).intValue();
+        }
+        else if (value instanceof String)
+        {
+            integerValue = Integer.valueOf((String) value);
+            // NumberFormatException is thrown (sub of InvalidArgumentException)
+        }
+        else
+        {
+            // invalid type of value
+            throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
+        }
+    }
 
-	@Override
-	public String getStringValue() {
-		return Integer.toString(integerValue);
-	}
-	
-	
-	
+    @Override
+    public String getStringValue()
+    {
+        return Integer.toString(integerValue);
+    }
 
 }

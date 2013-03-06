@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,38 +33,37 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestXMPWithDefinedSchemas {
+public class TestXMPWithDefinedSchemas
+{
 
-	
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        List<Object[]> data = new ArrayList<Object[]>();
+        data.add(new Object[] { "/validxmp/override_ns.rdf" });
+        data.add(new Object[] { "/validxmp/ghost2.xmp" });
+        data.add(new Object[] { "/validxmp/history2.rdf" });
+        data.add(new Object[] { "/validxmp/Notepad++_A1b.xmp" });
+        data.add(new Object[] { "/validxmp/metadata.rdf" });
+        return data;
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception 
-	{
-		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(new Object [] {"/validxmp/override_ns.rdf"});
-		data.add(new Object [] {"/validxmp/ghost2.xmp"});
-		data.add(new Object [] {"/validxmp/history2.rdf"});
-		data.add(new Object [] {"/validxmp/Notepad++_A1b.xmp"});
-		data.add(new Object [] {"/validxmp/metadata.rdf"});
-		return data;
-	}
+    private String path;
 
-	private String path;
-	
-	public TestXMPWithDefinedSchemas(String path) {
-		this.path = path;
-	}
+    public TestXMPWithDefinedSchemas(String path)
+    {
+        this.path = path;
+    }
 
-	
-	@Test
-	public void main() throws Exception {
-		
-		InputStream is = this.getClass().getResourceAsStream(path);
-		
-		DomXmpParser builder = new DomXmpParser();
-		XMPMetadata rxmp = builder.parse(is);
-		
-	}
+    @Test
+    public void main() throws Exception
+    {
 
-	
+        InputStream is = this.getClass().getResourceAsStream(path);
+
+        DomXmpParser builder = new DomXmpParser();
+        XMPMetadata rxmp = builder.parse(is);
+
+    }
+
 }

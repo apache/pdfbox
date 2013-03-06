@@ -22,43 +22,44 @@
 package org.apache.xmpbox.type;
 
 /**
- * Exception thrown when Value found to set/get property content is not
- * compatible with object specifications (typically when trying to have a
- * property in a type that is not compatible with specified original type of
- * property concerned)
+ * Exception thrown when Value found to set/get property content is not compatible with object specifications (typically
+ * when trying to have a property in a type that is not compatible with specified original type of property concerned)
  * 
  * @author a183132
  * 
  */
-public class BadFieldValueException extends Exception {
+public class BadFieldValueException extends Exception
+{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8100277682314632644L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8100277682314632644L;
 
-	/**
-	 * Create an instance of BadFieldValueException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 */
-	public BadFieldValueException(String message) {
-		super(message);
+    /**
+     * Create an instance of BadFieldValueException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     */
+    public BadFieldValueException(String message)
+    {
+        super(message);
 
-	}
+    }
 
-	/**
-	 * Create an instance of BadFieldValueException
-	 * 
-	 * @param message
-	 *            a description of the encountered problem
-	 * @param cause
-	 *            the cause of the exception
-	 */
-	public BadFieldValueException(String message, Throwable cause) {
-		super(message, cause);
+    /**
+     * Create an instance of BadFieldValueException
+     * 
+     * @param message
+     *            a description of the encountered problem
+     * @param cause
+     *            the cause of the exception
+     */
+    public BadFieldValueException(String message, Throwable cause)
+    {
+        super(message, cause);
 
-	}
+    }
 
 }

@@ -26,7 +26,6 @@ import org.apache.xmpbox.type.ArrayProperty;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.StructuredType;
-import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.Types;
 
 /**
@@ -35,13 +34,12 @@ import org.apache.xmpbox.type.Types;
  * @author a183132
  * 
  */
-@StructuredType(preferedPrefix="pdfaExtension",namespace="http://www.aiim.org/pdfa/ns/extension/")
-public class PDFAExtensionSchema extends XMPSchema {
+@StructuredType(preferedPrefix = "pdfaExtension", namespace = "http://www.aiim.org/pdfa/ns/extension/")
+public class PDFAExtensionSchema extends XMPSchema
+{
 
     @PropertyType(type = Types.PDFASchema, card = Cardinality.Bag)
     public static final String SCHEMAS = "schemas";
-
-
 
     /**
      * Build a new PDFExtension schema
@@ -49,22 +47,23 @@ public class PDFAExtensionSchema extends XMPSchema {
      * @param metadata
      *            The metadata to attach this schema XMPMetadata
      */
-    public PDFAExtensionSchema(XMPMetadata metadata) {
+    public PDFAExtensionSchema(XMPMetadata metadata)
+    {
         super(metadata);
     }
 
-    public PDFAExtensionSchema(XMPMetadata metadata, String prefix) {
+    public PDFAExtensionSchema(XMPMetadata metadata, String prefix)
+    {
         super(metadata, prefix);
     }
 
-
-	/**
-	 * 
-	 * @return the list of subject values
-	 */
-	public ArrayProperty getSchemasProperty() {
-		return (ArrayProperty) getProperty(SCHEMAS);
-	}
- 
+    /**
+     * 
+     * @return the list of subject values
+     */
+    public ArrayProperty getSchemasProperty()
+    {
+        return (ArrayProperty) getProperty(SCHEMAS);
+    }
 
 }

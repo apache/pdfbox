@@ -29,56 +29,60 @@ import org.apache.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class TextType extends AbstractSimpleProperty {
+public class TextType extends AbstractSimpleProperty
+{
 
-	private String textValue;
+    private String textValue;
 
-	/**
-	 * Property Text type constructor (namespaceURI is given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespaceURI
-	 *            the namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public TextType(XMPMetadata metadata, String namespaceURI, String prefix,
-			String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
+    /**
+     * Property Text type constructor (namespaceURI is given)
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespaceURI
+     *            the namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param value
+     *            The value to set
+     */
+    public TextType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
 
-	}
+    }
 
-	/**
-	 * Set the property value
-	 * 
-	 * @param value
-	 *            The value to set
-	 */
-	public void setValue(Object value) {
-		if (!(value instanceof String)) {
-			throw new IllegalArgumentException(
-					"Value given is not allowed for the Text type : '" + value
-							+ "'");
-		} else {
-			textValue = (String)value;
-		}
+    /**
+     * Set the property value
+     * 
+     * @param value
+     *            The value to set
+     */
+    public void setValue(Object value)
+    {
+        if (!(value instanceof String))
+        {
+            throw new IllegalArgumentException("Value given is not allowed for the Text type : '" + value + "'");
+        }
+        else
+        {
+            textValue = (String) value;
+        }
 
-	}
+    }
 
-	@Override
-	public String getStringValue() {
-		return textValue;
-	}
+    @Override
+    public String getStringValue()
+    {
+        return textValue;
+    }
 
-	@Override
-	public Object getValue() {
-		return textValue;
-	}
+    @Override
+    public Object getValue()
+    {
+        return textValue;
+    }
 
-	
 }

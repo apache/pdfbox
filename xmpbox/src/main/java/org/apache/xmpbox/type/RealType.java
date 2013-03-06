@@ -29,61 +29,69 @@ import org.apache.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class RealType extends AbstractSimpleProperty {
+public class RealType extends AbstractSimpleProperty
+{
 
-	private float realValue;
+    private float realValue;
 
-	/**
-	 * Property Real type constructor (namespaceURI is given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespaceURI
-	 *            the namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            The value to set
-	 */
-	public RealType(XMPMetadata metadata, String namespaceURI, String prefix,
-			String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
+    /**
+     * Property Real type constructor (namespaceURI is given)
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespaceURI
+     *            the namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param value
+     *            The value to set
+     */
+    public RealType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
 
-	}
+    }
 
-	/**
-	 * return the property value
-	 * 
-	 * @return float the property value
-	 */
-	public Float getValue() {
-		return realValue;
-	}
+    /**
+     * return the property value
+     * 
+     * @return float the property value
+     */
+    public Float getValue()
+    {
+        return realValue;
+    }
 
-	/**
-	 * Set the property value
-	 * 
-	 * @param value
-	 *            The value to set
-	 */
-	public void setValue(Object value) {
-		if (value instanceof Float) {
-			realValue = ((Float)value).floatValue();
-		} else if (value instanceof String) {
-			// NumberFormatException is thrown (sub of InvalidArgumentException)
-			realValue = Float.valueOf((String)value);
-		} else {
-			// invalid type of value
-			throw new IllegalArgumentException("Value given is not allowed for the Real type.");
-		}
-	}
+    /**
+     * Set the property value
+     * 
+     * @param value
+     *            The value to set
+     */
+    public void setValue(Object value)
+    {
+        if (value instanceof Float)
+        {
+            realValue = ((Float) value).floatValue();
+        }
+        else if (value instanceof String)
+        {
+            // NumberFormatException is thrown (sub of InvalidArgumentException)
+            realValue = Float.valueOf((String) value);
+        }
+        else
+        {
+            // invalid type of value
+            throw new IllegalArgumentException("Value given is not allowed for the Real type.");
+        }
+    }
 
-	@Override
-	public String getStringValue() {
-		return Float.toString(realValue);
-	}
-
+    @Override
+    public String getStringValue()
+    {
+        return Float.toString(realValue);
+    }
 
 }

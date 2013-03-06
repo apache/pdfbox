@@ -28,10 +28,11 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface StructuredType {
+public @interface StructuredType
+{
 
-	String namespace ();
-	
-	String preferedPrefix();
-	
+    String namespace();
+
+    String preferedPrefix();
+
 }

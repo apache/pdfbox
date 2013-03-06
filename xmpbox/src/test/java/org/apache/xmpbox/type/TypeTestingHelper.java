@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -27,88 +27,108 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.xmpbox.type.DateType;
-import org.apache.xmpbox.type.IntegerType;
-import org.apache.xmpbox.type.PropertyType;
-import org.apache.xmpbox.type.TextType;
-import org.apache.xmpbox.type.Types;
+public final class TypeTestingHelper
+{
 
-
-public final class TypeTestingHelper {
-
-	
-    public static String calculateSimpleGetter (String name) {
-    	StringBuilder sb = new StringBuilder(3+name.length());
-    	sb.append("get").append(calculateFieldNameForMethod(name));
-    	return sb.toString();
+    public static String calculateSimpleGetter(String name)
+    {
+        StringBuilder sb = new StringBuilder(3 + name.length());
+        sb.append("get").append(calculateFieldNameForMethod(name));
+        return sb.toString();
     }
 
-    public static String calculateArrayGetter (String name) {
-    	StringBuilder sb = new StringBuilder(4+name.length());
-    	String fn = calculateFieldNameForMethod(name);
-    	sb.append("get").append(fn);
-    	if (!fn.endsWith("s")) {
-    		sb.append("s");
-    	}
-    	return sb.toString();
+    public static String calculateArrayGetter(String name)
+    {
+        StringBuilder sb = new StringBuilder(4 + name.length());
+        String fn = calculateFieldNameForMethod(name);
+        sb.append("get").append(fn);
+        if (!fn.endsWith("s"))
+        {
+            sb.append("s");
+        }
+        return sb.toString();
     }
 
-    public static String calculateSimpleSetter (String name) {
-    	StringBuilder sb = new StringBuilder(3+name.length());
-    	sb.append("set").append(calculateFieldNameForMethod(name));
-    	return sb.toString();
-    }
-    
-    public static String calculateFieldNameForMethod (String name) {
-    	StringBuilder sb = new StringBuilder(name.length());
-    	sb.append(name.substring(0, 1).toUpperCase()).append(name.substring(1));
-    	return sb.toString();
+    public static String calculateSimpleSetter(String name)
+    {
+        StringBuilder sb = new StringBuilder(3 + name.length());
+        sb.append("set").append(calculateFieldNameForMethod(name));
+        return sb.toString();
     }
 
-    
-    public static Class<?> getJavaType (Types type) {
-    	if (type.getImplementingClass()==TextType.class) {
-    		return String.class;
-    	} else if (type.getImplementingClass()==DateType.class) {
-    		return Calendar.class;
-    	} else if (type.getImplementingClass()==IntegerType.class) {
-    		return Integer.class;
-    	} else if (TextType.class.isAssignableFrom(type.getImplementingClass())) {
-    		return String.class;
-    	} else {
-    		throw new IllegalArgumentException("Type not expected in test : "+type.getImplementingClass());
-    	}
-    }
-    
-    public static Object getJavaValue (Types type) {
-    	if (type.getImplementingClass()==TextType.class) {
-    		return UUID.randomUUID().toString();
-    	} else if (type.getImplementingClass()==DateType.class) {
-    		// use random because test are too fast (generate same calendar twice)
-    		Calendar calendar = Calendar.getInstance();
-    		Random rand = new Random();
-    		calendar.setTimeInMillis(rand.nextLong());
-    		return calendar;
-    	} else if (type.getImplementingClass()==IntegerType.class) {
-    		return new Integer(14);
-    	} else if (TextType.class.isAssignableFrom(type.getImplementingClass())) {
-    		// all derived from TextType
-    		return UUID.randomUUID().toString();
-    	} else {
-    		throw new IllegalArgumentException("Type not expected in test : "+type.getImplementingClass());
-    	}
+    public static String calculateFieldNameForMethod(String name)
+    {
+        StringBuilder sb = new StringBuilder(name.length());
+        sb.append(name.substring(0, 1).toUpperCase()).append(name.substring(1));
+        return sb.toString();
     }
 
-	public static List<Field> getXmpFields (Class<?> clz) {
-		Field [] fields = clz.getFields();
-		List<Field> result = new ArrayList<Field>(fields.length);
-		for (Field field : fields) {
-			if (field.getAnnotation(PropertyType.class)!=null) {
-				result.add(field);
-			}
-		}
-		return result;
-	}
+    public static Class<?> getJavaType(Types type)
+    {
+        if (type.getImplementingClass() == TextType.class)
+        {
+            return String.class;
+        }
+        else if (type.getImplementingClass() == DateType.class)
+        {
+            return Calendar.class;
+        }
+        else if (type.getImplementingClass() == IntegerType.class)
+        {
+            return Integer.class;
+        }
+        else if (TextType.class.isAssignableFrom(type.getImplementingClass()))
+        {
+            return String.class;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Type not expected in test : " + type.getImplementingClass());
+        }
+    }
 
-    
+    public static Object getJavaValue(Types type)
+    {
+        if (type.getImplementingClass() == TextType.class)
+        {
+            return UUID.randomUUID().toString();
+        }
+        else if (type.getImplementingClass() == DateType.class)
+        {
+            // use random because test are too fast (generate same calendar
+            // twice)
+            Calendar calendar = Calendar.getInstance();
+            Random rand = new Random();
+            calendar.setTimeInMillis(rand.nextLong());
+            return calendar;
+        }
+        else if (type.getImplementingClass() == IntegerType.class)
+        {
+            return new Integer(14);
+        }
+        else if (TextType.class.isAssignableFrom(type.getImplementingClass()))
+        {
+            // all derived from TextType
+            return UUID.randomUUID().toString();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Type not expected in test : " + type.getImplementingClass());
+        }
+    }
+
+    public static List<Field> getXmpFields(Class<?> clz)
+    {
+        Field[] fields = clz.getFields();
+        List<Field> result = new ArrayList<Field>(fields.length);
+        for (Field field : fields)
+        {
+            if (field.getAnnotation(PropertyType.class) != null)
+            {
+                result.add(field);
+            }
+        }
+        return result;
+    }
+
 }

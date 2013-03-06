@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -23,7 +23,6 @@ package org.apache.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
 import org.junit.Before;
@@ -32,43 +31,47 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class DublinCoreTest extends AbstractSchemaTester {
+public class DublinCoreTest extends AbstractSchemaTester
+{
 
-	protected DublinCoreSchema schema = null;
-	
-	public DublinCoreSchema getSchema () {
-		return schema;
-	}
-	
-	@Before
-	public void before() throws Exception {
-		super.before();
-		schema = xmp.createAndAddDublinCoreSchema();
-	}
+    protected DublinCoreSchema schema = null;
 
-	public DublinCoreTest(String fieldName, Types type, Cardinality card) {
-		super(fieldName, type, card);
-	}
+    public DublinCoreSchema getSchema()
+    {
+        return schema;
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        schema = xmp.createAndAddDublinCoreSchema();
+    }
 
-    	result.add(new Object [] {"contributor", Types.ProperName,Cardinality.Bag});
-    	result.add(new Object [] {"coverage",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"creator",Types.ProperName,Cardinality.Seq});
-    	result.add(new Object [] {"date",Types.Date,Cardinality.Seq});
-    	result.add(new Object [] {"format",Types.MIMEType,Cardinality.Simple});
-    	result.add(new Object [] {"identifier",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"language",Types.Locale,Cardinality.Bag});
-    	result.add(new Object [] {"publisher",Types.ProperName,Cardinality.Bag});
-    	result.add(new Object [] {"relation",Types.Text,Cardinality.Bag});
-    	result.add(new Object [] {"source",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"subject",Types.Text,Cardinality.Bag});
-    	result.add(new Object [] {"type",Types.Text,Cardinality.Bag});
-   	
-    	return result;
-	}
+    public DublinCoreTest(String fieldName, Types type, Cardinality card)
+    {
+        super(fieldName, type, card);
+    }
 
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        result.add(new Object[] { "contributor", Types.ProperName, Cardinality.Bag });
+        result.add(new Object[] { "coverage", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "creator", Types.ProperName, Cardinality.Seq });
+        result.add(new Object[] { "date", Types.Date, Cardinality.Seq });
+        result.add(new Object[] { "format", Types.MIMEType, Cardinality.Simple });
+        result.add(new Object[] { "identifier", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "language", Types.Locale, Cardinality.Bag });
+        result.add(new Object[] { "publisher", Types.ProperName, Cardinality.Bag });
+        result.add(new Object[] { "relation", Types.Text, Cardinality.Bag });
+        result.add(new Object[] { "source", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "subject", Types.Text, Cardinality.Bag });
+        result.add(new Object[] { "type", Types.Text, Cardinality.Bag });
+
+        return result;
+    }
 
 }

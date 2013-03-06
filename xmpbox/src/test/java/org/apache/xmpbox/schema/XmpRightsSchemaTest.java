@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
@@ -38,36 +37,36 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class XmpRightsSchemaTest extends AbstractXMPSchemaTest {
+public class XmpRightsSchemaTest extends AbstractXMPSchemaTest
+{
 
-	public XmpRightsSchemaTest(String property, PropertyType type, Object value) {
-		super(property, type, value);
-	}
+    public XmpRightsSchemaTest(String property, PropertyType type, Object value)
+    {
+        super(property, type, value);
+    }
 
-	@Before
-	public void initTempMetaData() throws Exception {
-		metadata = XMPMetadata.createXMPMetadata();
-		schema = metadata.createAndAddXMPRightsManagementSchema();
-		schemaClass = XMPRightsManagementSchema.class;
-	}
+    @Before
+    public void initTempMetaData() throws Exception
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        schema = metadata.createAndAddXMPRightsManagementSchema();
+        schemaClass = XMPRightsManagementSchema.class;
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception {
-		List<Object[]> data = new ArrayList<Object[]>();
-		data.add(wrapProperty("Certificate", Types.URL,
-				"http://une.url.vers.un.certificat/moncert.cer"));
-		data.add(wrapProperty("Marked", Types.Boolean, true));
-		data.add(wrapProperty("Owner", Types.ProperName, Cardinality.Bag,
-				new String[] { "OwnerName" }));
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        List<Object[]> data = new ArrayList<Object[]>();
+        data.add(wrapProperty("Certificate", Types.URL, "http://une.url.vers.un.certificat/moncert.cer"));
+        data.add(wrapProperty("Marked", Types.Boolean, true));
+        data.add(wrapProperty("Owner", Types.ProperName, Cardinality.Bag, new String[] { "OwnerName" }));
 
-		Map<String, String> desc = new HashMap<String, String>(2);
-		desc.put("fr", "Termes d'utilisation");
-		desc.put("en", "Usage Terms");
-		data.add(wrapProperty("UsageTerms", Types.LangAlt, desc));
-		data.add(wrapProperty("WebStatement", Types.URL,
-				"http://une.url.vers.une.page.fr/"));
-		return data;
-	}
-
+        Map<String, String> desc = new HashMap<String, String>(2);
+        desc.put("fr", "Termes d'utilisation");
+        desc.put("en", "Usage Terms");
+        data.add(wrapProperty("UsageTerms", Types.LangAlt, desc));
+        data.add(wrapProperty("WebStatement", Types.URL, "http://une.url.vers.une.page.fr/"));
+        return data;
+    }
 
 }

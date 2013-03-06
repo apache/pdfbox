@@ -23,53 +23,57 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-@StructuredType(preferedPrefix="pdfaType",namespace="http://www.aiim.org/pdfa/ns/type#")
-public class PDFATypeType extends AbstractStructuredType {
+@StructuredType(preferedPrefix = "pdfaType", namespace = "http://www.aiim.org/pdfa/ns/type#")
+public class PDFATypeType extends AbstractStructuredType
+{
 
- 	@PropertyType(type = Types.Text , card = Cardinality.Simple)
-	public static final String TYPE = "type";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String TYPE = "type";
 
-	@PropertyType(type = Types.URI, card = Cardinality.Simple)
-	public static final String NS_URI = "namespaceURI";
+    @PropertyType(type = Types.URI, card = Cardinality.Simple)
+    public static final String NS_URI = "namespaceURI";
 
-	@PropertyType(type = Types.Text , card = Cardinality.Simple)
-	public static final String PREFIX = "prefix";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String PREFIX = "prefix";
 
-	@PropertyType(type = Types.Text , card = Cardinality.Simple)
-	public static final String DESCRIPTION = "description";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String DESCRIPTION = "description";
 
-	@PropertyType(type =Types.PDFAField, card = Cardinality.Seq)
-	public static final String FIELD = "field";
+    @PropertyType(type = Types.PDFAField, card = Cardinality.Seq)
+    public static final String FIELD = "field";
 
-	public PDFATypeType(XMPMetadata metadata) {
-		super(metadata);
-	}
+    public PDFATypeType(XMPMetadata metadata)
+    {
+        super(metadata);
+    }
 
-	public String getNamespaceURI() {
-		URIType tt = (URIType) getProperty(NS_URI);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public String getNamespaceURI()
+    {
+        URIType tt = (URIType) getProperty(NS_URI);
+        return tt == null ? null : tt.getStringValue();
+    }
 
-	public String getType() {
-		TextType tt = (TextType) getProperty(TYPE);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public String getType()
+    {
+        TextType tt = (TextType) getProperty(TYPE);
+        return tt == null ? null : tt.getStringValue();
+    }
 
-	public String getPrefixValue() {
-		TextType tt = (TextType) getProperty(PREFIX);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public String getPrefixValue()
+    {
+        TextType tt = (TextType) getProperty(PREFIX);
+        return tt == null ? null : tt.getStringValue();
+    }
 
-	public String getDescription() {
-		TextType tt = (TextType) getProperty(DESCRIPTION);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public String getDescription()
+    {
+        TextType tt = (TextType) getProperty(DESCRIPTION);
+        return tt == null ? null : tt.getStringValue();
+    }
 
-	public ArrayProperty getFields() {
-		return (ArrayProperty) getArrayProperty(FIELD);
-	}
+    public ArrayProperty getFields()
+    {
+        return (ArrayProperty) getArrayProperty(FIELD);
+    }
 
-
-	
-	
 }

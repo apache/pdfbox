@@ -34,19 +34,19 @@ import java.lang.annotation.Target;
 /**
  * Annotation to specify type expected for a property
  */
-public @interface PropertyType {
-	
-	/**
-	 * get valuetype defined in this description that must be used to build
-	 * properties descriptions in schema descriptions
-	 * 
-	 * 
-	 */
-//	String propertyType();
-	
-	Types type();
-	
-	Cardinality card ();
-		
-	
+public @interface PropertyType
+{
+
+    /**
+     * get valuetype defined in this description that must be used to build properties descriptions in schema
+     * descriptions
+     * 
+     * 
+     */
+    // String propertyType();
+
+    Types type();
+
+    Cardinality card();
+
 }

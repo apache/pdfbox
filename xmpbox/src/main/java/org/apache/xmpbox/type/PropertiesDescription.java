@@ -27,63 +27,64 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents all properties known for a specific namespace Type and attributes
- * associated to each properties are saved If a specific type well declared is
- * used, this class map it to a basic type
+ * Represents all properties known for a specific namespace Type and attributes associated to each properties are saved
+ * If a specific type well declared is used, this class map it to a basic type
  * 
  * @author a183132
  * 
- *         Attribute management pre-implemented in order to give clues to make
- *         an attribute management system
+ *         Attribute management pre-implemented in order to give clues to make an attribute management system
  */
-public class PropertiesDescription {
+public class PropertiesDescription
+{
 
-	private Map<String, PropertyType> types;
+    private Map<String, PropertyType> types;
 
+    /**
+     * Build PropMapping for specified namespace
+     * 
+     * @param namespace
+     *            namespace URI concerned by this PropMapping
+     */
+    public PropertiesDescription()
+    {
+        types = new HashMap<String, PropertyType>();
+    }
 
-	/**
-	 * Build PropMapping for specified namespace
-	 * 
-	 * @param namespace
-	 *            namespace URI concerned by this PropMapping
-	 */
-	public PropertiesDescription() {
-		types = new HashMap<String, PropertyType>();
-	}
+    /**
+     * Get All Properties Name
+     * 
+     * @return a list of properties qualifiedName
+     */
+    public List<String> getPropertiesName()
+    {
+        return new ArrayList<String>(types.keySet());
+    }
 
-	/**
-	 * Get All Properties Name
-	 * 
-	 * @return a list of properties qualifiedName
-	 */
-	public List<String> getPropertiesName() {
-		return new ArrayList<String>(types.keySet());
-	}
+    /**
+     * Add a new property, an attributes list can be given or can be null
+     * 
+     * @param name
+     *            new property name
+     * @param type
+     *            Valuetype of the new property
+     * @param attr
+     *            A list of attribute (put null while attribute management is not implemented)
+     */
+    public void addNewProperty(String name, PropertyType type)
+    {
+        types.put(name, type);
+    }
 
-	/**
-	 * Add a new property, an attributes list can be given or can be null
-	 * 
-	 * @param name
-	 *            new property name
-	 * @param type
-	 *            Valuetype of the new property
-	 * @param attr
-	 *            A list of attribute (put null while attribute management is
-	 *            not implemented)
-	 */
-	public void addNewProperty(String name, PropertyType type) {
-		types.put(name, type);
-	}
-
-	/**
-	 * Return a type of a property from its qualifiedName
-	 * 
-	 * @param name
-	 *            The name of the property concerned
-	 * @return Type of property or null
-	 */
-	public PropertyType getPropertyType(String name) {
-		return types.get(name);
-	}
+    /**
+     * Return a type of a property from its qualifiedName
+     * 
+     * @param name
+     *            The name of the property concerned
+     * @return Type of property or null
+     */
+    public PropertyType getPropertyType(String name)
+    {
+        return types.get(name);
+    }
 
 }

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
@@ -37,40 +36,41 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class XMPBasicTest extends AbstractXMPSchemaTest {
+public class XMPBasicTest extends AbstractXMPSchemaTest
+{
 
-	public XMPBasicTest(String prop, PropertyType type, Object val) {
-		super(prop, type, val);
-	}
+    public XMPBasicTest(String prop, PropertyType type, Object val)
+    {
+        super(prop, type, val);
+    }
 
-	@Before
-	public void initTempMetaData() throws Exception {
-		metadata = XMPMetadata.createXMPMetadata();
-		schema = metadata.createAndAddXMPBasicSchema();
-		schemaClass = XMPBasicSchema.class;
-	}
+    @Before
+    public void initTempMetaData() throws Exception
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        schema = metadata.createAndAddXMPBasicSchema();
+        schemaClass = XMPBasicSchema.class;
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception {
-		List<Object[]> data = new ArrayList<Object[]>();
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        List<Object[]> data = new ArrayList<Object[]>();
 
-		data.add(wrapProperty("Advisory", Types.XPath, Cardinality.Bag, new String[] { "xpath1",
-				"xpath2" }));
-		data.add(wrapProperty("BaseURL", Types.URL, "URL"));
-		data.add(wrapProperty("CreateDate", Types.Date, Calendar.getInstance()));
-		data.add(wrapProperty("CreatorTool", Types.AgentName, "CreatorTool"));
-		data.add(wrapProperty("Identifier", Types.Text, Cardinality.Bag, new String[] { "id1",
-				"id2" }));
-		data.add(wrapProperty("Label", Types.Text, "label"));
-		data.add(wrapProperty("MetadataDate", Types.Date, Calendar.getInstance()));
-		data.add(wrapProperty("ModifyDate", Types.Date, Calendar.getInstance()));
-		data.add(wrapProperty("Nickname", Types.Text, "nick name"));
-		data.add(wrapProperty("Rating", Types.Integer, 7));
+        data.add(wrapProperty("Advisory", Types.XPath, Cardinality.Bag, new String[] { "xpath1", "xpath2" }));
+        data.add(wrapProperty("BaseURL", Types.URL, "URL"));
+        data.add(wrapProperty("CreateDate", Types.Date, Calendar.getInstance()));
+        data.add(wrapProperty("CreatorTool", Types.AgentName, "CreatorTool"));
+        data.add(wrapProperty("Identifier", Types.Text, Cardinality.Bag, new String[] { "id1", "id2" }));
+        data.add(wrapProperty("Label", Types.Text, "label"));
+        data.add(wrapProperty("MetadataDate", Types.Date, Calendar.getInstance()));
+        data.add(wrapProperty("ModifyDate", Types.Date, Calendar.getInstance()));
+        data.add(wrapProperty("Nickname", Types.Text, "nick name"));
+        data.add(wrapProperty("Rating", Types.Integer, 7));
 
-		data.add(wrapProperty("Thumbnails", Types.Thumbnail, Cardinality.Alt, null));
+        data.add(wrapProperty("Thumbnails", Types.Thumbnail, Cardinality.Alt, null));
 
-		return data;
-	}
-
+        return data;
+    }
 
 }

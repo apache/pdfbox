@@ -23,8 +23,9 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-@StructuredType(preferedPrefix="stJob",namespace="http://ns.adobe.com/xap/1.0/sType/Job#")
-public class JobType extends AbstractStructuredType {
+@StructuredType(preferedPrefix = "stJob", namespace = "http://ns.adobe.com/xap/1.0/sType/Job#")
+public class JobType extends AbstractStructuredType
+{
 
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String ID = "id";
@@ -35,38 +36,45 @@ public class JobType extends AbstractStructuredType {
     @PropertyType(type = Types.URL, card = Cardinality.Simple)
     public static final String URL = "url";
 
-
-    public JobType(XMPMetadata metadata) {
-    	this(metadata, null);
+    public JobType(XMPMetadata metadata)
+    {
+        this(metadata, null);
     }
 
-    public JobType(XMPMetadata metadata, String fieldPrefix) {
+    public JobType(XMPMetadata metadata, String fieldPrefix)
+    {
         super(metadata, fieldPrefix);
         addNamespace(getNamespace(), getPrefix());
     }
 
-    public void setId(String id) {
-    	addSimpleProperty(ID, id);
+    public void setId(String id)
+    {
+        addSimpleProperty(ID, id);
     }
 
-    public void setName( String name) {
-    	addSimpleProperty(NAME, name);
+    public void setName(String name)
+    {
+        addSimpleProperty(NAME, name);
     }
 
-    public void setUrl(String name) {
-    	addSimpleProperty(URL, name);
+    public void setUrl(String name)
+    {
+        addSimpleProperty(URL, name);
     }
 
-    public String getId() {
-    	return getPropertyValueAsString(ID);
+    public String getId()
+    {
+        return getPropertyValueAsString(ID);
     }
 
-    public String getName() {
-    	return getPropertyValueAsString(NAME);
+    public String getName()
+    {
+        return getPropertyValueAsString(NAME);
     }
 
-    public String getUrl() {
-    	return getPropertyValueAsString(URL);
+    public String getUrl()
+    {
+        return getPropertyValueAsString(URL);
     }
 
 }

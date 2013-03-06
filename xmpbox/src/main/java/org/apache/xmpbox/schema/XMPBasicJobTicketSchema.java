@@ -32,31 +32,34 @@ import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.StructuredType;
-import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.Types;
 
-@StructuredType(preferedPrefix="xmpBJ",namespace="http://ns.adobe.com/xap/1.0/bj/")
-public class XMPBasicJobTicketSchema extends XMPSchema {
+@StructuredType(preferedPrefix = "xmpBJ", namespace = "http://ns.adobe.com/xap/1.0/bj/")
+public class XMPBasicJobTicketSchema extends XMPSchema
+{
 
     @PropertyType(type = Types.Job, card = Cardinality.Bag)
     public static final String JOB_REF = "JobRef";
 
     private ArrayProperty bagJobs;
 
-
-    public XMPBasicJobTicketSchema(XMPMetadata metadata) {
-        this(metadata,null);
+    public XMPBasicJobTicketSchema(XMPMetadata metadata)
+    {
+        this(metadata, null);
     }
 
-    public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix) {
+    public XMPBasicJobTicketSchema(XMPMetadata metadata, String ownPrefix)
+    {
         super(metadata, ownPrefix);
     }
 
-    public void addJob(String id , String name, String url) {
-    	addJob(id,name,url,null);
+    public void addJob(String id, String name, String url)
+    {
+        addJob(id, name, url, null);
     }
-    
-    public void addJob(String id , String name, String url, String fieldPrefix) {
+
+    public void addJob(String id, String name, String url, String fieldPrefix)
+    {
         JobType job = new JobType(getMetadata(), fieldPrefix);
         job.setId(id);
         job.setName(name);
@@ -64,34 +67,45 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
         addJob(job);
     }
 
-    public void addJob (JobType job) {
-    	String prefix = getNamespacePrefix(job.getNamespace());
-    	if (prefix!=null) {
-    		// use same prefix for all jobs
-    		job.setPrefix(prefix);
-    	} else {
-    		// add prefix
-    		addNamespace(job.getNamespace(), job.getPrefix());
-    	}
-    	// create bag if not existing
-        if (bagJobs == null) {
+    public void addJob(JobType job)
+    {
+        String prefix = getNamespacePrefix(job.getNamespace());
+        if (prefix != null)
+        {
+            // use same prefix for all jobs
+            job.setPrefix(prefix);
+        }
+        else
+        {
+            // add prefix
+            addNamespace(job.getNamespace(), job.getPrefix());
+        }
+        // create bag if not existing
+        if (bagJobs == null)
+        {
             bagJobs = createArrayProperty(JOB_REF, Cardinality.Bag);
             addProperty(bagJobs);
         }
         // add job
         bagJobs.getContainer().addProperty(job);
     }
-    
-    public List<JobType> getJobs() throws BadFieldValueException {
+
+    public List<JobType> getJobs() throws BadFieldValueException
+    {
         List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
-        if (tmp != null) {
+        if (tmp != null)
+        {
             List<JobType> layers = new ArrayList<JobType>();
-            for (AbstractField abstractField : tmp) {
-                if (abstractField instanceof JobType) {
+            for (AbstractField abstractField : tmp)
+            {
+                if (abstractField instanceof JobType)
+                {
                     layers.add((JobType) abstractField);
-                } else {
-                    throw new BadFieldValueException("Job expected and "
-                            + abstractField.getClass().getName() + " found.");
+                }
+                else
+                {
+                    throw new BadFieldValueException("Job expected and " + abstractField.getClass().getName()
+                            + " found.");
                 }
             }
             return layers;
@@ -99,6 +113,5 @@ public class XMPBasicJobTicketSchema extends XMPSchema {
         return null;
 
     }
-
 
 }
