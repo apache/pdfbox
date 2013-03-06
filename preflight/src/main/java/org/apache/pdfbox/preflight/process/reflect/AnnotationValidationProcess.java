@@ -30,22 +30,26 @@ import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 
-public class AnnotationValidationProcess extends AbstractProcess {
+public class AnnotationValidationProcess extends AbstractProcess
+{
 
-	public void validate(PreflightContext context) throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class)) {
-			throw new ValidationException("Annotation validation process needs at least one COSDictionary object");
-		}
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class))
+        {
+            throw new ValidationException("Annotation validation process needs at least one COSDictionary object");
+        }
 
-		COSDictionary annotDict = (COSDictionary)vPath.peek();
+        COSDictionary annotDict = (COSDictionary) vPath.peek();
 
-		PreflightConfiguration config = context.getConfig();
-		AnnotationValidatorFactory factory = config.getAnnotFact();
-		AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
-		if (annotValidator != null) {
-			annotValidator.validate();
-		}
-	}
+        PreflightConfiguration config = context.getConfig();
+        AnnotationValidatorFactory factory = config.getAnnotFact();
+        AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
+        if (annotValidator != null)
+        {
+            annotValidator.validate();
+        }
+    }
 
 }

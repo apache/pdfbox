@@ -32,33 +32,36 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 /**
  * Validation class for the PopupAnnotation
  */
-public class PrintMarkAnnotationValidator extends AnnotationValidator {
-	/**
-	 * PDFBox object which wraps the annotation dictionary
-	 */
-	protected PDAnnotationUnknown pdUnk = null;
+public class PrintMarkAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox object which wraps the annotation dictionary
+     */
+    protected PDAnnotationUnknown pdUnk = null;
 
-	public PrintMarkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-		super(ctx, annotDictionary);
-		this.pdUnk = new PDAnnotationUnknown(annotDictionary);
-		this.pdAnnot = this.pdUnk;
-	}
+    public PrintMarkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdUnk = new PDAnnotationUnknown(annotDictionary);
+        this.pdAnnot = this.pdUnk;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-	 * checkMandatoryFields(java.util.List)
-	 */
-	protected boolean checkMandatoryFields() {
-		boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-		boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-		boolean f = this.annotDictionary.containsKey(COSName.F);
+    /*
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     */
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
 
-		boolean result = (subtype && rect && f);
-		if (!result) {
-			ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-		}
-		return result;
-	}
+        boolean result = (subtype && rect && f);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        }
+        return result;
+    }
 }

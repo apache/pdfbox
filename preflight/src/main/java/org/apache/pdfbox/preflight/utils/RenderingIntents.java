@@ -31,9 +31,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class contains a static list of RenderingIntent values to allow an easy
- * RenderingIntent value validation. Here is the content of the RenderingIntent
- * list :
+ * This class contains a static list of RenderingIntent values to allow an easy RenderingIntent value validation. Here
+ * is the content of the RenderingIntent list :
  * <UL>
  * <li>Perceptual
  * <li>Saturation
@@ -41,19 +40,22 @@ import java.util.List;
  * <li>RelativeColorimetric
  * </UL>
  */
-public class RenderingIntents {
-  private static List<String> RENDERING_INTENTS;
+public class RenderingIntents
+{
+    private static List<String> RENDERING_INTENTS;
 
-  static {
-    ArrayList<String> al = new ArrayList<String>(4);
-    al.add(RENDERING_INTENT_REL_COLOR);
-    al.add(RENDERING_INTENT_ABS_COLOR);
-    al.add(RENDERING_INTENT_PERCEPTUAL);
-    al.add(RENDERING_INTENT_SATURATION);
-    RENDERING_INTENTS = Collections.unmodifiableList(al);
-  }
+    static
+    {
+        ArrayList<String> al = new ArrayList<String>(4);
+        al.add(RENDERING_INTENT_REL_COLOR);
+        al.add(RENDERING_INTENT_ABS_COLOR);
+        al.add(RENDERING_INTENT_PERCEPTUAL);
+        al.add(RENDERING_INTENT_SATURATION);
+        RENDERING_INTENTS = Collections.unmodifiableList(al);
+    }
 
-  public static boolean contains(Object riArg) {
-    return RENDERING_INTENTS.contains(riArg);
-  }
+    public static boolean contains(Object riArg)
+    {
+        return RENDERING_INTENTS.contains(riArg);
+    }
 }

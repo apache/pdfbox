@@ -26,47 +26,58 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
-public class Type0Container extends FontContainer {
+public class Type0Container extends FontContainer
+{
 
-	protected FontContainer delegateFontContainer;
+    protected FontContainer delegateFontContainer;
 
-	public Type0Container(PDFont font) {
-		super(font);
-	}
-	
-	@Override
-	protected float getFontProgramWidth(int cid) {
-		float width = 0;
-		if (this.delegateFontContainer != null) {
-			width = this.delegateFontContainer.getFontProgramWidth(cid);
-		}
-		return width;
-	}
+    public Type0Container(PDFont font)
+    {
+        super(font);
+    }
 
-	public void setDelegateFontContainer(FontContainer delegateFontContainer) {
-		this.delegateFontContainer = delegateFontContainer;
-	}
-	
-	public List<ValidationError> getAllErrors() {
-		if (this.delegateFontContainer != null) {
-			this.errorBuffer.addAll(this.delegateFontContainer.getAllErrors());
-		}
-		return this.errorBuffer;
-	}
-	
-	public boolean isValid() {
-		boolean result = (this.errorBuffer.isEmpty() && isEmbeddedFont()); 
-		if (this.delegateFontContainer != null) {
-			result &=  this.delegateFontContainer.isValid();
-		}
-		return result;
-	}
-	
-	public boolean isEmbeddedFont() {
-		boolean result = embeddedFont; 
-		if (this.delegateFontContainer != null) {
-			result &=  this.delegateFontContainer.isEmbeddedFont();
-		}
-		return result;
-	}
+    @Override
+    protected float getFontProgramWidth(int cid)
+    {
+        float width = 0;
+        if (this.delegateFontContainer != null)
+        {
+            width = this.delegateFontContainer.getFontProgramWidth(cid);
+        }
+        return width;
+    }
+
+    public void setDelegateFontContainer(FontContainer delegateFontContainer)
+    {
+        this.delegateFontContainer = delegateFontContainer;
+    }
+
+    public List<ValidationError> getAllErrors()
+    {
+        if (this.delegateFontContainer != null)
+        {
+            this.errorBuffer.addAll(this.delegateFontContainer.getAllErrors());
+        }
+        return this.errorBuffer;
+    }
+
+    public boolean isValid()
+    {
+        boolean result = (this.errorBuffer.isEmpty() && isEmbeddedFont());
+        if (this.delegateFontContainer != null)
+        {
+            result &= this.delegateFontContainer.isValid();
+        }
+        return result;
+    }
+
+    public boolean isEmbeddedFont()
+    {
+        boolean result = embeddedFont;
+        if (this.delegateFontContainer != null)
+        {
+            result &= this.delegateFontContainer.isEmbeddedFont();
+        }
+        return result;
+    }
 }

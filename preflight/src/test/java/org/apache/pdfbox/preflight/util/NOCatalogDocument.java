@@ -27,17 +27,21 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
-public class NOCatalogDocument extends PDDocument {
-  public NOCatalogDocument() throws IOException {
-    super();
-  }
+public class NOCatalogDocument extends PDDocument
+{
+    public NOCatalogDocument() throws IOException
+    {
+        super();
+    }
 
-  public NOCatalogDocument(COSDocument doc) {
-    super(doc);
-  }
+    public NOCatalogDocument(COSDocument doc)
+    {
+        super(doc);
+    }
 
-  @Override
-  public PDDocumentCatalog getDocumentCatalog() {
-    return null;
-  }
+    @Override
+    public PDDocumentCatalog getDocumentCatalog()
+    {
+        return null;
+    }
 }

@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
-
 import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT;
 
 import org.apache.pdfbox.cos.COSName;
@@ -37,29 +36,40 @@ import org.apache.pdfbox.preflight.xobject.XObjImageValidator;
 import org.apache.pdfbox.preflight.xobject.XObjPostscriptValidator;
 import org.apache.pdfbox.preflight.xobject.XObjectValidator;
 
-public class GraphicObjectPageValidationProcess extends AbstractProcess {
+public class GraphicObjectPageValidationProcess extends AbstractProcess
+{
 
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
 
-	public void validate(PreflightContext context) throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
+        XObjectValidator validator = null;
+        if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectImage.class))
+        {
+            validator = new XObjImageValidator(context, (PDXObjectImage) vPath.peek());
+        }
+        else if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectForm.class))
+        {
+            validator = new XObjFormValidator(context, (PDXObjectForm) vPath.peek());
+        }
+        else if (!vPath.isEmpty() && vPath.isExpectedType(COSStream.class))
+        {
+            COSStream stream = (COSStream) vPath.peek();
+            String subType = stream.getNameAsString(COSName.SUBTYPE);
+            if (XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subType))
+            {
+                validator = new XObjPostscriptValidator(context, stream);
+            }
+            else
+            {
+                throw new ValidationException("Invalid XObject subtype");
+            }
+        }
+        else
+        {
+            throw new ValidationException("Graphic validation process needs at least one PDFont object");
+        }
 
-		XObjectValidator validator = null;
-		if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectImage.class)) {
-			validator = new XObjImageValidator(context, (PDXObjectImage)vPath.peek());
-		} else if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectForm.class)) {
-			validator = new XObjFormValidator(context, (PDXObjectForm)vPath.peek());
-		} else if (!vPath.isEmpty() && vPath.isExpectedType(COSStream.class)) {
-			COSStream stream = (COSStream)vPath.peek();
-			String subType = stream.getNameAsString(COSName.SUBTYPE);
-			if (XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subType)) {
-				validator = new XObjPostscriptValidator(context, stream);
-			} else {
-				throw new ValidationException("Invalid XObject subtype");
-			}
-		} else {
-			throw new ValidationException("Graphic validation process needs at least one PDFont object");
-		}
-
-		validator.validate();
-	}
+        validator.validate();
+    }
 }

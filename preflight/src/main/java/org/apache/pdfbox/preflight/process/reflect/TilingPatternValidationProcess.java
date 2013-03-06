@@ -38,53 +38,60 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class TilingPatternValidationProcess extends AbstractProcess {
+public class TilingPatternValidationProcess extends AbstractProcess
+{
 
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class))
+        {
+            throw new ValidationException("Tiling pattern validation required at least a PDPage");
+        }
 
-	public void validate(PreflightContext context)  throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class)) {
-			throw new ValidationException("Tiling pattern validation required at least a PDPage");
-		}
+        PDTilingPatternResources tilingPattern = (PDTilingPatternResources) vPath.peek();
+        PDPage page = vPath.getClosestPathElement(PDPage.class);
 
-		PDTilingPatternResources tilingPattern = (PDTilingPatternResources)vPath.peek();
-		PDPage page = vPath.getClosestPathElement(PDPage.class);
+        checkMandatoryFields(context, page, tilingPattern);
+        parseResources(context, page, tilingPattern);
+        parsePatternContent(context, page, tilingPattern);
+    }
 
-		checkMandatoryFields(context, page, tilingPattern);
-		parseResources(context, page, tilingPattern);
-		parsePatternContent(context, page, tilingPattern);
-	}
+    protected void parseResources(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
+            throws ValidationException
+    {
+        PDResources resources = pattern.getResources();
+        if (resources != null)
+        {
+            ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
+        }
+    }
 
-	protected void parseResources(PreflightContext context, PDPage page, PDTilingPatternResources pattern) throws ValidationException {
-		PDResources resources = pattern.getResources();
-		if (resources != null) {
-			ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
-		}
-	}
+    /**
+     * Validate the Pattern content like Color and Show Text Operators using an instance of ContentStreamWrapper.
+     */
+    protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
+            throws ValidationException
+    {
+        ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
+        csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
+    }
 
-	/**
-	 * Validate the Pattern content like Color and Show Text Operators using an
-	 * instance of ContentStreamWrapper.
-	 */
-	protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPatternResources pattern) 
-			throws ValidationException {
-		ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
-		csWrapper.validPatternContentStream((COSStream)pattern.getCOSObject());
-	}
-
-	/**
-	 * This method checks if required fields are present.
-	 */
-	protected void checkMandatoryFields(PreflightContext context, PDPage page, PDTilingPatternResources pattern) {
-		COSDictionary dictionary = pattern.getCOSDictionary();
-		boolean res = dictionary.getItem(COSName.RESOURCES) != null;
-		res = res && dictionary.getItem(COSName.BBOX) != null;
-		res = res && dictionary.getItem(COSName.PAINT_TYPE) != null;
-		res = res && dictionary.getItem(COSName.TILING_TYPE) != null;
-		res = res && dictionary.getItem(COSName.X_STEP) != null;
-		res = res && dictionary.getItem(COSName.Y_STEP) != null;
-		if (!res) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION));
-		}
-	}
+    /**
+     * This method checks if required fields are present.
+     */
+    protected void checkMandatoryFields(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
+    {
+        COSDictionary dictionary = pattern.getCOSDictionary();
+        boolean res = dictionary.getItem(COSName.RESOURCES) != null;
+        res = res && dictionary.getItem(COSName.BBOX) != null;
+        res = res && dictionary.getItem(COSName.PAINT_TYPE) != null;
+        res = res && dictionary.getItem(COSName.TILING_TYPE) != null;
+        res = res && dictionary.getItem(COSName.X_STEP) != null;
+        res = res && dictionary.getItem(COSName.Y_STEP) != null;
+        if (!res)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION));
+        }
+    }
 }

@@ -25,57 +25,56 @@ import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.javacc.ParseException;
 
 /**
- * This Exception is thrown if an validation error occurs during the javacc
- * validation in the PDF Cross Ref table.
+ * This Exception is thrown if an validation error occurs during the javacc validation in the PDF Cross Ref table.
  * 
  * Error codes provided by this exception should start by 1.3 or 1.0.
  */
-public class CrossRefParseException extends PdfParseException {
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
-   * .edoc.pdfa.validation.ParseException)
-   */
-  public CrossRefParseException(ParseException e) {
-    super(e);
-  }
+public class CrossRefParseException extends PdfParseException
+{
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
+     * .edoc.pdfa.validation.ParseException)
+     */
+    public CrossRefParseException(ParseException e)
+    {
+        super(e);
+    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String,java.lang.String)
-   */
-  public CrossRefParseException(String message, String code) {
-    super(message, code);
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String,java.lang.String)
+     */
+    public CrossRefParseException(String message, String code)
+    {
+        super(message, code);
+    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String)
-   */
-  public CrossRefParseException(String message) {
-    super(message);
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String)
+     */
+    public CrossRefParseException(String message)
+    {
+        super(message);
+    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
-   */
-  @Override
-  public String getErrorCode() {
-    // if (!isTokenMgrError) {
-    // // use token information to know the cause
-    // }
-    // else Token Management Error or Unknown Error during the CrossRefTable
-    // Validation
-    return PreflightConstants.ERROR_SYNTAX_CROSS_REF;
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
+     */
+    @Override
+    public String getErrorCode()
+    {
+        // if (!isTokenMgrError) {
+        // // use token information to know the cause
+        // }
+        // else Token Management Error or Unknown Error during the CrossRefTable
+        // Validation
+        return PreflightConstants.ERROR_SYNTAX_CROSS_REF;
+    }
 }

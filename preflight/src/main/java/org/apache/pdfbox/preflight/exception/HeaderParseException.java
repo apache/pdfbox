@@ -24,59 +24,58 @@ package org.apache.pdfbox.preflight.exception;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.javacc.ParseException;
 
-
 /**
- * This Exception is thrown if an validation error occurs during the javacc
- * validation in the PDF Header.
+ * This Exception is thrown if an validation error occurs during the javacc validation in the PDF Header.
  * 
  * Error codes provided by this exception should start by 1.1.
  */
-public class HeaderParseException extends PdfParseException {
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
-   * .edoc.pdfa.validation.ParseException)
-   */
-  public HeaderParseException(ParseException e) {
-    super(e);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String,java.lang.String)
-   */
-  public HeaderParseException(String message, String code) {
-    super(message, code);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String)
-   */
-  public HeaderParseException(String message) {
-    super(message);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
-   */
-  @Override
-  public String getErrorCode() {
-    if (!isTokenMgrError) {
-      System.out.println("## Header ParseError");
+public class HeaderParseException extends PdfParseException
+{
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
+     * .edoc.pdfa.validation.ParseException)
+     */
+    public HeaderParseException(ParseException e)
+    {
+        super(e);
     }
 
-    // else Token Management Error or Unknown Error during the Header Validation
-    return PreflightConstants.ERROR_SYNTAX_HEADER;
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String,java.lang.String)
+     */
+    public HeaderParseException(String message, String code)
+    {
+        super(message, code);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String)
+     */
+    public HeaderParseException(String message)
+    {
+        super(message);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
+     */
+    @Override
+    public String getErrorCode()
+    {
+        if (!isTokenMgrError)
+        {
+            System.out.println("## Header ParseError");
+        }
+
+        // else Token Management Error or Unknown Error during the Header Validation
+        return PreflightConstants.ERROR_SYNTAX_HEADER;
+    }
 }

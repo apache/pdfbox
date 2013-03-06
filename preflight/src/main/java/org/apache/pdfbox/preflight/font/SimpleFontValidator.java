@@ -31,48 +31,54 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 
-public abstract class SimpleFontValidator <T extends FontContainer> extends FontValidator<T> {
-	
-	public SimpleFontValidator(PreflightContext context, PDFont font,	T fContainer) {
-		super(context, font, fContainer);
-	}
+public abstract class SimpleFontValidator<T extends FontContainer> extends FontValidator<T>
+{
 
-	/**
-   * Call this method to validate the font wrapped by this object.
-   * If the validation failed, the error is updated in the FontContainer 
-   * with the right error code.
-   * 
-   * Errors that are saved in the container will be added on the PreflightContext if the font is used later.
-   * 
-   * @return
-   */
-	public void validate() throws ValidationException {
-		checkMandatoryField();
+    public SimpleFontValidator(PreflightContext context, PDFont font, T fContainer)
+    {
+        super(context, font, fContainer);
+    }
 
-		createFontDescriptorHelper();
-		processFontDescriptorValidation();
-		
-		checkEncoding();
-		checkToUnicode();
-	}
+    /**
+     * Call this method to validate the font wrapped by this object. If the validation failed, the error is updated in
+     * the FontContainer with the right error code.
+     * 
+     * Errors that are saved in the container will be added on the PreflightContext if the font is used later.
+     * 
+     * @return
+     */
+    public void validate() throws ValidationException
+    {
+        checkMandatoryField();
 
-	protected void checkMandatoryField() {
-		COSDictionary fontDictionary = (COSDictionary)font.getCOSObject();
-		boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
-		areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
-		areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);
-		areFieldsPResent &= fontDictionary.containsKey(COSName.FIRST_CHAR);
-		areFieldsPResent &= fontDictionary.containsKey(COSName.LAST_CHAR);
-		areFieldsPResent &= fontDictionary.containsKey(COSName.WIDTHS);
-		
-		if (!areFieldsPResent) {
-			this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, "Some required fields are missing from the Font dictionary."));
-		}
-	}
+        createFontDescriptorHelper();
+        processFontDescriptorValidation();
 
-	protected abstract void createFontDescriptorHelper();
-	
-	protected void processFontDescriptorValidation() {
-		this.descriptorHelper.validate();
-	}
+        checkEncoding();
+        checkToUnicode();
+    }
+
+    protected void checkMandatoryField()
+    {
+        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
+        boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
+        areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
+        areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);
+        areFieldsPResent &= fontDictionary.containsKey(COSName.FIRST_CHAR);
+        areFieldsPResent &= fontDictionary.containsKey(COSName.LAST_CHAR);
+        areFieldsPResent &= fontDictionary.containsKey(COSName.WIDTHS);
+
+        if (!areFieldsPResent)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
+                    "Some required fields are missing from the Font dictionary."));
+        }
+    }
+
+    protected abstract void createFontDescriptorHelper();
+
+    protected void processFontDescriptorValidation()
+    {
+        this.descriptorHelper.validate();
+    }
 }

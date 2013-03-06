@@ -35,38 +35,47 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.TrueTypeContainer;
 import org.apache.pdfbox.preflight.font.descriptor.TrueTypeDescriptorHelper;
 
-public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer> {
+public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer>
+{
 
-	public TrueTypeFontValidator(PreflightContext context, PDFont font) {
-		super(context, font, new TrueTypeContainer(font));
-	}
-	
-	protected void createFontDescriptorHelper() {
-		this.descriptorHelper = new TrueTypeDescriptorHelper(context, font, fontContainer);
-	}
-	
-	protected void checkEncoding() {		
-		PDFontDescriptor fd = this.font.getFontDescriptor();
-		if(fd != null) {
-			/* 
-			 * only MacRomanEncoding or WinAnsiEncoding are allowed for a non symbolic font.
-			 */
-			if (fd.isNonSymbolic()) {
-				Encoding encodingValue = this.font.getFontEncoding();
-				if (encodingValue == null	|| !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding)) {
-					this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING, "The Encoding is invalid for the NonSymbolic TTF"));
-				}
-			} 
+    public TrueTypeFontValidator(PreflightContext context, PDFont font)
+    {
+        super(context, font, new TrueTypeContainer(font));
+    }
 
-			/*
-			 * For symbolic font, no encoding entry is allowed and only one
-			 * encoding entry is expected into the FontFile CMap (Check latter when 
-			 * the FontFile stream will be checked)
-			 */
-			if (fd.isSymbolic() && 
-					((COSDictionary)this.font.getCOSObject()).getItem(COSName.ENCODING) != null) {
-				this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING, "The Encoding should be missing for the Symbolic TTF"));
-			} 
-		}
-	}
+    protected void createFontDescriptorHelper()
+    {
+        this.descriptorHelper = new TrueTypeDescriptorHelper(context, font, fontContainer);
+    }
+
+    protected void checkEncoding()
+    {
+        PDFontDescriptor fd = this.font.getFontDescriptor();
+        if (fd != null)
+        {
+            /*
+             * only MacRomanEncoding or WinAnsiEncoding are allowed for a non symbolic font.
+             */
+            if (fd.isNonSymbolic())
+            {
+                Encoding encodingValue = this.font.getFontEncoding();
+                if (encodingValue == null
+                        || !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding))
+                {
+                    this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
+                            "The Encoding is invalid for the NonSymbolic TTF"));
+                }
+            }
+
+            /*
+             * For symbolic font, no encoding entry is allowed and only one encoding entry is expected into the FontFile
+             * CMap (Check latter when the FontFile stream will be checked)
+             */
+            if (fd.isSymbolic() && ((COSDictionary) this.font.getCOSObject()).getItem(COSName.ENCODING) != null)
+            {
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
+                        "The Encoding should be missing for the Symbolic TTF"));
+            }
+        }
+    }
 }

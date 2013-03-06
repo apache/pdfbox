@@ -1,4 +1,5 @@
 package org.apache.pdfbox.preflight.integration;
+
 /*****************************************************************************
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +20,6 @@ package org.apache.pdfbox.preflight.integration;
  * under the License.
  * 
  ****************************************************************************/
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,7 +43,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
-public abstract class AbstractInvalidFileTester {
+public abstract class AbstractInvalidFileTester
+{
 
     /**
      * where result information are pushed
@@ -67,73 +68,93 @@ public abstract class AbstractInvalidFileTester {
     /**
      * Prepare the test for one file
      * 
-     * @param path pdf/a file to test
-     * @param error expected error for this test
+     * @param path
+     *            pdf/a file to test
+     * @param error
+     *            expected error for this test
      */
-    public AbstractInvalidFileTester(File path, String error) {
+    public AbstractInvalidFileTester(File path, String error)
+    {
         this.path = path;
         this.expectedError = error;
         this.logger = Logger.getLogger(this.getClass());
     }
 
-
     @Test()
-    public final void validate() throws Exception {
-        if (path==null) {
+    public final void validate() throws Exception
+    {
+        if (path == null)
+        {
             logger.warn("This is an empty test");
             return;
         }
         PreflightDocument document = null;
-        try {
+        try
+        {
             FileDataSource bds = new FileDataSource(path);
             PreflightParser parser = new PreflightParser(bds);
             parser.parse();
             document = parser.getPreflightDocument();
             document.validate();
-            
+
             ValidationResult result = document.getResult();
             Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
-            Assert.assertTrue(path + " : Should find at least one error",result.getErrorsList().size() > 0);
+            Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
             // could contain more than one error
             boolean found = false;
-            if (this.expectedError!=null) {
-                for (ValidationError error : result.getErrorsList()) {
-                    if (error.getErrorCode().equals(this.expectedError)) {
+            if (this.expectedError != null)
+            {
+                for (ValidationError error : result.getErrorsList())
+                {
+                    if (error.getErrorCode().equals(this.expectedError))
+                    {
                         found = true;
-                        if (outputResult == null) {
+                        if (outputResult == null)
+                        {
                             break;
                         }
                     }
-                    if (outputResult != null) {
-                        String log = path.getName().replace(".pdf", "") + "#" 
-                        +error.getErrorCode()+"#"+error.getDetails()+"\n";
+                    if (outputResult != null)
+                    {
+                        String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode() + "#"
+                                + error.getDetails() + "\n";
                         outputResult.write(log.getBytes());
                     }
                 }
             }
 
-            if (result.getErrorsList().size() > 0) {
-                if (this.expectedError == null) {
-                    logger.info("File invalid as expected (no expected code) :"+this.path.getAbsolutePath());
-                } else if (!found) {
+            if (result.getErrorsList().size() > 0)
+            {
+                if (this.expectedError == null)
+                {
+                    logger.info("File invalid as expected (no expected code) :" + this.path.getAbsolutePath());
+                }
+                else if (!found)
+                {
                     StringBuilder message = new StringBuilder(100);
-                    message.append(path).append(
-                    " : Invalid error code returned. Expected ");
+                    message.append(path).append(" : Invalid error code returned. Expected ");
                     message.append(this.expectedError).append(", found ");
-                    for (ValidationError error : result.getErrorsList()) {
+                    for (ValidationError error : result.getErrorsList())
+                    {
                         message.append(error.getErrorCode()).append(" ");
                     }
                     Assert.fail(message.toString());
                 }
-            } else {
-                Assert.assertEquals(path + " : Invalid error code returned.",
-                        this.expectedError, 
-                        result.getErrorsList().get(0).getErrorCode());
             }
-        } catch (ValidationException e) {
+            else
+            {
+                Assert.assertEquals(path + " : Invalid error code returned.", this.expectedError, result
+                        .getErrorsList().get(0).getErrorCode());
+            }
+        }
+        catch (ValidationException e)
+        {
             throw new Exception(path + " :" + e.getMessage(), e);
-        } finally {
-            if (document!=null) {
+        }
+        finally
+        {
+            if (document != null)
+            {
                 document.close();
             }
         }
@@ -142,21 +163,25 @@ public abstract class AbstractInvalidFileTester {
     protected abstract String getResultFileKey();
 
     @Before
-    public  void before() throws Exception {
+    public void before() throws Exception
+    {
         String irp = System.getProperty(getResultFileKey());
 
-        if (irp==null) {
+        if (irp == null)
+        {
             // no log file defined, use system.err
             outputResult = System.err;
-        } else {
+        }
+        else
+        {
             outputResult = new FileOutputStream(irp);
         }
     }
 
     @After
-    public void after() throws Exception {
+    public void after() throws Exception
+    {
         IOUtils.closeQuietly(outputResult);
     }
 
 }
-

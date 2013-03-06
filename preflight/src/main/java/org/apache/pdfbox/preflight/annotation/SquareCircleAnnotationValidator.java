@@ -34,71 +34,76 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 /**
  * Validation class for the Square/Circle Annotation
  */
-public class SquareCircleAnnotationValidator extends AnnotationValidator {
-  /**
-   * PDFBox object which wraps the annotation dictionary
-   */
-  protected PDAnnotationSquareCircle pdSquareCircle = null;
+public class SquareCircleAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox object which wraps the annotation dictionary
+     */
+    protected PDAnnotationSquareCircle pdSquareCircle = null;
 
-  public SquareCircleAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-	    super(ctx, annotDictionary);
-    this.pdSquareCircle = new PDAnnotationSquareCircle(annotDictionary);
-    this.pdAnnot = this.pdSquareCircle;
-  }
-
-  /**
-   * In addition of the AnnotationValidator.validate() method, this method
-   * executes the the checkIColors method.
-   * 
-   * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
-   */
-  @Override
-  public boolean validate() throws ValidationException {
-    boolean isValide = super.validate();
-    isValide = isValide && checkIColors();
-    return isValide;
-  }
-
-  /**
-   * Return true if the IC field is present in the Annotation dictionary and if
-   * the RGB profile is used in the DestOutputProfile of the OutputIntent
-   * dictionary.
-   * 
-   * @param errors
-   *          list of errors with is updated if no RGB profile is found when the
-   *          IC element is present
-   * @return
-   */
-  protected boolean checkIColors() throws ValidationException {
-    if (this.pdSquareCircle.getInteriorColour() != null) {
-      if (!searchRGBProfile()) {
-        ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,"Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
-        return false;
-      }
+    public SquareCircleAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdSquareCircle = new PDAnnotationSquareCircle(annotDictionary);
+        this.pdAnnot = this.pdSquareCircle;
     }
-    return true;
-  }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-   * checkMandatoryFields(java.util.List)
-   */
-  protected boolean checkMandatoryFields() {
-    boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-    boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-    boolean f = this.annotDictionary.containsKey(COSName.F);
+    /**
+     * In addition of the AnnotationValidator.validate() method, this method executes the the checkIColors method.
+     * 
+     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
+     */
+    @Override
+    public boolean validate() throws ValidationException
+    {
+        boolean isValide = super.validate();
+        isValide = isValide && checkIColors();
+        return isValide;
+    }
+
+    /**
+     * Return true if the IC field is present in the Annotation dictionary and if the RGB profile is used in the
+     * DestOutputProfile of the OutputIntent dictionary.
+     * 
+     * @param errors
+     *            list of errors with is updated if no RGB profile is found when the IC element is present
+     * @return
+     */
+    protected boolean checkIColors() throws ValidationException
+    {
+        if (this.pdSquareCircle.getInteriorColour() != null)
+        {
+            if (!searchRGBProfile())
+            {
+                ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,
+                        "Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
+                return false;
+            }
+        }
+        return true;
+    }
 
     /*
-     * ---- After PDF 1.4, all additional entries in this annotation are
-     * optional and they seem to be compatible with the PDF/A specification.
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
      */
-    boolean result = (subtype && rect && f);
-    if (!result) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
+
+        /*
+         * ---- After PDF 1.4, all additional entries in this annotation are optional and they seem to be compatible
+         * with the PDF/A specification.
+         */
+        boolean result = (subtype && rect && f);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        }
+        return result;
     }
-    return result;
-  }
 
 }

@@ -28,38 +28,48 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestSubmitAction extends AbstractTestAction {
-	
-	protected COSDictionary createSubmitAction() {
-		COSDictionary action = new COSDictionary();
-		action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
-		action.setItem(COSName.S, COSName.getPDFName("SubmitForm"));
-		action.setItem(COSName.F, new PDFileSpecification() {
-			public COSBase getCOSObject() {
-				return COSName.getPDFName("value");
-			}
-			@Override
-			public void setFile(String file) {
-			}
-			@Override
-			public String getFile() {
-				return null;
-			}
-		});
-		return action;
-	}
-	
-	@Test
-	public void test() throws Exception {
-		COSDictionary action = createSubmitAction();
-		valid(action, true);
-	}
-	
-	@Test
-	public void testMissngF() throws Exception {
-		COSDictionary action = createSubmitAction();
-		action.removeItem(COSName.F);
-		valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
+public class TestSubmitAction extends AbstractTestAction
+{
+
+    protected COSDictionary createSubmitAction()
+    {
+        COSDictionary action = new COSDictionary();
+        action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
+        action.setItem(COSName.S, COSName.getPDFName("SubmitForm"));
+        action.setItem(COSName.F, new PDFileSpecification()
+        {
+            public COSBase getCOSObject()
+            {
+                return COSName.getPDFName("value");
+            }
+
+            @Override
+            public void setFile(String file)
+            {
+            }
+
+            @Override
+            public String getFile()
+            {
+                return null;
+            }
+        });
+        return action;
+    }
+
+    @Test
+    public void test() throws Exception
+    {
+        COSDictionary action = createSubmitAction();
+        valid(action, true);
+    }
+
+    @Test
+    public void testMissngF() throws Exception
+    {
+        COSDictionary action = createSubmitAction();
+        action.removeItem(COSName.F);
+        valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
 
 }

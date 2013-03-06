@@ -55,28 +55,30 @@ import org.apache.pdfbox.preflight.annotation.WidgetAnnotationValidator;
 /**
  * Factory to instantiate AnnotationValidator for a PDF/A-1b validation.
  */
-public class PDFAbAnnotationFactory extends AnnotationValidatorFactory {
+public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
+{
 
-	protected void initializeClasses() {
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT, TextAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINK, LinkAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_FREETEXT, FreeTextAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINE, LineAnnotationValidator.class);
-		
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareCircleAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, SquareCircleAnnotationValidator.class);
+    protected void initializeClasses()
+    {
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT, TextAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINK, LinkAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_FREETEXT, FreeTextAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINE, LineAnnotationValidator.class);
 
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, MarkupAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, MarkupAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT, MarkupAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUILGGLY, MarkupAnnotationValidator.class);
-		
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP, RubberStampAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValdiator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP, PopupAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET, WidgetAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK, PrintMarkAnnotationValidator.class);
-		this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TRAPNET, TrapNetAnnotationValidator.class);
-	}
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareCircleAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, SquareCircleAnnotationValidator.class);
+
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, MarkupAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, MarkupAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT, MarkupAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUILGGLY, MarkupAnnotationValidator.class);
+
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP, RubberStampAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValdiator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP, PopupAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET, WidgetAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK, PrintMarkAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TRAPNET, TrapNetAnnotationValidator.class);
+    }
 
 }

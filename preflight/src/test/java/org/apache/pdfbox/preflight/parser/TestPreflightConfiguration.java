@@ -30,40 +30,48 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
 import org.junit.Test;
 
-public class TestPreflightConfiguration {
+public class TestPreflightConfiguration
+{
 
-	@Test(expected=MissingValidationProcessException.class)
-	public void testGetValidationProcess_MissingProcess() throws Exception {
-		PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
-		configuration.getInstanceOfProcess("unknownProcess");
-	}
+    @Test(expected = MissingValidationProcessException.class)
+    public void testGetValidationProcess_MissingProcess() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+        configuration.getInstanceOfProcess("unknownProcess");
+    }
 
-	@Test
-	public void testGetValidationProcess_MissingProcess_NoError() throws Exception {
-		PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
-		configuration.setErrorOnMissingProcess(false);
-		configuration.getInstanceOfProcess("unknownProcess");
-	}
-	
-	@Test
-	public void testReplaceValidationProcess() throws Exception {
-		PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
-		
-		String processName = "mock-process";
-		configuration.replaceProcess(processName, MockProcess.class);
-		assertEquals(MockProcess.class, configuration.getInstanceOfProcess(processName).getClass());
-		
-		configuration.replaceProcess(processName, MockProcess2.class);
-		assertEquals(MockProcess2.class, configuration.getInstanceOfProcess(processName).getClass());
-	}
+    @Test
+    public void testGetValidationProcess_MissingProcess_NoError() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+        configuration.setErrorOnMissingProcess(false);
+        configuration.getInstanceOfProcess("unknownProcess");
+    }
 
-	public static class MockProcess implements ValidationProcess {
-		public void validate(PreflightContext ctx) throws ValidationException {
-		}
-	}
-	
-	public static class MockProcess2 extends MockProcess {
-		public void validate(PreflightContext ctx) throws ValidationException {
-		}
-	}
+    @Test
+    public void testReplaceValidationProcess() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+
+        String processName = "mock-process";
+        configuration.replaceProcess(processName, MockProcess.class);
+        assertEquals(MockProcess.class, configuration.getInstanceOfProcess(processName).getClass());
+
+        configuration.replaceProcess(processName, MockProcess2.class);
+        assertEquals(MockProcess2.class, configuration.getInstanceOfProcess(processName).getClass());
+    }
+
+    public static class MockProcess implements ValidationProcess
+    {
+        public void validate(PreflightContext ctx) throws ValidationException
+        {
+        }
+    }
+
+    public static class MockProcess2 extends MockProcess
+    {
+        public void validate(PreflightContext ctx) throws ValidationException
+        {
+        }
+    }
 }

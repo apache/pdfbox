@@ -29,35 +29,43 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestGotoAction extends AbstractTestAction {
+public class TestGotoAction extends AbstractTestAction
+{
 
-	@Test
-	public void testGoto_OK() throws Exception {
-		PDActionGoTo gotoAction = new PDActionGoTo();
-		gotoAction.setDestination(new PDDestination() {
-			public COSBase getCOSObject() {
-				return COSName.getPDFName("ADest");
-			}
-		});
+    @Test
+    public void testGoto_OK() throws Exception
+    {
+        PDActionGoTo gotoAction = new PDActionGoTo();
+        gotoAction.setDestination(new PDDestination()
+        {
+            public COSBase getCOSObject()
+            {
+                return COSName.getPDFName("ADest");
+            }
+        });
 
-		valid(gotoAction, true);
-	}
+        valid(gotoAction, true);
+    }
 
-	@Test
-	public void testGoto_KO_invalidContent() throws Exception {
-		PDActionGoTo gotoAction = new PDActionGoTo();
-		gotoAction.setDestination(new PDDestination() {
-			public COSBase getCOSObject() {
-				return new COSDictionary();
-			}
-		});
+    @Test
+    public void testGoto_KO_invalidContent() throws Exception
+    {
+        PDActionGoTo gotoAction = new PDActionGoTo();
+        gotoAction.setDestination(new PDDestination()
+        {
+            public COSBase getCOSObject()
+            {
+                return new COSDictionary();
+            }
+        });
 
-		valid(gotoAction, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
-	}
-	
-	@Test
-	public void testGoto_KO_missingD() throws Exception {
-		PDActionGoTo gotoAction = new PDActionGoTo();
-		valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
+        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+    }
+
+    @Test
+    public void testGoto_KO_missingD() throws Exception
+    {
+        PDActionGoTo gotoAction = new PDActionGoTo();
+        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
 }

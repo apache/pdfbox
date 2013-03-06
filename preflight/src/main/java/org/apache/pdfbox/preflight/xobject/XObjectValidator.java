@@ -23,11 +23,12 @@ package org.apache.pdfbox.preflight.xobject;
 
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-
-public interface XObjectValidator {
-  /**
-   * Process the validation of the XObject.
-   * @throws ValidationException
-   */
-  public abstract void validate() throws ValidationException;
+public interface XObjectValidator
+{
+    /**
+     * Process the validation of the XObject.
+     * 
+     * @throws ValidationException
+     */
+    public abstract void validate() throws ValidationException;
 }

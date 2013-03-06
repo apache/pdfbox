@@ -1,4 +1,5 @@
 package org.apache.pdfbox.preflight.integration;
+
 /*****************************************************************************
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +20,6 @@ package org.apache.pdfbox.preflight.integration;
  * under the License.
  * 
  ****************************************************************************/
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,7 +47,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestValidFiles {
+public class TestValidFiles
+{
 
     private static final String RESULTS_FILE = "results.file";
 
@@ -61,37 +62,39 @@ public class TestValidFiles {
 
     protected Logger logger = null;
 
-
-    public TestValidFiles(File path) {
+    public TestValidFiles(File path)
+    {
         this.path = path;
-        this.logger = Logger.getLogger(path!=null?path.getName():"dummy");
+        this.logger = Logger.getLogger(path != null ? path.getName() : "dummy");
     }
 
-
-    protected static Collection<Object[]> stopIfExpected () throws Exception {
-        //		throw new Exception("Test badly configured");
+    protected static Collection<Object[]> stopIfExpected() throws Exception
+    {
+        // throw new Exception("Test badly configured");
         List<Object[]> ret = new ArrayList<Object[]>();
-        ret.add(new Object[]{null});
+        ret.add(new Object[] { null });
         return ret;
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception 
+    public static Collection<Object[]> initializeParameters() throws Exception
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
-        if (isartor==null) {
-            staticLogger.warn(ISARTOR_FILES+" (where are isartor pdf files) is not defined.");
+        if (isartor == null)
+        {
+            staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
         File root = new File(isartor);
         // load expected errors
         // prepare config
         List<Object[]> data = new ArrayList<Object[]>();
-        Collection<?> files= FileUtils.listFiles(root, new String [] {"pdf"}, true);
+        Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
-        for (Object object : files) {
-            File file = (File)object;
+        for (Object object : files)
+        {
+            File file = (File) object;
             Object[] tmp = new Object[] { file };
             data.add(tmp);
         }
@@ -99,51 +102,64 @@ public class TestValidFiles {
     }
 
     @BeforeClass
-    public static void beforeClass() throws Exception {
+    public static void beforeClass() throws Exception
+    {
         String irp = System.getProperty(RESULTS_FILE);
-        if (irp==null) {
+        if (irp == null)
+        {
             // no log file defined, use system.err
             System.err.println("No result file defined, will use standart error");
             isartorResultFile = System.err;
-        } else {
+        }
+        else
+        {
             isartorResultFile = new FileOutputStream(irp);
         }
     }
 
     @AfterClass
-    public static void afterClass() throws Exception {
+    public static void afterClass() throws Exception
+    {
         IOUtils.closeQuietly(isartorResultFile);
     }
 
     @Test()
-    public void validate() throws Exception {
-        if (path==null) {
+    public void validate() throws Exception
+    {
+        if (path == null)
+        {
             logger.warn("This is an empty test");
             return;
         }
         PreflightDocument document = null;
-        try {
+        try
+        {
             FileDataSource bds = new FileDataSource(path);
             PreflightParser parser = new PreflightParser(bds);
             parser.parse();
             document = parser.getPreflightDocument();
             document.validate();
-        
+
             ValidationResult result = document.getResult();
             Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
             Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
             // could contain more than one error
-            if (result.getErrorsList().size() > 0) {
-                Assert.fail("File expected valid : "+path.getAbsolutePath());
+            if (result.getErrorsList().size() > 0)
+            {
+                Assert.fail("File expected valid : " + path.getAbsolutePath());
             }
-        } catch (ValidationException e) {
+        }
+        catch (ValidationException e)
+        {
             throw new Exception(path + " :" + e.getMessage(), e);
-        } finally {
-            if (document!=null) {
+        }
+        finally
+        {
+            if (document != null)
+            {
                 document.close();
             }
         }
     }
 
 }
-

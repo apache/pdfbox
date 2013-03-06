@@ -52,113 +52,148 @@ import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class ResourcesValidationProcess extends AbstractProcess {
+public class ResourcesValidationProcess extends AbstractProcess
+{
 
-	public void validate(PreflightContext ctx) throws ValidationException {
-		PreflightPath vPath = ctx.getValidationPath();
-		if (vPath.isEmpty() && !vPath.isExpectedType(PDResources.class)) {
-			throw new ValidationException("Resources validation process needs at least one PDResources object");
-		}
+    public void validate(PreflightContext ctx) throws ValidationException
+    {
+        PreflightPath vPath = ctx.getValidationPath();
+        if (vPath.isEmpty() && !vPath.isExpectedType(PDResources.class))
+        {
+            throw new ValidationException("Resources validation process needs at least one PDResources object");
+        }
 
-		PDResources resources = (PDResources)vPath.peek();
+        PDResources resources = (PDResources) vPath.peek();
 
-		validateFonts(ctx, resources);
-		validateExtGStates(ctx, resources);
-		validateShadingPattern(ctx, resources);
-		validateTilingPattern(ctx, resources);
-		validateXObjects(ctx, resources);	
-	}
+        validateFonts(ctx, resources);
+        validateExtGStates(ctx, resources);
+        validateShadingPattern(ctx, resources);
+        validateTilingPattern(ctx, resources);
+        validateXObjects(ctx, resources);
+    }
 
-	/**
-	 * Check that fonts present in the Resources dictionary match with PDF/A-1 rules
-	 * @param context
-	 * @param resources
-	 * @throws ValidationException
-	 */
-	protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException {
-		Map<String, PDFont> mapOfFonts = resources.getFonts();
-		if (mapOfFonts != null) {
-			for (Entry<String, PDFont> entry : mapOfFonts.entrySet()) {
-				ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
-			}
-		}
-	}
+    /**
+     * Check that fonts present in the Resources dictionary match with PDF/A-1 rules
+     * 
+     * @param context
+     * @param resources
+     * @throws ValidationException
+     */
+    protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException
+    {
+        Map<String, PDFont> mapOfFonts = resources.getFonts();
+        if (mapOfFonts != null)
+        {
+            for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
+            {
+                ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
+            }
+        }
+    }
 
-	/**
-	 * 
-	 * @param context
-	 * @param resources
-	 * @throws ValidationException
-	 */
-	protected void validateExtGStates(PreflightContext context, PDResources resources) throws ValidationException {
-		COSBase egsEntry = resources.getCOSDictionary().getItem(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
-		COSDocument cosDocument = context.getDocument().getDocument();
-		COSDictionary extGState = COSUtils.getAsDictionary(egsEntry, cosDocument);
-		if (egsEntry != null) {
-			ContextHelper.validateElement(context, extGState, EXTGSTATE_PROCESS);
-		}
-	}
+    /**
+     * 
+     * @param context
+     * @param resources
+     * @throws ValidationException
+     */
+    protected void validateExtGStates(PreflightContext context, PDResources resources) throws ValidationException
+    {
+        COSBase egsEntry = resources.getCOSDictionary().getItem(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
+        COSDocument cosDocument = context.getDocument().getDocument();
+        COSDictionary extGState = COSUtils.getAsDictionary(egsEntry, cosDocument);
+        if (egsEntry != null)
+        {
+            ContextHelper.validateElement(context, extGState, EXTGSTATE_PROCESS);
+        }
+    }
 
-	/**
-	 * This method check the Shading entry of the resource dictionary if exists.
-	 * @param context
-	 * @param resources
-	 * @throws ValidationException
-	 */
-	protected void validateShadingPattern(PreflightContext context, PDResources resources) throws ValidationException {
-		try {
-			Map<String , PDShadingResources> shadingResources = resources.getShadings();
-			if (shadingResources != null) {
-				for (Entry<String, PDShadingResources> entry : shadingResources.entrySet()) {
-					ContextHelper.validateElement(context, entry.getValue(), SHADDING_PATTERN_PROCESS);
-				}
-			}
-		} catch (IOException e) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
-		}
-	}
+    /**
+     * This method check the Shading entry of the resource dictionary if exists.
+     * 
+     * @param context
+     * @param resources
+     * @throws ValidationException
+     */
+    protected void validateShadingPattern(PreflightContext context, PDResources resources) throws ValidationException
+    {
+        try
+        {
+            Map<String, PDShadingResources> shadingResources = resources.getShadings();
+            if (shadingResources != null)
+            {
+                for (Entry<String, PDShadingResources> entry : shadingResources.entrySet())
+                {
+                    ContextHelper.validateElement(context, entry.getValue(), SHADDING_PATTERN_PROCESS);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
+        }
+    }
 
-	/**
-	 * This method check the Shading entry of the resource dictionary if exists.
-	 * @param context
-	 * @param resources
-	 * @throws ValidationException
-	 */
-	protected void validateTilingPattern(PreflightContext context, PDResources resources) throws ValidationException {
-		try {
-			Map<String , PDPatternResources> patternResources = resources.getPatterns();
-			if (patternResources != null) {
-				for (Entry<String, PDPatternResources> entry : patternResources.entrySet()) {
-					if (entry.getValue() instanceof PDTilingPatternResources) {
-						ContextHelper.validateElement(context, entry.getValue(), TILING_PATTERN_PROCESS);
-					}
-				}
-			}
-		} catch (IOException e) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
-		}
-	}
+    /**
+     * This method check the Shading entry of the resource dictionary if exists.
+     * 
+     * @param context
+     * @param resources
+     * @throws ValidationException
+     */
+    protected void validateTilingPattern(PreflightContext context, PDResources resources) throws ValidationException
+    {
+        try
+        {
+            Map<String, PDPatternResources> patternResources = resources.getPatterns();
+            if (patternResources != null)
+            {
+                for (Entry<String, PDPatternResources> entry : patternResources.entrySet())
+                {
+                    if (entry.getValue() instanceof PDTilingPatternResources)
+                    {
+                        ContextHelper.validateElement(context, entry.getValue(), TILING_PATTERN_PROCESS);
+                    }
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
+        }
+    }
 
-	protected void validateXObjects(PreflightContext context, PDResources resources) throws ValidationException {
-		COSDocument cosDocument = context.getDocument().getDocument();
-		COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSDictionary().getItem(COSName.XOBJECT), cosDocument);
-		if (mapOfXObj != null) {
-			for ( Entry<COSName, COSBase> entry: mapOfXObj.entrySet()) {
-				COSBase xobj = entry.getValue();
-				if (xobj != null && COSUtils.isStream(xobj, cosDocument)) {
-					try {
-						COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-						PDXObject pdXObject= PDXObject.createXObject(stream);
-						if (pdXObject != null) {
-							ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
-						} else {
-							ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
-						}
-					} catch (IOException e) {
-						throw new ValidationException(e.getMessage(), e);
-					}
-				}
-			}
-		}
-	}
+    protected void validateXObjects(PreflightContext context, PDResources resources) throws ValidationException
+    {
+        COSDocument cosDocument = context.getDocument().getDocument();
+        COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSDictionary().getItem(COSName.XOBJECT),
+                cosDocument);
+        if (mapOfXObj != null)
+        {
+            for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
+            {
+                COSBase xobj = entry.getValue();
+                if (xobj != null && COSUtils.isStream(xobj, cosDocument))
+                {
+                    try
+                    {
+                        COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
+                        PDXObject pdXObject = PDXObject.createXObject(stream);
+                        if (pdXObject != null)
+                        {
+                            ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
+                        }
+                        else
+                        {
+                            ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        throw new ValidationException(e.getMessage(), e);
+                    }
+                }
+            }
+        }
+    }
 }

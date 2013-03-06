@@ -38,71 +38,78 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 /**
  * Validation class for the LinkAnnotation
  */
-public class LinkAnnotationValidator extends AnnotationValidator {
-  /**
-   * PDFBox object which wraps the annotation dictionary
-   */
-  protected PDAnnotationLink pdLink = null;
+public class LinkAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox object which wraps the annotation dictionary
+     */
+    protected PDAnnotationLink pdLink = null;
 
-  public LinkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-    super(ctx, annotDictionary);
-    this.pdLink = new PDAnnotationLink(annotDictionary);
-    this.pdAnnot = this.pdLink;
-  }
+    public LinkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdLink = new PDAnnotationLink(annotDictionary);
+        this.pdAnnot = this.pdLink;
+    }
 
-  /**
-   * In addition of the AnnotationValidator.validate() method, this method
-   * executes the the checkDest method.
-   * 
-   * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate()
-   */
-  @Override
-  public boolean validate()  throws ValidationException {
-    boolean isValide = super.validate();
-    isValide = isValide && checkDest();
-    return isValide;
-  }
+    /**
+     * In addition of the AnnotationValidator.validate() method, this method executes the the checkDest method.
+     * 
+     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate()
+     */
+    @Override
+    public boolean validate() throws ValidationException
+    {
+        boolean isValide = super.validate();
+        isValide = isValide && checkDest();
+        return isValide;
+    }
 
-  /**
-   * Check if the Dest element is authorized according to the A entry
-   * 
-   * @return
-   */
-  protected boolean checkDest() {
-    try {
-      PDDestination dest = this.pdLink.getDestination();
-      if (dest != null) {
-        // ---- check the if an A entry is present.
-        if (this.pdLink.getAction() != null) {
-          ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_DEST,
-              "Dest can't be used due to A element"));
-          return false;
+    /**
+     * Check if the Dest element is authorized according to the A entry
+     * 
+     * @return
+     */
+    protected boolean checkDest()
+    {
+        try
+        {
+            PDDestination dest = this.pdLink.getDestination();
+            if (dest != null)
+            {
+                // ---- check the if an A entry is present.
+                if (this.pdLink.getAction() != null)
+                {
+                    ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_DEST,
+                            "Dest can't be used due to A element"));
+                    return false;
+                }
+            }
         }
-      }
-    } catch (IOException e) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_DEST,
-              "Dest can't be checked"));
-      return false;
+        catch (IOException e)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_DEST, "Dest can't be checked"));
+            return false;
+        }
+        return true;
     }
-    return true;
-  }
 
-  /*
-   * (non-Javadoc)
-   * (new ValidationError(
-            ValidationConstants.
-   * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-   * checkMandatoryFields(java.util.List)
-   */
-  protected boolean checkMandatoryFields() {
-    boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-    boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-    boolean f = this.annotDictionary.containsKey(COSName.F);
+    /*
+     * (non-Javadoc) (new ValidationError( ValidationConstants.
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     */
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
 
-    boolean result = (subtype && rect && f);
-    if (!result) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        boolean result = (subtype && rect && f);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        }
+        return result;
     }
-    return result;
-  }
 }

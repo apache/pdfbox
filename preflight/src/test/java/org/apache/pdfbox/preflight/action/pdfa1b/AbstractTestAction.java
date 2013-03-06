@@ -39,82 +39,101 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.action.AbstractActionManager;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
 
-public abstract class AbstractTestAction {
+public abstract class AbstractTestAction
+{
 
-	/**
-	 * Read a simple PDF/A to create a valid Context
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	protected PreflightContext createContext() throws Exception {
-		DataSource ds = new FileDataSource("src/test/resources/pdfa-with-annotations-square.pdf");
-		PDDocument doc = PDDocument.load(ds.getInputStream());
-		PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
-		PreflightContext ctx = new PreflightContext(ds);
-		ctx.setDocument(preflightDocument);
-		preflightDocument.setContext(ctx);
-		return ctx;
-	}
-	
-	/**
-	 * Run the Action validation and check the result.
-	 * 
-	 * @param action action to check
-	 * @param valid true if the Action must be valid, false if the action contains mistakes
-	 * @throws Exception
-	 */
-	protected void valid(PDAction action, boolean valid) throws Exception {
-		valid(action, valid, null);
-	}
+    /**
+     * Read a simple PDF/A to create a valid Context
+     * 
+     * @return
+     * @throws Exception
+     */
+    protected PreflightContext createContext() throws Exception
+    {
+        DataSource ds = new FileDataSource("src/test/resources/pdfa-with-annotations-square.pdf");
+        PDDocument doc = PDDocument.load(ds.getInputStream());
+        PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
+        PreflightContext ctx = new PreflightContext(ds);
+        ctx.setDocument(preflightDocument);
+        preflightDocument.setContext(ctx);
+        return ctx;
+    }
 
-	protected void valid(COSDictionary action, boolean valid) throws Exception {
-		valid(action, valid, null);
-	}
-	
-	/**
-	 * Run the Action validation and check the result.
-	 * 
-	 * @param action action to check
-	 * @param valid true if the Action must be valid, false if the action contains mistakes
-	 * @param expectedCode the expected error code (can be null)
-	 * @throws Exception
-	 */
-	protected void valid(PDAction action, boolean valid, String expectedCode) throws Exception {
-		valid(action.getCOSDictionary(), valid, expectedCode);
-	}
-	
-	protected void valid(COSDictionary action, boolean valid, String expectedCode) throws Exception {
-		ActionManagerFactory fact = new ActionManagerFactory();
-		PreflightContext ctx = createContext();
-		COSDictionary dict = new COSDictionary();
-		dict.setItem(COSName.A, action);
-		
-		// process the action validation
-		List<AbstractActionManager> actions = fact.getActionManagers(ctx, dict);
-		for (AbstractActionManager abstractActionManager : actions) {
-			abstractActionManager.valid();
-		}
+    /**
+     * Run the Action validation and check the result.
+     * 
+     * @param action
+     *            action to check
+     * @param valid
+     *            true if the Action must be valid, false if the action contains mistakes
+     * @throws Exception
+     */
+    protected void valid(PDAction action, boolean valid) throws Exception
+    {
+        valid(action, valid, null);
+    }
 
-		// check the result
-		if (!valid) {
-			List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
-			assertFalse(errors.isEmpty());
-			if (expectedCode != null || !"".equals(expectedCode)) {
-				boolean found = false;
-				for (ValidationError err : errors) {
-					if (err.getErrorCode().equals(expectedCode)) {
-						found = true;
-						break;
-					}
-				}
-				assertTrue(found);
-			}
-		} else {
-			if (ctx.getDocument().getResult() != null) {
-				List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
-				assertTrue(errors.isEmpty());
-			}
-		}
-	}
+    protected void valid(COSDictionary action, boolean valid) throws Exception
+    {
+        valid(action, valid, null);
+    }
+
+    /**
+     * Run the Action validation and check the result.
+     * 
+     * @param action
+     *            action to check
+     * @param valid
+     *            true if the Action must be valid, false if the action contains mistakes
+     * @param expectedCode
+     *            the expected error code (can be null)
+     * @throws Exception
+     */
+    protected void valid(PDAction action, boolean valid, String expectedCode) throws Exception
+    {
+        valid(action.getCOSDictionary(), valid, expectedCode);
+    }
+
+    protected void valid(COSDictionary action, boolean valid, String expectedCode) throws Exception
+    {
+        ActionManagerFactory fact = new ActionManagerFactory();
+        PreflightContext ctx = createContext();
+        COSDictionary dict = new COSDictionary();
+        dict.setItem(COSName.A, action);
+
+        // process the action validation
+        List<AbstractActionManager> actions = fact.getActionManagers(ctx, dict);
+        for (AbstractActionManager abstractActionManager : actions)
+        {
+            abstractActionManager.valid();
+        }
+
+        // check the result
+        if (!valid)
+        {
+            List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
+            assertFalse(errors.isEmpty());
+            if (expectedCode != null || !"".equals(expectedCode))
+            {
+                boolean found = false;
+                for (ValidationError err : errors)
+                {
+                    if (err.getErrorCode().equals(expectedCode))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                assertTrue(found);
+            }
+        }
+        else
+        {
+            if (ctx.getDocument().getResult() != null)
+            {
+                List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
+                assertTrue(errors.isEmpty());
+            }
+        }
+    }
 }

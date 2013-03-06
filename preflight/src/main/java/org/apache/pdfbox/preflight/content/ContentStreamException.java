@@ -23,27 +23,33 @@ package org.apache.pdfbox.preflight.content;
 
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-public class ContentStreamException extends ValidationException {
-	private String errorCode="";
+public class ContentStreamException extends ValidationException
+{
+    private String errorCode = "";
 
-	public ContentStreamException(String arg0, Throwable arg1) {
-		super(arg0);
-	}
+    public ContentStreamException(String arg0, Throwable arg1)
+    {
+        super(arg0);
+    }
 
-	public ContentStreamException(String arg0) {
-		super(arg0);
-	}
+    public ContentStreamException(String arg0)
+    {
+        super(arg0);
+    }
 
-	public ContentStreamException(Throwable arg0) {
-		super(arg0.getMessage());
-	}
+    public ContentStreamException(Throwable arg0)
+    {
+        super(arg0.getMessage());
+    }
 
-	public String getErrorCode() {
-		return errorCode;
-	}
+    public String getErrorCode()
+    {
+        return errorCode;
+    }
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
+    public void setErrorCode(String errorCode)
+    {
+        this.errorCode = errorCode;
+    }
 
 }

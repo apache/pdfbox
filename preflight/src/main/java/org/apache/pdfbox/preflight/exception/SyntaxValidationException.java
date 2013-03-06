@@ -23,27 +23,32 @@ package org.apache.pdfbox.preflight.exception;
 
 import org.apache.pdfbox.preflight.ValidationResult;
 
-public class SyntaxValidationException extends ValidationException {
+public class SyntaxValidationException extends ValidationException
+{
 
-	private final ValidationResult result;
-	
-	public SyntaxValidationException(String message, Throwable cause, ValidationResult result) {
-	  super(message, cause);
-	  this.result = result;
-  }
+    private final ValidationResult result;
 
-	public SyntaxValidationException(String message, ValidationResult result) {
-	  super(message);
-	  this.result = result;
-  }
+    public SyntaxValidationException(String message, Throwable cause, ValidationResult result)
+    {
+        super(message, cause);
+        this.result = result;
+    }
 
-	public SyntaxValidationException(Throwable cause, ValidationResult result) {
-	  super(cause);
-	  this.result = result;
-  }
+    public SyntaxValidationException(String message, ValidationResult result)
+    {
+        super(message);
+        this.result = result;
+    }
 
-	public ValidationResult getResult() {
-  	return result;
-  }
+    public SyntaxValidationException(Throwable cause, ValidationResult result)
+    {
+        super(cause);
+        this.result = result;
+    }
+
+    public ValidationResult getResult()
+    {
+        return result;
+    }
 
 }

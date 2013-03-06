@@ -30,43 +30,42 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 /**
- * ActionManager for the Submit action SubmitAction is valid if the F entry is
- * present.
+ * ActionManager for the Submit action SubmitAction is valid if the F entry is present.
  */
-public class SubmitAction extends AbstractActionManager {
+public class SubmitAction extends AbstractActionManager
+{
 
-  /**
-   * @param amFact
-   *          Instance of ActionManagerFactory used to create ActionManager to
-   *          check Next actions.
-   * @param adict
-   *          the COSDictionary of the action wrapped by this class.
-   * @param cDoc
-   *          the COSDocument from which the action comes from.
-   * @param aaKey
-   *          The name of the key which identify the action in a additional
-   *          action dictionary.
-   */
-  public SubmitAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey) {
-    super(amFact, adict, ctx, aaKey);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util
-   * .List)
-   */
-  @Override
-  protected boolean innerValid() {
-    COSBase f = this.actionDictionnary.getItem(COSName.F);
-    if (f == null) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
-          "F entry is mandatory for the SubmitActions"));
-      return false;
+    /**
+     * @param amFact
+     *            Instance of ActionManagerFactory used to create ActionManager to check Next actions.
+     * @param adict
+     *            the COSDictionary of the action wrapped by this class.
+     * @param cDoc
+     *            the COSDocument from which the action comes from.
+     * @param aaKey
+     *            The name of the key which identify the action in a additional action dictionary.
+     */
+    public SubmitAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    {
+        super(amFact, adict, ctx, aaKey);
     }
-    return true;
-  }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     */
+    @Override
+    protected boolean innerValid()
+    {
+        COSBase f = this.actionDictionnary.getItem(COSName.F);
+        if (f == null)
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
+                    "F entry is mandatory for the SubmitActions"));
+            return false;
+        }
+        return true;
+    }
 
 }

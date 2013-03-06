@@ -21,21 +21,23 @@
 
 package org.apache.pdfbox.preflight.exception;
 
+public class MissingValidationProcessException extends ValidationException
+{
 
-public class MissingValidationProcessException extends ValidationException {
+    /**
+     * Name of the Missing process
+     */
+    private String processName;
 
-	/**
-	 * Name of the Missing process
-	 */
-	private String processName;
+    public MissingValidationProcessException(String process)
+    {
+        super(process + " is missing, validation can't be done");
+        this.processName = process;
+    }
 
-	public MissingValidationProcessException(String process) {
-		super(process + " is missing, validation can't be done");
-		this.processName = process;
-	}
-
-	public String getProcessName() {
-		return processName;
-	}
+    public String getProcessName()
+    {
+        return processName;
+    }
 
 }

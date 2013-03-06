@@ -21,26 +21,32 @@
 
 package org.apache.pdfbox.preflight.font.util;
 
-public class GlyphDetail {
-	private GlyphException invalidGlyphError = null;
-	private int charecterIdentifier = 0;
-	
-	public GlyphDetail(int cid) {
-		this.charecterIdentifier = cid;
-	}
+public class GlyphDetail
+{
+    private GlyphException invalidGlyphError = null;
+    private int charecterIdentifier = 0;
 
-	public GlyphDetail(int cid, GlyphException error) {
-		this.charecterIdentifier = cid;
-		this.invalidGlyphError = error;
-	}
+    public GlyphDetail(int cid)
+    {
+        this.charecterIdentifier = cid;
+    }
 
-	public void throwExceptionIfNotValid() throws GlyphException {
-		if (this.invalidGlyphError != null) {
-			throw this.invalidGlyphError;
-		}
-	}
+    public GlyphDetail(int cid, GlyphException error)
+    {
+        this.charecterIdentifier = cid;
+        this.invalidGlyphError = error;
+    }
 
-	public int getCID() {
-		return this.charecterIdentifier;
-	}
+    public void throwExceptionIfNotValid() throws GlyphException
+    {
+        if (this.invalidGlyphError != null)
+        {
+            throw this.invalidGlyphError;
+        }
+    }
+
+    public int getCID()
+    {
+        return this.charecterIdentifier;
+    }
 }

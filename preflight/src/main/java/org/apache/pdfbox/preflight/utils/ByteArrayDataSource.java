@@ -31,47 +31,55 @@ import javax.activation.DataSource;
 
 import org.apache.commons.io.IOUtils;
 
-public class ByteArrayDataSource implements DataSource {
-  private ByteArrayOutputStream data;
-  private String type = null;
-  private String name = null;
+public class ByteArrayDataSource implements DataSource
+{
+    private ByteArrayOutputStream data;
+    private String type = null;
+    private String name = null;
 
-  public ByteArrayDataSource(InputStream is) throws IOException {
-    data = new ByteArrayOutputStream();
-    IOUtils.copyLarge(is, data);
-    IOUtils.closeQuietly(is);
-  }
+    public ByteArrayDataSource(InputStream is) throws IOException
+    {
+        data = new ByteArrayOutputStream();
+        IOUtils.copyLarge(is, data);
+        IOUtils.closeQuietly(is);
+    }
 
-  public String getContentType() {
-    return this.type;
-  }
+    public String getContentType()
+    {
+        return this.type;
+    }
 
-  /**
-   * @param type
-   *          the type to set
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
+    /**
+     * @param type
+     *            the type to set
+     */
+    public void setType(String type)
+    {
+        this.type = type;
+    }
 
-  /**
-   * @param name
-   *          the name to set
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
+    /**
+     * @param name
+     *            the name to set
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-  public InputStream getInputStream() throws IOException {
-    return new ByteArrayInputStream(data.toByteArray());
-  }
+    public InputStream getInputStream() throws IOException
+    {
+        return new ByteArrayInputStream(data.toByteArray());
+    }
 
-  public String getName() {
-    return this.name;
-  }
+    public String getName()
+    {
+        return this.name;
+    }
 
-  public OutputStream getOutputStream() throws IOException {
-    this.data = new ByteArrayOutputStream();
-    return data;
-  }
+    public OutputStream getOutputStream() throws IOException
+    {
+        this.data = new ByteArrayOutputStream();
+        return data;
+    }
 }

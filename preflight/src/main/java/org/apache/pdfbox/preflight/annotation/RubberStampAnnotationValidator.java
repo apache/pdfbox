@@ -32,35 +32,38 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 /**
  * Validation class for the BudderStampAnnotation
  */
-public class RubberStampAnnotationValidator extends AnnotationValidator {
-  /**
-   * PDFBox class which wraps the annotaiton dictionary
-   */
-  protected PDAnnotationRubberStamp pdRStamp = null;
+public class RubberStampAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox class which wraps the annotaiton dictionary
+     */
+    protected PDAnnotationRubberStamp pdRStamp = null;
 
-  public RubberStampAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-	    super(ctx, annotDictionary);
-    this.pdRStamp = new PDAnnotationRubberStamp(annotDictionary);
-    this.pdAnnot = this.pdRStamp;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-   * checkMandatoryFields(java.util.List)
-   */
-  protected boolean checkMandatoryFields() {
-    boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-    boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-    boolean f = this.annotDictionary.containsKey(COSName.F);
-    boolean contents = this.annotDictionary.containsKey(COSName.CONTENTS);
-
-    boolean result = (subtype && rect && f && contents);
-    if (!result) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+    public RubberStampAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdRStamp = new PDAnnotationRubberStamp(annotDictionary);
+        this.pdAnnot = this.pdRStamp;
     }
-    return result;
-  }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     */
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
+        boolean contents = this.annotDictionary.containsKey(COSName.CONTENTS);
+
+        boolean result = (subtype && rect && f && contents);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        }
+        return result;
+    }
 
 }

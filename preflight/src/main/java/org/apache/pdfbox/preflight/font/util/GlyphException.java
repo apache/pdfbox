@@ -21,28 +21,33 @@
 
 package org.apache.pdfbox.preflight.font.util;
 
-public class GlyphException extends Exception {
-	private String errorCode;
-	private int invalidCid;
-	
-	public GlyphException(String code, int cid) {
-		super();
-		this.errorCode = code;
-		this.invalidCid = cid;
-	}
+public class GlyphException extends Exception
+{
+    private String errorCode;
+    private int invalidCid;
 
-	public GlyphException(String code, int cid, String message) {
-		super(message);
-		this.errorCode = code;
-		this.invalidCid = cid;
-	}
-	
-	public String getErrorCode() {
-		return errorCode;
-	}
+    public GlyphException(String code, int cid)
+    {
+        super();
+        this.errorCode = code;
+        this.invalidCid = cid;
+    }
 
-	public int getInvalidCid() {
-		return invalidCid;
-	}
+    public GlyphException(String code, int cid, String message)
+    {
+        super(message);
+        this.errorCode = code;
+        this.invalidCid = cid;
+    }
+
+    public String getErrorCode()
+    {
+        return errorCode;
+    }
+
+    public int getInvalidCid()
+    {
+        return invalidCid;
+    }
 
 }

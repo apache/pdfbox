@@ -26,53 +26,62 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestNamedAction extends AbstractTestAction {
-	protected COSDictionary createNamedAction() {
-		COSDictionary namedAction = new COSDictionary();
-		namedAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
-		namedAction.setItem(COSName.S, COSName.getPDFName("Named"));
-		
-		return namedAction;
-	}
-	
-	@Test
-	public void testFirstPage() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST));
-		valid(namedAction, true);
-	}
+public class TestNamedAction extends AbstractTestAction
+{
+    protected COSDictionary createNamedAction()
+    {
+        COSDictionary namedAction = new COSDictionary();
+        namedAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
+        namedAction.setItem(COSName.S, COSName.getPDFName("Named"));
 
-	@Test
-	public void testLastPage() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST));
-		valid(namedAction, true);
-	}
+        return namedAction;
+    }
 
-	@Test
-	public void testNextPage() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT));
-		valid(namedAction, true);
-	}
+    @Test
+    public void testFirstPage() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        namedAction
+                .setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST));
+        valid(namedAction, true);
+    }
 
-	@Test
-	public void testPrevPage() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV));
-		valid(namedAction, true);
-	}
+    @Test
+    public void testLastPage() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST));
+        valid(namedAction, true);
+    }
 
-	@Test
-	public void testMissingN() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		valid(namedAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
-	
-	@Test
-	public void testForbiddenN() throws Exception {
-		COSDictionary namedAction = createNamedAction();
-		namedAction.setItem(COSName.N, COSName.getPDFName("unknown"));
-		valid(namedAction, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED);
-	}
+    @Test
+    public void testNextPage() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT));
+        valid(namedAction, true);
+    }
+
+    @Test
+    public void testPrevPage() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV));
+        valid(namedAction, true);
+    }
+
+    @Test
+    public void testMissingN() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        valid(namedAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
+
+    @Test
+    public void testForbiddenN() throws Exception
+    {
+        COSDictionary namedAction = createNamedAction();
+        namedAction.setItem(COSName.N, COSName.getPDFName("unknown"));
+        valid(namedAction, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED);
+    }
 }

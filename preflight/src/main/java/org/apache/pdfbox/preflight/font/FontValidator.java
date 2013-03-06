@@ -27,43 +27,50 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.descriptor.FontDescriptorHelper;
 
-public abstract class FontValidator <T extends FontContainer> {
-	
-	protected T fontContainer;
-	protected PreflightContext context;
-	protected PDFont font;
-	protected FontDescriptorHelper<T> descriptorHelper;
+public abstract class FontValidator<T extends FontContainer>
+{
 
-	private static final String SUB_SET_PATTERN = "^[A-Z]{6}\\+.*";
+    protected T fontContainer;
+    protected PreflightContext context;
+    protected PDFont font;
+    protected FontDescriptorHelper<T> descriptorHelper;
 
-	public FontValidator(PreflightContext context, PDFont font, T fContainer) {
-		super();
-		this.context = context;
-		this.font = font;
-		this.fontContainer = fContainer;
-		this.context.addFontContainer(font.getCOSObject(), fContainer);
-	}
+    private static final String SUB_SET_PATTERN = "^[A-Z]{6}\\+.*";
 
-  public static boolean isSubSet(String fontName) {
-    return fontName.matches(SUB_SET_PATTERN);
-  }
+    public FontValidator(PreflightContext context, PDFont font, T fContainer)
+    {
+        super();
+        this.context = context;
+        this.font = font;
+        this.fontContainer = fContainer;
+        this.context.addFontContainer(font.getCOSObject(), fContainer);
+    }
 
-  public static String getSubSetPatternDelimiter() {
-    return "\\+";
-  }
- 	
-	public abstract void validate() throws ValidationException;
-	
-	protected void checkEncoding() {
-		// nothing to check for PDF/A-1b
-	}
+    public static boolean isSubSet(String fontName)
+    {
+        return fontName.matches(SUB_SET_PATTERN);
+    }
 
-	protected void checkToUnicode() {
-		// nothing to check for PDF/A-1b
-	}
+    public static String getSubSetPatternDelimiter()
+    {
+        return "\\+";
+    }
 
-	public T getFontContainer() {
-		return fontContainer;
-	}
-	
+    public abstract void validate() throws ValidationException;
+
+    protected void checkEncoding()
+    {
+        // nothing to check for PDF/A-1b
+    }
+
+    protected void checkToUnicode()
+    {
+        // nothing to check for PDF/A-1b
+    }
+
+    public T getFontContainer()
+    {
+        return fontContainer;
+    }
+
 }

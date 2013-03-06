@@ -22,41 +22,42 @@
 package org.apache.pdfbox.preflight.graphic;
 
 /**
- * This enum makes ColorSpaces validation easier. Labels represent ColorSpace
- * names as defined in the "PDF Reference 1.4". Enum entries with the "_SHORT"
- * suffix are used to represent color spaces (DeviceGray, DeviceRGB, DeviceCMYK
- * and Indexed) using the InlinedImage notation.
+ * This enum makes ColorSpaces validation easier. Labels represent ColorSpace names as defined in the
+ * "PDF Reference 1.4". Enum entries with the "_SHORT" suffix are used to represent color spaces (DeviceGray, DeviceRGB,
+ * DeviceCMYK and Indexed) using the InlinedImage notation.
  */
-public enum ColorSpaces {
+public enum ColorSpaces
+{
 
-  Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed(
-      "Indexed"), Indexed_SHORT("I"), Pattern("Pattern"), ICCBased("ICCBased"), DeviceRGB(
-      "DeviceRGB"), DeviceRGB_SHORT("RGB"), DeviceGray("DeviceGray"), DeviceGray_SHORT(
-      "G"), DeviceCMYK("DeviceCMYK"), DeviceCMYK_SHORT("CMYK"), Separation(
-      "Separation");
+    Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed("Indexed"), Indexed_SHORT("I"), Pattern(
+            "Pattern"), ICCBased("ICCBased"), DeviceRGB("DeviceRGB"), DeviceRGB_SHORT("RGB"), DeviceGray("DeviceGray"), DeviceGray_SHORT(
+            "G"), DeviceCMYK("DeviceCMYK"), DeviceCMYK_SHORT("CMYK"), Separation("Separation");
 
-  /**
-   * Name of the ColorSpace
-   */
-  public String label;
+    /**
+     * Name of the ColorSpace
+     */
+    public String label;
 
-  private ColorSpaces(String _label) {
-    label = _label;
-  }
+    private ColorSpaces(String _label)
+    {
+        label = _label;
+    }
 
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return label;
-  }
+    /**
+     * @return the label
+     */
+    public String getLabel()
+    {
+        return label;
+    }
 
-  /**
-   * @param label
-   *          the label to set
-   */
-  public void setLabel(String label) {
-    this.label = label;
-  }
+    /**
+     * @param label
+     *            the label to set
+     */
+    public void setLabel(String label)
+    {
+        this.label = label;
+    }
 
 }

@@ -23,56 +23,59 @@ package org.apache.pdfbox.preflight.metadata;
 
 import java.util.List;
 
-
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPSchema;
 
 /**
- * Class which all elements within an rdf:RDF have the same value for their
- * rdf:about attributes
+ * Class which all elements within an rdf:RDF have the same value for their rdf:about attributes
  * 
  * @author Germain Costenobel
  * 
  */
-public class RDFAboutAttributeConcordanceValidation {
+public class RDFAboutAttributeConcordanceValidation
+{
 
-  /**
-   * 
-   * @param metadata
-   * @return
-   * @throws DifferentRDFAboutException
-   * @throws ValidationException
-   */
-  public void validateRDFAboutAttributes(XMPMetadata metadata)
-      throws ValidationException, DifferentRDFAboutException {
+    /**
+     * 
+     * @param metadata
+     * @return
+     * @throws DifferentRDFAboutException
+     * @throws ValidationException
+     */
+    public void validateRDFAboutAttributes(XMPMetadata metadata) throws ValidationException, DifferentRDFAboutException
+    {
 
-    List<XMPSchema> schemas = metadata.getAllSchemas();
-    if (schemas.size() == 0) {
-      throw new ValidationException(
-          "Schemas not found in the given metadata representation");
+        List<XMPSchema> schemas = metadata.getAllSchemas();
+        if (schemas.size() == 0)
+        {
+            throw new ValidationException("Schemas not found in the given metadata representation");
+        }
+        String about = schemas.get(0).getAboutValue();
+        // rdf:description must have an rdf:about attribute
+        for (XMPSchema xmpSchema : schemas)
+        {
+            checkRdfAbout(about, xmpSchema);
+        }
+
     }
-    String about = schemas.get(0).getAboutValue();
-    // rdf:description must have an rdf:about attribute
-    for (XMPSchema xmpSchema : schemas) {
-      checkRdfAbout(about, xmpSchema);
+
+    private void checkRdfAbout(String about, XMPSchema xmpSchema) throws DifferentRDFAboutException
+    {
+        if (!about.equals(xmpSchema.getAboutValue()))
+        {
+            throw new DifferentRDFAboutException();
+        }
     }
 
-  }
+    public static class DifferentRDFAboutException extends Exception
+    {
 
-  private void checkRdfAbout(String about, XMPSchema xmpSchema)
-      throws DifferentRDFAboutException {
-    if (!about.equals(xmpSchema.getAboutValue())) {
-      throw new DifferentRDFAboutException();
+        private static final long serialVersionUID = 1L;
+
+        public DifferentRDFAboutException()
+        {
+            super("all rdf:about in RDF:rdf must have the same value");
+        }
     }
-  }
-
-  public static class DifferentRDFAboutException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
-    public DifferentRDFAboutException() {
-      super("all rdf:about in RDF:rdf must have the same value");
-    }
-  }
 }

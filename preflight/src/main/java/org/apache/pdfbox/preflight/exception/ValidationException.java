@@ -23,25 +23,29 @@ package org.apache.pdfbox.preflight.exception;
 
 import java.io.IOException;
 
-public class ValidationException extends IOException {
+public class ValidationException extends IOException
+{
 
-  /**
-   * serial version number
-   */
-  private static final long serialVersionUID = -1616141241190424669L;
+    /**
+     * serial version number
+     */
+    private static final long serialVersionUID = -1616141241190424669L;
 
-  public ValidationException(String message, Throwable cause) {
-    super(message);
-    initCause(cause);
-  }
+    public ValidationException(String message, Throwable cause)
+    {
+        super(message);
+        initCause(cause);
+    }
 
-  public ValidationException(String message) {
-    super(message);
-  }
+    public ValidationException(String message)
+    {
+        super(message);
+    }
 
-  public ValidationException(Throwable cause) {
-    super();
-    initCause(cause);
-  }
+    public ValidationException(Throwable cause)
+    {
+        super();
+        initCause(cause);
+    }
 
 }

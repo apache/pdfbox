@@ -43,68 +43,77 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
+public class FilterHelper
+{
 
-public class FilterHelper {
+    /**
+     * This method checks if the filter is authorized for the PDF file according to the preflight document specification
+     * attribute. For example according to the PDF/A-1 specification, only the LZW filter is forbidden due to Copyright
+     * compatibility. Because of the PDF/A is based on the PDF1.4 specification, all filters that aren't declared in the
+     * PDF Reference Third Edition are rejected.
+     * 
+     * @param context
+     *            the preflight context
+     * @param filter
+     *            the filter to checks
+     */
+    public static void isAuthorizedFilter(PreflightContext context, String filter)
+    {
+        PreflightDocument preflightDocument = context.getDocument();
+        switch (preflightDocument.getSpecification())
+        {
+        case PDF_A1A:
+            isAuthorizedFilterInPDFA(context, filter);
+            break;
 
-	/**
-	 * This method checks if the filter is authorized for the PDF file according to the preflight document specification attribute.
-	 * For example according to the PDF/A-1 specification, only the LZW filter is forbidden due to
-	 * Copyright compatibility. Because of the PDF/A is based on the PDF1.4 specification, 
-	 * all filters that aren't declared in the PDF Reference Third Edition are rejected. 
-	 * 
-	 * @param context the preflight context
-	 * @param filter the filter to checks
-	 */
-	public static void isAuthorizedFilter(PreflightContext context, String filter) {
-		PreflightDocument preflightDocument = context.getDocument();
-		switch (preflightDocument.getSpecification()) {
-		case PDF_A1A:
-			isAuthorizedFilterInPDFA(context, filter);		
-			break;
+        default:
+            // PDF/A-1b is the default format
+            isAuthorizedFilterInPDFA(context, filter);
+            break;
+        }
+    }
 
-		default:
-			// PDF/A-1b is the default format
-			isAuthorizedFilterInPDFA(context, filter);		
-			break;
-		}
-	}
+    /**
+     * This method checks if the filter is authorized for a PDF/A file. According to the PDF/A-1 specification, only the
+     * LZW filter is forbidden due to Copyright compatibility. Because of the PDF/A is based on the PDF1.4
+     * specification, all filters that aren't declared in the PDF Reference Third Edition are rejected.
+     * 
+     * @param context
+     * @param filter
+     */
+    public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter)
+    {
+        if (filter != null)
+        {
+            // --- LZW is forbidden.
+            if (STREAM_DICTIONARY_VALUE_FILTER_LZW.equals(filter) || INLINE_DICTIONARY_VALUE_FILTER_LZW.equals(filter))
+            {
+                context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
+                        "LZWDecode is forbidden"));
+            }
 
-	/**
-	 * This method checks if the filter is authorized for a PDF/A file.
-	 * According to the PDF/A-1 specification, only the LZW filter is forbidden due to
-	 * Copyright compatibility. Because of the PDF/A is based on the PDF1.4 specification, 
-	 * all filters that aren't declared in the PDF Reference Third Edition are rejected. 
-	 * 
-	 * @param context
-	 * @param filter
-	 */
-	public static void isAuthorizedFilterInPDFA(PreflightContext context, String filter) {
-		if (filter != null) {
-			// --- LZW is forbidden.
-			if (STREAM_DICTIONARY_VALUE_FILTER_LZW.equals(filter) || INLINE_DICTIONARY_VALUE_FILTER_LZW.equals(filter) ) {
-				context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER, "LZWDecode is forbidden"));
-			}
+            // --- Filters declared in the PDF Reference for PDF 1.4
+            // --- Other Filters are considered as invalid to avoid not consistent behaviour
+            boolean definedFilter = STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_JBIG.equals(filter);
+            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
 
-			// --- Filters declared in the PDF Reference for PDF 1.4
-			// --- Other Filters are considered as invalid to avoid not consistent behaviour
-			boolean definedFilter = STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_JBIG.equals(filter);
-			definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
+            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
 
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
-			definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
-
-			if (!definedFilter) {
-				context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_UNDEFINED_FILTER, "This filter isn't defined in the PDF Reference Third Edition : "+filter));
-			}
-		}
-	}
+            if (!definedFilter)
+            {
+                context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_UNDEFINED_FILTER,
+                        "This filter isn't defined in the PDF Reference Third Edition : " + filter));
+            }
+        }
+    }
 }

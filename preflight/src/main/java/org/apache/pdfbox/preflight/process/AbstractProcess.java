@@ -26,15 +26,19 @@ import java.util.List;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
-public abstract class AbstractProcess implements ValidationProcess {
+public abstract class AbstractProcess implements ValidationProcess
+{
 
-	protected void addValidationError(PreflightContext ctx, ValidationError error) {
-		ctx.addValidationError(error);
-	}
-	
-	protected void addValidationErrors(PreflightContext ctx, List<ValidationError> errors) {
-		for (ValidationError error : errors) {
-			addValidationError(ctx, error);
-		}
-	}
+    protected void addValidationError(PreflightContext ctx, ValidationError error)
+    {
+        ctx.addValidationError(error);
+    }
+
+    protected void addValidationErrors(PreflightContext ctx, List<ValidationError> errors)
+    {
+        for (ValidationError error : errors)
+        {
+            addValidationError(ctx, error);
+        }
+    }
 }

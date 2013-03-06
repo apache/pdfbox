@@ -43,49 +43,63 @@ import org.apache.pdfbox.preflight.font.Type3FontValidator;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 
-public class FontValidationProcess extends AbstractProcess {
+public class FontValidationProcess extends AbstractProcess
+{
 
-	public void validate(PreflightContext context)	throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() || !vPath.isExpectedType(PDFont.class)) {
-			throw new ValidationException("Font validation process needs at least one PDFont object");
-		}
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() || !vPath.isExpectedType(PDFont.class))
+        {
+            throw new ValidationException("Font validation process needs at least one PDFont object");
+        }
 
-		PDFont font = (PDFont)vPath.peek();
-		FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
-		if (fontContainer == null) { // if fontContainer isn't null the font is already checked
-			FontValidator<? extends FontContainer> validator = getFontValidator(context, font);
-			validator.validate();
-		}
-	}
+        PDFont font = (PDFont) vPath.peek();
+        FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
+        if (fontContainer == null)
+        { // if fontContainer isn't null the font is already checked
+            FontValidator<? extends FontContainer> validator = getFontValidator(context, font);
+            validator.validate();
+        }
+    }
 
-	/**
-	 * Create the right "Validator" object for the given font type
-	 * @param font
-	 * @return
-	 */
-	protected FontValidator<? extends FontContainer> getFontValidator(PreflightContext context, PDFont font)
-			throws ValidationException {
-		String subtype = font.getSubType();
-		if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype)) {
-			return new TrueTypeFontValidator(context, font);
-		} else if (FONT_DICTIONARY_VALUE_MMTYPE.equals(subtype)
-				|| FONT_DICTIONARY_VALUE_TYPE1.equals(subtype)) {
-			return new Type1FontValidator(context, font);
-		} else if (FONT_DICTIONARY_VALUE_TYPE3.equals(subtype)) {
-			return new Type3FontValidator(context, font);
-		} else if (FONT_DICTIONARY_VALUE_COMPOSITE.equals(subtype)) {
-			return new Type0FontValidator(context, font);
-		} else if (FONT_DICTIONARY_VALUE_TYPE2.equals(subtype)
-				|| FONT_DICTIONARY_VALUE_TYPE1C.equals(subtype)
-				|| FONT_DICTIONARY_VALUE_TYPE0C.equals(subtype)
-				|| FONT_DICTIONARY_VALUE_TYPE0.equals(subtype)) {
-			// ---- Font managed by a Composite font.
-			// this dictionary will be checked by a CompositeFontValidator
-			return null;
-		} else {
-			throw new ValidationException("Unknown font type : " + subtype);
-		}
-	}
+    /**
+     * Create the right "Validator" object for the given font type
+     * 
+     * @param font
+     * @return
+     */
+    protected FontValidator<? extends FontContainer> getFontValidator(PreflightContext context, PDFont font)
+            throws ValidationException
+    {
+        String subtype = font.getSubType();
+        if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype))
+        {
+            return new TrueTypeFontValidator(context, font);
+        }
+        else if (FONT_DICTIONARY_VALUE_MMTYPE.equals(subtype) || FONT_DICTIONARY_VALUE_TYPE1.equals(subtype))
+        {
+            return new Type1FontValidator(context, font);
+        }
+        else if (FONT_DICTIONARY_VALUE_TYPE3.equals(subtype))
+        {
+            return new Type3FontValidator(context, font);
+        }
+        else if (FONT_DICTIONARY_VALUE_COMPOSITE.equals(subtype))
+        {
+            return new Type0FontValidator(context, font);
+        }
+        else if (FONT_DICTIONARY_VALUE_TYPE2.equals(subtype) || FONT_DICTIONARY_VALUE_TYPE1C.equals(subtype)
+                || FONT_DICTIONARY_VALUE_TYPE0C.equals(subtype) || FONT_DICTIONARY_VALUE_TYPE0.equals(subtype))
+        {
+            // ---- Font managed by a Composite font.
+            // this dictionary will be checked by a CompositeFontValidator
+            return null;
+        }
+        else
+        {
+            throw new ValidationException("Unknown font type : " + subtype);
+        }
+    }
 
 }

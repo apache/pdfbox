@@ -47,118 +47,135 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 /**
  * This class validates XObject with the Form subtype.
  */
-public class XObjFormValidator extends AbstractXObjValidator {
-	/**
-	 * High level object which represents the XObjectForm
-	 */
-	PDXObjectForm pdXObj = null;
+public class XObjFormValidator extends AbstractXObjValidator
+{
+    /**
+     * High level object which represents the XObjectForm
+     */
+    PDXObjectForm pdXObj = null;
 
-	public XObjFormValidator(PreflightContext context, PDXObjectForm xobj) {
-		super(context, xobj.getCOSStream());
-		this.pdXObj = xobj;
-	}
+    public XObjFormValidator(PreflightContext context, PDXObjectForm xobj)
+    {
+        super(context, xobj.getCOSStream());
+        this.pdXObj = xobj;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
-	 */
-	@Override
-	public void validate() throws ValidationException {
-		super.validate();
-		checkGroup();
-		checkSubtype2Value();
-		validateXObjectResources();
-		validateXObjectContent();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
+     */
+    @Override
+    public void validate() throws ValidationException
+    {
+        super.validate();
+        checkGroup();
+        checkSubtype2Value();
+        validateXObjectResources();
+        validateXObjectContent();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#
-	 * checkMandatoryFields(java.util.List)
-	 */
-	@Override
-	protected void checkMandatoryFields() {
-		boolean lastMod = this.xobject.getItem(COSName.LAST_MODIFIED) != null;
-		boolean pieceInfo = this.xobject.getItem("PieceInfo") != null;
-		// type and subtype checked before to create the Validator.
-		if (lastMod ^ pieceInfo) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_MISSING_FIELD));
-			return;
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator# checkMandatoryFields(java.util.List)
+     */
+    @Override
+    protected void checkMandatoryFields()
+    {
+        boolean lastMod = this.xobject.getItem(COSName.LAST_MODIFIED) != null;
+        boolean pieceInfo = this.xobject.getItem("PieceInfo") != null;
+        // type and subtype checked before to create the Validator.
+        if (lastMod ^ pieceInfo)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_MISSING_FIELD));
+            return;
+        }
 
-		COSBase bbBase = this.xobject.getItem(COSName.BBOX);
-		// ---- BBox is an Array (Rectangle)
-		if (bbBase == null || !COSUtils.isArray(bbBase, cosDocument)) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_BBOX));
-			return;
-		}
-	}
+        COSBase bbBase = this.xobject.getItem(COSName.BBOX);
+        // ---- BBox is an Array (Rectangle)
+        if (bbBase == null || !COSUtils.isArray(bbBase, cosDocument))
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_BBOX));
+            return;
+        }
+    }
 
-	/**
-	 * An Form XObject is a ContentStream. This method method uses an instance of
-	 * ContentStreamWrapper to check the Stream of this Form XObject.
-	 */
-	protected void validateXObjectContent() throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, vPath.getClosestPathElement(PDPage.class));
-		csWrapper.validXObjContentStream(pdXObj);
-	}
+    /**
+     * An Form XObject is a ContentStream. This method method uses an instance of ContentStreamWrapper to check the
+     * Stream of this Form XObject.
+     */
+    protected void validateXObjectContent() throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, vPath.getClosestPathElement(PDPage.class));
+        csWrapper.validXObjContentStream(pdXObj);
+    }
 
-	/**
-	 * A Form XObject may contain a Group object (Key =" Group"). If a Group
-	 * object is present, this method checks if the S entry is present and if its
-	 * value is different from "Transparency".
-	 * 
-	 * @throws ValidationException
-	 */
-	protected void checkGroup() throws ValidationException {
-		COSBase baseGroup = this.xobject.getItem(XOBJECT_DICTIONARY_KEY_GROUP);
-		COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, cosDocument);
-		if (groupDictionary != null) {
-			if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE))) {
-				throw new ValidationException("The Group dictionary hasn't Group as Type value");
-			}
+    /**
+     * A Form XObject may contain a Group object (Key =" Group"). If a Group object is present, this method checks if
+     * the S entry is present and if its value is different from "Transparency".
+     * 
+     * @throws ValidationException
+     */
+    protected void checkGroup() throws ValidationException
+    {
+        COSBase baseGroup = this.xobject.getItem(XOBJECT_DICTIONARY_KEY_GROUP);
+        COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, cosDocument);
+        if (groupDictionary != null)
+        {
+            if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE)))
+            {
+                throw new ValidationException("The Group dictionary hasn't Group as Type value");
+            }
 
-			String sVal = groupDictionary.getNameAsString(COSName.S);
-			if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal)) {
-				context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP , "Group has a transparency S entry or the S entry is null."));
-				return;
-			}
-		}
-	}
+            String sVal = groupDictionary.getNameAsString(COSName.S);
+            if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+            {
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
+                        "Group has a transparency S entry or the S entry is null."));
+                return;
+            }
+        }
+    }
 
-	/**
-	 * Check if there are no PS entry in the Form XObject dictionary
-	 */
-	protected void checkPS() {
-		// 6.2.4 and 6.2.5 no PS
-		if (this.xobject.getItem(COSName.getPDFName("PS")) != null) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY, "Unexpected 'PS' Key"));
-			return;
-		}
-	}
+    /**
+     * Check if there are no PS entry in the Form XObject dictionary
+     */
+    protected void checkPS()
+    {
+        // 6.2.4 and 6.2.5 no PS
+        if (this.xobject.getItem(COSName.getPDFName("PS")) != null)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY, "Unexpected 'PS' Key"));
+            return;
+        }
+    }
 
-	/**
-	 * Check the SUbtype2 entry according to the §6.2.5 of the ISO 190005-1:2005
-	 * specification.
-	 */
-	protected void checkSubtype2Value() {
-		// 6.2.5 if Subtype2, value not PS
-		if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null) {
-			if ("PS".equals(this.xobject.getNameAsString("Subtype2"))) {
-				context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,"Unexpected 'PS' value for 'Subtype2' Key"));
-				return ;
-			}
-		}
-	}
-	
-	protected void validateXObjectResources() throws ValidationException {
-		PDResources resources = this.pdXObj.getResources();
-		if (resources != null) {
-			ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
-		}
-	}
+    /**
+     * Check the SUbtype2 entry according to the §6.2.5 of the ISO 190005-1:2005 specification.
+     */
+    protected void checkSubtype2Value()
+    {
+        // 6.2.5 if Subtype2, value not PS
+        if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null)
+        {
+            if ("PS".equals(this.xobject.getNameAsString("Subtype2")))
+            {
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                        "Unexpected 'PS' value for 'Subtype2' Key"));
+                return;
+            }
+        }
+    }
+
+    protected void validateXObjectResources() throws ValidationException
+    {
+        PDResources resources = this.pdXObj.getResources();
+        if (resources != null)
+        {
+            ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
+        }
+    }
 
 }

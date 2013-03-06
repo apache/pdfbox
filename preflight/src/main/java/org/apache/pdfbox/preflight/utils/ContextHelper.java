@@ -27,55 +27,64 @@ import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
 
-public class ContextHelper {
+public class ContextHelper
+{
 
-	/**
-	 * Check that the element parameter isn't null before calling 
-	 * the {@link #callValidation(PreflightContext, Object, String)} method.
-	 * @param context
-	 * @param element
-	 * @param processName
-	 * @throws ValidationException
-	 */
-	public static void validateElement(PreflightContext context, Object element, String processName) 
-	throws ValidationException {
-		if (element == null) {
-			throw new ValidationException("Unable to process an element if it is null.");
-		}
-		callValidation(context, element, processName);
-	}
+    /**
+     * Check that the element parameter isn't null before calling the
+     * {@link #callValidation(PreflightContext, Object, String)} method.
+     * 
+     * @param context
+     * @param element
+     * @param processName
+     * @throws ValidationException
+     */
+    public static void validateElement(PreflightContext context, Object element, String processName)
+            throws ValidationException
+    {
+        if (element == null)
+        {
+            throw new ValidationException("Unable to process an element if it is null.");
+        }
+        callValidation(context, element, processName);
+    }
 
-	/**
-	 * Put the element to check on the top of the ValidationPath and call the validation 
-	 * method on the Process.
-	 * 
-	 * @param context (mandatory) the preflight context that contains all required information
-	 * @param element
-	 * @param processName the process to instantiate and to compute
-	 * @throws ValidationException
-	 */
-	private static void callValidation(PreflightContext context, Object element, String processName) 
-	throws ValidationException {
-		if (context == null) {
-			throw new ValidationException("Unable to process an element without context.");
-		}
+    /**
+     * Put the element to check on the top of the ValidationPath and call the validation method on the Process.
+     * 
+     * @param context
+     *            (mandatory) the preflight context that contains all required information
+     * @param element
+     * @param processName
+     *            the process to instantiate and to compute
+     * @throws ValidationException
+     */
+    private static void callValidation(PreflightContext context, Object element, String processName)
+            throws ValidationException
+    {
+        if (context == null)
+        {
+            throw new ValidationException("Unable to process an element without context.");
+        }
 
-		PreflightPath validationPath = context.getValidationPath(); 
-		boolean needPop = validationPath.pushObject(element);
-		PreflightConfiguration config = context.getConfig();
-		ValidationProcess process = config.getInstanceOfProcess(processName);
-		process.validate(context);
-		if ( needPop ) validationPath.pop();
-	}
+        PreflightPath validationPath = context.getValidationPath();
+        boolean needPop = validationPath.pushObject(element);
+        PreflightConfiguration config = context.getConfig();
+        ValidationProcess process = config.getInstanceOfProcess(processName);
+        process.validate(context);
+        if (needPop)
+            validationPath.pop();
+    }
 
-	/**
-	 * call directly the {@link #callValidation(PreflightContext, Object, String)}
-	 * @param context
-	 * @param processName
-	 * @throws ValidationException
-	 */
-	public static void validateElement(PreflightContext context, String processName) 
-	throws ValidationException {
-		callValidation(context, null, processName);
-	}
+    /**
+     * call directly the {@link #callValidation(PreflightContext, Object, String)}
+     * 
+     * @param context
+     * @param processName
+     * @throws ValidationException
+     */
+    public static void validateElement(PreflightContext context, String processName) throws ValidationException
+    {
+        callValidation(context, null, processName);
+    }
 }

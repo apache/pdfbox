@@ -31,68 +31,91 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestGotoRemoteAction extends AbstractTestAction {
+public class TestGotoRemoteAction extends AbstractTestAction
+{
 
-	@Test
-	public void testGoto_OK() throws Exception {
-		PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
-		gotoAction.setD(COSName.getPDFName("ADest"));
-		gotoAction.setFile(new PDFileSpecification() {
-			public COSBase getCOSObject() {
-				return COSName.getPDFName("ADest");
-			}
-			@Override
-			public void setFile(String file) {
-			}
-			@Override
-			public String getFile() {
-				return "pouey";
-			}
-		});
-		valid(gotoAction, true);
-	}
+    @Test
+    public void testGoto_OK() throws Exception
+    {
+        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        gotoAction.setD(COSName.getPDFName("ADest"));
+        gotoAction.setFile(new PDFileSpecification()
+        {
+            public COSBase getCOSObject()
+            {
+                return COSName.getPDFName("ADest");
+            }
 
-	@Test
-	public void testGoto_KO_InvalidContent() throws Exception {
-		PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
-		gotoAction.setD(new COSDictionary());
-		gotoAction.setFile(new PDFileSpecification() {
-			public COSBase getCOSObject() {
-				return COSName.getPDFName("ADest");
-			}
-			@Override
-			public void setFile(String file) {
-			}
-			@Override
-			public String getFile() {
-				return "pouey";
-			}
-		});
-		valid(gotoAction, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
-	}
+            @Override
+            public void setFile(String file)
+            {
+            }
 
-	@Test
-	public void testGoto_KO_MissingD() throws Exception {
-		PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
-		gotoAction.setFile(new PDFileSpecification() {
-			public COSBase getCOSObject() {
-				return COSName.getPDFName("ADest");
-			}
-			@Override
-			public void setFile(String file) {
-			}
-			@Override
-			public String getFile() {
-				return "pouey";
-			}
-		});
-		valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
+            @Override
+            public String getFile()
+            {
+                return "pouey";
+            }
+        });
+        valid(gotoAction, true);
+    }
 
-	@Test
-	public void testGoto_KO_MissingF() throws Exception {
-		PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
-		gotoAction.setD(COSName.getPDFName("ADest"));
-		valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
+    @Test
+    public void testGoto_KO_InvalidContent() throws Exception
+    {
+        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        gotoAction.setD(new COSDictionary());
+        gotoAction.setFile(new PDFileSpecification()
+        {
+            public COSBase getCOSObject()
+            {
+                return COSName.getPDFName("ADest");
+            }
+
+            @Override
+            public void setFile(String file)
+            {
+            }
+
+            @Override
+            public String getFile()
+            {
+                return "pouey";
+            }
+        });
+        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+    }
+
+    @Test
+    public void testGoto_KO_MissingD() throws Exception
+    {
+        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        gotoAction.setFile(new PDFileSpecification()
+        {
+            public COSBase getCOSObject()
+            {
+                return COSName.getPDFName("ADest");
+            }
+
+            @Override
+            public void setFile(String file)
+            {
+            }
+
+            @Override
+            public String getFile()
+            {
+                return "pouey";
+            }
+        });
+        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
+
+    @Test
+    public void testGoto_KO_MissingF() throws Exception
+    {
+        PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
+        gotoAction.setD(COSName.getPDFName("ADest"));
+        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
 }

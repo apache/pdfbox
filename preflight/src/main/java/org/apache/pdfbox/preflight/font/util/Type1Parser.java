@@ -44,548 +44,680 @@ import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
-public final class Type1Parser {
+public final class Type1Parser
+{
 
-	public static final Logger LOGGER = Logger.getLogger(Type1Parser.class);
-	
-	protected static final char NAME_START = '/';
-	protected static final String NOTDEF = NAME_START + ".notdef";
-	protected static final int DEFAULT_LEN_IV = 4;
-	
-	private static final String PS_STANDARD_ENCODING = "StandardEncoding";
-	private static final String PS_ISOLATIN_ENCODING = "ISOLatin1Encoding";
+    public static final Logger LOGGER = Logger.getLogger(Type1Parser.class);
 
-	private static final String TOKEN_ENCODING = "US-ASCII";
+    protected static final char NAME_START = '/';
+    protected static final String NOTDEF = NAME_START + ".notdef";
+    protected static final int DEFAULT_LEN_IV = 4;
 
-	/**
-	 * The PostScript font stream.
-	 */
-	private PeekInputStream fontProgram = null;
-	/**
-	 * The length in bytes of the clear-text portion of the Type1 font program.
-	 */
-	private int clearTextSize = 0;
-	/**
-	 * The length in bytes of the eexec encrypted portion of the type1 font
-	 * program.
-	 */
-	private int eexecSize = 0;
+    private static final String PS_STANDARD_ENCODING = "StandardEncoding";
+    private static final String PS_ISOLATIN_ENCODING = "ISOLatin1Encoding";
 
-	/**
-	 * This counter is used to know how many byte have been read.
-	 * It is used to read the clear part of the font. this computer is
-	 * updated during the parsing of the encoding part too but it is not 
-	 * used.
-	 */
-	private int numberOfReadBytes = 0;
-	
-	/**
-	 * Object which contains information coming from the parsing.
-	 */
-	private Type1 type1Font = null;
-	
-	private Type1Parser(InputStream type1, int length1, int length2, Encoding enc) throws IOException {
-		super();
-		this.fontProgram = new PeekInputStream(type1);
-		this.clearTextSize = length1;
-		this.eexecSize = length2;
-		// ---- Instantiate the Encoding Map
-		if (enc != null) {
-			this.type1Font = new Type1(enc);
-		} else {
-			this.type1Font = new Type1(new StandardEncoding());
-		}
-		this.type1Font.addCidWithLabel(-1, NOTDEF);
-	}
+    private static final String TOKEN_ENCODING = "US-ASCII";
 
-	/**
-	 * 
-	 * @param fontProgram the stream of the font program extracted from the PDF file.
-	 * @param clearTextLength the length in bytes of the clear part of the font program.
-	 * @param eexecLength the length in bytes of the encoded part.
-	 * @return
-	 * @throws IOException
-	 */
-	public static Type1Parser createParser(
-			InputStream fontProgram, 
-			int clearTextLength, 
-			int eexecLength) throws IOException {
+    /**
+     * The PostScript font stream.
+     */
+    private PeekInputStream fontProgram = null;
+    /**
+     * The length in bytes of the clear-text portion of the Type1 font program.
+     */
+    private int clearTextSize = 0;
+    /**
+     * The length in bytes of the eexec encrypted portion of the type1 font program.
+     */
+    private int eexecSize = 0;
 
-		Encoding encoding = getEncodingObject("");
-		return createParserWithEncodingObject(fontProgram, clearTextLength, eexecLength, encoding);		
-	}
+    /**
+     * This counter is used to know how many byte have been read. It is used to read the clear part of the font. this
+     * computer is updated during the parsing of the encoding part too but it is not used.
+     */
+    private int numberOfReadBytes = 0;
 
-	/**
-	 * 
-	 * @param fontProgram the stream of the font program extracted from the PDF file.
-	 * @param clearTextLength the length in bytes of the clear part of the font program.
-	 * @param eexecLength the length in bytes of the encoded part.
-	 * @param encodingName The name of encoding which is used by this font program.
-	 * @return
-	 * @throws IOException
-	 */
-	public static Type1Parser createParserWithEncodingName(
-			InputStream fontProgram, 
-			int clearTextLength, 
-			int eexecLength, 
-			String encodingName) throws IOException {
+    /**
+     * Object which contains information coming from the parsing.
+     */
+    private Type1 type1Font = null;
 
-		Encoding encoding = getEncodingObject(encodingName);
-		return createParserWithEncodingObject(fontProgram, clearTextLength, eexecLength, encoding);
-	}
+    private Type1Parser(InputStream type1, int length1, int length2, Encoding enc) throws IOException
+    {
+        super();
+        this.fontProgram = new PeekInputStream(type1);
+        this.clearTextSize = length1;
+        this.eexecSize = length2;
+        // ---- Instantiate the Encoding Map
+        if (enc != null)
+        {
+            this.type1Font = new Type1(enc);
+        }
+        else
+        {
+            this.type1Font = new Type1(new StandardEncoding());
+        }
+        this.type1Font.addCidWithLabel(-1, NOTDEF);
+    }
 
-	private static Encoding getEncodingObject(String encodingName) {
-		Encoding encoding = new StandardEncoding();
-		if (FONT_DICTIONARY_VALUE_ENCODING_MAC.equals(encodingName)) {
-			encoding = new MacRomanEncoding();
-		} else if (FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP.equals(encodingName)) {
-			encoding = new MacRomanEncoding();
-		} else if (FONT_DICTIONARY_VALUE_ENCODING_WIN.equals(encodingName)) {
-			encoding = new WinAnsiEncoding();
-		} else if (FONT_DICTIONARY_VALUE_ENCODING_PDFDOC.equals(encodingName)) {
-			encoding = new PdfDocEncoding();
-		}
-		return encoding;
-	}
+    /**
+     * 
+     * @param fontProgram
+     *            the stream of the font program extracted from the PDF file.
+     * @param clearTextLength
+     *            the length in bytes of the clear part of the font program.
+     * @param eexecLength
+     *            the length in bytes of the encoded part.
+     * @return
+     * @throws IOException
+     */
+    public static Type1Parser createParser(InputStream fontProgram, int clearTextLength, int eexecLength)
+            throws IOException
+    {
 
-	/**
-	 * 
-	 * @param fontProgram the stream of the font program extracted from the PDF file.
-	 * @param clearTextLength the length in bytes of the clear part of the font program.
-	 * @param eexecLength the length in bytes of the encoded part.
-	 * @param encodingName The encoding object which is used by this font program.
-	 * @return
-	 * @throws IOException
-	 */
-	public static Type1Parser createParserWithEncodingObject(
-			InputStream fontProgram, 
-			int clearTextLength, 
-			int eexecLength, 
-			Encoding encoding)  throws IOException {
+        Encoding encoding = getEncodingObject("");
+        return createParserWithEncodingObject(fontProgram, clearTextLength, eexecLength, encoding);
+    }
 
-		return new Type1Parser(fontProgram, clearTextLength, eexecLength, encoding);
-	}
+    /**
+     * 
+     * @param fontProgram
+     *            the stream of the font program extracted from the PDF file.
+     * @param clearTextLength
+     *            the length in bytes of the clear part of the font program.
+     * @param eexecLength
+     *            the length in bytes of the encoded part.
+     * @param encodingName
+     *            The name of encoding which is used by this font program.
+     * @return
+     * @throws IOException
+     */
+    public static Type1Parser createParserWithEncodingName(InputStream fontProgram, int clearTextLength,
+            int eexecLength, String encodingName) throws IOException
+    {
 
-	public Type1 parse() throws IOException {
-		parseClearPartOfFontProgram(this.fontProgram);
-		decodeAndParseEExecPart(this.fontProgram);
-		return this.type1Font;
-	}
+        Encoding encoding = getEncodingObject(encodingName);
+        return createParserWithEncodingObject(fontProgram, clearTextLength, eexecLength, encoding);
+    }
 
-	private void parseClearPartOfFontProgram(PeekInputStream stream) throws IOException {
-		skipComments(stream);
-		parseFontInformationUntilEncodingPart(stream);
-	}
+    private static Encoding getEncodingObject(String encodingName)
+    {
+        Encoding encoding = new StandardEncoding();
+        if (FONT_DICTIONARY_VALUE_ENCODING_MAC.equals(encodingName))
+        {
+            encoding = new MacRomanEncoding();
+        }
+        else if (FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP.equals(encodingName))
+        {
+            encoding = new MacRomanEncoding();
+        }
+        else if (FONT_DICTIONARY_VALUE_ENCODING_WIN.equals(encodingName))
+        {
+            encoding = new WinAnsiEncoding();
+        }
+        else if (FONT_DICTIONARY_VALUE_ENCODING_PDFDOC.equals(encodingName))
+        {
+            encoding = new PdfDocEncoding();
+        }
+        return encoding;
+    }
 
-	private void decodeAndParseEExecPart(PeekInputStream stream) throws IOException {
-		byte[] eexecPart = readEexec(stream);
-		byte[] decodedEExecPart = decodeEexec(eexecPart);
-		PeekInputStream eexecStream = new PeekInputStream(new ByteArrayInputStream(decodedEExecPart));
-		parseEExecPart(eexecStream);
-	}
+    /**
+     * 
+     * @param fontProgram
+     *            the stream of the font program extracted from the PDF file.
+     * @param clearTextLength
+     *            the length in bytes of the clear part of the font program.
+     * @param eexecLength
+     *            the length in bytes of the encoded part.
+     * @param encodingName
+     *            The encoding object which is used by this font program.
+     * @return
+     * @throws IOException
+     */
+    public static Type1Parser createParserWithEncodingObject(InputStream fontProgram, int clearTextLength,
+            int eexecLength, Encoding encoding) throws IOException
+    {
 
-	private void skipComments(PeekInputStream stream) throws IOException {
-		int nextChar = stream.peek();
-		while (nextChar == '%') {
-			if (nextChar == -1) {
-				throw new IOException("Unexpected End Of File during a comment parsing");
-			}
-			readLine(stream);
-			nextChar = stream.peek();
-		}
-	}
+        return new Type1Parser(fontProgram, clearTextLength, eexecLength, encoding);
+    }
 
-	private void parseFontInformationUntilEncodingPart(PeekInputStream stream) throws IOException {
-		byte[] token = readToken(stream);
-		while (!isEExecKeyWord(token)) {
-			// add here specific operation to memorize useful information
-			if (isEncodingKeyWord(token)) {
-				parseEncodingDefinition(stream);
-			}
-			token = readToken(stream);
-		}
+    public Type1 parse() throws IOException
+    {
+        parseClearPartOfFontProgram(this.fontProgram);
+        decodeAndParseEExecPart(this.fontProgram);
+        return this.type1Font;
+    }
 
-		while (!isStartOfEExecReached()) {
-			readNextCharacter(stream);
-		}
-	}
+    private void parseClearPartOfFontProgram(PeekInputStream stream) throws IOException
+    {
+        skipComments(stream);
+        parseFontInformationUntilEncodingPart(stream);
+    }
 
-	private void parseEncodingDefinition(PeekInputStream stream) throws IOException {
-		byte[] token = readToken(stream);
-		String readableToken = new String(token, TOKEN_ENCODING);
-		if (PS_ISOLATIN_ENCODING.equals(readableToken)) {
-			this.type1Font.initEncodingWithISOLatin1Encoding();
-		} else if (PS_STANDARD_ENCODING.equals(readableToken)) {
-			this.type1Font.initEncodingWithStandardEncoding();
-		} else {
-			try {
-				Integer.parseInt(readableToken);
-				throwExceptionIfUnexpectedToken("array", readToken(stream));
-				readEndSetEncodingValues(stream);
-			} catch (NumberFormatException e) {
-				throw new IOException("Invalid encoding : Expected int value before \"array\" " 
-						+ "key word if the Encoding isn't Standard or ISOLatin");
-			}
-		}
-	}
+    private void decodeAndParseEExecPart(PeekInputStream stream) throws IOException
+    {
+        byte[] eexecPart = readEexec(stream);
+        byte[] decodedEExecPart = decodeEexec(eexecPart);
+        PeekInputStream eexecStream = new PeekInputStream(new ByteArrayInputStream(decodedEExecPart));
+        parseEExecPart(eexecStream);
+    }
 
-	private void parseEExecPart(PeekInputStream stream) throws IOException {
-		int lenIV = DEFAULT_LEN_IV;
-		byte[] previousToken = new byte[0];
-		while(!isEndOfStream(stream)) {
-			byte[] token = readToken(stream);
-			if (isLenIVKeyWord(token)) {
-				// lenIV belong to Private Dictionary. 
-				// If you create a method to parse PrivateDict, please update this function
-				byte[] l = readToken(stream);
-				lenIV = Integer.parseInt(new String(l, TOKEN_ENCODING));
-			} else if (isBeginOfBinaryPart(token)) {
-				try {
-					int lengthOfBinaryPart = Integer.parseInt(new String(previousToken, TOKEN_ENCODING));
-					skipSingleBlankSeparator(stream);
-					stream.read(new byte[lengthOfBinaryPart], 0, lengthOfBinaryPart);
-					token = readToken(stream); // read the end of binary part
-				} catch (NumberFormatException e) {
-					throw new IOException("Binary part found but previous token wasn't an integer");
-				}
-			} else if (isCharStringKeyWord(token)) {
-				parseCharStringArray(stream, lenIV);
-			}
-			previousToken = token;
-		}
-	}
+    private void skipComments(PeekInputStream stream) throws IOException
+    {
+        int nextChar = stream.peek();
+        while (nextChar == '%')
+        {
+            if (nextChar == -1)
+            {
+                throw new IOException("Unexpected End Of File during a comment parsing");
+            }
+            readLine(stream);
+            nextChar = stream.peek();
+        }
+    }
 
-	private void parseCharStringArray(PeekInputStream stream, int lenIV) throws IOException {
-		int numberOfElements = readNumberOfCharStrings(stream);
-		goToBeginOfCharStringElements(stream);
-		
-		while (numberOfElements > 0) {
-			byte[] labelToken = readToken(stream);
-			String label = new String(labelToken, TOKEN_ENCODING);
- 
-			if (label.equals("end")){
-				// TODO thrown exception ? add an error/warning in the PreflightContext ??	
-				LOGGER.warn("[Type 1] Invalid number of elements in the CharString");
-				break;
-			}
-			
-			byte[] sizeOfCharStringToken = readToken(stream);
-			int sizeOfCharString = Integer.parseInt(new String(sizeOfCharStringToken,TOKEN_ENCODING));
+    private void parseFontInformationUntilEncodingPart(PeekInputStream stream) throws IOException
+    {
+        byte[] token = readToken(stream);
+        while (!isEExecKeyWord(token))
+        {
+            // add here specific operation to memorize useful information
+            if (isEncodingKeyWord(token))
+            {
+                parseEncodingDefinition(stream);
+            }
+            token = readToken(stream);
+        }
 
-			readToken(stream); // skip "RD" or "-|" token
-			skipSingleBlankSeparator(stream); // "RD" or "-|" are followed by a space
+        while (!isStartOfEExecReached())
+        {
+            readNextCharacter(stream);
+        }
+    }
 
-			byte[] descBinary = new byte[sizeOfCharString];
-			stream.read(descBinary, 0, sizeOfCharString);
-			byte[] description = Type1FontUtil.charstringDecrypt(descBinary, lenIV);
-			Type1CharStringParser t1p = new Type1CharStringParser();
-			// TODO provide the local subroutine indexes
-			List<Object> operations = t1p.parse(description, new IndexData(0));
-			type1Font.addGlyphDescription(label, new GlyphDescription(operations));
+    private void parseEncodingDefinition(PeekInputStream stream) throws IOException
+    {
+        byte[] token = readToken(stream);
+        String readableToken = new String(token, TOKEN_ENCODING);
+        if (PS_ISOLATIN_ENCODING.equals(readableToken))
+        {
+            this.type1Font.initEncodingWithISOLatin1Encoding();
+        }
+        else if (PS_STANDARD_ENCODING.equals(readableToken))
+        {
+            this.type1Font.initEncodingWithStandardEncoding();
+        }
+        else
+        {
+            try
+            {
+                Integer.parseInt(readableToken);
+                throwExceptionIfUnexpectedToken("array", readToken(stream));
+                readEndSetEncodingValues(stream);
+            }
+            catch (NumberFormatException e)
+            {
+                throw new IOException("Invalid encoding : Expected int value before \"array\" "
+                        + "key word if the Encoding isn't Standard or ISOLatin");
+            }
+        }
+    }
 
-			readToken(stream); // skip "ND" or "|-" token
-			--numberOfElements;
-		}
-	}
+    private void parseEExecPart(PeekInputStream stream) throws IOException
+    {
+        int lenIV = DEFAULT_LEN_IV;
+        byte[] previousToken = new byte[0];
+        while (!isEndOfStream(stream))
+        {
+            byte[] token = readToken(stream);
+            if (isLenIVKeyWord(token))
+            {
+                // lenIV belong to Private Dictionary.
+                // If you create a method to parse PrivateDict, please update this function
+                byte[] l = readToken(stream);
+                lenIV = Integer.parseInt(new String(l, TOKEN_ENCODING));
+            }
+            else if (isBeginOfBinaryPart(token))
+            {
+                try
+                {
+                    int lengthOfBinaryPart = Integer.parseInt(new String(previousToken, TOKEN_ENCODING));
+                    skipSingleBlankSeparator(stream);
+                    stream.read(new byte[lengthOfBinaryPart], 0, lengthOfBinaryPart);
+                    token = readToken(stream); // read the end of binary part
+                }
+                catch (NumberFormatException e)
+                {
+                    throw new IOException("Binary part found but previous token wasn't an integer");
+                }
+            }
+            else if (isCharStringKeyWord(token))
+            {
+                parseCharStringArray(stream, lenIV);
+            }
+            previousToken = token;
+        }
+    }
 
-	private void goToBeginOfCharStringElements(PeekInputStream stream) throws IOException {
-		byte[] token = new byte[0];
-		do {
-			token = readToken(stream);
-		} while(isNotBeginKeyWord(token));
-	}
-	
-	private boolean isNotBeginKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return !"begin".equals(word);		
-	}
+    private void parseCharStringArray(PeekInputStream stream, int lenIV) throws IOException
+    {
+        int numberOfElements = readNumberOfCharStrings(stream);
+        goToBeginOfCharStringElements(stream);
 
-	private boolean isBeginOfBinaryPart(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return ("RD".equals(word) || "-|".equals(word));
-	}
+        while (numberOfElements > 0)
+        {
+            byte[] labelToken = readToken(stream);
+            String label = new String(labelToken, TOKEN_ENCODING);
 
-	private boolean isLenIVKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "/lenIV".equals(word);
-	}
+            if (label.equals("end"))
+            {
+                // TODO thrown exception ? add an error/warning in the PreflightContext ??
+                LOGGER.warn("[Type 1] Invalid number of elements in the CharString");
+                break;
+            }
 
-	private boolean isCharStringKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "/CharStrings".equals(word);
-	}
+            byte[] sizeOfCharStringToken = readToken(stream);
+            int sizeOfCharString = Integer.parseInt(new String(sizeOfCharStringToken, TOKEN_ENCODING));
 
-	private int readNumberOfCharStrings(PeekInputStream stream) throws IOException {
-		byte[] token = readToken(stream);
-		String word = new String(token, TOKEN_ENCODING);
-		try {
-			return Integer.parseInt(word);
-		} catch (NumberFormatException e) {
-			throw new IOException("Number of CharStrings elements is expected.");
-		}
-	}
-	
-	private void throwExceptionIfUnexpectedToken(String expectedValue, byte[] token) throws IOException {
-		String valueToCheck = new String(token, TOKEN_ENCODING);
-		if (!expectedValue.equals(valueToCheck)) {
-			throw new IOException(expectedValue + " was expected but we received " + valueToCheck);
-		}
-	}
+            readToken(stream); // skip "RD" or "-|" token
+            skipSingleBlankSeparator(stream); // "RD" or "-|" are followed by a space
 
-	private void readEndSetEncodingValues(PeekInputStream stream) throws IOException {
-		byte[] token = readToken(stream);
-		boolean lastTokenWasReadOnly = false;
-		while ( !(lastTokenWasReadOnly && isDefKeyWord(token)) ) {
-			if (isDupKeyWord(token)) {
-				byte[] cidToken = readToken(stream);
-				byte[] labelToken = readToken(stream);
-				String cid = new String(cidToken, TOKEN_ENCODING);
-				String label = new String(labelToken, TOKEN_ENCODING);
-				try {	
-					this.type1Font.addCidWithLabel(Integer.parseInt(cid), label);
-				} catch (NumberFormatException e) {
-					throw new IOException("Invalid encoding : Expected CID value before \"" + label + "\" label");
-				}
-			} else {
-				lastTokenWasReadOnly = isReadOnlyKeyWord(token);
-			}
-			token = readToken(stream);
-		}
-	}
+            byte[] descBinary = new byte[sizeOfCharString];
+            stream.read(descBinary, 0, sizeOfCharString);
+            byte[] description = Type1FontUtil.charstringDecrypt(descBinary, lenIV);
+            Type1CharStringParser t1p = new Type1CharStringParser();
+            // TODO provide the local subroutine indexes
+            List<Object> operations = t1p.parse(description, new IndexData(0));
+            type1Font.addGlyphDescription(label, new GlyphDescription(operations));
 
-	private byte[] readEexec(PeekInputStream stream) throws IOException {
-		int BUFFER_SIZE = 1024;
-		byte[] buffer = new byte[BUFFER_SIZE];
-		ByteArrayOutputStream eexecPart = new ByteArrayOutputStream();
-		int lr = 0;
-		int total = 0;
-		do {
-			lr = stream.read(buffer, 0, BUFFER_SIZE);
-			if (lr == BUFFER_SIZE && (total + BUFFER_SIZE < eexecSize)) {
-				eexecPart.write(buffer, 0, BUFFER_SIZE);
-				total += BUFFER_SIZE;
-			} else if (lr > 0 && (total + lr < eexecSize)) {
-				eexecPart.write(buffer, 0, lr);
-				total += lr;
-			} else if (lr > 0 && (total + lr >= eexecSize)) {
-				eexecPart.write(buffer, 0, eexecSize - total);
-				total += (eexecSize - total);
-			}
-		} while (eexecSize > total && lr > 0);
-		IOUtils.closeQuietly(eexecPart);
-		return eexecPart.toByteArray();
-	}
+            readToken(stream); // skip "ND" or "|-" token
+            --numberOfElements;
+        }
+    }
 
-	private byte[] decodeEexec(byte[] eexec) {
-		return Type1FontUtil.eexecDecrypt(eexec);
-	}
+    private void goToBeginOfCharStringElements(PeekInputStream stream) throws IOException
+    {
+        byte[] token = new byte[0];
+        do
+        {
+            token = readToken(stream);
+        } while (isNotBeginKeyWord(token));
+    }
 
-	private byte[] readLine(PeekInputStream stream) throws IOException {
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		int currentCharacter = 0;
+    private boolean isNotBeginKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return !"begin".equals(word);
+    }
 
-		do {
-			currentCharacter = readNextCharacter(stream);
-			bytes.add((byte)(currentCharacter & 0xFF));
-		} while ( !('\n' == currentCharacter || '\r' == currentCharacter)) ;
+    private boolean isBeginOfBinaryPart(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return ("RD".equals(word) || "-|".equals(word));
+    }
 
-		if ('\r' == currentCharacter && '\n' == stream.peek()) {
-			currentCharacter = readNextCharacter(stream);
-			bytes.add((byte)(currentCharacter & 0xFF));
-		}
+    private boolean isLenIVKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "/lenIV".equals(word);
+    }
 
-		byte[] result = new byte[bytes.size()];
-		for (int i = 0 ; i < bytes.size(); ++i) {
-			result[i] = bytes.get(i);
-		}
-		return result;
-	}
+    private boolean isCharStringKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "/CharStrings".equals(word);
+    }
 
-	private byte[] readToken(PeekInputStream stream) throws IOException {
-		byte[] token = new byte[0];
-		skipBlankSeparators(stream);
+    private int readNumberOfCharStrings(PeekInputStream stream) throws IOException
+    {
+        byte[] token = readToken(stream);
+        String word = new String(token, TOKEN_ENCODING);
+        try
+        {
+            return Integer.parseInt(word);
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IOException("Number of CharStrings elements is expected.");
+        }
+    }
 
-		int nextByte = stream.peek();
-		if (nextByte < 0) {
-			throw new IOException("Unexpected End Of File");
-		} 
+    private void throwExceptionIfUnexpectedToken(String expectedValue, byte[] token) throws IOException
+    {
+        String valueToCheck = new String(token, TOKEN_ENCODING);
+        if (!expectedValue.equals(valueToCheck))
+        {
+            throw new IOException(expectedValue + " was expected but we received " + valueToCheck);
+        }
+    }
 
-		if (nextByte == '(') {
-			token = readStringLiteral(stream);
-		} else if (nextByte == '[') {
-			token = readArray(stream);
-		} else if (nextByte == '{') {
-			token = readProcedure(stream);
-		} else {
-			token = readNameOrArgument(stream); 
-		}
+    private void readEndSetEncodingValues(PeekInputStream stream) throws IOException
+    {
+        byte[] token = readToken(stream);
+        boolean lastTokenWasReadOnly = false;
+        while (!(lastTokenWasReadOnly && isDefKeyWord(token)))
+        {
+            if (isDupKeyWord(token))
+            {
+                byte[] cidToken = readToken(stream);
+                byte[] labelToken = readToken(stream);
+                String cid = new String(cidToken, TOKEN_ENCODING);
+                String label = new String(labelToken, TOKEN_ENCODING);
+                try
+                {
+                    this.type1Font.addCidWithLabel(Integer.parseInt(cid), label);
+                }
+                catch (NumberFormatException e)
+                {
+                    throw new IOException("Invalid encoding : Expected CID value before \"" + label + "\" label");
+                }
+            }
+            else
+            {
+                lastTokenWasReadOnly = isReadOnlyKeyWord(token);
+            }
+            token = readToken(stream);
+        }
+    }
 
-		return token;
-	}
-	
-	private byte[] readStringLiteral(PeekInputStream stream) throws IOException {
-		int opened = 0;
-		List<Integer> buffer = new ArrayList<Integer>();
-		
-		int currentByte = 0;
-		do {
-			currentByte = readNextCharacter(stream);
-			if (currentByte < 0) {
-				throw new IOException("Unexpected End Of File");
-			}
+    private byte[] readEexec(PeekInputStream stream) throws IOException
+    {
+        int BUFFER_SIZE = 1024;
+        byte[] buffer = new byte[BUFFER_SIZE];
+        ByteArrayOutputStream eexecPart = new ByteArrayOutputStream();
+        int lr = 0;
+        int total = 0;
+        do
+        {
+            lr = stream.read(buffer, 0, BUFFER_SIZE);
+            if (lr == BUFFER_SIZE && (total + BUFFER_SIZE < eexecSize))
+            {
+                eexecPart.write(buffer, 0, BUFFER_SIZE);
+                total += BUFFER_SIZE;
+            }
+            else if (lr > 0 && (total + lr < eexecSize))
+            {
+                eexecPart.write(buffer, 0, lr);
+                total += lr;
+            }
+            else if (lr > 0 && (total + lr >= eexecSize))
+            {
+                eexecPart.write(buffer, 0, eexecSize - total);
+                total += (eexecSize - total);
+            }
+        } while (eexecSize > total && lr > 0);
+        IOUtils.closeQuietly(eexecPart);
+        return eexecPart.toByteArray();
+    }
 
-			if (currentByte == '(') {
-				opened++;
-			} else if (currentByte == ')') {
-				opened--;
-			}
+    private byte[] decodeEexec(byte[] eexec)
+    {
+        return Type1FontUtil.eexecDecrypt(eexec);
+    }
 
-			buffer.add(currentByte);
-		} while (opened != 0);
+    private byte[] readLine(PeekInputStream stream) throws IOException
+    {
+        ArrayList<Byte> bytes = new ArrayList<Byte>();
+        int currentCharacter = 0;
 
-		return convertListOfIntToByteArray(buffer);
-	}
+        do
+        {
+            currentCharacter = readNextCharacter(stream);
+            bytes.add((byte) (currentCharacter & 0xFF));
+        } while (!('\n' == currentCharacter || '\r' == currentCharacter));
 
-	private byte[] readArray(PeekInputStream stream) throws IOException {
-		int opened = 0;
-		List<Integer> buffer = new ArrayList<Integer>();
-		
-		int currentByte = 0;
-		do {
-			currentByte = readNextCharacter(stream);
-			if (currentByte < 0) {
-				throw new IOException("Unexpected End Of File");
-			}
+        if ('\r' == currentCharacter && '\n' == stream.peek())
+        {
+            currentCharacter = readNextCharacter(stream);
+            bytes.add((byte) (currentCharacter & 0xFF));
+        }
 
-			if (currentByte == '[') {
-				opened++;
-			} else if (currentByte == ']') {
-				opened--;
-			}
+        byte[] result = new byte[bytes.size()];
+        for (int i = 0; i < bytes.size(); ++i)
+        {
+            result[i] = bytes.get(i);
+        }
+        return result;
+    }
 
-			buffer.add(currentByte);
-		} while (opened != 0);
+    private byte[] readToken(PeekInputStream stream) throws IOException
+    {
+        byte[] token = new byte[0];
+        skipBlankSeparators(stream);
 
-		return convertListOfIntToByteArray(buffer);
-	}
+        int nextByte = stream.peek();
+        if (nextByte < 0)
+        {
+            throw new IOException("Unexpected End Of File");
+        }
 
-	private byte[] readProcedure(PeekInputStream stream) throws IOException {
-		int opened = 0;
-		List<Integer> buffer = new ArrayList<Integer>();
-		
-		int currentByte = 0;
-		do {
-			currentByte = readNextCharacter(stream);
-			if (currentByte < 0) {
-				throw new IOException("Unexpected End Of File");
-			}
+        if (nextByte == '(')
+        {
+            token = readStringLiteral(stream);
+        }
+        else if (nextByte == '[')
+        {
+            token = readArray(stream);
+        }
+        else if (nextByte == '{')
+        {
+            token = readProcedure(stream);
+        }
+        else
+        {
+            token = readNameOrArgument(stream);
+        }
 
-			if (currentByte == '{') {
-				opened++;
-			} else if (currentByte == '}') {
-				opened--;
-			}
+        return token;
+    }
 
-			buffer.add(currentByte);
-		} while (opened != 0);
+    private byte[] readStringLiteral(PeekInputStream stream) throws IOException
+    {
+        int opened = 0;
+        List<Integer> buffer = new ArrayList<Integer>();
 
-		return convertListOfIntToByteArray(buffer);
-	}
-	
-	private byte[] readNameOrArgument(PeekInputStream stream) throws IOException {
-		List<Integer> buffer = new ArrayList<Integer>();
-		int nextByte = 0;
-		do {
-			int currentByte = readNextCharacter(stream);
-			if (currentByte < 0) {
-				throw new IOException("Unexpected End Of File");
-			}
-			buffer.add(currentByte);
-			nextByte = stream.peek();
-		} while (isNotBlankSperator(nextByte) && isNotBeginOfName(nextByte) && isNotSeparator(nextByte));
+        int currentByte = 0;
+        do
+        {
+            currentByte = readNextCharacter(stream);
+            if (currentByte < 0)
+            {
+                throw new IOException("Unexpected End Of File");
+            }
 
-		return convertListOfIntToByteArray(buffer);
-	}
-	
-	private boolean isNotBeginOfName(int character) {
-		return ('/' != character);
-	}
-	
-	private boolean isNotSeparator(int character) {
-		return !('{' == character || '}' == character || '[' == character || ']' == character);
-	}
-	
-	private byte[] convertListOfIntToByteArray(List<Integer> input) {
-		byte[] res = new byte[input.size()];
-		for (int i = 0; i < res.length; ++i) {
-			res[i] = input.get(i).byteValue();
-		}
-		return res;
-	}
+            if (currentByte == '(')
+            {
+                opened++;
+            }
+            else if (currentByte == ')')
+            {
+                opened--;
+            }
 
-	private int readNextCharacter(PeekInputStream stream) throws IOException {
-		int currentByte = stream.read();
-		this.numberOfReadBytes++;
-		return currentByte;
-	}
+            buffer.add(currentByte);
+        } while (opened != 0);
 
-	private void skipBlankSeparators(PeekInputStream stream) throws IOException {
-		int nextByte = stream.peek();
-		while (isBlankSperator(nextByte)) {
-			readNextCharacter(stream);
-			nextByte = stream.peek();
-		}
-	}
+        return convertListOfIntToByteArray(buffer);
+    }
 
-	private void skipSingleBlankSeparator(PeekInputStream stream) throws IOException {
-		int nextByte = stream.peek();
-		if(isBlankSperator(nextByte)) {
-			readNextCharacter(stream);
-		}
-	}
-	private boolean isBlankSperator(int character) {
-		return (character == ' ' || character == '\n' || character == '\r');
-	}
+    private byte[] readArray(PeekInputStream stream) throws IOException
+    {
+        int opened = 0;
+        List<Integer> buffer = new ArrayList<Integer>();
 
-	private boolean isNotBlankSperator(int character) {
-		return !isBlankSperator(character);
-	}
-	
-	private boolean isEExecKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "eexec".equals(word);
-	}
+        int currentByte = 0;
+        do
+        {
+            currentByte = readNextCharacter(stream);
+            if (currentByte < 0)
+            {
+                throw new IOException("Unexpected End Of File");
+            }
 
-	private boolean isDefKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "def".equals(word);
-	}
-	
-	private boolean isReadOnlyKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "readonly".equals(word);
-	}
-	
-	private boolean isEncodingKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "/Encoding".equals(word);
-	}
+            if (currentByte == '[')
+            {
+                opened++;
+            }
+            else if (currentByte == ']')
+            {
+                opened--;
+            }
 
-	private boolean isDupKeyWord(byte[] token) throws IOException {
-		String word = new String(token, TOKEN_ENCODING);
-		return "dup".equals(word);
-	}
+            buffer.add(currentByte);
+        } while (opened != 0);
 
-	private boolean isStartOfEExecReached() {
-		return (this.numberOfReadBytes == this.clearTextSize);
-	}
-	
-	private boolean isEndOfStream(PeekInputStream stream) {
-		try {
-			skipBlankSeparators(stream);
-			return false;
-		} catch (IOException e) {
-			return true;
-		}
-	}
+        return convertListOfIntToByteArray(buffer);
+    }
+
+    private byte[] readProcedure(PeekInputStream stream) throws IOException
+    {
+        int opened = 0;
+        List<Integer> buffer = new ArrayList<Integer>();
+
+        int currentByte = 0;
+        do
+        {
+            currentByte = readNextCharacter(stream);
+            if (currentByte < 0)
+            {
+                throw new IOException("Unexpected End Of File");
+            }
+
+            if (currentByte == '{')
+            {
+                opened++;
+            }
+            else if (currentByte == '}')
+            {
+                opened--;
+            }
+
+            buffer.add(currentByte);
+        } while (opened != 0);
+
+        return convertListOfIntToByteArray(buffer);
+    }
+
+    private byte[] readNameOrArgument(PeekInputStream stream) throws IOException
+    {
+        List<Integer> buffer = new ArrayList<Integer>();
+        int nextByte = 0;
+        do
+        {
+            int currentByte = readNextCharacter(stream);
+            if (currentByte < 0)
+            {
+                throw new IOException("Unexpected End Of File");
+            }
+            buffer.add(currentByte);
+            nextByte = stream.peek();
+        } while (isNotBlankSperator(nextByte) && isNotBeginOfName(nextByte) && isNotSeparator(nextByte));
+
+        return convertListOfIntToByteArray(buffer);
+    }
+
+    private boolean isNotBeginOfName(int character)
+    {
+        return ('/' != character);
+    }
+
+    private boolean isNotSeparator(int character)
+    {
+        return !('{' == character || '}' == character || '[' == character || ']' == character);
+    }
+
+    private byte[] convertListOfIntToByteArray(List<Integer> input)
+    {
+        byte[] res = new byte[input.size()];
+        for (int i = 0; i < res.length; ++i)
+        {
+            res[i] = input.get(i).byteValue();
+        }
+        return res;
+    }
+
+    private int readNextCharacter(PeekInputStream stream) throws IOException
+    {
+        int currentByte = stream.read();
+        this.numberOfReadBytes++;
+        return currentByte;
+    }
+
+    private void skipBlankSeparators(PeekInputStream stream) throws IOException
+    {
+        int nextByte = stream.peek();
+        while (isBlankSperator(nextByte))
+        {
+            readNextCharacter(stream);
+            nextByte = stream.peek();
+        }
+    }
+
+    private void skipSingleBlankSeparator(PeekInputStream stream) throws IOException
+    {
+        int nextByte = stream.peek();
+        if (isBlankSperator(nextByte))
+        {
+            readNextCharacter(stream);
+        }
+    }
+
+    private boolean isBlankSperator(int character)
+    {
+        return (character == ' ' || character == '\n' || character == '\r');
+    }
+
+    private boolean isNotBlankSperator(int character)
+    {
+        return !isBlankSperator(character);
+    }
+
+    private boolean isEExecKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "eexec".equals(word);
+    }
+
+    private boolean isDefKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "def".equals(word);
+    }
+
+    private boolean isReadOnlyKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "readonly".equals(word);
+    }
+
+    private boolean isEncodingKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "/Encoding".equals(word);
+    }
+
+    private boolean isDupKeyWord(byte[] token) throws IOException
+    {
+        String word = new String(token, TOKEN_ENCODING);
+        return "dup".equals(word);
+    }
+
+    private boolean isStartOfEExecReached()
+    {
+        return (this.numberOfReadBytes == this.clearTextSize);
+    }
+
+    private boolean isEndOfStream(PeekInputStream stream)
+    {
+        try
+        {
+            skipBlankSeparators(stream);
+            return false;
+        }
+        catch (IOException e)
+        {
+            return true;
+        }
+    }
 }
