@@ -24,73 +24,71 @@ package org.apache.xmpbox.schema;
 import junit.framework.Assert;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.AdobePDFSchema;
-import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AdobePDFErrorsTest {
+public class AdobePDFErrorsTest
+{
 
-	protected XMPMetadata metadata;
+    protected XMPMetadata metadata;
 
-	protected DomXmpParser builder;
-	
-	@Before
-	public void initTempMetaData() throws Exception {
-		builder = new DomXmpParser();
-		metadata = XMPMetadata.createXMPMetadata();
-	}
+    protected DomXmpParser builder;
 
-	@Test
-	public void testPDFAIdentification() throws Exception {
-		AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
+    @Before
+    public void initTempMetaData() throws Exception
+    {
+        builder = new DomXmpParser();
+        metadata = XMPMetadata.createXMPMetadata();
+    }
 
-		String keywords = "keywords ihih";
-		String pdfVersion = "1.4";
-		String producer = "producer";
+    @Test
+    public void testPDFAIdentification() throws Exception
+    {
+        AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 
-		schem.setKeywords(keywords);
-		schem.setPDFVersion(pdfVersion);
+        String keywords = "keywords ihih";
+        String pdfVersion = "1.4";
+        String producer = "producer";
 
-		// Check get null if property not defined
-		Assert.assertNull(schem.getProducer());
+        schem.setKeywords(keywords);
+        schem.setPDFVersion(pdfVersion);
 
-		schem.setProducer(producer);
+        // Check get null if property not defined
+        Assert.assertNull(schem.getProducer());
 
-		Assert.assertEquals("Keywords", schem.getKeywordsProperty()
-				.getPropertyName());
-		Assert.assertEquals(keywords, schem.getKeywords());
+        schem.setProducer(producer);
 
-		Assert.assertEquals("PDFVersion", schem.getPDFVersionProperty()
-				.getPropertyName());
-		Assert.assertEquals(pdfVersion, schem.getPDFVersion());
+        Assert.assertEquals("Keywords", schem.getKeywordsProperty().getPropertyName());
+        Assert.assertEquals(keywords, schem.getKeywords());
 
-		Assert.assertEquals("Producer", schem.getProducerProperty()
-				.getPropertyName());
-		Assert.assertEquals(producer, schem.getProducer());
+        Assert.assertEquals("PDFVersion", schem.getPDFVersionProperty().getPropertyName());
+        Assert.assertEquals(pdfVersion, schem.getPDFVersion());
 
-		// check retrieve this schema in metadata
-		Assert.assertEquals(schem, metadata.getAdobePDFSchema());
+        Assert.assertEquals("Producer", schem.getProducerProperty().getPropertyName());
+        Assert.assertEquals(producer, schem.getProducer());
 
-		// SaveMetadataHelper.serialize(metadata, true, System.out);
-	}
+        // check retrieve this schema in metadata
+        Assert.assertEquals(schem, metadata.getAdobePDFSchema());
 
-	@Test(expected = BadFieldValueException.class)
-	public void testBadPDFAConformanceId() throws Exception {
-		PDFAIdentificationSchema pdfaid = metadata
-				.createAndAddPFAIdentificationSchema();
-		String conformance = "kiohiohiohiohio";
-		pdfaid.setConformance(conformance);
-	}
+        // SaveMetadataHelper.serialize(metadata, true, System.out);
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testBadVersionIdValueType() throws Exception {
-		PDFAIdentificationSchema pdfaid = metadata
-				.createAndAddPFAIdentificationSchema();
-		pdfaid.setPartValueWithString("1");
-		pdfaid.setPartValueWithString("ojoj");
-	}
+    @Test(expected = BadFieldValueException.class)
+    public void testBadPDFAConformanceId() throws Exception
+    {
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        String conformance = "kiohiohiohiohio";
+        pdfaid.setConformance(conformance);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBadVersionIdValueType() throws Exception
+    {
+        PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        pdfaid.setPartValueWithString("1");
+        pdfaid.setPartValueWithString("ojoj");
+    }
 
 }

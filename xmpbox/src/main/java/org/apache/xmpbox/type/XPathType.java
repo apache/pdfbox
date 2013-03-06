@@ -23,11 +23,12 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-public class XPathType extends TextType {
+public class XPathType extends TextType
+{
 
-	public XPathType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
-	}
+    public XPathType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
 }

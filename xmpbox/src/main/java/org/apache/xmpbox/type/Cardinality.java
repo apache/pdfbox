@@ -21,21 +21,21 @@
 
 package org.apache.xmpbox.type;
 
-public enum Cardinality {
+public enum Cardinality
+{
 
-	Simple(false),
-	Bag(true),
-	Seq(true),
-	Alt(true);
-	
-	private boolean array;
-	
-	private Cardinality (boolean a) {
-		this.array = a;
-	}
-	
-	public boolean isArray () {
-		return this.array;
-	}
-	
+    Simple(false), Bag(true), Seq(true), Alt(true);
+
+    private boolean array;
+
+    private Cardinality(boolean a)
+    {
+        this.array = a;
+    }
+
+    public boolean isArray()
+    {
+        return this.array;
+    }
+
 }

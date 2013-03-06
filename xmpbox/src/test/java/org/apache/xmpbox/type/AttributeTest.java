@@ -23,52 +23,54 @@ package org.apache.xmpbox.type;
 
 import junit.framework.Assert;
 
-import org.apache.xmpbox.type.Attribute;
 import org.junit.Test;
 
-public class AttributeTest {
+public class AttributeTest
+{
 
-	@Test
-	public void testAtt() {
-		String nsUri = "nsUri";
-		String prefix = "prefix";
-		String localName = "localName";
-		String value = "value";
+    @Test
+    public void testAtt()
+    {
+        String nsUri = "nsUri";
+        String prefix = "prefix";
+        String localName = "localName";
+        String value = "value";
 
-		Attribute att = new Attribute(nsUri, localName, value);
+        Attribute att = new Attribute(nsUri, localName, value);
 
-		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getName());
-		Assert.assertEquals(value, att.getValue());
+        Assert.assertEquals(nsUri, att.getNamespace());
+        Assert.assertEquals(localName, att.getName());
+        Assert.assertEquals(value, att.getValue());
 
-		String nsUri2 = "nsUri2";
-		String prefix2 = "prefix2";
-		String localName2 = "localName2";
-		String value2 = "value2";
+        String nsUri2 = "nsUri2";
+        String prefix2 = "prefix2";
+        String localName2 = "localName2";
+        String value2 = "value2";
 
-		att.setNsURI(nsUri2);
-		att.setName(localName2);
-		att.setValue(value2);
+        att.setNsURI(nsUri2);
+        att.setName(localName2);
+        att.setValue(value2);
 
-		Assert.assertEquals(nsUri2, att.getNamespace());
-		Assert.assertEquals(localName2, att.getName());
-		Assert.assertEquals(value2, att.getValue());
+        Assert.assertEquals(nsUri2, att.getNamespace());
+        Assert.assertEquals(localName2, att.getName());
+        Assert.assertEquals(value2, att.getValue());
 
-	}
+    }
 
-	@Test
-	public void testAttWithoutPrefix() {
-		String nsUri = "nsUri";
-		String localName = "localName";
-		String value = "value";
+    @Test
+    public void testAttWithoutPrefix()
+    {
+        String nsUri = "nsUri";
+        String localName = "localName";
+        String value = "value";
 
-		Attribute att = new Attribute(nsUri, localName, value);
+        Attribute att = new Attribute(nsUri, localName, value);
 
-		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getName());
+        Assert.assertEquals(nsUri, att.getNamespace());
+        Assert.assertEquals(localName, att.getName());
 
-		att = new Attribute(nsUri, localName, value);
-		Assert.assertEquals(nsUri, att.getNamespace());
-		Assert.assertEquals(localName, att.getName());
-	}
+        att = new Attribute(nsUri, localName, value);
+        Assert.assertEquals(nsUri, att.getNamespace());
+        Assert.assertEquals(localName, att.getName());
+    }
 }

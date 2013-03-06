@@ -25,92 +25,103 @@ import java.util.Calendar;
 
 import org.apache.xmpbox.XMPMetadata;
 
-@StructuredType(preferedPrefix="stEvt",namespace="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#")
-public class ResourceEventType extends AbstractStructuredType {
+@StructuredType(preferedPrefix = "stEvt", namespace = "http://ns.adobe.com/xap/1.0/sType/ResourceEvent#")
+public class ResourceEventType extends AbstractStructuredType
+{
 
-	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
-	public static final String ACTION = "action";
+    @PropertyType(type = Types.Choice, card = Cardinality.Simple)
+    public static final String ACTION = "action";
 
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String CHANGED = "changed";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String CHANGED = "changed";
 
-	@PropertyType(type = Types.GUID, card = Cardinality.Simple)
-	public static final String INSTANCE_ID = "instanceID";
-	
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String PARAMETERS = "parameters";
-	
-	@PropertyType(type = Types.AgentName, card = Cardinality.Simple)
-	public static final String SOFTWARE_AGENT = "softwareAgent";
+    @PropertyType(type = Types.GUID, card = Cardinality.Simple)
+    public static final String INSTANCE_ID = "instanceID";
 
-	@PropertyType(type = Types.Date, card = Cardinality.Simple)
-	public static final String WHEN = "when";
-	
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String PARAMETERS = "parameters";
 
-	/**
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespace
-	 *            the namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this thumbnail type
-	 */
-	public ResourceEventType(XMPMetadata metadata) {
-		super(metadata);
-		addNamespace(getNamespace(), getPreferedPrefix());
-	}
-	
-	
-	public String getInstanceID () {
-		return getPropertyValueAsString(INSTANCE_ID);
-	}
+    @PropertyType(type = Types.AgentName, card = Cardinality.Simple)
+    public static final String SOFTWARE_AGENT = "softwareAgent";
 
-	public void setInstanceID (String value) {
-		addSimpleProperty(INSTANCE_ID, value);
-	}
+    @PropertyType(type = Types.Date, card = Cardinality.Simple)
+    public static final String WHEN = "when";
 
-	public String getSoftwareAgent () {
-		return getPropertyValueAsString(SOFTWARE_AGENT);
-	}
+    /**
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespace
+     *            the namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this thumbnail type
+     */
+    public ResourceEventType(XMPMetadata metadata)
+    {
+        super(metadata);
+        addNamespace(getNamespace(), getPreferedPrefix());
+    }
 
-	public void setSoftwareAgent (String value) {
-		addSimpleProperty(SOFTWARE_AGENT, value);
-	}
+    public String getInstanceID()
+    {
+        return getPropertyValueAsString(INSTANCE_ID);
+    }
 
-	public Calendar getWhen () {
-		return getDatePropertyAsCalendar(WHEN);
-	}
+    public void setInstanceID(String value)
+    {
+        addSimpleProperty(INSTANCE_ID, value);
+    }
 
-	public void setWhen (Calendar value) {
-		addSimpleProperty(WHEN, value);
-	}
+    public String getSoftwareAgent()
+    {
+        return getPropertyValueAsString(SOFTWARE_AGENT);
+    }
 
-	public String getAction () {
-		return getPropertyValueAsString(ACTION);
-	}
+    public void setSoftwareAgent(String value)
+    {
+        addSimpleProperty(SOFTWARE_AGENT, value);
+    }
 
-	public void setAction (String value) {
-		addSimpleProperty(ACTION, value);
-	}
+    public Calendar getWhen()
+    {
+        return getDatePropertyAsCalendar(WHEN);
+    }
 
-	
-	public String getChanged () {
-		return getPropertyValueAsString(CHANGED);
-	}
+    public void setWhen(Calendar value)
+    {
+        addSimpleProperty(WHEN, value);
+    }
 
-	public void setChanged (String value) {
-		addSimpleProperty(CHANGED, value);
-	}
+    public String getAction()
+    {
+        return getPropertyValueAsString(ACTION);
+    }
 
-	public String getParameters () {
-		return getPropertyValueAsString(PARAMETERS);
-	}
+    public void setAction(String value)
+    {
+        addSimpleProperty(ACTION, value);
+    }
 
-	public void setParameters (String value) {
-		addSimpleProperty(PARAMETERS, value);
-	}
-	
+    public String getChanged()
+    {
+        return getPropertyValueAsString(CHANGED);
+    }
+
+    public void setChanged(String value)
+    {
+        addSimpleProperty(CHANGED, value);
+    }
+
+    public String getParameters()
+    {
+        return getPropertyValueAsString(PARAMETERS);
+    }
+
+    public void setParameters(String value)
+    {
+        addSimpleProperty(PARAMETERS, value);
+    }
+
 }

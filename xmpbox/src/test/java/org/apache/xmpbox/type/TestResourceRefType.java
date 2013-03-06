@@ -24,64 +24,60 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.type.AbstractStructuredType;
-import org.apache.xmpbox.type.ResourceRefType;
-import org.apache.xmpbox.type.Types;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestResourceRefType extends AbstractStructuredTypeTester{
+public class TestResourceRefType extends AbstractStructuredTypeTester
+{
 
-	protected ResourceRefType structured = null;
-	
-	@Before
-	public void before () throws Exception {
-		super.before();
-		structured = new ResourceRefType(xmp);
-	}
-	
-	public TestResourceRefType (Class<? extends AbstractStructuredType> clz, String field,Types type) {
-		super(clz, field, type);
-	}
+    protected ResourceRefType structured = null;
 
-	@Override
-	protected AbstractStructuredType getStructured() {
-		return structured;
-	}
-
-	
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
-
-//     	result.add(new Object [] {ResourceRefType.class,"alternatePaths","seq URI"});
-    	result.add(new Object [] {ResourceRefType.class,"documentID",Types.URI});
-    	result.add(new Object [] {ResourceRefType.class,"filePath",Types.URI});
-    	result.add(new Object [] {ResourceRefType.class,"fromPart",Types.Part});
-    	result.add(new Object [] {ResourceRefType.class,"instanceID",Types.URI});
-    	result.add(new Object [] {ResourceRefType.class,"lastModifyDate",Types.Date});
-    	result.add(new Object [] {ResourceRefType.class,"manager",Types.AgentName});
-    	result.add(new Object [] {ResourceRefType.class,"managerVariant",Types.Text});
-    	result.add(new Object [] {ResourceRefType.class,"manageTo",Types.URI});
-    	result.add(new Object [] {ResourceRefType.class,"manageUI",Types.URI});
-    	result.add(new Object [] {ResourceRefType.class,"maskMarkers",Types.Choice});
-    	result.add(new Object [] {ResourceRefType.class,"partMapping",Types.Text});
-    	result.add(new Object [] {ResourceRefType.class,"renditionClass",Types.RenditionClass});
-    	result.add(new Object [] {ResourceRefType.class,"renditionParams",Types.Text});
-    	result.add(new Object [] {ResourceRefType.class,"toPart",Types.Part});
-    	result.add(new Object [] {ResourceRefType.class,"versionID",Types.Text});
-    	
-    	return result;
-    	
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        structured = new ResourceRefType(xmp);
     }
 
+    public TestResourceRefType(Class<? extends AbstractStructuredType> clz, String field, Types type)
+    {
+        super(clz, field, type);
+    }
 
-    
-	
-	
-    
-	
+    @Override
+    protected AbstractStructuredType getStructured()
+    {
+        return structured;
+    }
+
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
+
+        // result.add(new Object []
+        // {ResourceRefType.class,"alternatePaths","seq URI"});
+        result.add(new Object[] { ResourceRefType.class, "documentID", Types.URI });
+        result.add(new Object[] { ResourceRefType.class, "filePath", Types.URI });
+        result.add(new Object[] { ResourceRefType.class, "fromPart", Types.Part });
+        result.add(new Object[] { ResourceRefType.class, "instanceID", Types.URI });
+        result.add(new Object[] { ResourceRefType.class, "lastModifyDate", Types.Date });
+        result.add(new Object[] { ResourceRefType.class, "manager", Types.AgentName });
+        result.add(new Object[] { ResourceRefType.class, "managerVariant", Types.Text });
+        result.add(new Object[] { ResourceRefType.class, "manageTo", Types.URI });
+        result.add(new Object[] { ResourceRefType.class, "manageUI", Types.URI });
+        result.add(new Object[] { ResourceRefType.class, "maskMarkers", Types.Choice });
+        result.add(new Object[] { ResourceRefType.class, "partMapping", Types.Text });
+        result.add(new Object[] { ResourceRefType.class, "renditionClass", Types.RenditionClass });
+        result.add(new Object[] { ResourceRefType.class, "renditionParams", Types.Text });
+        result.add(new Object[] { ResourceRefType.class, "toPart", Types.Part });
+        result.add(new Object[] { ResourceRefType.class, "versionID", Types.Text });
+
+        return result;
+
+    }
+
 }

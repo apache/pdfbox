@@ -23,11 +23,12 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-public class GUIDType extends TextType {
+public class GUIDType extends TextType
+{
 
-	public GUIDType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
-	}
+    public GUIDType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
 }

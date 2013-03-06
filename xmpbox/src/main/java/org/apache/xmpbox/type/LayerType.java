@@ -24,75 +24,80 @@ package org.apache.xmpbox.type;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.XmpConstants;
 
-@StructuredType(preferedPrefix="photoshop",namespace="http://ns.adobe.com/photoshop/1.0/")
-public class LayerType extends AbstractStructuredType {
-	
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String LAYER_NAME = "LayerName";
+@StructuredType(preferedPrefix = "photoshop", namespace = "http://ns.adobe.com/photoshop/1.0/")
+public class LayerType extends AbstractStructuredType
+{
 
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String LAYER_TEXT = "LayerText";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String LAYER_NAME = "LayerName";
 
-	
-	public LayerType(XMPMetadata metadata) {
-		super(metadata);
-		setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
-	}
-	
-	/**
-	 * Get The LayerName data
-	 * 
-	 * @return the LayerName
-	 */
-	public String getLayerName() {
-		AbstractField absProp = getFirstEquivalentProperty(LAYER_NAME,
-				TextType.class);
-		if (absProp != null) {
-			return ((TextType) absProp).getStringValue();
-		}
-		return null;
-	}
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String LAYER_TEXT = "LayerText";
 
-	/**
-	 * Set LayerName 
-	 * 
-	 * @param prefix
-	 *            the prefix of LayerName property to set
-	 * @param name
-	 *            the name of LayerName property to set
-	 * @param image
-	 *            the value of LayerName property to set
-	 */
-	public void setLayerName(String image) {
-		this.addProperty(createTextType ( LAYER_NAME, image));
-	}
-	
-	/**
-	 * Get The LayerText data
-	 * 
-	 * @return the LayerText
-	 */
-	public String getLayerText() {
-		AbstractField absProp = getFirstEquivalentProperty(LAYER_TEXT,
-				TextType.class);
-		if (absProp != null) {
-			return ((TextType) absProp).getStringValue();
-		}
-		return null;
-	}
+    public LayerType(XMPMetadata metadata)
+    {
+        super(metadata);
+        setAttribute(new Attribute(XmpConstants.RDF_NAMESPACE, "parseType", "Resource"));
+    }
 
-	/**
-	 * Set LayerText 
-	 * 
-	 * @param prefix
-	 *            the prefix of LayerText property to set
-	 * @param name
-	 *            the name of LayerText property to set
-	 * @param image
-	 *            the value of LayerText property to set
-	 */
-	public void setLayerText(String image) {
-		this.addProperty(createTextType ( LAYER_TEXT, image));
-	}
+    /**
+     * Get The LayerName data
+     * 
+     * @return the LayerName
+     */
+    public String getLayerName()
+    {
+        AbstractField absProp = getFirstEquivalentProperty(LAYER_NAME, TextType.class);
+        if (absProp != null)
+        {
+            return ((TextType) absProp).getStringValue();
+        }
+        return null;
+    }
+
+    /**
+     * Set LayerName
+     * 
+     * @param prefix
+     *            the prefix of LayerName property to set
+     * @param name
+     *            the name of LayerName property to set
+     * @param image
+     *            the value of LayerName property to set
+     */
+    public void setLayerName(String image)
+    {
+        this.addProperty(createTextType(LAYER_NAME, image));
+    }
+
+    /**
+     * Get The LayerText data
+     * 
+     * @return the LayerText
+     */
+    public String getLayerText()
+    {
+        AbstractField absProp = getFirstEquivalentProperty(LAYER_TEXT, TextType.class);
+        if (absProp != null)
+        {
+            return ((TextType) absProp).getStringValue();
+        }
+        return null;
+    }
+
+    /**
+     * Set LayerText
+     * 
+     * @param prefix
+     *            the prefix of LayerText property to set
+     * @param name
+     *            the name of LayerText property to set
+     * @param image
+     *            the value of LayerText property to set
+     */
+    public void setLayerText(String image)
+    {
+        this.addProperty(createTextType(LAYER_TEXT, image));
+    }
 
 }

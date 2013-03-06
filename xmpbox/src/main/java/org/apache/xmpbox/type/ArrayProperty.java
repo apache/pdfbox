@@ -29,78 +29,80 @@ import java.util.List;
 import org.apache.xmpbox.XMPMetadata;
 
 /**
- * Object representation of a Complex XMP Property (Represents Ordered,
- * Unordered and Alternative Arrays builder)
+ * Object representation of a Complex XMP Property (Represents Ordered, Unordered and Alternative Arrays builder)
  * 
  * @author a183132
  * 
  */
-public class ArrayProperty extends AbstractComplexProperty {
+public class ArrayProperty extends AbstractComplexProperty
+{
 
-	private Cardinality arrayType;
+    private Cardinality arrayType;
 
-	private String namespace;
-	
-	private String prefix;
+    private String namespace;
 
-	/**
-	 * Contructor of a complex property
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespace
-	 *            The namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param type
-	 *            type of complexProperty (Bag, Seq, Alt)
-	 */
-	public ArrayProperty(XMPMetadata metadata, String namespace,
-			String prefix, String propertyName, Cardinality type) {
-		super(metadata, propertyName);
-		this.arrayType = type;
-		this.namespace = namespace;
-		this.prefix = prefix;
-	}
+    private String prefix;
 
-	public Cardinality getArrayType() {
-		return arrayType;
-	}
+    /**
+     * Contructor of a complex property
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespace
+     *            The namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param type
+     *            type of complexProperty (Bag, Seq, Alt)
+     */
+    public ArrayProperty(XMPMetadata metadata, String namespace, String prefix, String propertyName, Cardinality type)
+    {
+        super(metadata, propertyName);
+        this.arrayType = type;
+        this.namespace = namespace;
+        this.prefix = prefix;
+    }
 
+    public Cardinality getArrayType()
+    {
+        return arrayType;
+    }
 
-	public List<String> getElementsAsString() {
-		List<String> retval = null;
-		retval = new ArrayList<String>();
-		Iterator<AbstractField> it = getContainer()
-				.getAllProperties().iterator();
-		AbstractSimpleProperty tmp;
-		while (it.hasNext()) {
-			tmp = (AbstractSimpleProperty) it.next();
-			retval.add(tmp.getStringValue());
-		}
-		retval = Collections.unmodifiableList(retval);
-		return retval;
-	}
+    public List<String> getElementsAsString()
+    {
+        List<String> retval = null;
+        retval = new ArrayList<String>();
+        Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
+        AbstractSimpleProperty tmp;
+        while (it.hasNext())
+        {
+            tmp = (AbstractSimpleProperty) it.next();
+            retval.add(tmp.getStringValue());
+        }
+        retval = Collections.unmodifiableList(retval);
+        return retval;
+    }
 
-	/**
-	 * Get the namespace URI of this entity
-	 * 
-	 * @return the namespace URI
-	 */
-	public final String getNamespace() {
-		return namespace;
-	}
+    /**
+     * Get the namespace URI of this entity
+     * 
+     * @return the namespace URI
+     */
+    public final String getNamespace()
+    {
+        return namespace;
+    }
 
-	/**
-	 * Get the prefix of this entity
-	 * 
-	 * @return the prefix specified
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * Get the prefix of this entity
+     * 
+     * @return the prefix specified
+     */
+    public String getPrefix()
+    {
+        return prefix;
+    }
 
-	
 }

@@ -21,21 +21,19 @@
 
 package org.apache.xmpbox.parser;
 
-import junit.framework.Assert;
-
 import org.apache.xmpbox.type.PropertiesDescription;
 import org.junit.Before;
-import org.junit.Test;
 
-public class PropMappingTest {
+public class PropMappingTest
+{
 
-	protected PropertiesDescription propMap;
-	protected String nsURI = "http://www.test.org/PropMap#";
+    protected PropertiesDescription propMap;
+    protected String nsURI = "http://www.test.org/PropMap#";
 
-	@Before
-	public void init() {
-		propMap = new PropertiesDescription();
-	}
-
+    @Before
+    public void init()
+    {
+        propMap = new PropertiesDescription();
+    }
 
 }

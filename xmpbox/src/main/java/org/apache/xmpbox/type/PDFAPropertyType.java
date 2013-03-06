@@ -23,44 +23,49 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-@StructuredType(preferedPrefix="pdfaProperty",namespace="http://www.aiim.org/pdfa/ns/property#")
-public class PDFAPropertyType extends AbstractStructuredType {
+@StructuredType(preferedPrefix = "pdfaProperty", namespace = "http://www.aiim.org/pdfa/ns/property#")
+public class PDFAPropertyType extends AbstractStructuredType
+{
 
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String NAME = "name";
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String NAME = "name";
 
-	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
-	public static final String VALUETYPE = "valueType";
-	
-	@PropertyType(type = Types.Choice, card = Cardinality.Simple)
-	public static final String CATEGORY = "category";
-	
-	@PropertyType(type = Types.Text, card = Cardinality.Simple)
-	public static final String DESCRIPTION = "description";
+    @PropertyType(type = Types.Choice, card = Cardinality.Simple)
+    public static final String VALUETYPE = "valueType";
 
+    @PropertyType(type = Types.Choice, card = Cardinality.Simple)
+    public static final String CATEGORY = "category";
 
-	public PDFAPropertyType(XMPMetadata metadata) {
-		super(metadata);
-	}
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
+    public static final String DESCRIPTION = "description";
 
-	public String getName () {
-		TextType tt = (TextType) getProperty(NAME);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public PDFAPropertyType(XMPMetadata metadata)
+    {
+        super(metadata);
+    }
 
-	public String getValueType () {
-		ChoiceType tt = (ChoiceType) getProperty(VALUETYPE);
-		return tt == null ? null : tt.getStringValue();
-	}
-	
-	public String getDescription () {
-		TextType tt = (TextType) getProperty(DESCRIPTION);
-		return tt == null ? null : tt.getStringValue();
-	}
-	
-	public String getCategory () {
-		ChoiceType tt = (ChoiceType) getProperty(CATEGORY);
-		return tt == null ? null : tt.getStringValue();
-	}
+    public String getName()
+    {
+        TextType tt = (TextType) getProperty(NAME);
+        return tt == null ? null : tt.getStringValue();
+    }
+
+    public String getValueType()
+    {
+        ChoiceType tt = (ChoiceType) getProperty(VALUETYPE);
+        return tt == null ? null : tt.getStringValue();
+    }
+
+    public String getDescription()
+    {
+        TextType tt = (TextType) getProperty(DESCRIPTION);
+        return tt == null ? null : tt.getStringValue();
+    }
+
+    public String getCategory()
+    {
+        ChoiceType tt = (ChoiceType) getProperty(CATEGORY);
+        return tt == null ? null : tt.getStringValue();
+    }
 
 }

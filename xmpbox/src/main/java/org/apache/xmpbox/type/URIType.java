@@ -1,5 +1,5 @@
 /*****************************************************************************
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -23,11 +23,12 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-public class URIType extends TextType {
+public class URIType extends TextType
+{
 
-	public URIType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
-	}
+    public URIType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
 }

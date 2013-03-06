@@ -27,87 +27,100 @@ import java.util.Map;
 
 import org.apache.xmpbox.XMPMetadata;
 
-public abstract class AbstractComplexProperty extends AbstractField {
+public abstract class AbstractComplexProperty extends AbstractField
+{
 
-	private ComplexPropertyContainer container;
-	
-	private Map<String,String> namespaceToPrefix;
+    private ComplexPropertyContainer container;
 
-	
-	public AbstractComplexProperty(XMPMetadata metadata, String propertyName) {
-		super(metadata, propertyName);
-		container = new ComplexPropertyContainer();
-		this.namespaceToPrefix = new HashMap<String, String>();
-	}
+    private Map<String, String> namespaceToPrefix;
 
-	public void addNamespace (String namespace, String prefix) {
-		this.namespaceToPrefix.put(namespace, prefix);
-	}
-		
-	public String getNamespacePrefix (String namespace) {
-		return this.namespaceToPrefix.get(namespace);
-	}
-	
-	public Map<String, String> getAllNamespacesWithPrefix () {
-		return this.namespaceToPrefix;
-	}
-	
-	/**
-	 * Add a property to the current structure
-	 * 
-	 * @param obj the property to add
-	 */
-	public final void addProperty(AbstractField obj) {
-		container.addProperty(obj);
-	}
+    public AbstractComplexProperty(XMPMetadata metadata, String propertyName)
+    {
+        super(metadata, propertyName);
+        container = new ComplexPropertyContainer();
+        this.namespaceToPrefix = new HashMap<String, String>();
+    }
 
-	/**
-	 * Remove a property
-	 * 
-	 * @param property
-	 *            The property to remove
-	 */
-	public final void removeProperty(AbstractField property) {
-		container.removeProperty(property);
-	}
+    public void addNamespace(String namespace, String prefix)
+    {
+        this.namespaceToPrefix.put(namespace, prefix);
+    }
 
-//	/**
-//	 * Return the container of this Array
-//	 * 
-//	 * @return The complex property container that represents content of this
-//	 *         property
-//	 */
-	public final ComplexPropertyContainer getContainer() {
-		return container;
-	}
-	
-	public final List<AbstractField> getAllProperties() {
-		return container.getAllProperties();
-	}
+    public String getNamespacePrefix(String namespace)
+    {
+        return this.namespaceToPrefix.get(namespace);
+    }
 
-	public final AbstractField getProperty (String fieldName) {
-		List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
-		// return null if no property
-		if (list==null) {
-			return null;
-		}
-		// return the first element of the list
-		return list.get(0);
-	}
+    public Map<String, String> getAllNamespacesWithPrefix()
+    {
+        return this.namespaceToPrefix;
+    }
 
-	public final ArrayProperty getArrayProperty (String fieldName) {
-		List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
-		// return null if no property
-		if (list==null) {
-			return null;
-		}
-		// return the first element of the list
-		return (ArrayProperty)list.get(0);
-	}
+    /**
+     * Add a property to the current structure
+     * 
+     * @param obj
+     *            the property to add
+     */
+    public final void addProperty(AbstractField obj)
+    {
+        container.addProperty(obj);
+    }
 
-	protected final AbstractField getFirstEquivalentProperty(String localName,
-			Class<? extends AbstractField> type) {
-		return container.getFirstEquivalentProperty(localName, type);
-	}
+    /**
+     * Remove a property
+     * 
+     * @param property
+     *            The property to remove
+     */
+    public final void removeProperty(AbstractField property)
+    {
+        container.removeProperty(property);
+    }
+
+    // /**
+    // * Return the container of this Array
+    // *
+    // * @return The complex property container that represents content of this
+    // * property
+    // */
+    public final ComplexPropertyContainer getContainer()
+    {
+        return container;
+    }
+
+    public final List<AbstractField> getAllProperties()
+    {
+        return container.getAllProperties();
+    }
+
+    public final AbstractField getProperty(String fieldName)
+    {
+        List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
+        // return null if no property
+        if (list == null)
+        {
+            return null;
+        }
+        // return the first element of the list
+        return list.get(0);
+    }
+
+    public final ArrayProperty getArrayProperty(String fieldName)
+    {
+        List<AbstractField> list = container.getPropertiesByLocalName(fieldName);
+        // return null if no property
+        if (list == null)
+        {
+            return null;
+        }
+        // return the first element of the list
+        return (ArrayProperty) list.get(0);
+    }
+
+    protected final AbstractField getFirstEquivalentProperty(String localName, Class<? extends AbstractField> type)
+    {
+        return container.getFirstEquivalentProperty(localName, type);
+    }
 
 }

@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -28,7 +28,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.XMPBasicJobTicketSchema;
 import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
@@ -37,113 +36,121 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class BasicJobTicketSchemaTest {
+public class BasicJobTicketSchemaTest
+{
 
-	protected static DomXmpParser builder;
+    protected static DomXmpParser builder;
 
-	protected XMPMetadata metadata;
-	
-	protected XmpSerializer serializer;
+    protected XMPMetadata metadata;
 
-	
-	@BeforeClass
-	public static void bc () throws Exception {
-		builder = new DomXmpParser();
-	}
-	
-	@Before
-	public void initTempMetaData() throws Exception {
-		metadata = XMPMetadata.createXMPMetadata();
-		serializer = new XmpSerializer();
-	}
+    protected XmpSerializer serializer;
 
-	private InputStream transfer(ByteArrayOutputStream out) {
-		IOUtils.closeQuietly(out);
-		ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
-		return bis;
-	}
-	
-	@Test
-	public void testAddTwoJobs() throws Exception {
-		
-		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+    @BeforeClass
+    public static void bc() throws Exception
+    {
+        builder = new DomXmpParser();
+    }
 
-		basic.addJob("zeid1", "zename1", "zeurl1","aaa"); 
-		basic.addJob("zeid2", "zename2", "zeurl2");
-		
-//		serializer.serialize(metadata, System.out, true);
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		serializer.serialize(metadata, bos, true);
-		InputStream is = transfer(bos);
-		XMPMetadata rxmp = builder.parse(is);
+    @Before
+    public void initTempMetaData() throws Exception
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        serializer = new XmpSerializer();
+    }
 
-		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-		Assert.assertNotNull(jt);
-		Assert.assertEquals(2, jt.getJobs().size());
-		
-	}
+    private InputStream transfer(ByteArrayOutputStream out)
+    {
+        IOUtils.closeQuietly(out);
+        ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
+        return bis;
+    }
 
-	@Test
-	public void testAddWithDefaultPrefix() throws Exception {
-		
-		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+    @Test
+    public void testAddTwoJobs() throws Exception
+    {
 
-		basic.addJob("zeid2", "zename2", "zeurl2");
-	
-//		serializer.serialize(metadata, System.out, true);
+        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		
-		serializer.serialize(metadata, bos, true);
-		InputStream is = transfer(bos);
-		XMPMetadata rxmp = builder.parse(is);
+        basic.addJob("zeid1", "zename1", "zeurl1", "aaa");
+        basic.addJob("zeid2", "zename2", "zeurl2");
 
-		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-		Assert.assertNotNull(jt);
-		Assert.assertEquals(1, jt.getJobs().size());
-		StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
-		
-		JobType job = jt.getJobs().get(0);
-		Assert.assertEquals("zeid2", job.getId());
-		Assert.assertEquals("zename2", job.getName());
-		Assert.assertEquals("zeurl2", job.getUrl());
-//		Assert.assertEquals("Invalid namespace",stjob.namespace(), job.getNamespace());
-//		Assert.assertEquals(stjob.preferedPrefix(), job.getPrefix());
-	
-	}
+        // serializer.serialize(metadata, System.out, true);
 
-	@Test
-	public void testAddWithDefinedPrefix() throws Exception {
-		
-		XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        serializer.serialize(metadata, bos, true);
+        InputStream is = transfer(bos);
+        XMPMetadata rxmp = builder.parse(is);
 
-		basic.addJob("zeid2", "zename2", "zeurl2","aaa");
-		
-//		SaveMetadataHelper.serialize(metadata, System.out);
-		
-//		serializer.serialize(metadata, System.out, true);
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		serializer.serialize(metadata, bos, true);
-		InputStream is = transfer(bos);
-		XMPMetadata rxmp = builder.parse(is);
+        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        Assert.assertNotNull(jt);
+        Assert.assertEquals(2, jt.getJobs().size());
 
-		XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-		Assert.assertNotNull(jt);
-		Assert.assertEquals(1, jt.getJobs().size());
-		
-		JobType job = jt.getJobs().get(0);
-//		SaveMetadataHelper.serialize(rxmp, System.out);
+    }
 
-//		StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
+    @Test
+    public void testAddWithDefaultPrefix() throws Exception
+    {
 
-		Assert.assertEquals("zeid2", job.getId());
-		Assert.assertEquals("zename2", job.getName());
-		Assert.assertEquals("zeurl2", job.getUrl());
-//		Assert.assertEquals(stjob.namespace(), job.getNamespace());
-//		Assert.assertEquals("aaa", job.getPrefix());
-	
-	}
+        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+
+        basic.addJob("zeid2", "zename2", "zeurl2");
+
+        // serializer.serialize(metadata, System.out, true);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        serializer.serialize(metadata, bos, true);
+        InputStream is = transfer(bos);
+        XMPMetadata rxmp = builder.parse(is);
+
+        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        Assert.assertNotNull(jt);
+        Assert.assertEquals(1, jt.getJobs().size());
+        StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
+
+        JobType job = jt.getJobs().get(0);
+        Assert.assertEquals("zeid2", job.getId());
+        Assert.assertEquals("zename2", job.getName());
+        Assert.assertEquals("zeurl2", job.getUrl());
+        // Assert.assertEquals("Invalid namespace",stjob.namespace(),
+        // job.getNamespace());
+        // Assert.assertEquals(stjob.preferedPrefix(), job.getPrefix());
+
+    }
+
+    @Test
+    public void testAddWithDefinedPrefix() throws Exception
+    {
+
+        XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
+
+        basic.addJob("zeid2", "zename2", "zeurl2", "aaa");
+
+        // SaveMetadataHelper.serialize(metadata, System.out);
+
+        // serializer.serialize(metadata, System.out, true);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        serializer.serialize(metadata, bos, true);
+        InputStream is = transfer(bos);
+        XMPMetadata rxmp = builder.parse(is);
+
+        XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
+        Assert.assertNotNull(jt);
+        Assert.assertEquals(1, jt.getJobs().size());
+
+        JobType job = jt.getJobs().get(0);
+        // SaveMetadataHelper.serialize(rxmp, System.out);
+
+        // StructuredType stjob =
+        // JobType.class.getAnnotation(StructuredType.class);
+
+        Assert.assertEquals("zeid2", job.getId());
+        Assert.assertEquals("zename2", job.getName());
+        Assert.assertEquals("zeurl2", job.getUrl());
+        // Assert.assertEquals(stjob.namespace(), job.getNamespace());
+        // Assert.assertEquals("aaa", job.getPrefix());
+
+    }
 
 }

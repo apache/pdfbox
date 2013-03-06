@@ -23,11 +23,12 @@ package org.apache.xmpbox.type;
 
 import org.apache.xmpbox.XMPMetadata;
 
-public class ChoiceType extends TextType {
+public class ChoiceType extends TextType
+{
 
-	public ChoiceType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
-	}
+    public ChoiceType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
 }

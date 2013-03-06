@@ -21,37 +21,38 @@
 
 package org.apache.xmpbox;
 
-import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.junit.Test;
 
-public class SaveMetadataHelperTest {
+public class SaveMetadataHelperTest
+{
 
-	@Test
-	public void testSchemaParsing() throws Exception {
-		DublinCoreSchema dc = new DublinCoreSchema(XMPMetadata.createXMPMetadata());
-		dc.setCoverage("coverage");
-		dc.addContributor("contributor1");
-		dc.addContributor("contributor2");
-		dc.addDescription("x-default", "Description");
-	}
+    @Test
+    public void testSchemaParsing() throws Exception
+    {
+        DublinCoreSchema dc = new DublinCoreSchema(XMPMetadata.createXMPMetadata());
+        dc.setCoverage("coverage");
+        dc.addContributor("contributor1");
+        dc.addContributor("contributor2");
+        dc.addDescription("x-default", "Description");
+    }
 
-	@Test
-	public void testMetadataParsing() throws Exception {
-		XMPMetadata meta = XMPMetadata.createXMPMetadata();
+    @Test
+    public void testMetadataParsing() throws Exception
+    {
+        XMPMetadata meta = XMPMetadata.createXMPMetadata();
 
-		DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
-		dc.setCoverage("coverage");
-		dc.addContributor("contributor1");
-		dc.addContributor("contributor2");
-		dc.addDescription("x-default", "Description");
+        DublinCoreSchema dc = meta.createAndAddDublinCoreSchema();
+        dc.setCoverage("coverage");
+        dc.addContributor("contributor1");
+        dc.addContributor("contributor2");
+        dc.addDescription("x-default", "Description");
 
-		AdobePDFSchema pdf = meta.createAndAddAdobePDFSchema();
-		pdf.setProducer("Producer");
-		pdf.setPDFVersion("1.4");
+        AdobePDFSchema pdf = meta.createAndAddAdobePDFSchema();
+        pdf.setProducer("Producer");
+        pdf.setPDFVersion("1.4");
 
-
-	}
+    }
 
 }

@@ -27,93 +27,102 @@ package org.apache.xmpbox.type;
  * @author a183132
  * 
  */
-public class Attribute {
+public class Attribute
+{
 
-	private String nsURI;
+    private String nsURI;
 
-	private String name;
+    private String name;
 
-	private String value;
+    private String value;
 
-	/**
-	 * Constructor of a new Attribute
-	 * 
-	 * @param nsURI
-	 *            namespaceURI of this attribute (could be null)
-	 * @param prefix
-	 *            prefix of this attribute
-	 * @param localName
-	 *            localName of this attribute
-	 * @param value
-	 *            value given to this attribute
-	 */
-	public Attribute(String nsURI, String localName, String value) {
-		this.nsURI = nsURI;
-		this.name = localName;
-		this.value = value;
-	}
+    /**
+     * Constructor of a new Attribute
+     * 
+     * @param nsURI
+     *            namespaceURI of this attribute (could be null)
+     * @param prefix
+     *            prefix of this attribute
+     * @param localName
+     *            localName of this attribute
+     * @param value
+     *            value given to this attribute
+     */
+    public Attribute(String nsURI, String localName, String value)
+    {
+        this.nsURI = nsURI;
+        this.name = localName;
+        this.value = value;
+    }
 
-	/**
-	 * Get the localName of this attribute
-	 * 
-	 * @return local name of this attribute
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Get the localName of this attribute
+     * 
+     * @return local name of this attribute
+     */
+    public String getName()
+    {
+        return name;
+    }
 
-	/**
-	 * Set the localName of this attribute
-	 * 
-	 * @param lname
-	 *            the local name to set
-	 */
-	public void setName(String lname) {
-		name = lname;
-	}
+    /**
+     * Set the localName of this attribute
+     * 
+     * @param lname
+     *            the local name to set
+     */
+    public void setName(String lname)
+    {
+        name = lname;
+    }
 
-	/**
-	 * Get the namespace URI of this attribute
-	 * 
-	 * @return the namespace URI associated to this attribute (could be null)
-	 */
-	public String getNamespace() {
-		return nsURI;
-	}
+    /**
+     * Get the namespace URI of this attribute
+     * 
+     * @return the namespace URI associated to this attribute (could be null)
+     */
+    public String getNamespace()
+    {
+        return nsURI;
+    }
 
-	/**
-	 * Set the namespace URI of this attribute
-	 * 
-	 * @param nsURI
-	 *            the namespace URI to set
-	 */
-	public void setNsURI(String nsURI) {
-		this.nsURI = nsURI;
-	}
+    /**
+     * Set the namespace URI of this attribute
+     * 
+     * @param nsURI
+     *            the namespace URI to set
+     */
+    public void setNsURI(String nsURI)
+    {
+        this.nsURI = nsURI;
+    }
 
-	/**
-	 * Get value of this attribute
-	 * 
-	 * @return value of this attribute
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * Get value of this attribute
+     * 
+     * @return value of this attribute
+     */
+    public String getValue()
+    {
+        return value;
+    }
 
-	/**
-	 * Set value of this attribute
-	 * 
-	 * @param value
-	 *            the value to set for this attribute
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * Set value of this attribute
+     * 
+     * @param value
+     *            the value to set for this attribute
+     */
+    public void setValue(String value)
+    {
+        this.value = value;
+    }
 
-	public String toString () {
-		StringBuilder sb = new StringBuilder(80);
-		sb.append("[attr:{").append(nsURI).append("}").append(name).append("=").append(value).append("]");
-		return sb.toString();
-	}
-	
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder(80);
+        sb.append("[attr:{").append(nsURI).append("}").append(name).append("=").append(value).append("]");
+        return sb.toString();
+    }
+
 }

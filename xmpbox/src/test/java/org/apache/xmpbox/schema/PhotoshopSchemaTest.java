@@ -1,4 +1,4 @@
- /*****************************************************************************
+/*****************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -23,7 +23,6 @@ package org.apache.xmpbox.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.xmpbox.schema.PhotoshopSchema;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
 import org.junit.Before;
@@ -32,49 +31,53 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class PhotoshopSchemaTest extends AbstractSchemaTester {
+public class PhotoshopSchemaTest extends AbstractSchemaTester
+{
 
-	protected PhotoshopSchema schema = null;
-	
-	public PhotoshopSchema getSchema () {
-		return schema;
-	}
-	
-	@Before
-	public void before() throws Exception {
-		super.before();
-		schema = xmp.createAndAddPhotoshopSchema();
-	}
+    protected PhotoshopSchema schema = null;
 
-	public PhotoshopSchemaTest(String fieldName, Types type, Cardinality card) {
-		super(fieldName, type, card);
-	}
+    public PhotoshopSchema getSchema()
+    {
+        return schema;
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception {
-    	Collection<Object[]> result = new ArrayList<Object[]>();
+    @Before
+    public void before() throws Exception
+    {
+        super.before();
+        schema = xmp.createAndAddPhotoshopSchema();
+    }
 
-    	result.add(new Object [] {"AncestorID",Types.URI,Cardinality.Simple});
-    	result.add(new Object [] {"AuthorsPosition",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"CaptionWriter",Types.ProperName,Cardinality.Simple});
-    	result.add(new Object [] {"Category",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"City",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"ColorMode",Types.Integer,Cardinality.Simple});
-    	result.add(new Object [] {"Country",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"Credit",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"DateCreated",Types.Date,Cardinality.Simple});
-    	result.add(new Object [] {"Headline",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"History",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"ICCProfile",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"Instructions",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"Source",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"State",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"SupplementalCategories",Types.Text,Cardinality.Bag});
-    	result.add(new Object [] {"TransmissionReference",Types.Text,Cardinality.Simple});
-    	result.add(new Object [] {"Urgency",Types.Integer,Cardinality.Simple});
+    public PhotoshopSchemaTest(String fieldName, Types type, Cardinality card)
+    {
+        super(fieldName, type, card);
+    }
 
-    	return result;
-	}
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        Collection<Object[]> result = new ArrayList<Object[]>();
 
+        result.add(new Object[] { "AncestorID", Types.URI, Cardinality.Simple });
+        result.add(new Object[] { "AuthorsPosition", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "CaptionWriter", Types.ProperName, Cardinality.Simple });
+        result.add(new Object[] { "Category", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "City", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "ColorMode", Types.Integer, Cardinality.Simple });
+        result.add(new Object[] { "Country", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "Credit", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "DateCreated", Types.Date, Cardinality.Simple });
+        result.add(new Object[] { "Headline", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "History", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "ICCProfile", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "Instructions", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "Source", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "State", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "SupplementalCategories", Types.Text, Cardinality.Bag });
+        result.add(new Object[] { "TransmissionReference", Types.Text, Cardinality.Simple });
+        result.add(new Object[] { "Urgency", Types.Integer, Cardinality.Simple });
+
+        return result;
+    }
 
 }

@@ -29,76 +29,86 @@ import org.apache.xmpbox.XMPMetadata;
  * @author a183132
  * 
  */
-public class BooleanType extends AbstractSimpleProperty {
+public class BooleanType extends AbstractSimpleProperty
+{
 
-	public static final String TRUE = "True";
+    public static final String TRUE = "True";
 
-	public static final String FALSE = "False";
+    public static final String FALSE = "False";
 
-	private boolean booleanValue;
-	
-	/**
-	 * Property Boolean type constructor (namespaceURI is given)
-	 * 
-	 * @param metadata
-	 *            The metadata to attach to this property
-	 * @param namespaceURI
-	 *            the namespace URI to associate to this property
-	 * @param prefix
-	 *            The prefix to set for this property
-	 * @param propertyName
-	 *            The local Name of this property
-	 * @param value
-	 *            the value to give
-	 */
-	public BooleanType(XMPMetadata metadata, String namespaceURI,
-			String prefix, String propertyName, Object value) {
-		super(metadata, namespaceURI, prefix, propertyName, value);
-	}
+    private boolean booleanValue;
 
-	/**
-	 * return the property value
-	 * 
-	 * @return boolean the property value
-	 */
-	public Boolean getValue() {
-		return booleanValue;
-	}
+    /**
+     * Property Boolean type constructor (namespaceURI is given)
+     * 
+     * @param metadata
+     *            The metadata to attach to this property
+     * @param namespaceURI
+     *            the namespace URI to associate to this property
+     * @param prefix
+     *            The prefix to set for this property
+     * @param propertyName
+     *            The local Name of this property
+     * @param value
+     *            the value to give
+     */
+    public BooleanType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
-	/**
-	 * Set value of this property BooleanTypeObject accept String value or a
-	 * boolean
-	 * 
-	 * @param value
-	 *            The value to set
-	 * 
-	 */
-	public void setValue(Object value) {
-		if (value instanceof Boolean) {
-			booleanValue = ((Boolean)value).booleanValue();
-		} else if (value instanceof String) {
-			// NumberFormatException is thrown (sub of InvalidArgumentException)
-			String s = value.toString().trim().toUpperCase();
-			if ("TRUE".equals(s)) {
-				booleanValue = true;
-			} else if ("FALSE".equals(s)) {
-				booleanValue = false;
-			} else {
-				// unknown value
-				throw new IllegalArgumentException("Not a valid boolean value : '"+value+"'");
-			}
-		} else {
-			// invalid type of value
-			throw new IllegalArgumentException("Value given is not allowed for the Boolean type.");
-		}
-	}
+    /**
+     * return the property value
+     * 
+     * @return boolean the property value
+     */
+    public Boolean getValue()
+    {
+        return booleanValue;
+    }
 
+    /**
+     * Set value of this property BooleanTypeObject accept String value or a boolean
+     * 
+     * @param value
+     *            The value to set
+     * 
+     */
+    public void setValue(Object value)
+    {
+        if (value instanceof Boolean)
+        {
+            booleanValue = ((Boolean) value).booleanValue();
+        }
+        else if (value instanceof String)
+        {
+            // NumberFormatException is thrown (sub of InvalidArgumentException)
+            String s = value.toString().trim().toUpperCase();
+            if ("TRUE".equals(s))
+            {
+                booleanValue = true;
+            }
+            else if ("FALSE".equals(s))
+            {
+                booleanValue = false;
+            }
+            else
+            {
+                // unknown value
+                throw new IllegalArgumentException("Not a valid boolean value : '" + value + "'");
+            }
+        }
+        else
+        {
+            // invalid type of value
+            throw new IllegalArgumentException("Value given is not allowed for the Boolean type.");
+        }
+    }
 
-	@Override
-	public String getStringValue() {
-		return booleanValue?TRUE:FALSE;
-	}
-
-
+    @Override
+    public String getStringValue()
+    {
+        return booleanValue ? TRUE : FALSE;
+    }
 
 }

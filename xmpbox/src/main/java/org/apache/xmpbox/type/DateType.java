@@ -27,18 +27,17 @@ import java.util.Calendar;
 import org.apache.xmpbox.DateConverter;
 import org.apache.xmpbox.XMPMetadata;
 
-
 /**
  * Object representation of a Date XMP type
  * 
  * @author a183132
  * 
  */
-public class DateType extends AbstractSimpleProperty {
+public class DateType extends AbstractSimpleProperty
+{
 
-	private Calendar dateValue;
-	
-	
+    private Calendar dateValue;
+
     /**
      * Property Date type constructor (namespaceURI is given)
      * 
@@ -53,8 +52,8 @@ public class DateType extends AbstractSimpleProperty {
      * @param value
      *            The value to set for this property
      */
-    public DateType(XMPMetadata metadata, String namespaceURI, String prefix,
-            String propertyName, Object value) {
+    public DateType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
         super(metadata, namespaceURI, prefix, propertyName, value);
     }
 
@@ -65,7 +64,8 @@ public class DateType extends AbstractSimpleProperty {
      *            the new Calendar element value
      * @throws InappropriateTypeException
      */
-    private void setValueFromCalendar(Calendar value) {
+    private void setValueFromCalendar(Calendar value)
+    {
         dateValue = value;
     }
 
@@ -74,7 +74,8 @@ public class DateType extends AbstractSimpleProperty {
      * 
      * @return boolean
      */
-    public Calendar getValue() {
+    public Calendar getValue()
+    {
         return dateValue;
     }
 
@@ -85,14 +86,21 @@ public class DateType extends AbstractSimpleProperty {
      *            Object value to check
      * @return True if types are compatibles
      */
-    private boolean isGoodType(Object value) {
-        if (value instanceof Calendar) {
+    private boolean isGoodType(Object value)
+    {
+        if (value instanceof Calendar)
+        {
             return true;
-        } else if (value instanceof String) {
-            try {
+        }
+        else if (value instanceof String)
+        {
+            try
+            {
                 DateConverter.toCalendar((String) value);
                 return true;
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 return false;
             }
         }
@@ -105,15 +113,21 @@ public class DateType extends AbstractSimpleProperty {
      * @param value
      *            The value to set
      */
-    public void setValue(Object value) {
-        if (!isGoodType(value)) {
-            throw new IllegalArgumentException(
-            "Value given is not allowed for the Date type : "+value.getClass());
-        } else {
+    public void setValue(Object value)
+    {
+        if (!isGoodType(value))
+        {
+            throw new IllegalArgumentException("Value given is not allowed for the Date type : " + value.getClass());
+        }
+        else
+        {
             // if string object
-            if (value instanceof String) {
+            if (value instanceof String)
+            {
                 setValueFromString((String) value);
-            } else {
+            }
+            else
+            {
                 // if Calendar
                 setValueFromCalendar((Calendar) value);
             }
@@ -122,22 +136,25 @@ public class DateType extends AbstractSimpleProperty {
 
     }
 
-    public String getStringValue() {
-		return DateConverter.toISO8601(dateValue);
-	} 
+    public String getStringValue()
+    {
+        return DateConverter.toISO8601(dateValue);
+    }
 
-	
-    
     /**
      * Set the property value with a String
      * 
      * @param value
      *            The String value
      */
-    private void setValueFromString(String value) {
-        try {
+    private void setValueFromString(String value)
+    {
+        try
+        {
             setValueFromCalendar(DateConverter.toCalendar((String) value));
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             // SHOULD NEVER HAPPEN
             // STRING HAS BEEN CHECKED BEFORE
             throw new IllegalArgumentException(e);
