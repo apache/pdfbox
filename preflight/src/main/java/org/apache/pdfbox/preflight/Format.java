@@ -21,18 +21,20 @@
 
 package org.apache.pdfbox.preflight;
 
-public enum Format {
-	PDF_A1B("PDF/A1-b"),
-	PDF_A1A("PDF/A1-a");
-	
-	private final String fname;
-	
-	private Format(String name) {
-		this.fname = name;
-	}
+public enum Format
+{
+    PDF_A1B("PDF/A1-b"), PDF_A1A("PDF/A1-a");
 
-	public String getFname() {
-		return fname;
-	}
-	
+    private final String fname;
+
+    private Format(String name)
+    {
+        this.fname = name;
+    }
+
+    public String getFname()
+    {
+        return fname;
+    }
+
 }

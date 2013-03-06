@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
-
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
@@ -60,146 +59,178 @@ import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class SinglePageValidationProcess extends AbstractProcess {
+public class SinglePageValidationProcess extends AbstractProcess
+{
 
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class))
+        {
+            throw new ValidationException("Page validation required at least a PDPage");
+        }
 
-	public void validate(PreflightContext context) throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class)) {
-			throw new ValidationException("Page validation required at least a PDPage");
-		}
+        PDPage page = (PDPage) vPath.peek();
+        validateActions(context, page);
+        validateAnnotation(context, page);
+        validateColorSpaces(context, page);
+        validateResources(context, page);
+        validateGraphicObjects(context, page);
+        validateGroupTransparency(context, page);
+        // TODO
+        // add MetaData validation ?
 
-		PDPage page = (PDPage)vPath.peek();
-		validateActions(context, page);
-		validateAnnotation(context, page);
-		validateColorSpaces(context, page);
-		validateResources(context, page);
-		validateGraphicObjects(context, page);
-		validateGroupTransparency(context, page);
-		// TODO
-		// add MetaData validation ?
+        validateContent(context, page);
+    }
 
-		validateContent(context, page);
-	}
+    /**
+     * This method checks additional actions contained in the given Page object.
+     * 
+     * @param context
+     * @param page
+     * @return
+     * @throws ValidationException
+     */
+    protected void validateActions(PreflightContext context, PDPage page) throws ValidationException
+    {
+        ContextHelper.validateElement(context, page.getCOSDictionary(), ACTIONS_PROCESS);
+    }
 
-	/**
-	 * This method checks additional actions contained in the given Page object.
-	 * 
-	 * @param context
-	 * @param page
-	 * @return
-	 * @throws ValidationException
-	 */
-	protected void validateActions(PreflightContext context, PDPage page) throws ValidationException {
-		ContextHelper.validateElement(context, page.getCOSDictionary(), ACTIONS_PROCESS);
-	}
+    /**
+     * Check that all ColorSpace present in the Resource dictionary are conforming to the ISO 19005:2005-1
+     * specification.
+     * 
+     * @param context
+     * @param page
+     */
+    protected void validateColorSpaces(PreflightContext context, PDPage page) throws ValidationException
+    {
+        PDResources resources = page.getResources();
+        if (resources != null)
+        {
+            Map<String, PDColorSpace> colorSpaces = resources.getColorSpaces();
+            if (colorSpaces != null)
+            {
+                PreflightConfiguration config = context.getConfig();
+                ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
+                for (PDColorSpace pdCS : colorSpaces.values())
+                {
+                    ColorSpaceHelper csHelper = colorSpaceFactory.getColorSpaceHelper(context, pdCS,
+                            ColorSpaceRestriction.NO_RESTRICTION);
+                    csHelper.validate();
+                }
+            }
+        }
+    }
 
+    /**
+     * Check that all XObject references in the PDResource of the page and in the Thumb entry are confirming to the
+     * PDF/A specification.
+     * 
+     * @param context
+     * @param page
+     * @throws ValidationException
+     */
+    protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException
+    {
+        COSBase thumbBase = page.getCOSDictionary().getItem(PAGE_DICTIONARY_VALUE_THUMB);
+        if (thumbBase != null)
+        {
+            try
+            {
+                if (thumbBase instanceof COSObject)
+                {
+                    thumbBase = ((COSObject) thumbBase).getObject();
+                }
+                PDXObject thumbImg = PDXObjectImage.createXObject(thumbBase);
+                ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
+            }
+            catch (IOException e)
+            {
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID, "Unable to read Thumb image : "
+                        + e.getMessage()));
+            }
+        }
+    }
 
-	/**
-	 * Check that all ColorSpace present in the Resource dictionary are conforming to the ISO 19005:2005-1 specification.
-	 * @param context
-	 * @param page
-	 */
-	protected void validateColorSpaces(PreflightContext context, PDPage page)
-			throws ValidationException {
-		PDResources resources = page.getResources();
-		if (resources != null) {
-			Map<String, PDColorSpace> colorSpaces = resources.getColorSpaces();
-			if (colorSpaces != null) {
-				PreflightConfiguration config = context.getConfig();
-				ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
-				for (PDColorSpace pdCS : colorSpaces.values()) {
-					ColorSpaceHelper csHelper = colorSpaceFactory.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);
-					csHelper.validate();
-				}
-			}
-		}
-	}
+    protected void validateResources(PreflightContext context, PDPage page) throws ValidationException
+    {
+        ContextHelper.validateElement(context, page.getResources(), RESOURCES_PROCESS);
+    }
 
-	/**
-	 * Check that all XObject references in the PDResource of the page and in the Thumb entry are confirming to 
-	 * the PDF/A specification.
-	 * @param context
-	 * @param page
-	 * @throws ValidationException
-	 */
-	protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException {
-		COSBase thumbBase = page.getCOSDictionary().getItem(PAGE_DICTIONARY_VALUE_THUMB);
-		if (thumbBase != null) {
-			try {
-				if (thumbBase instanceof COSObject) {
-					thumbBase = ((COSObject)thumbBase).getObject();
-				}
-				PDXObject thumbImg = PDXObjectImage.createXObject(thumbBase);
-				ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
-			} catch (IOException e) {
-				context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID, "Unable to read Thumb image : " + e.getMessage()));
-			}
-		}
-	}
+    /**
+     * 
+     * @param page
+     * @param context
+     * @return
+     * @throws ValidationException
+     */
+    protected void validateContent(PreflightContext context, PDPage page) throws ValidationException
+    {
+        // TODO add this wrapper in the config object ?
+        try
+        {
+            ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
+            csWrapper.validPageContentStream();
+        }
+        catch (IOException e)
+        {
+            context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage()));
+        }
+    }
 
-	protected void validateResources(PreflightContext context, PDPage page) throws ValidationException {
-		ContextHelper.validateElement(context, page.getResources(), RESOURCES_PROCESS);
-	}
+    /**
+     * 
+     * @param page
+     * @return
+     * @throws ValidationException
+     */
+    protected void validateAnnotation(PreflightContext context, PDPage page) throws ValidationException
+    {
+        try
+        {
+            List<?> lAnnots = page.getAnnotations();
+            for (Object object : lAnnots)
+            {
+                if (object instanceof PDAnnotation)
+                {
+                    COSDictionary cosAnnot = ((PDAnnotation) object).getDictionary();
+                    ContextHelper.validateElement(context, cosAnnot, ANNOTATIONS_PROCESS);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            if (e instanceof ValidationException)
+            {
+                throw (ValidationException) e;
+            }
+            // TODO IOException probably due to Encrypt
+            throw new ValidationException("Unable to access Annotation", e);
+        }
+    }
 
-	/**
-	 * 
-	 * @param page
-	 * @param context
-	 * @return
-	 * @throws ValidationException
-	 */
-	protected void validateContent(PreflightContext context, PDPage page) throws ValidationException {
-		// TODO add this wrapper in the config object ?
-		try {
-			ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
-			csWrapper.validPageContentStream();
-		} catch (IOException e) {
-			context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage()));
-		}
-	}
-
-	/**
-	 * 
-	 * @param page
-	 * @return
-	 * @throws ValidationException
-	 */
-	protected void validateAnnotation(PreflightContext context, PDPage page) throws ValidationException {
-		try {
-			List<?> lAnnots = page.getAnnotations();
-			for (Object object : lAnnots) {
-				if (object instanceof PDAnnotation) {
-					COSDictionary cosAnnot = ((PDAnnotation) object).getDictionary();
-					ContextHelper.validateElement(context, cosAnnot, ANNOTATIONS_PROCESS);
-				}
-			}
-		} catch (IOException e) {
-			if (e instanceof ValidationException) {
-				throw (ValidationException)e;
-			}
-			// TODO IOException probably due to Encrypt
-			throw new ValidationException("Unable to access Annotation", e);
-		}
-	}
-	
-	/**
-	 * Check that the group dictionary doesn't have a Transparency attribute
-	 * 
-	 * @param context
-	 * @param page
-	 * @throws ValidationException
-	 */
-	protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException {
-		COSBase baseGroup = page.getCOSDictionary().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
-		COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, context.getDocument().getDocument());
-		if (groupDictionary != null) {
-			String sVal = groupDictionary.getNameAsString(COSName.S);
-			if (XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal)) {
-				context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP , "Group has a transparency S entry or the S entry is null."));
-				return;
-			}
-		}
-	}
+    /**
+     * Check that the group dictionary doesn't have a Transparency attribute
+     * 
+     * @param context
+     * @param page
+     * @throws ValidationException
+     */
+    protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException
+    {
+        COSBase baseGroup = page.getCOSDictionary().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
+        COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, context.getDocument().getDocument());
+        if (groupDictionary != null)
+        {
+            String sVal = groupDictionary.getNameAsString(COSName.S);
+            if (XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+            {
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
+                        "Group has a transparency S entry or the S entry is null."));
+                return;
+            }
+        }
+    }
 
 }

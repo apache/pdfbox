@@ -29,14 +29,16 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-public class XRefValidationProcess extends AbstractProcess {
-	
+public class XRefValidationProcess extends AbstractProcess
+{
 
-	public void validate(PreflightContext ctx) throws ValidationException {
-		COSDocument document = ctx.getDocument().getDocument();
-		if ( document.getObjects().size() > PreflightConstants.MAX_INDIRECT_OBJ ) {
-			addValidationError(ctx, new ValidationError(ERROR_SYNTAX_INDIRECT_OBJ_RANGE, "Too many indirect objects"));
-		}
-	}
+    public void validate(PreflightContext ctx) throws ValidationException
+    {
+        COSDocument document = ctx.getDocument().getDocument();
+        if (document.getObjects().size() > PreflightConstants.MAX_INDIRECT_OBJ)
+        {
+            addValidationError(ctx, new ValidationError(ERROR_SYNTAX_INDIRECT_OBJ_RANGE, "Too many indirect objects"));
+        }
+    }
 
 }

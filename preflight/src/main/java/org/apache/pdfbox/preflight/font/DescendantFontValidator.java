@@ -40,102 +40,124 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
-public abstract class DescendantFontValidator <T extends FontContainer> extends SimpleFontValidator<T> {
+public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
+{
 
-	protected COSDocument cosDocument = null;
-	
-	public DescendantFontValidator(PreflightContext context, PDFont font,	T fContainer) {
-		super(context, font, fContainer);
-		cosDocument = context.getDocument().getDocument();
-	}
+    protected COSDocument cosDocument = null;
 
-	@Override
-	protected void checkMandatoryField() {
-		COSDictionary fontDictionary = (COSDictionary)font.getCOSObject();
+    public DescendantFontValidator(PreflightContext context, PDFont font, T fContainer)
+    {
+        super(context, font, fContainer);
+        cosDocument = context.getDocument().getDocument();
+    }
 
-		boolean arePresent =fontDictionary.containsKey(COSName.TYPE);
-		arePresent &= fontDictionary.containsKey(COSName.SUBTYPE);
-		arePresent &= fontDictionary.containsKey(COSName.BASE_FONT);
-		arePresent &= fontDictionary.containsKey(COSName.CIDSYSTEMINFO);
-		arePresent &= fontDictionary.containsKey(COSName.FONT_DESC);
+    @Override
+    protected void checkMandatoryField()
+    {
+        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
 
-		if (!arePresent) {
-			this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,	"Required keys are missing"));
-		}
+        boolean arePresent = fontDictionary.containsKey(COSName.TYPE);
+        arePresent &= fontDictionary.containsKey(COSName.SUBTYPE);
+        arePresent &= fontDictionary.containsKey(COSName.BASE_FONT);
+        arePresent &= fontDictionary.containsKey(COSName.CIDSYSTEMINFO);
+        arePresent &= fontDictionary.containsKey(COSName.FONT_DESC);
 
-		checkCIDSystemInfo(fontDictionary.getItem(COSName.CIDSYSTEMINFO));
-		checkCIDToGIDMap(fontDictionary.getItem(COSName.CID_TO_GID_MAP));
-	}
+        if (!arePresent)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, "Required keys are missing"));
+        }
 
-	/**
-	 * Check the content of the CIDSystemInfo dictionary. A CIDSystemInfo dictionary must contain :
-	 * <UL>
-	 * <li>a Name - Registry
-	 * <li>a Name - Ordering
-	 * <li>a Integer - Supplement
-	 * </UL>
-	 * 
-	 * @param sysinfo
-	 * @return
-	 */
-	protected void checkCIDSystemInfo(COSBase sysinfo) {
-		COSDictionary cidSysInfo = COSUtils.getAsDictionary(sysinfo, cosDocument);
-		if (cidSysInfo != null) {
-			COSBase reg = cidSysInfo.getItem(COSName.REGISTRY);
-			COSBase ord = cidSysInfo.getItem(COSName.ORDERING);
-			COSBase sup = cidSysInfo.getItem(COSName.SUPPLEMENT);
+        checkCIDSystemInfo(fontDictionary.getItem(COSName.CIDSYSTEMINFO));
+        checkCIDToGIDMap(fontDictionary.getItem(COSName.CID_TO_GID_MAP));
+    }
 
-			if (!(COSUtils.isString(reg, cosDocument) && COSUtils.isString(ord, cosDocument) && COSUtils.isInteger(sup, cosDocument))) {
-				this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
-			}
+    /**
+     * Check the content of the CIDSystemInfo dictionary. A CIDSystemInfo dictionary must contain :
+     * <UL>
+     * <li>a Name - Registry
+     * <li>a Name - Ordering
+     * <li>a Integer - Supplement
+     * </UL>
+     * 
+     * @param sysinfo
+     * @return
+     */
+    protected void checkCIDSystemInfo(COSBase sysinfo)
+    {
+        COSDictionary cidSysInfo = COSUtils.getAsDictionary(sysinfo, cosDocument);
+        if (cidSysInfo != null)
+        {
+            COSBase reg = cidSysInfo.getItem(COSName.REGISTRY);
+            COSBase ord = cidSysInfo.getItem(COSName.ORDERING);
+            COSBase sup = cidSysInfo.getItem(COSName.SUPPLEMENT);
 
-		} else {
-			this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
-		}
-	}
+            if (!(COSUtils.isString(reg, cosDocument) && COSUtils.isString(ord, cosDocument) && COSUtils.isInteger(sup,
+                    cosDocument)))
+            {
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
+            }
 
-	/**
-	 * This method checks the CIDtoGIDMap entry of the Font dictionary.
-	 * call the {@linkplain #checkCIDToGIDMap(COSBase, boolean)} with right parameters
-	 * according to the instance of DescendantFontValidator
-	 *  
-	 * @param ctog
-	 */
-	protected abstract void checkCIDToGIDMap(COSBase ctog);
+        }
+        else
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
+        }
+    }
 
-	/**
-	 * This method checks the CIDtoGIDMap entry of the Font dictionary. This
-	 * element must be a Stream or a Name. If it is a name, it must be "Identity"
-	 * otherwise, the PDF file isn't a PDF/A-1b.
-	 * 
-	 * If the validation fails the list of errors in the FontContainer is updated.
-	 * 
-	 * If the CIDtoGIDMap is a Stream, it is parsed as a CMap and the result is returned.
-	 * @param ctog
-	 * @param mandatory true for CIDType2 , false for CIDType0
-	 * @return
-	 */
-	protected CIDToGIDMap checkCIDToGIDMap(COSBase ctog,boolean mandatory) {
-		CIDToGIDMap cidToGidMap = null;
-		
-		if (COSUtils.isString(ctog, cosDocument)) {
-			// ---- valid only if the string is Identity
-			String ctogStr = COSUtils.getAsString(ctog, cosDocument);
-			if (!FONT_DICTIONARY_VALUE_CMAP_IDENTITY.equals(ctogStr)) {
-				this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID,"The CIDToGID entry is invalid"));
-			}
-		} else if (COSUtils.isStream(ctog, cosDocument)) {
-			try {
-				COSStream ctogMap = COSUtils.getAsStream(ctog, cosDocument);
-				cidToGidMap = new CIDToGIDMap();
-				cidToGidMap.parseStream(ctogMap);
-			} catch (IOException e) {
-				// map can be invalid, return a Validation Error
-				this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
-			}
-		} else if (mandatory) {
-			this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
-		}
-		return cidToGidMap;
-	}
+    /**
+     * This method checks the CIDtoGIDMap entry of the Font dictionary. call the
+     * {@linkplain #checkCIDToGIDMap(COSBase, boolean)} with right parameters according to the instance of
+     * DescendantFontValidator
+     * 
+     * @param ctog
+     */
+    protected abstract void checkCIDToGIDMap(COSBase ctog);
+
+    /**
+     * This method checks the CIDtoGIDMap entry of the Font dictionary. This element must be a Stream or a Name. If it
+     * is a name, it must be "Identity" otherwise, the PDF file isn't a PDF/A-1b.
+     * 
+     * If the validation fails the list of errors in the FontContainer is updated.
+     * 
+     * If the CIDtoGIDMap is a Stream, it is parsed as a CMap and the result is returned.
+     * 
+     * @param ctog
+     * @param mandatory
+     *            true for CIDType2 , false for CIDType0
+     * @return
+     */
+    protected CIDToGIDMap checkCIDToGIDMap(COSBase ctog, boolean mandatory)
+    {
+        CIDToGIDMap cidToGidMap = null;
+
+        if (COSUtils.isString(ctog, cosDocument))
+        {
+            // ---- valid only if the string is Identity
+            String ctogStr = COSUtils.getAsString(ctog, cosDocument);
+            if (!FONT_DICTIONARY_VALUE_CMAP_IDENTITY.equals(ctogStr))
+            {
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID,
+                        "The CIDToGID entry is invalid"));
+            }
+        }
+        else if (COSUtils.isStream(ctog, cosDocument))
+        {
+            try
+            {
+                COSStream ctogMap = COSUtils.getAsStream(ctog, cosDocument);
+                cidToGidMap = new CIDToGIDMap();
+                cidToGidMap.parseStream(ctogMap);
+            }
+            catch (IOException e)
+            {
+                // map can be invalid, return a Validation Error
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
+            }
+        }
+        else if (mandatory)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
+        }
+        return cidToGidMap;
+    }
 }

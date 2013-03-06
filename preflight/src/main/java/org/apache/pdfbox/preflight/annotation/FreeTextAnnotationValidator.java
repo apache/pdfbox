@@ -32,39 +32,43 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 /**
  * Validation class for the FreeTextAnnotation
  */
-public class FreeTextAnnotationValidator extends AnnotationValidator {
-  /**
-   * PDFBox object which wraps the Annotation dictionary
-   */
-  protected PDAnnotationTextMarkup pdFreeText = null;
+public class FreeTextAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox object which wraps the Annotation dictionary
+     */
+    protected PDAnnotationTextMarkup pdFreeText = null;
 
-  public FreeTextAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-    super(ctx, annotDictionary);
-    this.pdFreeText = new PDAnnotationTextMarkup(annotDictionary);
-    this.pdAnnot = this.pdFreeText;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-   * checkMandatoryFields(java.util.List)
-   */
-  protected boolean checkMandatoryFields() {
-    boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-    boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-    boolean f = this.annotDictionary.containsKey(COSName.F);
-    boolean contents = this.annotDictionary.containsKey(COSName.CONTENTS);
-    boolean da = this.annotDictionary.containsKey(COSName.DA);
+    public FreeTextAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdFreeText = new PDAnnotationTextMarkup(annotDictionary);
+        this.pdAnnot = this.pdFreeText;
+    }
 
     /*
-     * After PDF 1.4, all additional entries in this annotation are
-     * optional and they seem to be compatible with the PDF/A specification.
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
      */
-    boolean result = (subtype && rect && f && da && contents);
-    if (!result) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS,"A mandatory field for the " + this.pdAnnot.getSubtype() + " annotation is missing"));
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
+        boolean contents = this.annotDictionary.containsKey(COSName.CONTENTS);
+        boolean da = this.annotDictionary.containsKey(COSName.DA);
+
+        /*
+         * After PDF 1.4, all additional entries in this annotation are optional and they seem to be compatible with the
+         * PDF/A specification.
+         */
+        boolean result = (subtype && rect && f && da && contents);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS, "A mandatory field for the "
+                    + this.pdAnnot.getSubtype() + " annotation is missing"));
+        }
+        return result;
     }
-    return result;
-  }
 }

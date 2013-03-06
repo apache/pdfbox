@@ -33,25 +33,28 @@ import org.apache.pdfbox.preflight.action.ActionManagerFactory;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 
+public class ActionsValidationProcess extends AbstractProcess
+{
 
-public class ActionsValidationProcess extends AbstractProcess {
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class))
+        {
+            throw new ValidationException("Action validation process needs at least one COSDictionary object");
+        }
 
-	public void validate(PreflightContext context) throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class)) {
-		 throw new ValidationException("Action validation process needs at least one COSDictionary object");
-		}
-		
-		COSDictionary actionsDict = (COSDictionary)vPath.peek();
-		// AA entry is authorized only for Page, in this case A Page is just before the Action Dictionary in the path
-		boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
-		
-		PreflightConfiguration config = context.getConfig();
-		ActionManagerFactory factory = config.getActionFact();
-	    List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
-	    for (AbstractActionManager aMng : la) {
-	      aMng.valid(aaEntryAuth);
-	    }
-	}
+        COSDictionary actionsDict = (COSDictionary) vPath.peek();
+        // AA entry is authorized only for Page, in this case A Page is just before the Action Dictionary in the path
+        boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
+
+        PreflightConfiguration config = context.getConfig();
+        ActionManagerFactory factory = config.getActionFact();
+        List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
+        for (AbstractActionManager aMng : la)
+        {
+            aMng.valid(aaEntryAuth);
+        }
+    }
 
 }

@@ -27,47 +27,58 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
-public class PeekInputStream extends InputStream {
-	private byte[] content = new byte[0];
-	private int position = 0;
-	
-	public PeekInputStream(InputStream source) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			IOUtils.copyLarge(source, bos);
-			content = bos.toByteArray();
-		} finally {
-			IOUtils.closeQuietly(source);
-			IOUtils.closeQuietly(bos);
-		}
-	}
+public class PeekInputStream extends InputStream
+{
+    private byte[] content = new byte[0];
+    private int position = 0;
 
-	@Override
-	public int read() throws IOException {
-		if (position >= content.length) {
-			throw new IOException("No more content in this stream");
-		}
+    public PeekInputStream(InputStream source) throws IOException
+    {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try
+        {
+            IOUtils.copyLarge(source, bos);
+            content = bos.toByteArray();
+        }
+        finally
+        {
+            IOUtils.closeQuietly(source);
+            IOUtils.closeQuietly(bos);
+        }
+    }
 
-		int currentByte = (content[position] & 0xFF);
-		++position;
-		return currentByte;
-	}
+    @Override
+    public int read() throws IOException
+    {
+        if (position >= content.length)
+        {
+            throw new IOException("No more content in this stream");
+        }
 
-	public int peek() throws IOException {
-		if (position >= content.length) {
-			throw new IOException("No more content in this stream");
-		}
+        int currentByte = (content[position] & 0xFF);
+        ++position;
+        return currentByte;
+    }
 
-		return (content[position] & 0xFF);
-	}
-	
-	public byte[] peek(int numberOfBytes) throws IOException {
-		if ( numberOfBytes < 0 || (position + numberOfBytes) >= content.length) {
-			throw new IOException("No more content in this stream, can't return the next " + numberOfBytes + " bytes");
-		}
+    public int peek() throws IOException
+    {
+        if (position >= content.length)
+        {
+            throw new IOException("No more content in this stream");
+        }
 
-		byte[] nextBytes = new byte[numberOfBytes];
-		System.arraycopy(this.content, this.position, nextBytes, 0, numberOfBytes);
-		return nextBytes; 
-	}
+        return (content[position] & 0xFF);
+    }
+
+    public byte[] peek(int numberOfBytes) throws IOException
+    {
+        if (numberOfBytes < 0 || (position + numberOfBytes) >= content.length)
+        {
+            throw new IOException("No more content in this stream, can't return the next " + numberOfBytes + " bytes");
+        }
+
+        byte[] nextBytes = new byte[numberOfBytes];
+        System.arraycopy(this.content, this.position, nextBytes, 0, numberOfBytes);
+        return nextBytes;
+    }
 }

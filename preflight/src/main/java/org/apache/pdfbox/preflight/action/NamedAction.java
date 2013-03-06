@@ -34,8 +34,7 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 /**
- * ActionManager for the Named action. Named action is valid if N entry is
- * present with one of the four values :
+ * ActionManager for the Named action. Named action is valid if N entry is present with one of the four values :
  * <UL>
  * <li>NextPage
  * <li>PrevPage
@@ -43,50 +42,52 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
  * <li>LastPage
  * </UL>
  */
-public class NamedAction extends AbstractActionManager {
+public class NamedAction extends AbstractActionManager
+{
 
-  /**
-   * @param amFact
-   *          Instance of ActionManagerFactory used to create ActionManager to
-   *          check Next actions.
-   * @param adict
-   *          the COSDictionary of the action wrapped by this class.
-   * @param cDoc
-   *          the COSDocument from which the action comes from.
-   * @param aaKey
-   *          The name of the key which identify the action in a additional
-   *          action dictionary.
-   */
-  public NamedAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey) {
-    super(amFact, adict, ctx, aaKey);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util
-   * .List)
-   */
-  @Override
-  protected boolean innerValid() {
-    String n = this.actionDictionnary.getNameAsString(COSName.N);
-
-    // ---- N entry is mandatory
-    if (n == null || "".equals(n)) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY, "N entry is mandatory for the NamedActions"));
-      return false;
+    /**
+     * @param amFact
+     *            Instance of ActionManagerFactory used to create ActionManager to check Next actions.
+     * @param adict
+     *            the COSDictionary of the action wrapped by this class.
+     * @param cDoc
+     *            the COSDocument from which the action comes from.
+     * @param aaKey
+     *            The name of the key which identify the action in a additional action dictionary.
+     */
+    public NamedAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    {
+        super(amFact, adict, ctx, aaKey);
     }
 
-    // ---- Only Predefine name actions are authorized
-    if (!(ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST.equals(n)
-        || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST.equals(n)
-        || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT.equals(n) || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV
-        .equals(n))) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED, n + " isn't authorized as named action"));
-      return false;
-    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     */
+    @Override
+    protected boolean innerValid()
+    {
+        String n = this.actionDictionnary.getNameAsString(COSName.N);
 
-    return true;
-  }
+        // ---- N entry is mandatory
+        if (n == null || "".equals(n))
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
+                    "N entry is mandatory for the NamedActions"));
+            return false;
+        }
+
+        // ---- Only Predefine name actions are authorized
+        if (!(ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST.equals(n) || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST.equals(n)
+                || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT.equals(n) || ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV
+                    .equals(n)))
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED, n
+                    + " isn't authorized as named action"));
+            return false;
+        }
+
+        return true;
+    }
 }

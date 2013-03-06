@@ -1,4 +1,5 @@
 package org.apache.pdfbox.preflight.integration;
+
 /*****************************************************************************
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +21,6 @@ package org.apache.pdfbox.preflight.integration;
  * 
  ****************************************************************************/
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -38,7 +38,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestIsartorValidation extends AbstractInvalidFileTester {
+public class TestIsartorValidation extends AbstractInvalidFileTester
+{
 
     private static final String RESULTS_FILE = "results.file";
 
@@ -48,37 +49,41 @@ public class TestIsartorValidation extends AbstractInvalidFileTester {
 
     protected static Logger staticLogger = Logger.getLogger("Test");
 
-
-    public TestIsartorValidation(File path, String error) {
-        super(path,error);
+    public TestIsartorValidation(File path, String error)
+    {
+        super(path, error);
     }
 
-
-    protected static Collection<Object[]> stopIfExpected () throws Exception {
+    protected static Collection<Object[]> stopIfExpected() throws Exception
+    {
         List<Object[]> ret = new ArrayList<Object[]>();
-        ret.add(new Object[]{null,null});
+        ret.add(new Object[] { null, null });
         return ret;
     }
 
     @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception 
+    public static Collection<Object[]> initializeParameters() throws Exception
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
-        if (isartor==null) {
-            staticLogger.warn(ISARTOR_FILES+" (where are isartor pdf files) is not defined.");
+        if (isartor == null)
+        {
+            staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
         }
         File root = new File(isartor);
         // load expected errors
         String expectedPath = System.getProperty(EXPECTED_ERRORS);
-        if (expectedPath==null) {
+        if (expectedPath == null)
+        {
             staticLogger.warn("'expected.errors' not defined, so cannot execute tests");
             return stopIfExpected();
         }
         File expectedFile = new File(expectedPath);
-        if (!expectedFile.exists() || !expectedFile.isFile()) {
-            staticLogger.warn("'expected.errors' does not reference valid file, so cannot execute tests : "+expectedFile.getAbsolutePath());
+        if (!expectedFile.exists() || !expectedFile.isFile())
+        {
+            staticLogger.warn("'expected.errors' does not reference valid file, so cannot execute tests : "
+                    + expectedFile.getAbsolutePath());
             return stopIfExpected();
         }
         InputStream expected = new FileInputStream(expectedPath);
@@ -87,17 +92,22 @@ public class TestIsartorValidation extends AbstractInvalidFileTester {
         IOUtils.closeQuietly(expected);
         // prepare config
         List<Object[]> data = new ArrayList<Object[]>();
-        Collection<?> files= FileUtils.listFiles(root, new String [] {"pdf"}, true);
+        Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
-        for (Object object : files) {
-            File file = (File)object;
+        for (Object object : files)
+        {
+            File file = (File) object;
             String fn = file.getName();
-            if (props.getProperty(fn)!=null) {
+            if (props.getProperty(fn) != null)
+            {
                 String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
                 Object[] tmp = new Object[] { file, error };
                 data.add(tmp);
-            } else {
-                System.err.println("No expected result for this file, will not try to validate : "+file.getAbsolutePath());
+            }
+            else
+            {
+                System.err.println("No expected result for this file, will not try to validate : "
+                        + file.getAbsolutePath());
             }
 
         }
@@ -105,9 +115,9 @@ public class TestIsartorValidation extends AbstractInvalidFileTester {
     }
 
     @Override
-    protected String getResultFileKey() {
+    protected String getResultFileKey()
+    {
         return RESULTS_FILE;
     }
 
 }
-

@@ -33,54 +33,53 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
- * ActionManager for the GoTo action GoToAction is valid if the D entry is
- * present.
+ * ActionManager for the GoTo action GoToAction is valid if the D entry is present.
  */
-public class GoToAction extends AbstractActionManager {
+public class GoToAction extends AbstractActionManager
+{
 
-  /**
-   * 
-   * @param amFact
-   *          Instance of ActionManagerFactory used to create ActionManager to
-   *          check Next actions.
-   * @param adict
-   *          the COSDictionary of the action wrapped by this class.
-   * @param cDoc
-   *          the COSDocument from which the action comes from.
-   * @param aa
-   *          The name of the key which identify the action in a additional
-   *          action dictionary.
-   */
-  public GoToAction(ActionManagerFactory amFact, COSDictionary adict,
-      PreflightContext ctx, String aa) {
-    super(amFact, adict, ctx, aa);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util
-   * .List)
-   */
-  @Override
-  protected boolean innerValid() {
-    COSBase d = this.actionDictionnary.getItem(COSName.D);
-
-    // ---- D entry is mandatory
-    if (d == null) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
-          "D entry is mandatory for the GoToActions"));
-      return false;
+    /**
+     * 
+     * @param amFact
+     *            Instance of ActionManagerFactory used to create ActionManager to check Next actions.
+     * @param adict
+     *            the COSDictionary of the action wrapped by this class.
+     * @param cDoc
+     *            the COSDocument from which the action comes from.
+     * @param aa
+     *            The name of the key which identify the action in a additional action dictionary.
+     */
+    public GoToAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aa)
+    {
+        super(amFact, adict, ctx, aa);
     }
 
-	COSDocument cosDocument = this.context.getDocument().getDocument();
-    if (!(d instanceof COSName || COSUtils.isString(d, cosDocument) || COSUtils.isArray(d, cosDocument))) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "Type of D entry is invalid"));
-      return false;
-    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     */
+    @Override
+    protected boolean innerValid()
+    {
+        COSBase d = this.actionDictionnary.getItem(COSName.D);
 
-    return true;
-  }
+        // ---- D entry is mandatory
+        if (d == null)
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
+                    "D entry is mandatory for the GoToActions"));
+            return false;
+        }
+
+        COSDocument cosDocument = this.context.getDocument().getDocument();
+        if (!(d instanceof COSName || COSUtils.isString(d, cosDocument) || COSUtils.isArray(d, cosDocument)))
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "Type of D entry is invalid"));
+            return false;
+        }
+
+        return true;
+    }
 
 }

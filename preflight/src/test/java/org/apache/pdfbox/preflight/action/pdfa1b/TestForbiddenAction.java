@@ -26,48 +26,56 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestForbiddenAction extends AbstractTestAction {
-	
-	protected COSDictionary createAction(String type) {
-		COSDictionary action = new COSDictionary();
-		action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
-		action.setItem(COSName.S, COSName.getPDFName(type));
-		return action;
-	}
-	
-	@Test
-	public void testLaunch() throws Exception {
-		COSDictionary action = createAction("Launch");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+public class TestForbiddenAction extends AbstractTestAction
+{
 
-	@Test
-	public void testSound() throws Exception {
-		COSDictionary action = createAction("Sound");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    protected COSDictionary createAction(String type)
+    {
+        COSDictionary action = new COSDictionary();
+        action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
+        action.setItem(COSName.S, COSName.getPDFName(type));
+        return action;
+    }
 
-	@Test
-	public void testMovie() throws Exception {
-		COSDictionary action = createAction("Movie");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    @Test
+    public void testLaunch() throws Exception
+    {
+        COSDictionary action = createAction("Launch");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
 
-	@Test
-	public void testImportData() throws Exception {
-		COSDictionary action = createAction("ImportData");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    @Test
+    public void testSound() throws Exception
+    {
+        COSDictionary action = createAction("Sound");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
 
-	@Test
-	public void testResetForm() throws Exception {
-		COSDictionary action = createAction("ResetForm");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    @Test
+    public void testMovie() throws Exception
+    {
+        COSDictionary action = createAction("Movie");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
 
-	@Test
-	public void testJS() throws Exception {
-		COSDictionary action = createAction("JavaScript");
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    @Test
+    public void testImportData() throws Exception
+    {
+        COSDictionary action = createAction("ImportData");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
+
+    @Test
+    public void testResetForm() throws Exception
+    {
+        COSDictionary action = createAction("ResetForm");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
+
+    @Test
+    public void testJS() throws Exception
+    {
+        COSDictionary action = createAction("JavaScript");
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
 }

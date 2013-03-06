@@ -38,63 +38,84 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class TestValidDirectory {
+public class TestValidDirectory
+{
 
-	protected File target = null;
+    protected File target = null;
 
-	public TestValidDirectory (File file) {
-		this.target = file;
-	}
+    public TestValidDirectory(File file)
+    {
+        this.target = file;
+    }
 
-	@Test
-	public void validate () throws Exception {
-		PreflightDocument document = null;
-		System.out.println(target);
-		ValidationResult result = null;
-		try {
-			PreflightParser parser = new PreflightParser(new FileDataSource(target));
-			parser.parse();
-			document = (PreflightDocument)parser.getPDDocument();
-			document.validate();
-			result = document.getResult();
-		} catch (SyntaxValidationException e) {
-			result = e.getResult();
-		} finally {
-			if (document != null) {
-				document.close();
-			}
-		}
-		Assert.assertTrue("Validation of " + target , result.isValid());
-	}
+    @Test
+    public void validate() throws Exception
+    {
+        PreflightDocument document = null;
+        System.out.println(target);
+        ValidationResult result = null;
+        try
+        {
+            PreflightParser parser = new PreflightParser(new FileDataSource(target));
+            parser.parse();
+            document = (PreflightDocument) parser.getPDDocument();
+            document.validate();
+            result = document.getResult();
+        }
+        catch (SyntaxValidationException e)
+        {
+            result = e.getResult();
+        }
+        finally
+        {
+            if (document != null)
+            {
+                document.close();
+            }
+        }
+        Assert.assertTrue("Validation of " + target, result.isValid());
+    }
 
-	@Parameters
-	public static Collection<Object[]> initializeParameters() throws Exception {
-		// check directory
-		File directory = null;
-		String pdfPath = System.getProperty("pdfa.valid", null);
-		if ("${user.pdfa.valid}".equals(pdfPath)) {pdfPath=null;}
-		if (pdfPath!=null) {
-			directory = new File(pdfPath);
-			if (!directory.exists()) throw new Exception ("directory does not exists : "+directory.getAbsolutePath());
-			if (!directory.isDirectory()) throw new Exception ("not a directory : "+directory.getAbsolutePath());
-		} else {
-			System.err.println("System property 'pdfa.valid' not defined, will not run TestValidaDirectory");
-		}
-		// create list
-		if (directory==null) {
-			return new ArrayList<Object[]>(0);
-		} else {
-			File [] files = directory.listFiles();
-			List<Object[]> data = new ArrayList<Object[]>(files.length);
-			for (File file : files) {
-				if (file.isFile()) {
-					data.add(new Object [] {file});
-				}
-			}
-			return data;
-		}
-	}
-
-
+    @Parameters
+    public static Collection<Object[]> initializeParameters() throws Exception
+    {
+        // check directory
+        File directory = null;
+        String pdfPath = System.getProperty("pdfa.valid", null);
+        if ("${user.pdfa.valid}".equals(pdfPath))
+        {
+            pdfPath = null;
+        }
+        if (pdfPath != null)
+        {
+            directory = new File(pdfPath);
+            if (!directory.exists())
+                throw new Exception("directory does not exists : " + directory.getAbsolutePath());
+            if (!directory.isDirectory())
+                throw new Exception("not a directory : " + directory.getAbsolutePath());
+        }
+        else
+        {
+            System.err.println("System property 'pdfa.valid' not defined, will not run TestValidaDirectory");
+        }
+        // create list
+        if (directory == null)
+        {
+            return new ArrayList<Object[]>(0);
+        }
+        else
+        {
+            File[] files = directory.listFiles();
+            List<Object[]> data = new ArrayList<Object[]>(files.length);
+            for (File file : files)
+            {
+                if (file.isFile())
+                {
+                    data.add(new Object[] { file });
+                }
+            }
+            return data;
+        }
+    }
 
 }

@@ -25,32 +25,35 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-public class XObjPostscriptValidator extends AbstractXObjValidator {
+public class XObjPostscriptValidator extends AbstractXObjValidator
+{
 
-  public XObjPostscriptValidator(PreflightContext context, COSStream xobj) {
-    super(context, xobj);
-  }
+    public XObjPostscriptValidator(PreflightContext context, COSStream xobj)
+    {
+        super(context, xobj);
+    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
-   */
-  @Override
-  public void validate() throws ValidationException {
-    super.validate();
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
+     */
+    @Override
+    public void validate() throws ValidationException
+    {
+        super.validate();
+    }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#
-   * checkMandatoryFields(java.util.List)
-   */
-  @Override
-  protected void checkMandatoryFields() {
-    // PostScript XObjects are forbidden. Whatever the result of this function,
-    // the validation will fail
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator# checkMandatoryFields(java.util.List)
+     */
+    @Override
+    protected void checkMandatoryFields()
+    {
+        // PostScript XObjects are forbidden. Whatever the result of this function,
+        // the validation will fail
+    }
 
 }

@@ -24,11 +24,11 @@ package org.apache.pdfbox.preflight.process;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-public interface ValidationProcess {
+public interface ValidationProcess
+{
 
-	// TODO JavaDoc
-	void validate(PreflightContext ctx) 
-	throws ValidationException;
+    // TODO JavaDoc
+    void validate(PreflightContext ctx) throws ValidationException;
 
-	// TODO ? void validateAndFix(DocumentHandler documentHandler) throws ValidationException;
+    // TODO ? void validateAndFix(DocumentHandler documentHandler) throws ValidationException;
 }

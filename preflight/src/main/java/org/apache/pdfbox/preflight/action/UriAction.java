@@ -33,50 +33,49 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
- * ActionManager for the URI action URI action is valid if the URI entry is
- * present as a String.
+ * ActionManager for the URI action URI action is valid if the URI entry is present as a String.
  */
-public class UriAction extends AbstractActionManager {
+public class UriAction extends AbstractActionManager
+{
 
-  /**
-   * @param amFact
-   *          Instance of ActionManagerFactory used to create ActionManager to
-   *          check Next actions.
-   * @param adict
-   *          the COSDictionary of the action wrapped by this class.
-   * @param cDoc
-   *          the COSDocument from which the action comes from.
-   * @param aaKey
-   *          The name of the key which identify the action in a additional
-   *          action dictionary.
-   */
-  public UriAction(ActionManagerFactory amFact, COSDictionary adict,
-      PreflightContext ctx, String aaKey) {
-    super(amFact, adict, ctx, aaKey);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util
-   * .List)
-   */
-  @Override
-  protected boolean innerValid() {
-    COSBase uri = this.actionDictionnary.getItem(COSName.URI);
-    if (uri == null) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
-          "URI entry is mandatory for the UriAction"));
-      return false;
+    /**
+     * @param amFact
+     *            Instance of ActionManagerFactory used to create ActionManager to check Next actions.
+     * @param adict
+     *            the COSDictionary of the action wrapped by this class.
+     * @param cDoc
+     *            the COSDocument from which the action comes from.
+     * @param aaKey
+     *            The name of the key which identify the action in a additional action dictionary.
+     */
+    public UriAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
+    {
+        super(amFact, adict, ctx, aaKey);
     }
 
-	COSDocument cosDocument = this.context.getDocument().getDocument();
-    if (!COSUtils.isString(uri, cosDocument)) {
-      context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "URI entry should be a string"));
-      return false;
-    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     */
+    @Override
+    protected boolean innerValid()
+    {
+        COSBase uri = this.actionDictionnary.getItem(COSName.URI);
+        if (uri == null)
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
+                    "URI entry is mandatory for the UriAction"));
+            return false;
+        }
 
-    return true;
-  }
+        COSDocument cosDocument = this.context.getDocument().getDocument();
+        if (!COSUtils.isString(uri, cosDocument))
+        {
+            context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "URI entry should be a string"));
+            return false;
+        }
+
+        return true;
+    }
 }

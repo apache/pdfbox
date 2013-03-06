@@ -39,34 +39,43 @@ import org.apache.pdfbox.preflight.font.container.Type1Container;
 import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
-public class Type1FontValidator extends SimpleFontValidator<Type1Container> {
-	
-	public Type1FontValidator(PreflightContext context, PDFont font) {
-		super(context, font, new Type1Container(font));
-	}
+public class Type1FontValidator extends SimpleFontValidator<Type1Container>
+{
 
-	@Override
-	protected void createFontDescriptorHelper() {
-		this.descriptorHelper = new Type1DescriptorHelper(context, font, fontContainer);
-	}
+    public Type1FontValidator(PreflightContext context, PDFont font)
+    {
+        super(context, font, new Type1Container(font));
+    }
 
-	protected void checkEncoding() {	
-		COSBase encoding = ((COSDictionary)font.getCOSObject()).getItem(COSName.ENCODING);
-		if (encoding != null) {
-			COSDocument cosDocument = context.getDocument().getDocument();
-			if (COSUtils.isString(encoding, cosDocument)) {
-				String encodingName = COSUtils.getAsString(encoding, cosDocument);
-				if (!(encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC)
-						|| encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP)
-						|| encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_WIN)
-						|| encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_PDFDOC) 
-						|| encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_STD))) {
-					this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
-				}
-			} else if (!COSUtils.isDictionary(encoding, cosDocument)) {
-				this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
-			} 
-		}	
-	}
-	
+    @Override
+    protected void createFontDescriptorHelper()
+    {
+        this.descriptorHelper = new Type1DescriptorHelper(context, font, fontContainer);
+    }
+
+    protected void checkEncoding()
+    {
+        COSBase encoding = ((COSDictionary) font.getCOSObject()).getItem(COSName.ENCODING);
+        if (encoding != null)
+        {
+            COSDocument cosDocument = context.getDocument().getDocument();
+            if (COSUtils.isString(encoding, cosDocument))
+            {
+                String encodingName = COSUtils.getAsString(encoding, cosDocument);
+                if (!(encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC)
+                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP)
+                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_WIN)
+                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_PDFDOC) || encodingName
+                            .equals(FONT_DICTIONARY_VALUE_ENCODING_STD)))
+                {
+                    this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
+                }
+            }
+            else if (!COSUtils.isDictionary(encoding, cosDocument))
+            {
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
+            }
+        }
+    }
+
 }

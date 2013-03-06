@@ -30,41 +30,44 @@ import org.apache.pdfbox.pdfparser.BaseParser;
 /**
  * This class is a tool to parse a byte array as a COS object (COSDIctionary)
  */
-public class PdfElementParser extends BaseParser {
+public class PdfElementParser extends BaseParser
+{
 
-  /**
-   * Create the PDFElementParser object.
-   * 
-   * @param cosDocument
-   *          a COSDocument which will be used to parse the byte array
-   * @param input
-   *          the byte array to parse
-   * @throws IOException
-   */
-  public PdfElementParser(COSDocument cosDocument, byte[] input) throws IOException {
-    super(input);
-    this.document = cosDocument;
-  }
+    /**
+     * Create the PDFElementParser object.
+     * 
+     * @param cosDocument
+     *            a COSDocument which will be used to parse the byte array
+     * @param input
+     *            the byte array to parse
+     * @throws IOException
+     */
+    public PdfElementParser(COSDocument cosDocument, byte[] input) throws IOException
+    {
+        super(input);
+        this.document = cosDocument;
+    }
 
-  /**
-   * Parse the input byte array of the constructor call as a COSDictionary.
-   * 
-   * @return a COSDictionary if the parsing succeed.
-   * @throws IOException
-   *           If the byte array isn't a COSDictionary or if there are an error
-   *           on the stream parsing
-   */
-  public COSDictionary parseAsDictionary() throws IOException {
-    return parseCOSDictionary();
-  }
+    /**
+     * Parse the input byte array of the constructor call as a COSDictionary.
+     * 
+     * @return a COSDictionary if the parsing succeed.
+     * @throws IOException
+     *             If the byte array isn't a COSDictionary or if there are an error on the stream parsing
+     */
+    public COSDictionary parseAsDictionary() throws IOException
+    {
+        return parseCOSDictionary();
+    }
 
-  /**
-   * Return the COSDocument used to create this object.
-   * 
-   * @return
-   */
-  public COSDocument getDocument() {
-    return this.document;
-  }
+    /**
+     * Return the COSDocument used to create this object.
+     * 
+     * @return
+     */
+    public COSDocument getDocument()
+    {
+        return this.document;
+    }
 
 }

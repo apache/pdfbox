@@ -28,22 +28,24 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 /**
- * This class defines restrictions on Pattern ColorSpace. It checks the
- * consistency of the Color space with the DestOutputIntent, if the color space
- * is a Pattern the validation will fail.
+ * This class defines restrictions on Pattern ColorSpace. It checks the consistency of the Color space with the
+ * DestOutputIntent, if the color space is a Pattern the validation will fail.
  */
-public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper {
+public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper
+{
 
-  
-  public NoPatternColorSpaceHelper(PreflightContext _context, PDColorSpace _cs) {
-		super(_context, _cs);
-	}
+    public NoPatternColorSpaceHelper(PreflightContext _context, PDColorSpace _cs)
+    {
+        super(_context, _cs);
+    }
 
-/**
-   * This method updates the given list with a ValidationError
-   * (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN) and returns false.
-   */
-  protected void processPatternColorSpace(PDColorSpace pdcs) {
-    context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN, "Pattern color space is forbidden"));
-  }
+    /**
+     * This method updates the given list with a ValidationError (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN)
+     * and returns false.
+     */
+    protected void processPatternColorSpace(PDColorSpace pdcs)
+    {
+        context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
+                "Pattern color space is forbidden"));
+    }
 }

@@ -31,21 +31,28 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class PageTreeValidationProcess extends AbstractProcess {
+public class PageTreeValidationProcess extends AbstractProcess
+{
 
-	public void validate(PreflightContext context) throws ValidationException {
-		PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
-		if (catalog != null) {
-			List<?> pages = catalog.getAllPages();
-			for (int i = 0; i < pages.size(); ++i) {
-				validatePage(context,(PDPage) pages.get(i));
-			}
-		} else {
-			throw new ValidationException("There are no Catalog entry in the Document.");
-		}
-	}
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
+        if (catalog != null)
+        {
+            List<?> pages = catalog.getAllPages();
+            for (int i = 0; i < pages.size(); ++i)
+            {
+                validatePage(context, (PDPage) pages.get(i));
+            }
+        }
+        else
+        {
+            throw new ValidationException("There are no Catalog entry in the Document.");
+        }
+    }
 
-	protected void validatePage(PreflightContext context, PDPage page) throws ValidationException {
-		ContextHelper.validateElement(context, page, PAGE_PROCESS);
-	}
+    protected void validatePage(PreflightContext context, PDPage page) throws ValidationException
+    {
+        ContextHelper.validateElement(context, page, PAGE_PROCESS);
+    }
 }

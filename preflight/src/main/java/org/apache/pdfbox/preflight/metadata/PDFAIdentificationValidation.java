@@ -42,69 +42,80 @@ import org.apache.xmpbox.type.StructuredType;
  * @author Germain Costenobel
  * 
  */
-public class PDFAIdentificationValidation {
+public class PDFAIdentificationValidation
+{
 
-  /**
-   * Check if PDFAIdentification is valid
-   * 
-   * @param document
-   *          the PDF Document
-   * @param metadata
-   *          the XMP MetaData
-   * @return List of validation errors
-   * @throws ValidationException
-   */
-  public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata) throws ValidationException {
-    List<ValidationError> ve = new ArrayList<ValidationError>();
-    PDFAIdentificationSchema id = metadata.getPDFIdentificationSchema();
-    if (id == null) {
-      ve.add(new ValidationError(ERROR_METADATA_PDFA_ID_MISSING));
-      return ve;
+    /**
+     * Check if PDFAIdentification is valid
+     * 
+     * @param document
+     *            the PDF Document
+     * @param metadata
+     *            the XMP MetaData
+     * @return List of validation errors
+     * @throws ValidationException
+     */
+    public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata) throws ValidationException
+    {
+        List<ValidationError> ve = new ArrayList<ValidationError>();
+        PDFAIdentificationSchema id = metadata.getPDFIdentificationSchema();
+        if (id == null)
+        {
+            ve.add(new ValidationError(ERROR_METADATA_PDFA_ID_MISSING));
+            return ve;
+        }
+
+        // According to the PDF/A specification, the prefix must be pdfaid for this schema.
+        StructuredType stBasic = XMPBasicSchema.class.getAnnotation(StructuredType.class);
+        StructuredType stPdfaIdent = PDFAIdentificationSchema.class.getAnnotation(StructuredType.class);
+        if (!id.getPrefix().equals(stPdfaIdent.preferedPrefix()))
+        {
+            if (metadata.getSchema(stPdfaIdent.preferedPrefix(), stBasic.namespace()) == null)
+            {
+                ve.add(unexpectedPrefixFoundError(id.getPrefix(), stPdfaIdent.preferedPrefix(),
+                        PDFAIdentificationSchema.class.getName()));
+            }
+            else
+            {
+                id = (PDFAIdentificationSchema) metadata.getSchema(stPdfaIdent.preferedPrefix(),
+                        stPdfaIdent.namespace());
+            }
+        }
+        checkConformanceLevel(ve, id.getConformance());
+        checkPartNumber(ve, id.getPart());
+        return ve;
     }
 
-    // According to the PDF/A specification, the prefix must be pdfaid for this schema.
-    StructuredType stBasic = XMPBasicSchema.class.getAnnotation(StructuredType.class);
-    StructuredType stPdfaIdent = PDFAIdentificationSchema.class.getAnnotation(StructuredType.class);
-    if (!id.getPrefix().equals(stPdfaIdent.preferedPrefix())) {
-      if (metadata.getSchema(stPdfaIdent.preferedPrefix(), stBasic.namespace()) == null) {
-        ve.add(unexpectedPrefixFoundError(id.getPrefix(),
-                        stPdfaIdent.preferedPrefix(), PDFAIdentificationSchema.class.getName()));
-      } else {
-        id = (PDFAIdentificationSchema) metadata.getSchema(
-            stPdfaIdent.preferedPrefix(), stPdfaIdent.namespace());
-      }
+    /**
+     * Return a validationError formatted when a schema has not the expected prefix
+     * 
+     * @param prefFound
+     * @param prefExpected
+     * @param schema
+     * @return
+     */
+    protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema)
+    {
+        StringBuilder sb = new StringBuilder(80);
+        sb.append(schema).append(" found but prefix used is '").append(prefFound).append("', prefix '")
+                .append(prefExpected).append("' is expected.");
+
+        return new ValidationError(ERROR_METADATA_WRONG_NS_PREFIX, sb.toString());
     }
-    checkConformanceLevel(ve, id.getConformance());
-    checkPartNumber(ve, id.getPart());
-    return ve;
-  }
 
-  /**
-   * Return a validationError formatted when a schema has not the expected
-   * prefix
-   * 
-   * @param prefFound
-   * @param prefExpected
-   * @param schema
-   * @return
-   */
-  protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema) {
-    StringBuilder sb = new StringBuilder(80);
-    sb.append(schema).append(" found but prefix used is '").append(prefFound)
-        .append("', prefix '").append(prefExpected).append("' is expected.");
-
-    return new ValidationError(ERROR_METADATA_WRONG_NS_PREFIX, sb.toString());
-  }
-
-  protected void checkConformanceLevel(List<ValidationError> ve, String value) {
-    if (!(value.equals("A") || value.equals("B"))) {
-      ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_CONFORMANCE));
+    protected void checkConformanceLevel(List<ValidationError> ve, String value)
+    {
+        if (!(value.equals("A") || value.equals("B")))
+        {
+            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_CONFORMANCE));
+        }
     }
-  }
 
-  protected void checkPartNumber(List<ValidationError> ve, int value) {
-    if (value != 1) {
-      ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_VERSION_ID));
+    protected void checkPartNumber(List<ValidationError> ve, int value)
+    {
+        if (value != 1)
+        {
+            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_VERSION_ID));
+        }
     }
-  }
 }

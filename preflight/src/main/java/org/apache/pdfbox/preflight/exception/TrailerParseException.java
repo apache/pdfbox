@@ -25,58 +25,58 @@ import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.javacc.ParseException;
 
 /**
- * This Exception is thrown if an validation error occurs during the javacc
- * validation in the PDF Trailer.
+ * This Exception is thrown if an validation error occurs during the javacc validation in the PDF Trailer.
  * 
  * Error codes provided by this exception should start by 1.4 or 1.0.
  */
-public class TrailerParseException extends PdfParseException {
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
-   * .edoc.pdfa.validation.ParseException)
-   */
-  public TrailerParseException(ParseException e) {
-    super(e);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String,java.lang.String)
-   */
-  public TrailerParseException(String message, String code) {
-    super(message, code);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang
-   * .String)
-   */
-  public TrailerParseException(String message) {
-    super(message);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
-   */
-  @Override
-  public String getErrorCode() {
-    if (!isTokenMgrError) {
-      // use token information to know the cause
-      System.out.println("## Trailer ParseError");
+public class TrailerParseException extends PdfParseException
+{
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
+     * .edoc.pdfa.validation.ParseException)
+     */
+    public TrailerParseException(ParseException e)
+    {
+        super(e);
     }
-    // else Token Management Error or Unknown Error during the Trailer
-    // Validation
-    return PreflightConstants.ERROR_SYNTAX_TRAILER;
-  }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String,java.lang.String)
+     */
+    public TrailerParseException(String message, String code)
+    {
+        super(message, code);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String)
+     */
+    public TrailerParseException(String message)
+    {
+        super(message);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
+     */
+    @Override
+    public String getErrorCode()
+    {
+        if (!isTokenMgrError)
+        {
+            // use token information to know the cause
+            System.out.println("## Trailer ParseError");
+        }
+        // else Token Management Error or Unknown Error during the Trailer
+        // Validation
+        return PreflightConstants.ERROR_SYNTAX_TRAILER;
+    }
 }

@@ -43,58 +43,66 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRes
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class ShaddingPatternValidationProcess extends AbstractProcess {
+public class ShaddingPatternValidationProcess extends AbstractProcess
+{
 
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        PreflightPath vPath = context.getValidationPath();
+        if (vPath.isEmpty() && !vPath.isExpectedType(PDResources.class))
+        {
+            throw new ValidationException("ShadingPattern validation required at least a PDResources");
+        }
 
-	public void validate(PreflightContext context)  throws ValidationException {
-		PreflightPath vPath = context.getValidationPath();
-		if (vPath.isEmpty() && !vPath.isExpectedType(PDResources.class)) {
-			throw new ValidationException("ShadingPattern validation required at least a PDResources");
-		}
+        PDShadingResources shaddingResource = (PDShadingResources) vPath.peek();
+        PDPage page = vPath.getClosestPathElement(PDPage.class);
+        checkColorSpace(context, page, shaddingResource);
+        checkGraphicState(context, page, shaddingResource);
+    }
 
-		PDShadingResources shaddingResource = (PDShadingResources)vPath.peek();
-		PDPage page = vPath.getClosestPathElement(PDPage.class);
-		checkColorSpace(context, page, shaddingResource);
-		checkGraphicState(context, page, shaddingResource);
-	}
+    /**
+     * Checks if the ColorSapce entry is consistent which rules of the PDF Reference and the ISO 190005-1:2005
+     * Specification.
+     * 
+     * This method is called by the validate method.
+     * 
+     * @param shadingRes
+     *            the Shading pattern to check
+     * @return true if the Shading pattern is valid, false otherwise.
+     * @throws ValidationException
+     */
+    protected void checkColorSpace(PreflightContext context, PDPage page, PDShadingResources shadingRes)
+            throws ValidationException
+    {
+        try
+        {
+            PDColorSpace pColorSpace = shadingRes.getColorSpace();
+            PreflightConfiguration config = context.getConfig();
+            ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
+            ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
+            csh.validate();
+        }
+        catch (IOException e)
+        {
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
+        }
+    }
 
-
-
-	/**
-	 * Checks if the ColorSapce entry is consistent which rules of the PDF Reference 
-	 * and the ISO 190005-1:2005 Specification.
-	 * 
-	 * This method is called by the validate method.
-	 * 
-	 * @param shadingRes
-	 *          the Shading pattern  to check
-	 * @return true if the Shading pattern is valid, false otherwise.
-	 * @throws ValidationException
-	 */
-	protected void checkColorSpace(PreflightContext context, PDPage page, PDShadingResources shadingRes) throws ValidationException {
-		try {
-			PDColorSpace pColorSpace = shadingRes.getColorSpace();
-			PreflightConfiguration config = context.getConfig();
-			ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
-			ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pColorSpace, ColorSpaceRestriction.NO_PATTERN);
-			csh.validate();
-		} catch (IOException e) {
-			context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
-		}
-	}
-
-	/**
-	 * Check the Extended Graphic State contains in the ShadingPattern dictionary
-	 * if it is present. To check this ExtGState, this method uses the
-	 * net.awl.edoc.pdfa.validation.graphics.ExtGStateContainer object.
-	 * 
-	 * @return true is the ExtGState is missing or valid, false otherwise.
-	 * @throws ValidationException
-	 */
-	protected void checkGraphicState(PreflightContext context, PDPage page, PDShadingResources shadingRes) throws ValidationException {
-		COSDictionary resources = (COSDictionary) shadingRes.getCOSDictionary().getDictionaryObject(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
-		if (resources != null) {
-			ContextHelper.validateElement(context, resources, EXTGSTATE_PROCESS);
-		}
-	}
+    /**
+     * Check the Extended Graphic State contains in the ShadingPattern dictionary if it is present. To check this
+     * ExtGState, this method uses the net.awl.edoc.pdfa.validation.graphics.ExtGStateContainer object.
+     * 
+     * @return true is the ExtGState is missing or valid, false otherwise.
+     * @throws ValidationException
+     */
+    protected void checkGraphicState(PreflightContext context, PDPage page, PDShadingResources shadingRes)
+            throws ValidationException
+    {
+        COSDictionary resources = (COSDictionary) shadingRes.getCOSDictionary().getDictionaryObject(
+                TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
+        if (resources != null)
+        {
+            ContextHelper.validateElement(context, resources, EXTGSTATE_PROCESS);
+        }
+    }
 }

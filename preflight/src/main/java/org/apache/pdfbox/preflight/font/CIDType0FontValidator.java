@@ -27,19 +27,23 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.font.container.CIDType0Container;
 import org.apache.pdfbox.preflight.font.descriptor.CIDType0DescriptorHelper;
 
-public class CIDType0FontValidator extends DescendantFontValidator<CIDType0Container> {
+public class CIDType0FontValidator extends DescendantFontValidator<CIDType0Container>
+{
 
-	public CIDType0FontValidator(PreflightContext context, PDFont font) {
-		super(context, font, new CIDType0Container(font));
-	}
+    public CIDType0FontValidator(PreflightContext context, PDFont font)
+    {
+        super(context, font, new CIDType0Container(font));
+    }
 
-	@Override
-	protected void checkCIDToGIDMap(COSBase ctog) {
-		checkCIDToGIDMap(ctog, false);
-	}
+    @Override
+    protected void checkCIDToGIDMap(COSBase ctog)
+    {
+        checkCIDToGIDMap(ctog, false);
+    }
 
-	@Override
-	protected void createFontDescriptorHelper() {
-		this.descriptorHelper = new CIDType0DescriptorHelper(context, font, fontContainer);
-	}
+    @Override
+    protected void createFontDescriptorHelper()
+    {
+        this.descriptorHelper = new CIDType0DescriptorHelper(context, font, fontContainer);
+    }
 }

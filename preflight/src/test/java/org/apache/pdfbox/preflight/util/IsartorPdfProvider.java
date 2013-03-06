@@ -23,37 +23,39 @@ package org.apache.pdfbox.preflight.util;
 
 import java.io.InputStream;
 
-public class IsartorPdfProvider {
-//  public static File path;
-//  static {
-//    String ip = System.getProperty("isartor.path", null);
-//    if (ip != null) {
-//      path = new File(ip);
-//      if (!path.exists() || !path.isDirectory()) {
-//        path = null;
-//      }
-//    }
-//  }
+public class IsartorPdfProvider
+{
+    // public static File path;
+    // static {
+    // String ip = System.getProperty("isartor.path", null);
+    // if (ip != null) {
+    // path = new File(ip);
+    // if (!path.exists() || !path.isDirectory()) {
+    // path = null;
+    // }
+    // }
+    // }
 
-  public static InputStream getIsartorDocument(String name) {
-    return IsartorPdfProvider.class.getResourceAsStream(name);
-//    
-//    if (path == null) {
-//      return null;
-//    }
-//
-//    String[] ext = { "pdf" };
-//    Iterator<?> iter = FileUtils.iterateFiles(path, ext, true);
-//    while (iter.hasNext()) {
-//      Object o = iter.next();
-//      if (o instanceof File) {
-//        File isartorFile = (File) o;
-//        if (isartorFile.isFile() && name.equals(isartorFile.getName())) {
-//          return isartorFile;
-//        }
-//      }
-//    }
-//    return null;
-//  }
-  }
+    public static InputStream getIsartorDocument(String name)
+    {
+        return IsartorPdfProvider.class.getResourceAsStream(name);
+        //
+        // if (path == null) {
+        // return null;
+        // }
+        //
+        // String[] ext = { "pdf" };
+        // Iterator<?> iter = FileUtils.iterateFiles(path, ext, true);
+        // while (iter.hasNext()) {
+        // Object o = iter.next();
+        // if (o instanceof File) {
+        // File isartorFile = (File) o;
+        // if (isartorFile.isFile() && name.equals(isartorFile.getName())) {
+        // return isartorFile;
+        // }
+        // }
+        // }
+        // return null;
+        // }
+    }
 }

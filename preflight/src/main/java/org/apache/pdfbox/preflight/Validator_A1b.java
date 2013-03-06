@@ -28,9 +28,6 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 
-
-
-
 /**
  * This class is a simple main class used to check the validity of a pdf file.
  * 
@@ -39,39 +36,48 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
  * @author gbailleul
  * 
  */
-public class Validator_A1b {
+public class Validator_A1b
+{
 
-	public static void main(String[] args) throws Exception {
-		if (args.length == 0) {
-			System.out
-			.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b <file path>");
-			System.out.println("Version : "+Version.getVersion());
-			System.exit(1);
-		}
+    public static void main(String[] args) throws Exception
+    {
+        if (args.length == 0)
+        {
+            System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b <file path>");
+            System.out.println("Version : " + Version.getVersion());
+            System.exit(1);
+        }
 
-		ValidationResult result = null;
-		FileDataSource fd = new FileDataSource(args[0]);
-		PreflightParser parser = new PreflightParser(fd);
-		try {
-			parser.parse();
-			PreflightDocument document = parser.getPreflightDocument();
-			document.validate();
-			result = document.getResult();
-			document.close();
-		} catch (SyntaxValidationException e) {
-			result = e.getResult();
-		}
+        ValidationResult result = null;
+        FileDataSource fd = new FileDataSource(args[0]);
+        PreflightParser parser = new PreflightParser(fd);
+        try
+        {
+            parser.parse();
+            PreflightDocument document = parser.getPreflightDocument();
+            document.validate();
+            result = document.getResult();
+            document.close();
+        }
+        catch (SyntaxValidationException e)
+        {
+            result = e.getResult();
+        }
 
-		if (result.isValid()) {
-			System.out.println("The file " + args[0] + " is a valid PDF/A-1b file");
-			System.exit(0);
-		} else {
-			System.out.println("The file" + args[0] + " is not valid, error(s) :");
-			for (ValidationError error : result.getErrorsList()) {
-				System.out.println(error.getErrorCode() + " : " + error.getDetails());
-			}
+        if (result.isValid())
+        {
+            System.out.println("The file " + args[0] + " is a valid PDF/A-1b file");
+            System.exit(0);
+        }
+        else
+        {
+            System.out.println("The file" + args[0] + " is not valid, error(s) :");
+            for (ValidationError error : result.getErrorsList())
+            {
+                System.out.println(error.getErrorCode() + " : " + error.getDetails());
+            }
 
-			System.exit(-1);
-		}
-	}
+            System.exit(-1);
+        }
+    }
 }

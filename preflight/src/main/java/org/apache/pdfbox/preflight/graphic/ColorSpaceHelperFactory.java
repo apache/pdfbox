@@ -21,49 +21,49 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.preflight.PreflightContext;
 
 /**
- * This factory create the right Helper according to the owner of the ColorSpace
- * entry.
+ * This factory create the right Helper according to the owner of the ColorSpace entry.
  */
-public class ColorSpaceHelperFactory {
+public class ColorSpaceHelperFactory
+{
 
-  /**
-   * Return an instance of ColorSpaceHelper according to the
-   * ColorSpaceRestiction value.
-   * <UL>
-   * <li>ColorSpaceRestiction.NO_PATTERN : returns NoPatternColorSpaceHelper
-   * <li>ColorSpaceRestiction.ONLY_DEVICE : returns DeviceColorSpaceHelper
-   * <li>default : returns StandardColorSpaceHelper
-   * </UL>
-   * 
-   * @param context
-   *          the PreflightContext to access useful data
-   * @param cs
-   *          the High level PDFBox object which represents the ColorSpace
-   * @param csr
-   *          the color space restriction
-   * @return
-   */
-  public ColorSpaceHelper getColorSpaceHelper(PreflightContext context, PDColorSpace cs, ColorSpaceRestriction csr) {
-    switch (csr) {
-    case NO_PATTERN:
-      return new NoPatternColorSpaceHelper(context, cs);
-    case ONLY_DEVICE:
-      return new DeviceColorSpaceHelper(context, cs);
-    default:
-      return new StandardColorSpaceHelper(context, cs);
+    /**
+     * Return an instance of ColorSpaceHelper according to the ColorSpaceRestiction value.
+     * <UL>
+     * <li>ColorSpaceRestiction.NO_PATTERN : returns NoPatternColorSpaceHelper
+     * <li>ColorSpaceRestiction.ONLY_DEVICE : returns DeviceColorSpaceHelper
+     * <li>default : returns StandardColorSpaceHelper
+     * </UL>
+     * 
+     * @param context
+     *            the PreflightContext to access useful data
+     * @param cs
+     *            the High level PDFBox object which represents the ColorSpace
+     * @param csr
+     *            the color space restriction
+     * @return
+     */
+    public ColorSpaceHelper getColorSpaceHelper(PreflightContext context, PDColorSpace cs, ColorSpaceRestriction csr)
+    {
+        switch (csr)
+        {
+        case NO_PATTERN:
+            return new NoPatternColorSpaceHelper(context, cs);
+        case ONLY_DEVICE:
+            return new DeviceColorSpaceHelper(context, cs);
+        default:
+            return new StandardColorSpaceHelper(context, cs);
+        }
     }
-  }
 
-  /**
-   * Enum used as argument of methods of this factory to return the right
-   * Helper.
-   */
-  public enum ColorSpaceRestriction {
-    NO_RESTRICTION, NO_PATTERN, ONLY_DEVICE;
-  }
+    /**
+     * Enum used as argument of methods of this factory to return the right Helper.
+     */
+    public enum ColorSpaceRestriction
+    {
+        NO_RESTRICTION, NO_PATTERN, ONLY_DEVICE;
+    }
 }

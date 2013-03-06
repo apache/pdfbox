@@ -27,44 +27,49 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
  * This exception is raised when the parsing of the xpacket fails
  * 
  */
-public class XpacketParsingException extends Exception {
+public class XpacketParsingException extends Exception
+{
 
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-  protected ValidationError error;
+    protected ValidationError error;
 
-  /**
-   * Constructor
-   * 
-   * @param message
-   *          the message
-   * @param cause
-   *          the cause
-   */
-  public XpacketParsingException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    /**
+     * Constructor
+     * 
+     * @param message
+     *            the message
+     * @param cause
+     *            the cause
+     */
+    public XpacketParsingException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 
-  /**
-   * Constructor
-   * 
-   * @param message
-   *          the message
-   */
-  public XpacketParsingException(String message) {
-    super(message);
-  }
+    /**
+     * Constructor
+     * 
+     * @param message
+     *            the message
+     */
+    public XpacketParsingException(String message)
+    {
+        super(message);
+    }
 
-  public XpacketParsingException(String message, ValidationError error) {
-    super(message);
-    this.error = error;
-  }
+    public XpacketParsingException(String message, ValidationError error)
+    {
+        super(message);
+        this.error = error;
+    }
 
-  public ValidationError getError() {
-    return error;
-  }
+    public ValidationError getError()
+    {
+        return error;
+    }
 
 }

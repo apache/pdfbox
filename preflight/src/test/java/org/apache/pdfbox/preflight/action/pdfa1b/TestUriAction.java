@@ -30,44 +30,51 @@ import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestUriAction extends AbstractTestAction {
-	
-	protected PDActionURI createAction() {
-		PDActionURI action = new PDActionURI();
-		action.setURI("http://www.apache.org");
-		return action;
-	}
-	
-	@Test
-	public void test() throws Exception {
-		PDAction action = createAction();
-		valid(action, true);
-	}
-	
-	@Test
-	public void testMissingURI() throws Exception {
-		PDActionURI action = new PDActionURI();
-		valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
-	
-	@Test
-	public void testInvalidURI() throws Exception {
-		PDActionURI action = new PDActionURI();
-		action.getCOSDictionary().setBoolean(COSName.URI, true);
-		valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
-	}
-	
-	@Test
-	public void testNextValid() throws Exception {
-		PDActionURI action = createAction();
-		action.setNext(Arrays.asList(createAction()));
-		valid(action, true);
-	}
+public class TestUriAction extends AbstractTestAction
+{
 
-	@Test
-	public void testNextInvalid() throws Exception {
-		PDActionURI action = createAction();
-		action.setNext(Arrays.asList(new PDActionJavaScript()));
-		valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
-	}
+    protected PDActionURI createAction()
+    {
+        PDActionURI action = new PDActionURI();
+        action.setURI("http://www.apache.org");
+        return action;
+    }
+
+    @Test
+    public void test() throws Exception
+    {
+        PDAction action = createAction();
+        valid(action, true);
+    }
+
+    @Test
+    public void testMissingURI() throws Exception
+    {
+        PDActionURI action = new PDActionURI();
+        valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
+
+    @Test
+    public void testInvalidURI() throws Exception
+    {
+        PDActionURI action = new PDActionURI();
+        action.getCOSDictionary().setBoolean(COSName.URI, true);
+        valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+    }
+
+    @Test
+    public void testNextValid() throws Exception
+    {
+        PDActionURI action = createAction();
+        action.setNext(Arrays.asList(createAction()));
+        valid(action, true);
+    }
+
+    @Test
+    public void testNextInvalid() throws Exception
+    {
+        PDActionURI action = createAction();
+        action.setNext(Arrays.asList(new PDActionJavaScript()));
+        valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
+    }
 }

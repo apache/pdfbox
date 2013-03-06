@@ -34,61 +34,65 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 /**
  * Validation class for the Widget Annotation
  */
-public class WidgetAnnotationValidator extends AnnotationValidator {
-  /**
-   * PDFBox object which wraps the annotation dictionary
-   */
-  protected PDAnnotationWidget pdWidget = null;
+public class WidgetAnnotationValidator extends AnnotationValidator
+{
+    /**
+     * PDFBox object which wraps the annotation dictionary
+     */
+    protected PDAnnotationWidget pdWidget = null;
 
-  public WidgetAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary) {
-	    super(ctx, annotDictionary);
-    this.pdWidget = new PDAnnotationWidget(annotDictionary);
-    this.pdAnnot = this.pdWidget;
-  }
-
-  /**
-   * In addition of the AnnotationValidator.validate() method, this method
-   * executes the the checkAAField method.
-   * 
-   * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
-   */
-  @Override
-  public boolean validate() throws ValidationException {
-    boolean isValide = super.validate();
-    isValide = isValide && checkAAField();
-    return isValide;
-  }
-
-  /**
-   * The AA field is forbidden for the Widget annotation when the PDF is a
-   * PDF/A. This method return false and update the errors list if this key is
-   * present. returns true otherwise
-   * 
-   * @return
-   */
-  protected boolean checkAAField() {
-    if (this.pdWidget.getActions() != null) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_AA));
-      return false;
+    public WidgetAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    {
+        super(ctx, annotDictionary);
+        this.pdWidget = new PDAnnotationWidget(annotDictionary);
+        this.pdAnnot = this.pdWidget;
     }
-    return true;
-  }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator#
-   * checkMandatoryFields()
-   */
-  protected boolean checkMandatoryFields() {
-    boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-    boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-    boolean f = this.annotDictionary.containsKey(COSName.F);
-
-    boolean result = (subtype && rect && f);
-    if (!result) {
-      ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+    /**
+     * In addition of the AnnotationValidator.validate() method, this method executes the the checkAAField method.
+     * 
+     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
+     */
+    @Override
+    public boolean validate() throws ValidationException
+    {
+        boolean isValide = super.validate();
+        isValide = isValide && checkAAField();
+        return isValide;
     }
-    return result;
-  }
+
+    /**
+     * The AA field is forbidden for the Widget annotation when the PDF is a PDF/A. This method return false and update
+     * the errors list if this key is present. returns true otherwise
+     * 
+     * @return
+     */
+    protected boolean checkAAField()
+    {
+        if (this.pdWidget.getActions() != null)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_AA));
+            return false;
+        }
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields()
+     */
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
+        boolean f = this.annotDictionary.containsKey(COSName.F);
+
+        boolean result = (subtype && rect && f);
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
+        }
+        return result;
+    }
 }

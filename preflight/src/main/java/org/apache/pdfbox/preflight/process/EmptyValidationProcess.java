@@ -25,14 +25,15 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
 /**
- * This class is used to return a non null ValidationProcess when a missing process is asked
- * to the ConfigurationBean only if the errorOnMissingProcess configuration attribute is set to false.
- *
+ * This class is used to return a non null ValidationProcess when a missing process is asked to the ConfigurationBean
+ * only if the errorOnMissingProcess configuration attribute is set to false.
+ * 
  */
-public class EmptyValidationProcess implements ValidationProcess {
-	
-	public void validate(PreflightContext context)
-	throws ValidationException {
-		// this class does nothing 
-	}
+public class EmptyValidationProcess implements ValidationProcess
+{
+
+    public void validate(PreflightContext context) throws ValidationException
+    {
+        // this class does nothing
+    }
 }

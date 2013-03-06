@@ -30,126 +30,148 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class PreflightDocument extends PDDocument {
+public class PreflightDocument extends PDDocument
+{
 
-	protected ValidationResult result = new ValidationResult(true);
-	
-	protected PreflightConfiguration config;
+    protected ValidationResult result = new ValidationResult(true);
 
-	protected PreflightContext context;
+    protected PreflightConfiguration config;
 
-	protected final Format specification;
+    protected PreflightContext context;
 
-	/**
-	 * Create an empty preflight document 
-	 * and load the default configuration for the given format.
-	 * 
-	 * @param format
-	 * @throws IOException
-	 */
-	public PreflightDocument(Format format) throws IOException {
-		this(format, (PreflightConfiguration)null);
-	}
+    protected final Format specification;
 
-	/**
-	 * Create a preflight document based on the COSDocument 
-	 * and load the default configuration for the given format.
-	 * 
-	 * @param doc
-	 * @param format
-	 */
-	public PreflightDocument(COSDocument doc, Format format) {
-		this(doc, format, null);
-	}
+    /**
+     * Create an empty preflight document and load the default configuration for the given format.
+     * 
+     * @param format
+     * @throws IOException
+     */
+    public PreflightDocument(Format format) throws IOException
+    {
+        this(format, (PreflightConfiguration) null);
+    }
 
-	/**
-	 * Create an empty preflight document that will use the given configuration bean to process the validation.
-	 * if the configuration is null, a default configuration will be load using the given format.
-	 * 
-	 * @param format
-	 * @param cfg
-	 * @throws IOException
-	 */
-	public PreflightDocument(Format format, PreflightConfiguration cfg) throws IOException {
-		this(new COSDocument(), format, cfg);
-	}
+    /**
+     * Create a preflight document based on the COSDocument and load the default configuration for the given format.
+     * 
+     * @param doc
+     * @param format
+     */
+    public PreflightDocument(COSDocument doc, Format format)
+    {
+        this(doc, format, null);
+    }
 
-	/**
-	 * Create a preflight document based on the COSDocument that will use the given configuration bean to process the validation.
-	 * if the configuration is null, a default configuration will be load using the given format.
-	 * 
-	 * @param doc
-	 * @param format
-	 * @param cfg
-	 * @throws IOException
-	 */
-	public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration cfg) {
-		super(doc);
-		this.specification = format;
-		this.config = cfg;
-		if (this.config == null) {
-			initConfiguration(format);
-		}
-	}
-	
-	private void initConfiguration(Format format) {
-		switch (format) {
-//		case PDF_A1A:
-//			
-//			break;
+    /**
+     * Create an empty preflight document that will use the given configuration bean to process the validation. if the
+     * configuration is null, a default configuration will be load using the given format.
+     * 
+     * @param format
+     * @param cfg
+     * @throws IOException
+     */
+    public PreflightDocument(Format format, PreflightConfiguration cfg) throws IOException
+    {
+        this(new COSDocument(), format, cfg);
+    }
 
-		default: // default is PDF/A1-b
-			this.config = PreflightConfiguration.createPdfA1BConfiguration();
-			break;
-		}
+    /**
+     * Create a preflight document based on the COSDocument that will use the given configuration bean to process the
+     * validation. if the configuration is null, a default configuration will be load using the given format.
+     * 
+     * @param doc
+     * @param format
+     * @param cfg
+     * @throws IOException
+     */
+    public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration cfg)
+    {
+        super(doc);
+        this.specification = format;
+        this.config = cfg;
+        if (this.config == null)
+        {
+            initConfiguration(format);
+        }
+    }
 
-	}
-	
-	public ValidationResult getResult() {
-		return result;
-	}
+    private void initConfiguration(Format format)
+    {
+        switch (format)
+        {
+        // case PDF_A1A:
+        //
+        // break;
 
-	public void setResult(ValidationResult _result) {
-		if (this.result != null) {
-			this.result.mergeResult(_result);
-		} else if (_result != null) {
-			this.result = _result;
-		} else {
-			this.result = new ValidationResult(true);
-		}
-	}
+        default: // default is PDF/A1-b
+            this.config = PreflightConfiguration.createPdfA1BConfiguration();
+            break;
+        }
 
-	public void addValidationError(ValidationError error) {
-		if (error != null) {
-			if (result == null) {
-				this.result = new ValidationResult(error.isWarning());
-			}
-			this.result.addError(error);
-		}
-	}
-	
-	public PreflightContext getContext() {
-		return this.context;
-	}
+    }
 
-	public void setContext(PreflightContext context) {
-		this.context = context;
-	}
+    public ValidationResult getResult()
+    {
+        return result;
+    }
 
-	/**
-	 * Check that PDDocument is a valid file according to the format given during the object creation. 
-	 * @throws ValidationException
-	 */
-	public void validate() throws ValidationException {
-		context.setConfig(config);
-		Collection<String> processes = config.getProcessNames();
-		for (String name : processes) {
-			ContextHelper.validateElement(context, name);
-		}
-	}
+    public void setResult(ValidationResult _result)
+    {
+        if (this.result != null)
+        {
+            this.result.mergeResult(_result);
+        }
+        else if (_result != null)
+        {
+            this.result = _result;
+        }
+        else
+        {
+            this.result = new ValidationResult(true);
+        }
+    }
 
-	public Format getSpecification() {
-		return specification;
-	}
-	
+    public void addValidationError(ValidationError error)
+    {
+        if (error != null)
+        {
+            if (result == null)
+            {
+                this.result = new ValidationResult(error.isWarning());
+            }
+            this.result.addError(error);
+        }
+    }
+
+    public PreflightContext getContext()
+    {
+        return this.context;
+    }
+
+    public void setContext(PreflightContext context)
+    {
+        this.context = context;
+    }
+
+    /**
+     * Check that PDDocument is a valid file according to the format given during the object creation.
+     * 
+     * @throws ValidationException
+     */
+    public void validate() throws ValidationException
+    {
+        context.setConfig(config);
+        Collection<String> processes = config.getProcessNames();
+        for (String name : processes)
+        {
+            ContextHelper.validateElement(context, name);
+        }
+    }
+
+    public Format getSpecification()
+    {
+        return specification;
+    }
+
 }

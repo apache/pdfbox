@@ -27,63 +27,65 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class TestPreflightPath {
+public class TestPreflightPath
+{
 
-	@Test
-	public void test() {
-		PreflightPath path = new PreflightPath();
+    @Test
+    public void test()
+    {
+        PreflightPath path = new PreflightPath();
 
-		assertTrue(path.isEmpty());
-		assertEquals(0,path.size());
+        assertTrue(path.isEmpty());
+        assertEquals(0, path.size());
 
-		path.pushObject("a");
-		assertEquals(1,path.size());
-		assertFalse(path.isEmpty());
-		
-		int position = path.getClosestTypePosition(String.class);
-		assertEquals(0,position);
-		
-		path.pushObject(new Integer(6));
-		assertEquals(2,path.size());
-		
-		position = path.getClosestTypePosition(String.class);
-		assertEquals(0,position);
-		
-		position = path.getClosestTypePosition(Integer.class);
-		assertEquals(1,position);
-		
-		path.pushObject("b");
-		assertEquals(3,path.size());
-				
-		position = path.getClosestTypePosition(String.class);
-		assertEquals(2,position);
-		position = path.getClosestTypePosition(Integer.class);
-		assertEquals(1,position);
-		
-		Integer i = path.getPathElement(position, Integer.class);
-		assertEquals(new Integer(6), i);
-		
-		Object str = path.peek();
-		assertEquals(3,path.size());
-		assertEquals(String.class, str.getClass());
-		assertEquals("b", (String)str);
-		
-		str = path.pop();
-		assertEquals(2,path.size());
-		assertEquals(String.class, str.getClass());
-		assertEquals("b", (String)str);
-		
-		path.clear();
-		assertTrue(path.isEmpty());
-		assertEquals(0,path.size());
-	}
+        path.pushObject("a");
+        assertEquals(1, path.size());
+        assertFalse(path.isEmpty());
 
-	@Test
-	public void testPush() {
-		PreflightPath path = new PreflightPath();
-		assertTrue(path.pushObject("a"));
-		assertFalse(path.pushObject(null));
-	}
-	
+        int position = path.getClosestTypePosition(String.class);
+        assertEquals(0, position);
+
+        path.pushObject(new Integer(6));
+        assertEquals(2, path.size());
+
+        position = path.getClosestTypePosition(String.class);
+        assertEquals(0, position);
+
+        position = path.getClosestTypePosition(Integer.class);
+        assertEquals(1, position);
+
+        path.pushObject("b");
+        assertEquals(3, path.size());
+
+        position = path.getClosestTypePosition(String.class);
+        assertEquals(2, position);
+        position = path.getClosestTypePosition(Integer.class);
+        assertEquals(1, position);
+
+        Integer i = path.getPathElement(position, Integer.class);
+        assertEquals(new Integer(6), i);
+
+        Object str = path.peek();
+        assertEquals(3, path.size());
+        assertEquals(String.class, str.getClass());
+        assertEquals("b", (String) str);
+
+        str = path.pop();
+        assertEquals(2, path.size());
+        assertEquals(String.class, str.getClass());
+        assertEquals("b", (String) str);
+
+        path.clear();
+        assertTrue(path.isEmpty());
+        assertEquals(0, path.size());
+    }
+
+    @Test
+    public void testPush()
+    {
+        PreflightPath path = new PreflightPath();
+        assertTrue(path.pushObject("a"));
+        assertFalse(path.pushObject(null));
+    }
+
 }
-

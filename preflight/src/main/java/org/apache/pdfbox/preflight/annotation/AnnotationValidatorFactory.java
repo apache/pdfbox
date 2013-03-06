@@ -34,54 +34,67 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
-public abstract class AnnotationValidatorFactory {
-	protected ActionManagerFactory actionFact = null;
+public abstract class AnnotationValidatorFactory
+{
+    protected ActionManagerFactory actionFact = null;
 
-	protected Map<String, Class<? extends AnnotationValidator>> validatorClasses = new HashMap<String, Class<? extends AnnotationValidator>>();
+    protected Map<String, Class<? extends AnnotationValidator>> validatorClasses = new HashMap<String, Class<? extends AnnotationValidator>>();
 
-	public AnnotationValidatorFactory() {
-		initializeClasses();
-	}
+    public AnnotationValidatorFactory()
+    {
+        initializeClasses();
+    }
 
-	public AnnotationValidatorFactory(ActionManagerFactory actionFact) {
-		super();
-		this.actionFact = actionFact;
-	}
+    public AnnotationValidatorFactory(ActionManagerFactory actionFact)
+    {
+        super();
+        this.actionFact = actionFact;
+    }
 
-	public final void setActionFact(ActionManagerFactory _actionFact) {
-		this.actionFact = _actionFact;
-	}
+    public final void setActionFact(ActionManagerFactory _actionFact)
+    {
+        this.actionFact = _actionFact;
+    }
 
-	/**
-	 * Initialize the map of Validation classes used to create a validation object according to the Annotation subtype.
-	 */
-	protected abstract void initializeClasses();
-	
-	/**
-	 * Return an instance of AnnotationValidator.
-	 * 
-	 * @param ctx
-	 * @param annotDic
-	 * @return
-	 */
-	public final AnnotationValidator getAnnotationValidator(PreflightContext ctx, COSDictionary annotDic)
-	throws ValidationException {
-		
-		AnnotationValidator result = null;
-		String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
-		Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
-		
-		if (clazz == null) {
-			ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_SUBTYPE,	"The subtype isn't authorized : " + subtype));
-		} else {
-			try {
-				Constructor<? extends AnnotationValidator> constructor = clazz.getConstructor(PreflightContext.class, COSDictionary.class);
-				result = constructor.newInstance(ctx, annotDic);
-				result.setFactory(this);
-			} catch (Exception e) {
-				throw new ValidationException(e.getMessage());
-			}
-		}
-		return result;
-	}
+    /**
+     * Initialize the map of Validation classes used to create a validation object according to the Annotation subtype.
+     */
+    protected abstract void initializeClasses();
+
+    /**
+     * Return an instance of AnnotationValidator.
+     * 
+     * @param ctx
+     * @param annotDic
+     * @return
+     */
+    public final AnnotationValidator getAnnotationValidator(PreflightContext ctx, COSDictionary annotDic)
+            throws ValidationException
+    {
+
+        AnnotationValidator result = null;
+        String subtype = annotDic.getNameAsString(COSName.SUBTYPE);
+        Class<? extends AnnotationValidator> clazz = this.validatorClasses.get(subtype);
+
+        if (clazz == null)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_SUBTYPE, "The subtype isn't authorized : "
+                    + subtype));
+        }
+        else
+        {
+            try
+            {
+                Constructor<? extends AnnotationValidator> constructor = clazz.getConstructor(PreflightContext.class,
+                        COSDictionary.class);
+                result = constructor.newInstance(ctx, annotDic);
+                result.setFactory(this);
+            }
+            catch (Exception e)
+            {
+                throw new ValidationException(e.getMessage());
+            }
+        }
+        return result;
+    }
 }

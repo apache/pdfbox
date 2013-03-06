@@ -26,41 +26,47 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestHideAction extends AbstractTestAction {
+public class TestHideAction extends AbstractTestAction
+{
 
-	protected COSDictionary createHideAction() {
-		COSDictionary hideAction = new COSDictionary();
-		hideAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
-		hideAction.setItem(COSName.S, COSName.getPDFName("Hide"));
-		hideAction.setBoolean(COSName.H, false);
-		hideAction.setString(COSName.T, "avalue");
-		return hideAction;
-	}
-	
-	@Test
-	public void testHideAction() throws Exception {
-		COSDictionary action = createHideAction();
-		valid(action, true);
-	}
-	
-	@Test
-	public void testHideAction_InvalideH() throws Exception {
-		COSDictionary action = createHideAction();
-		action.setBoolean(COSName.H, true);
-		valid(action, false, PreflightConstants.ERROR_ACTION_HIDE_H_INVALID);
-	}
-	
-	@Test
-	public void testHideAction_InvalideT() throws Exception {
-		COSDictionary action = createHideAction();
-		action.setBoolean(COSName.T, true);
-		valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
-	}
-	
-	@Test
-	public void testHideAction_MissingT() throws Exception {
-		COSDictionary action = createHideAction();
-		action.removeItem(COSName.T);
-		valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
+    protected COSDictionary createHideAction()
+    {
+        COSDictionary hideAction = new COSDictionary();
+        hideAction.setItem(COSName.TYPE, COSName.getPDFName("Action"));
+        hideAction.setItem(COSName.S, COSName.getPDFName("Hide"));
+        hideAction.setBoolean(COSName.H, false);
+        hideAction.setString(COSName.T, "avalue");
+        return hideAction;
+    }
+
+    @Test
+    public void testHideAction() throws Exception
+    {
+        COSDictionary action = createHideAction();
+        valid(action, true);
+    }
+
+    @Test
+    public void testHideAction_InvalideH() throws Exception
+    {
+        COSDictionary action = createHideAction();
+        action.setBoolean(COSName.H, true);
+        valid(action, false, PreflightConstants.ERROR_ACTION_HIDE_H_INVALID);
+    }
+
+    @Test
+    public void testHideAction_InvalideT() throws Exception
+    {
+        COSDictionary action = createHideAction();
+        action.setBoolean(COSName.T, true);
+        valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+    }
+
+    @Test
+    public void testHideAction_MissingT() throws Exception
+    {
+        COSDictionary action = createHideAction();
+        action.removeItem(COSName.T);
+        valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
 }

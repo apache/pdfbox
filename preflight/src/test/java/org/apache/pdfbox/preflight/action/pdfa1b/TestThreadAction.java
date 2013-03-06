@@ -26,33 +26,38 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 
-public class TestThreadAction extends AbstractTestAction {
-	
-	protected COSDictionary createSubmitAction() {
-		COSDictionary action = new COSDictionary();
-		action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
-		action.setItem(COSName.S, COSName.getPDFName("Thread"));
-		action.setInt(COSName.D, 1);
-		return action;
-	}
-	
-	@Test
-	public void test() throws Exception {
-		COSDictionary action = createSubmitAction();
-		valid(action, true);
-	}
-	
-	@Test
-	public void testMissingD() throws Exception {
-		COSDictionary action = createSubmitAction();
-		action.removeItem(COSName.D);
-		valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
-	}
-	
-	@Test
-	public void testInvalidD() throws Exception {
-		COSDictionary action = createSubmitAction();
-		action.setBoolean(COSName.D, false);
-		valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
-	}
+public class TestThreadAction extends AbstractTestAction
+{
+
+    protected COSDictionary createSubmitAction()
+    {
+        COSDictionary action = new COSDictionary();
+        action.setItem(COSName.TYPE, COSName.getPDFName("Action"));
+        action.setItem(COSName.S, COSName.getPDFName("Thread"));
+        action.setInt(COSName.D, 1);
+        return action;
+    }
+
+    @Test
+    public void test() throws Exception
+    {
+        COSDictionary action = createSubmitAction();
+        valid(action, true);
+    }
+
+    @Test
+    public void testMissingD() throws Exception
+    {
+        COSDictionary action = createSubmitAction();
+        action.removeItem(COSName.D);
+        valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
+    }
+
+    @Test
+    public void testInvalidD() throws Exception
+    {
+        COSDictionary action = createSubmitAction();
+        action.setBoolean(COSName.D, false);
+        valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+    }
 }

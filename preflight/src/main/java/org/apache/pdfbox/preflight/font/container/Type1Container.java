@@ -30,73 +30,90 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.preflight.font.util.Type1;
 
-public class Type1Container extends FontContainer {
-	/**
-	 * Represent the missingWidth value of the FontDescriptor dictionary.
-	 * According to the PDF Reference, if this value is missing, the default 
-	 * one is 0.
-	 */
-	private float defaultGlyphWidth = 0;
+public class Type1Container extends FontContainer
+{
+    /**
+     * Represent the missingWidth value of the FontDescriptor dictionary. According to the PDF Reference, if this value
+     * is missing, the default one is 0.
+     */
+    private float defaultGlyphWidth = 0;
 
-	/**
-	 * true if information come from the FontFile1 Stream, 
-	 * false if they come from the FontFile3
-	 */
-	protected boolean isFontFile1 = true;
+    /**
+     * true if information come from the FontFile1 Stream, false if they come from the FontFile3
+     */
+    protected boolean isFontFile1 = true;
 
-	protected Type1 type1Font; 
-	protected List<CFFFont> lCFonts;
+    protected Type1 type1Font;
+    protected List<CFFFont> lCFonts;
 
-	public Type1Container(PDFont font) {
-		super(font);
-	}
+    public Type1Container(PDFont font)
+    {
+        super(font);
+    }
 
-	@Override
-	protected float getFontProgramWidth(int cid) {
-		float widthResult = -1;
-		try {
-			if (isFontFile1) {
-				if (type1Font != null) {
-					widthResult = this.type1Font.getWidthOfCID(cid);
-				}
-			} else {
-				/* 
-				 * Retrieves the SID with the Character Name in the encoding map
-				 * Need more PDF with a Type1C subfont to valid this implementation  
-				 */
-				String name = this.font.getFontEncoding().getName(cid);
-				for (CFFFont cff : lCFonts) {
-					int SID = cff.getEncoding().getSID(cid);
-					for (Mapping m : cff.getMappings() ){
-						if (m.getName().equals(name)) {
-							SID = m.getSID();
-							break;
-						}
-					}
-					widthResult = cff.getWidth(SID);
-					if (widthResult != defaultGlyphWidth) {
-						break;
-					}
-				}
-			}
-		} catch (GlyphException e) {
-			widthResult = -1;
-		} catch (IOException e) {
-			widthResult = -1; // TODO validation exception
-		}
+    @Override
+    protected float getFontProgramWidth(int cid)
+    {
+        float widthResult = -1;
+        try
+        {
+            if (isFontFile1)
+            {
+                if (type1Font != null)
+                {
+                    widthResult = this.type1Font.getWidthOfCID(cid);
+                }
+            }
+            else
+            {
+                /*
+                 * Retrieves the SID with the Character Name in the encoding map Need more PDF with a Type1C subfont to
+                 * valid this implementation
+                 */
+                String name = this.font.getFontEncoding().getName(cid);
+                for (CFFFont cff : lCFonts)
+                {
+                    int SID = cff.getEncoding().getSID(cid);
+                    for (Mapping m : cff.getMappings())
+                    {
+                        if (m.getName().equals(name))
+                        {
+                            SID = m.getSID();
+                            break;
+                        }
+                    }
+                    widthResult = cff.getWidth(SID);
+                    if (widthResult != defaultGlyphWidth)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        catch (GlyphException e)
+        {
+            widthResult = -1;
+        }
+        catch (IOException e)
+        {
+            widthResult = -1; // TODO validation exception
+        }
 
-		return widthResult;
-	}
+        return widthResult;
+    }
 
-	public void setType1Font(Type1 type1Font) {
-		this.type1Font = type1Font;
-	}
+    public void setType1Font(Type1 type1Font)
+    {
+        this.type1Font = type1Font;
+    }
 
-	public void setFontFile1(boolean isFontFile1) {
-		this.isFontFile1 = isFontFile1;
-	}
+    public void setFontFile1(boolean isFontFile1)
+    {
+        this.isFontFile1 = isFontFile1;
+    }
 
-	public void setCFFFontObjects(List<CFFFont> lCFonts) {
-		this.lCFonts = lCFonts;
-	}
+    public void setCFFFontObjects(List<CFFFont> lCFonts)
+    {
+        this.lCFonts = lCFonts;
+    }
 }
