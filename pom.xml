@@ -49,6 +49,7 @@
     <module>xmpbox</module>
     <module>pdfbox</module>
     <module>preflight</module>
+    <module>preflight-app</module>
     <module>lucene</module>
     <module>ant</module>
     <module>war</module>
@@ -107,7 +108,10 @@
                         <include name="jempbox/target/*-${project.version}.jar*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
+                        <include name="xmpbox/target/*-${project.version}.jar*" />
+                        <include name="preflight/target/*-${project.version}.jar*" />
                         <include name="app/target/*-${project.version}.jar*" />
+                        <include name="preflight-app/target/*-${project.version}.jar*" />
                       </fileset>
                     </copy>
                     <checksum algorithm="MD5" fileext=".md5">
