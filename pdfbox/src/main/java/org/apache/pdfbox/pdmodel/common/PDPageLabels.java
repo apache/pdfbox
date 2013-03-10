@@ -98,19 +98,25 @@ public class PDPageLabels implements COSObjectable
         findLabels(root);
     }
     
-    private void findLabels(PDNumberTreeNode node) throws IOException {
-        if (node.getKids() != null) {
+    private void findLabels(PDNumberTreeNode node) throws IOException 
+    {
+        if (node.getKids() != null) 
+        {
             List<PDNumberTreeNode> kids = node.getKids();
-            for (PDNumberTreeNode kid : kids) {
+            for (PDNumberTreeNode kid : kids) 
+            {
                 findLabels(kid);
             }
         }
-        else if (node.getNumbers() != null) {
-            Map<Integer, COSDictionary> numbers = node.getNumbers();
-            for (Entry<Integer, COSDictionary> i : numbers.entrySet())
+        else if (node.getNumbers() != null) 
+        {
+            Map<Integer, COSObjectable> numbers = node.getNumbers();
+            for (Entry<Integer, COSObjectable> i : numbers.entrySet())
             {
                 if(i.getKey() >= 0)
-                    labels.put(i.getKey(), new PDPageLabelRange(i.getValue()));
+                {
+                    labels.put(i.getKey(), new PDPageLabelRange((COSDictionary)i.getValue()));
+                }
             }
         }
     }
@@ -160,7 +166,10 @@ public class PDPageLabels implements COSObjectable
     {
         labels.put(startPage, item);
     }
-
+    
+    /**
+     * {@inheritDoc} 
+     */
     public COSBase getCOSObject()
     {
         COSDictionary dict = new COSDictionary();
