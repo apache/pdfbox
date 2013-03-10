@@ -18,10 +18,10 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.List;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
@@ -85,7 +85,6 @@ public class EmbeddedFiles
             //embedded files are stored in a named tree
             PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
-
             //first create the file specification, which holds the embedded file
             PDComplexFileSpecification fs = new PDComplexFileSpecification();
             fs.setFile( "Test.txt" );
@@ -100,8 +99,14 @@ public class EmbeddedFiles
             ef.setCreationDate( new GregorianCalendar() );
             fs.setEmbeddedFile( ef );
 
-            //now add the entry to the embedded file tree and set in the document.
-            efTree.setNames( Collections.singletonMap( "My first attachment",  fs ) );
+            // create a new tree node and add the embedded file 
+            PDEmbeddedFilesNameTreeNode treeNode = new PDEmbeddedFilesNameTreeNode();
+            treeNode.setNames( Collections.singletonMap( "My first attachment",  fs ) );
+            // add the new node as kid to the root node
+            List<PDEmbeddedFilesNameTreeNode> kids = new ArrayList<PDEmbeddedFilesNameTreeNode>();
+            kids.add(treeNode);
+            efTree.setKids(kids);
+            // add the tree to the document catalog
             PDDocumentNameDictionary names = new PDDocumentNameDictionary( doc.getDocumentCatalog() );
             names.setEmbeddedFiles( efTree );
             doc.getDocumentCatalog().setNames( names );
