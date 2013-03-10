@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -55,7 +56,7 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode
     /**
      * {@inheritDoc}
      */
-    protected Object convertCOSToPD( COSBase base ) throws IOException
+    protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
     {
         COSBase destination = base;
         if( base instanceof COSDictionary )

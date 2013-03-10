@@ -31,6 +31,8 @@ import org.apache.pdfbox.io.ccitt.TestPackedBitArray;
 import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
+import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
@@ -99,6 +101,9 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestExtractText.class );
         
         suite.addTestSuite(TestPDPageContentStream.class);
+        
+        suite.addTestSuite(TestPDNameTreeNode.class);
+        suite.addTestSuite(TestPDNumberTreeNode.class);
 
         return suite;
     }

@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
@@ -54,7 +55,7 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode
     /**
      * {@inheritDoc}
      */
-    protected Object convertCOSToPD( COSBase base ) throws IOException
+    protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
     {
         PDTextStream stream = null;
         if( base instanceof COSString )
