@@ -187,7 +187,7 @@ public class PDNameTreeNode implements COSObjectable
                 try 
                 {
                     Map<String, COSObjectable> names = getNames();
-                    if (names != null && names.size() >= 2)
+                    if (names != null && names.size() > 0)
                     {
                         Object[] keys = names.keySet().toArray();
                         String lowerLimit = (String)keys[0];
