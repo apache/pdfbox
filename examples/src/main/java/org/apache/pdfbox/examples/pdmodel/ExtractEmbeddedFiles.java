@@ -18,13 +18,16 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Iterator;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 
@@ -58,7 +61,6 @@ public class ExtractEmbeddedFiles
         else
         {
             PDDocument document = null;
-
             try
             {
                 File pdfFile = new File(args[0]);
@@ -80,23 +82,23 @@ public class ExtractEmbeddedFiles
                     }
                 }
                 PDDocumentNameDictionary namesDictionary = 
-                    new PDDocumentNameDictionary( document.getDocumentCatalog() );
+                        new PDDocumentNameDictionary( document.getDocumentCatalog() );
                 PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
                 if (efTree != null)
                 {
-                    Map<String,Object> names = efTree.getNames();
-                    Iterator<String> namesKeys = names.keySet().iterator();
-                    while (namesKeys.hasNext())
+                    Map<String,COSObjectable> names = efTree.getNames();
+                    if (names != null)
                     {
-                        String filename = namesKeys.next();
-                        PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
-                        PDEmbeddedFile embeddedFile = fileSpec.getEmbeddedFile();
-                        String embeddedFilename = filePath+filename;
-                        File file = new File(filePath+filename);
-                        System.out.println("Writing "+ embeddedFilename);
-                        FileOutputStream fos = new FileOutputStream(file);
-                        fos.write(embeddedFile.getByteArray());
-                        fos.close();
+                        extractFiles(names, filePath);
+                    }
+                    else
+                    {
+                        List<PDNameTreeNode> kids = efTree.getKids();
+                        for (PDNameTreeNode node : kids)
+                        {
+                            names = node.getNames();
+                            extractFiles(names, filePath);
+                        }
                     }
                 }
             }
@@ -111,6 +113,21 @@ public class ExtractEmbeddedFiles
     }
 
 
+    private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
+            throws IOException
+    {
+        for (String filename : names.keySet())
+        {
+            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
+            PDEmbeddedFile embeddedFile = fileSpec.getEmbeddedFile();
+            String embeddedFilename = filePath+filename;
+            File file = new File(filePath+filename);
+            System.out.println("Writing "+ embeddedFilename);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(embeddedFile.getByteArray());
+            fos.close();
+        }
+    }
     /**
      * This will print the usage for this program.
      */
