@@ -153,15 +153,20 @@ public class PDNameTreeNode implements COSObjectable
             for (PDNameTreeNode kidsNode : kids)
                 kidsNode.setParent(this);
             node.setItem( COSName.KIDS, COSArrayList.converterToCOSArray( kids ) );
-            calculateLimits();
+            // root nodes with kids don't have Names
+            if (isRootNode())
+            {
+                node.setItem(COSName.NAMES, null);
+            }
         }
         else 
         {
-            // Remove Names and Limits if there are no kids
-            node.setItem(COSName.NAMES, null);
-            node.setItem(COSName.LIMITS, null);
+            // remove kids
             node.setItem(COSName.KIDS, null);
+            // remove Limits 
+            node.setItem(COSName.LIMITS, null);
         }
+        calculateLimits();
     }
 
     private void calculateLimits()
