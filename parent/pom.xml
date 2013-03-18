@@ -229,8 +229,22 @@
         </roles>
     </developer>
     <developer>
+        <id>msayhoun</id>
+        <name>Maruan Sayhoun</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
         <id>pkoch</id>
         <name>Phillipp Koch</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>tchojecki</id>
+        <name>Thomas Chojecki</name>
         <roles>
           <role>PMC Member</role>
         </roles>
