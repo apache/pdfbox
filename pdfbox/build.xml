@@ -28,7 +28,7 @@
     <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
-    <property name="project.version" value="1.7.0" />
+    <property name="project.version" value="1.8.0" />
 
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
@@ -770,7 +770,7 @@
             <arg value="-out:${bin.dir}\ImportXFDF.exe" />
             <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\ImportXFDF.class" />
         </exec>
-        <echo>Building Overlay</echo>
+        <echo>Building OverlayPDF</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
@@ -785,8 +785,8 @@
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
             <arg value="-reference:bin\${pdfbox.release.name}.dll" />
             <arg value="-version:${project.version}.0" />
-            <arg value="-out:${bin.dir}\Overlay.exe" />
-            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\Overlay.class" />
+            <arg value="-out:${bin.dir}\OverlayPDF.exe" />
+            <arg value="${pdfbox.target.dir}\classes\org\apache\pdfbox\OverlayPDF.class" />
         </exec>
         <echo>Building PDFSplit</echo>
         <exec executable="${ikvmc}">
