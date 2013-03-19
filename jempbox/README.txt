@@ -25,7 +25,7 @@ Apache Software Foundation.
 License (see also LICENSE.txt)
 ==============================
 
-Collective work: Copyright 2012 The Apache Software Foundation.
+Collective work: Copyright 2013 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
