@@ -124,7 +124,7 @@ public class PageDrawer extends PDFStreamEngine
             PDResources resources = page.findResources();
             processStream( page, resources, page.getContents().getStream() );
         }
-        List annotations = page.getAnnotations();
+        List<PDAnnotation> annotations = page.getAnnotations();
         for( int i=0; i<annotations.size(); i++ )
         {
             PDAnnotation annot = (PDAnnotation)annotations.get( i );
@@ -137,16 +137,24 @@ public class PageDrawer extends PDFStreamEngine
                 {
                     appearanceName = "default";
                 }
-                Map appearanceMap = appearDictionary.getNormalAppearance();
+                Map<String, PDAppearanceStream> appearanceMap = appearDictionary.getNormalAppearance();
                 if (appearanceMap != null) 
                 { 
                     PDAppearanceStream appearance = 
                         (PDAppearanceStream)appearanceMap.get( appearanceName ); 
                     if( appearance != null ) 
                     { 
-                        g.translate( (int)rect.getLowerLeftX(), (int)-rect.getLowerLeftY() ); 
+                        Point2D point = new Point2D.Float(rect.getLowerLeftX(), rect.getLowerLeftY());
+                        Matrix matrix = appearance.getMatrix();
+                        if (matrix != null) 
+                        {
+                            // transform the rectangle using the given matrix 
+                            AffineTransform at = matrix.createAffineTransform();
+                            at.transform(point, point);
+                        }
+                        g.translate( (int)point.getX(), -(int)point.getY() );
                         processSubStream( page, appearance.getResources(), appearance.getStream() ); 
-                        g.translate( (int)-rect.getLowerLeftX(), (int)+rect.getLowerLeftY() ); 
+                        g.translate( -(int)point.getX(), (int)point.getY() ); 
                     }
                 }
             }
