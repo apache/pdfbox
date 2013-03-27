@@ -375,8 +375,8 @@ public class PDFStreamEngine
         textStateParameters.setValue(2,1, riseText);
 
         int pageRotation = page.findRotation();
-        float pageHeight = page.findMediaBox().getHeight();
-        float pageWidth = page.findMediaBox().getWidth();
+        float pageHeight = page.findCropBox().getHeight();
+        float pageWidth = page.findCropBox().getWidth();
 
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Matrix textXctm = new Matrix();
