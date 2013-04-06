@@ -1139,7 +1139,7 @@ public class COSWriter implements ICOSVisitor
             }
             
             // the trailer section should only be used for xref tables not for xref streams
-            if (!doc.isXRefStream() || hybridPrev != -1)
+            if (!incrementalUpdate || !doc.isXRefStream() || hybridPrev != -1)
             {
                 doWriteTrailer(doc);
             }
