@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -61,6 +63,11 @@ import java.util.List;
  */
 public class PDPage implements COSObjectable, Printable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDPage.class);
 
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
 
@@ -310,6 +317,11 @@ public class PDPage implements COSObjectable, Printable
         if( retval == null && getParent() != null )
         {
             retval = getParent().findMediaBox();
+        }
+        if (retval == null)
+        {
+            LOG.debug("Can't find MediaBox, using LETTER as default pagesize!");
+            retval = PDPage.PAGE_SIZE_LETTER;
         }
         return retval;
     }
