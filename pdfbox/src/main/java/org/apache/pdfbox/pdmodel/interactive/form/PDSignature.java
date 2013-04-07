@@ -25,6 +25,8 @@ import java.io.IOException;
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $
+ * 
+ * @deprecated Use {@link PDSignatureField} instead (see PDFBOX-1513).
  */
 public class PDSignature extends PDField
 {
@@ -38,6 +40,8 @@ public class PDSignature extends PDField
     public PDSignature( PDAcroForm theAcroForm, COSDictionary field)
     {
         super(theAcroForm,field);
+        throw new RuntimeException( "The usage of " + getClass().getName() 
+                + " is deprecated. Please use " + PDSignatureField.class.getName() + " instead (see PDFBOX-1513)" );
     }
 
     /**

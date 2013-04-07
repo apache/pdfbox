@@ -380,6 +380,9 @@ public class PDTrueTypeFont extends PDSimpleFont
             
             HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
             int[] widthValues = hMet.getAdvanceWidth();
+            // some monospaced fonts provide only one value for the width 
+            // instead of an array containing the same value for every glyphid 
+            boolean isMonospaced = widthValues.length == 1;
             int nWidths=lastChar-firstChar+1;
             List<Float> widths = new ArrayList<Float>(nWidths);
             // width of the .notdef character.
@@ -406,7 +409,14 @@ public class PDTrueTypeFont extends PDSimpleFont
                 int gid = uniMap.getGlyphId(charCode);
                 if (gid != 0) 
                 {
-                    widths.set( e.getKey().intValue()-firstChar,widthValues[gid]*scaling );
+                    if (isMonospaced)
+                    {
+                        widths.set( e.getKey().intValue()-firstChar,widthValues[0]*scaling );
+                    }
+                    else
+                    {
+                        widths.set( e.getKey().intValue()-firstChar,widthValues[gid]*scaling );
+                    }
                 }
             }
             setWidths( widths );
