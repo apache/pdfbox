@@ -153,10 +153,10 @@ public class TTFSubFont
     
     private static long buildUint32(byte[] bytes) 
     {
-        return ((((long)bytes[3])&0xffL) << 24) |
-                ((((long)bytes[2])&0xffL) << 16) |
-                ((((long)bytes[1])&0xffL) << 8) |
-                (((long)bytes[0])&0xffL);
+        return ((((long)bytes[0])&0xffL) << 24) |
+                ((((long)bytes[1])&0xffL) << 16) |
+                ((((long)bytes[2])&0xffL) << 8) |
+                (((long)bytes[3])&0xffL);
     }
 
     /**
@@ -200,11 +200,6 @@ public class TTFSubFont
         
         checksum &= 0xffffffffL;
         
-        if ((n%4)!=0) 
-        {
-            nup += 4-(n%4);
-        }
-        
         LOG.debug(String.format("Writing table header [%s,%08x,%08x,%08x]",tag,checksum,offset,bytes.length));
         
         byte[] tagbytes = tag.getBytes("US-ASCII");
@@ -214,7 +209,8 @@ public class TTFSubFont
         dos.writeInt((int)offset);
         dos.writeInt(bytes.length);
         
-        return buildUint32(tagbytes) + checksum + offset + bytes.length;
+        // account for the checksum twice, one time for the header field, on time for the content itself.
+        return buildUint32(tagbytes) + checksum + checksum + offset + bytes.length;
     }
     
     private static void writeTableBody(OutputStream os, byte[] bytes) throws IOException 
@@ -472,9 +468,9 @@ public class TTFSubFont
         writeUint16(dos,p.getMaxTwilightPoints());
         writeUint16(dos,p.getMaxStorage());
         writeUint16(dos,p.getMaxFunctionDefs());
-        writeUint16(dos,p.getMaxInstructionDefs());
+        writeUint16(dos,0);
         writeUint16(dos,p.getMaxStackElements());
-        writeUint16(dos,p.getMaxSizeOfInstructions());
+        writeUint16(dos,0);
         writeUint16(dos,p.getMaxComponentElements());
         writeUint16(dos,p.getMaxComponentDepth());
 
@@ -497,7 +493,7 @@ public class TTFSubFont
         
         LOG.debug("Building table [OS/2]...");
 
-        writeUint16(dos,1);
+        writeUint16(dos,0);
         writeSint16(dos,os2.getAverageCharWidth());
         writeUint16(dos,os2.getWeightClass());
         writeUint16(dos,os2.getWidthClass());
@@ -520,10 +516,10 @@ public class TTFSubFont
         writeUint8(dos,os2.getFamilySubClass());
         dos.write(os2.getPanose());
         
-        writeUint32(dos,os2.getUnicodeRange1());
-        writeUint32(dos,os2.getUnicodeRange2());
-        writeUint32(dos,os2.getUnicodeRange3());
-        writeUint32(dos,os2.getUnicodeRange4());
+        writeUint32(dos,0);
+        writeUint32(dos,0);
+        writeUint32(dos,0);
+        writeUint32(dos,0);
         
         dos.write(os2.getAchVendId().getBytes("ISO-8859-1"));
 
@@ -534,8 +530,18 @@ public class TTFSubFont
         writeUint16(dos,os2.getFsSelection());
         writeUint16(dos,first.getKey());
         writeUint16(dos,characters.lastKey());
+        /*
+         * The mysterious Microsoft additions.
+         *
+         * SHORT    sTypoAscender    
+         * SHORT    sTypoDescender    
+         * SHORT    sTypoLineGap
+         * USHORT    usWinAscent
+         * USHORT    usWinDescent
+         */
         writeUint16(dos,os2.getTypoAscender());
         writeUint16(dos,os2.getTypoDescender());
+        writeUint16(dos,os2.getTypeLineGap());
         writeUint16(dos,os2.getWinAscent());
         writeUint16(dos,os2.getWinDescent());
         
@@ -544,22 +550,17 @@ public class TTFSubFont
         return bos.toByteArray();
     }
     
-    private byte[] buildLocaTable() throws IOException 
+    private byte[] buildLocaTable(long[] newOffsets) throws IOException 
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);
 
         LOG.debug("Building table [loca]...");
 
-        long[] offsets = this.baseTTF.getIndexToLocation().getOffsets();
-        long offset = 0L;
-        for (Integer glyphId : this.glyphIds) 
-        {
-            LOG.debug(String.format("glyphId={%d},offset={%08x}",glyphId,offset));
-            writeUint32(dos,offset);
-            offset += offsets[glyphId.intValue()+1] - offsets[glyphId.intValue()];
+        for (long newOff : newOffsets)
+        {                
+            writeUint32(dos,newOff);
         }
-        writeUint32(dos,offset);
         dos.flush();
         LOG.debug("Finished table [loca].");
         return bos.toByteArray();
@@ -646,7 +647,7 @@ public class TTFSubFont
         return glyphIdsToAdd == null;
     }
     
-    private byte[] buildGlyfTable() throws IOException 
+    private byte[] buildGlyfTable(long[] newOffsets) throws IOException 
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         LOG.debug("Building table [glyf]...");
@@ -657,10 +658,13 @@ public class TTFSubFont
         {
             is.skip(g.getOffset());
             long lastOff = 0L;
+            long newOff = 0L;
+            int ioff = 0;
             for (Integer glyphId : this.glyphIds) 
             {
                 long offset = offsets[glyphId.intValue()];
                 long len = offsets[glyphId.intValue()+1] - offset;
+                newOffsets[ioff++] = newOff;
                 is.skip(offset-lastOff);
                 byte[] buf= new byte[(int)len];
                 is.read(buf);
@@ -672,9 +676,11 @@ public class TTFSubFont
                     int flags = 0;
                     do 
                     {
-                        flags = ((((int)buf[off]) & 0xff) << 8) | (buf[off+1] & 0xff); 
+                        // clear the WE_HAVE_INSTRUCTIONS bit. (bit 8 is lsb of the first byte)
+                        buf[off] &= 0xfe;
+                        flags = ((((int)buf[off]) & 0xff) << 8) | ((int)buf[off+1] & 0xff);                         
                         off +=2;
-                        int ogid = ((((int)buf[off]) & 0xff) << 8) | (buf[off+1] & 0xff);
+                        int ogid = ((((int)buf[off]) & 0xff) << 8) | ((int)buf[off+1] & 0xff);
                         if (!this.glyphIds.contains(ogid)) 
                         {
                             this.glyphIds.add(ogid);
@@ -715,10 +721,70 @@ public class TTFSubFont
                         // MORE_COMPONENTS
                     } 
                     while ((flags & (1 << 5)) != 0);
+                    // write the compound glyph
+                    bos.write(buf,0,off);
+                    newOff += off;
                 }
-                bos.write(buf);
+                else if (buf.length > 0)
+                {
+                    /*
+                     * bail out instructions for simple glyphs, an excerpt from the specs is given below:
+                     *                         
+                     * int16    numberOfContours    If the number of contours is positive or zero, it is a single glyph;
+                     * If the number of contours is -1, the glyph is compound
+                     *  FWord    xMin    Minimum x for coordinate data
+                     *  FWord    yMin    Minimum y for coordinate data
+                     *  FWord    xMax    Maximum x for coordinate data
+                     *  FWord    yMax    Maximum y for coordinate data
+                     *  (here follow the data for the simple or compound glyph)
+                     *
+                     * Table 15: Simple glyph definition
+                     *  Type    Name    Description
+                     *  uint16  endPtsOfContours[n] Array of last points of each contour; n is the number of contours;
+                     *          array entries are point indices
+                     *  uint16  instructionLength Total number of bytes needed for instructions
+                     *  uint8   instructions[instructionLength] Array of instructions for this glyph
+                     *  uint8   flags[variable] Array of flags
+                     *  uint8 or int16  xCoordinates[] Array of x-coordinates; the first is relative to (0,0),
+                     *                                 others are relative to previous point
+                     *  uint8 or int16  yCoordinates[] Array of y-coordinates; the first is relative to (0,0), 
+                     *                                 others are relative to previous point
+                     */
+                                        
+                    int    numberOfContours = (((int)buf[0]& 0xff) << 8) | ((int)buf[1] & 0xff); 
+                    
+                    // offset of instructionLength
+                    int off = 2*5 + numberOfContours * 2;
+                    
+                    // write numberOfContours, xMin, yMin, xMax, yMax, endPtsOfContours[n]
+                    bos.write(buf,0,off);
+                    newOff += off;
+                    
+                    int instructionLength = ((((int)buf[off]) & 0xff) << 8) | ((int)buf[off+1] & 0xff);
+                        
+                    // zarro instructions.
+                    bos.write(0);
+                    bos.write(0);
+                    newOff += 2;
+                    
+                    off += 2 + instructionLength;
+                    
+                    // flags and coordinates
+                    bos.write(buf,off,buf.length - off);
+                    newOff += buf.length - off;
+                }
+                
+                
+                if ((newOff % 4L) != 0L) 
+                {
+                    int np = (int)(4-newOff%4L);
+                    bos.write(PAD_BUF,0,np);
+                    newOff += np;
+                }
+                
                 lastOff = offsets[glyphId.intValue()+1];
             }
+            newOffsets[ioff++] = newOff;
         }
         finally 
         {
@@ -821,7 +887,7 @@ public class TTFSubFont
          */
         
         writeUint16(dos,4);
-        writeUint16(dos, 8*2 + nseg * (8*2));
+        writeUint16(dos, 8*2 + nseg * (4*2));
         writeUint16(dos,0);
         writeUint16(dos,nseg*2);
         int nsegHigh = Integer.highestOneBit(nseg);
@@ -1050,19 +1116,19 @@ public class TTFSubFont
                 'name'    naming
                 'post'    PostScript
              */
-            String[] tableNames = {"head","hhea","maxp","name","OS/2","loca","cmap","hmtx","glyf","post"};
+            String[] tableNames = {"OS/2","cmap","glyf","head","hhea","hmtx","loca","maxp","name","post"};
             byte [][] tables = new byte[tableNames.length][];
-            tables[0] = this.buildHeadTable();
-            tables[1] = this.buildHheaTable();
-            tables[2] = this.buildMaxpTable();
-            tables[3] = this.buildNameTable();
-            tables[4] = this.buildOS2Table();
-            tables[5] = this.buildLocaTable();
-            tables[6] = this.buildCmapTable();
-            tables[7] = this.buildHmtxTable();
-            tables[8] = this.buildGlyfTable();
+            long[] newOffsets = new long[this.glyphIds.size()+1];
+            tables[3] = this.buildHeadTable();
+            tables[4] = this.buildHheaTable();
+            tables[7] = this.buildMaxpTable();
+            tables[8] = this.buildNameTable();
+            tables[0] = this.buildOS2Table();
+            tables[2] = this.buildGlyfTable(newOffsets);
+            tables[6] = this.buildLocaTable(newOffsets);
+            tables[1] = this.buildCmapTable();
+            tables[5] = this.buildHmtxTable();
             tables[9] = this.buildPostTable();
-
             long checksum = writeFileHeader(dos,tableNames.length);
             long offset = 12L + 16L * tableNames.length;
             for (int i=0;i<tableNames.length;++i) 
@@ -1072,10 +1138,10 @@ public class TTFSubFont
             }
             checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
             // correct checksumAdjustment of 'head' table.
-            tables[0][8] = (byte)(checksum >>> 24);
-            tables[0][9] = (byte)(checksum >>> 16);
-            tables[0][10] = (byte)(checksum >>> 8);
-            tables[0][11] = (byte)(checksum);
+            tables[3][8] = (byte)(checksum >>> 24);
+            tables[3][9] = (byte)(checksum >>> 16);
+            tables[3][10] = (byte)(checksum >>> 8);
+            tables[3][11] = (byte)(checksum);
             for (int i=0;i<tableNames.length;++i) 
             {
                  writeTableBody(dos,tables[i]);
