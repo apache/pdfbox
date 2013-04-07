@@ -1,143 +1,28 @@
-Release Notes -- Apache PDFBox -- Version 1.8.0
+Release Notes -- Apache PDFBox -- Version 1.8.1
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental feature release based on the earlier 1.x releases.
-This release contains many improvements and fixes especially related to
-performance, resource usage and rendering. The most significant 
-new features are the first official release of the new PDF/A preflight module as
-part of Apache PDFBox and the improved signature abilities.
+This is an incremental bugfix release based on the earlier 1.8.0 release. It 
+contains a couple of fixes, most notable a fix for an issue which leads to
+corrupted files.
 
-For more details on these changes and all the other fixes and improvements
-included in this release, please refer to the following issues on the
-PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
-
-New features
-
-[PDFBOX-46] - Support XFA form submitting
-[PDFBOX-81] - Excetion while extracting images
-[PDFBOX-84] - Read PDF XFA Form Contents
-[PDFBOX-127] - Accessing XML-Forms (patch provided)
-[PDFBOX-1067] - PDF Scan from Xerox WorkCentre 5030 renders as all black
-[PDFBOX-1514] - Improved overlay cammand line tool
-
-Improvements
-
-[PDFBOX-1246] - Allow resolution to be defined when calling ImageIOUtil.writeImage
-[PDFBOX-1312] - Refactor the PdfA parser
-[PDFBOX-1352] - xmpbox refactoring
-[PDFBOX-1367] - Do not generate preflight jar with dependencies at each build
-[PDFBOX-1369] - support getting file pointer from RandomAccessRead interface
-[PDFBOX-1377] - Simplify PDF/A schema parsing
-[PDFBOX-1387] - Create NonSequentialParser with InputStream
-[PDFBOX-1388] - Create a branch to refactor xmpbox
-[PDFBOX-1392] - Enable usage of compressionQuality when creating a PDJpeg
-[PDFBOX-1399] - Add an example on how to extract embedded files
-[PDFBOX-1418] - Improved font mapping
-[PDFBOX-1423] - An error exists on this page. Acrobat may not display the page correctly
-[PDFBOX-1425] - Make PositionWrapper.getTextPosition public
-[PDFBOX-1439] - Problems with Image Extraction from PDF
-[PDFBOX-1468] - Decrypting unencrypted strings
-[PDFBOX-1488] - Add generics to the COSArrayList class
-[PDFBOX-1492] - Add basic XFA extraction
-[PDFBOX-1513] - PDF signature improvements
-[PDFBOX-1536] - Improve the ExtractEmbeddedFiles example to deal with different kind of 
-                trees representing the embedded files
+For more details on all fixes included in this release, please refer to the following
+issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug Fixes
 
-[PDFBOX-137] - Does not detect paper format
-[PDFBOX-811] - EmbeddedFiles example does not work
-[PDFBOX-819] - PDFBox prints landscape documents as portrait
-[PDFBOX-927] - Problem on writing some kind of images to a File in filesystem
-[PDFBOX-969] - IndexOutOfBound whle creating a Type1C font
-[PDFBOX-985] - PDF Printing Orientation
-[PDFBOX-992] - IndexOutOfBoundsException: while parsing few pdf's
-[PDFBOX-1072] - PDFImageWriter extracts black images from arabic PDFs
-[PDFBOX-1084] - java.lang.NumberFormatException when getting PDF text of some PDF file if 
-                dup line does not contains font index
-[PDFBOX-1130] - ExtractText -html doesn't always close the <p> tags it opens
-[PDFBOX-1138] - Printing fails for pages in landscape format
-[PDFBOX-1169] - Images extracted from PDF are loosing color (are shown in blackcolor)
-[PDFBOX-1191] - Lost information while extracting images from pdf scanned by XEROX
-[PDFBOX-1298] - java.lang.IllegalArgumentException: fromIndex(0) > toIndex(-2)
-[PDFBOX-1344] - xml namespace problem in ResourceRef
-[PDFBOX-1346] - Can't assign an arbitrary string value to an editable acroform combobox
-[PDFBOX-1359] - stack overflow~~ ExtractText (PDF2TXT)
-[PDFBOX-1362] - Slovakian characters
-[PDFBOX-1364] - Error On MetaData
-[PDFBOX-1365] - Error On MetaData: The Metadata entry doesn't reference a stream object
-[PDFBOX-1368] - Xmp validation KO if there are complex type in a seq element
-[PDFBOX-1371] - MetaData : Trapped property
-[PDFBOX-1373] - Body Syntax Error : Possible Encoding problem
-[PDFBOX-1374] - Error On MetaData: Title
-[PDFBOX-1376] - xmpbox cannot parse structured types containing structured types
-[PDFBOX-1378] - [PATCH] COSArray: Avoid NullPointerException in setString
-[PDFBOX-1379] - [PATCH] COSDocument: setVersion
-[PDFBOX-1380] - [PATCH] PDNameTreeNode
-[PDFBOX-1381] - [PATCH] PDNumberTreeNode
-[PDFBOX-1382] - [PATCH] PDObjectReference
-[PDFBOX-1394] - Image streams are lost when adding new images to page
-[PDFBOX-1395] - Transparency isn't checked in Page dictionary
-[PDFBOX-1398] - Runtime exception when trying to check PDF/A compliance on non PDF/A document
-[PDFBOX-1408] - Width of space character is calculated wrong
-[PDFBOX-1411] - [Patch] PDPixelMap.createImageStream can attempt to close output stream it 
-                didn't open, hiding errors.
-[PDFBOX-1412] - NullPointerException when getting fields from a PDF file
-[PDFBOX-1421] - TextPosition.getX()returen 0 in case of rotation ==360
-[PDFBOX-1424] - Wrong glyph (Persian) is used in extacted text instead of the original glyph 
-                (Persian) in PDF file
-[PDFBOX-1427] - PDF page rotation is not working
-[PDFBOX-1431] - Some pdfss created by ABBY trigger a NPE
-[PDFBOX-1432] - PDF rotation problem
-[PDFBOX-1434] - Font being changed after form field is set
-[PDFBOX-1440] - Garbled image from PDFToImage
-[PDFBOX-1443] - Images are rendered blank
-[PDFBOX-1445] - /ImageMask true does not work. Patch included.
-[PDFBOX-1447] - wasted work in PDFMarkedContentExtractor.processTextPosition()
-[PDFBOX-1449] - Preflight doesn't report on non-embedded font
-[PDFBOX-1456] - wasted work in PublicKeySecurityHandler.prepareForDecryption()
-[PDFBOX-1458] - wasted work in PDOptionalContentProperties.setGroupEnabled()
-[PDFBOX-1464] - unnecessary linear searches in "CFFParser.Format0FDSelect.getFd"
-[PDFBOX-1465] - Preflight crashes on PDF
-[PDFBOX-1469] - [PATCH] PDPageContentStream incorrectly sets colors in CMYK color space
-[PDFBOX-1470] - about attribute is serialized more than one time in XmpSerializer
-[PDFBOX-1471] - Parsing of xmp properties set in xml attributes is not done
-[PDFBOX-1473] - Incorrect handling of OpenType fonts
-[PDFBOX-1475] - Exception thrown during rendering page if /DecodeParms specified indirectly 
-                (like [9 0 R]) in XObject/Image
-[PDFBOX-1476] - Isartor tests fails due to bad rdf:about handling
-[PDFBOX-1477] - PDF/A file is declared invalid on windows and valid with linux
-[PDFBOX-1481] - Ignore postscript code when parsing a type1 font
-[PDFBOX-1482] - Java color spaces returned by PDDeviceN do not take tint transformation into account 
-                and type mismatch
-[PDFBOX-1489] - Maven Dependency not resolveable agains central
-[PDFBOX-1490] - pdf page => inline image not converted
-[PDFBOX-1491] - Image with colour key masking triggers NPE
-[PDFBOX-1496] - Can't add multiple form XObjects to a PDF - they become duplicated
-[PDFBOX-1497] - Preflight throws an exception on DeviceN validation
-[PDFBOX-1499] - The blank white page is converted with method pdPage.convertToImage();
-[PDFBOX-1501] - Width of the character "201" .. inconsistent with the width in the PDF dictionary.
-[PDFBOX-1504] - Split document issue
-[PDFBOX-1505] - [PATCH] CharStringRenderer does not render CharString data correctly for Type 2 
-                CFF fonts
-[PDFBOX-1517] - PDFSplit: split is set to one if no -split argument present
-[PDFBOX-1518] - ClassCastException writing text to a page
-[PDFBOX-1522] - Some PDF files are causing exception (java.io.IOException: Error: Could not find 
-                font(COSName{F53.0}) in map=)
-[PDFBOX-1535] - Extract text from PDF cause Nullpointer Exception in PDFStreamEngine.processEncodedText
-                Method
-
-Misc
-
-[PDFBOX-1366] - Reduce xmpbox code complexity
-[PDFBOX-1528] - rename org.apache.padaf.xmpbox to org.apache.xmpbox
-[PDFBOX-1530] - Respect PDFBox coding rules in new modules
-[PDFBOX-1531] - Reaarange xmpbox and preflight maven modules
-[PDFBOX-795] - PDPage convertToImage partially generates image file and throws exception
+[PDFBOX-1515] - PDGraphicsState class receives null page argument leading to NPE
+[PDFBOX-1538] - Content of annotation not visible in image (converted from pdf)
+[PDFBOX-1547] - TextPosition.getX() and getY() do not work properly with CropBox
+[PDFBOX-1549] - TTFSubFont generates bug-prone TTF sub fonts screwing some printers
+[PDFBOX-1551] - Merging PDFs with interactive forms results in a corrupt PDF
+[PDFBOX-1556] - Saving a document containing a xfa form creates invalid pdf
+[PDFBOX-1557] - NonSequentialPDFParser incorrectly parsing document info
+[PDFBOX-1558] - Unused PDSignature class should be removed
+[PDFBOX-1559] - Error when using monospaced Fonts
 
 Release Contents
 ----------------
