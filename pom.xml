@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.8.1</version>
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
@@ -34,12 +34,12 @@
 
   <scm>
     <connection>
-      scm:svn:http://svn.apache.org/repos/asf/pdfbox/branches/1.8
+      scm:svn:http://svn.apache.org/repos/asf/pdfbox/tags/1.8.1
     </connection>
     <developerConnection>
-      scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/1.8
+      scm:svn:https://svn.apache.org/repos/asf/pdfbox/tags/1.8.1
     </developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/branches/1.8</url>
+    <url>http://svn.apache.org/viewvc/pdfbox/tags/1.8.1</url>
   </scm>
 
   <modules>
