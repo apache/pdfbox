@@ -249,17 +249,8 @@ public class PreflightParser extends NonSequentialPDFParser
         // fill xref table
         document.addXRefTable(xrefTrailerResolver.getXrefTable());
 
-        // Trailer entries are useful in the preflight document
-        for (COSBase trailerEntry : getDocument().getTrailer().getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, true);
-            }
-        }
-
         // For each ObjectKey, we check if the object has been loaded
+        // useful for linearized PDFs
         Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
         for (Entry<COSObjectKey, Long> entry : xrefTable.entrySet())
         {
