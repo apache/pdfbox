@@ -397,6 +397,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DESTS = new COSName( "Dests" );
 
     /**
+     * A common COSName value.
+     */
+    public static final COSName DEST_OUTPUT_PROFILE = new COSName( "DestOutputProfile" ); 
+    
+    /**
     * A common COSName value.
     */
     public static final COSName DEVICECMYK = new COSName( "DeviceCMYK" );
@@ -697,9 +702,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName GAMMA = new COSName( "Gamma" );
+
     /**
      * A common COSName value.
      */
+    public static final COSName GTS_PDFA1 = new COSName ("GTS_PDFA1");
+    
     public static final COSName H = new COSName( "H" );
     /**
     * A common COSName value.
@@ -1014,10 +1022,31 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName OS = new COSName( "OS" );
+
     /**
      * A common COSName value.
      */
     public static final COSName OUTLINES = new COSName("Outlines");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_INTENT = new COSName( "OutputIntent" ); 
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_INTENTS = new COSName( "OutputIntents" ); 
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_CONDITION = new COSName("OutputCondition"); 
+    
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_CONDITION_IDENTIFIER = new COSName("OutputConditionIdentifier"); 
 
     /**
      * A common COSName value.
@@ -1160,6 +1189,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName REGISTRY = new COSName( "Registry" );
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName REGISTRY_NAME = new COSName("RegistryName");
+
     /**
     * A common COSName value.
     */
