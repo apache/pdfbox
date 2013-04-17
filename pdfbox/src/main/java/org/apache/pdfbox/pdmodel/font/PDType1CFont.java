@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -87,15 +86,19 @@ public class PDType1CFont extends PDSimpleFont
 
     private PDRectangle fontBBox = null;
 
-    private static final Log log = LogFactory.getLog(PDType1CFont.class);
+    private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
 
     private static final byte[] SPACE_BYTES = {(byte)32};
 
     private COSDictionary fontDict = null;
     
+    private Map<Integer, Integer> codeToGlyph = new HashMap<Integer, Integer>();
+    
     /**
      * Constructor.
+     * 
      * @param fontDictionary the corresponding dictionary
+     * @throws IOException it somethin went wrong
      */
     public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
@@ -112,13 +115,17 @@ public class PDType1CFont extends PDSimpleFont
         String character = getCharacter(bytes, offset, length);
         if( character == null )
         {
-            log.debug("No character for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
+            LOG.debug("No character for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
             return null;
         }
 
         return character;
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int encodeToCID( byte[] bytes, int offset, int length )
     {
       if (length > 2)
@@ -136,8 +143,9 @@ public class PDType1CFont extends PDSimpleFont
     private String getCharacter( byte[] bytes, int offset, int length )
     {
         int code = encodeToCID(bytes, offset, length);
-        if (code == -1) {
-        	return null;
+        if (code == -1) 
+        {
+            return null;
         }
         return (String)this.codeToCharacter.get(code);
     }
@@ -150,7 +158,7 @@ public class PDType1CFont extends PDSimpleFont
         String name = getName(bytes, offset, length);
         if( name == null && !Arrays.equals(SPACE_BYTES, bytes) )
         {
-            log.debug("No name for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
+            LOG.debug("No name for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
 
             return 0;
         }
@@ -173,7 +181,7 @@ public class PDType1CFont extends PDSimpleFont
         String name = getName(bytes, offset, length);
         if( name == null )
         {
-            log.debug("No name for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
+            LOG.debug("No name for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
 
             return 0;
         }
@@ -218,7 +226,7 @@ public class PDType1CFont extends PDSimpleFont
             Integer code = getCode(character);
             if( code == null )
             {
-                log.debug("No code for character " + character);
+                LOG.debug("No code for character " + character);
 
                 return 0;
             }
@@ -234,6 +242,16 @@ public class PDType1CFont extends PDSimpleFont
         return (Integer)this.characterToCode.get(character);
     }
 
+    /**
+     * Returns the glyph index of the given character code.
+     * 
+     * @param code the character code
+     * @return the glyph index
+     */
+    protected Integer getGlyphIndex(int code) 
+    {
+        return codeToGlyph.get(code);
+    }
 
     /**
      * {@inheritDoc}
@@ -308,7 +326,7 @@ public class PDType1CFont extends PDSimpleFont
             }
             catch (IOException exception)
             {
-                log.error("An error occured while extracting the font metrics!", exception);
+                LOG.error("An error occured while extracting the font metrics!", exception);
             }
         }
         return fontMetric;
@@ -338,11 +356,9 @@ public class PDType1CFont extends PDSimpleFont
             this.cffFont = (CFFFont)fonts.get(0);
         }
 
-        CFFEncoding encoding = this.cffFont.getEncoding();
-        PDFEncoding pdfEncoding = new PDFEncoding(encoding);
+        PDFEncoding pdfEncoding = new PDFEncoding();
 
-        CFFCharset charset = this.cffFont.getCharset();
-        PDFCharset pdfCharset = new PDFCharset(charset);
+        PDFCharset pdfCharset = new PDFCharset();
 
         Map<String,byte[]> charStringsDict = this.cffFont.getCharStringsDict();
         Map<String,byte[]> pdfCharStringsDict = new LinkedHashMap<String,byte[]>();
@@ -369,47 +385,34 @@ public class PDType1CFont extends PDSimpleFont
             String name = (String)entry.getValue();
             if(knownNames.contains(name))
             {
+                Iterator<Map.Entry<Integer, String>> iter = codeToNameMap.entrySet().iterator();
+                while (iter.hasNext()) 
+                {
+                    Map.Entry<Integer, String> existingEntry = iter.next();
+                    if (existingEntry.getValue().equals(name)) 
+                    {
+                        iter.remove();
+                        break;
+                    }
+                }
                 codeToNameMap.put(code, name);
             }
         }
 
-        Map<String,String> nameToCharacter;
-        try
-        {
-            // TODO remove access by reflection
-            Field nameToCharacterField = Encoding.class.getDeclaredField("NAME_TO_CHARACTER");
-            nameToCharacterField.setAccessible(true);
-            nameToCharacter = (Map<String,String>)nameToCharacterField.get(null);
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException(e);
-        }
-
+        int glyphIndex = 0;
         for( Iterator<Map.Entry<Integer,String>> it = (codeToNameMap.entrySet()).iterator(); it.hasNext();)
         {
             Map.Entry<Integer,String> entry = it.next();
             Integer code = (Integer)entry.getKey();
             String name = (String)entry.getValue();
-            String uniName = "uni";
-            String character = (String)nameToCharacter.get(name);
-            if( character != null )
-            {
-                for( int j = 0; j < character.length(); j++ )
-                {
-                    uniName += hexString(character.charAt(j), 4);
-                }
-            }
-            else
-            {
-                uniName += hexString(code.intValue(), 4);
-                character = String.valueOf((char)code.intValue());
-            }
+            String uniName = "uni" + hexString(code.intValue(), 4);
+            String character = String.valueOf((char) code.intValue());
             pdfEncoding.register(code.intValue(), code.intValue());
             pdfCharset.register(code.intValue(), uniName);
-            this.codeToName.put(code, uniName);
-            this.codeToCharacter.put(code, character);
-            this.characterToCode.put(character, code);
+            codeToName.put(code, uniName);
+            codeToCharacter.put(code, character);
+            characterToCode.put(character, code);
+            codeToGlyph.put(code, glyphIndex++);
             pdfCharStringsDict.put(uniName, charStringsDict.get(name));
         }
 
@@ -477,10 +480,38 @@ public class PDType1CFont extends PDSimpleFont
             COSArray differences = (COSArray)encodingDic.getDictionaryObject(COSName.DIFFERENCES);
             if( differences != null )
             {
-                result.putAll(loadDifferences(differences));
+                Map<Integer, String> diffs = loadDifferences(differences);
+                if (baseName == null) 
+                {
+                    result.putAll(diffs);
+                } 
+                else 
+                {
+                    Set<String> knownNames = new HashSet<String>(result.values());
+                    Iterator<Map.Entry<Integer, String>> it = (diffs.entrySet()).iterator();
+                    while (it.hasNext()) 
+                    {
+                        Map.Entry<Integer, String> entry = it.next();
+                        Integer code = (Integer) entry.getKey();
+                        String name = (String) entry.getValue();
+                        if (knownNames.contains(name)) 
+                        {
+                            Iterator<Map.Entry<Integer, String>> iter = result.entrySet().iterator();
+                            while( iter.hasNext()) 
+                            {
+                                Map.Entry<Integer, String> existingEntry = iter.next();
+                                if (existingEntry.getValue().equals(name)) 
+                                {
+                                    iter.remove();
+                                    break;
+                                }
+                            }
+                        }
+                        result.put(code, name);
+                    }
+                }
             }
         }
-
         return result;
     }
 
@@ -526,7 +557,7 @@ public class PDType1CFont extends PDSimpleFont
     
     private static String hexString( int code, int length )
     {
-        String string = Integer.toHexString(code);
+        String string = Integer.toHexString(code).toUpperCase();
         while(string.length() < length)
         {
             string = ("0" + string);
@@ -591,13 +622,8 @@ public class PDType1CFont extends PDSimpleFont
     private static class PDFEncoding extends CFFEncoding
     {
 
-        private PDFEncoding( CFFEncoding parent )
+        private PDFEncoding()
         {
-            Iterator<Entry> parentEntries = parent.getEntries().iterator();
-            while(parentEntries.hasNext())
-            {
-                addEntry(parentEntries.next());
-            }
         }
 
         public boolean isFontSpecific()
@@ -613,13 +639,8 @@ public class PDType1CFont extends PDSimpleFont
      */
     private static class PDFCharset extends CFFCharset
     {
-        private PDFCharset( CFFCharset parent )
+        private PDFCharset()
         {
-            Iterator<Entry> parentEntries = parent.getEntries().iterator();
-            while(parentEntries.hasNext())
-            {
-                addEntry(parentEntries.next());
-            }
         }
 
         public boolean isFontSpecific()
