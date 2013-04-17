@@ -18,9 +18,11 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.font.GlyphVector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -52,7 +54,7 @@ public class PDType1Font extends PDSimpleFont
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDType1Font.class);
+    private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
     private PDType1CFont type1CFont = null;
     /**
@@ -163,7 +165,7 @@ public class PDType1Font extends PDSimpleFont
                 }
                 catch (IOException exception) 
                 {
-                    log.info("Can't read the embedded type1C font " + fd.getFontName() );
+                    LOG.info("Can't read the embedded type1C font " + fd.getFontName() );
                 }
             }
         }
@@ -227,11 +229,12 @@ public class PDType1Font extends PDSimpleFont
                         try 
                         {
                             // create a type1 font with the embedded data
-                            awtFont = Font.createFont( Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream() );
+                            awtFont = Font.createFont( Font.TYPE1_FONT,
+                                    fdDictionary.getFontFile().createInputStream() );
                         } 
                         catch (FontFormatException e) 
                         {
-                            log.info("Can't read the embedded type1 font " + fd.getFontName() );
+                            LOG.info("Can't read the embedded type1 font " + fd.getFontName() );
                         }
                     }
                     if (awtFont == null)
@@ -240,7 +243,7 @@ public class PDType1Font extends PDSimpleFont
                         awtFont = FontManager.getAwtFont(fd.getFontName());
                         if (awtFont == null)
                         {
-                            log.info("Can't find the specified font " + fd.getFontName() );
+                            LOG.info("Can't find the specified font " + fd.getFontName() );
                         }
                     }
                 }
@@ -250,7 +253,7 @@ public class PDType1Font extends PDSimpleFont
                     awtFont = FontManager.getAwtFont(baseFont);
                     if (awtFont == null) 
                     {
-                        log.info("Can't find the specified basefont " + baseFont );
+                        LOG.info("Can't find the specified basefont " + baseFont );
                     }
                 }
             }
@@ -258,12 +261,16 @@ public class PDType1Font extends PDSimpleFont
             {
                 // we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
-                log.info("Using font "+awtFont.getName()+ " instead");
+                LOG.info("Using font "+awtFont.getName()+ " instead");
             }
         }
         return awtFont;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void determineEncoding()
     {
         super.determineEncoding();
@@ -308,9 +315,12 @@ public class PDType1Font extends PDSimpleFont
                     {
                         if (extractEncoding) 
                         {
-                            if (line.startsWith("currentdict end")) {
+                            if (line.startsWith("currentdict end")) 
+                            {
                                 if (encoding != null)
+                                {
                                     setFontEncoding(encoding);
+                                }
                                 break;
                             }
                             if (line.startsWith("/Encoding")) 
@@ -337,7 +347,8 @@ public class PDType1Font extends PDSimpleFont
                                     break;
                                 }
                             }
-                            else if (line.startsWith("dup")) {
+                            else if (line.startsWith("dup")) 
+                            {
                                 StringTokenizer st = new StringTokenizer(line.replaceAll("/"," /"));
                                 // ignore the first token
                                 st.nextElement();
@@ -347,7 +358,8 @@ public class PDType1Font extends PDSimpleFont
                                     String name = st.nextToken();
                                     if(encoding == null)
                                     {
-                                        log.warn("Unable to get character encoding. Encoding defintion found without /Encoding line.");
+                                        LOG.warn("Unable to get character encoding. " +
+                                                "Encoding defintion found without /Encoding line.");
                                     }
                                     else
                                     {
@@ -359,7 +371,7 @@ public class PDType1Font extends PDSimpleFont
                                     // there are (tex?)-some fonts containing postscript code like the following, 
                                     // which has to be ignored, see PDFBOX-1481
                                     // dup dup 161 10 getinterval 0 exch putinterval ....
-                                    log.debug("Malformed encoding definition ignored (line="+line+")");
+                                    LOG.debug("Malformed encoding definition ignored (line="+line+")");
                                 }
                                 continue;
                             }
@@ -385,7 +397,7 @@ public class PDType1Font extends PDSimpleFont
                                 }
                                 catch (NumberFormatException exception)
                                 {
-                                    log.error("Can't read the fontmatrix from embedded font file!");
+                                    LOG.error("Can't read the fontmatrix from embedded font file!");
                                 }
                             }
                         }
@@ -393,7 +405,7 @@ public class PDType1Font extends PDSimpleFont
                 }
                 catch(IOException exception) 
                 {
-                    log.error("Error: Could not extract the encoding from the embedded type1 font.");
+                    LOG.error("Error: Could not extract the encoding from the embedded type1 font.");
                 }
                 finally
                 {
@@ -405,7 +417,7 @@ public class PDType1Font extends PDSimpleFont
                         }
                         catch(IOException exception) 
                         {
-                            log.error("An error occurs while closing the stream used to read the embedded type1 font.");
+                            LOG.error("An error occurs while closing the stream used to read the embedded type1 font.");
                         }
                     }
                 }
@@ -419,7 +431,7 @@ public class PDType1Font extends PDSimpleFont
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
-        if (type1CFont != null && getFontEncoding() == null)
+        if (type1CFont != null)
         {
             return type1CFont.encode(c, offset, length);
         }
@@ -429,7 +441,12 @@ public class PDType1Font extends PDSimpleFont
         }
     }
     
-    public int encodeToCID( byte[] c, int offset, int length ) throws IOException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int encodeToCID( byte[] c, int offset, int length ) throws IOException 
+    {
       if (type1CFont != null && getFontEncoding() == null)
       {
           return type1CFont.encodeToCID(c, offset, length);
@@ -439,6 +456,7 @@ public class PDType1Font extends PDSimpleFont
           return super.encodeToCID(c, offset, length);
       }
     }
+    
     /**
      * {@inheritDoc}
      */
@@ -454,4 +472,45 @@ public class PDType1Font extends PDSimpleFont
             return super.getFontMatrix();
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
+    {
+        // this is used to fix an apparent bug with the sun jdk where the mapping of
+        // character code to glyph index done by native code is wrong; this does not happen with openjdk
+        try 
+        {
+            Field fGlyphs = glyphVector.getClass().getDeclaredField("glyphs");
+            fGlyphs.setAccessible(true);
+            int[] glyphs = (int[]) fGlyphs.get(glyphVector);
+            if (glyphs.length == 1 && glyphs[0] != 65535) 
+            {
+                return glyphVector;
+            }
+            if (type1CFont != null) 
+            {
+                Field fuserGlyphs = glyphVector.getClass().getDeclaredField("userGlyphs");
+                fuserGlyphs.setAccessible(true);
+                int[] userGlyphs = (int[]) fuserGlyphs.get(glyphVector);
+                for (int j = 0; j < glyphs.length; j++) 
+                {
+                    if (glyphs[j] == 65535) 
+                    {
+                        int c = (int) string.charAt(j);
+                        glyphs[j] = type1CFont.getGlyphIndex(c);
+                        userGlyphs[j] = type1CFont.getGlyphIndex(c);
+                    }
+                }
+            }
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
+        return glyphVector;
+    }
+
 }

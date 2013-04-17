@@ -141,6 +141,10 @@ public abstract class PDSimpleFont extends PDFont
                 awtFont = Font.decode(null).deriveFont(1f);
             }
             glyphs = awtFont.createGlyphVector(frc, string);
+            if (isType1Font()) 
+            {
+                glyphs = remapGlyphs(glyphs, string);
+            }
         }
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
@@ -546,5 +550,16 @@ public abstract class PDSimpleFont extends PDFont
         }
         return fontWidthOfSpace;
     }
-
+    
+    /**
+     * Remap glyphs.
+     * 
+     * @param glyphVector glyph vector to be remapped
+     * @param string the represented string
+     * @return the remapped glyph vector
+     */
+    protected GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
+    {
+        return glyphVector;
+    }
 }
