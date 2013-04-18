@@ -401,10 +401,11 @@ public class PDFStreamParser extends BaseParser
                 //(UnderstandingWebSphereClassLoaders.pdf) which has EI as part
                 //of the image data and will stop parsing prematurely if there is
                 //not a check for <whitespace>EI<whitespace>.
-                while( !(isWhitespace( twoBytesAgo ) &&
+                // Not all whitespaces are allowed here. see PDFBOX1561
+                while( !(isSpaceOrReturn( twoBytesAgo ) &&
                          lastByte == 'E' &&
                          currentByte == 'I' &&
-                         isWhitespace() //&&
+                         isSpaceOrReturn() //&&
                          //amyuni2_05d__pdf1_3_acro4x.pdf has image data that
                          //is compressed, so expectedBytes is useless here.
                          //count >= expectedBytes
@@ -489,4 +490,16 @@ public class PDFStreamParser extends BaseParser
         }
         return buffer.toString();
     }
+    
+    
+    private boolean isSpaceOrReturn( int c )
+    {
+        return c == 13 || c == 32;
+    }
+
+    private boolean isSpaceOrReturn() throws IOException
+    {
+        return isSpaceOrReturn( pdfSource.peek() );
+    }
+
 }
