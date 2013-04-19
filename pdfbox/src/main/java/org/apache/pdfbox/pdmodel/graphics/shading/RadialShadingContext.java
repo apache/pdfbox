@@ -46,9 +46,9 @@ public class RadialShadingContext implements PaintContext
 {
 
     private ColorModel colorModel;
-    private PDFunction function;
     private ColorSpace shadingColorSpace;
     private PDFunction shadingTinttransform;
+    private PDShadingType3 shadingType;
 
     private float[] coords;
     private float[] domain;
@@ -81,7 +81,8 @@ public class RadialShadingContext implements PaintContext
     public RadialShadingContext(PDShadingType3 shadingType3, ColorModel colorModelValue, 
             AffineTransform xform, Matrix ctm, int pageHeight) 
     {
-        coords = shadingType3.getCoords().toFloatArray();
+        shadingType = shadingType3;
+        coords = shadingType.getCoords().toFloatArray();
         if (ctm != null)
         {
             // the shading is used in combination with the sh-operator
@@ -108,7 +109,7 @@ public class RadialShadingContext implements PaintContext
         // colorSpace 
         try 
         {
-            PDColorSpace cs = shadingType3.getColorSpace();
+            PDColorSpace cs = shadingType.getColorSpace();
             if (!(cs instanceof PDDeviceRGB))
             {
                 // we have to create an instance of the shading colorspace if it isn't RGB
@@ -137,26 +138,17 @@ public class RadialShadingContext implements PaintContext
             try
             {
                 // TODO bpc != 8 ??  
-                colorModel = shadingType3.getColorSpace().createColorModel(8);
+                colorModel = shadingType.getColorSpace().createColorModel(8);
             }
             catch(IOException exception)
             {
                 LOG.error("error while creating colorModel", exception);
             }
         }
-        // shading function
-        try
-        {
-            function = shadingType3.getFunction();
-        }
-        catch(IOException exception)
-        {
-            LOG.error("error while creating a function", exception);
-        }
         // domain values
-        if (shadingType3.getDomain() != null)
+        if (shadingType.getDomain() != null)
         {
-            domain = shadingType3.getDomain().toFloatArray();
+            domain = shadingType.getDomain().toFloatArray();
         }
         else 
         {
@@ -164,8 +156,8 @@ public class RadialShadingContext implements PaintContext
             domain = new float[]{0,1};
         }
         // extend values
-        COSArray extendValues = shadingType3.getExtend();
-        if (shadingType3.getExtend() != null)
+        COSArray extendValues = shadingType.getExtend();
+        if (shadingType.getExtend() != null)
         {
             extend = new boolean[2];
             extend[0] = ((COSBoolean)extendValues.get(0)).getValue();
@@ -194,7 +186,7 @@ public class RadialShadingContext implements PaintContext
     public void dispose() 
     {
         colorModel = null;
-        function = null;
+        shadingType = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
     }
@@ -214,7 +206,6 @@ public class RadialShadingContext implements PaintContext
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        float[] input = new float[1];
         float inputValue;
         int[] data = new int[w * h * 3];
         for (int j = 0; j < h; j++) 
@@ -276,12 +267,12 @@ public class RadialShadingContext implements PaintContext
                         continue;
                     }
                 }
-                input[0] = (float)(domain[0] + (d1d0*inputValue));
+                float input = (float)(domain[0] + (d1d0*inputValue));
                 float[] values = null;
                 int index = (j * w + i) * 3;
                 try 
                 {
-                    values = function.eval(input);
+                    values = shadingType.evalFunction(input);
                     // convert color values from shading colorspace to RGB 
                     if (shadingColorSpace != null)
                     {

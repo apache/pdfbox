@@ -21,6 +21,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -36,7 +37,7 @@ public class PDShadingType2 extends PDShadingResources
     private COSArray coords = null;
     private COSArray domain = null;
     private COSArray extend = null;
-    private PDFunction function = null;
+    private PDFunction[] functionArray = null;
     
     /**
      * Constructor using the given shading dictionary.
@@ -159,7 +160,7 @@ public class PDShadingType2 extends PDShadingResources
      */
     public void setFunction(PDFunction newFunction)
     {
-        function = newFunction;
+        functionArray = null;
         if (newFunction == null)
         {
             getCOSDictionary().removeItem(COSName.FUNCTION);
@@ -171,20 +172,96 @@ public class PDShadingType2 extends PDShadingResources
     }
 
     /**
+     * This will set the functions COSArray for the color conversion.
+     *
+     * @param newFunctions The new COSArray containing all functions.
+     */
+    public void setFunction(COSArray newFunctions)
+    {
+        functionArray = null;
+        if (newFunctions == null)
+        {
+            getCOSDictionary().removeItem(COSName.FUNCTION);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.FUNCTION, newFunctions);
+        }
+    }
+    /**
      * This will return the function used to convert the color values.
      *
      * @return The function
      * 
      * @exception IOException If we are unable to create the PDFunction object. 
      * 
+     * @deprecated
+     * 
      */
     public PDFunction getFunction() throws IOException
     {
-        if (function == null)
+        // TODO
+        // change the return value to COSArray
+        return null;
+    }
+    
+    /**
+     * Provide the function(s) of the shading dictionary as array.
+     * 
+     * @return an array containing the function(s) 
+     * @throws IOException throw if something went wrong
+     */
+    private PDFunction[] getFunctionsArray() throws IOException
+    {
+        if (functionArray == null)
         {
-            function = PDFunction.create(getCOSDictionary().getDictionaryObject(COSName.FUNCTION));
+            COSBase functionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            if (functionObject instanceof COSDictionary)
+            {
+                functionArray = new PDFunction[1];
+                functionArray[0] = PDFunction.create(functionObject);
+            }
+            else
+            {
+                COSArray functionCOSArray = (COSArray)functionObject;
+                int numberOfFunctions = functionCOSArray.size();
+                functionArray = new PDFunction[numberOfFunctions];
+                for (int i=0; i<numberOfFunctions; i++)
+                {
+                    functionArray[i] = PDFunction.create(functionCOSArray.get(i));
+                }
+            }
         }
-        return function;
+        return functionArray;
+    }
+    
+    /**
+     * Convert the input value using the functions of the shading dictionary.
+     * 
+     * @param inputValue the input value
+     * @return the output values
+     * @throws IOException thrown if something went wrong
+     */
+    public float[] evalFunction(float inputValue) throws IOException
+    {
+        float[] input = new float[] {inputValue};
+        PDFunction[] functions = getFunctionsArray();
+        int numberOfFunctions = functions.length;
+        float[] returnValues = null;
+        if (numberOfFunctions == 1)
+        {
+            returnValues = functions[0].eval(input);
+        }
+        else
+        {
+            returnValues = new float[numberOfFunctions];
+            for (int i=0; i<numberOfFunctions;i++)
+            {
+                float[] newValue = functions[i].eval(input);
+                returnValues[i] = newValue[0];
+            }
+        }
+        return returnValues;
     }
 
 }
