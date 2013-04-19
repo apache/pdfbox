@@ -333,6 +333,23 @@ public class ValidationResult
         {
             this.isWarning = isWarning;
         }
+        
+        public boolean equals (Object o) {
+            if (o instanceof ValidationError) {
+                ValidationError ve = (ValidationError)o;
+                // check errorCode
+                if (errorCode==null && ve.errorCode!=null) {
+                    return false;
+                } else if (!errorCode.equals(ve.errorCode)) {
+                    return false;
+                }
+                // check warning
+                return isWarning==ve.isWarning;
+                
+            } else {
+                return false;
+            }
+        }
 
     }
 }
