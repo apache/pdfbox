@@ -28,7 +28,9 @@ public class XmlResultParser
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             return validate(rdocument,source);
         } catch (ParserConfigurationException e) {
-            throw new IOException("Failed to init document builder", e);
+            IOException ioe = new IOException("Failed to init document builder");
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 
