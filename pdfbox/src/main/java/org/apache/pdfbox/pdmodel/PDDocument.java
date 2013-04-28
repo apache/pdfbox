@@ -441,6 +441,11 @@ public class PDDocument implements Pageable
 
             for ( COSObject cosObject : cosObjects )
             {
+                if (!annotNotFound && !sigFieldNotFound)
+                {
+                    break;
+                }
+                
                 COSBase base = cosObject.getObject();
                 if (base != null && base instanceof COSDictionary)
                 {
