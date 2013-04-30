@@ -28,7 +28,7 @@
     <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
-    <property name="project.version" value="1.8.0" />
+    <property name="project.version" value="2.0.0" />
 
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
@@ -69,8 +69,12 @@
     <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
 
     <property name="bcmail.name" value="bcmail-jdk15on-1.48" />
-    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15on/1.48/${bcmail.name}.jar" />
+    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15on/1.48/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
+
+    <property name="bcpkix.name" value="bcpkix-jdk15on-1.48" />
+    <property name="bcpkix.url" value="${maven.repo2}/org/bouncycastle/bcpkix-jdk15on/1.48/${bcpkix.name}.jar" />
+    <property name="bcpkix.jar" value="${jar.dir}/${bcpkix.name}.jar" />
 
     <property name="junit.name" value="junit-4.8.1" />
     <property name="junit.url" value="${maven.repo2}/junit/junit/4.8.1/${junit.name}.jar" />
@@ -289,6 +293,7 @@
                 <pathelement path="${logging.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
+                <pathelement path="${bcpkix.jar}" />
                 <pathelement path="${icu4j.jar}" />
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
@@ -313,6 +318,7 @@
                 <pathelement path="${logging.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
+                <pathelement path="${bcpkix.jar}" />
                 <pathelement path="${icu4j.jar}" />
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
@@ -333,6 +339,7 @@
                 <pathelement path="${logging.jar}" />
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
+                <pathelement path="${bcpkix.jar}" />
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
@@ -397,6 +404,10 @@
             <param name="destfile" value="${bcprov.jar}"/>
         </antcall>
         <antcall target="downloadfile">
+            <param name="sourcefile" value="${bcpkix.url}"/>
+            <param name="destfile" value="${bcpkix.jar}"/>
+        </antcall>
+    	<antcall target="downloadfile">
             <param name="sourcefile" value="${junit.url}"/>
             <param name="destfile" value="${junit.jar}"/>
         </antcall>
@@ -539,6 +550,22 @@
             <arg value="-compressresources" />
             <arg value="-out:${bin.dir}\${bcmail.name}.dll" />
             <arg value="${bcmail.jar}" />
+        </exec>
+        <echo>Building BC PKIX</echo>
+        <exec executable="${ikvmc}">
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
+            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
+            <arg value="-reference:bin/${bcprov.name}.dll" />
+            <arg value="-reference:bin/junit.dll" />
+            <arg value="-target:library" />
+            <arg value="-compressresources" />
+            <arg value="-out:${bin.dir}\${bcpkix.name}.dll" />
+            <arg value="${bcpkix.jar}" />
         </exec>
         <echo>Building ICU4J</echo>
         <exec executable="${ikvmc}">
