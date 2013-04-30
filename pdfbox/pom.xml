@@ -54,14 +54,14 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk15</artifactId>
-      <version>1.44</version>
+      <artifactId>bcmail-jdk15on</artifactId>
+      <version>1.48</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15</artifactId>
-      <version>1.44</version>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.48</version>
       <optional>true</optional>
     </dependency>
     <dependency>

@@ -37,7 +37,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.DERObject;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DEROutputStream;
@@ -309,7 +309,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
                 pkcs7input[22] = two;
                 pkcs7input[23] = one;
 
-                DERObject obj = createDERForRecipient(pkcs7input, certificate);
+                ASN1Primitive obj = createDERForRecipient(pkcs7input, certificate);
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -376,7 +376,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
 
     }
 
-    private DERObject createDERForRecipient(byte[] in, X509Certificate cert)
+    private ASN1Primitive createDERForRecipient(byte[] in, X509Certificate cert)
         throws IOException,
                GeneralSecurityException
     {
@@ -387,7 +387,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
         AlgorithmParameters algorithmparameters = algorithmparametergenerator.generateParameters();
         ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(algorithmparameters.getEncoded("ASN.1"));
         ASN1InputStream asn1inputstream = new ASN1InputStream(bytearrayinputstream);
-        DERObject derobject = asn1inputstream.readObject();
+        ASN1Primitive derobject = asn1inputstream.readObject();
         KeyGenerator keygenerator = KeyGenerator.getInstance(s);
         keygenerator.init(128);
         SecretKey secretkey = keygenerator.generateKey();
@@ -403,7 +403,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
         EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, null);
         ContentInfo contentinfo =
             new ContentInfo(PKCSObjectIdentifiers.envelopedData, env);
-        return contentinfo.getDERObject();
+        return contentinfo.toASN1Primitive();
     }
 
     private KeyTransRecipientInfo computeRecipientInfo(X509Certificate x509certificate, byte[] abyte0)
