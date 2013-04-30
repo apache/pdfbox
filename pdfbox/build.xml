@@ -64,12 +64,12 @@
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
 
-    <property name="bcprov.name" value="bcprov-jdk15-1.44" />
-    <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15/1.44/${bcprov.name}.jar" />
+    <property name="bcprov.name" value="bcprov-jdk15on-1.48" />
+    <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15on/1.48/${bcprov.name}.jar" />
     <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
 
-    <property name="bcmail.name" value="bcmail-jdk15-1.44" />
-    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15/1.44/${bcmail.name}.jar" />
+    <property name="bcmail.name" value="bcmail-jdk15on-1.48"" />
+    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15on/1.48/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
     <property name="junit.name" value="junit-4.8.1" />
