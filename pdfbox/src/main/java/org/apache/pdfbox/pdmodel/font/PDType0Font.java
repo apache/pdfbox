@@ -99,6 +99,11 @@ public class PDType0Font extends PDSimpleFont
                         + " instead of "+descendantFont.getFontDescriptor().getFontName());
                 setIsFontSubstituted(true);
             }
+            /*
+             * Fix Oracle JVM Crashes.
+             * Tested with Oracle JRE 6.0_45-b06 and 7.0_21-b11
+             */
+            awtFont.canDisplay(1);
         }
         return awtFont;
     }
