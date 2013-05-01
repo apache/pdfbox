@@ -30,10 +30,6 @@
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
 
-	<properties>
-		<compileSource>1.5</compileSource>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>
