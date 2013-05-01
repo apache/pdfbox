@@ -76,16 +76,16 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <target>1.5</target>
-          <source>1.5</source>
+          <target>1.6</target>
+          <source>1.6</source>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
+          <source>1.6</source>
           <links>
-            <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
+            <link>http://download.oracle.com/javase/1.6.0/docs/api/</link>
           </links>
         </configuration>
       </plugin>

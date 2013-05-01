@@ -8,7 +8,7 @@ of existing documents and the ability to extract content from documents.
 PDFBox also includes several command line utilities. PDFBox is published
 under the Apache License, Version 2.0.
 
-You need Java 5 (or higher) and Maven 2 <http://maven.apache.org/> to
+You need Java 6 (or higher) and Maven 2 <http://maven.apache.org/> to
 build PDFBox. The recommended build command is:
 
     mvn clean install
