@@ -190,13 +190,6 @@
 			<version>1.48</version>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 
 	</dependencies>
 

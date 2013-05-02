@@ -75,12 +75,6 @@
       <version>1.48</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1.1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -93,7 +87,7 @@
           <instructions>
             <Export-Package>org.apache.pdfbox.*</Export-Package>
             <Embed-Transitive>true</Embed-Transitive>
-            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|com/ibm/icu/**|javax/activation/**|com/sun/activation/**</Embed-Dependency>
+            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|com/ibm/icu/**</Embed-Dependency>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
             <Import-Package>!junit.framework,!junit.textui,javax.*;resolution:=optional,org.apache.avalon.framework.logger;resolution:=optional,org.apache.log;resolution:=optional,org.apache.log4j;resolution:=optional,*</Import-Package>
             <Main-Class>org.apache.pdfbox.preflight.Validator_A1b</Main-Class>
