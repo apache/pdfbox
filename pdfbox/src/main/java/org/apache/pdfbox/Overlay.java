@@ -224,12 +224,12 @@ public class Overlay
         collectLayoutPages( overlayCatalog.getAllPages() );
 
         COSDictionary saveGraphicsStateDic = new COSDictionary();
-        saveGraphicsStateStream = new COSStream( saveGraphicsStateDic, pdfDocument.getDocument().getScratchFile() );
+        saveGraphicsStateStream = pdfDocument.getDocument().createCOSStream(saveGraphicsStateDic);
         OutputStream saveStream = saveGraphicsStateStream.createUnfilteredStream();
         saveStream.write( " q\n".getBytes("ISO-8859-1") );
         saveStream.flush();
 
-        restoreGraphicsStateStream = new COSStream( saveGraphicsStateDic, pdfDocument.getDocument().getScratchFile() );
+        restoreGraphicsStateStream = pdfDocument.getDocument().createCOSStream(saveGraphicsStateDic);
         OutputStream restoreStream = restoreGraphicsStateStream.createUnfilteredStream();
         restoreStream.write( " Q\n".getBytes("ISO-8859-1") );
         restoreStream.flush();
@@ -353,7 +353,7 @@ public class Overlay
 
         COSDictionary streamDict = new COSDictionary();
         streamDict.setInt(COSName.LENGTH, baos.size());
-        COSStream output = new COSStream(streamDict, pdfDocument.getDocument().getScratchFile());
+        COSStream output = pdfDocument.getDocument().createCOSStream(streamDict);
         output.setFilters(stream.getFilters());
         OutputStream os = output.createUnfilteredStream();
         baos.writeTo(os);

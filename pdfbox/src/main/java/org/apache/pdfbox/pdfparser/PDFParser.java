@@ -234,6 +234,7 @@ public class PDFParser extends BaseParser
             if( document != null )
             {
                 document.close();
+                document = null;
             }
             if( t instanceof IOException )
             {

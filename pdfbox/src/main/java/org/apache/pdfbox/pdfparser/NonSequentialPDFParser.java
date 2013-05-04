@@ -688,6 +688,7 @@ public class NonSequentialPDFParser extends PDFParser
                 try
                 {
                     document.close();
+                    document = null;
                 }
                 catch (IOException ioe)
                 {
