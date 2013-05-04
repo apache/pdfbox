@@ -420,7 +420,7 @@ public class PDDocument implements Pageable
             acroFormDict.setItem(COSName.DR, null);
             // Set empty Appearance-Dictionary
             PDAppearanceDictionary ap = new PDAppearanceDictionary();
-            COSStream apsStream = new COSStream(getDocument().getScratchFile());
+            COSStream apsStream = getDocument().createCOSStream();
             apsStream.createUnfilteredStream();
             PDAppearanceStream aps = new PDAppearanceStream(apsStream);
             COSDictionary cosObject = (COSDictionary)aps.getCOSObject();
@@ -644,7 +644,7 @@ public class PDDocument implements Pageable
             PDStream src = page.getContents();
             if(src != null)
             {
-                PDStream dest = new PDStream( new COSStream( src.getStream(), document.getScratchFile() ) );
+                PDStream dest = new PDStream( document.createCOSStream(src.getStream()));
                 importedPage.setContents( dest );
                 os = dest.createOutputStream();
 

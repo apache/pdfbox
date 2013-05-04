@@ -257,7 +257,7 @@ public class PDAppearance
                 PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
                 if( appearanceStream == null )
                 {
-                    COSStream cosStream = new COSStream( acroForm.getDocument().getDocument().getScratchFile() );
+                    COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
                     appearanceStream = new PDAppearanceStream( cosStream );
                     appearanceStream.setBoundingBox( widget.getRectangle().createRetranslatedRectangle() );
                     appearance.setNormalAppearance( appearanceStream );

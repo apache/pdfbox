@@ -51,9 +51,9 @@ public class PDObjectStream extends PDStream
      */
     public static PDObjectStream createStream( PDDocument document )
     {
-        COSStream cosStream = new COSStream( document.getDocument().getScratchFile() );
+        COSStream cosStream = document.getDocument().createCOSStream();
         PDObjectStream strm = new PDObjectStream( cosStream );
-        strm.getStream().setName( "Type", "ObjStm" );
+        strm.getStream().setName( COSName.TYPE, "ObjStm" );
         return strm;
     }
 
@@ -64,7 +64,7 @@ public class PDObjectStream extends PDStream
      */
     public String getType()
     {
-        return getStream().getNameAsString( "Type" );
+        return getStream().getNameAsString( COSName.TYPE );
     }
 
     /**
@@ -74,7 +74,7 @@ public class PDObjectStream extends PDStream
      */
     public int getNumberOfObjects()
     {
-        return getStream().getInt( "N", 0 );
+        return getStream().getInt( COSName.N, 0 );
     }
 
     /**
@@ -84,7 +84,7 @@ public class PDObjectStream extends PDStream
      */
     public void setNumberOfObjects( int n )
     {
-        getStream().setInt( "N", n );
+        getStream().setInt( COSName.N, n );
     }
 
     /**
@@ -94,7 +94,7 @@ public class PDObjectStream extends PDStream
      */
     public int getFirstByteOffset()
     {
-        return getStream().getInt( "First", 0 );
+        return getStream().getInt( COSName.FIRST, 0 );
     }
 
     /**
@@ -104,7 +104,7 @@ public class PDObjectStream extends PDStream
      */
     public void setFirstByteOffset( int n )
     {
-        getStream().setInt( "First", n );
+        getStream().setInt( COSName.FIRST, n );
     }
 
     /**

@@ -83,14 +83,12 @@ public class LayerUtility
     public void wrapInSaveRestore(PDPage page) throws IOException
     {
         COSDictionary saveGraphicsStateDic = new COSDictionary();
-        COSStream saveGraphicsStateStream = new COSStream(saveGraphicsStateDic,
-                getDocument().getDocument().getScratchFile());
+        COSStream saveGraphicsStateStream = getDocument().getDocument().createCOSStream(saveGraphicsStateDic);
         OutputStream saveStream = saveGraphicsStateStream.createUnfilteredStream();
         saveStream.write("q\n".getBytes("ISO-8859-1"));
         saveStream.flush();
 
-        COSStream restoreGraphicsStateStream = new COSStream(saveGraphicsStateDic,
-                getDocument().getDocument().getScratchFile());
+        COSStream restoreGraphicsStateStream = getDocument().getDocument().createCOSStream(saveGraphicsStateDic);
         OutputStream restoreStream = restoreGraphicsStateStream.createUnfilteredStream();
         restoreStream.write("Q\n".getBytes("ISO-8859-1"));
         restoreStream.flush();
