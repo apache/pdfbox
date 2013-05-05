@@ -644,7 +644,7 @@ public class PDDocument implements Pageable
             PDStream src = page.getContents();
             if(src != null)
             {
-                PDStream dest = new PDStream( document.createCOSStream(src.getStream()));
+                PDStream dest = new PDStream( document.createCOSStream());
                 importedPage.setContents( dest );
                 os = dest.createOutputStream();
 
