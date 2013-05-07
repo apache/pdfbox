@@ -23,23 +23,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
-
 /**
- * This class will take a PDF document and strip out all of the text and ignore the
- * formatting and such.  Please note; it is up to clients of this class to verify that
- * a specific user has the correct permissions to extract text from the
- * PDF document.
- * <p>
- * Patterned after PDFTextStripper.
- *
+ * This class writes single pages of a pdf to a file.
+ * 
  * @author <a href="mailto:DanielWilson@Users.SourceForge.net">Daniel Wilson</a>
  * @version $Revision: 1.1 $
  */
 public class PDFImageWriter extends PDFStreamEngine
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFImageWriter.class);
 
     /**
      * Instantiate a new PDFImageWriter object.
@@ -49,72 +50,89 @@ public class PDFImageWriter extends PDFStreamEngine
     }
 
     /**
-     * Instantiate a new PDFImageWriter object.  Loading all of the operator mappings
-     * from the properties object that is passed in.
-     *
-     * @param props The properties containing the mapping of operators to PDFOperator
-     * classes.
-     *
-     * @throws IOException If there is an error reading the properties.
+     * Instantiate a new PDFImageWriter object. Loading all of the operator mappings from the properties object that is
+     * passed in.
+     * 
+     * @param props
+     *            The properties containing the mapping of operators to PDFOperator classes.
+     * 
+     * @throws IOException
+     *             If there is an error reading the properties.
      */
-    public PDFImageWriter( Properties props ) throws IOException
+    public PDFImageWriter(Properties props) throws IOException
     {
-        super( props );
+        super(props);
     }
 
     /**
      * Converts a given page range of a PDF document to bitmap images.
-     * @param document the PDF document
-     * @param imageType the target format (ex. "png")
-     * @param password the password (needed if the PDF is encrypted)
-     * @param startPage the start page (1 is the first page)
-     * @param endPage the end page (set to Integer.MAX_VALUE for all pages)
-     * @param outputPrefix used to construct the filename for the individual images
+     * 
+     * @param document
+     *            the PDF document
+     * @param imageType
+     *            the target format (ex. "png")
+     * @param password
+     *            the password (needed if the PDF is encrypted)
+     * @param startPage
+     *            the start page (1 is the first page)
+     * @param endPage
+     *            the end page (set to Integer.MAX_VALUE for all pages)
+     * @param outputPrefix
+     *            used to construct the filename for the individual images
      * @return true if the images were produced, false if there was an error
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public boolean writeImage(PDDocument document, String imageType, String password,
-            int startPage, int endPage, String outputPrefix)
-    throws IOException
+    public boolean writeImage(PDDocument document, String imageType, String password, int startPage, int endPage,
+            String outputPrefix) throws IOException
     {
         int resolution;
         try
         {
             resolution = Toolkit.getDefaultToolkit().getScreenResolution();
         }
-        catch( HeadlessException e )
+        catch (HeadlessException e)
         {
             resolution = 96;
         }
-        return writeImage(document, imageType, password, startPage, endPage, outputPrefix,
-                8, resolution);
+        return writeImage(document, imageType, password, startPage, endPage, outputPrefix, 8, resolution);
     }
 
     /**
      * Converts a given page range of a PDF document to bitmap images.
-     * @param document the PDF document
-     * @param imageFormat the target format (ex. "png")
-     * @param password the password (needed if the PDF is encrypted)
-     * @param startPage the start page (1 is the first page)
-     * @param endPage the end page (set to Integer.MAX_VALUE for all pages)
-     * @param outputPrefix used to construct the filename for the individual images
-     * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
-     * @param resolution the resolution in dpi (dots per inch)
+     * 
+     * @param document
+     *            the PDF document
+     * @param imageFormat
+     *            the target format (ex. "png")
+     * @param password
+     *            the password (needed if the PDF is encrypted)
+     * @param startPage
+     *            the start page (1 is the first page)
+     * @param endPage
+     *            the end page (set to Integer.MAX_VALUE for all pages)
+     * @param outputPrefix
+     *            used to construct the filename for the individual images
+     * @param imageType
+     *            the image type (see {@link BufferedImage}.TYPE_*)
+     * @param resolution
+     *            the resolution in dpi (dots per inch)
      * @return true if the images were produced, false if there was an error
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public boolean writeImage(PDDocument document, String imageFormat, String password,
-            int startPage, int endPage, String outputPrefix, int imageType, int resolution)
-    throws IOException
+    public boolean writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
+            String outputPrefix, int imageType, int resolution) throws IOException
     {
         boolean bSuccess = true;
-        List pages = document.getDocumentCatalog().getAllPages();
-        for( int i = startPage - 1; i < endPage && i < pages.size(); i++ )
+        List<PDPage> pages = document.getDocumentCatalog().getAllPages();
+        int pagesSize = pages.size();
+        for (int i = startPage - 1; i < endPage && i < pagesSize; i++)
         {
-            PDPage page = (PDPage)pages.get( i );
+            PDPage page = pages.get(i);
             BufferedImage image = page.convertToImage(imageType, resolution);
             String fileName = outputPrefix + (i + 1);
-            System.out.println( "Writing: " + fileName + "." +imageFormat);
+            LOG.info("Writing: " + fileName + "." + imageFormat);
             bSuccess &= ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
         }
         return bSuccess;
