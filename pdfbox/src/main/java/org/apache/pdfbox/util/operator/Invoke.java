@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFMarkedContentExtractor;
 import org.apache.pdfbox.util.PDFOperator;
 
@@ -53,18 +54,25 @@ public class Invoke extends OperatorProcessor
 
         Map<String,PDXObject> xobjects = context.getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(name.getName());
-        if (this.context instanceof PDFMarkedContentExtractor)
+        if (context instanceof PDFMarkedContentExtractor)
         {
-            ((PDFMarkedContentExtractor) this.context).xobject(xobject);
+            ((PDFMarkedContentExtractor) context).xobject(xobject);
         }
 
         if(xobject instanceof PDXObjectForm)
         {
             PDXObjectForm form = (PDXObjectForm)xobject;
             COSStream formContentstream = form.getCOSStream();
+            // if there is an optional form matrix, we have to map the form space to the user space
+            Matrix matrix = form.getMatrix();
+            if (matrix != null) 
+            {
+                Matrix xobjectCTM = matrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix());
+                context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+            }
             // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
-            getContext().processSubStream( context.getCurrentPage(), pdResources, formContentstream );
+            context.processSubStream( context.getCurrentPage(), pdResources, formContentstream );
         }
     }
 }
