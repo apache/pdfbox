@@ -93,15 +93,21 @@ public class PDAppearanceDictionary implements COSObjectable
         {
             COSStream aux = (COSStream) ap;
             ap = new COSDictionary();
-            ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
+            ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
         }
         COSDictionary map = (COSDictionary)ap;
         Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
-        Map retval = new COSDictionaryMap( actuals, map );
+        Map<String, PDAppearanceStream> retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
         for( COSName asName : map.keySet() )
         {
-            COSStream as = (COSStream)map.getDictionaryObject( asName );
-            actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+            COSBase stream = map.getDictionaryObject( asName );
+            // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
+            // which leads to a COSName("null") value and finally to a ClassCastExcpetion
+            if (stream instanceof COSStream)
+            {
+                COSStream as = (COSStream)stream;
+                actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+            }
         }
         return retval;
     }
@@ -151,15 +157,21 @@ public class PDAppearanceDictionary implements COSObjectable
             {
                 COSStream aux = (COSStream) ap;
                 ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
+                ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
             }
             COSDictionary map = (COSDictionary)ap;
             Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
-            retval = new COSDictionaryMap( actuals, map );
+            retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
             for( COSName asName : map.keySet() )
             {
-                COSStream as = (COSStream)map.getDictionaryObject( asName );
-                actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                COSBase stream = map.getDictionaryObject( asName );
+                // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
+                // which leads to a COSName("null") value and finally to a ClassCastExcpetion
+                if (stream instanceof COSStream)
+                {
+                    COSStream as = (COSStream)stream;
+                    actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                }
             }
         }
         return retval;
@@ -210,16 +222,22 @@ public class PDAppearanceDictionary implements COSObjectable
             {
                 COSStream aux = (COSStream) ap;
                 ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.getPDFName( "default" ), aux );
+                ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
             }
             COSDictionary map = (COSDictionary)ap;
             Map<String, PDAppearanceStream> actuals =
                 new HashMap<String, PDAppearanceStream>();
-            retval = new COSDictionaryMap( actuals, map );
+            retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
             for( COSName asName : map.keySet() )
             {
-                COSStream as = (COSStream)map.getDictionaryObject( asName );
-                actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                COSBase stream = map.getDictionaryObject( asName );
+                // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
+                // which leads to a COSName("null") value and finally to a ClassCastExcpetion
+                if (stream instanceof COSStream)
+                {
+                    COSStream as = (COSStream)stream;
+                    actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                }
             }
         }
         return retval;
