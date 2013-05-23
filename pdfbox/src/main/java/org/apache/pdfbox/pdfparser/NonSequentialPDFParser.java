@@ -340,7 +340,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (trailerEntry instanceof COSObject)
             {
                 COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, true);
+                parseObjectDynamically(tmpObj, false);
             }
         }
         // ---- prepare encryption if necessary
