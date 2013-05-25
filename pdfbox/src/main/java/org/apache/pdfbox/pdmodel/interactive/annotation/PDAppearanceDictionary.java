@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -35,6 +37,12 @@ import java.util.Map;
  */
 public class PDAppearanceDictionary implements COSObjectable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDAppearanceDictionary.class);
+
     private COSDictionary dictionary;
 
     /**
@@ -108,6 +116,10 @@ public class PDAppearanceDictionary implements COSObjectable
                 COSStream as = (COSStream)stream;
                 actuals.put( asName.getName(), new PDAppearanceStream( as ) );
             }
+            else
+            {
+                LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
+            }
         }
         return retval;
     }
@@ -171,6 +183,10 @@ public class PDAppearanceDictionary implements COSObjectable
                 {
                     COSStream as = (COSStream)stream;
                     actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                }
+                else
+                {
+                    LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
                 }
             }
         }
@@ -237,6 +253,10 @@ public class PDAppearanceDictionary implements COSObjectable
                 {
                     COSStream as = (COSStream)stream;
                     actuals.put( asName.getName(), new PDAppearanceStream( as ) );
+                }
+                else
+                {
+                    LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
                 }
             }
         }
