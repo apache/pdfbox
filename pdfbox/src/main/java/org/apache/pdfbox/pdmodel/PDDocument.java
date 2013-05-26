@@ -1247,7 +1247,40 @@ public class PDDocument implements Pageable
     }
 
     /**
-     * This will save this document to the filesystem.
+     * Parses PDF with non sequential parser.
+     *  
+     * @param input stream that contains the document.
+     * @param scratchFile location to store temp PDFBox data for this document
+     *
+     * @return loaded document
+     *
+     * @throws IOException  in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq( InputStream input, RandomAccess scratchFile) throws IOException
+    {
+        return loadNonSeq(input, scratchFile, "");
+    }
+
+    /**
+     * Parses PDF with non sequential parser.
+     *  
+     * @param input stream that contains the document.
+     * @param scratchFile location to store temp PDFBox data for this document
+     * @param password password to be used for decryption
+     *
+     * @return loaded document
+     *
+     * @throws IOException  in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq( InputStream input, RandomAccess scratchFile, String password ) throws IOException
+    {
+        NonSequentialPDFParser parser = new NonSequentialPDFParser( input, scratchFile, password );
+        parser.parse();
+        return parser.getPDDocument();
+    }
+
+    /**
+     * Save the document to a file.
      *
      * @param fileName The file to save as.
      *
@@ -1256,7 +1289,20 @@ public class PDDocument implements Pageable
      */
     public void save( String fileName ) throws IOException, COSVisitorException
     {
-        save( new FileOutputStream( fileName ) );
+        save( new File( fileName ) );
+    }
+
+    /**
+     * Save the document to a file.
+     *
+     * @param file The file to save as.
+     *
+     * @throws IOException If there is an error saving the document.
+     * @throws COSVisitorException If an error occurs while generating the data.
+     */
+    public void save( File file ) throws IOException, COSVisitorException
+    {
+        save( new FileOutputStream( file ) );
     }
 
     /**
