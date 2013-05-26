@@ -317,6 +317,10 @@ public class PDIndexed extends PDColorSpace
         if (baseColorModel == null)
         {
             baseColorModel = getBaseColorSpace().createColorModel(bpc);
+            if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
+            {
+                throw new IOException( "Not implemented" );
+            }
         }
         return baseColorModel;
     }
@@ -333,10 +337,10 @@ public class PDIndexed extends PDColorSpace
             // and sometimes there are fewer indexed value than possible
             maxIndex = Math.min(numberOfColorValues-1, highValue);
             byte[] index = getLookupData();
-            if( baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE )
-            {
-                throw new IOException( "Not implemented" );
-            }
+            // despite all definitions there may be less values within the lookup data
+            int numberOfColorValuesFromIndex = (index.length / baseColorModel.getNumComponents())-1;
+            maxIndex = Math.min(maxIndex, numberOfColorValuesFromIndex);
+            // does the colorspace have an alpha channel?
             boolean hasAlpha = baseColorModel.hasAlpha();
             indexNumOfComponents = 3 + ( hasAlpha ? 1 : 0);
             int buffersize = (maxIndex+1) * indexNumOfComponents;
@@ -346,6 +350,7 @@ public class PDIndexed extends PDColorSpace
             for( int i = 0; i <= maxIndex; i++ )
             {
                 System.arraycopy(index, i * inData.length, inData, 0, inData.length);
+                // calculate RGB values
                 indexedColorValues[bufferIndex] = (byte)colorModel.getRed(inData);
                 indexedColorValues[bufferIndex+1] = (byte)colorModel.getGreen(inData);
                 indexedColorValues[bufferIndex+2] = (byte)colorModel.getBlue(inData);
