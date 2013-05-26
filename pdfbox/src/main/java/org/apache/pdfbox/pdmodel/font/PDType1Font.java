@@ -359,7 +359,7 @@ public class PDType1Font extends PDSimpleFont
                                     if(encoding == null)
                                     {
                                         LOG.warn("Unable to get character encoding. " +
-                                                "Encoding defintion found without /Encoding line.");
+                                                "Encoding definition found without /Encoding line.");
                                     }
                                     else
                                     {
@@ -381,23 +381,60 @@ public class PDType1Font extends PDSimpleFont
                         // attached to PDFBOX-935
                         if (line.startsWith("/FontMatrix"))
                         {
-                            String matrixValues = line.substring(line.indexOf("[")+1,line.lastIndexOf("]"));
-                            StringTokenizer st = new StringTokenizer(matrixValues);
-                            COSArray array = new COSArray();
-                            if (st.countTokens() >= 6)
+                            // most likely all matrix values are in the same line than the keyword
+                            if (line.indexOf("[") > -1)
                             {
-                                try 
+                                String matrixValues = line.substring(line.indexOf("[")+1,line.lastIndexOf("]"));
+                                StringTokenizer st = new StringTokenizer(matrixValues);
+                                COSArray array = new COSArray();
+                                if (st.countTokens() >= 6)
                                 {
-                                    for (int i=0;i<6;i++)
+                                    try 
                                     {
-                                        COSFloat floatValue = new COSFloat(Float.parseFloat(st.nextToken()));
-                                        array.add(floatValue);
+                                        for (int i=0;i<6;i++)
+                                        {
+                                            COSFloat floatValue = new COSFloat(Float.parseFloat(st.nextToken()));
+                                            array.add(floatValue);
+                                        }
+                                    }
+                                    catch (NumberFormatException exception)
+                                    {
+                                        LOG.error("Can't read the fontmatrix from embedded font file!");
                                     }
                                     fontMatrix = new PDMatrix(array);
                                 }
-                                catch (NumberFormatException exception)
+                            }
+                            else
+                            {
+                                // there are fonts where all values are on a separate line, see PDFBOX-1611
+                                COSArray array = new COSArray();
+                                while((line = in.readLine()) != null)
                                 {
-                                    LOG.error("Can't read the fontmatrix from embedded font file!");
+                                    if (line.startsWith("["))
+                                    {
+                                        continue;
+                                    }
+                                    if (line.endsWith("]"))
+                                    {
+                                        break;
+                                    }
+                                    try
+                                    {
+                                        COSFloat floatValue = new COSFloat(Float.parseFloat(line));
+                                        array.add(floatValue);
+                                    }
+                                    catch (NumberFormatException exception)
+                                    {
+                                        LOG.error("Can't read the fontmatrix from embedded font file!");
+                                    }
+                                }
+                                if (array.size() == 6)
+                                {
+                                    fontMatrix = new PDMatrix(array);
+                                }
+                                else
+                                {
+                                    LOG.error("Can't read the fontmatrix from embedded font file, not enough values!");
                                 }
                             }
                         }
