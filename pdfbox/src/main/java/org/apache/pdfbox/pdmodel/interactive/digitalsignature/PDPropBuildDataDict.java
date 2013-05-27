@@ -90,7 +90,7 @@ public class PDPropBuildDataDict implements COSObjectable
      */
     public void setName(String name)
     {
-        dictionary.setString(COSName.NAME, name);
+        dictionary.setName(COSName.NAME, name);
     }
 
     /**

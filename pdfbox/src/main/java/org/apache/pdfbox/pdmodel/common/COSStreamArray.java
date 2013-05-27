@@ -94,6 +94,7 @@ public class COSStreamArray extends COSStream
      * This will get the scratch file associated with this stream.
      *
      * @return The scratch file where this stream is being stored.
+     * 
      */
     public RandomAccess getScratchFile()
     {

@@ -24,8 +24,11 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.PDRange;
 
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
 
 import java.io.IOException;
 
@@ -96,7 +99,7 @@ public class PDLab extends PDColorSpace
      */
     protected ColorSpace createColorSpace() throws IOException
     {
-        throw new IOException( "Not implemented" );
+        return new ColorSpaceLab(getWhitepoint(), getBlackPoint(), getARange(), getBRange());
     }
 
     /**
@@ -110,7 +113,13 @@ public class PDLab extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        throw new IOException( "Not implemented" );
+        int[] nBits = {bpc, bpc, bpc};
+        return new ComponentColorModel( getJavaColorSpace(),
+                   nBits,
+                   false,
+                   false,
+                   Transparency.OPAQUE,
+                   DataBuffer.TYPE_BYTE);
     }
 
     /**
@@ -122,8 +131,6 @@ public class PDLab extends PDColorSpace
      */
     public int getNumberOfComponents() throws IOException
     {
-        //BJL
-        //hmm is this correct, I am not 100% sure.
         return 3;
     }
 

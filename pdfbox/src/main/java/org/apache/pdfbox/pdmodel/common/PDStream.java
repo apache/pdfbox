@@ -67,7 +67,7 @@ public class PDStream implements COSObjectable
      */
     public PDStream(PDDocument document)
     {
-        stream = new COSStream(document.getDocument().getScratchFile());
+        stream = document.getDocument().createCOSStream();
     }
 
     /**
@@ -116,7 +116,7 @@ public class PDStream implements COSObjectable
         OutputStream output = null;
         try
         {
-            stream = new COSStream(doc.getDocument().getScratchFile());
+            stream = doc.getDocument().createCOSStream();
             if (filtered)
             {
                 output = stream.createFilteredStream();

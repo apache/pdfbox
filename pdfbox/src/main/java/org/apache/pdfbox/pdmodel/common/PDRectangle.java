@@ -67,7 +67,7 @@ public class PDRectangle implements COSObjectable
     /**
      * Constructor.
      *
-     * @param box The non PD bouding box.
+     * @param box the bounding box to be used for the rectangle
      */
     public PDRectangle( BoundingBox box )
     {
@@ -85,7 +85,13 @@ public class PDRectangle implements COSObjectable
      */
     public PDRectangle( COSArray array )
     {
-        rectArray = array;
+        float[] values = array.toFloatArray();
+        rectArray = new COSArray();
+        // we have to start with the lower left corner
+        rectArray.add( new COSFloat( Math.min(values[0],values[2] )) );
+        rectArray.add( new COSFloat( Math.min(values[1],values[3] )) );
+        rectArray.add( new COSFloat( Math.max(values[0],values[2] )) );
+        rectArray.add( new COSFloat( Math.max(values[1],values[3] )) );
     }
 
     /**

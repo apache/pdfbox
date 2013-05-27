@@ -91,16 +91,28 @@ public class NonSequentialPDFParser extends PDFParser
     private static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(new byte[0]);
 
     protected static final int DEFAULT_TRAIL_BYTECOUNT = 2048;
+    /**
+     * EOF-marker.
+     */
     protected static final char[] EOF_MARKER = new char[]
     { '%', '%', 'E', 'O', 'F' };
+    /**
+     * StartXRef-marker.
+     */
     protected static final char[] STARTXREF_MARKER = new char[]
     { 's', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f' };
+    /**
+     * obj-marker.
+     */
     protected static final char[] OBJ_MARKER = new char[]
     { 'o', 'b', 'j' };
 
     private final File pdfFile;
     private final RandomAccessBufferedFileInputStream raStream;
 
+    /**
+     * The security handler.
+     */
     protected SecurityHandler securityHandler = null;
 
     private String keyStoreFilename = null;
@@ -219,12 +231,31 @@ public class NonSequentialPDFParser extends PDFParser
         password = decryptionPassword;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param input input stream representing the pdf.
+     * @throws IOException If something went wrong.
+     */
     public NonSequentialPDFParser(InputStream input) throws IOException
+    {
+        this(input, null, "");
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param input input stream representing the pdf.
+     * @param raBuf the buffer to be used for parsing
+     * @param decryptionPassword password to be used for decryption.
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser(InputStream input, RandomAccess raBuf, String decryptionPassword) throws IOException
     {
         super(EMPTY_INPUT_STREAM, null, false);
         pdfFile = createTmpFile(input);
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        init(pdfFile, null, "");
+        init(pdfFile, raBuf, decryptionPassword);
     }
 
     /**
@@ -234,7 +265,7 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @param input
      * @return
-     * @throws IOException
+     * @throws IOException If something went wrong.
      */
     private File createTmpFile(InputStream input) throws IOException
     {
@@ -287,7 +318,7 @@ public class NonSequentialPDFParser extends PDFParser
      * can handle linearized pdfs, which will have an xref at the end pointing
      * to an xref at the beginning of the file. Last the root object is parsed.
      * 
-     * @throws IOException
+     * @throws IOException If something went wrong.
      */
     protected void initialParse() throws IOException
     {
@@ -340,7 +371,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (trailerEntry instanceof COSObject)
             {
                 COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, true);
+                parseObjectDynamically(tmpObj, false);
             }
         }
         // ---- prepare encryption if necessary
@@ -442,7 +473,12 @@ public class NonSequentialPDFParser extends PDFParser
         return pdfSource.getOffset();
     }
 
-    /** Sets {@link #pdfSource} to start next parsing at given file offset. */
+    /**
+     * Sets {@link #pdfSource} to start next parsing at given file offset.
+     * 
+     * @param fileOffset file offset
+     * @throws IOException If something went wrong.
+     */
     protected final void setPdfSource(long fileOffset) throws IOException
     {
 
@@ -458,7 +494,10 @@ public class NonSequentialPDFParser extends PDFParser
         // pdfSource.skip( _fileOffset );
     }
 
-    /** Enable handling of alternative pdfSource implementation. */
+    /**
+     * Enable handling of alternative pdfSource implementation.
+     * @throws IOException If something went wrong.
+     */
     protected final void releasePdfSourceInputStream() throws IOException
     {
         // if ( pdfSource != null )
@@ -479,6 +518,9 @@ public class NonSequentialPDFParser extends PDFParser
      * (within last {@link #DEFAULT_TRAIL_BYTECOUNT} bytes (or range set via
      * {@link #setEOFLookupRange(int)}) and go back to find
      * <code>startxref</code>.
+     * 
+     * @return the offset of StartXref 
+     * @throws IOException If something went wrong.
      */
     protected final long getStartxrefOffset() throws IOException
     {
@@ -590,6 +632,7 @@ public class NonSequentialPDFParser extends PDFParser
      * Reads given pattern from {@link #pdfSource}. Skipping whitespace at start
      * and end.
      * 
+     * @param pattern pattern to be skipped
      * @throws IOException if pattern could not be read
      */
     protected final void readPattern(final char[] pattern) throws IOException
@@ -688,6 +731,7 @@ public class NonSequentialPDFParser extends PDFParser
                 try
                 {
                     document.close();
+                    document = null;
                 }
                 catch (IOException ioe)
                 {
@@ -696,6 +740,11 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
 
+    /**
+     * Return the pdf file.
+     * 
+     * @return the pdf file
+     */
     protected File getPdfFile()
     {
         return this.pdfFile;
@@ -712,7 +761,9 @@ public class NonSequentialPDFParser extends PDFParser
             try
             {
                 if (!pdfFile.delete())
+                {
                     LOG.warn("Temporary file '" + pdfFile.getName() + "' can't be deleted");
+                }
             }
             catch (SecurityException e)
             {
@@ -749,7 +800,9 @@ public class NonSequentialPDFParser extends PDFParser
     {
         PDDocument pdDocument = super.getPDDocument();
         if (securityHandler != null)
+        {
             pdDocument.setSecurityHandler(securityHandler);
+        }
         return pdDocument;
     }
 
@@ -1170,7 +1223,8 @@ public class NonSequentialPDFParser extends PDFParser
                         // this is not legal
                         // the combination of a dict and the stream/endstream
                         // forms a complete stream object
-                        throw new IOException("Stream not preceded by dictionary (offset: " + offsetOrObjstmObNr + ").");
+                        throw new IOException("Stream not preceded by dictionary (offset: " 
+                        + offsetOrObjstmObNr + ").");
                     }
                     skipSpaces();
                     endObjectKey = readLine();
@@ -1270,7 +1324,14 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     // ------------------------------------------------------------------------
-    /** Decrypts given COSString. */
+    /**
+     * Decrypts given COSString.
+     * 
+     * @param str the string to be decrypted
+     * @param objNr the object number
+     * @param objGenNr the object generation number
+     * @throws IOException ff something went wrong
+     */
     protected final void decrypt(COSString str, long objNr, long objGenNr) throws IOException
     {
         try
@@ -1438,7 +1499,10 @@ public class NonSequentialPDFParser extends PDFParser
             int bytesRead = 0;
             boolean unexpectedEndOfStream = false;
             if (remainBytes == 35090)
+            {
+                // TODO debug system out, to be removed??
                 System.out.println();
+            }
             while (remainBytes > 0)
             {
                 final int readBytes = pdfSource.read(streamCopyBuf, 0,

@@ -71,11 +71,6 @@ public class COSDocument extends COSBase
     private COSDictionary trailer;
     
     /**
-     * Document signature dictionary.
-     */
-    private COSDictionary signDictionary = null;
-    
-    /**
      * Signature interface.
      */
     private SignatureInterface signatureInterface;
@@ -178,10 +173,43 @@ public class COSDocument extends COSBase
      * This will get the scratch file for this document.
      *
      * @return The scratch file.
+     * 
+     * 
      */
     public RandomAccess getScratchFile()
     {
-        return scratchFile;
+        // TODO the direct access to the scratch file should be removed.
+        if (!closed)
+        {
+            return scratchFile;
+        }
+        else
+        {
+            LOG.error("Can't access the scratch file as it is already closed!");
+            return null;
+        }
+    }
+
+    /**
+     * Create a new COSStream using the underlying scratch file.
+     * 
+     * @return the new COSStream
+     */
+    public COSStream createCOSStream()
+    {
+        return new COSStream( getScratchFile() );
+    }
+
+    /**
+     * Create a new COSStream using the underlying scratch file.
+     *
+     * @param dictionary the corresponding dictionary
+     * 
+     * @return the new COSStream
+     */
+    public COSStream createCOSStream(COSDictionary dictionary)
+    {
+        return new COSStream( dictionary, getScratchFile() );
     }
 
     /**
