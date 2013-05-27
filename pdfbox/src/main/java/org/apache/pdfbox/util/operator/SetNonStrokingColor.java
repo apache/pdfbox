@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
+import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.PDFOperator;
@@ -37,7 +38,6 @@ import java.io.IOException;
 /**
  * <p>Set the non stroking color space.</p>
  * 
- * @author <a href="mailto:andreas@lehmi.de">Andreas Lehmkühler</a>
  * @version $Revision: 1.0 $
  */
 public class SetNonStrokingColor extends OperatorProcessor 
@@ -46,7 +46,7 @@ public class SetNonStrokingColor extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(SetNonStrokingColor.class);
+    private static final Log LOG = LogFactory.getLog(SetNonStrokingColor.class);
 
     /**
      * sc,scn Set color space for non stroking operations.
@@ -96,6 +96,10 @@ public class SetNonStrokingColor extends OperatorProcessor
             {
                 newOperator = new SetNonStrokingIndexed();
             }
+            else if (colorSpace instanceof PDLab)
+            {
+                newOperator = new SetNonStrokingLabColor();
+            }
 
             if (newOperator != null) 
             {
@@ -104,13 +108,13 @@ public class SetNonStrokingColor extends OperatorProcessor
             }
             else 
             {
-                log.warn("Not supported colorspace "+colorSpace.getName() 
+                LOG.warn("Not supported colorspace "+colorSpace.getName() 
                         + " within operator "+operator.getOperation());
             }
         }
         else
         {
-            log.warn("Colorspace not found in "+getClass().getName()+".process!!");
+            LOG.warn("Colorspace not found in "+getClass().getName()+".process!!");
         }
     }
 }
