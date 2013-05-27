@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.IOUtils;
@@ -45,6 +44,14 @@ public class TestPDDocument extends TestCase
         testResultsDir.mkdirs();
     }
 
+    private byte[] copyOfRange(byte[] array, int from, int to)
+    {
+    	// java5 backport of java6-only Arrays.copyOfRange
+    	int length = to-from;
+    	byte[] subArray = new byte[length];
+    	System.arraycopy(array, from, subArray, 0, length);
+    	return subArray;
+    }
     /**
      * Test document save/load using a stream.
      * @throws IOException if something went wrong
@@ -64,8 +71,8 @@ public class TestPDDocument extends TestCase
         // Verify content
         byte[] pdf = baos.toByteArray();
         assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
+        assertEquals("%PDF-1.4", new String(copyOfRange(pdf, 0, 8), "UTF-8"));
+        assertEquals("%%EOF\n", new String(copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
         PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf), new RandomAccessBuffer());
@@ -95,8 +102,8 @@ public class TestPDDocument extends TestCase
         byte[] pdf = IOUtils.toByteArray(in);
         in.close();
         assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
+        assertEquals("%PDF-1.4", new String(copyOfRange(pdf, 0, 8), "UTF-8"));
+        assertEquals("%%EOF\n", new String(copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
         PDDocument loadDoc = PDDocument.load(targetFile, new RandomAccessBuffer());
@@ -123,8 +130,8 @@ public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
         // Verify content
         byte[] pdf = baos.toByteArray();
         assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
+        assertEquals("%PDF-1.4", new String(copyOfRange(pdf, 0, 8), "UTF-8"));
+        assertEquals("%%EOF\n", new String(copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
         PDDocument loadDoc = PDDocument.loadNonSeq(new ByteArrayInputStream(pdf), new RandomAccessBuffer());
@@ -154,8 +161,8 @@ public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
         byte[] pdf = IOUtils.toByteArray(in);
         in.close();
         assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
+        assertEquals("%PDF-1.4", new String(copyOfRange(pdf, 0, 8), "UTF-8"));
+        assertEquals("%%EOF\n", new String(copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
         PDDocument loadDoc = PDDocument.loadNonSeq(targetFile, new RandomAccessBuffer());
