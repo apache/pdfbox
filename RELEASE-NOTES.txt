@@ -1,28 +1,46 @@
-Release Notes -- Apache PDFBox -- Version 1.8.1
+Release Notes -- Apache PDFBox -- Version 1.8.2
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.0 release. It 
-contains a couple of fixes, most notable a fix for an issue which leads to
-corrupted files.
+This is an incremental bugfix release based on the earlier 1.8.1 release. It 
+contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
 issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug Fixes
 
-[PDFBOX-1515] - PDGraphicsState class receives null page argument leading to NPE
-[PDFBOX-1538] - Content of annotation not visible in image (converted from pdf)
-[PDFBOX-1547] - TextPosition.getX() and getY() do not work properly with CropBox
-[PDFBOX-1549] - TTFSubFont generates bug-prone TTF sub fonts screwing some printers
-[PDFBOX-1551] - Merging PDFs with interactive forms results in a corrupt PDF
-[PDFBOX-1556] - Saving a document containing a xfa form creates invalid pdf
-[PDFBOX-1557] - NonSequentialPDFParser incorrectly parsing document info
-[PDFBOX-1558] - Unused PDSignature class should be removed
-[PDFBOX-1559] - Error when using monospaced Fonts
+[PDFBOX-1093] - Copy Page from one Document to another: Page Content Stream Linked 
+                to Original Document
+[PDFBOX-1561] - PDFBox throws exception with PDFTextStripper.getText
+[PDFBOX-1580] - Oracle JVM crashes because of embedded fonts.
+[PDFBOX-1583] - wasted work in PDDocument.addSignature(...)
+[PDFBOX-1586] - IndexOutOfBoundsException when saving a document (at random)
+[PDFBOX-1592] - Addition of 'null' in COSString when extracting form fields
+[PDFBOX-1599] - ConvertToImage gets ClassCastException with Checkboxes in PDFForm
+[PDFBOX-1601] - java.lang.IllegalArgumentException: Width (4032) and height (-2880) 
+                cannot be <= 0
+[PDFBOX-1602] - Erroneous values for TextPosition get{X,Y}[DirAdj]
+[PDFBOX-1603] - Regression in PDDocument.loadNonSeq ?
+[PDFBOX-1605] - PDPropBuildDataDict: use COSName instead of COSString as name value
+[PDFBOX-1609] - EXCEPTION_ACCESS_VIOLATION with PDF file and image conversion
+[PDFBOX-1611] - Avoid IndexOutOfBoundsException when extracting the font matrix of 
+                a Type1 font
+[PDFBOX-1612] - Avoid ArrayOutOfBoundsException when creating a PDPixelMap using an
+                indexed colorspace
+
+Improvement
+
+[PDFBOX-1293] - PDFImageWriter should use logging instead of System.out.println
+[PDFBOX-1581] - Add PDDocument.save(File) and PDDocument.loadNonSeq(InputStream, ...)
+
+New Feature
+
+[PDFBOX-1565] - Add support for Lab color spaces
+
 
 Release Contents
 ----------------
