@@ -27,10 +27,12 @@ Bug Fixes
 [PDFBOX-1603] - Regression in PDDocument.loadNonSeq ?
 [PDFBOX-1605] - PDPropBuildDataDict: use COSName instead of COSString as name value
 [PDFBOX-1609] - EXCEPTION_ACCESS_VIOLATION with PDF file and image conversion
+[PDFBOX-1610] - Corrupted result pdf when overlay one document with another one
 [PDFBOX-1611] - Avoid IndexOutOfBoundsException when extracting the font matrix of 
                 a Type1 font
 [PDFBOX-1612] - Avoid ArrayOutOfBoundsException when creating a PDPixelMap using an
                 indexed colorspace
+[PDFBOX-1615] - Color map not correctly copied when PDF file is split
 
 Improvement
 
