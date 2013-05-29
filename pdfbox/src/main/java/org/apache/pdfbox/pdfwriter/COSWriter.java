@@ -940,7 +940,8 @@ public class COSWriter implements ICOSVisitor
                 }
                 else if( current instanceof COSString )
                 {
-                    COSString copy = new COSString(((COSString)current).getString());
+                    COSString copy = new COSString(true);
+                    copy.append(((COSString)current).getBytes());
                     copy.accept(this);
                 }
                 else
