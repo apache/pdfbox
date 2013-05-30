@@ -1420,7 +1420,10 @@ public class COSWriter implements ICOSVisitor
      * @throws COSVisitorException If an error occurs while generating the data.
      */
     public void write(PDDocument doc) throws COSVisitorException
-    {
+	{
+        Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
+                                                    doc.getDocumentId();
+        
         document = doc;
         if(incrementalUpdate)
         {
@@ -1473,7 +1476,7 @@ public class COSWriter implements ICOSVisitor
                 //algorithm says to use time/path/size/values in doc to generate
                 //the id.  We don't have path or size, so do the best we can
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
-                md.update( Long.toString( System.currentTimeMillis()).getBytes("ISO-8859-1") );
+                md.update( Long.toString(idTime).getBytes("ISO-8859-1") );
                 COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
                 if( info != null )
                 {
