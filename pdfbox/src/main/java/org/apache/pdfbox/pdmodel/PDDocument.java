@@ -116,6 +116,14 @@ public class PDDocument implements Pageable
      * from this documents.
      */
     private boolean allSecurityToBeRemoved = false;
+
+    /**
+     * Keep tracking customized documentId for the trailer. If null, a new 
+     * id will be generated for the document. This ID doesn't represent the
+     * actual documentId from the trailer.
+     */
+    private Long documentId;
+
     
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
@@ -1626,6 +1634,16 @@ public class PDDocument implements Pageable
     public void setAllSecurityToBeRemoved(boolean removeAllSecurity)
     {
         allSecurityToBeRemoved = removeAllSecurity;
+    }
+    
+    public Long getDocumentId() 
+    {
+      return documentId;
+    }
+    
+    public void setDocumentId(Long docId)
+    {
+      documentId = docId;
     }
 }
 
