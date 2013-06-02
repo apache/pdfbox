@@ -142,9 +142,8 @@ public abstract class FontContainer
      * 
      * @param cid
      * @return The Glyph width in 'em' unit.
-     * @throws GlyphException 
      */
-    protected abstract float getFontProgramWidth(int cid) throws GlyphException;
+    protected abstract float getFontProgramWidth(int cid);
 
     /**
      * Test if both width are consistent. At the end of this method, the CID is marked as valid or invalid.

@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 public class Type0Container extends FontContainer
 {
@@ -38,7 +37,7 @@ public class Type0Container extends FontContainer
     }
 
     @Override
-    protected float getFontProgramWidth(int cid) throws GlyphException
+    protected float getFontProgramWidth(int cid)
     {
         float width = 0;
         if (this.delegateFontContainer != null)
