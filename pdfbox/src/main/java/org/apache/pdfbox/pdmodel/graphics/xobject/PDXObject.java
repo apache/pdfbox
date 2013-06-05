@@ -119,6 +119,20 @@ public abstract class PDXObject implements COSObjectable
      */
     public static PDXObject createXObject( COSBase xobject ) throws IOException
     {
+        PDXObject retval = commonXObjectCreation(xobject, false);
+        return retval;
+    }
+
+    /**
+     * Create the correct xobject from the cos base.
+     *
+     * @param xobject The cos level xobject to create.
+     * @param isthumb specify if the xobject represent a Thumbnail Image (in this case, the subtype null must be considered as an Image)
+     * @return a pdmodel xobject
+     * @throws IOException If there is an error creating the xobject.
+     */
+    protected static PDXObject commonXObjectCreation(COSBase xobject, boolean isThumb)
+    {
         PDXObject retval = null;
         if( xobject == null )
         {
@@ -128,7 +142,8 @@ public abstract class PDXObject implements COSObjectable
         {
             COSStream xstream = (COSStream)xobject;
             String subtype = xstream.getNameAsString( COSName.SUBTYPE );
-            if( subtype.equals( PDXObjectImage.SUB_TYPE ) )
+            // according to the PDF Reference : a thumbnail subtype must be Image if it is not null
+            if( PDXObjectImage.SUB_TYPE.equals( subtype ) || (subtype == null && isThumb))
             {
                 PDStream image = new PDStream( xstream );
                 // See if filters are DCT or JPX otherwise treat as Bitmap-like
@@ -157,7 +172,7 @@ public abstract class PDXObject implements COSObjectable
                     retval = new PDPixelMap(image);
                 }
             }
-            else if( subtype.equals( PDXObjectForm.SUB_TYPE ) )
+            else if( PDXObjectForm.SUB_TYPE.equals( subtype ) )
             {
                 retval = new PDXObjectForm( xstream );
             }
