@@ -142,7 +142,7 @@ public class SinglePageValidationProcess extends AbstractProcess
                 {
                     thumbBase = ((COSObject) thumbBase).getObject();
                 }
-                PDXObject thumbImg = PDXObjectImage.createXObject(thumbBase);
+                PDXObject thumbImg = PDXObjectImage.createThumbnailXObject(thumbBase);
                 ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
             }
             catch (IOException e)
