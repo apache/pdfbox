@@ -176,48 +176,47 @@ public class DocumentEncryption
     public void decryptDocument( String password )
         throws CryptographyException, IOException, InvalidPasswordException
     {
-        if( password == null )
+        final PDStandardEncryption encParameters = (PDStandardEncryption)pdDocument.getEncryptionDictionary();
+        final int permissions = encParameters.getPermissions();
+        final int revision = encParameters.getRevision();
+        final int length = encParameters.getLength()/8;
+        final byte[] id = ((COSString)document.getDocumentID().getObject( 0 )).getBytes();
+        final byte[] userPassword = encParameters.getUserKey()
+        final byte[] ownerPassword = encParameters.getOwnerKey();
+        final byte[] passwordBytes;
+
+        if (password == null) 
         {
-            password = "";
+            passwordBytes = "".getBytes("ISO-8859-1");
+        } else {
+            passwordBytes = password.getBytes("ISO-8859-1");
         }
-
-        PDStandardEncryption encParameters = (PDStandardEncryption)pdDocument.getEncryptionDictionary();
-
-
-        int permissions = encParameters.getPermissions();
-        int revision = encParameters.getRevision();
-        int length = encParameters.getLength()/8;
-
-        COSString id = (COSString)document.getDocumentID().getObject( 0 );
-        byte[] u = encParameters.getUserKey();
-        byte[] o = encParameters.getOwnerKey();
-
-        boolean isUserPassword =
-            encryption.isUserPassword( password.getBytes("ISO-8859-1"), u,
-                o, permissions, id.getBytes(), revision, length );
-        boolean isOwnerPassword =
-            encryption.isOwnerPassword( password.getBytes("ISO-8859-1"), u,
-                o, permissions, id.getBytes(), revision, length );
+        final boolean isUserPassword =
+            encryption.isUserPassword( passwordBytes, userPassword,
+                ownerPassword, permissions, id, revision, length );
+        final boolean isOwnerPassword =
+            encryption.isOwnerPassword( passwordBytes, userPassword,
+                ownerPassword, permissions, id, revision, length );
 
         if( isUserPassword )
         {
             encryptionKey =
                 encryption.computeEncryptedKey(
-                    password.getBytes("ISO-8859-1"), o,
-                    permissions, id.getBytes(), revision, length );
+                    passwordBytes, ownerPassword,
+                    permissions, id, revision, length );
         }
         else if( isOwnerPassword )
         {
             byte[] computedUserPassword =
                 encryption.getUserPassword(
-                    password.getBytes("ISO-8859-1"),
-                    o,
+                    passwordBytes,
+                    ownerPassword,
                     revision,
                     length );
             encryptionKey =
                 encryption.computeEncryptedKey(
-                    computedUserPassword, o,
-                    permissions, id.getBytes(), revision, length );
+                    computedUserPassword, ownerPassword,
+                    permissions, id, revision, length );
         }
         else
         {
