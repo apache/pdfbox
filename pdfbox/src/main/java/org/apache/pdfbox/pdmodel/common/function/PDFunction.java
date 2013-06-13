@@ -127,34 +127,25 @@ public abstract class PDFunction implements COSObjectable
      */
     public static PDFunction create( COSBase function ) throws IOException
     {
-        PDFunction retval = null;
+        final COSDictionary functionDictionary;
+        final int functionType;
+        
         if( function instanceof COSObject )
         {
-            function = ((COSObject)function).getObject();
+            functionDictionary = (COSDictionary)((COSObject)function).getObject();
+        } else {
+            functionDictionary = (COSDictionary)function;
         }
-        COSDictionary functionDictionary = (COSDictionary)function;
-        int functionType =  functionDictionary.getInt( COSName.FUNCTION_TYPE );
-        if( functionType == 0 )
+        functionTYpe = functionDictionary.getInt( COSName.FUNCTION_TYPE );
+        switch (functionType)
         {
-            retval = new PDFunctionType0(functionDictionary);
-        }
-        else if( functionType == 2 )
-        {
-            retval = new PDFunctionType2(functionDictionary);
-        }
-        else if( functionType == 3 )
-        {
-            retval = new PDFunctionType3(functionDictionary);
-        }
-        else if( functionType == 4 )
-        {
-            retval = new PDFunctionType4(functionDictionary);
-        }
-        else
-        {
-            throw new IOException( "Error: Unknown function type " + functionType );
-        }
-        return retval;
+            case 0: return new PDFunctionType0(functionDictionary);
+            case 2: return new PDFunctionType2(functionDictionary);
+            case 3: return new PDFunctionType3(functionDictionary);
+            case 4: return new PDFunctionType4(functionDictionary);
+            default: 
+                throw new IOException( "Error: Unknown function type " + functionType );
+        }        
     }
 
     /**
