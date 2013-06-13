@@ -184,9 +184,12 @@ class CJKEncodings
    {
        if ( encoding.startsWith("COSName"))
        {
-           encoding = encoding.substring(8, encoding.length()-1);
+           return (String)(charsetMapping.get(encoding.substring(8, encoding.length()-1)));
+       } 
+       else 
+       {
+           return (String)(charsetMapping.get(encoding));
        }
-       return (String)(charsetMapping.get(encoding));
    }
 
    /**
