@@ -19,15 +19,12 @@ package org.apache.pdfbox.pdfparser;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.io.PushBackInputStream;
-import org.apache.pdfbox.io.RandomAccess;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -41,7 +38,8 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.WrappedIOException;
-
+import org.apache.pdfbox.io.PushBackInputStream;
+import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -54,6 +52,10 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public abstract class BaseParser
 {
 
+    private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
+
+    private static final long GENERATION_NUMBER_THRESHOLD = 65535;
+    
     /**
      * system property allowing to define size of push back buffer.
      */
@@ -1585,6 +1587,36 @@ public abstract class BaseParser
     }
 
     /**
+     * This will read a long from the Stream and throw an {@link IllegalArgumentException} if the long value
+     * has more than 10 digits (i.e. : bigger than {@link #OBJECT_NUMBER_THRESHOLD})
+     * @return
+     * @throws IOException
+     */
+    protected long readObjectNumber() throws IOException
+    {
+        long retval = readLong();
+        if(retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD) {
+            throw new IOException("Object Number '" + retval + "' has more than 10 digits or is negative");
+        }
+        return retval;
+    }
+    
+    /**
+     * This will read a integer from the Stream and throw an {@link IllegalArgumentException} if the integer value
+     * has more than the maximum object revision (i.e. : bigger than {@link #GENERATION_NUMBER_THRESHOLD})
+     * @return
+     * @throws IOException
+     */
+    protected int readGenerationNumber() throws IOException
+    {
+        int retval = readInt();
+        if(retval < 0 || retval >= GENERATION_NUMBER_THRESHOLD) {
+            throw new IOException("Generation Number '" + retval + "' has more than 5 digits");
+        }
+        return retval;
+    }
+    
+    /**
      * This will read an integer from the stream.
      *
      * @return The integer that was read from the stream.
@@ -1596,21 +1628,7 @@ public abstract class BaseParser
         skipSpaces();
         int retval = 0;
 
-        int lastByte = 0;
-        StringBuffer intBuffer = new StringBuffer();
-        while( (lastByte = pdfSource.read() ) != 32 &&
-                lastByte != 10 &&
-                lastByte != 13 &&
-                lastByte != 60 && //see sourceforge bug 1714707
-                lastByte != 0 && //See sourceforge bug 853328
-                lastByte != -1 )
-        {
-            intBuffer.append( (char)lastByte );
-        }
-        if( lastByte != -1 )
-        {
-            pdfSource.unread( lastByte );
-        }
+        StringBuilder intBuffer = readStringNumber();
 
         try
         {
@@ -1623,4 +1641,58 @@ public abstract class BaseParser
         }
         return retval;
     }
+    
+
+    /**
+     * This will read an long from the stream.
+     *
+     * @return The long that was read from the stream.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected long readLong() throws IOException
+    {
+        skipSpaces();
+        long retval = 0;
+
+        StringBuilder longBuffer = readStringNumber();
+
+        try
+        {
+            retval = Long.parseLong( longBuffer.toString() );
+        }
+        catch( NumberFormatException e )
+        {
+            pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
+            throw new IOException( "Error: Expected a long type, actual='" + longBuffer + "'" );
+        }
+        return retval;
+    }
+
+    /**
+     * This method is used to read a token by the {@linkplain #readInt()} method and the {@linkplain #readLong()} method.
+     *  
+     * @return the token to parse as integer or long by the calling method.
+     * @throws IOException throws by the {@link #pdfSource} methods.
+     */
+    protected final StringBuilder readStringNumber() throws IOException
+    {
+        int lastByte = 0;
+        StringBuilder buffer = new StringBuilder();
+        while( (lastByte = pdfSource.read() ) != 32 &&
+                lastByte != 10 &&
+                lastByte != 13 &&
+                lastByte != 60 && //see sourceforge bug 1714707
+                lastByte != 0 && //See sourceforge bug 853328
+                lastByte != -1 )
+        {
+            buffer.append( (char)lastByte );
+        }
+        if( lastByte != -1 )
+        {
+            pdfSource.unread( lastByte );
+        }
+        return buffer;
+    }
+
 }

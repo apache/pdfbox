@@ -183,6 +183,7 @@ public class PDFParser extends BaseParser
                 {
                     break;
                 }
+                                
                 try
                 {
                     wasLastParsedObjectEOF = parseObject();
@@ -204,7 +205,19 @@ public class PDFParser extends BaseParser
                          * we skipped over an object
                          */
                         LOG.warn("Parsing Error, Skipping Object", e);
+                        
+                        skipSpaces();
+                        long lastOffset = pdfSource.getOffset();
                         skipToNextObj();
+                        
+                        /* the nextObject is the one we want to skip 
+                         * so read the 'Object Number' without interpret it
+                         * in order to force the skipObject
+                         */
+                        if (lastOffset == pdfSource.getOffset()) {
+                            readStringNumber();
+                            skipToNextObj();
+                        }
                     }
                     else
                     {
@@ -507,7 +520,7 @@ public class PDFParser extends BaseParser
         //we are going to parse an normal object
         else
         {
-            int number = -1;
+            long number = -1;
             int genNum = -1;
             String objectKey = null;
             boolean missingObjectNumber = false;
@@ -520,7 +533,7 @@ public class PDFParser extends BaseParser
                 }
                 else
                 {
-                    number = readInt();
+                    number = readObjectNumber();
                 }
             }
             catch( IOException e )
@@ -529,12 +542,12 @@ public class PDFParser extends BaseParser
                 //statements after an object, of course this is nonsense
                 //but because we want to support as many PDFs as possible
                 //we will simply try again
-                number = readInt();
+                number = readObjectNumber();
             }
             if( !missingObjectNumber )
             {
                 skipSpaces();
-                genNum = readInt();
+                genNum = readGenerationNumber();
 
                 objectKey = readString( 3 );
                 //System.out.println( "parseObject() num=" + number +
@@ -676,7 +689,7 @@ public class PDFParser extends BaseParser
         /* This integer is the byte offset of the first object referenced by the xref or xref stream
          * Needed for the incremental update (PREV)
          */
-        getDocument().setStartXref(readInt());
+        getDocument().setStartXref(readLong());
         return true;
     }
 
@@ -709,8 +722,8 @@ public class PDFParser extends BaseParser
          */
         while(true)
         {
-            int currObjID = readInt(); // first obj id
-            int count = readInt(); // the number of objects in the xref table
+            long currObjID = readObjectNumber(); // first obj id
+            long count = readLong(); // the number of objects in the xref table
             skipSpaces();
             for(int i = 0; i < count; i++)
             {
