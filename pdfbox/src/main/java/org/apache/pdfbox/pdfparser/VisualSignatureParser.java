@@ -176,7 +176,7 @@ public class VisualSignatureParser extends BaseParser
         else 
         {
             //we are going to parse an normal object
-            int number = -1;
+            long number = -1;
             int genNum = -1;
             String objectKey = null;
             boolean missingObjectNumber = false;
@@ -189,7 +189,7 @@ public class VisualSignatureParser extends BaseParser
                 } 
                 else 
                 {
-                    number = readInt();
+                    number = readObjectNumber();
                 }
             } 
             catch(IOException e) 
@@ -198,12 +198,12 @@ public class VisualSignatureParser extends BaseParser
                 //statements after an object, of course this is nonsense
                 //but because we want to support as many PDFs as possible
                 //we will simply try again
-                number = readInt();
+                number = readObjectNumber();
             }
             if(!missingObjectNumber)
             {
                 skipSpaces();
-                genNum = readInt();
+                genNum = readGenerationNumber();
 
                 objectKey = readString(3);
                 //System.out.println( "parseObject() num=" + number +

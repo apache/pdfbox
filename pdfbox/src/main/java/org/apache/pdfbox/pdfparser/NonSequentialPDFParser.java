@@ -455,8 +455,8 @@ public class NonSequentialPDFParser extends PDFParser
     private long parseXrefObjStream(long objByteOffset) throws IOException
     {
         // ---- parse indirect object head
-        readInt();
-        readInt();
+        readObjectNumber();
+        readGenerationNumber();
         readPattern(OBJ_MARKER);
 
         COSDictionary dict = parseCOSDictionary();
@@ -1180,8 +1180,8 @@ public class NonSequentialPDFParser extends PDFParser
                 setPdfSource(offsetOrObjstmObNr);
 
                 // ---- we must have an indirect object
-                final int readObjNr = readInt();
-                final int readObjGen = readInt();
+                final long readObjNr = readObjectNumber();
+                final long readObjGen = readGenerationNumber();
                 readPattern(OBJ_MARKER);
 
                 // ---- consistency check

@@ -352,8 +352,8 @@ public class PreflightParser extends NonSequentialPDFParser
         while (true)
         {
             // just after the xref<EOL> there are an integer
-            int currObjID = 0; // first obj id
-            int count = 0; // the number of objects in the xref table
+            long currObjID = 0; // first obj id
+            long count = 0; // the number of objects in the xref table
 
             long offset = pdfSource.getOffset();
             String line = readLine();
@@ -370,8 +370,8 @@ public class PreflightParser extends NonSequentialPDFParser
                         "Cross reference subsection header is invalid"));
                 // reset pdfSource cursor to read xref information
                 pdfSource.seek(offset);
-                currObjID = readInt(); // first obj id
-                count = readInt(); // the number of objects in the xref table
+                currObjID = readObjectNumber(); // first obj id
+                count = readLong(); // the number of objects in the xref table
             }
 
             skipSpaces();
@@ -669,7 +669,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 // ---- go to object start
                 setPdfSource(offsetOrObjstmObNr);
                 // ---- we must have an indirect object
-                int readObjNr = 0;
+                long readObjNr = 0;
                 int readObjGen = 0;
 
                 long offset = pdfSource.getOffset();
@@ -687,8 +687,8 @@ public class PreflightParser extends NonSequentialPDFParser
                     addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Single space expected"));
                     // reset pdfSource cursor to read object information
                     pdfSource.seek(offset);
-                    readObjNr = readInt();
-                    readObjGen = readInt();
+                    readObjNr = readObjectNumber();
+                    readObjGen = readGenerationNumber();
                     for (char c : OBJ_MARKER)
                     {
                         if (pdfSource.read() != c)
