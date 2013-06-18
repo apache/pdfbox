@@ -24,7 +24,6 @@ package org.apache.pdfbox.preflight.parser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,58 +93,54 @@ public class XmlResultParser
         } else {
             Element preflight = generateResponseSkeleton(rdocument, source.getName(), after-before);
             // valid ?
-            Element valid = rdocument.createElement("isValid");
-            valid.setAttribute("type", pdfType);
-            valid.setTextContent("false");
-            preflight.appendChild(valid);
-            // errors list
-            List<ValidationError> cleaned = cleanErrorList(result.getErrorsList());
-            Element errors = rdocument.createElement("errors");
-            errors.setAttribute("count", String.format("%d", cleaned.size()));
-            preflight.appendChild(errors);
-            Map<ValidationError, Integer> errorsByType = new HashMap<ValidationError, Integer>();
-            for (ValidationError validationError : cleaned)
-            {
-                Integer count = errorsByType.get(validationError);
-                if (count==null) {
-                    errorsByType.put(validationError, 1);
-                } else {
-                    errorsByType.put(validationError, count++);
-                }
-            }
-            
-            for (Map.Entry<ValidationError,Integer> entry : errorsByType.entrySet())
-            {
-                Element error = rdocument.createElement("error");
-                error.setAttribute("count", String.format("%d",entry.getValue().intValue()));
-                Element code = rdocument.createElement("code");
-                code.setTextContent(entry.getKey().getErrorCode());
-                error.appendChild(code);
-                Element detail = rdocument.createElement("details");
-                detail.setTextContent(entry.getKey().getDetails());
-                error.appendChild(detail);
-                errors.appendChild(error);
-            }
+            createResponseWithError(rdocument, pdfType, result, preflight);
             return preflight;
         }
 
     }
 
-    private List<ValidationError> cleanErrorList (List<ValidationError> errors) {
-        List<ValidationError> cleaned = new ArrayList<ValidationResult.ValidationError>(errors.size());
-        List<String> already = new ArrayList<String>(errors.size());
-        for (ValidationError validationError : errors)
+    protected void createResponseWithError(Document rdocument, String pdfType, ValidationResult result, Element preflight) {
+        Element valid = rdocument.createElement("isValid");
+        valid.setAttribute("type", pdfType);
+        valid.setTextContent("false");
+        preflight.appendChild(valid);
+        // errors list
+        Element errors = rdocument.createElement("errors");
+        Map<ValidationError, Integer> cleaned = cleanErrorList(result.getErrorsList());
+        preflight.appendChild(errors);
+        int totalCount = 0;
+        for (Map.Entry<ValidationError,Integer> entry : cleaned.entrySet())
         {
-            if (!already.contains(validationError.getErrorCode())) {
-                // first time
-                cleaned.add(validationError);
-                already.add(validationError.getErrorCode());
-            } // else already found
+            Element error = rdocument.createElement("error");
+            int count = entry.getValue().intValue();
+            error.setAttribute("count", String.format("%d",count));
+            totalCount += count;
+            Element code = rdocument.createElement("code");
+            code.setTextContent(entry.getKey().getErrorCode());
+            error.appendChild(code);
+            Element detail = rdocument.createElement("details");
+            detail.setTextContent(entry.getKey().getDetails());
+            error.appendChild(detail);
+            errors.appendChild(error);
         }
-        return cleaned;
+        errors.setAttribute("count", String.format("%d", totalCount));
     }
 
-    private Element generateFailureResponse (Document rdocument, String name,long duration, String pdfType, Exception e) {
+    private Map<ValidationError,Integer> cleanErrorList (List<ValidationError> errors) {
+        Map<ValidationError,Integer> cleaned = new HashMap<ValidationError, Integer>(errors.size());
+        for (ValidationError ve: errors) {
+            Integer found = cleaned.get(ve);
+            if (found!=null) {
+                cleaned.put(ve,found+1);
+            } else {
+                cleaned.put(ve,1);
+            }
+
+        }
+         return cleaned;
+    }
+
+    protected Element generateFailureResponse (Document rdocument, String name,long duration, String pdfType, Exception e) {
         Element preflight = generateResponseSkeleton(rdocument, name, duration);
         // valid ?
         Element valid = rdocument.createElement("isValid");
@@ -168,7 +163,7 @@ public class XmlResultParser
         return preflight;
     }
 
-    private Element generateResponseSkeleton (Document rdocument, String name, long duration) {
+    protected Element generateResponseSkeleton (Document rdocument, String name, long duration) {
         Element preflight = rdocument.createElement("preflight");
         preflight.setAttribute("name", name);
         // duration
