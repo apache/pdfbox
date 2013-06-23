@@ -22,6 +22,7 @@
 package org.apache.pdfbox.preflight.process;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_OUTLINES_INVALID;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -31,6 +32,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -69,7 +71,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         }
         else
         {
-            throw new ValidationException("There are no Catalog entry in the Document.");
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
         }
     }
 

@@ -460,7 +460,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     }
                     catch (IOException e)
                     {
-                        throw new ValidationException("Unable to valid the Type3 : " + e.getMessage());
+                        context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_DAMAGED, "Unable to valid the Type3 : " + e.getMessage()));
                     }
                 }
             }

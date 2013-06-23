@@ -414,6 +414,10 @@ public interface PreflightConstants
      * The stream uses a filter which isn't defined in the PDF Reference document.
      */
     String ERROR_SYNTAX_STREAM_UNDEFINED_FILTER = "1.2.12";
+    /**
+     * The stream can't be processed
+     */
+    String ERROR_SYNTAX_STREAM_DAMAGED = "1.2.13";
 
     String ERROR_SYNTAX_NOCATALOG = "1.2.13";
     /**
@@ -473,6 +477,7 @@ public interface PreflightConstants
      * Main error code for graphical problems
      */
     String ERROR_GRAPHIC_MAIN = "2";
+    
     String ERROR_GRAPHIC_INVALID = "2.1";
     /**
      * BBox Entry of a Form XObject is missing or isn't an Array
@@ -504,6 +509,10 @@ public interface PreflightConstants
 
     String ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES = "2.1.8";
 
+    String ERROR_GRAPHIC_MISSING_OBJECT = "2.1.9";
+    
+    String ERROR_GRAPHIC_XOBJECT_INVALID_TYPE = "2.1.10";
+    
     /**
      * Main error code for graphical transparency problems
      */
@@ -573,6 +582,10 @@ public interface PreflightConstants
      * ICC Based color space used in the PDF file is invalid
      */
     String ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED = "2.4.11";
+    /**
+     * Validation asked on a missing ColorSpace
+     */
+    String ERROR_GRAPHIC_MISSING_COLOR_SPACE_ICCBASED = "2.4.12";
     // -----------------------------------------------------------
     // ---- FONT ERRORS 3.x...
     // -----------------------------------------------------------
@@ -636,6 +649,10 @@ public interface PreflightConstants
      * Encoding entry can't be read due to IOException
      */
     String ERROR_FONTS_ENCODING_IO = "3.1.13";
+    /**
+     * The font type is unknown
+     */
+    String ERROR_FONTS_UNKNOWN_FONT_TYPE = "3.1.14";
     /**
      * The embedded font is damaged
      */
@@ -711,7 +728,10 @@ public interface PreflightConstants
      * The AP dictionary of the annotation contains forbidden/invalid entries (only the N entry is authorized)
      */
     String ERROR_ANNOT_MISSING_AP_N_CONTENT = "5.1.2";
-
+    /**
+     * An annotation validation is required but there are no element to validate
+     */
+    String ERROR_ANNOT_MISSING_ANNOTATION_DICTIONARY = "5.1.3";
     /**
      * Common forbidden field error in annotation dictionary
      */
@@ -782,6 +802,10 @@ public interface PreflightConstants
      * The H entry of a Hide action is set to true (so some annotation can be hide)
      */
     String ERROR_ACTION_HIDE_H_INVALID = "6.1.4";
+    /**
+     * An action validation is required but there are no element to validate
+     */
+    String ERROR_ACTION_MISSING_ACTION_DICTIONARY = "6.1.5";
     /**
      * Common forbidden action error
      */
@@ -914,5 +938,14 @@ public interface PreflightConstants
      * a category has an invalid value in one property description (must be internal or external)
      */
     String ERROR_METADATA_CATEGORY_PROPERTY_INVALID = "7.5.1";
-
+    
+    /**
+     * Error about PDF processing : that is not necessary a specific PDF/A validation error
+     * but a PDF specification requirement that isn't respected.
+     */
+    String ERROR_PDF_PROCESSING = "8";
+    /**
+     * A Mandatory element is missing
+     */
+    String ERROR_PDF_PROCESSING_MISSING = "8.1";
 }
