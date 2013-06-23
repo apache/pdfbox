@@ -202,15 +202,16 @@ public class CatalogValidationProcess extends AbstractProcess
 
         if (this.catalog == null)
         {
-            new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document.");
-            throw new ValidationException("There are no Catalog entry in the Document.");
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
+        } 
+        else 
+        {
+            validateActions(ctx);
+            validateLang(ctx);
+            validateNames(ctx);
+            validateOCProperties(ctx);
+            validateOutputIntent(ctx);
         }
-
-        validateActions(ctx);
-        validateLang(ctx);
-        validateNames(ctx);
-        validateOCProperties(ctx);
-        validateOutputIntent(ctx);
     }
 
     /**
@@ -379,7 +380,7 @@ public class CatalogValidationProcess extends AbstractProcess
      */
     protected void validateICCProfile(COSBase destOutputProfile, Map<COSObjectKey, Boolean> mapDestOutputProfile,
             PreflightContext ctx) throws ValidationException
-    {
+            {
         try
         {
             if (destOutputProfile == null)
@@ -461,5 +462,5 @@ public class CatalogValidationProcess extends AbstractProcess
         {
             throw new ValidationException("Unable to parse the ICC Profile", e);
         }
-    }
+            }
 }

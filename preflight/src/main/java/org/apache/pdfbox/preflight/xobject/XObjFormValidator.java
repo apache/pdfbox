@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -116,9 +117,8 @@ public class XObjFormValidator extends AbstractXObjValidator
      * A Form XObject may contain a Group object (Key =" Group"). If a Group object is present, this method checks if
      * the S entry is present and if its value is different from "Transparency".
      * 
-     * @throws ValidationException
      */
-    protected void checkGroup() throws ValidationException
+    protected void checkGroup()
     {
         COSBase baseGroup = this.xobject.getItem(XOBJECT_DICTIONARY_KEY_GROUP);
         COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, cosDocument);
@@ -126,15 +126,16 @@ public class XObjFormValidator extends AbstractXObjValidator
         {
             if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE)))
             {
-                throw new ValidationException("The Group dictionary hasn't Group as Type value");
-            }
-
-            String sVal = groupDictionary.getNameAsString(COSName.S);
-            if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+                context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_FIELD, "The Group dictionary hasn't Group as Type value"));
+            } 
+            else 
             {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
-                        "Group has a transparency S entry or the S entry is null."));
-                return;
+                String sVal = groupDictionary.getNameAsString(COSName.S);
+                if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, "Group has a transparency S entry or the S entry is null."));
+                    return;
+                }
             }
         }
     }

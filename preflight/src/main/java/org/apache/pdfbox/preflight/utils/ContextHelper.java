@@ -21,11 +21,13 @@
 
 package org.apache.pdfbox.preflight.utils;
 
+import static org.apache.pdfbox.preflight.PreflightConstants.*;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 public class ContextHelper
 {
@@ -39,14 +41,16 @@ public class ContextHelper
      * @param processName
      * @throws ValidationException
      */
-    public static void validateElement(PreflightContext context, Object element, String processName)
-            throws ValidationException
+    public static void validateElement(PreflightContext context, Object element, String processName) throws ValidationException
     {
         if (element == null)
         {
-            throw new ValidationException("Unable to process an element if it is null.");
+            context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING_MISSING, "Unable to process an element if it is null."));
+        } 
+        else 
+        {
+            callValidation(context, element, processName);
         }
-        callValidation(context, element, processName);
     }
 
     /**
@@ -60,20 +64,16 @@ public class ContextHelper
      * @throws ValidationException
      */
     private static void callValidation(PreflightContext context, Object element, String processName)
-            throws ValidationException
+    throws ValidationException
     {
-        if (context == null)
-        {
-            throw new ValidationException("Unable to process an element without context.");
-        }
-
         PreflightPath validationPath = context.getValidationPath();
         boolean needPop = validationPath.pushObject(element);
         PreflightConfiguration config = context.getConfig();
         ValidationProcess process = config.getInstanceOfProcess(processName);
         process.validate(context);
-        if (needPop)
+        if (needPop) {
             validationPath.pop();
+        }
     }
 
     /**

@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.process;
 
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_FX_KEYS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID;
@@ -226,7 +227,9 @@ public class StreamValidationProcess extends AbstractProcess
                     long curSkip = ra.skip(offset - skipped);
                     if (curSkip < 0)
                     {
-                        throw new ValidationException("Unable to skip bytes in the PDFFile to check stream length");
+                        org.apache.pdfbox.io.IOUtils.closeQuietly(ra);
+                        addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_DAMAGED, "Unable to skip bytes in the PDFFile to check stream length"));
+                        return;
                     }
                     skipped += curSkip;
                 }
@@ -261,6 +264,7 @@ public class StreamValidationProcess extends AbstractProcess
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
                                     "Stream length is invalide"));
+                            org.apache.pdfbox.io.IOUtils.closeQuietly(ra);
                             return;
                         }
                         else

@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -44,38 +45,43 @@ public class TilingPatternValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class))
-        {
-            throw new ValidationException("Tiling pattern validation required at least a PDPage");
+        if (vPath.isEmpty()) {
+            return;
         }
+        else if (!vPath.isExpectedType(PDTilingPatternResources.class))
+        {
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT, "Tiling pattern validation required at least a PDPage"));
+        }
+        else
+        {
+            PDTilingPatternResources tilingPattern = (PDTilingPatternResources) vPath.peek();
+            PDPage page = vPath.getClosestPathElement(PDPage.class);
 
-        PDTilingPatternResources tilingPattern = (PDTilingPatternResources) vPath.peek();
-        PDPage page = vPath.getClosestPathElement(PDPage.class);
-
-        checkMandatoryFields(context, page, tilingPattern);
-        parseResources(context, page, tilingPattern);
-        parsePatternContent(context, page, tilingPattern);
+            checkMandatoryFields(context, page, tilingPattern);
+            parseResources(context, page, tilingPattern);
+            parsePatternContent(context, page, tilingPattern);
+        }
     }
 
     protected void parseResources(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
             throws ValidationException
-    {
+            {
         PDResources resources = pattern.getResources();
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
         }
-    }
+            }
 
     /**
      * Validate the Pattern content like Color and Show Text Operators using an instance of ContentStreamWrapper.
      */
     protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
             throws ValidationException
-    {
+            {
         ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
         csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
-    }
+            }
 
     /**
      * This method checks if required fields are present.

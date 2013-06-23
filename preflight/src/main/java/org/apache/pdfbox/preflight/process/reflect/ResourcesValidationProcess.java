@@ -44,6 +44,7 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -58,18 +59,24 @@ public class ResourcesValidationProcess extends AbstractProcess
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PreflightPath vPath = ctx.getValidationPath();
-        if (vPath.isEmpty() && !vPath.isExpectedType(PDResources.class))
-        {
-            throw new ValidationException("Resources validation process needs at least one PDResources object");
+        if (vPath.isEmpty()) {
+            return;
         }
+        else if (!vPath.isExpectedType(PDResources.class))
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_PDF_PROCESSING_MISSING, "Resources validation process needs at least one PDResources object"));
+        } 
+        else
+        {
 
-        PDResources resources = (PDResources) vPath.peek();
+            PDResources resources = (PDResources) vPath.peek();
 
-        validateFonts(ctx, resources);
-        validateExtGStates(ctx, resources);
-        validateShadingPattern(ctx, resources);
-        validateTilingPattern(ctx, resources);
-        validateXObjects(ctx, resources);
+            validateFonts(ctx, resources);
+            validateExtGStates(ctx, resources);
+            validateShadingPattern(ctx, resources);
+            validateTilingPattern(ctx, resources);
+            validateXObjects(ctx, resources);
+        }
     }
 
     /**

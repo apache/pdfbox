@@ -40,7 +40,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_V
 import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_TYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_ADDITIONAL_ACTION;
 import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_OPEN_ACTION;
-
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +53,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
@@ -176,7 +177,7 @@ public class ActionManagerFactory
         }
         else
         {
-            throw new ValidationException("Action entry isn't an instance of COSDictionary");
+            ctx.addValidationError(new ValidationError(PreflightConstants.ERROR_ACTION_INVALID_TYPE, "Action entry isn't an instance of COSDictionary"));
         }
     }
 
