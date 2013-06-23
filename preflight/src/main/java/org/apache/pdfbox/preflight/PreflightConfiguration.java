@@ -196,6 +196,11 @@ public class PreflightConfiguration
         this.processes.put(processName, process);
     }
 
+    public void removeProcess(String processName)
+    {
+        this.processes.remove(processName);
+    }
+    
     public Collection<String> getPageValidationProcessNames()
     {
         return this.innerProcesses.keySet();
@@ -206,6 +211,11 @@ public class PreflightConfiguration
         this.innerProcesses.put(processName, process);
     }
 
+    public void removePageProcess(String processName)
+    {
+        this.innerProcesses.remove(processName);
+    }
+    
     public boolean isErrorOnMissingProcess()
     {
         return errorOnMissingProcess;
