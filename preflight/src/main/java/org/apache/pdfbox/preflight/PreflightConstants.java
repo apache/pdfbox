@@ -418,8 +418,10 @@ public interface PreflightConstants
      * The stream can't be processed
      */
     String ERROR_SYNTAX_STREAM_DAMAGED = "1.2.13";
-
-    String ERROR_SYNTAX_NOCATALOG = "1.2.13";
+    /**
+     * There are no catalog dictionary in the PDF File
+     */
+    String ERROR_SYNTAX_NOCATALOG = "1.2.14";
     /**
      * Common error about the cross ref table
      */
