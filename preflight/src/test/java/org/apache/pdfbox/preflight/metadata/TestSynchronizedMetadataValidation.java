@@ -436,19 +436,6 @@ public class TestSynchronizedMetadataValidation
         }
 
     }
-
-    /**
-     * Check if FormatAccessException Generator is ok
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void checkformatAccessException() throws Exception
-    {
-        Throwable cause = new Throwable();
-        Assert.assertSame(cause, sync.formatAccessException("test", "test", cause).getCause());
-    }
-
     /**
      * Check if SchemaAccessException Generator is ok
      * 
