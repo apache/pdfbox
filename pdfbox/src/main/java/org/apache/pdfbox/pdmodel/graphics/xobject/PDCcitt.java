@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
@@ -37,14 +38,16 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 /**
  * An image class for CCITT Fax.
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @author paul king
- * @version $Revision: 1.6 $
+ *
  */
 public class PDCcitt extends PDXObjectImage
 {
@@ -79,7 +82,6 @@ public class PDCcitt extends PDXObjectImage
     public PDCcitt( PDDocument doc, RandomAccess raf ) throws IOException
     {
         super( new PDStream(doc),"tiff");
-        // super( new PDStream( doc, null, true ), "tiff" );
 
         COSDictionary decodeParms = new COSDictionary();
 
@@ -148,11 +150,35 @@ public class PDCcitt extends PDXObjectImage
         }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
 
-        BufferedImage image = new BufferedImage(cols, rows, BufferedImage.TYPE_BYTE_BINARY);
-        WritableRaster raster = image.getRaster();
+        byte[] bufferData = null;
+        ColorModel colorModel = null;
+        PDColorSpace colorspace = getColorSpace();
+        // most likely there is no colorspace as a CCITT-filter uses 1-bit values mapped to black/white
+        // in some rare cases other colorspaces maybe used such as an indexed colorspace, see PDFBOX-1638
+        if (colorspace instanceof PDIndexed)
+        {
+            PDIndexed csIndexed = (PDIndexed)colorspace;
+            COSBase maskArray = getMask();
+            if (maskArray != null && maskArray instanceof COSArray)
+            {
+                colorModel = csIndexed.createColorModel(8, ((COSArray)maskArray).getInt(0));
+            }
+            else
+            {
+                colorModel = csIndexed.createColorModel(8);
+            }
+        }
+        else
+        {
+            byte[] map = new byte[] {(byte)0xff, (byte)0x00};
+            colorModel = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+        }
+        WritableRaster raster = colorModel.createCompatibleWritableRaster( cols, rows );
         DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-        byte[] bufferData = buffer.getData();
+        bufferData = buffer.getData();
         IOUtils.populateBuffer(stream.getUnfilteredStream(), bufferData);
+        BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+
         if (!blackIsOne)
         {
             //Inverting the bitmap
@@ -167,17 +193,16 @@ public class PDCcitt extends PDXObjectImage
          */
         if(hasMask())
         {
-	        byte map[] = new byte[] {(byte)0x00, (byte)0xff};
-	    	IndexColorModel  cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
-	    	 raster = cm.createCompatibleWritableRaster( image.getWidth(), image.getHeight() );
-	         buffer = (DataBufferByte)raster.getDataBuffer();
-	        bufferData = buffer.getData();
-	
-	        byte array[] = ((DataBufferByte)image.getData().getDataBuffer()).getData();
-	        System.arraycopy( array, 0,bufferData, 0,
-	                (array.length<bufferData.length?array.length: bufferData.length) );
-	        BufferedImage indexed = new BufferedImage(cm, raster, false, null);
-	        image = indexed;
+            byte[] map = new byte[] {(byte)0x00, (byte)0xff};
+            IndexColorModel  cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+            raster = cm.createCompatibleWritableRaster( cols, rows );
+            bufferData = ((DataBufferByte)raster.getDataBuffer()).getData();
+
+            byte[] array = ((DataBufferByte)image.getData().getDataBuffer()).getData();
+            System.arraycopy( array, 0,bufferData, 0,
+                    (array.length<bufferData.length?array.length: bufferData.length) );
+            BufferedImage indexed = new BufferedImage(cm, raster, false, null);
+            image = indexed;
         }
         
         return applyMasks(image);
