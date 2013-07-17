@@ -237,12 +237,6 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-        <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources">
-            <patternset>
-                <include name="com/adobe/pdf/pcfi/glyphlist.txt"/>
-            </patternset>
-            <mapper type="flatten"/>
-        </unjar>
     </target>
 
     <target name="find.testfiles">
