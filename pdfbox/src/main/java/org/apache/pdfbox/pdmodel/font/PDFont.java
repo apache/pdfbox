@@ -38,9 +38,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import org.apache.pdfbox.util.ResourceLoader;
 
-import java.awt.Graphics;
-import java.awt.geom.AffineTransform;
-
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -307,41 +304,6 @@ public abstract class PDFont implements COSObjectable
      */
     public abstract float getAverageFontWidth() throws IOException;
 
-    /**
-     * This will draw a string on a canvas using the font.
-     *
-     * @param string The string to draw.
-     * @param g The graphics to draw onto.
-     * @param fontSize The size of the font to draw.
-     * @param at The transformation matrix with all information for scaling and shearing of the font.
-     * @param x The x coordinate to draw at.
-     * @param y The y coordinate to draw at.
-     *
-     * @throws IOException If there is an error drawing the specific string.
-     * @deprecated use {@link PDFont#drawString(String, int[], Graphics, float, AffineTransform, float, float)} instead
-     */
-    public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
-    throws IOException
-    {
-        drawString(string, null, g, fontSize, at, x, y);
-    }
-
-    /**
-     * This will draw a string on a canvas using the font.
-     *
-     * @param string The string to draw.
-     * @param codePoints The codePoints of the given string.
-     * @param g The graphics to draw onto.
-     * @param fontSize The size of the font to draw.
-     * @param at The transformation matrix with all information for scaling and shearing of the font.
-     * @param x The x coordinate to draw at.
-     * @param y The y coordinate to draw at.
-     *
-     * @throws IOException If there is an error drawing the specific string.
-     */
-    public abstract void drawString( String string, int[] codePoints, Graphics g, float fontSize,
-        AffineTransform at, float x, float y ) throws IOException;
-    
     /**
      * Used for multibyte encodings.
      *
@@ -645,8 +607,8 @@ public abstract class PDFont implements COSObjectable
     // Memorized values to avoid repeated dictionary lookups
     private String subtype = null;
     private boolean type1Font;
+    private boolean type3Font;
     private boolean trueTypeFont;
-    private boolean typeFont;
     private boolean type0Font;
 
     /**
@@ -662,7 +624,7 @@ public abstract class PDFont implements COSObjectable
             type1Font = "Type1".equals(subtype);
             trueTypeFont = "TrueType".equals(subtype);
             type0Font = "Type0".equals(subtype);
-            typeFont = type1Font || "Type0".equals(subtype) || trueTypeFont;
+            type3Font = "Type3".equals(subtype);
         }
         return subtype;
     }
@@ -671,32 +633,40 @@ public abstract class PDFont implements COSObjectable
      * Determines if the font is a type 1 font.
      * @return returns true if the font is a type 1 font
      */
-    protected boolean isType1Font()
+    public boolean isType1Font()
     {
         getSubType();
         return type1Font;
     }
 
     /**
+     * Determines if the font is a type 3 font.
+     * @return returns true if the font is a type 3 font
+     */
+    public boolean isType3Font()
+    {
+        getSubType();
+        return type3Font;
+    }
+    
+    /**
      * Determines if the font is a type 0 font.
      * @return returns true if the font is a type 0 font
      */
-    protected boolean isType0Font()
+    public boolean isType0Font()
     {
         getSubType();
         return type0Font;
     }
 
-    private boolean isTrueTypeFont()
+    /**
+     * Determines if the font is a true type font.
+     * @return returns true if the font is a true type font
+     */
+    public boolean isTrueTypeFont()
     {
         getSubType();
         return trueTypeFont;
-    }
-
-    private boolean isTypeFont()
-    {
-        getSubType();
-        return typeFont;
     }
 
     /**

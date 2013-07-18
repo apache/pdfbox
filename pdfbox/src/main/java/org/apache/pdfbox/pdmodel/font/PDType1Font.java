@@ -514,7 +514,7 @@ public class PDType1Font extends PDSimpleFont
      * {@inheritDoc}
      */
     @Override
-    protected GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
+    public GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
     {
         // this is used to fix an apparent bug with the sun jdk where the mapping of
         // character code to glyph index done by native code is wrong; this does not happen with openjdk

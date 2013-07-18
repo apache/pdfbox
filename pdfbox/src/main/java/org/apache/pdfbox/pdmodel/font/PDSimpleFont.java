@@ -17,14 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import java.util.HashMap;
@@ -100,57 +93,6 @@ public abstract class PDSimpleFont extends PDFont
         return null;
     }
     
-    /**
-     * {@inheritDoc}
-     */
-    public void drawString( String string, int[] codePoints, Graphics g, float fontSize, 
-            AffineTransform at, float x, float y ) throws IOException
-    {
-        Font awtFont = getawtFont();
-        FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
-        GlyphVector glyphs = null;
-        boolean useCodepoints = codePoints != null && isType0Font();
-        PDFont descendantFont = useCodepoints ? ((PDType0Font)this).getDescendantFont() : null;
-        // symbolic fonts may trigger the same fontmanager.so/dll error as described below
-        if (useCodepoints && !descendantFont.getFontDescriptor().isSymbolic())
-        {
-            PDCIDFontType2Font cid2Font = null;
-            if (descendantFont instanceof PDCIDFontType2Font)
-            {
-                cid2Font = (PDCIDFontType2Font)descendantFont;
-            }
-            if((cid2Font != null && cid2Font.hasCIDToGIDMap()) || isFontSubstituted)
-            {
-                // we still have to use the string if a CIDToGIDMap is used 
-                glyphs = awtFont.createGlyphVector(frc, string);
-            }
-            else
-            {
-                glyphs = awtFont.createGlyphVector(frc, codePoints);
-            }
-        }
-        else 
-        {
-            // mdavis - fix fontmanager.so/dll on sun.font.FileFont.getGlyphImage
-            // for font with bad cmaps?
-            // Type1 fonts are not affected as they don't have cmaps
-            if (!isType1Font() && awtFont.canDisplayUpTo(string) != -1) 
-            {
-                LOG.warn("Changing font on <" + string + "> from <"
-                        + awtFont.getName() + "> to the default font");
-                awtFont = Font.decode(null).deriveFont(1f);
-            }
-            glyphs = awtFont.createGlyphVector(frc, string);
-            if (isType1Font()) 
-            {
-                glyphs = remapGlyphs(glyphs, string);
-            }
-        }
-        Graphics2D g2d = (Graphics2D)g;
-        g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        writeFont(g2d, at, x, y, glyphs);
-    }
-
     /**
      * This will get the font height for a character.
      *
@@ -323,48 +265,6 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * This will draw a string on a canvas using the font.
-     *
-     * @param g2d The graphics to draw onto.
-     * @param at The transformation matrix with all information for scaling and shearing of the font.
-     * @param x The x coordinate to draw at.
-     * @param y The y coordinate to draw at.
-     * @param glyphs The GlyphVector containing the glyphs to be drawn.
-     *
-     */
-    protected void writeFont(final Graphics2D g2d, final AffineTransform at, 
-            final float x, final float y, final GlyphVector glyphs) 
-    {
-        // check if we have a rotation
-        if (!at.isIdentity()) 
-        {
-            try 
-            {
-                AffineTransform atInv = at.createInverse();
-                // do only apply the size of the transform, rotation will be realized by rotating the graphics,
-                // otherwise the hp printers will not render the font
-                // apply the transformation to the graphics, which should be the same as applying the
-                // transformation itself to the text
-                g2d.transform(at);
-                // translate the coordinates
-                Point2D.Float newXy = new  Point2D.Float(x,y);
-                atInv.transform(new Point2D.Float( x, y), newXy);
-                g2d.drawGlyphVector(glyphs, (float)newXy.getX(), (float)newXy.getY() );
-                // restore the original transformation
-                g2d.transform(atInv);
-            }
-            catch (NoninvertibleTransformException e) 
-            {
-                LOG.error("Error in "+getClass().getName()+".writeFont",e);
-            }
-        }
-        else 
-        {
-            g2d.drawGlyphVector(glyphs, x, y);
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     protected void determineEncoding()
@@ -499,7 +399,7 @@ public abstract class PDSimpleFont extends PDFont
      * 
      * @return true if the font was substituted
      */
-    protected boolean isFontSubstituted()
+    public boolean isFontSubstituted()
     {
         return isFontSubstituted;
     }
@@ -558,7 +458,7 @@ public abstract class PDSimpleFont extends PDFont
      * @param string the represented string
      * @return the remapped glyph vector
      */
-    protected GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
+    public GlyphVector remapGlyphs(GlyphVector glyphVector, String string) 
     {
         return glyphVector;
     }
