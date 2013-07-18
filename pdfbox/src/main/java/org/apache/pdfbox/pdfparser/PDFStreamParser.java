@@ -375,10 +375,6 @@ public class PDFStreamParser extends BaseParser
             }
             case 'I':
             {
-                //ImageParameters imageParams = lastBIToken.getImageParameters();
-
-                //int expectedBytes = (int)Math.ceil(imageParams.getHeight() * imageParams.getWidth() *
-                //                    (imageParams.getBitsPerComponent()/8) );
                 //Special case for ID operator
                 String id = "" + (char)pdfSource.read() + (char)pdfSource.read();
                 if( !id.equals( "ID" ) )
@@ -395,7 +391,6 @@ public class PDFStreamParser extends BaseParser
                 int twoBytesAgo = 0;
                 int lastByte = pdfSource.read();
                 int currentByte = pdfSource.read();
-                int count = 0;
                 //PDF spec is kinda unclear about this.  Should a whitespace
                 //always appear before EI? Not sure, I found a PDF
                 //(UnderstandingWebSphereClassLoaders.pdf) which has EI as part
@@ -416,7 +411,6 @@ public class PDFStreamParser extends BaseParser
                     twoBytesAgo = lastByte;
                     lastByte = currentByte;
                     currentByte = pdfSource.read();
-                    count++;
                 }
                 pdfSource.unread( 'I' ); //unread the EI operator
                 pdfSource.unread( 'E' );
@@ -494,7 +488,7 @@ public class PDFStreamParser extends BaseParser
     
     private boolean isSpaceOrReturn( int c )
     {
-        return c == 13 || c == 32;
+        return c == 10 || c == 13 || c == 32;
     }
 
     private boolean isSpaceOrReturn() throws IOException

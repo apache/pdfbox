@@ -207,7 +207,7 @@ public class PDType0Font extends PDSimpleFont
      * @return the descendant font.
      *
      */
-    protected PDFont getDescendantFont()
+    public PDFont getDescendantFont()
     {
         return descendantFont;
     }
