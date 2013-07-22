@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * This is implementation of the CIDFontType2 Font.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * 
  */
 public class PDCIDFontType2Font extends PDCIDFont
 {
@@ -94,7 +94,6 @@ public class PDCIDFontType2Font extends PDCIDFont
                 setIsFontSubstituted(true);
             }
         }
-        // TODO FontFile3
         return awtFont;
     }
 
@@ -112,10 +111,11 @@ public class PDCIDFontType2Font extends PDCIDFont
                 byte[] mapAsBytes = IOUtils.toByteArray(stream.getUnfilteredStream());
                 int numberOfInts = mapAsBytes.length / 2;
                 cid2gid = new int[numberOfInts];
-                int index = 0;
-                for(int offset = 0;offset < numberOfInts;offset++)
+                int offset = 0;
+                for(int index = 0;index < numberOfInts;index++)
                 {
                     cid2gid[index] = getCodeFromArray(mapAsBytes, offset, 2);
+                    offset+=2;
                 }
             }
             catch(IOException exception)
