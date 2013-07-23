@@ -17,6 +17,7 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
+
 /**
  * A true type font file parser.
  * 
@@ -24,15 +25,17 @@ import java.io.IOException;
  * @version $Revision: 1.2 $
  */
 public class TTFParser extends AbstractTTFParser
-{   
-    public TTFParser() {
+{
+    public TTFParser()
+    {
         super(false);
     }
-       
-    public TTFParser(boolean isEmbedded) {
+
+    public TTFParser(boolean isEmbedded)
+    {
         super(isEmbedded);
     }
-        
+
     /**
      * A simple command line program to test parsing of a TTF file. <br/>
      * usage: java org.pdfbox.ttf.TTFParser &lt;ttf-file&gt;
@@ -41,27 +44,28 @@ public class TTFParser extends AbstractTTFParser
      * 
      * @throws IOException If there is an error while parsing the font file.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(String[] args) throws IOException
     {
-        if( args.length != 1 )
+        if (args.length != 1)
         {
-            System.err.println( "usage: java org.pdfbox.ttf.TTFParser <ttf-file>" );
-            System.exit( -1 );
+            System.err.println("usage: java org.pdfbox.ttf.TTFParser <ttf-file>");
+            System.exit(-1);
         }
         TTFParser parser = new TTFParser();
-        TrueTypeFont font = parser.parseTTF( args[0] );
-        System.out.println( "Font:" + font );
+        TrueTypeFont font = parser.parseTTF(args[0]);
+        System.out.println("Font:" + font);
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    protected void parseTables(TrueTypeFont font, TTFDataStream raf) throws IOException 
+    protected void parseTables(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
         super.parseTables(font, raf);
-        
+
         // check others mandatory tables
-        if ( font.getCMAP() == null ){
+        if (!isEmbedded && font.getCMAP() == null)
+        {
             throw new IOException("cmap is mandatory");
         }
     }
