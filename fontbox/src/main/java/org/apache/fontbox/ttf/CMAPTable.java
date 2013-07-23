@@ -19,10 +19,10 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * A table in a true type font.
+ * The CMAP table of a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class CMAPTable extends TTFTable
 {
@@ -30,12 +30,22 @@ public class CMAPTable extends TTFTable
      * A tag used to identify this table.
      */
     public static final String TAG = "cmap";
-    
+
+    /**
+     * A constant for the platform.
+     */
+    public static final int PLATFORM_MISC = 0;
+
+    /**
+     * A constant for the platform.
+     */
+    public static final int PLATFORM_MACINTOSH = 1;
+
     /**
      * A constant for the platform.
      */
     public static final int PLATFORM_WINDOWS = 3;
-    
+
     /**
      * An encoding constant.
      */
@@ -64,9 +74,9 @@ public class CMAPTable extends TTFTable
      * An encoding constant.
      */
     public static final int ENCODING_JOHAB = 6;
-    
+
     private CMAPEncodingEntry[] cmaps;
-    
+
     /**
      * This will read the required data from the stream.
      * 
@@ -74,23 +84,24 @@ public class CMAPTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    public void initData(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         int version = data.readUnsignedShort();
         int numberOfTables = data.readUnsignedShort();
-        cmaps = new CMAPEncodingEntry[ numberOfTables ];
-        for( int i=0; i< numberOfTables; i++ )
+        cmaps = new CMAPEncodingEntry[numberOfTables];
+        for (int i = 0; i < numberOfTables; i++)
         {
             CMAPEncodingEntry cmap = new CMAPEncodingEntry();
-            cmap.initData( ttf, data );
-            cmaps[i]=cmap;
+            cmap.initData(ttf, data);
+            cmaps[i] = cmap;
         }
-        for( int i=0; i< numberOfTables; i++ )
+        for (int i = 0; i < numberOfTables; i++)
         {
-            cmaps[i].initSubtable( ttf, data );
+            cmaps[i].initSubtable(ttf, data);
         }
-        
+
     }
+
     /**
      * @return Returns the cmaps.
      */
@@ -98,11 +109,12 @@ public class CMAPTable extends TTFTable
     {
         return cmaps;
     }
+
     /**
      * @param cmapsValue The cmaps to set.
      */
     public void setCmaps(CMAPEncodingEntry[] cmapsValue)
     {
-        this.cmaps = cmapsValue;
+        cmaps = cmapsValue;
     }
 }
