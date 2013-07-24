@@ -34,13 +34,19 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cmap.CMap;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfviewer.font.Glyph2D;
+import org.apache.pdfbox.pdfviewer.font.TTFGlyph2D;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
@@ -48,6 +54,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
@@ -70,7 +77,7 @@ import org.apache.pdfbox.util.TextPosition;
  * This will paint a page in a PDF document to a graphics context.
  * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.22 $
+ * 
  */
 public class PageDrawer extends PDFStreamEngine
 {
@@ -98,11 +105,12 @@ public class PageDrawer extends PDFStreamEngine
 
     private GeneralPath linePath = new GeneralPath();
 
+    private HashMap<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+
     /**
      * Default constructor, loads properties from file.
      * 
-     * @throws IOException
-     *             If there is an error loading properties from the file.
+     * @throws IOException If there is an error loading properties from the file.
      */
     public PageDrawer() throws IOException
     {
@@ -112,15 +120,11 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * This will draw the page to the requested context.
      * 
-     * @param g
-     *            The graphics context to draw onto.
-     * @param p
-     *            The page to draw.
-     * @param pageDimension
-     *            The size of the page to draw.
+     * @param g The graphics context to draw onto.
+     * @param p The page to draw.
+     * @param pageDimension The size of the page to draw.
      * 
-     * @throws IOException
-     *             If there is an IO error while drawing the page.
+     * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawPage(Graphics g, PDPage p, Dimension pageDimension) throws IOException
     {
@@ -170,14 +174,33 @@ public class PageDrawer extends PDFStreamEngine
                 }
             }
         }
+    }
 
+    /**
+     * Remove all cached resources.
+     */
+    public void dispose()
+    {
+        if (fontGlyph2D != null)
+        {
+            Iterator<Glyph2D> iter = fontGlyph2D.values().iterator();
+            while (iter.hasNext())
+            {
+                iter.next().dispose();
+            }
+            fontGlyph2D.clear();
+            fontGlyph2D = null;
+        }
+        graphics = null;
+        linePath = null;
+        page = null;
+        pageSize = null;
     }
 
     /**
      * You should override this method if you want to perform an action when a text is being processed.
      * 
-     * @param text
-     *            The text to process
+     * @param text The text to process
      */
     protected void processTextPosition(TextPosition text)
     {
@@ -254,11 +277,22 @@ public class PageDrawer extends PDFStreamEngine
             // use different methods to draw the string
             if (font.isType3Font())
             {
-                drawType3String((PDType3Font) font, text.getCharacter(), text.getCodePoints(), at);
+                // Type3 fonts are using streams for each character
+                drawType3String((PDType3Font) font, text.getCharacter(), at);
             }
             else
             {
-                drawString((PDSimpleFont) font, text.getCharacter(), text.getCodePoints(), graphics, at, x, y);
+                Glyph2D glyph2D = createGlyph2D(font);
+                if (glyph2D != null)
+                {
+                    // Let PDFBox render the font if supported
+                    drawGlyph2D(glyph2D, text.getCodePoints(), graphics, at, x, y);
+                }
+                else
+                {
+                    // Use AWT to render the font
+                    drawString((PDSimpleFont) font, text.getCharacter(), text.getCodePoints(), graphics, at, x, y);
+                }
             }
         }
         catch (IOException io)
@@ -267,8 +301,73 @@ public class PageDrawer extends PDFStreamEngine
         }
     }
 
-    private void drawType3String(PDType3Font font, String string, int[] codePoints, AffineTransform at)
+    /**
+     * Render the font using the Glyph2d interface.
+     * 
+     * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
+     * @param codePoints the string to be rendered
+     * @param graphics the graphics object to be used for rendering
+     * @param at the transformation
+     * @param x the x coordinate of the text
+     * @param y the y coordinate of the text
+     * @throws IOException if something went wrong
+     */
+    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, Graphics graphics, AffineTransform at, float x, float y)
             throws IOException
+    {
+        Graphics2D g2d = (Graphics2D) graphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        for (int i = 0; i < codePoints.length; i++)
+        {
+            if (!at.isIdentity())
+            {
+                try
+                {
+                    AffineTransform atInv = at.createInverse();
+                    // do only apply the size of the transform, rotation will be realized by rotating the graphics,
+                    // otherwise the hp printers will not render the font
+                    // apply the transformation to the graphics, which should be the same as applying the
+                    // transformation itself to the text
+                    g2d.transform(at);
+                    // translate the coordinates
+                    Point2D.Float newXy = new Point2D.Float(x, y);
+                    atInv.transform(new Point2D.Float(x, y), newXy);
+
+                    GeneralPath path = glyph2D.getPathForCharactercode(codePoints[i]);
+                    if (path != null)
+                    {
+                        g2d.translate(newXy.getX(), newXy.getY());
+                        g2d.fill(path);
+                        g2d.translate(-newXy.getX(), -newXy.getY());
+                    }
+                    // restore the original transformation
+                    g2d.transform(atInv);
+                }
+                catch (NoninvertibleTransformException e)
+                {
+                    LOG.error("Error in " + getClass().getName() + ".drawGlyph2D", e);
+                }
+            }
+            else
+            {
+                GeneralPath path = glyph2D.getPathForCharactercode(codePoints[i]);
+                if (path != null)
+                {
+                    g2d.draw(path);
+                }
+            }
+        }
+    }
+
+    /**
+     * Render the text using a type 3 font.
+     * 
+     * @param font the type3 font
+     * @param string the string to be rendered
+     * @param at the transformation
+     * @throws IOException if something went wrong
+     */
+    private void drawType3String(PDType3Font font, String string, AffineTransform at) throws IOException
     {
         int stringLength = string.length();
         for (int i = 0; i < stringLength; i++)
@@ -297,23 +396,15 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * This will draw a string on a canvas using the font.
      * 
-     * @param font
-     *            the font to be used to draw the string
-     * @param string
-     *            The string to draw.
-     * @param codePoints
-     *            The codePoints of the given string.
-     * @param g
-     *            The graphics to draw onto.
-     * @param at
-     *            The transformation matrix with all information for scaling and shearing of the font.
-     * @param x
-     *            The x coordinate to draw at.
-     * @param y
-     *            The y coordinate to draw at.
+     * @param font the font to be used to draw the string
+     * @param string The string to draw.
+     * @param codePoints The codePoints of the given string.
+     * @param g The graphics to draw onto.
+     * @param at The transformation matrix with all information for scaling and shearing of the font.
+     * @param x The x coordinate to draw at.
+     * @param y The y coordinate to draw at.
      * 
-     * @throws IOException
-     *             If there is an error drawing the specific string.
+     * @throws IOException If there is an error drawing the specific string.
      */
     private void drawString(PDSimpleFont font, String string, int[] codePoints, Graphics g, AffineTransform at,
             float x, float y) throws IOException
@@ -395,6 +486,86 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * Provide a Glyh2d for the given font if supported.
+     * 
+     * @param font the font
+     * @return the implementation of the Glyph2D interface for the given font if supported
+     * @throws IOException if something went wrong
+     */
+    private Glyph2D createGlyph2D(PDFont font) throws IOException
+    {
+        Glyph2D glyph2D = null;
+        // Is there already a Glyph2D for the given font?
+        if (fontGlyph2D.containsKey(font))
+        {
+            glyph2D = fontGlyph2D.get(font);
+        }
+        else
+        {
+            // check if the given font is supported
+
+            // TTF fonts are supported
+            if (font instanceof PDTrueTypeFont)
+            {
+                PDTrueTypeFont ttfFont = (PDTrueTypeFont) font;
+                // does the font have an optional toUnicode mapping
+                CMap toUnicodeCMap = null;
+                if (ttfFont.hasToUnicode())
+                {
+                    toUnicodeCMap = ttfFont.getToUnicodeCMap();
+                }
+                // get the true type font raw data
+                TrueTypeFont ttf = ttfFont.getTTFFont();
+                if (ttf != null)
+                {
+                    glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), ttfFont.isSymbolicFont(), toUnicodeCMap);
+                }
+                // cache the Glyph2D instance
+                if (glyph2D != null)
+                {
+                    fontGlyph2D.put(font, glyph2D);
+                }
+            }
+            else if (font instanceof PDType0Font)
+            {
+                PDType0Font type0Font = (PDType0Font) font;
+                CMap toUnicodeCMap = null;
+                if (type0Font.hasToUnicode())
+                {
+                    toUnicodeCMap = type0Font.getToUnicodeCMap();
+                }
+                if (type0Font.getDescendantFont() instanceof PDCIDFontType2Font)
+                {
+                    // a CIDFontType2Font contains TTF font
+                    PDCIDFontType2Font cidType2Font = (PDCIDFontType2Font) type0Font.getDescendantFont();
+                    // get the true type font raw data
+                    TrueTypeFont ttf = cidType2Font.getTTFFont();
+                    if (ttf != null)
+                    {
+                        if (cidType2Font.hasCIDToGIDMap())
+                        {
+                            glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
+                                    toUnicodeCMap, cidType2Font.getCID2GID());
+                        }
+                        else
+                        {
+                            glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
+                                    toUnicodeCMap);
+                        }
+                    }
+                    // cache the Glyph2D instance
+                    if (glyph2D != null)
+                    {
+                        fontGlyph2D.put(font, glyph2D);
+                    }
+
+                }
+            }
+        }
+        return glyph2D;
+    }
+
+    /**
      * Get the graphics that we are currently drawing on.
      * 
      * @return The graphics we are drawing on.
@@ -427,8 +598,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fix the y coordinate.
      * 
-     * @param y
-     *            The y coordinate.
+     * @param y The y coordinate.
      * @return The updated y coordinate.
      */
     public double fixY(double y)
@@ -449,8 +619,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Set the line path to draw.
      * 
-     * @param newLinePath
-     *            Set the line path to draw.
+     * @param newLinePath Set the line path to draw.
      */
     public void setLinePath(GeneralPath newLinePath)
     {
@@ -467,11 +636,9 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fill the path.
      * 
-     * @param windingRule
-     *            The winding rule this path will use.
+     * @param windingRule The winding rule this path will use.
      * 
-     * @throws IOException
-     *             If there is an IO error while filling the path.
+     * @throws IOException If there is an IO error while filling the path.
      */
     public void fillPath(int windingRule) throws IOException
     {
@@ -498,8 +665,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * This will set the current stroke.
      * 
-     * @param newStroke
-     *            The current stroke.
+     * @param newStroke The current stroke.
      * 
      */
     public void setStroke(BasicStroke newStroke)
@@ -521,8 +687,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Stroke the path.
      * 
-     * @throws IOException
-     *             If there is an IO error while stroking the path.
+     * @throws IOException If there is an IO error while stroking the path.
      */
     public void strokePath() throws IOException
     {
@@ -549,10 +714,8 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Called when the color changed.
      * 
-     * @param bStroking
-     *            true for the stroking color, false for the non-stroking color
-     * @throws IOException
-     *             if an I/O error occurs
+     * @param bStroking true for the stroking color, false for the non-stroking color
+     * @throws IOException if an I/O error occurs
      */
     @Deprecated
     public void colorChanged(boolean bStroking) throws IOException
@@ -564,10 +727,8 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * use the current transformation matrix to transform a single point.
      * 
-     * @param x
-     *            x-coordinate of the point to be transform
-     * @param y
-     *            y-coordinate of the point to be transform
+     * @param x x-coordinate of the point to be transform
+     * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
      */
     public java.awt.geom.Point2D.Double transformedPoint(double x, double y)
@@ -582,8 +743,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Set the clipping Path.
      * 
-     * @param windingRule
-     *            The winding rule this path will use.
+     * @param windingRule The winding rule this path will use.
      * 
      * @deprecated use {@link #setClippingWindingRule(int)} instead
      * 
@@ -596,8 +756,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Set the clipping winding rule.
      * 
-     * @param windingRule
-     *            The winding rule which will be used for clipping.
+     * @param windingRule The winding rule which will be used for clipping.
      * 
      */
     public void setClippingWindingRule(int windingRule)
@@ -637,10 +796,8 @@ public class PageDrawer extends PDFStreamEngine
      * Draw the AWT image. Called by Invoke. Moved into PageDrawer so that Invoke doesn't have to reach in here for
      * Graphics as that breaks extensibility.
      * 
-     * @param awtImage
-     *            The image to draw.
-     * @param at
-     *            The transformation to use when drawing.
+     * @param awtImage The image to draw.
+     * @param at The transformation to use when drawing.
      * 
      */
     public void drawImage(Image awtImage, AffineTransform at)
@@ -653,11 +810,9 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fill with Shading. Called by SHFill operator.
      * 
-     * @param ShadingName
-     *            The name of the Shading Dictionary to use for this fill instruction.
+     * @param ShadingName The name of the Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      * 
      * @deprecated use {@link #shFill(COSName)) instead.
      */
@@ -669,11 +824,9 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fill with Shading. Called by SHFill operator.
      * 
-     * @param shadingName
-     *            The name of the Shading Dictionary to use for this fill instruction.
+     * @param shadingName The name of the Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the clipping area.
+     * @throws IOException If there is an IO error while shade-filling the clipping area.
      */
     public void shFill(COSName shadingName) throws IOException
     {
@@ -714,11 +867,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Function-based gradient / shading. If extending the class, override this and its siblings, not the
      * public SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_Function(PDShading Shading) throws IOException
     {
@@ -728,11 +879,9 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fill with an Axial Shading. If extending the class, override this and its siblings, not the public SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_Axial(PDShading Shading) throws IOException
     {
@@ -744,11 +893,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Radial gradient / shading. If extending the class, override this and its siblings, not the public
      * SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_Radial(PDShading Shading) throws IOException
     {
@@ -759,11 +906,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Free-form Gourad-shaded triangle mesh. If extending the class, override this and its siblings, not
      * the public SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_FreeGourad(PDShading Shading) throws IOException
     {
@@ -774,11 +919,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Lattice-form Gourad-shaded triangle mesh. If extending the class, override this and its siblings, not
      * the public SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_LatticeGourad(PDShading Shading) throws IOException
     {
@@ -789,11 +932,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Coons patch mesh If extending the class, override this and its siblings, not the public SHFill
      * method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_CoonsPatch(PDShading Shading) throws IOException
     {
@@ -804,11 +945,9 @@ public class PageDrawer extends PDFStreamEngine
      * Fill with a Tensor-product patch mesh. If extending the class, override this and its siblings, not the public
      * SHFill method.
      * 
-     * @param Shading
-     *            The Shading Dictionary to use for this fill instruction.
+     * @param Shading The Shading Dictionary to use for this fill instruction.
      * 
-     * @throws IOException
-     *             If there is an IO error while shade-filling the path/clipping area.
+     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      */
     protected void SHFill_TensorPatch(PDShading Shading) throws IOException
     {

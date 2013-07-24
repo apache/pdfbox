@@ -16,12 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This is implementation of the CIDFontType2 Font.
- *
+ * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * 
  */
@@ -45,56 +45,24 @@ public class PDCIDFontType2Font extends PDCIDFont
 
     private Boolean hasCIDToGIDMap = null;
     private int[] cid2gid = null;
-    
+
     /**
      * Constructor.
      */
     public PDCIDFontType2Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.CID_FONT_TYPE2 );
+        font.setItem(COSName.SUBTYPE, COSName.CID_FONT_TYPE2);
     }
 
     /**
      * Constructor.
-     *
+     * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDCIDFontType2Font( COSDictionary fontDictionary )
+    public PDCIDFontType2Font(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public Font getawtFont() throws IOException
-    {
-        Font awtFont = null;
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
-        PDStream ff2Stream = fd.getFontFile2();
-        if( ff2Stream != null )
-        {
-            try
-            {
-                // create a font with the embedded data
-                awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
-            }
-            catch( FontFormatException f )
-            {
-                LOG.info("Can't read the embedded font " + fd.getFontName() );
-            }
-            if (awtFont == null)
-            {
-                awtFont = FontManager.getAwtFont(fd.getFontName());
-                if (awtFont != null)
-                {
-                    LOG.info("Using font "+awtFont.getName()+ " instead");
-                }
-                setIsFontSubstituted(true);
-            }
-        }
-        return awtFont;
+        super(fontDictionary);
     }
 
     /**
@@ -103,28 +71,28 @@ public class PDCIDFontType2Font extends PDCIDFont
     private void readCIDToGIDMapping()
     {
         COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
-        if (map instanceof COSStream) 
+        if (map instanceof COSStream)
         {
-            COSStream stream = (COSStream)map;
-            try 
+            COSStream stream = (COSStream) map;
+            try
             {
                 byte[] mapAsBytes = IOUtils.toByteArray(stream.getUnfilteredStream());
                 int numberOfInts = mapAsBytes.length / 2;
                 cid2gid = new int[numberOfInts];
                 int offset = 0;
-                for(int index = 0;index < numberOfInts;index++)
+                for (int index = 0; index < numberOfInts; index++)
                 {
                     cid2gid[index] = getCodeFromArray(mapAsBytes, offset, 2);
-                    offset+=2;
+                    offset += 2;
                 }
             }
-            catch(IOException exception)
+            catch (IOException exception)
             {
                 LOG.error("Can't read the CIDToGIDMap", exception);
             }
         }
     }
-    
+
     /**
      * Indicates if this font has a CIDToGIDMap.
      * 
@@ -146,16 +114,16 @@ public class PDCIDFontType2Font extends PDCIDFont
         }
         return hasCIDToGIDMap.booleanValue();
     }
-    
+
     /**
      * Maps the given CID to the correspondent GID.
      * 
      * @param cid the given CID
      * @return the mapped GID, or -1 if something went wrong.
      */
-    public int mapCIDToGID(int cid) 
+    public int mapCIDToGID(int cid)
     {
-        if (hasCIDToGIDMap()) 
+        if (hasCIDToGIDMap())
         {
             if (cid2gid == null)
             {
@@ -173,4 +141,41 @@ public class PDCIDFontType2Font extends PDCIDFont
             return cid;
         }
     }
+
+    /**
+     * Returns the CID2GID mapping if present.
+     * 
+     * @return the CID2GID mapping
+     */
+    public int[] getCID2GID()
+    {
+        if (hasCIDToGIDMap())
+        {
+            if (cid2gid == null)
+            {
+                readCIDToGIDMapping();
+            }
+        }
+        return cid2gid;
+    }
+
+    /**
+     * Returns the embedded true type font.
+     * 
+     * @return the true type font
+     * @throws IOException exception if something went wrong
+     */
+    public TrueTypeFont getTTFFont() throws IOException
+    {
+        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
+        PDStream ff2Stream = fd.getFontFile2();
+        TrueTypeFont trueTypeFont = null;
+        if (ff2Stream != null)
+        {
+            TTFParser ttfParser = new TTFParser(true);
+            trueTypeFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+        }
+        return trueTypeFont;
+    }
+
 }
