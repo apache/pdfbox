@@ -77,6 +77,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void seek(long position) throws IOException
     {
+        checkClosed();
         pointer = position;
         // calculate the chunk list index
         bufferListIndex = (int)(position / BUFFER_SIZE);
@@ -88,7 +89,8 @@ public class RandomAccessBuffer implements RandomAccess
      * {@inheritDoc}
      */
     public long getPosition() throws IOException {
-        return pointer;
+       checkClosed();
+       return pointer;
     }
     
     /**
@@ -96,6 +98,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public int read() throws IOException
     {
+        checkClosed();
         if (pointer >= this.size)
         {
             return -1;
@@ -121,6 +124,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public int read(byte[] b, int offset, int length) throws IOException
     {
+        checkClosed();
         if (pointer >= this.size)
         {
             return 0;
@@ -164,6 +168,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public long length() throws IOException
     {
+        checkClosed();
         return size;
     }
 
@@ -172,6 +177,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void write(int b) throws IOException
     {
+        checkClosed();
         // end of buffer reached?
         if (currentBufferPointer >= BUFFER_SIZE) 
         {
@@ -203,6 +209,7 @@ public class RandomAccessBuffer implements RandomAccess
      */
     public void write(byte[] b, int offset, int length) throws IOException
     {
+        checkClosed();
         long newSize = pointer + length;
         long remainingBytes = BUFFER_SIZE - currentBufferPointer;
         if (length >= remainingBytes)
@@ -275,5 +282,17 @@ public class RandomAccessBuffer implements RandomAccess
     {
         currentBufferPointer = 0;
         currentBuffer = bufferList.get(++bufferListIndex);
+    }
+    
+    /**
+     * Ensure that the RandomAccessBuffer is not closed
+     * @throws IOException
+     */
+    private void checkClosed () throws IOException {
+        if (currentBuffer==null) {
+            // consider that the rab is closed if there is no current buffer
+            throw new IOException("RandomAccessBuffer already closed");
+        }
+        
     }
 }
