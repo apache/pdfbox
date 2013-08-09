@@ -207,16 +207,29 @@ public class TTFGlyph2D implements Glyph2D
     {
         if (isSymbol)
         {
+            int glyphId = 0;
             // symbol fonts
             if (cmapWinSymbol != null)
             {
-                int glyphId = cmapWinSymbol.getGlyphId(code);
+                glyphId = cmapWinSymbol.getGlyphId(code);
                 // microsoft sometimes uses PUA unicode values for symbol fonts
                 // the range 0x0020 - 0x00FF maps to 0xF020 - 0xF0FF
                 if (glyphId == 0 && code >= 0x0020 && code <= 0x00FF)
                 {
                     glyphId = cmapWinSymbol.getGlyphId(code + 0xF000);
                 }
+                if (glyphId != 0)
+                {
+                    return getPathForGlyphId(glyphId);
+                }
+            }
+            // use a mac related mapping
+            if (cmapMacintoshSymbol != null)
+            {
+                glyphId = cmapMacintoshSymbol.getGlyphId(code);
+            }
+            if (glyphId != 0)
+            {
                 return getPathForGlyphId(glyphId);
             }
         }
@@ -244,12 +257,13 @@ public class TTFGlyph2D implements Glyph2D
                 return getPathForGlyphId(cmapMiscUnicode.getGlyphId(unicode));
             }
             // use a mac related mapping
+            // Is this possible for non symbol fonts?
             if (cmapMacintoshSymbol != null)
             {
                 return getPathForGlyphId(cmapMacintoshSymbol.getGlyphId(code));
             }
         }
-        // there isn't any mpping, but propably an optional CID2GID mapping
+        // there isn't any mapping, but probably an optional CID2GID mapping
         if (cid2gid != null && code <= cid2gid.length)
         {
             code = cid2gid[code];
