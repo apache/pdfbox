@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.io.IOUtils;
@@ -32,12 +31,13 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 
 /**
- * This will extract all treu type-fonts of a pdf.
- *
+ * This will extract all true type-fonts of a pdf.
+ * 
  */
 public class ExtractTTFFonts
 {
@@ -53,20 +53,20 @@ public class ExtractTTFFonts
 
     /**
      * This is the entry point for the application.
-     *
+     * 
      * @param args The command-line arguments.
-     *
+     * 
      * @throws Exception If there is an error decrypting the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws Exception
     {
         ExtractTTFFonts extractor = new ExtractTTFFonts();
-        extractor.extractFonts( args );
+        extractor.extractFonts(args);
     }
 
-    private void extractFonts( String[] args ) throws Exception
+    private void extractFonts(String[] args) throws Exception
     {
-        if( args.length < 1 || args.length > 4 )
+        if (args.length < 1 || args.length > 4)
         {
             usage();
         }
@@ -76,64 +76,63 @@ public class ExtractTTFFonts
             String password = "";
             String prefix = null;
             boolean addKey = false;
-            for( int i=0; i<args.length; i++ )
+            for (int i = 0; i < args.length; i++)
             {
-                if( args[i].equals( PASSWORD ) )
+                if (args[i].equals(PASSWORD))
                 {
                     i++;
-                    if( i >= args.length )
+                    if (i >= args.length)
                     {
                         usage();
                     }
                     password = args[i];
                 }
-                else if( args[i].equals( PREFIX ) )
+                else if (args[i].equals(PREFIX))
                 {
                     i++;
-                    if( i >= args.length )
+                    if (i >= args.length)
                     {
                         usage();
                     }
                     prefix = args[i];
                 }
-                else if( args[i].equals( ADDKEY ) )
+                else if (args[i].equals(ADDKEY))
                 {
                     addKey = true;
                 }
                 else
                 {
-                    if( pdfFile == null )
+                    if (pdfFile == null)
                     {
                         pdfFile = args[i];
                     }
                 }
             }
-            if(pdfFile == null)
+            if (pdfFile == null)
             {
                 usage();
             }
             else
             {
-                if( prefix == null && pdfFile.length() >4 )
+                if (prefix == null && pdfFile.length() > 4)
                 {
-                    prefix = pdfFile.substring( 0, pdfFile.length() -4 );
+                    prefix = pdfFile.substring(0, pdfFile.length() - 4);
                 }
 
                 PDDocument document = null;
 
                 try
                 {
-                    document = PDDocument.load( pdfFile );
+                    document = PDDocument.load(pdfFile);
 
-                    if( document.isEncrypted() )
+                    if (document.isEncrypted())
                     {
                         document.decrypt(password);
                     }
-                    List pages = document.getDocumentCatalog().getAllPages();
-                    Iterator iter = pages.iterator();
-                    while( iter.hasNext() )
+                    Iterator<PDPage> iter = document.getDocumentCatalog().getAllPages().iterator();
+                    while (iter.hasNext())
                     {
-                        PDPage page = (PDPage)iter.next();
+                        PDPage page = iter.next();
                         PDResources resources = page.getResources();
                         // extract all fonts which are part of the page resources
                         processResources(resources, prefix, addKey);
@@ -141,7 +140,7 @@ public class ExtractTTFFonts
                 }
                 finally
                 {
-                    if( document != null )
+                    if (document != null)
                     {
                         document.close();
                     }
@@ -157,51 +156,57 @@ public class ExtractTTFFonts
             return;
         }
         Map<String, PDFont> fonts = resources.getFonts();
-        if( fonts != null )
+        if (fonts != null)
         {
             Iterator<String> fontIter = fonts.keySet().iterator();
-            while( fontIter.hasNext() )
+            while (fontIter.hasNext())
             {
                 String key = fontIter.next();
-                PDFont font = fonts.get( key );
+                PDFont font = fonts.get(key);
                 // write the font
-                if (font instanceof PDCIDFontType2Font || font instanceof PDTrueTypeFont)
+                if (font instanceof PDTrueTypeFont)
                 {
                     String name = null;
-                    if (addKey) 
+                    if (addKey)
                     {
-                        name = getUniqueFileName( prefix + "_" + key, "ttf" );
+                        name = getUniqueFileName(prefix + "_" + key, "ttf");
                     }
-                    else 
+                    else
                     {
-                        name = getUniqueFileName( prefix, "ttf" );
+                        name = getUniqueFileName(prefix, "ttf");
                     }
-                    PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)font.getFontDescriptor();
-                    if (fd != null) 
+                    writeFont(font, name);
+                }
+                else if (font instanceof PDType0Font)
+                {
+                    PDFont descendantFont = ((PDType0Font) font).getDescendantFont();
+                    if (descendantFont instanceof PDCIDFontType2Font)
                     {
-                        PDStream ff2Stream = fd.getFontFile2();
-                        if (ff2Stream != null) 
+                        String name = null;
+                        if (addKey)
                         {
-                            System.out.println( "Writing font:" + name );
-                            FileOutputStream fos = new FileOutputStream(new File(name+".ttf"));
-                            IOUtils.copy(ff2Stream.createInputStream(), fos);
-                            fos.close();
+                            name = getUniqueFileName(prefix + "_" + key, "ttf");
                         }
+                        else
+                        {
+                            name = getUniqueFileName(prefix, "ttf");
+                        }
+                        writeFont(descendantFont, name);
                     }
                 }
             }
         }
         Map<String, PDXObject> xobjects = resources.getXObjects();
-        if( xobjects != null )
+        if (xobjects != null)
         {
             Iterator<String> xobjectIter = xobjects.keySet().iterator();
-            while( xobjectIter.hasNext() )
+            while (xobjectIter.hasNext())
             {
                 String key = xobjectIter.next();
-                PDXObject xobject = xobjects.get( key );
+                PDXObject xobject = xobjects.get(key);
                 if (xobject instanceof PDXObjectForm)
                 {
-                    PDXObjectForm xObjectForm = (PDXObjectForm)xobject;
+                    PDXObjectForm xObjectForm = (PDXObjectForm) xobject;
                     PDResources formResources = xObjectForm.getResources();
                     processResources(formResources, prefix, addKey);
                 }
@@ -210,14 +215,30 @@ public class ExtractTTFFonts
 
     }
 
-    private String getUniqueFileName( String prefix, String suffix )
+    private void writeFont(PDFont font, String name) throws IOException
+    {
+        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) font.getFontDescriptor();
+        if (fd != null)
+        {
+            PDStream ff2Stream = fd.getFontFile2();
+            if (ff2Stream != null)
+            {
+                System.out.println("Writing font:" + name);
+                FileOutputStream fos = new FileOutputStream(new File(name + ".ttf"));
+                IOUtils.copy(ff2Stream.createInputStream(), fos);
+                fos.close();
+            }
+        }
+    }
+
+    private String getUniqueFileName(String prefix, String suffix)
     {
         String uniqueName = null;
         File f = null;
-        while( f == null || f.exists() )
+        while (f == null || f.exists())
         {
             uniqueName = prefix + "-" + fontCounter;
-            f = new File( uniqueName + "." + suffix );
+            f = new File(uniqueName + "." + suffix);
             fontCounter++;
         }
         return uniqueName;
@@ -228,13 +249,12 @@ public class ExtractTTFFonts
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.ExtractTTFFonts [OPTIONS] <PDF file>\n" +
-            "  -password  <password>        Password to decrypt document\n" +
-            "  -prefix  <font-prefix>       Font prefix(default to pdf name)\n" +
-            "  -addkey                      add the internal font key to the file name\n" +
-            "  <PDF file>                   The PDF document to use\n"
-            );
-        System.exit( 1 );
+        System.err.println("Usage: java org.apache.pdfbox.ExtractTTFFonts [OPTIONS] <PDF file>\n"
+                + "  -password  <password>        Password to decrypt document\n"
+                + "  -prefix  <font-prefix>       Font prefix(default to pdf name)\n"
+                + "  -addkey                      add the internal font key to the file name\n"
+                + "  <PDF file>                   The PDF document to use\n");
+        System.exit(1);
     }
 
 }
