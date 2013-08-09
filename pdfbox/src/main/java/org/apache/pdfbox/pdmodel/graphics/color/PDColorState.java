@@ -30,9 +30,9 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 
 /**
  * This class represents a color space and the color value for that colorspace.
- *
+ * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * 
  */
 public class PDColorState implements Cloneable
 {
@@ -43,32 +43,25 @@ public class PDColorState implements Cloneable
     private static final Log LOG = LogFactory.getLog(PDColorState.class);
 
     /**
-     * The default color that can be set to replace all colors in
-     * {@link ICC_ColorSpace ICC color spaces}.
-     *
+     * The default color that can be set to replace all colors in {@link ICC_ColorSpace ICC color spaces}.
+     * 
      * @see #setIccOverrideColor(Color)
      */
-    private static volatile Color iccOverrideColor =
-        Color.getColor("org.apache.pdfbox.ICC_override_color");
+    private static volatile Color iccOverrideColor = Color.getColor("org.apache.pdfbox.ICC_override_color");
 
     /**
-     * Sets the default color to replace all colors in
-     * {@link ICC_ColorSpace ICC color spaces}. This will work around
-     * a potential JVM crash caused by broken native ICC color manipulation
-     * code in the Sun class libraries.
+     * Sets the default color to replace all colors in {@link ICC_ColorSpace ICC color spaces}. This will work around a
+     * potential JVM crash caused by broken native ICC color manipulation code in the Sun class libraries.
      * <p>
      * The default override can be specified by setting the color code in
-     * <code>org.apache.pdfbox.ICC_override_color</code> system property
-     * (see {@link Color#getColor(String)}. If this system property is not
-     * specified, then the override is not enabled unless this method is
-     * explicitly called.
-     *
-     * @param color ICC override color,
-     *              or <code>null</code> to disable the override
+     * <code>org.apache.pdfbox.ICC_override_color</code> system property (see {@link Color#getColor(String)}. If this
+     * system property is not specified, then the override is not enabled unless this method is explicitly called.
+     * 
+     * @param color ICC override color, or <code>null</code> to disable the override
      * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-511">PDFBOX-511</a>
      * @since Apache PDFBox 0.8.1
      */
-    public static void setIccOverrideColor(Color color) 
+    public static void setIccOverrideColor(Color color)
     {
         iccOverrideColor = color;
     }
@@ -78,9 +71,9 @@ public class PDColorState implements Cloneable
     private PDPatternResources pattern = null;
 
     /**
-     * Cached Java AWT color based on the current color space and value.
-     * The value is cleared whenever the color space or value is set.
-     *
+     * Cached Java AWT color based on the current color space and value. The value is cleared whenever the color space
+     * or value is set.
+     * 
      * @see #getJavaColor()
      */
     private Color color = null;
@@ -88,11 +81,11 @@ public class PDColorState implements Cloneable
 
     /**
      * Default constructor.
-     *
+     * 
      */
     public PDColorState()
     {
-        setColorSpaceValue( new float[] {0});
+        setColorSpaceValue(new float[] { 0 });
     }
 
     /**
@@ -101,22 +94,22 @@ public class PDColorState implements Cloneable
     public Object clone()
     {
         PDColorState retval = new PDColorState();
-        retval.colorSpace = this.colorSpace;
+        retval.colorSpace = colorSpace;
         retval.colorSpaceValue.clear();
-        retval.colorSpaceValue.addAll( this.colorSpaceValue );
+        retval.colorSpaceValue.addAll(colorSpaceValue);
         retval.setPattern(getPattern());
         return retval;
     }
 
     /**
      * Returns the Java AWT color based on the current color space and value.
-     *
+     * 
      * @return current Java AWT color
      * @throws IOException if the current color can not be created
      */
     public Color getJavaColor() throws IOException
     {
-        if (color == null && colorSpaceValue.size() > 0) 
+        if (color == null && colorSpaceValue.size() > 0)
         {
             color = createColor();
         }
@@ -125,7 +118,7 @@ public class PDColorState implements Cloneable
 
     /**
      * Returns the Java AWT paint based on the current pattern.
-     *
+     * 
      * @param pageHeight the height of the current page
      * @return current Java AWT paint
      * 
@@ -133,7 +126,7 @@ public class PDColorState implements Cloneable
      */
     public Paint getPaint(int pageHeight) throws IOException
     {
-        if (paint == null && pattern != null) 
+        if (paint == null && pattern != null)
         {
             paint = pattern.getPaint(pageHeight);
         }
@@ -142,6 +135,7 @@ public class PDColorState implements Cloneable
 
     /**
      * Create the current color from the colorspace and values.
+     * 
      * @return The current awt color.
      * @throws IOException If there is an error creating the color.
      */
@@ -150,44 +144,49 @@ public class PDColorState implements Cloneable
         float[] components = colorSpaceValue.toFloatArray();
         try
         {
-            if( colorSpace.getName().equals(PDDeviceRGB.NAME) && components.length == 3 )
+            String csName = colorSpace.getName();
+            if (PDDeviceRGB.NAME.equals(csName) && components.length == 3)
             {
-                //for some reason, when using RGB and the RGB colorspace
-                //the new Color doesn't maintain exactly the same values
-                //I think some color conversion needs to take place first
-                //for now we will just make rgb a special case.
-                return new Color( components[0], components[1], components[2] );
+                // for some reason, when using RGB and the RGB colorspace
+                // the new Color doesn't maintain exactly the same values
+                // I think some color conversion needs to take place first
+                // for now we will just make rgb a special case.
+                return new Color(components[0], components[1], components[2]);
+            }
+            else if (PDLab.NAME.equals(csName))
+            {
+                // transform the color values from Lab- to RGB-space
+                float[] csComponents = colorSpace.getJavaColorSpace().toRGB(components);
+                return new Color(csComponents[0], csComponents[1], csComponents[2]);
             }
             else
             {
-                if (components.length == 1) 
+                if (components.length == 1)
                 {
-                    if (colorSpace.getName().equals(PDSeparation.NAME))
+                    if (PDSeparation.NAME.equals(csName))
                     {
-                        //Use that component as a single-integer RGB value
-                        return new Color((int)components[0]);
+                        // Use that component as a single-integer RGB value
+                        return new Color((int) components[0]);
                     }
-                    if (colorSpace.getName().equals(PDDeviceGray.NAME))
+                    if (PDDeviceGray.NAME.equals(csName))
                     {
-                        // Handling DeviceGray as a special case as with JVM 1.5.0_15 
-                        // and maybe others printing on Windows fails with an 
+                        // Handling DeviceGray as a special case as with JVM 1.5.0_15
+                        // and maybe others printing on Windows fails with an
                         // ArrayIndexOutOfBoundsException when selecting colors
                         // and strokes e.g. sun.awt.windows.WPrinterJob.setTextColor
-                        return new Color(components[0],components[0],components[0]);
+                        return new Color(components[0], components[0], components[0]);
                     }
                 }
                 Color override = iccOverrideColor;
                 ColorSpace cs = colorSpace.getJavaColorSpace();
                 if (cs instanceof ICC_ColorSpace && override != null)
                 {
-                    LOG.warn(
-                            "Using an ICC override color to avoid a potential"
-                            + " JVM crash (see PDFBOX-511)");
+                    LOG.warn("Using an ICC override color to avoid a potential" + " JVM crash (see PDFBOX-511)");
                     return override;
                 }
                 else
                 {
-                    return new Color( cs, components, 1f );
+                    return new Color(cs, components, 1f);
                 }
             }
         }
@@ -197,42 +196,44 @@ public class PDColorState implements Cloneable
         catch (Exception e)
         {
             Color cGuess;
-            String sMsg = "Unable to create the color instance "
-                    + Arrays.toString(components) + " in color space "
+            String sMsg = "Unable to create the color instance " + Arrays.toString(components) + " in color space "
                     + colorSpace + "; guessing color ... ";
             try
             {
-                switch(components.length)
+                switch (components.length)
                 {
-                    case 1://Use that component as a single-integer RGB value
-                        cGuess = new Color((int)components[0]);
-                        sMsg += "\nInterpretating as single-integer RGB";
-                        break;
-                    case 3: //RGB
-                        cGuess = new Color(components[0],components[1],components[2]);
-                        sMsg += "\nInterpretating as RGB";
-                        break;
-                    case 4: //CMYK
-                        //do a rough conversion to RGB as I'm not getting the CMYK to work.
-                        //http://www.codeproject.com/KB/applications/xcmyk.aspx
-                        float r, g, b, k;
-                        k = components[3];
+                case 1:// Use that component as a single-integer RGB value
+                    cGuess = new Color((int) components[0]);
+                    sMsg += "\nInterpretating as single-integer RGB";
+                    break;
+                case 3: // RGB
+                    cGuess = new Color(components[0], components[1], components[2]);
+                    sMsg += "\nInterpretating as RGB";
+                    break;
+                case 4: // CMYK
+                    // do a rough conversion to RGB as I'm not getting the CMYK to work.
+                    // http://www.codeproject.com/KB/applications/xcmyk.aspx
+                    float r,
+                    g,
+                    b,
+                    k;
+                    k = components[3];
 
-                        r = components[0] * (1f - k) + k;
-                        g = components[1] * (1f - k) + k;
-                        b = components[2] * (1f - k) + k;
-                    
-                        r = (1f - r);
-                        g = (1f - g);
-                        b = (1f - b);
-                                
-                        cGuess = new Color( r,g,b );
-                        sMsg += "\nInterpretating as CMYK";
-                        break;
-                    default:
-                        
-                        sMsg += "\nUnable to guess using " + components.length + " components; using black instead";
-                         cGuess = Color.BLACK;
+                    r = components[0] * (1f - k) + k;
+                    g = components[1] * (1f - k) + k;
+                    b = components[2] * (1f - k) + k;
+
+                    r = (1f - r);
+                    g = (1f - g);
+                    b = (1f - b);
+
+                    cGuess = new Color(r, g, b);
+                    sMsg += "\nInterpretating as CMYK";
+                    break;
+                default:
+
+                    sMsg += "\nUnable to guess using " + components.length + " components; using black instead";
+                    cGuess = Color.BLACK;
                 }
             }
             catch (Exception e2)
@@ -247,19 +248,18 @@ public class PDColorState implements Cloneable
     }
 
     /**
-     * Constructor with an existing color set.  Default colorspace is PDDeviceGray.
-     *
+     * Constructor with an existing color set. Default colorspace is PDDeviceGray.
+     * 
      * @param csValues The color space values.
      */
-    public PDColorState( COSArray csValues )
+    public PDColorState(COSArray csValues)
     {
         colorSpaceValue = csValues;
     }
 
-
     /**
      * This will get the current colorspace.
-     *
+     * 
      * @return The current colorspace.
      */
     public PDColorSpace getColorSpace()
@@ -269,7 +269,7 @@ public class PDColorState implements Cloneable
 
     /**
      * This will set the current colorspace.
-     *
+     * 
      * @param value The new colorspace.
      */
     public void setColorSpace(PDColorSpace value)
@@ -281,8 +281,8 @@ public class PDColorState implements Cloneable
     }
 
     /**
-     * This will get the color space values.  Either 1 for gray or 3 for RGB.
-     *
+     * This will get the color space values. Either 1 for gray or 3 for RGB.
+     * 
      * @return The colorspace values.
      */
     public float[] getColorSpaceValue()
@@ -291,8 +291,8 @@ public class PDColorState implements Cloneable
     }
 
     /**
-     * This will get the color space values.  Either 1 for gray or 3 for RGB.
-     *
+     * This will get the color space values. Either 1 for gray or 3 for RGB.
+     * 
      * @return The colorspace values.
      */
     public COSArray getCOSColorSpaceValue()
@@ -302,12 +302,12 @@ public class PDColorState implements Cloneable
 
     /**
      * This will update the colorspace values.
-     *
+     * 
      * @param value The new colorspace values.
      */
     public void setColorSpaceValue(float[] value)
     {
-        colorSpaceValue.setFloatArray( value );
+        colorSpaceValue.setFloatArray(value);
         // Clear color cache and current pattern
         color = null;
         pattern = null;
@@ -315,7 +315,7 @@ public class PDColorState implements Cloneable
 
     /**
      * This will get the current pattern.
-     *
+     * 
      * @return The current pattern.
      */
     public PDPatternResources getPattern()
@@ -325,7 +325,7 @@ public class PDColorState implements Cloneable
 
     /**
      * This will update the current pattern.
-     *
+     * 
      * @param patternValue The new pattern.
      */
     public void setPattern(PDPatternResources patternValue)
@@ -334,5 +334,5 @@ public class PDColorState implements Cloneable
         // Clear color cache
         color = null;
     }
-    
+
 }
