@@ -88,7 +88,7 @@ public abstract class PDFont implements COSObjectable
     /**
      * A list a floats representing the widths.
      */
-    private List<Float> widths = null;
+    private List<Integer> widths = null;
 
     /**
      * The static map of the default Adobe font metrics.
@@ -746,14 +746,14 @@ public abstract class PDFont implements COSObjectable
      * 
      * @return The widths of the characters.
      */
-    public List<Float> getWidths()
+    public List<Integer> getWidths()
     {
         if (widths == null)
         {
             COSArray array = (COSArray) font.getDictionaryObject(COSName.WIDTHS);
             if (array != null)
             {
-                widths = COSArrayList.convertFloatCOSArrayToList(array);
+                widths = COSArrayList.convertIntegerCOSArrayToList(array);
             }
         }
         return widths;
@@ -764,7 +764,7 @@ public abstract class PDFont implements COSObjectable
      * 
      * @param widthsList The widths of the character codes.
      */
-    public void setWidths(List<Float> widthsList)
+    public void setWidths(List<Integer> widthsList)
     {
         widths = widthsList;
         font.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
