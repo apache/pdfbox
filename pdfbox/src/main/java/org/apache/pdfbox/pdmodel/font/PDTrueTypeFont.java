@@ -279,7 +279,6 @@ public class PDTrueTypeFont extends PDSimpleFont
             fd.setSymbolic(isSymbolic);
             fd.setNonSymbolic(!isSymbolic);
 
-            // todo retval.setFixedPitch
             // todo retval.setItalic
             // todo retval.setAllCap
             // todo retval.setSmallCap
@@ -354,14 +353,16 @@ public class PDTrueTypeFont extends PDSimpleFont
             int[] widthValues = hMet.getAdvanceWidth();
             // some monospaced fonts provide only one value for the width
             // instead of an array containing the same value for every glyphid
-            boolean isMonospaced = widthValues.length == 1;
+            boolean isMonospaced = fd.isFixedPitch();
             int nWidths = lastChar - firstChar + 1;
-            List<Float> widths = new ArrayList<Float>(nWidths);
-            // width of the .notdef character.
-            Float zero = Float.valueOf(widthValues[0] * scaling);
+            List<Integer> widths = new ArrayList<Integer>(nWidths);
+            // use the first width as default
+            // proportional fonts -> width of the .notdef character
+            // monospaced-fonts -> the first width
+            int defaultWidth = Math.round(widthValues[0] * scaling);
             for (int i = 0; i < nWidths; i++)
             {
-                widths.add(zero);
+                widths.add(defaultWidth);
             }
             // Encoding singleton to have acces to the chglyph name to
             // unicode cpoint point mapping of Adobe's glyphlist.txt
@@ -383,11 +384,11 @@ public class PDTrueTypeFont extends PDSimpleFont
                 {
                     if (isMonospaced)
                     {
-                        widths.set(e.getKey().intValue() - firstChar, widthValues[0] * scaling);
+                        widths.set(e.getKey().intValue() - firstChar, defaultWidth);
                     }
                     else
                     {
-                        widths.set(e.getKey().intValue() - firstChar, widthValues[gid] * scaling);
+                        widths.set(e.getKey().intValue() - firstChar, Math.round(widthValues[gid] * scaling));
                     }
                 }
             }

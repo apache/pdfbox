@@ -276,7 +276,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkCharProcsAndMetrics() throws ValidationException
     {
-        List<Float> widths = font.getWidths();
+        List<Integer> widths = font.getWidths();
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -460,7 +460,8 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     }
                     catch (IOException e)
                     {
-                        context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_DAMAGED, "Unable to valid the Type3 : " + e.getMessage()));
+                        context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_DAMAGED,
+                                "Unable to valid the Type3 : " + e.getMessage()));
                     }
                 }
             }
