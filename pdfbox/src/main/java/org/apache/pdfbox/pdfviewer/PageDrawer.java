@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -41,21 +42,29 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfviewer.font.CFFGlyph2D;
 import org.apache.pdfbox.pdfviewer.font.Glyph2D;
 import org.apache.pdfbox.pdfviewer.font.TTFGlyph2D;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.FontManager;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType0Font;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1CFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDShading;
@@ -106,6 +115,7 @@ public class PageDrawer extends PDFStreamEngine
     private GeneralPath linePath = new GeneralPath();
 
     private HashMap<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+    private HashMap<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
 
     /**
      * Default constructor, loads properties from file.
@@ -190,6 +200,10 @@ public class PageDrawer extends PDFStreamEngine
             }
             fontGlyph2D.clear();
             fontGlyph2D = null;
+        }
+        if (awtFonts != null)
+        {
+            awtFonts.clear();
         }
         graphics = null;
         linePath = null;
@@ -290,7 +304,8 @@ public class PageDrawer extends PDFStreamEngine
                 }
                 else
                 {
-                    // Use AWT to render the font
+                    // Use AWT to render the font (Type1 fonts, standard14 fonts, if the embedded font is substituted)
+                    // TODO to be removed in the long run?
                     drawString((PDSimpleFont) font, text.getCharacter(), text.getCodePoints(), graphics, at, x, y);
                 }
             }
@@ -409,45 +424,10 @@ public class PageDrawer extends PDFStreamEngine
     private void drawString(PDSimpleFont font, String string, int[] codePoints, Graphics g, AffineTransform at,
             float x, float y) throws IOException
     {
-        Font awtFont = font.getawtFont();
+        Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
-        GlyphVector glyphs = null;
-        boolean useCodepoints = codePoints != null && font.isType0Font();
-        PDFont descendantFont = useCodepoints ? ((PDType0Font) font).getDescendantFont() : null;
-        // symbolic fonts may trigger the same fontmanager.so/dll error as described below
-        if (useCodepoints && !descendantFont.getFontDescriptor().isSymbolic())
-        {
-            PDCIDFontType2Font cid2Font = null;
-            if (descendantFont instanceof PDCIDFontType2Font)
-            {
-                cid2Font = (PDCIDFontType2Font) descendantFont;
-            }
-            if ((cid2Font != null && cid2Font.hasCIDToGIDMap()) || ((PDSimpleFont) font).isFontSubstituted())
-            {
-                // we still have to use the string if a CIDToGIDMap is used
-                glyphs = awtFont.createGlyphVector(frc, string);
-            }
-            else
-            {
-                glyphs = awtFont.createGlyphVector(frc, codePoints);
-            }
-        }
-        else
-        {
-            // mdavis - fix fontmanager.so/dll on sun.font.FileFont.getGlyphImage
-            // for font with bad cmaps?
-            // Type1 fonts are not affected as they don't have cmaps
-            if (!font.isType1Font() && awtFont.canDisplayUpTo(string) != -1)
-            {
-                LOG.warn("Changing font on <" + string + "> from <" + awtFont.getName() + "> to the default font");
-                awtFont = Font.decode(null).deriveFont(1f);
-            }
-            glyphs = awtFont.createGlyphVector(frc, string);
-            if (font.isType1Font())
-            {
-                glyphs = font.remapGlyphs(glyphs, string);
-            }
-        }
+        GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
+
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         writeFont(g2d, at, x, y, glyphs);
@@ -486,6 +466,87 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * Provides an AWT font for the given PDFont.
+     * 
+     * @param font the font which needs an AWT font
+     * @return the corresponding AWT font
+     * @throws IOException if something went wrong
+     */
+
+    private Font createAWTFont(PDSimpleFont font) throws IOException
+    {
+        Font awtFont = null;
+        // Is there already a AWTFont for the given font?
+        if (awtFonts.containsKey(font))
+        {
+            awtFont = awtFonts.get(font);
+        }
+        else
+        {
+            if (font instanceof PDType1Font)
+            {
+                PDType1Font type1Font = (PDType1Font) font;
+                PDFontDescriptor fd = type1Font.getFontDescriptor();
+                if (fd != null && fd instanceof PDFontDescriptorDictionary)
+                {
+                    PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary) fd;
+                    if (fdDictionary.getFontFile() != null)
+                    {
+                        try
+                        {
+                            // create a type1 font with the embedded data
+                            awtFont = Font.createFont(Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream());
+                        }
+                        catch (FontFormatException e)
+                        {
+                            LOG.info("Can't read the embedded type1 font " + fd.getFontName());
+                        }
+                    }
+                    if (awtFont == null)
+                    {
+                        // check if the font is part of our environment
+                        awtFont = FontManager.getAwtFont(fd.getFontName());
+                        if (awtFont != null)
+                        {
+                            type1Font.setIsFontSubstituted(true);
+                        }
+                        else
+                        {
+                            LOG.info("Can't find the specified font " + fd.getFontName());
+                        }
+                    }
+                }
+                else
+                {
+                    // check if the font is part of our environment
+                    String baseFont = type1Font.getBaseFont();
+                    awtFont = FontManager.getAwtFont(baseFont);
+                    if (awtFont == null)
+                    {
+                        LOG.info("Can't find the specified basefont " + baseFont);
+                    }
+                }
+            }
+            else
+            {
+                LOG.info("Unsupported type of font " + font.getClass().getName());
+            }
+            if (awtFont == null)
+            {
+                // Fallback: we can't find anything, so we have to use the standard font
+                awtFont = FontManager.getStandardFont();
+                LOG.info("Using font " + awtFont.getName() + " instead");
+                font.setIsFontSubstituted(true);
+            }
+            if (awtFont != null)
+            {
+                awtFonts.put(font, awtFont);
+            }
+        }
+        return awtFont;
+    }
+
+    /**
      * Provide a Glyh2d for the given font if supported.
      * 
      * @param font the font
@@ -503,8 +564,6 @@ public class PageDrawer extends PDFStreamEngine
         else
         {
             // check if the given font is supported
-
-            // TTF fonts are supported
             if (font instanceof PDTrueTypeFont)
             {
                 PDTrueTypeFont ttfFont = (PDTrueTypeFont) font;
@@ -520,10 +579,19 @@ public class PageDrawer extends PDFStreamEngine
                 {
                     glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), ttfFont.isSymbolicFont(), toUnicodeCMap);
                 }
-                // cache the Glyph2D instance
-                if (glyph2D != null)
+            }
+            else if (font instanceof PDType1Font)
+            {
+                PDType1Font type1Font = (PDType1Font) font;
+                PDType1CFont type1CFont = type1Font.getType1CFont();
+                if (type1CFont != null)
                 {
-                    fontGlyph2D.put(font, glyph2D);
+                    // get the cffFont raw data
+                    CFFFont cffFont = type1CFont.getCFFFont();
+                    if (cffFont != null)
+                    {
+                        glyph2D = new CFFGlyph2D(cffFont, type1CFont.getFontEncoding());
+                    }
                 }
             }
             else if (font instanceof PDType0Font)
@@ -553,13 +621,27 @@ public class PageDrawer extends PDFStreamEngine
                                     toUnicodeCMap);
                         }
                     }
-                    // cache the Glyph2D instance
-                    if (glyph2D != null)
-                    {
-                        fontGlyph2D.put(font, glyph2D);
-                    }
-
                 }
+                else if (type0Font.getDescendantFont() instanceof PDCIDFontType0Font)
+                {
+                    // a CIDFontType2Font contains TTF font
+                    PDCIDFontType0Font cidType2Font = (PDCIDFontType0Font) type0Font.getDescendantFont();
+                    PDType1CFont type1CFont = cidType2Font.getType1CFont();
+                    if (type1CFont != null)
+                    {
+                        // get the cffFont raw data
+                        CFFFont cffFont = type1CFont.getCFFFont();
+                        if (cffFont != null)
+                        {
+                            glyph2D = new CFFGlyph2D(cffFont, type1CFont.getFontEncoding());
+                        }
+                    }
+                }
+            }
+            // cache the Glyph2D instance
+            if (glyph2D != null)
+            {
+                fontGlyph2D.put(font, glyph2D);
             }
         }
         return glyph2D;
