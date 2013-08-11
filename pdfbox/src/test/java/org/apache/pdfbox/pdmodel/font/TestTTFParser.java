@@ -34,19 +34,19 @@ import org.junit.Test;
 /**
  * A test for correctly parsing TTF files.
  */
-public class TestTTFParser 
+public class TestTTFParser
 {
 
     /**
      * Test the post table parser.
+     * 
      * @throws IOException if an error occurs.
      */
     @Test
-    public void testPostTable() throws IOException 
+    public void testPostTable() throws IOException
     {
-        InputStream arialIs = TestTTFParser.class.getClassLoader()
-                .getResourceAsStream(
-                        "org/apache/pdfbox/resources/ttf/ArialMT.ttf");
+        InputStream arialIs = TestTTFParser.class.getClassLoader().getResourceAsStream(
+                "org/apache/pdfbox/resources/ttf/ArialMT.ttf");
         Assert.assertNotNull(arialIs);
 
         TTFParser parser = new TTFParser();
@@ -61,10 +61,10 @@ public class TestTTFParser
 
         CMAPEncodingEntry uc = null;
 
-        for (CMAPEncodingEntry e : cmaps) 
+        for (CMAPEncodingEntry e : cmaps)
         {
             if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
-                    && e.getPlatformEncodingId() == NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE) 
+                    && e.getPlatformEncodingId() == NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE)
             {
                 uc = e;
                 break;
@@ -84,63 +84,46 @@ public class TestTTFParser
         int[] charCodes = uc.getGlyphIdToCharacterCode();
         Assert.assertNotNull(charCodes);
 
-        for (int gid = 0; gid < charCodes.length; ++gid) 
+        for (int gid = 0; gid < charCodes.length; ++gid)
         {
             int charCode = charCodes[gid];
             String name = glyphNames[gid];
-            if (charCode < 0x8000 && charCode >= 32) 
+            if (charCode < 0x8000 && charCode >= 32)
             {
-                if ("space".equals(name) || "slash".equals(name)
-                        || "bracketleft".equals(name)
-                        || "bracketright".equals(name)
-                        || "braceleft".equals(name)
-                        || "braceright".equals(name) || "product".equals(name)
-                        || "integral".equals(name) || "Omega".equals(name)
-                        || "radical".equals(name) || "tilde".equals(name)) 
+                if ("space".equals(name) || "slash".equals(name) || "bracketleft".equals(name)
+                        || "bracketright".equals(name) || "braceleft".equals(name) || "braceright".equals(name)
+                        || "product".equals(name) || "integral".equals(name) || "Omega".equals(name)
+                        || "radical".equals(name) || "tilde".equals(name))
                 {
-                    Assert.assertTrue(enc.getNameFromCharacter((char) charCode)
-                            .startsWith(name));
-                } 
-                else if ("bar".equals(name)) 
-                {
-                    Assert.assertTrue(enc.getNameFromCharacter((char) charCode)
-                            .endsWith(name));
-                } 
-                else if ("germandbls".equals(name)) 
-                {
-                    Assert.assertEquals("xff",
-                            enc.getNameFromCharacter((char) charCode));
-                } 
-                else if ("sfthyphen".equals(name)) 
-                {
-                    Assert.assertEquals("softhyphen",
-                            enc.getNameFromCharacter((char) charCode));
+                    Assert.assertTrue(enc.getNameForCharacter((char) charCode).startsWith(name));
                 }
-                else if ("periodcentered".equals(name)
-                        && !enc.getNameFromCharacter((char) charCode).equals(
-                                name)) 
+                else if ("bar".equals(name))
                 {
-                    Assert.assertEquals("bulletoperator",
-                            enc.getNameFromCharacter((char) charCode));
+                    Assert.assertTrue(enc.getNameForCharacter((char) charCode).endsWith(name));
                 }
-                else if ("fraction".equals(name)) 
+                else if ("sfthyphen".equals(name))
                 {
-                    Assert.assertEquals("divisionslash",
-                            enc.getNameFromCharacter((char) charCode));
+                    Assert.assertEquals("softhyphen", enc.getNameForCharacter((char) charCode));
                 }
-                else if ("mu".equals(name)) 
+                else if ("periodcentered".equals(name) && !enc.getNameForCharacter((char) charCode).equals(name))
                 {
-                    Assert.assertEquals("mu1",
-                            enc.getNameFromCharacter((char) charCode));
+                    Assert.assertEquals("bulletoperator", enc.getNameForCharacter((char) charCode));
                 }
-                else if ("pi".equals(name)) 
+                else if ("fraction".equals(name))
+                {
+                    Assert.assertEquals("divisionslash", enc.getNameForCharacter((char) charCode));
+                }
+                else if ("mu".equals(name))
+                {
+                    Assert.assertEquals("mu1", enc.getNameForCharacter((char) charCode));
+                }
+                else if ("pi".equals(name))
                 {
                     Assert.assertEquals(0x03c0, charCode);
                 }
-                else 
+                else
                 {
-                    Assert.assertEquals(
-                            enc.getNameFromCharacter((char) charCode), name);
+                    Assert.assertEquals(enc.getNameForCharacter((char) charCode), name);
                 }
             }
         }
