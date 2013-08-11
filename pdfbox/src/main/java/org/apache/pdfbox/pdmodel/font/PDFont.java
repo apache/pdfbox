@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
@@ -34,13 +33,11 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This is the base class for all PDF fonts.
@@ -90,61 +87,7 @@ public abstract class PDFont implements COSObjectable
      */
     private List<Integer> widths = null;
 
-    /**
-     * The static map of the default Adobe font metrics.
-     */
-    private static final Map<String, FontMetric> afmObjects = Collections.unmodifiableMap(getAdobeFontMetrics());
-
-    // TODO move the Map to PDType1Font as these are the 14 Standard fonts
-    // which are definitely Type 1 fonts
-    private static Map<String, FontMetric> getAdobeFontMetrics()
-    {
-        Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
-        addAdobeFontMetric(metrics, "Courier-Bold");
-        addAdobeFontMetric(metrics, "Courier-BoldOblique");
-        addAdobeFontMetric(metrics, "Courier");
-        addAdobeFontMetric(metrics, "Courier-Oblique");
-        addAdobeFontMetric(metrics, "Helvetica");
-        addAdobeFontMetric(metrics, "Helvetica-Bold");
-        addAdobeFontMetric(metrics, "Helvetica-BoldOblique");
-        addAdobeFontMetric(metrics, "Helvetica-Oblique");
-        addAdobeFontMetric(metrics, "Symbol");
-        addAdobeFontMetric(metrics, "Times-Bold");
-        addAdobeFontMetric(metrics, "Times-BoldItalic");
-        addAdobeFontMetric(metrics, "Times-Italic");
-        addAdobeFontMetric(metrics, "Times-Roman");
-        addAdobeFontMetric(metrics, "ZapfDingbats");
-        return metrics;
-    }
-
     protected static final String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
-    private static final String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
-
-    private static void addAdobeFontMetric(Map<String, FontMetric> metrics, String name)
-    {
-        try
-        {
-            String resource = resourceRootAFM + name + ".afm";
-            InputStream afmStream = ResourceLoader.loadResource(resource);
-            if (afmStream != null)
-            {
-                try
-                {
-                    AFMParser parser = new AFMParser(afmStream);
-                    parser.parse();
-                    metrics.put(name, parser.getResult());
-                }
-                finally
-                {
-                    afmStream.close();
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            // ignore
-        }
-    }
 
     /**
      * This will clear AFM resources that are stored statically. This is usually not a problem unless you want to
@@ -197,7 +140,7 @@ public abstract class PDFont implements COSObjectable
             }
             else
             {
-                getAFM();
+                FontMetric afm = getAFM();
                 if (afm != null)
                 {
                     fontDescriptor = new PDFontDescriptorAFM(afm);
@@ -359,33 +302,8 @@ public abstract class PDFont implements COSObjectable
      */
     protected FontMetric getAFM()
     {
-        if (isType1Font() && afm == null)
-        {
-            COSBase baseFont = font.getDictionaryObject(COSName.BASE_FONT);
-            String name = null;
-            if (baseFont instanceof COSName)
-            {
-                name = ((COSName) baseFont).getName();
-                if (name.indexOf("+") > -1)
-                {
-                    name = name.substring(name.indexOf("+") + 1);
-                }
-
-            }
-            else if (baseFont instanceof COSString)
-            {
-                COSString string = (COSString) baseFont;
-                name = string.getString();
-            }
-            if (name != null)
-            {
-                afm = afmObjects.get(name);
-            }
-        }
-        return afm;
+        return null;
     }
-
-    private FontMetric afm = null;
 
     private COSBase encoding = null;
 
@@ -546,6 +464,13 @@ public abstract class PDFont implements COSObjectable
         return retval;
     }
 
+    /**
+     * Parse the given CMap.
+     * 
+     * @param cmapRoot the root path pointing to the provided CMaps
+     * @param cmapStream the CMap to be read
+     * @return the parsed CMap
+     */
     protected CMap parseCmap(String cmapRoot, InputStream cmapStream)
     {
         CMap targetCmap = null;

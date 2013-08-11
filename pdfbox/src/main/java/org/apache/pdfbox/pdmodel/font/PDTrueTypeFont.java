@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,8 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.GlyphData;
@@ -63,17 +60,10 @@ public class PDTrueTypeFont extends PDSimpleFont
 {
 
     /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDTrueTypeFont.class);
-
-    /**
      * This is the key to a property in the PDFBox_External_Fonts.properties file to load a Font when a mapping does not
      * exist for the current font.
      */
-    public static final String UNKNOWN_FONT = "UNKNOWN_FONT";
-
-    private Font awtFont = null;
+    private static final String UNKNOWN_FONT = "UNKNOWN_FONT";
 
     private static Properties externalFonts = new Properties();
     private static Map<String, TrueTypeFont> loadedExternalFonts = new HashMap<String, TrueTypeFont>();
@@ -403,19 +393,6 @@ public class PDTrueTypeFont extends PDSimpleFont
                 ttf.close();
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Font getawtFont() throws IOException
-    {
-        // TODO remove if no longer needed
-        // fallback if getTTFFont doesn't provides a suitable font
-        awtFont = FontManager.getStandardFont();
-        LOG.info("Using font " + awtFont.getName() + " instead");
-        setIsFontSubstituted(true);
-        return awtFont;
     }
 
     /**

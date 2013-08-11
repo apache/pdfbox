@@ -16,20 +16,27 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.awt.Font;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
  * This is implementation of the CIDFontType0 Font.
- *
+ * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * 
  */
 public class PDCIDFontType0Font extends PDCIDFont
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDCIDFontType0Font.class);
+
+    private PDType1CFont type1CFont = null;
 
     /**
      * Constructor.
@@ -37,46 +44,42 @@ public class PDCIDFontType0Font extends PDCIDFont
     public PDCIDFontType0Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.CID_FONT_TYPE0 );
+        font.setItem(COSName.SUBTYPE, COSName.CID_FONT_TYPE0);
     }
 
     /**
      * Constructor.
-     *
+     * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDCIDFontType0Font( COSDictionary fontDictionary )
+    public PDCIDFontType0Font(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
+        super(fontDictionary);
+        PDFontDescriptor fd = getFontDescriptor();
+        if (fd instanceof PDFontDescriptorDictionary)
+        {
+            PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary) fd;
+            if (fdd.getFontFile3() != null)
+            {
+                try
+                {
+                    type1CFont = new PDType1CFont(font);
+                }
+                catch (IOException exception)
+                {
+                    LOG.error("Can't create the embedded CFF-font", exception);
+                }
+            }
+        }
     }
 
     /**
-     * Returns the AWT font that corresponds with this CIDFontType0 font.
-     * By default we try to look up a system font with the same name. If that
-     * fails and the font file is embedded in the PDF document, we try to
-     * generate the AWT font using the {@link PDType1CFont} class. Ideally
-     * the embedded font would be used always if available, but since the
-     * code doesn't work correctly for all fonts yet we opt to use the
-     * system font by default.
-     *
-     * @return AWT font, or <code>null</code> if not available
+     * Returns the embedded Type1CFont.
+     * 
+     * @return the Type1C font
      */
-    public Font getawtFont() throws IOException
+    public PDType1CFont getType1CFont()
     {
-        PDFontDescriptor fd = getFontDescriptor();
-        Font awtFont = FontManager.getAwtFont(fd.getFontName());
-
-        if (awtFont == null && fd instanceof PDFontDescriptorDictionary) {
-            PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary) fd;
-            if (fdd.getFontFile3() != null) {
-                // Create a font with the embedded data
-                // TODO: This still doesn't work right for
-                // some embedded fonts
-                awtFont = new PDType1CFont(font).getawtFont();
-            }
-        }
-
-        return awtFont;
+        return type1CFont;
     }
-
 }

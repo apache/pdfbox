@@ -210,7 +210,7 @@ public abstract class Encoding implements COSObjectable
      * 
      * @throws IOException If there is no name for the character.
      */
-    public String getNameFromCharacter(char c) throws IOException
+    public String getNameForCharacter(char c) throws IOException
     {
         String name = CHARACTER_TO_NAME.get(Character.toString(c));
         if (name == null)
@@ -218,6 +218,24 @@ public abstract class Encoding implements COSObjectable
             throw new IOException("No name for character '" + c + "'");
         }
         return name;
+    }
+
+    /**
+     * This will take a name and get the character code for that name.
+     * 
+     * @param name The name.
+     * 
+     * @return The name of the character.
+     * 
+     */
+    public static String getCharacterForName(String name)
+    {
+        if (NAME_TO_CHARACTER.containsKey(name))
+        {
+            LOG.debug("No character for name " + name);
+            return NAME_TO_CHARACTER.get(name);
+        }
+        return null;
     }
 
     /**
