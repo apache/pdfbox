@@ -23,12 +23,10 @@ package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_DEST;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_INVALID_DEST;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -92,24 +90,5 @@ public class LinkAnnotationValidator extends AnnotationValidator
             return false;
         }
         return true;
-    }
-
-    /*
-     * (non-Javadoc) (new ValidationError( ValidationConstants.
-     * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
-     */
-    protected boolean checkMandatoryFields()
-    {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-        boolean f = this.annotDictionary.containsKey(COSName.F);
-
-        boolean result = (subtype && rect && f);
-        if (!result)
-        {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-        }
-        return result;
     }
 }

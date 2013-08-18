@@ -22,10 +22,8 @@
 package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -81,29 +79,6 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
             }
         }
         return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
-     */
-    protected boolean checkMandatoryFields()
-    {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-        boolean f = this.annotDictionary.containsKey(COSName.F);
-
-        /*
-         * ---- After PDF 1.4, all additional entries in this annotation are optional and they seem to be compatible
-         * with the PDF/A specification.
-         */
-        boolean result = (subtype && rect && f);
-        if (!result)
-        {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-        }
-        return result;
     }
 
 }
