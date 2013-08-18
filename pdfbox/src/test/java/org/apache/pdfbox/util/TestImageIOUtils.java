@@ -31,8 +31,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 /**
  * Test suite for ImageIOUtil.
- *
- * @version $Revision: 1.0 $
+ * 
  */
 public class TestImageIOUtils extends TestCase
 {
@@ -46,14 +45,13 @@ public class TestImageIOUtils extends TestCase
 
     /**
      * Validate page rendering for all supported image formats (JDK5).
-     *
+     * 
      * @param file The file to validate
      * @param inDir Name of the input directory
      * @param outDir Name of the output directory
      * @throws Exception when there is an exception
      */
-    private void doTestFile(File file, String inDir, String outDir)
-        throws Exception
+    private void doTestFile(File file, String inDir, String outDir) throws Exception
     {
         PDDocument document = null;
         String imageType = "png";
@@ -61,25 +59,21 @@ public class TestImageIOUtils extends TestCase
         try
         {
             int resolution = 120;
-            document =  PDDocument.load(file);
+            document = PDDocument.load(file);
             // testing PNG
-            writeImage(document, imageType, outDir + file.getName() + "-", 
-                    BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
             // testing JPG/JPEG
             imageType = "jpg";
-            writeImage(document, imageType, outDir + file.getName() + "-", 
-                    BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
             // testing BMP
             imageType = "bmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", 
-                    BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
             // testing WBMP
             imageType = "wbmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", 
-                    BufferedImage.TYPE_BYTE_BINARY, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_BYTE_BINARY, resolution);
         }
-        catch(Exception e)
-        { 
+        catch (Exception e)
+        {
             testFailed = true;
             LOG.error("Error converting file " + file.getName() + " using image type " + imageType, e);
         }
@@ -91,44 +85,42 @@ public class TestImageIOUtils extends TestCase
     }
 
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix, int imageType, int resolution)
-    throws IOException
+            throws IOException
     {
-        List pages = document.getDocumentCatalog().getAllPages();
-        PDPage page = (PDPage)pages.get( 0 );
-        BufferedImage image = page.convertToImage(imageType, resolution);
+        List<PDPage> pages = document.getDocumentCatalog().getAllPages();
+        BufferedImage image = RenderUtil.convertToImage(pages.get(0), imageType, resolution);
         String fileName = outputPrefix + 1;
-        System.out.println( "Writing: " + fileName + "." +imageFormat);
+        System.out.println("Writing: " + fileName + "." + imageFormat);
         ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
     }
 
     /**
      * Test to validate image rendering of file set.
-     *
+     * 
      * @throws Exception when there is an exception
      */
-    public void testRenderImage()
-        throws Exception
+    public void testRenderImage() throws Exception
     {
         String inDir = "src/test/resources/input/rendering";
         String outDir = "target/test-output/";
 
-            File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
+        File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
+        {
+            public boolean accept(File dir, String name)
             {
-                public boolean accept(File dir, String name)
-                {
-                    return (name.endsWith(".pdf") || name.endsWith(".ai"));
-                }
-            });
-
-            for (int n = 0; n < testFiles.length; n++)
-            {
-                doTestFile(testFiles[n], inDir, outDir);
+                return (name.endsWith(".pdf") || name.endsWith(".ai"));
             }
+        });
 
-            if (testFailed)
-            {
-                fail("One or more failures, see test log for details");
-            }
+        for (int n = 0; n < testFiles.length; n++)
+        {
+            doTestFile(testFiles[n], inDir, outDir);
+        }
+
+        if (testFailed)
+        {
+            fail("One or more failures, see test log for details");
+        }
     }
 
 }
