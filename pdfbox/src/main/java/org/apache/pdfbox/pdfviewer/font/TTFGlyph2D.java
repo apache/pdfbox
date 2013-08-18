@@ -58,6 +58,7 @@ public class TTFGlyph2D implements Glyph2D
     private boolean isSymbol = false;
     private HashMap<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
     private CMap toUnicode = null;
+    private int unicodeByteMapping = 1;
     private int[] cid2gid = null;
 
     /**
@@ -104,6 +105,10 @@ public class TTFGlyph2D implements Glyph2D
         isSymbol = symbolFont;
         name = fontname;
         toUnicode = toUnicodeCMap;
+        if (toUnicode != null && toUnicode.hasTwoByteMappings())
+        {
+            unicodeByteMapping = 2;
+        }
         cid2gid = cid2gidMapping;
         // get units per em, which is used as scaling factor
         HeaderTable header = font.getHeader();
@@ -235,32 +240,32 @@ public class TTFGlyph2D implements Glyph2D
         }
         else
         {
+            int unicode = code;
+            // map the given code to a valid unicode value, if necessary
+            if (toUnicode != null)
+            {
+                String unicodeStr = toUnicode.lookup(code, unicodeByteMapping);
+                if (unicodeStr != null)
+                {
+                    unicode = unicodeStr.codePointAt(0);
+                }
+            }
             // non symbol fonts
             // Unicode mapping
             if (cmapWinUnicode != null)
             {
-                return getPathForGlyphId(cmapWinUnicode.getGlyphId(code));
+                return getPathForGlyphId(cmapWinUnicode.getGlyphId(unicode));
             }
             // some fonts provide a custom CMap
             if (cmapMiscUnicode != null)
             {
-                int unicode = code;
-                // map the given code to a valid unicode value, if necessary
-                if (toUnicode != null)
-                {
-                    String unicodeStr = toUnicode.lookup(code, 1);
-                    if (unicodeStr != null)
-                    {
-                        unicode = unicodeStr.codePointAt(0);
-                    }
-                }
                 return getPathForGlyphId(cmapMiscUnicode.getGlyphId(unicode));
             }
             // use a mac related mapping
             // Is this possible for non symbol fonts?
             if (cmapMacintoshSymbol != null)
             {
-                return getPathForGlyphId(cmapMacintoshSymbol.getGlyphId(code));
+                return getPathForGlyphId(cmapMacintoshSymbol.getGlyphId(unicode));
             }
         }
         // there isn't any mapping, but probably an optional CID2GID mapping
