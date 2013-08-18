@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.print.PageFormat;
@@ -34,11 +33,10 @@ import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * Adapter class that implements the {@link Pageable} and {@link Printable}
- * interfaces for printing a given PDF document. Note that the given PDF
- * document should not be modified (pages added, removed, etc.) while an
- * instance of this class is being used.
- *
+ * Adapter class that implements the {@link Pageable} and {@link Printable} interfaces for printing a given PDF
+ * document. Note that the given PDF document should not be modified (pages added, removed, etc.) while an instance of
+ * this class is being used.
+ * 
  * @since Apache PDFBox 1.3.0
  * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-788">PDFBOX-788</a>
  */
@@ -56,9 +54,8 @@ public class PDPageable implements Pageable, Printable
     private final PrinterJob job;
 
     /**
-     * Creates a {@link Pageable} adapter for the given PDF document and
-     * printer job.
-     *
+     * Creates a {@link Pageable} adapter for the given PDF document and printer job.
+     * 
      * @param document PDF document
      * @param printerJob printer job
      * @throws IllegalArgumentException if an argument is <code>null</code>
@@ -68,13 +65,11 @@ public class PDPageable implements Pageable, Printable
     {
         if (document == null || printerJob == null)
         {
-            throw new IllegalArgumentException(
-                    "PDPageable(" + document + ", " + printerJob + ")");
-        } 
+            throw new IllegalArgumentException("PDPageable(" + document + ", " + printerJob + ")");
+        }
         else if (!document.getCurrentAccessPermission().canPrint())
         {
-            throw new PrinterException(
-                "You do not have permission to print this document");
+            throw new PrinterException("You do not have permission to print this document");
         }
         else
         {
@@ -84,9 +79,9 @@ public class PDPageable implements Pageable, Printable
     }
 
     /**
-     * Creates a {@link Pageable} adapter for the given PDF document using
-     * a default printer job returned by {@link PrinterJob#getPrinterJob()}.
-     *
+     * Creates a {@link Pageable} adapter for the given PDF document using a default printer job returned by
+     * {@link PrinterJob#getPrinterJob()}.
+     * 
      * @param document PDF document
      * @throws IllegalArgumentException if the argument is <code>null</code>
      * @throws PrinterException if the document permissions prevent printing
@@ -98,7 +93,7 @@ public class PDPageable implements Pageable, Printable
 
     /**
      * Returns the printer job for printing the given PDF document.
-     *
+     * 
      * @return printer job
      */
     public PrinterJob getPrinterJob()
@@ -106,11 +101,11 @@ public class PDPageable implements Pageable, Printable
         return job;
     }
 
-    //------------------------------------------------------------< Pageable >
+    // ------------------------------------------------------------< Pageable >
 
     /**
      * Returns the number of pages in the given PDF document.
-     *
+     * 
      * @return number of pages
      */
     public int getNumberOfPages()
@@ -120,7 +115,7 @@ public class PDPageable implements Pageable, Printable
 
     /**
      * Returns the format of the page at the given index.
-     *
+     * 
      * @param i page index, zero-based
      * @return page format
      * @throws IndexOutOfBoundsException if the page index is invalid
@@ -145,13 +140,13 @@ public class PDPageable implements Pageable, Printable
         Paper paper = format.getPaper();
         if (media.getWidth() < media.getHeight())
         {
-          format.setOrientation(PageFormat.PORTRAIT);
-          paper.setImageableArea(diffWidth, diffHeight, crop.getWidth(), crop.getHeight());
+            format.setOrientation(PageFormat.PORTRAIT);
+            paper.setImageableArea(diffWidth, diffHeight, crop.getWidth(), crop.getHeight());
         }
         else
         {
-          format.setOrientation(PageFormat.LANDSCAPE);
-          paper.setImageableArea(diffHeight, diffWidth, crop.getHeight(), crop.getWidth());
+            format.setOrientation(PageFormat.LANDSCAPE);
+            paper.setImageableArea(diffHeight, diffWidth, crop.getHeight(), crop.getWidth());
         }
         format.setPaper(paper);
 
@@ -159,30 +154,33 @@ public class PDPageable implements Pageable, Printable
     }
 
     /**
-     * Returns a {@link Printable} for the page at the given index.
-     * Currently this method simply returns the underlying {@link PDPage}
-     * object that directly implements the {@link Printable} interface, but
-     * future versions may choose to return a different adapter instance.
-     *
+     * Returns a {@link Printable} for the page at the given index. Currently this method simply returns the underlying
+     * {@link PDPage} object that directly implements the {@link Printable} interface, but future versions may choose to
+     * return a different adapter instance.
+     * 
      * @param i page index, zero-based
      * @return printable
      * @throws IndexOutOfBoundsException if the page index is invalid
      */
     public Printable getPrintable(int i) throws IndexOutOfBoundsException
     {
-        return pages.get(i);
+        if (i >= pages.size())
+        {
+            throw new IndexOutOfBoundsException("Index: " + i + ", Size: " + pages.size());
+        }
+        return this;
     }
 
-    //-----------------------------------------------------------< Printable >
+    // -----------------------------------------------------------< Printable >
 
     /**
      * Prints the page at the given index.
-     *
+     * 
      * @param graphics printing target
      * @param format page format
      * @param i page index, zero-based
-     * @return {@link Printable#PAGE_EXISTS} if the page was printed,
-     *         or {@link Printable#NO_SUCH_PAGE} if page index was invalid
+     * @return {@link Printable#PAGE_EXISTS} if the page was printed, or {@link Printable#NO_SUCH_PAGE} if page index
+     *         was invalid
      * @throws PrinterException if printing failed
      */
     public int print(Graphics graphics, PageFormat format, int i) throws PrinterException
@@ -194,12 +192,13 @@ public class PDPageable implements Pageable, Printable
                 PDPage page = pages.get(i);
                 PDRectangle cropBox = page.findCropBox();
                 PageDrawer drawer = new PageDrawer();
-                drawer.drawPage( graphics, page, cropBox.createDimension() );
+                drawer.drawPage(graphics, page, cropBox.createDimension());
+                drawer.dispose();
                 return PAGE_EXISTS;
             }
-            catch( IOException io )
+            catch (IOException io)
             {
-                throw new PrinterIOException( io );
+                throw new PrinterIOException(io);
             }
         }
         else
