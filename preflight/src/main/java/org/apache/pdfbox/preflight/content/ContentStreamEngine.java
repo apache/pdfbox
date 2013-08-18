@@ -172,6 +172,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("v", stubOp);
         registerOperatorProcessor("n", stubOp);
         registerOperatorProcessor("BI", stubOp);
+        registerOperatorProcessor("ID", stubOp);
         registerOperatorProcessor("EI", stubOp);
         registerOperatorProcessor("m", stubOp);
         registerOperatorProcessor("W*", stubOp);
@@ -192,6 +193,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("BMC", stubOp);
         registerOperatorProcessor("DP", stubOp);
         registerOperatorProcessor("EMC", stubOp);
+        registerOperatorProcessor("BX", stubOp);
+        registerOperatorProcessor("EX", stubOp);
 
         registerOperatorProcessor("d0", stubOp);
         registerOperatorProcessor("d1", stubOp);
@@ -616,7 +619,13 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
      */
     protected void registerError(String msg, String errorCode)
     {
+        registerError(msg, errorCode, false);
+    }
+    
+    protected void registerError(String msg, String errorCode, boolean warning)
+    {
         ValidationError error = new ValidationError(errorCode, msg);
+        error.setWarning(warning);
         this.context.addValidationError(error);
     }
 }
