@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
  * This class writes single pages of a pdf to a file.
  * 
  * @author <a href="mailto:DanielWilson@Users.SourceForge.net">Daniel Wilson</a>
- * @version $Revision: 1.1 $
+ * 
  */
 public class PDFImageWriter extends PDFStreamEngine
 {
@@ -53,11 +53,9 @@ public class PDFImageWriter extends PDFStreamEngine
      * Instantiate a new PDFImageWriter object. Loading all of the operator mappings from the properties object that is
      * passed in.
      * 
-     * @param props
-     *            The properties containing the mapping of operators to PDFOperator classes.
+     * @param props The properties containing the mapping of operators to PDFOperator classes.
      * 
-     * @throws IOException
-     *             If there is an error reading the properties.
+     * @throws IOException If there is an error reading the properties.
      */
     public PDFImageWriter(Properties props) throws IOException
     {
@@ -67,21 +65,14 @@ public class PDFImageWriter extends PDFStreamEngine
     /**
      * Converts a given page range of a PDF document to bitmap images.
      * 
-     * @param document
-     *            the PDF document
-     * @param imageType
-     *            the target format (ex. "png")
-     * @param password
-     *            the password (needed if the PDF is encrypted)
-     * @param startPage
-     *            the start page (1 is the first page)
-     * @param endPage
-     *            the end page (set to Integer.MAX_VALUE for all pages)
-     * @param outputPrefix
-     *            used to construct the filename for the individual images
+     * @param document the PDF document
+     * @param imageType the target format (ex. "png")
+     * @param password the password (needed if the PDF is encrypted)
+     * @param startPage the start page (1 is the first page)
+     * @param endPage the end page (set to Integer.MAX_VALUE for all pages)
+     * @param outputPrefix used to construct the filename for the individual images
      * @return true if the images were produced, false if there was an error
-     * @throws IOException
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public boolean writeImage(PDDocument document, String imageType, String password, int startPage, int endPage,
             String outputPrefix) throws IOException
@@ -101,25 +92,16 @@ public class PDFImageWriter extends PDFStreamEngine
     /**
      * Converts a given page range of a PDF document to bitmap images.
      * 
-     * @param document
-     *            the PDF document
-     * @param imageFormat
-     *            the target format (ex. "png")
-     * @param password
-     *            the password (needed if the PDF is encrypted)
-     * @param startPage
-     *            the start page (1 is the first page)
-     * @param endPage
-     *            the end page (set to Integer.MAX_VALUE for all pages)
-     * @param outputPrefix
-     *            used to construct the filename for the individual images
-     * @param imageType
-     *            the image type (see {@link BufferedImage}.TYPE_*)
-     * @param resolution
-     *            the resolution in dpi (dots per inch)
+     * @param document the PDF document
+     * @param imageFormat the target format (ex. "png")
+     * @param password the password (needed if the PDF is encrypted)
+     * @param startPage the start page (1 is the first page)
+     * @param endPage the end page (set to Integer.MAX_VALUE for all pages)
+     * @param outputPrefix used to construct the filename for the individual images
+     * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
+     * @param resolution the resolution in dpi (dots per inch)
      * @return true if the images were produced, false if there was an error
-     * @throws IOException
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     public boolean writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
             String outputPrefix, int imageType, int resolution) throws IOException
@@ -129,8 +111,7 @@ public class PDFImageWriter extends PDFStreamEngine
         int pagesSize = pages.size();
         for (int i = startPage - 1; i < endPage && i < pagesSize; i++)
         {
-            PDPage page = pages.get(i);
-            BufferedImage image = page.convertToImage(imageType, resolution);
+            BufferedImage image = RenderUtil.convertToImage(pages.get(i), imageType, resolution);
             String fileName = outputPrefix + (i + 1);
             LOG.info("Writing: " + fileName + "." + imageFormat);
             bSuccess &= ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);

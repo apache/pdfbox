@@ -17,69 +17,68 @@
 package org.apache.pdfbox;
 
 import java.awt.print.PrinterJob;
+import java.io.File;
 
 import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPageable;
-
-import java.io.File;
+import org.apache.pdfbox.util.RenderUtil;
 
 /**
  * This is a command line program that will print a PDF document.
- *
+ * 
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
  */
 public class PrintPDF
 {
 
-    private static final String PASSWORD     = "-password";
-    private static final String SILENT       = "-silentPrint";
+    private static final String PASSWORD = "-password";
+    private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
 
     /**
      * private constructor.
-    */
+     */
     private PrintPDF()
     {
-        //static class
+        // static class
     }
 
     /**
      * Infamous main method.
-     *
+     * 
      * @param args Command line arguments, should be one and a reference to a file.
-     *
+     * 
      * @throws Exception If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws Exception
     {
         String password = "";
         String pdfFile = null;
         boolean silentPrint = false;
         String printerName = null;
-        for( int i=0; i<args.length; i++ )
+        for (int i = 0; i < args.length; i++)
         {
-            if( args[i].equals( PASSWORD ) )
+            if (args[i].equals(PASSWORD))
             {
                 i++;
-                if( i >= args.length )
+                if (i >= args.length)
                 {
                     usage();
                 }
                 password = args[i];
             }
-            else if( args[i].equals( PRINTER_NAME ) )
+            else if (args[i].equals(PRINTER_NAME))
             {
                 i++;
-                if( i >= args.length )
+                if (i >= args.length)
                 {
                     usage();
                 }
                 printerName = args[i];
             }
-            else if( args[i].equals( SILENT ) )
+            else if (args[i].equals(SILENT))
             {
                 silentPrint = true;
             }
@@ -89,7 +88,7 @@ public class PrintPDF
             }
         }
 
-        if( pdfFile == null )
+        if (pdfFile == null)
         {
             usage();
         }
@@ -97,23 +96,23 @@ public class PrintPDF
         PDDocument document = null;
         try
         {
-            document = PDDocument.load( pdfFile );
+            document = PDDocument.load(pdfFile);
 
-            if( document.isEncrypted() )
+            if (document.isEncrypted())
             {
-                document.decrypt( password );
+                document.decrypt(password);
             }
 
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(new File(pdfFile).getName());
 
-            if(printerName != null )
+            if (printerName != null)
             {
                 PrintService[] printService = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
-                for(int i = 0; !printerFound && i < printService.length; i++)
+                for (int i = 0; !printerFound && i < printService.length; i++)
                 {
-                    if(printService[i].getName().indexOf(printerName) != -1)
+                    if (printService[i].getName().indexOf(printerName) != -1)
                     {
                         printJob.setPrintService(printService[i]);
                         printerFound = true;
@@ -121,15 +120,18 @@ public class PrintPDF
                 }
             }
 
-            printJob.setPageable(new PDPageable(document, printJob));
-            if( silentPrint || printJob.printDialog())
+            if (silentPrint)
             {
-                printJob.print();
+                RenderUtil.silentPrint(document, printJob);
+            }
+            else if (printJob.printDialog())
+            {
+                RenderUtil.print(document, printJob);
             }
         }
         finally
         {
-            if( document != null )
+            if (document != null)
             {
                 document.close();
             }
@@ -141,10 +143,9 @@ public class PrintPDF
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [OPTIONS] <PDF file>\n" +
-            "  -password  <password>        Password to decrypt document\n" +
-            "  -silentPrint                 Print without prompting for printer info\n"
-            );
-        System.exit( 1 );
+        System.err.println("Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [OPTIONS] <PDF file>\n"
+                + "  -password  <password>        Password to decrypt document\n"
+                + "  -silentPrint                 Print without prompting for printer info\n");
+        System.exit(1);
     }
 }
