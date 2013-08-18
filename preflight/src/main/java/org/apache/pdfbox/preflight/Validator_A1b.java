@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.activation.DataSource;
@@ -75,7 +77,7 @@ public class Validator_A1b
         // list
         boolean isBatch = "batch".equals(args[posFile]);
         posFile += isBatch?1:0;
-        
+
         if (isGroup||isBatch) {
             // prepare the list
             List<File> ftp = listFiles(args[posFile]);
@@ -114,9 +116,9 @@ public class Validator_A1b
                     }
                 }
             }
-            
-            
-            
+
+
+
         } else {
             // only one file
             FileDataSource fd = new FileDataSource(args[posFile]);
@@ -135,9 +137,9 @@ public class Validator_A1b
                 transformer.transform(new DOMSource(document), new StreamResult(System.out));
             }
         }
-        
+
     }
-    
+
     private static void usage () {
         System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [mode] <file path>");
         System.out.println();
@@ -147,7 +149,7 @@ public class Validator_A1b
         System.out.println("       group : generate an xml result for all the file of the list.");
         System.out.println("Version : " + Version.getVersion());
     }
-    
+
     private static int runSimple (DataSource fd) throws Exception {
         ValidationResult result = null;
         PreflightParser parser = new PreflightParser(fd);
@@ -180,22 +182,26 @@ public class Validator_A1b
             System.out.println();
             return -1;
         }
-       
+
     }
-    
-    
+
+
     private static List<File> listFiles (String path) throws IOException {
         List<File> files = new ArrayList<File>();
         File f = new File(path);
-        FileReader fr = new FileReader(f);
-        BufferedReader buf = new BufferedReader(fr);
-        while (buf.ready()) {
-            File fn = new File(buf.readLine());
-            if (fn.exists()) {
-                files.add(fn);
-            } // else warn ?
+        if (f.isFile()) {
+            FileReader fr = new FileReader(f);
+            BufferedReader buf = new BufferedReader(fr);
+            while (buf.ready()) {
+                File fn = new File(buf.readLine());
+                if (fn.exists()) {
+                    files.add(fn);
+                } // else warn ?
+            }
+            IOUtils.closeQuietly(buf);
+        } else {
+            files.addAll(Arrays.asList(f.listFiles()));
         }
-        IOUtils.closeQuietly(buf);
         return files;
     }
 }

@@ -22,7 +22,6 @@
 package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -88,22 +87,8 @@ public class LineAnnotationValidator extends AnnotationValidator
      * 
      * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
      */
-    protected boolean checkMandatoryFields()
+    protected boolean checkSpecificMandatoryFields()
     {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-        boolean f = this.annotDictionary.containsKey(COSName.F);
-        boolean l = this.annotDictionary.containsKey(COSName.L);
-
-        /*
-         * After PDF 1.4, all additional entries in this annotation are optional and they seem to be compatible with the
-         * PDF/A specification.
-         */
-        boolean result = (subtype && rect && f && l);
-        if (!result)
-        {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-        }
-        return result;
+        return this.annotDictionary.containsKey(COSName.L);
     }
 }

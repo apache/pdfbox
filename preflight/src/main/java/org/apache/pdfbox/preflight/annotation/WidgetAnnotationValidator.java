@@ -22,10 +22,8 @@
 package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_AA;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -75,24 +73,5 @@ public class WidgetAnnotationValidator extends AnnotationValidator
             return false;
         }
         return true;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields()
-     */
-    protected boolean checkMandatoryFields()
-    {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-        boolean f = this.annotDictionary.containsKey(COSName.F);
-
-        boolean result = (subtype && rect && f);
-        if (!result)
-        {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-        }
-        return result;
     }
 }

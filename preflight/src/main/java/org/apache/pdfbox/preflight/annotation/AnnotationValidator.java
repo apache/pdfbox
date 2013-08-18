@@ -29,6 +29,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDD
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_INVALID_AP_CONTENT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_INVALID_CA;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_AP_N_CONTENT;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -269,8 +270,30 @@ public abstract class AnnotationValidator
      *            list of errors which is updated if validation fails
      * @return true if validation succeed, false otherwise.
      */
-    protected abstract boolean checkMandatoryFields();
+    protected boolean checkMandatoryFields()
+    {
+        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
+        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
 
+        boolean result = (subtype && rect && checkSpecificMandatoryFields());
+        if (!result)
+        {
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS, "A mandatory field for the "
+                    + this.pdAnnot.getSubtype() + " annotation is missing"));
+        }
+        return result;
+    }
+
+    /**
+     * Override this method to check the presence of specific fields
+     * @return
+     */
+    protected boolean checkSpecificMandatoryFields()
+    {
+        return true;
+    }
+    
+    
     /**
      * Initialize the annotFact attribute of this object. This method must be called by the Factory at the creation of
      * this object. Only the Factory should call this method.

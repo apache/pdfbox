@@ -22,13 +22,11 @@
 package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_KEY_QUADPOINTS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_MISSING_FIELDS;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 /**
  * Validation class for the MarkupAnnotation
@@ -47,24 +45,8 @@ public class MarkupAnnotationValidator extends AnnotationValidator
         this.pdAnnot = this.pdMarkup;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
-     */
-    protected boolean checkMandatoryFields()
+    protected boolean checkSpecificMandatoryFields()
     {
-        boolean subtype = this.annotDictionary.containsKey(COSName.SUBTYPE);
-        boolean rect = this.annotDictionary.containsKey(COSName.RECT);
-        boolean f = this.annotDictionary.containsKey(COSName.F);
-        boolean contents = this.annotDictionary.containsKey(COSName.CONTENTS);
-        boolean qp = this.annotDictionary.containsKey(COSName.getPDFName(ANNOT_DICTIONARY_KEY_QUADPOINTS));
-
-        boolean result = (subtype && rect && f && contents && qp);
-        if (!result)
-        {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_MISSING_FIELDS));
-        }
-        return result;
+        return this.annotDictionary.containsKey(COSName.getPDFName(ANNOT_DICTIONARY_KEY_QUADPOINTS));
     }
 }
