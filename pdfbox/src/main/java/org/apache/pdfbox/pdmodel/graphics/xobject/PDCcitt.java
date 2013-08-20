@@ -149,7 +149,6 @@ public class PDCcitt extends PDXObjectImage
             rows = Math.max(rows, height);
         }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
-
         byte[] bufferData = null;
         ColorModel colorModel = null;
         PDColorSpace colorspace = getColorSpace();
@@ -161,16 +160,16 @@ public class PDCcitt extends PDXObjectImage
             COSBase maskArray = getMask();
             if (maskArray != null && maskArray instanceof COSArray)
             {
-                colorModel = csIndexed.createColorModel(8, ((COSArray) maskArray).getInt(0));
+                colorModel = csIndexed.createColorModel(1, ((COSArray) maskArray).getInt(0));
             }
             else
             {
-                colorModel = csIndexed.createColorModel(8);
+                colorModel = csIndexed.createColorModel(1);
             }
         }
         else
         {
-            byte[] map = new byte[] { (byte) 0x00, (byte) 0xff };
+            byte[] map = new byte[] { (byte) 0x00, (byte) 0xFF };
             colorModel = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
         }
         WritableRaster raster = colorModel.createCompatibleWritableRaster(cols, rows);
