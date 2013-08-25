@@ -173,7 +173,9 @@ public class RenderUtil
         {
             retval = new BufferedImage(widthPx, heightPx, imageType);
         }
-        renderPage(page, (Graphics2D) retval.getGraphics(), retval.getWidth(), retval.getHeight(), scale, scale);
+        Graphics2D graphics2D = (Graphics2D) retval.getGraphics();
+        renderPage(page, graphics2D, retval.getWidth(), retval.getHeight(), scale, scale);
+        graphics2D.dispose();
         return retval;
     }
 
