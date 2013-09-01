@@ -20,10 +20,10 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +43,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author mathiak
- * @version $Revision: 1.9 $
  */
 public abstract class PDXObjectImage extends PDXObject
 {
@@ -64,7 +63,7 @@ public abstract class PDXObjectImage extends PDXObject
     private String suffix;
 
     private PDColorState stencilColor;
-    
+
     /**
      * Standard constructor.
      *
@@ -73,20 +72,20 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public PDXObjectImage(PDStream imageStream, String fileSuffix)
     {
-        super( imageStream );
+        super(imageStream);
         suffix = fileSuffix;
     }
 
     /**
-     * Standard constuctor.
+     * Standard constructor.
      *
      * @param doc The document to store the stream in.
      * @param fileSuffix The file suffix, jpg/png.
      */
     public PDXObjectImage(PDDocument doc, String fileSuffix)
     {
-        super( doc );
-        getCOSStream().setName( COSName.SUBTYPE, SUB_TYPE );
+        super(doc);
+        getCOSStream().setName(COSName.SUBTYPE, SUB_TYPE);
         suffix = fileSuffix;
     }
 
@@ -98,12 +97,11 @@ public abstract class PDXObjectImage extends PDXObject
      * @return a pdmodel xobject
      * @throws IOException If there is an error creating the xobject.
      */
-    public static PDXObject createThumbnailXObject( COSBase xobject ) throws IOException
+    public static PDXObject createThumbnailXObject(COSBase xobject) throws IOException
     {
-        PDXObject retval = commonXObjectCreation(xobject, true);
-        return retval;
+        return commonXObjectCreation(xobject, true);
     }
-    
+
     /**
      * Returns an java.awt.Image, that can be used for display etc.
      *
@@ -131,42 +129,55 @@ public abstract class PDXObjectImage extends PDXObject
         }
         else
         {
-            return (PDXObjectImage)PDXObject.createXObject(smask);
+            return (PDXObjectImage) PDXObject.createXObject(smask);
         }
     }
-    
-    public BufferedImage applyMasks(BufferedImage baseImage) throws IOException
+
+    /**
+     * Add masked image to the given image.
+     * 
+     * @param baseImage the base image.
+     * @return the masked image.
+     * @throws IOException if something went wrong
+     */
+    protected BufferedImage applyMasks(BufferedImage baseImage) throws IOException
     {
-    	if (getImageMask())
-    	{
-    		return imageMask(baseImage);
-    	}
-    	if(getMask() != null)
-    	{
-    		return mask(baseImage);
-    	}
-    	PDXObjectImage smask = getSMaskImage();
-    	if(smask != null)
-    	{
-    		BufferedImage smaskBI = smask.getRGBImage();
-    		COSArray decodeArray = smask.getDecode();
-    		CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
-    		BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
-        	return rgbImage;
-    	}
-    	return baseImage;
+        if (getImageMask())
+        {
+            return imageMask(baseImage);
+        }
+        if (getMask() != null)
+        {
+            return mask(baseImage);
+        }
+        PDXObjectImage smask = getSMaskImage();
+        if (smask != null)
+        {
+            BufferedImage smaskBI = smask.getRGBImage();
+            COSArray decodeArray = smask.getDecode();
+            CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
+            BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+            return rgbImage;
+        }
+        return baseImage;
     }
-    
-    public boolean hasMask() throws IOException
+
+    /**
+     * Determines is the XObject has any mask.
+     * 
+     * @return true if the XObkject has any mask
+     * @throws IOException if something went wrong
+     */
+    protected boolean hasMask() throws IOException
     {
-    	return getImageMask() || getMask() != null || getSMaskImage() != null;
+        return getImageMask() || getMask() != null || getSMaskImage() != null;
     }
-    
-    
-    public BufferedImage imageMask(BufferedImage baseImage) throws IOException 
+
+    private BufferedImage imageMask(BufferedImage baseImage) throws IOException
     {
-    	BufferedImage stencilMask = new BufferedImage(baseImage.getWidth(), baseImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
+        BufferedImage stencilMask = new BufferedImage(baseImage.getWidth(), baseImage.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = (Graphics2D) stencilMask.getGraphics();
         if (getStencilColor() != null)
         {
             graphics.setColor(getStencilColor().getJavaColor());
@@ -177,35 +188,38 @@ public abstract class PDXObjectImage extends PDXObject
             LOG.debug("no stencil color for PixelMap found, using Color.BLACK instead.");
             graphics.setColor(Color.BLACK);
         }
-        
+
         graphics.fillRect(0, 0, baseImage.getWidth(), baseImage.getHeight());
         // assume default values ([0,1]) for the DecodeArray
         // TODO DecodeArray == [1,0]
         graphics.setComposite(AlphaComposite.DstIn);
         graphics.drawImage(baseImage, null, 0, 0);
+        graphics.dispose();
         return stencilMask;
     }
-    
-    public BufferedImage mask(BufferedImage baseImage) 
-    	throws IOException
+
+    private BufferedImage mask(BufferedImage baseImage) throws IOException
     {
         COSBase mask = getMask();
         if (mask instanceof COSStream)
         {
-        	PDXObjectImage maskImageRef = (PDXObjectImage)PDXObject.createXObject((COSStream)mask);
-        	BufferedImage maskImage = maskImageRef.getRGBImage();
-       	 	if(maskImage == null)
-       	 	{
-    	   		 LOG.warn("masking getRGBImage returned NULL");
-    	   		 return baseImage;
-       	 	}
-       	 
-    	   	 BufferedImage newImage = new BufferedImage( maskImage.getWidth(), maskImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    	   	 Graphics2D graphics = (Graphics2D)newImage.getGraphics();
-    	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
-    	   	 graphics.setComposite(AlphaComposite.DstIn);
-    	   	 graphics.drawImage(maskImage, null, 0, 0);
-    	   	 return newImage;
+            PDXObjectImage maskImageRef = (PDXObjectImage) PDXObject.createXObject((COSStream) mask);
+            BufferedImage maskImage = maskImageRef.getRGBImage();
+            if (maskImage == null)
+            {
+                LOG.warn("masking getRGBImage returned NULL");
+                return baseImage;
+            }
+
+            BufferedImage newImage = new BufferedImage(maskImage.getWidth(), maskImage.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = (Graphics2D) newImage.getGraphics();
+            graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0,
+                    baseImage.getWidth(), baseImage.getHeight(), null);
+            graphics.setComposite(AlphaComposite.DstIn);
+            graphics.drawImage(maskImage, null, 0, 0);
+            graphics.dispose();
+            return newImage;
         }
         else
         {
@@ -239,7 +253,7 @@ public abstract class PDXObjectImage extends PDXObject
         }
         finally
         {
-            if( out != null )
+            if (out != null)
             {
                 out.close();
             }
@@ -264,7 +278,7 @@ public abstract class PDXObjectImage extends PDXObject
         }
         finally
         {
-            if( out != null )
+            if (out != null)
             {
                 out.close();
             }
@@ -278,7 +292,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public int getHeight()
     {
-        return getCOSStream().getInt( COSName.HEIGHT, -1 );
+        return getCOSStream().getInt(COSName.HEIGHT, -1);
     }
 
     /**
@@ -286,9 +300,9 @@ public abstract class PDXObjectImage extends PDXObject
      *
      * @param height The height of the image.
      */
-    public void setHeight( int height )
+    public void setHeight(int height)
     {
-        getCOSStream().setInt( COSName.HEIGHT, height );
+        getCOSStream().setInt(COSName.HEIGHT, height);
     }
 
     /**
@@ -298,7 +312,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public int getWidth()
     {
-        return getCOSStream().getInt( COSName.WIDTH, -1 );
+        return getCOSStream().getInt(COSName.WIDTH, -1);
     }
 
     /**
@@ -306,9 +320,9 @@ public abstract class PDXObjectImage extends PDXObject
      *
      * @param width The width of the image.
      */
-    public void setWidth( int width )
+    public void setWidth(int width)
     {
-        getCOSStream().setInt( COSName.WIDTH, width );
+        getCOSStream().setInt(COSName.WIDTH, width);
     }
 
     /**
@@ -319,7 +333,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public int getBitsPerComponent()
     {
-        return getCOSStream().getInt( COSName.BITS_PER_COMPONENT, COSName.BPC, -1 );
+        return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC, -1);
     }
 
     /**
@@ -327,9 +341,9 @@ public abstract class PDXObjectImage extends PDXObject
      *
      * @param bpc The number of bits per component.
      */
-    public void setBitsPerComponent( int bpc )
+    public void setBitsPerComponent(int bpc)
     {
-        getCOSStream().setInt( COSName.BITS_PER_COMPONENT, bpc );
+        getCOSStream().setInt(COSName.BITS_PER_COMPONENT, bpc);
     }
 
     /**
@@ -341,11 +355,11 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cs = getCOSStream().getDictionaryObject( COSName.COLORSPACE, COSName.CS );
+        COSBase cs = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
         PDColorSpace retval = null;
-        if( cs != null )
+        if (cs != null)
         {
-            retval = PDColorSpaceFactory.createColorSpace( cs );
+            retval = PDColorSpaceFactory.createColorSpace(cs);
             if (retval == null)
             {
                 LOG.info("About to return NULL from createColorSpace branch");
@@ -353,15 +367,14 @@ public abstract class PDXObjectImage extends PDXObject
         }
         else
         {
-            //there are some cases where the 'required' CS value is not present
-            //but we know that it will be grayscale for a CCITT filter.
-            COSBase filter = getCOSStream().getDictionaryObject( COSName.FILTER );
-            if( COSName.CCITTFAX_DECODE.equals( filter ) ||
-                COSName.CCITTFAX_DECODE_ABBREVIATION.equals( filter ) )
+            // there are some cases where the 'required' CS value is not present
+            // but we know that it will be grayscale for a CCITT filter.
+            COSBase filter = getCOSStream().getDictionaryObject(COSName.FILTER);
+            if (COSName.CCITTFAX_DECODE.equals(filter) || COSName.CCITTFAX_DECODE_ABBREVIATION.equals(filter))
             {
                 retval = new PDDeviceGray();
             }
-            else if( COSName.JBIG2_DECODE.equals( filter ) )
+            else if (COSName.JBIG2_DECODE.equals(filter))
             {
                 retval = new PDDeviceGray();
             }
@@ -372,8 +385,7 @@ public abstract class PDXObjectImage extends PDXObject
             }
             else
             {
-                LOG.info("About to return NULL from unhandled branch."
-                        + " filter = " + filter);
+                LOG.info("About to return NULL from unhandled branch." + " filter = " + filter);
             }
         }
         return retval;
@@ -384,14 +396,14 @@ public abstract class PDXObjectImage extends PDXObject
      *
      * @param cs The color space for this image.
      */
-    public void setColorSpace( PDColorSpace cs )
+    public void setColorSpace(PDColorSpace cs)
     {
         COSBase base = null;
-        if( cs != null )
+        if (cs != null)
         {
             base = cs.getCOSObject();
         }
-        getCOSStream().setItem( COSName.COLORSPACE, base );
+        getCOSStream().setItem(COSName.COLORSPACE, base);
     }
 
     /**
@@ -411,7 +423,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public boolean getImageMask()
     {
-        return getCOSStream().getBoolean( COSName.IMAGE_MASK, false );
+        return getCOSStream().getBoolean(COSName.IMAGE_MASK, false);
     }
 
     /**
@@ -440,10 +452,10 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public COSArray getDecode()
     {
-        COSBase decode = getCOSStream().getDictionaryObject( COSName.DECODE );
+        COSBase decode = getCOSStream().getDictionaryObject(COSName.DECODE);
         if (decode != null && decode instanceof COSArray)
         {
-            return (COSArray)decode;
+            return (COSArray) decode;
         }
         return null;
     }
