@@ -816,4 +816,15 @@ public abstract class PDFont implements COSObjectable
     {
         return toUnicodeCmap;
     }
+
+    /**
+     * Returns the CMap if present.
+     * 
+     * @return the CMap representing the character encoding
+     */
+    public CMap getCMap()
+    {
+        return cmap;
+    }
+
 }
