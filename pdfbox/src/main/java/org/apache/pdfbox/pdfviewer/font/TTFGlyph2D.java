@@ -21,6 +21,7 @@ package org.apache.pdfbox.pdfviewer.font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
@@ -33,6 +34,8 @@ import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphDescription;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 
 /**
  * This class provides a glyph to GeneralPath conversion for true type fonts.
@@ -51,14 +54,14 @@ public class TTFGlyph2D implements Glyph2D
     private TrueTypeFont font;
     private String name;
     private float scale = 0.001f;
-    private CMAPEncodingEntry cmapMiscUnicode = null;
     private CMAPEncodingEntry cmapWinUnicode = null;
     private CMAPEncodingEntry cmapWinSymbol = null;
     private CMAPEncodingEntry cmapMacintoshSymbol = null;
     private boolean isSymbol = false;
     private HashMap<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
-    private CMap toUnicode = null;
-    private int unicodeByteMapping = 1;
+    private Encoding fontEncoding = null;
+    private CMap fontCMap = null;
+    private boolean hasTwoByteMappings = false;
     private int[] cid2gid = null;
 
     /**
@@ -67,11 +70,12 @@ public class TTFGlyph2D implements Glyph2D
      * @param trueTypeFont the true type font containing the glyphs
      * @param fontname the name of the given font
      * @param symbolFont indicates if the font is a symbolic font
+     * @param encoding the encoding of the font
      * 
      */
-    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont)
+    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, Encoding encoding)
     {
-        this(trueTypeFont, fontname, symbolFont, null);
+        this(trueTypeFont, fontname, symbolFont, encoding, null, null);
     }
 
     /**
@@ -80,36 +84,52 @@ public class TTFGlyph2D implements Glyph2D
      * @param trueTypeFont the true type font containing the glyphs
      * @param fontname the name of the given font
      * @param symbolFont indicates if the font is a symbolic font
-     * @param toUnicodeCMap an optional toUnicode mapping
-     * 
+     * @param encoding the encoding of the font
+     * @param cid2gidMapping an optional CID2GID mapping
      */
-    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, CMap toUnicodeCMap)
-    {
-        this(trueTypeFont, fontname, symbolFont, toUnicodeCMap, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param trueTypeFont the true type font containing the glyphs
-     * @param fontname the name of the given font
-     * @param symbolFont indicates if the font is a symbolic font
-     * @param toUnicodeCMap an optional toUnicode mapping
-     * @param cid2gidMapping an optional CID2GIC mapping
-     * 
-     */
-    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, CMap toUnicodeCMap,
+    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, Encoding encoding,
             int[] cid2gidMapping)
+    {
+        this(trueTypeFont, fontname, symbolFont, encoding, cid2gidMapping, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param trueTypeFont the true type font containing the glyphs
+     * @param fontname the name of the given font
+     * @param symbolFont indicates if the font is a symbolic font
+     * @param encoding the encoding of the font
+     * @param cMap an optional CMap
+     */
+    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, Encoding encoding, CMap cMap)
+    {
+        this(trueTypeFont, fontname, symbolFont, encoding, null, cMap);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param trueTypeFont the true type font containing the glyphs
+     * @param fontname the name of the given font
+     * @param symbolFont indicates if the font is a symbolic font
+     * @param encoding the encoding of the font
+     * @param cid2gidMapping an optional CID2GID mapping
+     * @param cMap an optional CMap
+     */
+    public TTFGlyph2D(TrueTypeFont trueTypeFont, String fontname, boolean symbolFont, Encoding encoding,
+            int[] cid2gidMapping, CMap cMap)
     {
         font = trueTypeFont;
         isSymbol = symbolFont;
         name = fontname;
-        toUnicode = toUnicodeCMap;
-        if (toUnicode != null && toUnicode.hasTwoByteMappings())
-        {
-            unicodeByteMapping = 2;
-        }
+        fontEncoding = encoding;
         cid2gid = cid2gidMapping;
+        fontCMap = cMap;
+        if (fontCMap != null)
+        {
+            hasTwoByteMappings = fontCMap.hasTwoByteMappings();
+        }
         // get units per em, which is used as scaling factor
         HeaderTable header = font.getHeader();
         if (header != null)
@@ -139,13 +159,6 @@ public class TTFGlyph2D implements Glyph2D
                     if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
                     {
                         cmapMacintoshSymbol = cmaps[i];
-                    }
-                }
-                else if (CMAPTable.PLATFORM_MISC == cmaps[i].getPlatformId())
-                {
-                    if (CMAPTable.ENCODING_UNICODE == cmaps[i].getPlatformEncodingId())
-                    {
-                        cmapMiscUnicode = cmaps[i];
                     }
                 }
             }
@@ -204,68 +217,95 @@ public class TTFGlyph2D implements Glyph2D
         return glyphPath != null ? (GeneralPath) glyphPath.clone() : null;
     }
 
+    /*
+     * Try to map the given code to the corresponding glyph-ID
+     */
+    private int getGlyphcode(int code)
+    {
+        int result = 0;
+        if (fontEncoding != null && !isSymbol)
+        {
+            try
+            {
+                String charactername = fontEncoding.getName(code);
+                if (charactername != null)
+                {
+                    if (cmapWinUnicode != null)
+                    {
+                        String unicode = Encoding.getCharacterForName(charactername);
+                        if (unicode != null)
+                        {
+                            code = unicode.codePointAt(0);
+                        }
+                        result = cmapWinUnicode.getGlyphId(code);
+                    }
+                    else if (cmapMacintoshSymbol != null)
+                    {
+                        code = MacOSRomanEncoding.INSTANCE.getCode(charactername);
+                        result = cmapMacintoshSymbol.getGlyphId(code);
+                    }
+                }
+            }
+            catch (IOException exception)
+            {
+                LOG.error("Caught an exception getGlyhcode: " + exception);
+            }
+        }
+        if (fontEncoding == null || isSymbol)
+        {
+            if (cmapWinSymbol != null)
+            {
+                result = cmapWinSymbol.getGlyphId(code);
+                if (code >= 0 && code <= 0xFF)
+                {
+                    // the CMap may use one of the following code ranges,
+                    // so that we have to add the high byte to get the
+                    // mapped value
+                    if (result == 0)
+                    {
+                        // F000 - F0FF
+                        result = cmapWinSymbol.getGlyphId(code + 0xF000);
+                    }
+                    if (result == 0)
+                    {
+                        // F100 - F1FF
+                        result = cmapWinSymbol.getGlyphId(code + 0xF100);
+                    }
+                    if (result == 0)
+                    {
+                        // F200 - F2FF
+                        result = cmapWinSymbol.getGlyphId(code + 0xF200);
+                    }
+                }
+            }
+            else if (cmapMacintoshSymbol != null)
+            {
+                result = cmapMacintoshSymbol.getGlyphId(code);
+            }
+        }
+        return result;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public GeneralPath getPathForCharactercode(int code)
     {
-        if (isSymbol)
+
+        int glyphId = getGlyphcode(code);
+
+        if (glyphId > 0)
         {
-            int glyphId = 0;
-            // symbol fonts
-            if (cmapWinSymbol != null)
-            {
-                glyphId = cmapWinSymbol.getGlyphId(code);
-                // microsoft sometimes uses PUA unicode values for symbol fonts
-                // the range 0x0020 - 0x00FF maps to 0xF020 - 0xF0FF
-                if (glyphId == 0 && code >= 0x0020 && code <= 0x00FF)
-                {
-                    glyphId = cmapWinSymbol.getGlyphId(code + 0xF000);
-                }
-                if (glyphId != 0)
-                {
-                    return getPathForGlyphId(glyphId);
-                }
-            }
-            // use a mac related mapping
-            if (cmapMacintoshSymbol != null)
-            {
-                glyphId = cmapMacintoshSymbol.getGlyphId(code);
-            }
-            if (glyphId != 0)
-            {
-                return getPathForGlyphId(glyphId);
-            }
+            return getPathForGlyphId(glyphId);
         }
-        else
+        // there isn't any mapping, but probably an optional CMap
+        if (fontCMap != null)
         {
-            int unicode = code;
-            // map the given code to a valid unicode value, if necessary
-            if (toUnicode != null)
+            String string = fontCMap.lookup(code, hasTwoByteMappings ? 2 : 1);
+            if (string != null)
             {
-                String unicodeStr = toUnicode.lookup(code, unicodeByteMapping);
-                if (unicodeStr != null)
-                {
-                    unicode = unicodeStr.codePointAt(0);
-                }
-            }
-            // non symbol fonts
-            // Unicode mapping
-            if (cmapWinUnicode != null)
-            {
-                return getPathForGlyphId(cmapWinUnicode.getGlyphId(unicode));
-            }
-            // some fonts provide a custom CMap
-            if (cmapMiscUnicode != null)
-            {
-                return getPathForGlyphId(cmapMiscUnicode.getGlyphId(unicode));
-            }
-            // use a mac related mapping
-            // Is this possible for non symbol fonts?
-            if (cmapMacintoshSymbol != null)
-            {
-                return getPathForGlyphId(cmapMacintoshSymbol.getGlyphId(unicode));
+                code = string.codePointAt(0);
             }
         }
         // there isn't any mapping, but probably an optional CID2GID mapping
@@ -440,11 +480,10 @@ public class TTFGlyph2D implements Glyph2D
     {
         cid2gid = null;
         cmapMacintoshSymbol = null;
-        cmapMiscUnicode = null;
         cmapWinSymbol = null;
         cmapWinUnicode = null;
         font = null;
-        toUnicode = null;
+        fontCMap = null;
         if (glyphs != null)
         {
             glyphs.clear();

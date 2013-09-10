@@ -43,7 +43,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -567,17 +566,11 @@ public class PageDrawer extends PDFStreamEngine
             if (font instanceof PDTrueTypeFont)
             {
                 PDTrueTypeFont ttfFont = (PDTrueTypeFont) font;
-                // does the font have an optional toUnicode mapping
-                CMap toUnicodeCMap = null;
-                if (ttfFont.hasToUnicode())
-                {
-                    toUnicodeCMap = ttfFont.getToUnicodeCMap();
-                }
                 // get the true type font raw data
                 TrueTypeFont ttf = ttfFont.getTTFFont();
                 if (ttf != null)
                 {
-                    glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), ttfFont.isSymbolicFont(), toUnicodeCMap);
+                    glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), ttfFont.isSymbolicFont(), font.getFontEncoding());
                 }
             }
             else if (font instanceof PDType1Font)
@@ -597,11 +590,6 @@ public class PageDrawer extends PDFStreamEngine
             else if (font instanceof PDType0Font)
             {
                 PDType0Font type0Font = (PDType0Font) font;
-                CMap toUnicodeCMap = null;
-                if (type0Font.hasToUnicode())
-                {
-                    toUnicodeCMap = type0Font.getToUnicodeCMap();
-                }
                 if (type0Font.getDescendantFont() instanceof PDCIDFontType2Font)
                 {
                     // a CIDFontType2Font contains TTF font
@@ -613,12 +601,12 @@ public class PageDrawer extends PDFStreamEngine
                         if (cidType2Font.hasCIDToGIDMap())
                         {
                             glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
-                                    toUnicodeCMap, cidType2Font.getCID2GID());
+                                    font.getFontEncoding(), cidType2Font.getCID2GID());
                         }
                         else
                         {
                             glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
-                                    toUnicodeCMap);
+                                    font.getFontEncoding(), type0Font.getCMap());
                         }
                     }
                 }
