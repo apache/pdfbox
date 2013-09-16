@@ -360,6 +360,11 @@ public class PDDocument implements Closeable
 
         List<PDField> fields = acroForm.getFields();
         PDSignatureField signatureField = null;
+        if(fields == null) 
+        {
+            fields = new ArrayList();
+            acroForm.setFields(fields);
+        }
         for (PDField pdField : fields)
         {
             if (pdField instanceof PDSignatureField)
