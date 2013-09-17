@@ -38,6 +38,7 @@ import javax.crypto.SecretKey;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DEROutputStream;
@@ -400,7 +401,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
         AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(new DERObjectIdentifier(s), derobject);
         EncryptedContentInfo encryptedcontentinfo =
             new EncryptedContentInfo(PKCSObjectIdentifiers.data, algorithmidentifier, deroctetstring);
-        EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, null);
+        EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, (ASN1Set) null);
         ContentInfo contentinfo =
             new ContentInfo(PKCSObjectIdentifiers.envelopedData, env);
         return contentinfo.toASN1Primitive();
