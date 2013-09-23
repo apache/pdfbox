@@ -113,8 +113,8 @@ public class PageDrawer extends PDFStreamEngine
 
     private GeneralPath linePath = new GeneralPath();
 
-    private HashMap<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
-    private HashMap<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
+    private Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+    private Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
 
     /**
      * Default constructor, loads properties from file.
@@ -299,13 +299,13 @@ public class PageDrawer extends PDFStreamEngine
                 if (glyph2D != null)
                 {
                     // Let PDFBox render the font if supported
-                    drawGlyph2D(glyph2D, text.getCodePoints(), graphics, at, x, y);
+                    drawGlyph2D(glyph2D, text.getCodePoints(), at, x, y);
                 }
                 else
                 {
                     // Use AWT to render the font (Type1 fonts, standard14 fonts, if the embedded font is substituted)
                     // TODO to be removed in the long run?
-                    drawString((PDSimpleFont) font, text.getCharacter(), text.getCodePoints(), graphics, at, x, y);
+                    drawString((PDSimpleFont) font, text.getCharacter(), at, x, y);
                 }
             }
         }
@@ -320,13 +320,12 @@ public class PageDrawer extends PDFStreamEngine
      * 
      * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
      * @param codePoints the string to be rendered
-     * @param graphics the graphics object to be used for rendering
      * @param at the transformation
      * @param x the x coordinate of the text
      * @param y the y coordinate of the text
      * @throws IOException if something went wrong
      */
-    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, Graphics graphics, AffineTransform at, float x, float y)
+    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at, float x, float y)
             throws IOException
     {
         Graphics2D g2d = (Graphics2D) graphics;
@@ -412,7 +411,6 @@ public class PageDrawer extends PDFStreamEngine
      * 
      * @param font the font to be used to draw the string
      * @param string The string to draw.
-     * @param codePoints The codePoints of the given string.
      * @param g The graphics to draw onto.
      * @param at The transformation matrix with all information for scaling and shearing of the font.
      * @param x The x coordinate to draw at.
@@ -420,14 +418,13 @@ public class PageDrawer extends PDFStreamEngine
      * 
      * @throws IOException If there is an error drawing the specific string.
      */
-    private void drawString(PDSimpleFont font, String string, int[] codePoints, Graphics g, AffineTransform at,
-            float x, float y) throws IOException
+    private void drawString(PDSimpleFont font, String string, AffineTransform at, float x, float y) throws IOException
     {
         Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
 
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) graphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         writeFont(g2d, at, x, y, glyphs);
     }
@@ -486,7 +483,7 @@ public class PageDrawer extends PDFStreamEngine
             {
                 PDType1Font type1Font = (PDType1Font) font;
                 PDFontDescriptor fd = type1Font.getFontDescriptor();
-                if (fd != null && fd instanceof PDFontDescriptorDictionary)
+                if (fd instanceof PDFontDescriptorDictionary)
                 {
                     PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary) fd;
                     if (fdDictionary.getFontFile() != null)
@@ -570,7 +567,7 @@ public class PageDrawer extends PDFStreamEngine
                 TrueTypeFont ttf = ttfFont.getTTFFont();
                 if (ttf != null)
                 {
-                    glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), ttfFont.isSymbolicFont(), font.getFontEncoding());
+                    glyph2D = new TTFGlyph2D(ttf, font);
                 }
             }
             else if (font instanceof PDType1Font)
@@ -598,16 +595,7 @@ public class PageDrawer extends PDFStreamEngine
                     TrueTypeFont ttf = cidType2Font.getTTFFont();
                     if (ttf != null)
                     {
-                        if (cidType2Font.hasCIDToGIDMap())
-                        {
-                            glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
-                                    font.getFontEncoding(), cidType2Font.getCID2GID());
-                        }
-                        else
-                        {
-                            glyph2D = new TTFGlyph2D(ttf, font.getBaseFont(), cidType2Font.isSymbolicFont(),
-                                    font.getFontEncoding(), type0Font.getCMap());
-                        }
+                        glyph2D = new TTFGlyph2D(ttf, font, cidType2Font);
                     }
                 }
                 else if (type0Font.getDescendantFont() instanceof PDCIDFontType0Font)
