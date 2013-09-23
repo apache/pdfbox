@@ -44,6 +44,7 @@ public class PDCIDFontType2Font extends PDCIDFont
     private static final Log LOG = LogFactory.getLog(PDCIDFontType2Font.class);
 
     private Boolean hasCIDToGIDMap = null;
+    private Boolean hasIdentityCIDToGIDMap = null;
     private int[] cid2gid = null;
 
     /**
@@ -113,6 +114,28 @@ public class PDCIDFontType2Font extends PDCIDFont
             }
         }
         return hasCIDToGIDMap.booleanValue();
+    }
+
+    /**
+     * Indicates if this font has an identity CIDToGIDMap.
+     * 
+     * @return returns true if the font has an identity CIDToGIDMap.
+     */
+    public boolean hasIdentityCIDToGIDMap()
+    {
+        if (hasIdentityCIDToGIDMap == null)
+        {
+            COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+            if (map != null && map instanceof COSName)
+            {
+                hasIdentityCIDToGIDMap = Boolean.TRUE;
+            }
+            else
+            {
+                hasIdentityCIDToGIDMap = Boolean.FALSE;
+            }
+        }
+        return hasIdentityCIDToGIDMap.booleanValue();
     }
 
     /**
