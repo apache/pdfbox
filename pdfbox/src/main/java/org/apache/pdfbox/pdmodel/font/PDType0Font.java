@@ -75,28 +75,18 @@ public class PDType0Font extends PDSimpleFont
     }
 
     /**
-     * This will get the fonts bounding box.
-     * 
-     * @return The fonts bounding box.
-     * 
-     * @throws IOException If there is an error getting the bounding box.
+     * {@inheritDoc}
      */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
         throw new RuntimeException("Not yet implemented");
     }
 
     /**
-     * This will get the font width for a character.
-     * 
-     * @param c The character code to get the width for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     * 
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
-     * @throws IOException If an error occurs while parsing.
+     * {@inheritDoc}
      */
+    @Override
     public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
         if (descendantFont instanceof PDCIDFontType2Font)
@@ -104,13 +94,9 @@ public class PDType0Font extends PDSimpleFont
             // a suitable mapping is needed to address the correct width value
             PDCIDFontType2Font cidType2Font = (PDCIDFontType2Font) descendantFont;
             int code = getCodeFromArray(c, offset, length);
-            if (cidType2Font.hasIdentityCIDToGIDMap())
+            if (cidType2Font.hasIdentityCIDToGIDMap() || cidType2Font.hasCIDToGIDMap())
             {
                 return cidType2Font.getFontWidth(code);
-            }
-            else if (cidType2Font.hasCIDToGIDMap() && cidType2Font.mapCIDToGID(code) > -1)
-            {
-                return getFontWidth(cidType2Font.mapCIDToGID(code));
             }
             else if (getCMap() != null)
             {
@@ -125,28 +111,18 @@ public class PDType0Font extends PDSimpleFont
     }
 
     /**
-     * This will get the font height for a character.
-     * 
-     * @param c The character code to get the height for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     * 
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
-     * @throws IOException If an error occurs while parsing.
+     * {@inheritDoc}
      */
+    @Override
     public float getFontHeight(byte[] c, int offset, int length) throws IOException
     {
         return descendantFont.getFontHeight(c, offset, length);
     }
 
     /**
-     * This will get the average font width for all characters.
-     * 
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
-     * @throws IOException If an error occurs while parsing.
+     * {@inheritDoc}
      */
+    @Override
     public float getAverageFontWidth() throws IOException
     {
         return descendantFont.getAverageFontWidth();
@@ -164,11 +140,15 @@ public class PDType0Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
+    @Override
     public float getFontWidth(int charCode)
     {
         return descendantFont.getFontWidth(charCode);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
