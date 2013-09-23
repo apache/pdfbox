@@ -77,6 +77,7 @@ public class TTFGlyph2D implements Glyph2D
     private Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
     private Encoding fontEncoding = null;
     private CMap fontCMap = null;
+    private boolean isCIDFont = false;
     private boolean hasIdentityCIDMapping = false;
     private boolean hasCID2GIDMapping = false;
     private boolean hasTwoByteMappings = false;
@@ -163,6 +164,7 @@ public class TTFGlyph2D implements Glyph2D
         fontEncoding = pdFont.getFontEncoding();
         if (descFont != null)
         {
+            isCIDFont = true;
             descendantFont = descFont;
             hasIdentityCIDMapping = descendantFont.hasIdentityCIDToGIDMap();
             hasCID2GIDMapping = descendantFont.hasCIDToGIDMap();
@@ -232,15 +234,9 @@ public class TTFGlyph2D implements Glyph2D
      */
     private int getGlyphcode(int code)
     {
-        if (hasIdentityCIDMapping)
+        if (isCIDFont)
         {
-            // identity mapping
-            return code;
-        }
-        if (hasCID2GIDMapping)
-        {
-            // use the provided CID2GID mapping
-            return descendantFont.mapCIDToGID(code);
+            return getGID(code);
         }
 
         int result = 0;
@@ -305,6 +301,35 @@ public class TTFGlyph2D implements Glyph2D
             }
         }
         return result;
+    }
+
+    /**
+     * Get the GID for the given CIDFont.
+     * 
+     * @param code the given CID
+     * @return the mapped GID
+     */
+    private int getGID(int code)
+    {
+        if (hasIdentityCIDMapping)
+        {
+            // identity mapping
+            return code;
+        }
+        if (hasCID2GIDMapping)
+        {
+            // use the provided CID2GID mapping
+            return descendantFont.mapCIDToGID(code);
+        }
+        if (fontCMap != null)
+        {
+            String string = fontCMap.lookup(code, hasTwoByteMappings ? 2 : 1);
+            if (string != null)
+            {
+                return string.codePointAt(0);
+            }
+        }
+        return code;
     }
 
     /**
