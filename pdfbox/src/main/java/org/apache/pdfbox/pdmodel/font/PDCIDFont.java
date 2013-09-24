@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.encoding.conversion.CMapSubstitution;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -36,18 +34,18 @@ import org.apache.pdfbox.util.ResourceLoader;
  * This is implementation for the CIDFontType0/CIDFontType2 Fonts.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.11 $
+ * 
  */
 public abstract class PDCIDFont extends PDSimpleFont
 {
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDCIDFont.class);
+    private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
 
-    private Map<Integer,Float> widthCache = null;
+    private Map<Integer, Float> widthCache = null;
     private long defaultWidth = 0;
-    
+
     /**
      * Constructor.
      */
@@ -61,22 +59,23 @@ public abstract class PDCIDFont extends PDSimpleFont
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDCIDFont( COSDictionary fontDictionary )
+    public PDCIDFont(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
+        super(fontDictionary);
         extractWidths();
     }
 
     /**
-     * This will get the fonts bouding box.
+     * This will get the fonts bounding box.
      *
-     * @return The fonts bouding box.
+     * @return The fonts bounding box.
      *
      * @throws IOException If there is an error getting the font bounding box.
      */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
-        throw new RuntimeException( "getFontBoundingBox(): Not yet implemented" );
+        throw new RuntimeException("getFontBoundingBox(): Not yet implemented");
     }
 
     /**
@@ -86,10 +85,10 @@ public abstract class PDCIDFont extends PDSimpleFont
      */
     public long getDefaultWidth()
     {
-        if (defaultWidth == 0) 
+        if (defaultWidth == 0)
         {
-            COSNumber number = (COSNumber)font.getDictionaryObject( COSName.DW);
-            if( number != null )
+            COSNumber number = (COSNumber) font.getDictionaryObject(COSName.DW);
+            if (number != null)
             {
                 defaultWidth = number.intValue();
             }
@@ -106,10 +105,10 @@ public abstract class PDCIDFont extends PDSimpleFont
      *
      * @param dw The default width.
      */
-    public void setDefaultWidth( long dw )
+    public void setDefaultWidth(long dw)
     {
         defaultWidth = dw;
-        font.setLong( COSName.DW, dw );
+        font.setLong(COSName.DW, dw);
     }
 
     /**
@@ -123,60 +122,63 @@ public abstract class PDCIDFont extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
-    public float getFontWidth( byte[] c, int offset, int length ) throws IOException
+    @Override
+    public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
 
         float retval = getDefaultWidth();
-        int code = getCodeFromArray( c, offset, length );
+        int code = getCodeFromArray(c, offset, length);
 
-        Float widthFloat = widthCache.get( code );
-        if( widthFloat != null )
+        Float widthFloat = widthCache.get(code);
+        if (widthFloat != null)
         {
             retval = widthFloat.floatValue();
         }
         return retval;
     }
 
-    private void extractWidths() 
+    private void extractWidths()
     {
-        if (widthCache == null) 
+        if (widthCache == null)
         {
-            widthCache = new HashMap<Integer,Float>();
-            COSArray widths = (COSArray)font.getDictionaryObject( COSName.W );
-            if( widths != null )
+            widthCache = new HashMap<Integer, Float>();
+            COSArray widths = (COSArray) font.getDictionaryObject(COSName.W);
+            if (widths != null)
             {
                 int size = widths.size();
                 int counter = 0;
-                while (counter < size) 
+                while (counter < size)
                 {
-                    COSNumber firstCode = (COSNumber)widths.getObject( counter++ );
-                    COSBase next = widths.getObject( counter++ );
-                    if( next instanceof COSArray )
+                    COSNumber firstCode = (COSNumber) widths.getObject(counter++);
+                    COSBase next = widths.getObject(counter++);
+                    if (next instanceof COSArray)
                     {
-                        COSArray array = (COSArray)next;
+                        COSArray array = (COSArray) next;
                         int startRange = firstCode.intValue();
                         int arraySize = array.size();
-                        for (int i=0; i<arraySize; i++) 
+                        for (int i = 0; i < arraySize; i++)
                         {
-                            COSNumber width = (COSNumber)array.get(i);
-                            widthCache.put(startRange+i, width.floatValue());
+                            COSNumber width = (COSNumber) array.get(i);
+                            widthCache.put(startRange + i, width.floatValue());
                         }
                     }
                     else
                     {
-                        COSNumber secondCode = (COSNumber)next;
-                        COSNumber rangeWidth = (COSNumber)widths.getObject( counter++ );
+                        COSNumber secondCode = (COSNumber) next;
+                        COSNumber rangeWidth = (COSNumber) widths.getObject(counter++);
                         int startRange = firstCode.intValue();
                         int endRange = secondCode.intValue();
                         float width = rangeWidth.floatValue();
-                        for (int i=startRange; i<=endRange; i++) {
-                            widthCache.put(i,width);
+                        for (int i = startRange; i <= endRange; i++)
+                        {
+                            widthCache.put(i, width);
                         }
                     }
                 }
             }
         }
     }
+
     /**
      * This will get the font height for a character.
      *
@@ -188,22 +190,23 @@ public abstract class PDCIDFont extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
-    public float getFontHeight( byte[] c, int offset, int length ) throws IOException
+    @Override
+    public float getFontHeight(byte[] c, int offset, int length) throws IOException
     {
         float retval = 0;
         PDFontDescriptor desc = getFontDescriptor();
         float xHeight = desc.getXHeight();
         float capHeight = desc.getCapHeight();
-        if( xHeight != 0f && capHeight != 0 )
+        if (xHeight != 0f && capHeight != 0)
         {
-            //do an average of these two.  Can we do better???
-            retval = (xHeight + capHeight)/2f;
+            // do an average of these two. Can we do better???
+            retval = (xHeight + capHeight) / 2f;
         }
-        else if( xHeight != 0 )
+        else if (xHeight != 0)
         {
             retval = xHeight;
         }
-        else if( capHeight != 0 )
+        else if (capHeight != 0)
         {
             retval = capHeight;
         }
@@ -211,7 +214,7 @@ public abstract class PDCIDFont extends PDSimpleFont
         {
             retval = 0;
         }
-        if( retval == 0 )
+        if (retval == 0)
         {
             retval = desc.getAscent();
         }
@@ -225,34 +228,34 @@ public abstract class PDCIDFont extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
+    @Override
     public float getAverageFontWidth() throws IOException
     {
         float totalWidths = 0.0f;
         float characterCount = 0.0f;
-        float defaultWidth = getDefaultWidth();
-        COSArray widths = (COSArray)font.getDictionaryObject( COSName.W );
+        COSArray widths = (COSArray) font.getDictionaryObject(COSName.W);
 
-        if( widths != null )
+        if (widths != null)
         {
-            for( int i=0; i<widths.size(); i++ )
+            for (int i = 0; i < widths.size(); i++)
             {
-                COSNumber firstCode = (COSNumber)widths.getObject( i++ );
-                COSBase next = widths.getObject( i );
-                if( next instanceof COSArray )
+                COSNumber firstCode = (COSNumber) widths.getObject(i++);
+                COSBase next = widths.getObject(i);
+                if (next instanceof COSArray)
                 {
-                    COSArray array = (COSArray)next;
-                    for( int j=0; j<array.size(); j++ )
+                    COSArray array = (COSArray) next;
+                    for (int j = 0; j < array.size(); j++)
                     {
-                        COSNumber width = (COSNumber)array.get( j );
-                        totalWidths+=width.floatValue();
+                        COSNumber width = (COSNumber) array.get(j);
+                        totalWidths += width.floatValue();
                         characterCount += 1;
                     }
                 }
                 else
                 {
                     i++;
-                    COSNumber rangeWidth = (COSNumber)widths.getObject( i );
-                    if( rangeWidth.floatValue() > 0 )
+                    COSNumber rangeWidth = (COSNumber) widths.getObject(i);
+                    if (rangeWidth.floatValue() > 0)
                     {
                         totalWidths += rangeWidth.floatValue();
                         characterCount += 1;
@@ -261,20 +264,21 @@ public abstract class PDCIDFont extends PDSimpleFont
             }
         }
         float average = totalWidths / characterCount;
-        if( average <= 0 )
+        if (average <= 0)
         {
-            average = defaultWidth;
+            average = getDefaultWidth();
         }
         return average;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public float getFontWidth( int charCode ) 
+    @Override
+    public float getFontWidth(int charCode)
     {
-        float width = -1;
-        if (widthCache.containsKey(charCode)) 
+        float width = getDefaultWidth();
+        if (widthCache.containsKey(charCode))
         {
             width = widthCache.get(charCode);
         }
@@ -287,23 +291,23 @@ public abstract class PDCIDFont extends PDSimpleFont
      */
     private String getCIDSystemInfo()
     {
-        String cidSystemInfo = null; 
-        COSDictionary cidsysteminfo = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (cidsysteminfo != null) 
+        String cidSystemInfo = null;
+        COSDictionary cidsysteminfo = (COSDictionary) font.getDictionaryObject(COSName.CIDSYSTEMINFO);
+        if (cidsysteminfo != null)
         {
             String ordering = cidsysteminfo.getString(COSName.ORDERING);
             String registry = cidsysteminfo.getString(COSName.REGISTRY);
             int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
-            cidSystemInfo = registry + "-" + ordering+ "-" + supplement;
+            cidSystemInfo = registry + "-" + ordering + "-" + supplement;
         }
         return cidSystemInfo;
     }
-    
+
     @Override
     protected void determineEncoding()
     {
         String cidSystemInfo = getCIDSystemInfo();
-        if (cidSystemInfo != null) 
+        if (cidSystemInfo != null)
         {
             if (cidSystemInfo.contains("Identity"))
             {
@@ -315,22 +319,23 @@ public abstract class PDCIDFont extends PDSimpleFont
             }
             else
             {
-                cidSystemInfo = cidSystemInfo.substring(0,cidSystemInfo.lastIndexOf("-"))+"-UCS2";
+                cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf("-")) + "-UCS2";
             }
-            cmap = cmapObjects.get( cidSystemInfo );
+            cmap = cmapObjects.get(cidSystemInfo);
             if (cmap == null)
             {
                 String resourceName = resourceRootCMAP + cidSystemInfo;
-                try {
-                    cmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
-                    if( cmap == null)
+                try
+                {
+                    cmap = parseCmap(resourceRootCMAP, ResourceLoader.loadResource(resourceName));
+                    if (cmap == null)
                     {
-                        log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'" );
+                        LOG.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
                     }
                 }
-                catch(IOException exception) 
+                catch (IOException exception)
                 {
-                    log.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo + "'" );
+                    LOG.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo + "'");
                 }
             }
         }
@@ -339,14 +344,14 @@ public abstract class PDCIDFont extends PDSimpleFont
             super.determineEncoding();
         }
     }
-    
+
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
         String result = null;
         if (cmap != null)
         {
-            result = cmapEncoding(getCodeFromArray( c, offset, length ), length, true, cmap);
+            result = cmapEncoding(getCodeFromArray(c, offset, length), length, true, cmap);
         }
         else
         {
