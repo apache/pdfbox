@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.PDPageable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * RenderUtil contains some convenience methods to print or draw a single page of a document.
+ * RenderUtil provides some convenience methods to print or draw a single page of a document.
  * 
  */
 public class RenderUtil
@@ -132,7 +132,7 @@ public class RenderUtil
         // the default size is not really good resolution,
         // so create an image that is twice the size
         // and let the client scale it down.
-        return convertToImage(page, BufferedImage.TYPE_USHORT_565_RGB, 2 * PDPage.DEFAULT_USER_SPACE_UNIT_DPI);
+        return convertToImage(page, BufferedImage.TYPE_INT_RGB, 2 * PDPage.DEFAULT_USER_SPACE_UNIT_DPI);
     }
 
     /**
