@@ -20,7 +20,6 @@ package org.apache.pdfbox.pdfviewer.font;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +44,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * 
  * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
  * http://xmlgraphics.apache.org/batik/ for further details.
+ * 
  */
 public class TTFGlyph2D implements Glyph2D
 {
@@ -372,7 +372,7 @@ public class TTFGlyph2D implements Glyph2D
         int i = 0;
         boolean endOfContour = true;
         Point startingPoint = null;
-        Point lastCtrlPoint = null;
+        Point offCurveStartPoint = null;
         while (i < numberOfPoints)
         {
             Point point = points[i % numberOfPoints];
@@ -388,19 +388,33 @@ public class TTFGlyph2D implements Glyph2D
                     continue;
                 }
                 // move to the starting point
-                path.moveTo(point.x, point.y);
+                moveTo(path, point);
                 endOfContour = false;
                 startingPoint = point;
+
+                offCurveStartPoint = null;
+                if (!point.onCurve && !nextPoint1.onCurve)
+                {
+                    // off curve start
+                    offCurveStartPoint = point;
+                    startingPoint = midValue(point, nextPoint1);
+                    moveTo(path, startingPoint);
+                }
+            }
+
+            if (point.onCurve)
+            {
+                offCurveStartPoint = null;
             }
             // lineTo
             if (point.onCurve && nextPoint1.onCurve)
             {
-                path.lineTo(nextPoint1.x, nextPoint1.y);
+                lineTo(path, nextPoint1);
                 i++;
                 if (point.endOfContour || nextPoint1.endOfContour)
                 {
                     endOfContour = true;
-                    path.closePath();
+                    closePath(path);
                 }
                 continue;
             }
@@ -410,65 +424,74 @@ public class TTFGlyph2D implements Glyph2D
                 if (nextPoint1.endOfContour)
                 {
                     // use the starting point as end point
-                    path.quadTo(nextPoint1.x, nextPoint1.y, startingPoint.x, startingPoint.y);
+                    quadTo(path, nextPoint1, startingPoint);
                 }
                 else
                 {
-                    path.quadTo(nextPoint1.x, nextPoint1.y, nextPoint2.x, nextPoint2.y);
+                    quadTo(path, nextPoint1, nextPoint2);
                 }
                 if (nextPoint1.endOfContour || nextPoint2.endOfContour)
                 {
                     endOfContour = true;
-                    path.closePath();
+                    closePath(path);
                 }
                 i += 2;
-                lastCtrlPoint = nextPoint1;
                 continue;
             }
+
+            // TH segment for curves that start with an off-curve point
+            if (offCurveStartPoint != null && !nextPoint1.onCurve && !nextPoint2.onCurve)
+            {
+                // interpolate endPoint
+                quadTo(path, nextPoint1, midValue(nextPoint1, nextPoint2));
+                if (point.endOfContour || nextPoint1.endOfContour || nextPoint2.endOfContour)
+                {
+                    quadTo(path, nextPoint2, midValue(nextPoint2, offCurveStartPoint));
+                    quadTo(path, offCurveStartPoint, startingPoint);
+                    endOfContour = true;
+                    i += 2;
+                    continue;
+                }
+                ++i;
+                continue;
+            }
+
             if (point.onCurve && !nextPoint1.onCurve && !nextPoint2.onCurve)
             {
                 // interpolate endPoint
-                int endPointX = midValue(nextPoint1.x, nextPoint2.x);
-                int endPointY = midValue(nextPoint1.y, nextPoint2.y);
-                path.quadTo(nextPoint1.x, nextPoint1.y, endPointX, endPointY);
+                quadTo(path, nextPoint1, midValue(nextPoint1, nextPoint2));
                 if (point.endOfContour || nextPoint1.endOfContour || nextPoint2.endOfContour)
                 {
-                    path.quadTo(nextPoint2.x, nextPoint2.y, startingPoint.x, startingPoint.y);
+                    quadTo(path, nextPoint2, startingPoint);
                     endOfContour = true;
-                    path.closePath();
+                    closePath(path);
                 }
                 i += 2;
-                lastCtrlPoint = nextPoint1;
                 continue;
             }
+
+            // TH the control point is never interpolated
             if (!point.onCurve && !nextPoint1.onCurve)
             {
-                Point2D lastEndPoint = path.getCurrentPoint();
-                // calculate new control point using the previous control point
-                lastCtrlPoint = new Point(midValue(lastCtrlPoint.x, (int) lastEndPoint.getX()), midValue(
-                        lastCtrlPoint.y, (int) lastEndPoint.getY()));
-                // interpolate endPoint
-                int endPointX = midValue((int) lastEndPoint.getX(), nextPoint1.x);
-                int endPointY = midValue((int) lastEndPoint.getY(), nextPoint1.y);
-                path.quadTo(lastCtrlPoint.x, lastCtrlPoint.y, endPointX, endPointY);
+                quadTo(path, point, midValue(point, nextPoint1));
                 if (point.endOfContour || nextPoint1.endOfContour)
                 {
                     endOfContour = true;
-                    path.closePath();
+                    quadTo(path, nextPoint1, startingPoint);
                 }
                 i++;
                 continue;
             }
+
             if (!point.onCurve && nextPoint1.onCurve)
             {
-                path.quadTo(point.x, point.y, nextPoint1.x, nextPoint1.y);
+                quadTo(path, point, nextPoint1);
                 if (point.endOfContour || nextPoint1.endOfContour)
                 {
                     endOfContour = true;
-                    path.closePath();
+                    closePath(path);
                 }
                 i++;
-                lastCtrlPoint = point;
                 continue;
             }
             LOG.error("Unknown glyph command!!");
@@ -477,9 +500,38 @@ public class TTFGlyph2D implements Glyph2D
         return path;
     }
 
+    private void closePath(GeneralPath path)
+    {
+        path.closePath();
+        LOG.debug("closePath");
+    }
+
+    private void moveTo(GeneralPath path, Point point)
+    {
+        path.moveTo(point.x, point.y);
+        LOG.debug("moveTo: " + String.format("%d,%d", point.x, point.y));
+    }
+
+    private void lineTo(GeneralPath path, Point point)
+    {
+        path.lineTo(point.x, point.y);
+        LOG.debug("lineTo: " + String.format("%d,%d", point.x, point.y));
+    }
+
+    private void quadTo(GeneralPath path, Point ctrlPoint, Point point)
+    {
+        path.quadTo(ctrlPoint.x, ctrlPoint.y, point.x, point.y);
+        LOG.debug("quadTo: " + String.format("%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y, point.x, point.y));
+    }
+
     private int midValue(int a, int b)
     {
         return a + (b - a) / 2;
+    }
+
+    private Point midValue(Point point1, Point point2)
+    {
+        return new Point(midValue(point1.x, point2.x), midValue(point1.y, point2.y));
     }
 
     /**
@@ -505,6 +557,13 @@ public class TTFGlyph2D implements Glyph2D
         public Point(int xValue, int yValue)
         {
             this(xValue, yValue, false, false);
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("Point(%d,%d,%s,%s)", x, y, onCurve ? "onCurve" : "",
+                    endOfContour ? "endOfContour" : "");
         }
     }
 
