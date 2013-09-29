@@ -20,11 +20,11 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -39,7 +39,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -48,13 +47,11 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.ImageIOUtil;
 
-
-
 /**
  * This class contains a PixelMap Image.
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author mathiak
- * @version $Revision: 1.10 $
+ * 
  */
 public class PDPixelMap extends PDXObjectImage
 {
@@ -87,7 +84,7 @@ public class PDPixelMap extends PDXObjectImage
      */
     public PDPixelMap(PDDocument doc, BufferedImage bi) throws IOException
     {
-        super( doc, PNG);
+        super(doc, PNG);
         createImageStream(doc, bi);
     }
 
@@ -101,8 +98,8 @@ public class PDPixelMap extends PDXObjectImage
         {
             // extract the alpha information
             WritableRaster alphaRaster = bi.getAlphaRaster();
-            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), 
-                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), false, false,
+                    Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
             alphaImage = new BufferedImage(cm, alphaRaster, false, null);
             // create a RGB image without alpha
             rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
@@ -120,13 +117,13 @@ public class PDPixelMap extends PDXObjectImage
             int numberOfComponents = rgbImage.getColorModel().getNumComponents();
             if (numberOfComponents == 3)
             {
-                setColorSpace( PDDeviceRGB.INSTANCE );
+                setColorSpace(PDDeviceRGB.INSTANCE);
             }
             else
             {
                 if (numberOfComponents == 1)
                 {
-                    setColorSpace( new PDDeviceGray() );
+                    setColorSpace(new PDDeviceGray());
                 }
                 else
                 {
@@ -139,19 +136,19 @@ public class PDPixelMap extends PDXObjectImage
             getPDStream().addCompression();
             os = getCOSStream().createUnfilteredStream();
             os.write(outData);
-            
+
             COSDictionary dic = getCOSStream();
-            dic.setItem( COSName.FILTER, COSName.FLATE_DECODE );
-            dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-            dic.setItem( COSName.TYPE, COSName.XOBJECT );
-            if(alphaImage != null)
+            dic.setItem(COSName.FILTER, COSName.FLATE_DECODE);
+            dic.setItem(COSName.SUBTYPE, COSName.IMAGE);
+            dic.setItem(COSName.TYPE, COSName.XOBJECT);
+            if (alphaImage != null)
             {
                 PDPixelMap smask = new PDPixelMap(doc, alphaImage);
                 dic.setItem(COSName.SMASK, smask);
             }
-            setBitsPerComponent( 8 );
-            setHeight( height );
-            setWidth( width );
+            setBitsPerComponent(8);
+            setHeight(height);
+            setWidth(width);
         }
         finally
         {
@@ -161,6 +158,7 @@ public class PDPixelMap extends PDXObjectImage
             }
         }
     }
+
     /**
      * Returns a {@link java.awt.image.BufferedImage} of the COSStream
      * set in the constructor or null if the COSStream could not be encoded.
@@ -171,11 +169,10 @@ public class PDPixelMap extends PDXObjectImage
      */
     public BufferedImage getRGBImage() throws IOException
     {
-        if( image != null )
+        if (image != null)
         {
             return image;
         }
-
         try
         {
             int width = getWidth();
@@ -199,11 +196,11 @@ public class PDPixelMap extends PDXObjectImage
             ColorModel cm = null;
             if (colorspace instanceof PDIndexed)
             {
-                PDIndexed csIndexed = (PDIndexed)colorspace;
+                PDIndexed csIndexed = (PDIndexed) colorspace;
                 COSBase maskArray = getMask();
                 if (maskArray != null && maskArray instanceof COSArray)
                 {
-                    cm = csIndexed.createColorModel(bpc, ((COSArray)maskArray).getInt(0));
+                    cm = csIndexed.createColorModel(bpc, ((COSArray) maskArray).getInt(0));
                 }
                 else
                 {
@@ -212,7 +209,7 @@ public class PDPixelMap extends PDXObjectImage
             }
             else if (colorspace instanceof PDSeparation)
             {
-                PDSeparation csSeparation = (PDSeparation)colorspace;
+                PDSeparation csSeparation = (PDSeparation) colorspace;
                 int numberOfComponents = csSeparation.getAlternateColorSpace().getNumberOfComponents();
                 PDFunction tintTransformFunc = csSeparation.getTintTransform();
                 COSArray decode = getDecode();
@@ -220,38 +217,38 @@ public class PDPixelMap extends PDXObjectImage
                 // if the Decode array exists and consists of (1,0)
                 boolean invert = decode != null && decode.getInt(0) == 1;
                 // TODO add interpolation for other decode values then 1,0
-                int maxValue = (int)Math.pow(2,bpc) - 1;
+                int maxValue = (int) Math.pow(2, bpc) - 1;
                 // destination array
-                byte[] mappedData = new byte[width*height*numberOfComponents];
-                int rowLength = width*numberOfComponents;
+                byte[] mappedData = new byte[width * height * numberOfComponents];
+                int rowLength = width * numberOfComponents;
                 float[] input = new float[1];
-                for ( int i = 0; i < height; i++ )
+                for (int i = 0; i < height; i++)
                 {
-                    int rowOffset = i * rowLength; 
+                    int rowOffset = i * rowLength;
                     for (int j = 0; j < width; j++)
                     {
                         // scale tint values to a range of 0...1
-                        int value = (array[ i * width + j ] + 256) % 256;
+                        int value = (array[i * width + j] + 256) % 256;
                         if (invert)
                         {
-                            input[0] = 1-(value / maxValue);
+                            input[0] = 1 - (value / maxValue);
                         }
                         else
                         {
-                            input[0] =  value / maxValue;
+                            input[0] = value / maxValue;
                         }
                         float[] mappedColor = tintTransformFunc.eval(input);
                         int columnOffset = j * numberOfComponents;
-                        for ( int k = 0; k < numberOfComponents; k++ ) 
+                        for (int k = 0; k < numberOfComponents; k++)
                         {
-                            // redo scaling for every single color value 
+                            // redo scaling for every single color value
                             float mappedValue = mappedColor[k];
-                            mappedData[ rowOffset + columnOffset + k] = (byte)(mappedValue * maxValue);
+                            mappedData[rowOffset + columnOffset + k] = (byte) (mappedValue * maxValue);
                         }
                     }
                 }
                 array = mappedData;
-                cm = colorspace.createColorModel( bpc );
+                cm = colorspace.createColorModel(bpc);
             }
             else if (bpc == 1)
             {
@@ -263,27 +260,27 @@ public class PDPixelMap extends PDXObjectImage
                     // if the Decode array exists and consists of (1,0)
                     if (decode != null && decode.getInt(0) == 1)
                     {
-                        map = new byte[] {(byte)0xff};
+                        map = new byte[] { (byte) 0xff };
                     }
                     else
                     {
-                        map = new byte[] {(byte)0x00, (byte)0xff};
+                        map = new byte[] { (byte) 0x00, (byte) 0xff };
                     }
                 }
                 else if (colorspace instanceof PDICCBased)
                 {
-                    if ( ((PDICCBased)colorspace).getNumberOfComponents() == 1)
+                    if (((PDICCBased) colorspace).getNumberOfComponents() == 1)
                     {
-                        map = new byte[] {(byte)0xff};
+                        map = new byte[] { (byte) 0xff };
                     }
                     else
                     {
-                        map = new byte[] {(byte)0x00, (byte)0xff};
+                        map = new byte[] { (byte) 0x00, (byte) 0xff };
                     }
                 }
                 else
                 {
-                    map = new byte[] {(byte)0x00, (byte)0xff};
+                    map = new byte[] { (byte) 0x00, (byte) 0xff };
                 }
                 cm = new IndexColorModel(bpc, map.length, map, map, map, Transparency.OPAQUE);
             }
@@ -291,45 +288,43 @@ public class PDPixelMap extends PDXObjectImage
             {
                 if (colorspace instanceof PDICCBased)
                 {
-                    if (((PDICCBased)colorspace).getNumberOfComponents() == 1)
+                    if (((PDICCBased) colorspace).getNumberOfComponents() == 1)
                     {
-                        byte[] map = new byte[] {(byte)0xff};
+                        byte[] map = new byte[] { (byte) 0xff };
                         cm = new IndexColorModel(bpc, 1, map, map, map, Transparency.OPAQUE);
                     }
                     else
                     {
-                        cm = colorspace.createColorModel( bpc );
+                        cm = colorspace.createColorModel(bpc);
                     }
                 }
                 else
                 {
-                    cm = colorspace.createColorModel( bpc );
+                    cm = colorspace.createColorModel(bpc);
                 }
             }
 
             LOG.debug("ColorModel: " + cm.toString());
-            WritableRaster raster = cm.createCompatibleWritableRaster( width, height );
-            DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
+            WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
+            DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
             byte[] bufferData = buffer.getData();
 
-            System.arraycopy( array, 0,bufferData, 0,
-                    (array.length<bufferData.length?array.length: bufferData.length) );
-            image = new BufferedImage(cm, raster, false, null);
-           
-            return applyMasks(image);  
+            System.arraycopy(array, 0, bufferData, 0,
+                    (array.length < bufferData.length ? array.length : bufferData.length));
+            image = applyMasks(new BufferedImage(cm, raster, false, null));
+
+            return image;
         }
         catch (Exception exception)
         {
             LOG.error(exception, exception);
-            //A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
-            //Returning the NULL falls through to Phillip Koch's TODO section.
+            // A NULL return is caught in pagedrawer.Invoke.process() so don't re-throw.
+            // Returning the NULL falls through to Phillip Koch's TODO section.
             return null;
         }
     }
-    
- 
 
-	/**
+    /**
      * Writes the image as .png.
      *
      * {@inheritDoc}
@@ -368,7 +363,7 @@ public class PDPixelMap extends PDXObjectImage
             else if (decodeParms instanceof COSArray)
             {
                 // not implemented yet, which index should we use?
-                return null;//(COSDictionary)((COSArray)decodeParms).get(0);
+                return null;// (COSDictionary)((COSArray)decodeParms).get(0);
             }
             else
             {
