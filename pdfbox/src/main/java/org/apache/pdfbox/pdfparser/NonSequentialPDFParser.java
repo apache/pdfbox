@@ -335,6 +335,8 @@ public class NonSequentialPDFParser extends PDFParser
             // seek to xref table
             setPdfSource(prev);
 
+            // skip white spaces
+            skipSpaces();
             // -- parse xref
             if (pdfSource.peek() == 'x')
             {
