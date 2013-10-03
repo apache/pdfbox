@@ -149,6 +149,13 @@ public class PDCcitt extends PDXObjectImage
             rows = Math.max(rows, height);
         }
         boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
+        // maybe a decode array is defined
+        COSArray decode = getDecode();
+        if (decode != null && decode.getInt(0) == 1)
+        {
+            // [1.0, 0.0] -> invert the "color" values
+            blackIsOne = !blackIsOne;
+        }
         byte[] bufferData = null;
         ColorModel colorModel = null;
         PDColorSpace colorspace = getColorSpace();
@@ -177,7 +184,6 @@ public class PDCcitt extends PDXObjectImage
         bufferData = buffer.getData();
         IOUtils.populateBuffer(stream.getUnfilteredStream(), bufferData);
         BufferedImage image = new BufferedImage(colorModel, raster, false, null);
-
         if (!blackIsOne)
         {
             // Inverting the bitmap
@@ -186,7 +192,6 @@ public class PDCcitt extends PDXObjectImage
             // So a safe but slower approach was taken.
             invertBitmap(bufferData);
         }
-
         /*
          * If we have an image mask we need to add an alpha channel to the data
          */
@@ -203,7 +208,6 @@ public class PDCcitt extends PDXObjectImage
             BufferedImage indexed = new BufferedImage(cm, raster, false, null);
             image = indexed;
         }
-
         return applyMasks(image);
     }
 
