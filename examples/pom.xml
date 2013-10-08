@@ -37,6 +37,10 @@
   </description>
   <inceptionYear>2002</inceptionYear>
 
+  <properties>
+    <lucene.version>4.3.1</lucene.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
@@ -49,6 +53,21 @@
       <version>1.48</version>
       <optional>true</optional>
     </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+    </dependency>  
   </dependencies>
 
   <build>
