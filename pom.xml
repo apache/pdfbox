@@ -50,7 +50,6 @@
     <module>pdfbox</module>
     <module>preflight</module>
     <module>preflight-app</module>
-    <module>lucene</module>
     <module>ant</module>
     <module>war</module>
     <module>app</module>
