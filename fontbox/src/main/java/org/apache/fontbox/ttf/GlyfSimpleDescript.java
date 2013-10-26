@@ -21,10 +21,10 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * This class is based on code from Apache Batik a subproject of Apache XMLGraphics.
- * see http://xmlgraphics.apache.org/batik/ for further details.
+ * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
+ * http://xmlgraphics.apache.org/batik/ for further details.
  */
-public class GlyfSimpleDescript extends GlyfDescript 
+public class GlyfSimpleDescript extends GlyfDescript
 {
 
     private int[] endPtsOfContours;
@@ -38,18 +38,18 @@ public class GlyfSimpleDescript extends GlyfDescript
      * 
      * @param numberOfContours number of contours
      * @param bais the stream to be read
-     * @throws IOException is thrown if something went wrong 
+     * @throws IOException is thrown if something went wrong
      */
     public GlyfSimpleDescript(short numberOfContours, TTFDataStream bais) throws IOException
     {
         super(numberOfContours, bais);
-        
-        /* https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html
-         * "If a glyph has zero contours, it need not have any glyph data."
-         * set the pointCount to zero to initialize attributes and avoid nullpointer but 
-         * maybe there shouldn't have GlyphDescript in the GlyphData?
+
+        /*
+         * https://developer.apple.com/fonts/TTRefMan/RM06/Chap6glyf.html
+         * "If a glyph has zero contours, it need not have any glyph data." set the pointCount to zero to initialize
+         * attributes and avoid nullpointer but maybe there shouldn't have GlyphDescript in the GlyphData?
          */
-        if (numberOfContours == 0) 
+        if (numberOfContours == 0)
         {
             pointCount = 0;
             return;
@@ -60,8 +60,8 @@ public class GlyfSimpleDescript extends GlyfDescript
         endPtsOfContours = bais.readUnsignedShortArray(numberOfContours);
 
         // The last end point index reveals the total number of points
-        pointCount = endPtsOfContours[numberOfContours -1] + 1;   
-        
+        pointCount = endPtsOfContours[numberOfContours - 1] + 1;
+
         flags = new byte[pointCount];
         xCoordinates = new short[pointCount];
         yCoordinates = new short[pointCount];
@@ -75,7 +75,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public int getEndPtOfContours(int i) 
+    public int getEndPtOfContours(int i)
     {
         return endPtsOfContours[i];
     }
@@ -83,7 +83,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public byte getFlags(int i) 
+    public byte getFlags(int i)
     {
         return flags[i];
     }
@@ -91,7 +91,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public short getXCoordinate(int i) 
+    public short getXCoordinate(int i)
     {
         return xCoordinates[i];
     }
@@ -99,7 +99,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public short getYCoordinate(int i) 
+    public short getYCoordinate(int i)
     {
         return yCoordinates[i];
     }
@@ -107,7 +107,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public boolean isComposite() 
+    public boolean isComposite()
     {
         return false;
     }
@@ -115,7 +115,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
-    public int getPointCount() 
+    public int getPointCount()
     {
         return pointCount;
     }
@@ -127,22 +127,22 @@ public class GlyfSimpleDescript extends GlyfDescript
     {
         short x = 0;
         short y = 0;
-        for (int i = 0; i < count; i++) 
+        for (int i = 0; i < count; i++)
         {
-            if ((flags[i] & X_DUAL) != 0) 
+            if ((flags[i] & X_DUAL) != 0)
             {
-                if ((flags[i] & X_SHORT_VECTOR) != 0) 
+                if ((flags[i] & X_SHORT_VECTOR) != 0)
                 {
-                    x += (short) bais.read();
+                    x += (short) bais.readUnsignedByte();
                 }
-            } 
-            else 
+            }
+            else
             {
-                if ((flags[i] & X_SHORT_VECTOR) != 0) 
+                if ((flags[i] & X_SHORT_VECTOR) != 0)
                 {
-                    x += (short) -((short) bais.read());
-                } 
-                else 
+                    x += (short) -((short) bais.readUnsignedByte());
+                }
+                else
                 {
                     x += bais.readSignedShort();
                 }
@@ -150,22 +150,22 @@ public class GlyfSimpleDescript extends GlyfDescript
             xCoordinates[i] = x;
         }
 
-        for (int i = 0; i < count; i++) 
+        for (int i = 0; i < count; i++)
         {
-            if ((flags[i] & Y_DUAL) != 0) 
+            if ((flags[i] & Y_DUAL) != 0)
             {
-                if ((flags[i] & Y_SHORT_VECTOR) != 0) 
+                if ((flags[i] & Y_SHORT_VECTOR) != 0)
                 {
-                    y += (short) bais.read();
+                    y += (short) bais.readUnsignedByte();
                 }
-            } 
-            else 
+            }
+            else
             {
-                if ((flags[i] & Y_SHORT_VECTOR) != 0) 
+                if ((flags[i] & Y_SHORT_VECTOR) != 0)
                 {
-                    y += (short) -((short) bais.read());
-                } 
-                else 
+                    y += (short) -((short) bais.readUnsignedByte());
+                }
+                else
                 {
                     y += bais.readSignedShort();
                 }
@@ -179,25 +179,26 @@ public class GlyfSimpleDescript extends GlyfDescript
      */
     private void readFlags(int flagCount, TTFDataStream bais) throws IOException
     {
-        try 
+        try
         {
-            for (int index = 0; index < flagCount; index++) 
+            for (int index = 0; index < flagCount; index++)
             {
-                flags[index] = (byte) bais.read();
-                if ((flags[index] & REPEAT) != 0) 
+                flags[index] = (byte) bais.readUnsignedByte();
+                if ((flags[index] & REPEAT) != 0)
                 {
-                    int repeats = bais.read();
-                    for (int i = 1; i <= repeats; i++) 
+                    int repeats = bais.readUnsignedByte();
+                    for (int i = 1; i <= repeats; i++)
                     {
                         flags[index + i] = flags[index];
                     }
                     index += repeats;
                 }
             }
-        } 
-        catch (ArrayIndexOutOfBoundsException e) 
+        }
+        catch (ArrayIndexOutOfBoundsException e)
         {
             System.out.println("error: array index out of bounds");
         }
     }
+
 }
