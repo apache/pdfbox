@@ -55,11 +55,6 @@ public class TTFGlyph2D implements Glyph2D
     private static final Log LOG = LogFactory.getLog(TTFGlyph2D.class);
 
     /**
-     * Default scaling value.
-     */
-    private static final float DEFAULT_SCALING = 0.001f;
-
-    /**
      * Start of coderanges.
      */
     private static final int START_RANGE_F000 = 0xF000;
@@ -69,7 +64,8 @@ public class TTFGlyph2D implements Glyph2D
     private TrueTypeFont font;
     private PDCIDFontType2Font descendantFont;
     private String name;
-    private float scale;
+    private float scale = 1.0f;
+    private boolean hasScaling = false;
     private CMAPEncodingEntry cmapWinUnicode = null;
     private CMAPEncodingEntry cmapWinSymbol = null;
     private CMAPEncodingEntry cmapMacintoshSymbol = null;
@@ -105,13 +101,12 @@ public class TTFGlyph2D implements Glyph2D
         font = trueTypeFont;
         // get units per em, which is used as scaling factor
         HeaderTable header = font.getHeader();
-        if (header != null)
+        if (header != null && header.getUnitsPerEm() != 1000)
         {
-            scale = 1f / header.getUnitsPerEm();
-        }
-        else
-        {
-            scale = DEFAULT_SCALING;
+            // in most case the scaling factor is set to 1.0f
+            // due to the fact that units per em is set to 1000
+            scale = 1000f / header.getUnitsPerEm();
+            hasScaling = true;
         }
         extractCMaps();
         extractFontSpecifics(pdFont, descFont);
@@ -191,7 +186,7 @@ public class TTFGlyph2D implements Glyph2D
             {
                 endPtIndex++;
             }
-            points[i] = new Point(gd.getXCoordinate(i), -gd.getYCoordinate(i),
+            points[i] = new Point(gd.getXCoordinate(i), gd.getYCoordinate(i),
                     (gd.getFlags(i) & GlyfDescript.ON_CURVE) != 0, endPt);
         }
         return points;
@@ -217,8 +212,11 @@ public class TTFGlyph2D implements Glyph2D
                 GlyphDescription gd = glyph.getDescription();
                 Point[] points = describe(gd);
                 glyphPath = calculatePath(points);
-                AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
-                glyphPath.transform(atScale);
+                if (hasScaling)
+                {
+                    AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
+                    glyphPath.transform(atScale);
+                }
                 glyphs.put(glyphId, glyphPath);
             }
             else

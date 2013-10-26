@@ -18,10 +18,7 @@
  */
 package org.apache.pdfbox.pdfviewer.font;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +43,6 @@ public class CFFGlyph2D implements Glyph2D
      */
     private static final Log LOG = LogFactory.getLog(CFFGlyph2D.class);
 
-    private float scale = 0.001f;
     private HashMap<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
     private HashMap<Integer, Integer> codeToGlyph = new HashMap<Integer, Integer>();
     private String fontname = null;
@@ -81,9 +77,7 @@ public class CFFGlyph2D implements Glyph2D
             }
             if (glyph != null)
             {
-                AffineTransform atPath = AffineTransform.getScaleInstance(scale, scale);
-                glyph.transform(atPath);
-                glyphs.put(glyphId, transformGlyph(glyph));
+                glyphs.put(glyphId, glyph);
                 int code = mapping.getSID();
                 String name = mapping.getName();
                 if (nameToCode != null && nameToCode.containsKey(name))
@@ -93,48 +87,6 @@ public class CFFGlyph2D implements Glyph2D
                 codeToGlyph.put(code, glyphId);
                 glyphId++;
             }
-        }
-    }
-
-    private GeneralPath transformGlyph(GeneralPath glyph)
-    {
-        // we have to invert all y-coordinates due to the moved 0,0-reference
-        PathIterator iter = glyph.getPathIterator(null);
-        float[] currentSegment = new float[6];
-        Path2D.Float path = new Path2D.Float(iter.getWindingRule());
-        boolean glyphTransformed = false;
-        while (!iter.isDone())
-        {
-            glyphTransformed = true;
-            int type = iter.currentSegment(currentSegment);
-            switch (type)
-            {
-            case PathIterator.SEG_MOVETO:
-                path.moveTo(currentSegment[0], -currentSegment[1]);
-                break;
-            case PathIterator.SEG_LINETO:
-                path.lineTo(currentSegment[0], -currentSegment[1]);
-                break;
-            case PathIterator.SEG_QUADTO:
-                path.quadTo(currentSegment[0], -currentSegment[1], currentSegment[2], -currentSegment[3]);
-                break;
-            case PathIterator.SEG_CUBICTO:
-                path.curveTo(currentSegment[0], -currentSegment[1], currentSegment[2], -currentSegment[3],
-                        currentSegment[4], -currentSegment[5]);
-                break;
-            case PathIterator.SEG_CLOSE:
-                path.closePath();
-                break;
-            }
-            iter.next();
-        }
-        if (glyphTransformed)
-        {
-            return new GeneralPath(path);
-        }
-        else
-        {
-            return glyph;
         }
     }
 
