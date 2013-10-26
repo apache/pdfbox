@@ -17,13 +17,14 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
+
 import org.apache.fontbox.encoding.Encoding;
 
 /**
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class PostScriptTable extends TTFTable
 {
@@ -37,13 +38,12 @@ public class PostScriptTable extends TTFTable
     private long mimMemType1;
     private long maxMemType1;
     private String[] glyphNames = null;
-    
 
     /**
      * A tag that identifies this table type.
      */
     public static final String TAG = "post";
-    
+
     /**
      * This will read the required data from the stream.
      * 
@@ -51,7 +51,7 @@ public class PostScriptTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    public void initData(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         MaximumProfileTable maxp = ttf.getMaximumProfile();
         formatType = data.read32Fixed();
@@ -63,53 +63,52 @@ public class PostScriptTable extends TTFTable
         maxMemType42 = data.readUnsignedInt();
         mimMemType1 = data.readUnsignedInt();
         maxMemType1 = data.readUnsignedInt();
-        
-        if( formatType == 1.0f )
+
+        if (formatType == 1.0f)
         {
             /*
-             * This TrueType font file contains exactly the 258 glyphs in the standard 
-             * Macintosh TrueType.
+             * This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
              */
             glyphNames = new String[Encoding.NUMBER_OF_MAC_GLYPHS];
             System.arraycopy(Encoding.MAC_GLYPH_NAMES, 0, glyphNames, 0, Encoding.NUMBER_OF_MAC_GLYPHS);
         }
-        else if( formatType == 2.0f )
+        else if (formatType == 2.0f)
         {
             int numGlyphs = data.readUnsignedShort();
             int[] glyphNameIndex = new int[numGlyphs];
-            glyphNames = new String[ numGlyphs ];
+            glyphNames = new String[numGlyphs];
             int maxIndex = Integer.MIN_VALUE;
-            for( int i=0; i<numGlyphs; i++ )
+            for (int i = 0; i < numGlyphs; i++)
             {
                 int index = data.readUnsignedShort();
                 glyphNameIndex[i] = index;
                 // PDFBOX-808: Index numbers between 32768 and 65535 are
                 // reserved for future use, so we should just ignore them
-                if (index <= 32767) 
+                if (index <= 32767)
                 {
-                    maxIndex = Math.max( maxIndex, index );
+                    maxIndex = Math.max(maxIndex, index);
                 }
             }
             String[] nameArray = null;
-            if( maxIndex >= Encoding.NUMBER_OF_MAC_GLYPHS )
+            if (maxIndex >= Encoding.NUMBER_OF_MAC_GLYPHS)
             {
-                nameArray = new String[ maxIndex-Encoding.NUMBER_OF_MAC_GLYPHS +1 ];
-                for( int i=0; i<maxIndex-Encoding.NUMBER_OF_MAC_GLYPHS+1; i++ )
+                nameArray = new String[maxIndex - Encoding.NUMBER_OF_MAC_GLYPHS + 1];
+                for (int i = 0; i < maxIndex - Encoding.NUMBER_OF_MAC_GLYPHS + 1; i++)
                 {
-                    int numberOfChars = data.read();
-                    nameArray[i]=data.readString( numberOfChars );
+                    int numberOfChars = data.readUnsignedByte();
+                    nameArray[i] = data.readString(numberOfChars);
                 }
             }
-            for( int i=0; i<numGlyphs; i++ )
+            for (int i = 0; i < numGlyphs; i++)
             {
                 int index = glyphNameIndex[i];
-                if( index < Encoding.NUMBER_OF_MAC_GLYPHS )
+                if (index < Encoding.NUMBER_OF_MAC_GLYPHS)
                 {
                     glyphNames[i] = Encoding.MAC_GLYPH_NAMES[index];
                 }
-                else if( index >= Encoding.NUMBER_OF_MAC_GLYPHS && index <= 32767 )
+                else if (index >= Encoding.NUMBER_OF_MAC_GLYPHS && index <= 32767)
                 {
-                    glyphNames[i] = nameArray[index-Encoding.NUMBER_OF_MAC_GLYPHS];
+                    glyphNames[i] = nameArray[index - Encoding.NUMBER_OF_MAC_GLYPHS];
                 }
                 else
                 {
@@ -119,30 +118,31 @@ public class PostScriptTable extends TTFTable
                 }
             }
         }
-        else if( formatType == 2.5f )
+        else if (formatType == 2.5f)
         {
             int[] glyphNameIndex = new int[maxp.getNumGlyphs()];
-            for( int i=0; i<glyphNameIndex.length; i++)
+            for (int i = 0; i < glyphNameIndex.length; i++)
             {
                 int offset = data.readSignedByte();
-                glyphNameIndex[i] = i+1+offset;
+                glyphNameIndex[i] = i + 1 + offset;
             }
             glyphNames = new String[glyphNameIndex.length];
-            for( int i=0; i<glyphNames.length; i++)
+            for (int i = 0; i < glyphNames.length; i++)
             {
                 String name = Encoding.MAC_GLYPH_NAMES[glyphNameIndex[i]];
-                if( name != null )
+                if (name != null)
                 {
                     glyphNames[i] = name;
                 }
             }
-            
+
         }
-        else if( formatType == 3.0f )
+        else if (formatType == 3.0f)
         {
-            //no postscript information is provided.
+            // no postscript information is provided.
         }
     }
+
     /**
      * @return Returns the formatType.
      */
@@ -150,6 +150,7 @@ public class PostScriptTable extends TTFTable
     {
         return formatType;
     }
+
     /**
      * @param formatTypeValue The formatType to set.
      */
@@ -157,6 +158,7 @@ public class PostScriptTable extends TTFTable
     {
         this.formatType = formatTypeValue;
     }
+
     /**
      * @return Returns the isFixedPitch.
      */
@@ -164,6 +166,7 @@ public class PostScriptTable extends TTFTable
     {
         return isFixedPitch;
     }
+
     /**
      * @param isFixedPitchValue The isFixedPitch to set.
      */
@@ -171,6 +174,7 @@ public class PostScriptTable extends TTFTable
     {
         this.isFixedPitch = isFixedPitchValue;
     }
+
     /**
      * @return Returns the italicAngle.
      */
@@ -178,6 +182,7 @@ public class PostScriptTable extends TTFTable
     {
         return italicAngle;
     }
+
     /**
      * @param italicAngleValue The italicAngle to set.
      */
@@ -185,6 +190,7 @@ public class PostScriptTable extends TTFTable
     {
         this.italicAngle = italicAngleValue;
     }
+
     /**
      * @return Returns the maxMemType1.
      */
@@ -192,6 +198,7 @@ public class PostScriptTable extends TTFTable
     {
         return maxMemType1;
     }
+
     /**
      * @param maxMemType1Value The maxMemType1 to set.
      */
@@ -199,6 +206,7 @@ public class PostScriptTable extends TTFTable
     {
         this.maxMemType1 = maxMemType1Value;
     }
+
     /**
      * @return Returns the maxMemType42.
      */
@@ -206,6 +214,7 @@ public class PostScriptTable extends TTFTable
     {
         return maxMemType42;
     }
+
     /**
      * @param maxMemType42Value The maxMemType42 to set.
      */
@@ -213,6 +222,7 @@ public class PostScriptTable extends TTFTable
     {
         this.maxMemType42 = maxMemType42Value;
     }
+
     /**
      * @return Returns the mimMemType1.
      */
@@ -220,6 +230,7 @@ public class PostScriptTable extends TTFTable
     {
         return mimMemType1;
     }
+
     /**
      * @param mimMemType1Value The mimMemType1 to set.
      */
@@ -227,6 +238,7 @@ public class PostScriptTable extends TTFTable
     {
         this.mimMemType1 = mimMemType1Value;
     }
+
     /**
      * @return Returns the minMemType42.
      */
@@ -234,6 +246,7 @@ public class PostScriptTable extends TTFTable
     {
         return minMemType42;
     }
+
     /**
      * @param minMemType42Value The minMemType42 to set.
      */
@@ -241,6 +254,7 @@ public class PostScriptTable extends TTFTable
     {
         this.minMemType42 = minMemType42Value;
     }
+
     /**
      * @return Returns the underlinePosition.
      */
@@ -248,6 +262,7 @@ public class PostScriptTable extends TTFTable
     {
         return underlinePosition;
     }
+
     /**
      * @param underlinePositionValue The underlinePosition to set.
      */
@@ -255,6 +270,7 @@ public class PostScriptTable extends TTFTable
     {
         this.underlinePosition = underlinePositionValue;
     }
+
     /**
      * @return Returns the underlineThickness.
      */
@@ -262,6 +278,7 @@ public class PostScriptTable extends TTFTable
     {
         return underlineThickness;
     }
+
     /**
      * @param underlineThicknessValue The underlineThickness to set.
      */
@@ -269,6 +286,7 @@ public class PostScriptTable extends TTFTable
     {
         this.underlineThickness = underlineThicknessValue;
     }
+
     /**
      * @return Returns the glyphNames.
      */
@@ -276,6 +294,7 @@ public class PostScriptTable extends TTFTable
     {
         return glyphNames;
     }
+
     /**
      * @param glyphNamesValue The glyphNames to set.
      */
