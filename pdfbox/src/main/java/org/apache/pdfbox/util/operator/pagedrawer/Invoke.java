@@ -40,9 +40,9 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
  * Implementation of content stream operator for page drawer.
- *
+ * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * 
  */
 public class Invoke extends OperatorProcessor
 {
@@ -54,24 +54,25 @@ public class Invoke extends OperatorProcessor
 
     /**
      * process : Do : Paint the specified XObject (section 4.7).
+     * 
      * @param operator The operator that is being executed.
      * @param arguments List
      * @throws IOException If there is an error invoking the sub object.
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        PageDrawer drawer = (PageDrawer)context;
+        PageDrawer drawer = (PageDrawer) context;
         PDPage page = drawer.getPage();
-        COSName objectName = (COSName)arguments.get( 0 );
+        COSName objectName = (COSName) arguments.get(0);
         Map<String, PDXObject> xobjects = drawer.getResources().getXObjects();
-        PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
-        if ( xobject == null )
+        PDXObject xobject = (PDXObject) xobjects.get(objectName.getName());
+        if (xobject == null)
         {
-            LOG.warn("Can't find the XObject for '"+objectName.getName()+"'");
+            LOG.warn("Can't find the XObject for '" + objectName.getName() + "'");
         }
-        else if( xobject instanceof PDXObjectImage )
+        else if (xobject instanceof PDXObjectImage)
         {
-            PDXObjectImage image = (PDXObjectImage)xobject;
+            PDXObjectImage image = (PDXObjectImage) xobject;
             try
             {
                 if (image.getImageMask())
@@ -81,59 +82,46 @@ public class Invoke extends OperatorProcessor
                     image.setStencilColor(drawer.getGraphicsState().getNonStrokingColor());
                 }
                 BufferedImage awtImage = image.getRGBImage();
-                if (awtImage == null) 
+                if (awtImage == null)
                 {
                     LOG.warn("getRGBImage returned NULL");
-                    return;//TODO PKOCH
+                    return;// TODO PKOCH
                 }
                 int imageWidth = awtImage.getWidth();
                 int imageHeight = awtImage.getHeight();
-                double pageHeight = drawer.getPageSize().getHeight();
 
                 LOG.debug("imageWidth: " + imageWidth + "\t\timageHeight: " + imageHeight);
-        
+
                 Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
-                float yScaling = ctm.getYScale();
-                float angle = (float)Math.acos(ctm.getValue(0, 0)/ctm.getXScale());
-                if (ctm.getValue(0, 1) < 0 && ctm.getValue(1, 0) > 0)
-                {
-                    angle = (-1)*angle;
-                }
-                ctm.setValue(2, 1, (float)(pageHeight - ctm.getYPosition() - Math.cos(angle)*yScaling));
-                ctm.setValue(2, 0, (float)(ctm.getXPosition() - Math.sin(angle)*yScaling));
-                // because of the moved 0,0-reference, we have to shear in the opposite direction
-                ctm.setValue(0, 1, (-1)*ctm.getValue(0, 1));
-                ctm.setValue(1, 0, (-1)*ctm.getValue(1, 0));
-                AffineTransform ctmAT = ctm.createAffineTransform();
-                ctmAT.scale(1f/imageWidth, 1f/imageHeight);
-                drawer.drawImage( awtImage, ctmAT ); 
+                AffineTransform imageTransform = ctm.createAffineTransform();
+                drawer.drawImage(awtImage, imageTransform);
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 e.printStackTrace();
                 LOG.error(e, e);
             }
         }
-        else if(xobject instanceof PDXObjectForm)
+        else if (xobject instanceof PDXObjectForm)
         {
             // save the graphics state
-            context.getGraphicsStack().push( (PDGraphicsState)context.getGraphicsState().clone() );
-            
-            PDXObjectForm form = (PDXObjectForm)xobject;
+            context.getGraphicsStack().push((PDGraphicsState) context.getGraphicsState().clone());
+
+            PDXObjectForm form = (PDXObjectForm) xobject;
             COSStream formContentstream = form.getCOSStream();
             // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
             // if there is an optional form matrix, we have to map the form space to the user space
             Matrix matrix = form.getMatrix();
-            if (matrix != null) 
+            if (matrix != null)
             {
-                Matrix xobjectCTM = matrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix());
+                Matrix xobjectCTM = matrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix());
                 context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
             }
-            getContext().processSubStream( page, pdResources, formContentstream );
-            
+            getContext().processSubStream(page, pdResources, formContentstream);
+
             // restore the graphics state
-            context.setGraphicsState( (PDGraphicsState)context.getGraphicsStack().pop() );
+            context.setGraphicsState((PDGraphicsState) context.getGraphicsStack().pop());
         }
     }
 }

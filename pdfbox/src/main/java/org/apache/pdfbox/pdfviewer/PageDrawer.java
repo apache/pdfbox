@@ -142,6 +142,8 @@ public class PageDrawer extends PDFStreamEngine
         pageSize = pageDimension;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        graphics.translate(0, pageSize.height);
+        graphics.scale(1, -1);
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
         if (page.getContents() != null)
@@ -259,37 +261,16 @@ public class PageDrawer extends PDFStreamEngine
             graphics.setPaint(paint);
 
             PDFont font = text.getFont();
-            Matrix textPos = text.getTextPos().copy();
-            float x = textPos.getXPosition();
-            // the 0,0-reference has to be moved from the lower left (PDF) to the upper left (AWT-graphics)
-            float y = pageSize.height - textPos.getYPosition();
-
-            // Set translation to 0,0. We only need the scaling and shearing except for type 3 fonts
-            if (!font.isType3Font())
-            {
-                textPos.setValue(2, 0, 0);
-                textPos.setValue(2, 1, 0);
-            }
-            // because of the moved 0,0-reference, we have to shear in the opposite direction
-            textPos.setValue(0, 1, (-1) * textPos.getValue(0, 1));
-            textPos.setValue(1, 0, (-1) * textPos.getValue(1, 0));
-            AffineTransform at = textPos.createAffineTransform();
+            AffineTransform at = text.getTextPos().createAffineTransform();
             PDMatrix fontMatrix = font.getFontMatrix();
-            // Type3 fonts don't use the same units within the font matrix as all the other fonts
-            if (font.isType3Font())
-            {
-                at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
-            }
-            else
-            {
-                at.scale(fontMatrix.getValue(0, 0) * 1000f, fontMatrix.getValue(1, 1) * 1000f);
-            }
             // TODO setClip() is a massive performance hot spot. Investigate optimization possibilities
             graphics.setClip(graphicsState.getCurrentClippingPath());
 
             // use different methods to draw the string
             if (font.isType3Font())
             {
+                // Type3 fonts don't use the same units within the font matrix as all the other fonts
+                at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
                 // Type3 fonts are using streams for each character
                 drawType3String((PDType3Font) font, text.getCharacter(), at);
             }
@@ -298,14 +279,18 @@ public class PageDrawer extends PDFStreamEngine
                 Glyph2D glyph2D = createGlyph2D(font);
                 if (glyph2D != null)
                 {
+                    AffineTransform fontMatrixAT = new AffineTransform(fontMatrix.getValue(0, 0), fontMatrix.getValue(
+                            0, 1), fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1), fontMatrix.getValue(2, 0),
+                            fontMatrix.getValue(2, 1));
+                    at.concatenate(fontMatrixAT);
                     // Let PDFBox render the font if supported
-                    drawGlyph2D(glyph2D, text.getCodePoints(), at, x, y);
+                    drawGlyph2D(glyph2D, text.getCodePoints(), at);
                 }
                 else
                 {
                     // Use AWT to render the font (Type1 fonts, standard14 fonts, if the embedded font is substituted)
                     // TODO to be removed in the long run?
-                    drawString((PDSimpleFont) font, text.getCharacter(), at, x, y);
+                    drawString((PDSimpleFont) font, text.getCharacter(), at);
                 }
             }
         }
@@ -321,52 +306,36 @@ public class PageDrawer extends PDFStreamEngine
      * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
      * @param codePoints the string to be rendered
      * @param at the transformation
-     * @param x the x coordinate of the text
-     * @param y the y coordinate of the text
      * @throws IOException if something went wrong
      */
-    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at, float x, float y)
-            throws IOException
+    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at) throws IOException
     {
-        Graphics2D g2d = (Graphics2D) graphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (int i = 0; i < codePoints.length; i++)
         {
-            if (!at.isIdentity())
+            GeneralPath path = glyph2D.getPathForCharactercode(codePoints[i]);
+            if (path != null)
             {
-                try
+                AffineTransform atInverse = null;
+                if (!at.isIdentity())
                 {
-                    AffineTransform atInv = at.createInverse();
-                    // do only apply the size of the transform, rotation will be realized by rotating the graphics,
-                    // otherwise the hp printers will not render the font
-                    // apply the transformation to the graphics, which should be the same as applying the
-                    // transformation itself to the text
-                    g2d.transform(at);
-                    // translate the coordinates
-                    Point2D.Float newXy = new Point2D.Float(x, y);
-                    atInv.transform(new Point2D.Float(x, y), newXy);
-
-                    GeneralPath path = glyph2D.getPathForCharactercode(codePoints[i]);
-                    if (path != null)
+                    try
                     {
-                        g2d.translate(newXy.getX(), newXy.getY());
-                        g2d.fill(path);
-                        g2d.translate(-newXy.getX(), -newXy.getY());
+                        atInverse = at.createInverse();
                     }
-                    // restore the original transformation
-                    g2d.transform(atInv);
+                    catch (NoninvertibleTransformException exception)
+                    {
+                        LOG.error("Can't invert the given affine transformation", exception);
+                    }
                 }
-                catch (NoninvertibleTransformException e)
+                if (atInverse != null)
                 {
-                    LOG.error("Error in " + getClass().getName() + ".drawGlyph2D", e);
+                    graphics.transform(at);
                 }
-            }
-            else
-            {
-                GeneralPath path = glyph2D.getPathForCharactercode(codePoints[i]);
-                if (path != null)
+                graphics.fill(path);
+                if (atInverse != null)
                 {
-                    g2d.draw(path);
+                    graphics.transform(atInverse);
                 }
             }
         }
@@ -378,6 +347,7 @@ public class PageDrawer extends PDFStreamEngine
      * @param font the type3 font
      * @param string the string to be rendered
      * @param at the transformation
+     * 
      * @throws IOException if something went wrong
      */
     private void drawType3String(PDType3Font font, String string, AffineTransform at) throws IOException
@@ -413,51 +383,33 @@ public class PageDrawer extends PDFStreamEngine
      * @param string The string to draw.
      * @param g The graphics to draw onto.
      * @param at The transformation matrix with all information for scaling and shearing of the font.
-     * @param x The x coordinate to draw at.
-     * @param y The y coordinate to draw at.
      * 
      * @throws IOException If there is an error drawing the specific string.
      */
-    private void drawString(PDSimpleFont font, String string, AffineTransform at, float x, float y) throws IOException
+    private void drawString(PDSimpleFont font, String string, AffineTransform at) throws IOException
     {
         Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
-
-        Graphics2D g2d = (Graphics2D) graphics;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        writeFont(g2d, at, x, y, glyphs);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        writeFont(at, glyphs);
     }
 
-    private void writeFont(final Graphics2D g2d, final AffineTransform at, final float x, final float y,
-            final GlyphVector glyphs)
+    private void writeFont(final AffineTransform at, final GlyphVector glyphs)
     {
-        // check if we have a rotation
-        if (!at.isIdentity())
+        try
         {
-            try
-            {
-                AffineTransform atInv = at.createInverse();
-                // do only apply the size of the transform, rotation will be realized by rotating the graphics,
-                // otherwise the hp printers will not render the font
-                // apply the transformation to the graphics, which should be the same as applying the
-                // transformation itself to the text
-                g2d.transform(at);
-                // translate the coordinates
-                Point2D.Float newXy = new Point2D.Float(x, y);
-                atInv.transform(new Point2D.Float(x, y), newXy);
-                g2d.drawGlyphVector(glyphs, (float) newXy.getX(), (float) newXy.getY());
-                // restore the original transformation
-                g2d.transform(atInv);
-            }
-            catch (NoninvertibleTransformException e)
-            {
-                LOG.error("Error in " + getClass().getName() + ".writeFont", e);
-            }
+            // Convert from PDF, where glyphs are upright when direction is from
+            // bottom to top, to AWT, where this is the other way around
+            at.scale(1, -1);
+            AffineTransform atInverse = at.createInverse();
+            graphics.transform(at);
+            graphics.drawGlyphVector(glyphs, 0, 0);
+            graphics.transform(atInverse);
         }
-        else
+        catch (NoninvertibleTransformException exception)
         {
-            g2d.drawGlyphVector(glyphs, x, y);
+            LOG.error("Can't invert the given affine transformation", exception);
         }
     }
 
@@ -654,17 +606,6 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Fix the y coordinate.
-     * 
-     * @param y The y coordinate.
-     * @return The updated y coordinate.
-     */
-    public double fixY(double y)
-    {
-        return pageSize.getHeight() - y;
-    }
-
-    /**
      * Get the current line path to be drawn.
      * 
      * @return The current line path to be drawn.
@@ -794,7 +735,6 @@ public class PageDrawer extends PDFStreamEngine
         double[] position = { x, y };
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform()
                 .transform(position, 0, position, 0, 1);
-        position[1] = fixY(position[1]);
         return new Point2D.Double(position[0], position[1]);
     }
 
@@ -862,7 +802,12 @@ public class PageDrawer extends PDFStreamEngine
     {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
-        graphics.drawImage(awtImage, at, null);
+        int width = awtImage.getWidth(null);
+        int height = awtImage.getHeight(null);
+        AffineTransform imageTransform = new AffineTransform(at);
+        imageTransform.scale(1.0 / width, -1.0 / height);
+        imageTransform.translate(0, -height);
+        graphics.drawImage(awtImage, imageTransform, null);
     }
 
     /**
