@@ -256,6 +256,26 @@ public class PDPage implements COSObjectable
     }
 
     /**
+     * This will get the key of this Page in the structural parent tree.
+     * 
+     * @return the integer key of the page's entry in the structural parent tree
+     */
+    public int getStructParents()
+    {
+        return page.getInt(COSName.STRUCT_PARENTS, 0);
+    }
+
+    /**
+     * This will set the key for this page in the structural parent tree.
+     * 
+     * @param structParents The new key for this page.
+     */
+    public void setStructParents(int structParents)
+    {
+        page.setInt(COSName.STRUCT_PARENTS, structParents);
+    }
+
+    /**
      * A rectangle, expressed in default user space units, defining the boundaries of the physical medium on which the
      * page is intended to be displayed or printed
      * 
