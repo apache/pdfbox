@@ -231,10 +231,10 @@ public class ExtGStateValidationProcess extends AbstractProcess
         if (egs.getItem("TR2") != null)
         {
             String s = egs.getNameAsString("TR2");
-            if (!"default".equals(s))
+            if (!"Default".equals(s))
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "TR2 key only expect 'default' value, not '" + s + "'"));
+                        "TR2 key only expect 'Default' value, not '" + s + "'"));
             }
         }
     }
