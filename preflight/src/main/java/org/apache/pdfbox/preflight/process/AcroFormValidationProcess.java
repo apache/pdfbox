@@ -147,7 +147,7 @@ public class AcroFormValidationProcess extends AbstractProcess
             if (act != null)
             {
                 addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD,
-                        "\"A\" must not be used in a Field dictionary"));
+                        "\"A\" must not be used in a widget annotation"));
                 res = false;
             }
         }
