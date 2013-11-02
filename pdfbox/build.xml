@@ -125,6 +125,7 @@
         <pathelement path="${bcpkix.jar}" />
         <pathelement path="${icu4j.jar}" />
         <pathelement path="${logging.jar}" />
+        <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.jar}" />
         <pathelement path="${jempbox.jar}" />
         <pathelement path="${pdfbox.dest.dir}" />
@@ -133,6 +134,7 @@
 
     <path id="fontbox.build.classpath">
         <pathelement path="${logging.jar}" />
+        <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.dest.dir}" />
         <pathelement path="${fontbox.resources.dir}" />
     </path>
