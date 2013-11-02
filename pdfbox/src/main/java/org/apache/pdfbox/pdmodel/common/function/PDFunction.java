@@ -18,11 +18,11 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * This class represents a function in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * 
  */
 public abstract class PDFunction implements COSObjectable
 {
@@ -41,6 +41,8 @@ public abstract class PDFunction implements COSObjectable
     private COSDictionary functionDictionary = null;
     private COSArray domain = null;
     private COSArray range = null;
+    private int numberOfInputValues = -1;
+    private int numberOfOutputValues = -1;
 
     /**
      * Constructor.
@@ -53,7 +55,7 @@ public abstract class PDFunction implements COSObjectable
         if (function instanceof COSStream)
         {
             functionStream = new PDStream( (COSStream)function );
-            functionStream.getStream().setName( COSName.TYPE, "Function" );
+            functionStream.getStream().setItem( COSName.TYPE, COSName.FUNCTION );
         }
         else if (function instanceof COSDictionary)
         {
@@ -169,8 +171,12 @@ public abstract class PDFunction implements COSObjectable
      */
     public int getNumberOfOutputParameters()
     {
-        COSArray rangeValues = getRangeValues();
-        return rangeValues.size() / 2;
+        if (numberOfOutputValues == -1)
+        {
+            COSArray rangeValues = getRangeValues();
+            numberOfOutputValues = rangeValues.size() / 2;
+        }
+        return numberOfOutputValues;
     }
 
     /**
@@ -208,8 +214,12 @@ public abstract class PDFunction implements COSObjectable
      */
     public int getNumberOfInputParameters()
     {
-        COSArray array = getDomainValues();
-        return array.size() / 2;
+        if (numberOfInputValues == -1)
+        {
+            COSArray array = getDomainValues();
+            numberOfInputValues = array.size() / 2;
+        }
+        return numberOfInputValues;
     }
 
     /**
