@@ -44,7 +44,6 @@ package org.apache.pdfbox.pdmodel.encryption;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
  *
- * @version $Revision: 1.4 $
  */
 
 public class AccessPermission
@@ -418,5 +417,31 @@ public class AccessPermission
     public boolean isReadOnly()
     {
         return readOnly;
+    }
+    
+    /**
+     * Indicates if any revision 3 access permission is set or not.
+     * 
+     * @return true if any revision 3 access permission is set
+     */
+    protected boolean hasAnyRevision3PermissionSet()
+    {
+        if (canFillInForm())
+        {
+            return true;
+        }
+        if (canExtractForAccessibility())
+        {
+            return true;
+        }
+        if (canAssembleDocument())
+        {
+            return true;
+        }
+        if (canPrintDegraded())
+        {
+            return true;
+        }
+        return false;
     }
 }
