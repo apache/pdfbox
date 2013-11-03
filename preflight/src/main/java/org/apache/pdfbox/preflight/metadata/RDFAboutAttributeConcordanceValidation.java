@@ -51,21 +51,24 @@ public class RDFAboutAttributeConcordanceValidation
         {
             throw new ValidationException("Schemas not found in the given metadata representation");
         }
+        
         String about = schemas.get(0).getAboutValue();
+       
         // rdf:description must have an rdf:about attribute
         for (XMPSchema xmpSchema : schemas)
         {
-            checkRdfAbout(about, xmpSchema);
+            // each rdf:Description must have the same rdf:about (or an empty one)
+            String schemaAboutValue = xmpSchema.getAboutValue();
+            if (!("".equals(schemaAboutValue) || "".equals(about) || about.equals(schemaAboutValue)))
+            {
+                throw new DifferentRDFAboutException();
+            }
+            
+            if ("".equals(about)) {
+                about = schemaAboutValue;
+            }
         }
 
-    }
-
-    private void checkRdfAbout(String about, XMPSchema xmpSchema) throws DifferentRDFAboutException
-    {
-        if (!about.equals(xmpSchema.getAboutValue()))
-        {
-            throw new DifferentRDFAboutException();
-        }
     }
 
     public static class DifferentRDFAboutException extends Exception
