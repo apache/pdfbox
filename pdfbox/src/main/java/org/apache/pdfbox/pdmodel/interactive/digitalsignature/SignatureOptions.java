@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.VisualSignatureParser;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
 
 public class SignatureOptions
@@ -64,6 +65,20 @@ public class SignatureOptions
         VisualSignatureParser visParser = new VisualSignatureParser(is);
         visParser.parse();
         visualSignature = visParser.getDocument();
+    }
+    
+    /**
+     * Reads the visual signature from the given visual signature properties
+     *  
+     * @param is the <code>PDVisibleSigProperties</code> object containing the visual signature
+     * 
+     * @throws IOException when something went wrong during parsing
+     * 
+     * @since 1.8.3
+     */
+    public void setVisualSignature(PDVisibleSigProperties visSignatureProperties) throws IOException
+    { 
+        setVisualSignature(visSignatureProperties.getVisibleSignature());
     }
 
     /**
