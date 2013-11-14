@@ -18,7 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -29,7 +28,7 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
  * This class represents a floating point number in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.17 $
+ * 
  */
 public class COSFloat extends COSNumber
 {
@@ -159,7 +158,7 @@ public class COSFloat extends COSNumber
     public void writePDF( OutputStream output ) throws IOException
     {
         DecimalFormat formatDecimal = (DecimalFormat)NumberFormat.getNumberInstance();
-        formatDecimal.setMaximumFractionDigits( 10 );
+        formatDecimal.setMaximumFractionDigits( 5 );
         formatDecimal.setGroupingUsed( false );
         DecimalFormatSymbols symbols = formatDecimal.getDecimalFormatSymbols();
         symbols.setDecimalSeparator( '.' );
