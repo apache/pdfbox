@@ -16,17 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 
 /**
  * This builder class is in order to create visible signature properties.
  * 
- * @author Vakhtang koroghlishvili (Gogebashvili)
+ * @author <a href="mailto:vakhtang.koroghlishvili@gmail.com"> vakhtang koroghlishvili (gogebashvili) </a>
  * 
  */
 public class PDVisibleSigProperties
@@ -63,7 +59,7 @@ public class PDVisibleSigProperties
     }
 
     /**
-     * sets signer name
+     * Sets signer name
      * @param signerName
      * @return
      */
@@ -74,7 +70,7 @@ public class PDVisibleSigProperties
     }
 
     /**
-     * 
+     * Gets signer locations
      * @return - location
      */
     public String getSignerLocation()

@@ -37,7 +37,7 @@ import org.bouncycastle.util.Arrays;
  * visible signature design. Because of 
  * this is builder, instead of setParam()
  * we use param() methods.
- * @author Vakhtang koroghlishvili (Gogebashvili) 
+ * @author <a href="mailto:vakhtang.koroghlishvili@gmail.com"> vakhtang koroghlishvili (gogebashvili) </a>
  */
 public class PDVisibleSignDesigner
 {
@@ -73,8 +73,8 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param documentPath
-     * @param imageStream
+     * @param documentPath - path of your pdf document
+     * @param imageStream - stream of image
      * @param page -which page are you going to add visible signature
      * @throws IOException
      */
@@ -93,7 +93,14 @@ public class PDVisibleSignDesigner
         document.close();
     }
 
-    public PDVisibleSignDesigner(PDDocument doc, InputStream imageStream, int page) throws IOException
+    /**
+     * 
+     * @param doc - Already created PDDocument of your PDF document
+     * @param imageStream
+     * @param page
+     * @throws IOException - If we can't read, flush, or can't close stream
+     */
+    public PDVisibleSignDesigner(PDDocument doc, InputStream imageStream, int page) throws IOException 
     {
         signatureImageStream(imageStream);
         calculatePageSize(doc, page);
@@ -298,15 +305,15 @@ public class PDVisibleSignDesigner
      * 
      * @param imgageStream- stream of your visible signature image
      * @return Visible Signature Configuration Object
-     * @throws IOException
+     * @throws IOException - If we can't read, flush, or close stream of image
      */
-    private PDVisibleSignDesigner signatureImageStream(InputStream imgageStream) throws IOException
+    private PDVisibleSignDesigner signatureImageStream(InputStream imageStream) throws IOException 
     {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
-        while ((len = imgageStream.read(buffer)) > -1)
+        while ((len = imageStream.read(buffer)) > -1)
         {
             baos.write(buffer, 0, len);
         }
@@ -333,9 +340,9 @@ public class PDVisibleSignDesigner
      * calculates image width and height. sported formats: all
      * 
      * @param fis - input stream of image
-     * @throws IOException
+     * @throws IOException - if can't read input stream
      */
-    private void calcualteImageSize(InputStream fis) throws IOException
+    private void calcualteImageSize(InputStream fis) throws IOException 
     {
 
         BufferedImage bimg = ImageIO.read(fis);

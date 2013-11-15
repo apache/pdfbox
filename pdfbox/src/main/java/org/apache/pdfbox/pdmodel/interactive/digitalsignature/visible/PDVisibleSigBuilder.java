@@ -42,8 +42,9 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * 
- * @author Vakhtang koroghlishvili (Gogebashvili)
+ * That's implementation of <b>PDFTemplateBuilder </b>
+ * @see org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDFTemplateBuilder
+ * @author <a href="mailto:vakhtang.koroghlishvili@gmail.com"> vakhtang koroghlishvili (gogebashvili) </a>
  * 
  */
 public class PDVisibleSigBuilder implements PDFTemplateBuilder
