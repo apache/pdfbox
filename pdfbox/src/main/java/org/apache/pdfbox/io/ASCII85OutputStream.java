@@ -24,7 +24,7 @@ import java.io.OutputStream;
  * This class represents an ASCII85 output stream.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ *
  */
 public class ASCII85OutputStream extends FilterOutputStream
 {
@@ -42,22 +42,25 @@ public class ASCII85OutputStream extends FilterOutputStream
     private int maxline;
     private boolean flushed;
     private char terminator;
+    private static final char OFFSET = '!';
+    private static final char NEWLINE = '\n';
+    private static final char Z = 'z';
 
     /**
      * Constructor.
      *
      * @param out The output stream to write to.
      */
-    public ASCII85OutputStream( OutputStream out )
+    public ASCII85OutputStream(OutputStream out)
     {
-        super( out );
-        lineBreak = 36*2;
-        maxline = 36*2;
-        count=0;
-        indata=new byte[4];
-        outdata=new byte[5];
-        flushed=true;
-        terminator='~';
+        super(out);
+        lineBreak = 36 * 2;
+        maxline = 36 * 2;
+        count = 0;
+        indata = new byte[4];
+        outdata = new byte[5];
+        flushed = true;
+        terminator = '~';
     }
 
     /**
@@ -67,11 +70,11 @@ public class ASCII85OutputStream extends FilterOutputStream
      */
     public void setTerminator(char term)
     {
-        if(term<118 || term>126 || term=='z')
+        if (term < 118 || term > 126 || term == Z)
         {
             throw new IllegalArgumentException("Terminator must be 118-126 excluding z");
         }
-        terminator=term;
+        terminator = term;
     }
 
     /**
@@ -91,11 +94,11 @@ public class ASCII85OutputStream extends FilterOutputStream
      */
     public void setLineLength(int l)
     {
-        if( lineBreak > l )
+        if (lineBreak > l)
         {
             lineBreak = l;
         }
-        maxline=l;
+        maxline = l;
     }
 
     /**
@@ -111,44 +114,33 @@ public class ASCII85OutputStream extends FilterOutputStream
     /**
      * This will transform the next four ascii bytes.
      */
-    private final void  transformASCII85()
+    private final void transformASCII85()
     {
-        long word;
-        word=( (((indata[0] << 8) | (indata[1] &0xFF)) << 16) |
-        ( (indata[2] & 0xFF) << 8) | (indata[3] & 0xFF)
-        )    & 0xFFFFFFFFL;
-        // System.out.println("word=0x"+Long.toString(word,16)+" "+word);
+        long word = ((((indata[0] << 8) | (indata[1] & 0xFF)) << 16) | ((indata[2] & 0xFF) << 8) | (indata[3] & 0xFF)) & 0xFFFFFFFFL;
 
-        if (word == 0 )
+        if (word == 0)
         {
-            outdata[0]=(byte)'z';
-            outdata[1]=0;
+            outdata[0] = (byte) Z;
+            outdata[1] = 0;
             return;
         }
         long x;
-        x=word/(85L*85L*85L*85L);
-        // System.out.println("x0="+x);
-        outdata[0]=(byte)(x+'!');
-        word-=x*85L*85L*85L*85L;
+        x = word / (85L * 85L * 85L * 85L);
+        outdata[0] = (byte) (x + OFFSET);
+        word -= x * 85L * 85L * 85L * 85L;
 
-        x=word/(85L*85L*85L);
-        // System.out.println("x1="+x);
-        outdata[1]=(byte)(x+'!');
-        word-=x*85L*85L*85L;
+        x = word / (85L * 85L * 85L);
+        outdata[1] = (byte) (x + OFFSET);
+        word -= x * 85L * 85L * 85L;
 
-        x=word/(85L*85L);
-        // System.out.println("x2="+x);
-        outdata[2]=(byte)(x+'!');
-        word-=x*85L*85L;
+        x = word / (85L * 85L);
+        outdata[2] = (byte) (x + OFFSET);
+        word -= x * 85L * 85L;
 
-        x=word/85L;
-        // System.out.println("x3="+x);
-        outdata[3]=(byte)(x+'!');
+        x = word / 85L;
+        outdata[3] = (byte) (x + OFFSET);
 
-        // word-=x*85L;
-
-        // System.out.println("x4="+(word % 85L));
-        outdata[4]=(byte)((word%85L)+'!');
+        outdata[4] = (byte) ((word % 85L) + OFFSET);
     }
 
     /**
@@ -160,51 +152,27 @@ public class ASCII85OutputStream extends FilterOutputStream
      */
     public final void write(int b) throws IOException
     {
-        flushed=false;
-        indata[count++]=(byte)b;
-        if(count < 4 )
+        flushed = false;
+        indata[count++] = (byte) b;
+        if (count < 4)
         {
             return;
         }
         transformASCII85();
-        for(int i=0;i<5;i++)
+        for (int i = 0; i < 5; i++)
         {
-            if(outdata[i]==0)
+            if (outdata[i] == 0)
             {
                 break;
             }
             out.write(outdata[i]);
-            if(--lineBreak==0)
+            if (--lineBreak == 0)
             {
-                out.write('\n');
-                lineBreak=maxline;
+                out.write(NEWLINE);
+                lineBreak = maxline;
             }
         }
         count = 0;
-    }
-
-    /**
-     * This will write a chunk of data to the stream.
-     *
-     * @param b The byte buffer to read from.
-     * @param off The offset into the buffer.
-     * @param sz The number of bytes to read from the buffer.
-     *
-     * @throws IOException If there is an error writing to the underlying stream.
-     */
-    public final void write(byte[] b,int off, int sz) throws IOException
-    {
-        for(int i=0;i<sz;i++)
-        {
-            if(count < 3)
-            {
-                indata[count++]=b[off+i];
-            }
-            else
-            {
-                write(b[off+i]);
-            }
-        }
     }
 
     /**
@@ -214,43 +182,43 @@ public class ASCII85OutputStream extends FilterOutputStream
      */
     public final void flush() throws IOException
     {
-        if(flushed)
+        if (flushed)
         {
             return;
         }
-        if(count > 0 )
+        if (count > 0)
         {
-            for( int i=count; i<4; i++ )
+            for (int i = count; i < 4; i++)
             {
-                indata[i]=0;
+                indata[i] = 0;
             }
             transformASCII85();
-            if(outdata[0]=='z')
+            if (outdata[0] == Z)
             {
-                for(int i=0;i<5;i++) // expand 'z',
+                for (int i = 0; i < 5; i++) // expand 'z',
                 {
-                    outdata[i]=(byte)'!';
+                    outdata[i] = (byte) OFFSET;
                 }
             }
-            for(int i=0;i<count+1;i++)
+            for (int i = 0; i < count + 1; i++)
             {
                 out.write(outdata[i]);
-                if(--lineBreak==0)
+                if (--lineBreak == 0)
                 {
-                    out.write('\n');
-                    lineBreak=maxline;
+                    out.write(NEWLINE);
+                    lineBreak = maxline;
                 }
             }
         }
-        if(--lineBreak==0)
+        if (--lineBreak == 0)
         {
-            out.write('\n');
+            out.write(NEWLINE);
         }
         out.write(terminator);
-        out.write('\n');
+        out.write(NEWLINE);
         count = 0;
-        lineBreak=maxline;
-        flushed=true;
+        lineBreak = maxline;
+        flushed = true;
         super.flush();
     }
 
@@ -263,28 +231,12 @@ public class ASCII85OutputStream extends FilterOutputStream
     {
         try
         {
+            flush();
             super.close();
         }
         finally
         {
-            indata=outdata=null;
-        }
-    }
-
-    /**
-     * This will flush the stream.
-     *
-     * @throws Throwable If there is an error.
-     */
-    protected void finalize() throws Throwable
-    {
-        try
-        {
-            flush();
-        }
-        finally
-        {
-            super.finalize();
+            indata = outdata = null;
         }
     }
 }

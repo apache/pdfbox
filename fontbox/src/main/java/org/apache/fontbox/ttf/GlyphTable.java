@@ -22,7 +22,7 @@ import java.io.IOException;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class GlyphTable extends TTFTable
 {
@@ -30,9 +30,9 @@ public class GlyphTable extends TTFTable
      * Tag to identify this table.
      */
     public static final String TAG = "glyf";
-    
+
     private GlyphData[] glyphs;
-    
+
     /**
      * This will read the required data from the stream.
      * 
@@ -40,7 +40,7 @@ public class GlyphTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    public void initData(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         MaximumProfileTable maxp = ttf.getMaximumProfile();
         IndexToLocationTable loc = ttf.getIndexToLocation();
@@ -50,27 +50,26 @@ public class GlyphTable extends TTFTable
         int numGlyphs = maxp.getNumGlyphs();
         // the end of the glyph table
         long endOfGlyphs = offsets[numGlyphs];
-        long currentOffset = -1;
         long offset = getOffset();
         glyphs = new GlyphData[numGlyphs];
-        for( int i=0; i<numGlyphs; i++ )
+        for (int i = 0; i < numGlyphs; i++)
         {
             // end of glyphs reached?
             if (endOfGlyphs == offsets[i])
             {
                 break;
             }
-            // don't repeat glyphs
-            if (currentOffset == offsets[i])
+            // the current glyph isn't defined
+            // if the next offset equals the current index
+            if (offsets[i] == offsets[i + 1])
             {
                 continue;
             }
-            currentOffset = offsets[i];
             glyphs[i] = new GlyphData();
-            data.seek( offset + offsets[i] );
-            glyphs[i].initData( ttf, data );
+            data.seek(offset + offsets[i]);
+            glyphs[i].initData(ttf, data);
         }
-        for( int i=0; i<numGlyphs; i++ )
+        for (int i = 0; i < numGlyphs; i++)
         {
             GlyphData glyph = glyphs[i];
             // resolve composite glyphs
@@ -80,7 +79,7 @@ public class GlyphTable extends TTFTable
             }
         }
     }
-    
+
     /**
      * @return Returns the glyphs.
      */
@@ -88,7 +87,7 @@ public class GlyphTable extends TTFTable
     {
         return glyphs;
     }
-    
+
     /**
      * @param glyphsValue The glyphs to set.
      */

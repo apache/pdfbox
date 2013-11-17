@@ -16,6 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMapParser;
@@ -54,7 +62,7 @@ import java.util.Map;
  * This is the base class for all PDF fonts.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.46 $
+ * 
  */
 public abstract class PDFont implements COSObjectable
 {
@@ -98,7 +106,7 @@ public abstract class PDFont implements COSObjectable
     /**
      *  A list a floats representing the widths.
      */
-    private List<Float> widths = null;
+    private List<Integer> widths = null;
 
     /**
      * The static map of the default Adobe font metrics.
@@ -645,8 +653,8 @@ public abstract class PDFont implements COSObjectable
     // Memorized values to avoid repeated dictionary lookups
     private String subtype = null;
     private boolean type1Font;
+    private boolean type3Font;
     private boolean trueTypeFont;
-    private boolean typeFont;
     private boolean type0Font;
 
     /**
@@ -662,7 +670,7 @@ public abstract class PDFont implements COSObjectable
             type1Font = "Type1".equals(subtype);
             trueTypeFont = "TrueType".equals(subtype);
             type0Font = "Type0".equals(subtype);
-            typeFont = type1Font || "Type0".equals(subtype) || trueTypeFont;
+            type3Font = "Type3".equals(subtype);
         }
         return subtype;
     }
@@ -675,6 +683,17 @@ public abstract class PDFont implements COSObjectable
     {
         getSubType();
         return type1Font;
+    }
+
+    /**
+     * Determines if the font is a type 3 font.
+     * 
+     * @return returns true if the font is a type 3 font
+     */
+    public boolean isType3Font()
+    {
+        getSubType();
+        return type3Font;
     }
 
     /**
@@ -693,10 +712,18 @@ public abstract class PDFont implements COSObjectable
         return trueTypeFont;
     }
 
-    private boolean isTypeFont()
+    /**
+     * Determines if the font is a symbolic font.
+     * 
+     * @return returns true if the font is a symbolic font
+     */
+    public boolean isSymbolicFont()
     {
-        getSubType();
-        return typeFont;
+        if (getFontDescriptor() != null)
+        {
+            return getFontDescriptor().isSymbolic();
+        }
+        return false;
     }
 
     /**
@@ -764,14 +791,14 @@ public abstract class PDFont implements COSObjectable
      *
      * @return The widths of the characters.
      */
-    public List<Float> getWidths()
+    public List<Integer> getWidths()
     {
         if (widths == null)
         {
             COSArray array = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
             if (array != null)
             {
-                widths = COSArrayList.convertFloatCOSArrayToList( array );
+                widths = COSArrayList.convertIntegerCOSArrayToList(array);
             }
         }
         return widths;
@@ -782,7 +809,7 @@ public abstract class PDFont implements COSObjectable
      *
      * @param widthsList The widths of the character codes.
      */
-    public void setWidths( List<Float> widthsList )
+    public void setWidths(List<Integer> widthsList)
     {
         widths = widthsList;
         font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( widths ) );
@@ -896,5 +923,14 @@ public abstract class PDFont implements COSObjectable
      * @return the width of the space character
      */
     public abstract float getSpaceWidth();
-    
+
+    /**
+     * Returns the toUnicode mapping if present.
+     * 
+     * @return the CMap representing the toUnicode mapping
+     */
+    public CMap getToUnicodeCMap()
+    {
+        return toUnicodeCmap;
+    }
 }

@@ -26,12 +26,14 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.action.AbstractActionManager;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 public class ActionsValidationProcess extends AbstractProcess
 {
@@ -39,21 +41,26 @@ public class ActionsValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class))
-        {
-            throw new ValidationException("Action validation process needs at least one COSDictionary object");
+        if (vPath.isEmpty()) {
+            return;
         }
-
-        COSDictionary actionsDict = (COSDictionary) vPath.peek();
-        // AA entry is authorized only for Page, in this case A Page is just before the Action Dictionary in the path
-        boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
-
-        PreflightConfiguration config = context.getConfig();
-        ActionManagerFactory factory = config.getActionFact();
-        List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
-        for (AbstractActionManager aMng : la)
+        else if (!vPath.isExpectedType(COSDictionary.class))
         {
-            aMng.valid(aaEntryAuth);
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_ACTION_INVALID_TYPE, "Action validation process needs at least one COSDictionary object"));
+        }
+        else 
+        {
+            COSDictionary actionsDict = (COSDictionary) vPath.peek();
+            // AA entry is authorized only for Page, in this case A Page is just before the Action Dictionary in the path
+            boolean aaEntryAuth = ((vPath.size() - vPath.getClosestTypePosition(PDPage.class)) == 2);
+
+            PreflightConfiguration config = context.getConfig();
+            ActionManagerFactory factory = config.getActionFact();
+            List<AbstractActionManager> la = factory.getActionManagers(context, actionsDict);
+            for (AbstractActionManager aMng : la)
+            {
+                aMng.valid(aaEntryAuth);
+            }
         }
     }
 

@@ -91,6 +91,20 @@ public abstract class PDXObjectImage extends PDXObject
     }
 
     /**
+     * Create the correct thumbnail from the cos base.
+     *
+     * @param xobject The cos level xobject to create.
+     *
+     * @return a pdmodel xobject
+     * @throws IOException If there is an error creating the xobject.
+     */
+    public static PDXObject createThumbnailXObject( COSBase xobject ) throws IOException
+    {
+        PDXObject retval = commonXObjectCreation(xobject, true);
+        return retval;
+    }
+    
+    /**
      * Returns an java.awt.Image, that can be used for display etc.
      *
      * @return This PDF object as an AWT image.

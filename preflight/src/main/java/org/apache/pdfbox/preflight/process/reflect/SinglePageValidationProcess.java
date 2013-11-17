@@ -47,6 +47,7 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -65,22 +66,26 @@ public class SinglePageValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() && !vPath.isExpectedType(PDPage.class))
-        {
-            throw new ValidationException("Page validation required at least a PDPage");
+        if (vPath.isEmpty()){
+            return;
         }
-
-        PDPage page = (PDPage) vPath.peek();
-        validateActions(context, page);
-        validateAnnotation(context, page);
-        validateColorSpaces(context, page);
-        validateResources(context, page);
-        validateGraphicObjects(context, page);
-        validateGroupTransparency(context, page);
-        // TODO
-        // add MetaData validation ?
-
-        validateContent(context, page);
+        else if (!vPath.isExpectedType(PDPage.class)) 
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_PDF_PROCESSING_MISSING, "Page validation required at least a PDPage"));
+        } 
+        else 
+        {
+            PDPage page = (PDPage) vPath.peek();
+            validateActions(context, page);
+            validateAnnotation(context, page);
+            validateColorSpaces(context, page);
+            validateResources(context, page);
+            validateGraphicObjects(context, page);
+            validateGroupTransparency(context, page);
+            // TODO
+            // add MetaData validation ?
+            validateContent(context, page);
+        }
     }
 
     /**
@@ -142,7 +147,7 @@ public class SinglePageValidationProcess extends AbstractProcess
                 {
                     thumbBase = ((COSObject) thumbBase).getObject();
                 }
-                PDXObject thumbImg = PDXObjectImage.createXObject(thumbBase);
+                PDXObject thumbImg = PDXObjectImage.createThumbnailXObject(thumbBase);
                 ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
             }
             catch (IOException e)

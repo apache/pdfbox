@@ -27,24 +27,21 @@ import java.util.List;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.CharMetric;
 import org.apache.fontbox.afm.FontMetric;
-
 import org.apache.fontbox.pfb.PfbParser;
-
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
-import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is implementation of the Type1 Font
- * with a afm and a pfb file.
- *
+ * This is implementation of the Type1 Font with a afm and a pfb file.
+ * 
  * @author <a href="mailto:m.g.n@gmx.de">Michael Niedermair</a>
  * @version $Revision: 1.5 $
  */
@@ -62,12 +59,12 @@ public class PDType1AfmPfbFont extends PDType1Font
 
     /**
      * Create a new object.
-     * @param doc       The PDF document that will hold the embedded font.
-     * @param afmname   The font filename.
+     * 
+     * @param doc The PDF document that will hold the embedded font.
+     * @param afmname The font filename.
      * @throws IOException If there is an error loading the data.
      */
-    public PDType1AfmPfbFont(final PDDocument doc, final String afmname)
-        throws IOException
+    public PDType1AfmPfbFont(final PDDocument doc, final String afmname) throws IOException
     {
 
         super();
@@ -79,13 +76,13 @@ public class PDType1AfmPfbFont extends PDType1Font
 
     /**
      * Create a new object.
-     * @param doc       The PDF document that will hold the embedded font.
-     * @param afm       The afm input.
-     * @param pfb       The pfb input.
+     * 
+     * @param doc The PDF document that will hold the embedded font.
+     * @param afm The afm input.
+     * @param pfb The pfb input.
      * @throws IOException If there is an error loading the data.
      */
-    public PDType1AfmPfbFont(final PDDocument doc, final InputStream afm, final InputStream pfb)
-        throws IOException
+    public PDType1AfmPfbFont(final PDDocument doc, final InputStream afm, final InputStream pfb) throws IOException
     {
         super();
         load(doc, afm, pfb);
@@ -93,14 +90,13 @@ public class PDType1AfmPfbFont extends PDType1Font
 
     /**
      * This will load a afm and pfb to be embedding into a document.
-     *
-     * @param doc   The PDF document that will hold the embedded font.
-     * @param afm   The afm input.
-     * @param pfb   The pfb input.
+     * 
+     * @param doc The PDF document that will hold the embedded font.
+     * @param afm The afm input.
+     * @param pfb The pfb input.
      * @throws IOException If there is an error loading the data.
      */
-    private void load(final PDDocument doc, final InputStream afm,
-            final InputStream pfb) throws IOException
+    private void load(final PDDocument doc, final InputStream afm, final InputStream pfb) throws IOException
     {
 
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
@@ -110,13 +106,11 @@ public class PDType1AfmPfbFont extends PDType1Font
         PfbParser pfbparser = new PfbParser(pfb);
         pfb.close();
 
-        PDStream fontStream = new PDStream(doc, pfbparser.getInputStream(),
-                false);
+        PDStream fontStream = new PDStream(doc, pfbparser.getInputStream(), false);
         fontStream.getStream().setInt("Length", pfbparser.size());
         for (int i = 0; i < pfbparser.getLengths().length; i++)
         {
-            fontStream.getStream().setInt("Length" + (i + 1),
-                    pfbparser.getLengths()[i]);
+            fontStream.getStream().setInt("Length" + (i + 1), pfbparser.getLengths()[i]);
         }
         fontStream.addCompression();
         fd.setFontFile(fontStream);
@@ -149,10 +143,10 @@ public class PDType1AfmPfbFont extends PDType1Font
         List<CharMetric> listmetric = metric.getCharMetrics();
         Encoding encoding = getFontEncoding();
         int maxWidths = 256;
-        List<Float> widths = new ArrayList<Float>(maxWidths);
-        float zero = 250;
+        List<Integer> widths = new ArrayList<Integer>(maxWidths);
+        int zero = 250;
         Iterator<CharMetric> iter = listmetric.iterator();
-        for( int i=0; i<maxWidths; i++ )
+        for (int i = 0; i < maxWidths; i++)
         {
             widths.add(zero);
         }
@@ -166,44 +160,44 @@ public class PDType1AfmPfbFont extends PDType1Font
                 lastchar = Math.max(lastchar, n);
                 if (m.getWx() > 0)
                 {
-                    float width = m.getWx();
-                    widths.set(n,new Float(width));
+                    int width = Math.round(m.getWx());
+                    widths.set(n, width);
                     // germandbls has 2 character codes !! Don't ask me why .....
                     // StandardEncoding = 0373 = 251
                     // WinANSIEncoding = 0337 = 223
                     if (m.getName().equals("germandbls") && n != 223)
                     {
-                        widths.set(0337,new Float(width));
+                        widths.set(0337, width);
                     }
                 }
             }
-            else 
+            else
             {
                 // my AFMPFB-Fonts has no character-codes for german umlauts
                 // so that I've to add them here by hand
                 if (m.getName().equals("adieresis"))
                 {
-                    widths.set(0344,(Float)widths.get(encoding.getCode("a")));
+                    widths.set(0344, widths.get(encoding.getCode("a")));
                 }
                 else if (m.getName().equals("odieresis"))
                 {
-                    widths.set(0366,(Float)widths.get(encoding.getCode("o")));
+                    widths.set(0366, widths.get(encoding.getCode("o")));
                 }
                 else if (m.getName().equals("udieresis"))
                 {
-                    widths.set(0374,(Float)widths.get(encoding.getCode("u")));
+                    widths.set(0374, widths.get(encoding.getCode("u")));
                 }
                 else if (m.getName().equals("Adieresis"))
                 {
-                    widths.set(0304,(Float)widths.get(encoding.getCode("A")));
+                    widths.set(0304, widths.get(encoding.getCode("A")));
                 }
                 else if (m.getName().equals("Odieresis"))
                 {
-                    widths.set(0326,(Float)widths.get(encoding.getCode("O")));
+                    widths.set(0326, widths.get(encoding.getCode("O")));
                 }
                 else if (m.getName().equals("Udieresis"))
                 {
-                    widths.set(0334,(Float)widths.get(encoding.getCode("U")));
+                    widths.set(0334, widths.get(encoding.getCode("U")));
                 }
             }
         }
@@ -213,28 +207,28 @@ public class PDType1AfmPfbFont extends PDType1Font
     }
 
     /*
-     *  This will generate a Encoding from the AFM-Encoding, because the AFM-Enconding isn't exported to the pdf
-     *  and consequently the StandardEncoding is used so that any special character is missing
-     *  I've copied the code from the pdfbox-forum posted by V0JT4 and made some additions concerning german umlauts
-     *  see also https://sourceforge.net/forum/message.php?msg_id=4705274
+     * This will generate a Encoding from the AFM-Encoding, because the AFM-Enconding isn't exported to the pdf and
+     * consequently the StandardEncoding is used so that any special character is missing I've copied the code from the
+     * pdfbox-forum posted by V0JT4 and made some additions concerning german umlauts see also
+     * https://sourceforge.net/forum/message.php?msg_id=4705274
      */
-    private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException 
+    private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException
     {
         COSArray array = new COSArray();
         array.add(COSInteger.ZERO);
-        for (int i = 0; i < 256; i++) 
+        for (int i = 0; i < 256; i++)
         {
             array.add(COSName.getPDFName(encoding.getName(i)));
         }
         // my AFMPFB-Fonts has no character-codes for german umlauts
         // so that I've to add them here by hand
-        array.set( 0337+1, COSName.getPDFName("germandbls"));
-        array.set( 0344+1, COSName.getPDFName("adieresis"));
-        array.set( 0366+1, COSName.getPDFName("odieresis"));
-        array.set( 0374+1, COSName.getPDFName("udieresis"));
-        array.set( 0304+1, COSName.getPDFName("Adieresis"));
-        array.set( 0326+1, COSName.getPDFName("Odieresis"));
-        array.set( 0334+1, COSName.getPDFName("Udieresis"));
+        array.set(0337 + 1, COSName.getPDFName("germandbls"));
+        array.set(0344 + 1, COSName.getPDFName("adieresis"));
+        array.set(0366 + 1, COSName.getPDFName("odieresis"));
+        array.set(0374 + 1, COSName.getPDFName("udieresis"));
+        array.set(0304 + 1, COSName.getPDFName("Adieresis"));
+        array.set(0326 + 1, COSName.getPDFName("Odieresis"));
+        array.set(0334 + 1, COSName.getPDFName("Udieresis"));
 
         COSDictionary dictionary = new COSDictionary();
         dictionary.setItem(COSName.NAME, COSName.ENCODING);
