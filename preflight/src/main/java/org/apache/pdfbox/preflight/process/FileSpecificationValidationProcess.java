@@ -58,7 +58,7 @@ public class FileSpecificationValidationProcess extends AbstractProcess
             {
                 COSDictionary dic = (COSDictionary) cBase;
                 String type = dic.getNameAsString(COSName.TYPE);
-                if (FILE_SPECIFICATION_VALUE_TYPE.equals(type))
+                if (FILE_SPECIFICATION_VALUE_TYPE.equals(type) || COSName.F.getName().equals(type))
                 {
                     // ---- It is a file specification
                     validateFileSpecification(ctx, dic);

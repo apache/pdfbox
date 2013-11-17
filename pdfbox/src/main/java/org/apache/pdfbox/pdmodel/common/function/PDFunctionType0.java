@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
  * This class represents a type 0 function in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * 
  */
 public class PDFunctionType0 extends PDFunction
 {
@@ -41,14 +41,14 @@ public class PDFunctionType0 extends PDFunction
     private static final Log log = LogFactory.getLog(PDFunctionType0.class);
 
     /**
-     * An array of 2 × m numbers specifying the linear mapping of input values 
-     * into the domain of the function’s sample table. 
-     * Default value: [ 0 (Size0 − 1) 0 (Size1 − 1) … ].
+     * An array of 2 x m numbers specifying the linear mapping of input values 
+     * into the domain of the function's sample table. 
+     * Default value: [ 0 (Size0 - 1) 0 (Size1 - 1) ...].
      */
     private COSArray encode = null;
     /**
-     * An array of 2 × n numbers specifying the linear mapping of sample values 
-     * into the range appropriate for the function’s output values. 
+     * An array of 2 x n numbers specifying the linear mapping of sample values 
+     * into the range appropriate for the function's output values. 
      * Default value: same as the value of Range
      */
     private COSArray decode = null;
@@ -298,16 +298,16 @@ public class PDFunctionType0 extends PDFunction
         int bitsPerSample = getBitsPerSample();
         int numberOfInputValues = input.length;
         int numberOfOutputValues = getNumberOfOutputParameters();
-        int[] intInputValuesPrevious = new int[numberOfInputValues];
-        int[] intInputValuesNext = new int[numberOfInputValues];
+        int intInputValuesPrevious = 0;
+        int intInputValuesNext = 0;
         for (int i=0; i<numberOfInputValues; i++) {
             PDRange domain = getDomainForInput(i);
             PDRange encode = getEncodeForParameter(i);
             input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
             input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
             input[i] = clipToRange(input[i], 0, sizeValues[i]-1);
-            intInputValuesPrevious[i] = (int)Math.floor(input[i]);
-            intInputValuesNext[i] = (int)Math.ceil(input[i]);
+            intInputValuesPrevious += (int)Math.floor(input[i]);
+            intInputValuesNext += (int)Math.ceil(input[i]);
         }
         float[] outputValuesPrevious = null;
         float[] outputValuesNext = null;
@@ -331,26 +331,17 @@ public class PDFunctionType0 extends PDFunction
     /**
      * Get the samples for the given input values.
      * 
-     * @param inputValues an array containing the input values
+     * @param indexValue the index into the sample values array
      * @return an array with the corresponding samples
      */
-    private float[] getSample(int[] inputValues)
+    private float[] getSample(int indexValue)
     {
-        int[][] sampleValues = getSamples();
-        COSArray sizes = getSize();
-        int numberOfInputValues = getNumberOfInputParameters();
-        int index = 0;
-        int previousSize = 1;
-        for (int i=0;i<numberOfInputValues;i++)
+        int[] sampleValues = getSamples()[indexValue];
+        int numberOfValues = sampleValues.length;
+        float[] result = new float[numberOfValues];
+        for (int i=0;i<numberOfValues;i++)
         {
-            index += inputValues[i];
-            previousSize *= sizes.getInt(i);
-        }
-        int numberOfOutputValues = getNumberOfOutputParameters();
-        float[] result = new float[numberOfOutputValues];
-        for (int i=0;i<numberOfOutputValues;i++)
-        {
-            result[i] = sampleValues[index][i];
+            result[i] = sampleValues[i];
         }
         return result;
     }

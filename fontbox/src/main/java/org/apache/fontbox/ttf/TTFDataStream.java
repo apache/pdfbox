@@ -19,7 +19,6 @@ package org.apache.fontbox.ttf;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -27,14 +26,14 @@ import java.util.GregorianCalendar;
  * An interface into a data stream.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
-public abstract class TTFDataStream 
+public abstract class TTFDataStream
 {
 
     /**
-     * Read a 16.16 fixed value, where the first 16 bits are the decimal and the last
-     * 16 bits are the fraction.
+     * Read a 16.16 fixed value, where the first 16 bits are the decimal and the last 16 bits are the fraction.
+     * 
      * @return A 32 bit value.
      * @throws IOException If there is an error reading the data.
      */
@@ -42,62 +41,83 @@ public abstract class TTFDataStream
     {
         float retval = 0;
         retval = readSignedShort();
-        retval += (readUnsignedShort()/65536.0);
+        retval += (readUnsignedShort() / 65536.0);
         return retval;
     }
-    
+
     /**
      * Read a fixed length ascii string.
+     * 
      * @param length The length of the string to read.
      * @return A string of the desired length.
      * @throws IOException If there is an error reading the data.
      */
-    public String readString( int length ) throws IOException
+    public String readString(int length) throws IOException
     {
-        return readString( length, "ISO-8859-1" );
+        return readString(length, "ISO-8859-1");
     }
-    
+
     /**
      * Read a fixed length ascii string.
+     * 
      * @param length The length of the string to read in bytes.
      * @param charset The expected character set of the string.
      * @return A string of the desired length.
      * @throws IOException If there is an error reading the data.
      */
-    public String readString( int length, String charset ) throws IOException
+    public String readString(int length, String charset) throws IOException
     {
-        byte[] buffer = read( length );
+        byte[] buffer = read(length);
         return new String(buffer, charset);
     }
-    
+
     /**
      * Read an unsigned byte.
+     * 
      * @return An unsigned byte.
      * @throws IOException If there is an error reading the data.
      */
     public abstract int read() throws IOException;
-    
+
     /**
      * Read an unsigned byte.
+     * 
      * @return An unsigned byte.
      * @throws IOException If there is an error reading the data.
      */
     public abstract long readLong() throws IOException;
-    
-    
+
     /**
      * Read a signed byte.
+     * 
      * @return A signed byte.
      * @throws IOException If there is an error reading the data.
      */
     public int readSignedByte() throws IOException
     {
         int signedByte = read();
-        return signedByte < 127 ? signedByte : signedByte-256;
+        return signedByte < 127 ? signedByte : signedByte - 256;
     }
-    
+
+    /**
+     * Read a unsigned byte. Similar to {@link #read()}, but throws an exception if EOF is unexpectedly reached.
+     * 
+     * @return A unsigned byte.
+     * @throws IOException If there is an error reading the data.
+     */
+    public int readUnsignedByte() throws IOException
+    {
+        int unsignedByte = read();
+        if (unsignedByte == -1)
+        {
+            throw new EOFException("premature EOF");
+        }
+        return unsignedByte;
+    }
+
     /**
      * Read an unsigned integer.
+     * 
      * @return An unsiged integer.
      * @throws IOException If there is an error reading the data.
      */
@@ -107,13 +127,13 @@ public abstract class TTFDataStream
         long byte2 = read();
         long byte3 = read();
         long byte4 = read();
-        if( byte4 < 0 )
+        if (byte4 < 0)
         {
             throw new EOFException();
         }
         return (byte1 << 24) + (byte2 << 16) + (byte3 << 8) + (byte4 << 0);
     }
-    
+
     /**
      * Read an unsigned short.
      * 
@@ -121,7 +141,7 @@ public abstract class TTFDataStream
      * @throws IOException If there is an error reading the data.
      */
     public abstract int readUnsignedShort() throws IOException;
-    
+
     /**
      * Read an unsigned byte array.
      * 
@@ -129,16 +149,16 @@ public abstract class TTFDataStream
      * @return An unsigned byte array.
      * @throws IOException If there is an error reading the data.
      */
-    public int[] readUnsignedByteArray( int length ) throws IOException
+    public int[] readUnsignedByteArray(int length) throws IOException
     {
-        int[] array = new int[ length ];
-        for( int i=0; i<length; i++ )
+        int[] array = new int[length];
+        for (int i = 0; i < length; i++)
         {
             array[i] = read();
         }
         return array;
     }
-    
+
     /**
      * Read an unsigned short array.
      * 
@@ -146,16 +166,16 @@ public abstract class TTFDataStream
      * @return An unsigned short array.
      * @throws IOException If there is an error reading the data.
      */
-    public int[] readUnsignedShortArray( int length ) throws IOException
+    public int[] readUnsignedShortArray(int length) throws IOException
     {
-        int[] array = new int[ length ];
-        for( int i=0; i<length; i++ )
+        int[] array = new int[length];
+        for (int i = 0; i < length; i++)
         {
             array[i] = readUnsignedShort();
         }
         return array;
     }
-    
+
     /**
      * Read an signed short.
      * 
@@ -163,7 +183,7 @@ public abstract class TTFDataStream
      * @throws IOException If there is an error reading the data.
      */
     public abstract short readSignedShort() throws IOException;
-    
+
     /**
      * Read an eight byte international date.
      * 
@@ -173,20 +193,20 @@ public abstract class TTFDataStream
     public Calendar readInternationalDate() throws IOException
     {
         long secondsSince1904 = readLong();
-        GregorianCalendar cal = new GregorianCalendar( 1904, 0, 1 );
+        GregorianCalendar cal = new GregorianCalendar(1904, 0, 1);
         long millisFor1904 = cal.getTimeInMillis();
-        millisFor1904 += (secondsSince1904*1000);
-        cal.setTimeInMillis( millisFor1904 );
+        millisFor1904 += (secondsSince1904 * 1000);
+        cal.setTimeInMillis(millisFor1904);
         return cal;
     }
-    
+
     /**
      * Close the underlying resources.
      * 
      * @throws IOException If there is an error closing the resources.
      */
     public abstract void close() throws IOException;
-    
+
     /**
      * Seek into the datasource.
      * 
@@ -194,36 +214,37 @@ public abstract class TTFDataStream
      * @throws IOException If there is an error seeking to that position.
      */
     public abstract void seek(long pos) throws IOException;
-    
+
     /**
      * Read a specific number of bytes from the stream.
+     * 
      * @param numberOfBytes The number of bytes to read.
      * @return The byte buffer.
      * @throws IOException If there is an error while reading.
      */
-    public byte[] read( int numberOfBytes ) throws IOException
+    public byte[] read(int numberOfBytes) throws IOException
     {
-        byte[] data = new byte[ numberOfBytes ];
+        byte[] data = new byte[numberOfBytes];
         int amountRead = 0;
         int totalAmountRead = 0;
-        //read at most numberOfBytes bytes from the stream.
+        // read at most numberOfBytes bytes from the stream.
         while (totalAmountRead < numberOfBytes
-                && (amountRead = read( data, totalAmountRead, numberOfBytes-totalAmountRead ) ) != -1) 
+                && (amountRead = read(data, totalAmountRead, numberOfBytes - totalAmountRead)) != -1)
         {
             totalAmountRead += amountRead;
         }
-        if (totalAmountRead == numberOfBytes) 
+        if (totalAmountRead == numberOfBytes)
         {
             return data;
-        } 
-        else 
+        }
+        else
         {
             throw new IOException("Unexpected end of TTF stream reached");
         }
     }
-    
+
     /**
-     * @see java.io.InputStream#read( byte[], int, int )
+     * @see java.io.InputStream#read(byte[], int, int )
      * 
      * @param b The buffer to write to.
      * @param off The offset into the buffer.
@@ -234,17 +255,17 @@ public abstract class TTFDataStream
      * @throws IOException If there is an error reading from the stream.
      */
     public abstract int read(byte[] b, int off, int len) throws IOException;
-    
+
     /**
      * Get the current position in the stream.
+     * 
      * @return The current position in the stream.
      * @throws IOException If an error occurs while reading the stream.
      */
     public abstract long getCurrentPosition() throws IOException;
-    
+
     /**
-     * This will get the original data file that was used for this
-     * stream.
+     * This will get the original data file that was used for this stream.
      * 
      * @return The data that was read from.
      * @throws IOException If there is an issue reading the data.

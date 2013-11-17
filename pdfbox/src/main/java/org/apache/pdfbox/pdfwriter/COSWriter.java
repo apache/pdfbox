@@ -71,7 +71,7 @@ import org.apache.pdfbox.util.StringUtil;
  *
  * @author Michael Traut
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.36 $
+ * 
  */
 public class COSWriter implements ICOSVisitor
 {
@@ -1054,7 +1054,15 @@ public class COSWriter implements ICOSVisitor
                         }
                         else
                         {
-                            subValue.accept( this );
+                            if (subValue.isDirect())
+                            {
+                                subValue.accept( this );                                
+                            } 
+                            else 
+                            {
+                                addObjectToWrite( subValue );
+                                writeReference( subValue );                                                  
+                            }
                         }
                     }
                     else
