@@ -25,7 +25,7 @@ import org.apache.pdfbox.cos.COSStream;
  * This represents a file specification.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * 
  */
 public class PDComplexFileSpecification extends PDFileSpecification
 {
@@ -353,5 +353,26 @@ public class PDComplexFileSpecification extends PDFileSpecification
             ef.setItem( COSName.UNIX, file );
         }
     }
+    
+    /**
+     * Set the file description.
+     * 
+     * @param description The file description
+     */
+    public void setFileDescription( String description )
+    {
+        fs.setString( COSName.DESC, description );
+    }
+
+    /**
+     * This will get the description.
+     *
+     * @return The file description.
+     */
+    public String getFileDescription()
+    {
+        return fs.getString( COSName.DESC );
+    }
+
 }
 

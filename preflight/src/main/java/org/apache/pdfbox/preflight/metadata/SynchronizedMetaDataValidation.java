@@ -341,7 +341,7 @@ public class SynchronizedMetaDataValidation
     protected void analyzeCreationDateProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
             throws ValidationException
     {
-        Calendar creationDate;
+        Calendar creationDate = null;
         try
         {
             creationDate = dico.getCreationDate();
@@ -349,7 +349,7 @@ public class SynchronizedMetaDataValidation
         catch (IOException e)
         {
             // If there is an error while converting this property to a date
-            throw formatAccessException("Document Information", "CreationDate", e);
+            ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_DICT_INFO_CORRUPT, "Document Information 'CreationDate' can't be read : " + e.getMessage()));
         }
         if (creationDate != null)
         {
@@ -424,7 +424,7 @@ public class SynchronizedMetaDataValidation
         catch (IOException e)
         {
             // If there is an error while converting this property to a date
-            throw formatAccessException("Document Information", "ModifyDate", e);
+            ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_DICT_INFO_CORRUPT, "Document Information 'ModifyDate' can't be read : " + e.getMessage()));
         }
 
     }
@@ -505,24 +505,6 @@ public class SynchronizedMetaDataValidation
                 .append(prefExpected).append("' is expected.");
 
         return new ValidationError(PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX, sb.toString());
-    }
-
-    /**
-     * Return an exception formatted on IOException when accessing metadata
-     * 
-     * @param type
-     *            type of property (Document Info or XMP)
-     * @param target
-     *            the name of the metadata
-     * @param cause
-     *            the raised IOException
-     * @return the generated exception
-     */
-    protected ValidationException formatAccessException(String type, String target, Throwable cause)
-    {
-        StringBuilder sb = new StringBuilder(80);
-        sb.append("Cannot treat ").append(type).append(" ").append(target).append(" property");
-        return new ValidationException(sb.toString(), cause);
     }
 
     /**

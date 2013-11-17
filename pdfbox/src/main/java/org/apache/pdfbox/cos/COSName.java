@@ -30,7 +30,7 @@ import org.apache.pdfbox.persistence.util.COSHEXTable;
  * This class represents a PDF named object.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.42 $
+ * 
  */
 public final class COSName extends COSBase implements Comparable<COSName>
 {
@@ -382,6 +382,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public static final COSName DECODE_PARMS = new COSName( "DecodeParms" );
 
+    /**
+     * A common COSName value.
+     */
+    public static final COSName DESC = new COSName("Desc");
     /**
      * A common COSName value.
      */
@@ -1026,6 +1030,26 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName OUTLINES = new COSName("Outlines");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_INTENT = new COSName("OutputIntent");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_INTENTS = new COSName("OutputIntents");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_CONDITION = new COSName("OutputCondition");
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName OUTPUT_CONDITION_IDENTIFIER = new COSName("OutputConditionIdentifier");
 
     /**
      * A common COSName value.

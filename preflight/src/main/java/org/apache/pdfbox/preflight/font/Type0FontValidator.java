@@ -254,7 +254,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
                         "Some elements in the CMap dictionary are missing or invalid"));
             }
-            else if (!(wmValue == wmode && cmnValue.equals(cmapName)))
+            else if (!(wmValue == wmode && cmapName.equals(cmnValue)))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
                         "CMapName or WMode is inconsistent"));

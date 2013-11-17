@@ -694,10 +694,12 @@ public class PreflightParser extends NonSequentialPDFParser
                 {
 
                     addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Single space expected"));
+
                     // reset pdfSource cursor to read object information
                     pdfSource.seek(offset);
                     readObjNr = readInt();
                     readObjGen = readInt();
+                    skipSpaces(); // skip spaces between Object Generation number and the 'obj' keyword 
                     for (char c : OBJ_MARKER)
                     {
                         if (pdfSource.read() != c)
