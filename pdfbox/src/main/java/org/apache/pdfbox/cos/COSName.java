@@ -25,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
-
 /**
  * This class represents a PDF named object.
  *
@@ -405,6 +404,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DESTS = new COSName( "Dests" );
 
     /**
+     * A common COSName value.
+     */
+    public static final COSName DEST_OUTPUT_PROFILE = new COSName("DestOutputProfile");
+
+    /**
     * A common COSName value.
     */
     public static final COSName DEVICECMYK = new COSName( "DeviceCMYK" );
@@ -713,6 +717,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName H = new COSName( "H" );
+    /**
+     * A common COSName value.
+     */
+    public static final COSName GTS_PDFA1 = new COSName("GTS_PDFA1");
     /**
     * A common COSName value.
     */
@@ -1102,6 +1110,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName PARENT_TREE = new COSName("ParentTree");
+    /**
+     * A common COSName value.
+     */
     public static final COSName PARENT_TREE_NEXT_KEY = new COSName("ParentTreeNextKey");
     /**
     * A common COSName value.
@@ -1192,6 +1204,12 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName REGISTRY = new COSName( "Registry" );
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName REGISTRY_NAME = new COSName("RegistryName");
+
     /**
     * A common COSName value.
     */
@@ -1302,7 +1320,14 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName STR_F = new COSName( "StrF" );
-
+    /**
+     * A common COSName value.
+     */
+    public static final COSName STRUCT_PARENT = new COSName("StructParent");
+    /**
+     * A common COSName value.
+     */
+    public static final COSName STRUCT_PARENTS = new COSName("StructParents");
     /**
      * A common COSName value.
      */

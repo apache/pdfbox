@@ -58,6 +58,10 @@ public class PDFParser extends BaseParser
 
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
+    
+    private static final String PDF_DEFAULT_VERSION = "1.4";
+    private static final String FDF_DEFAULT_VERSION = "1.0";
+    
     /**
      * A list of duplicate objects found when Parsing the PDF
      * File.
@@ -352,20 +356,39 @@ public class PDFParser extends BaseParser
          */
         if (header.startsWith(PDF_HEADER))
         {
-            if(!header.matches(PDF_HEADER + "\\d.\\d"))
+            if (!header.matches(PDF_HEADER + "\\d.\\d"))
             {
-                String headerGarbage = header.substring(PDF_HEADER.length()+3, header.length()) + "\n";
-                header = header.substring(0, PDF_HEADER.length()+3);
-                pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+
+                if (header.length() < PDF_HEADER.length() + 3)
+                {
+                    // No version number at all, set to 1.4 as default
+                    header = PDF_HEADER + PDF_DEFAULT_VERSION;
+                    LOG.debug("No pdf version found, set to " + PDF_DEFAULT_VERSION + " as default.");
+                }
+                else
+                {
+                    String headerGarbage = header.substring(PDF_HEADER.length() + 3, header.length()) + "\n";
+                    header = header.substring(0, PDF_HEADER.length() + 3);
+                    pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+                }
             }
         }
         else
         {
-            if(!header.matches(FDF_HEADER + "\\d.\\d"))
+            if (!header.matches(FDF_HEADER + "\\d.\\d"))
             {
-                String headerGarbage = header.substring(FDF_HEADER.length()+3, header.length()) + "\n";
-                header = header.substring(0, FDF_HEADER.length()+3);
-                pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+                if (header.length() < FDF_HEADER.length() + 3)
+                {
+                    // No version number at all, set to 1.0 as default
+                    header = FDF_HEADER + FDF_DEFAULT_VERSION;
+                    LOG.debug("No fdf version found, set to " + FDF_DEFAULT_VERSION + " as default.");
+                }
+                else
+                {
+                    String headerGarbage = header.substring(FDF_HEADER.length() + 3, header.length()) + "\n";
+                    header = header.substring(0, FDF_HEADER.length() + 3);
+                    pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+                }
             }
         }
         document.setHeaderString(header);

@@ -21,14 +21,14 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * This class is based on code from Apache Batik a subproject of Apache XMLGraphics.
- * see http://xmlgraphics.apache.org/batik/ for further details.
+ * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
+ * http://xmlgraphics.apache.org/batik/ for further details.
  */
-public class GlyfCompositeComp 
+public class GlyfCompositeComp
 {
 
     // Flags for composite glyphs.
-    
+
     /**
      * If set, the arguments are words; otherwise, they are bytes.
      */
@@ -62,8 +62,7 @@ public class GlyfCompositeComp
      */
     protected static final short WE_HAVE_INSTRUCTIONS = 0x0100;
     /**
-     * If set, this forces the aw and lsb (and rsb) for the composite to be equal to
-     * those from this original glyph.
+     * If set, this forces the aw and lsb (and rsb) for the composite to be equal to those from this original glyph.
      */
     protected static final short USE_MY_METRICS = 0x0200;
 
@@ -72,7 +71,7 @@ public class GlyfCompositeComp
     private short argument1;
     private short argument2;
     private short flags;
-    private int    glyphIndex;
+    private int glyphIndex;
     private double xscale = 1.0;
     private double yscale = 1.0;
     private double scale01 = 0.0;
@@ -88,49 +87,50 @@ public class GlyfCompositeComp
      * @param bais the stream to be read
      * @throws IOException is thrown if something went wrong
      */
-    protected GlyfCompositeComp(TTFDataStream bais) throws IOException 
+    protected GlyfCompositeComp(TTFDataStream bais) throws IOException
     {
         flags = bais.readSignedShort();
         glyphIndex = bais.readUnsignedShort();// number of glyph in a font is uint16
 
         // Get the arguments as just their raw values
-        if ((flags & ARG_1_AND_2_ARE_WORDS) != 0) 
+        if ((flags & ARG_1_AND_2_ARE_WORDS) != 0)
         {
             argument1 = bais.readSignedShort();
             argument2 = bais.readSignedShort();
-        } 
-        else 
+        }
+        else
         {
-            argument1 = (short) bais.read();
-            argument2 = (short) bais.read();
+            argument1 = (short) bais.readUnsignedByte();
+            argument2 = (short) bais.readUnsignedByte();
         }
 
         // Assign the arguments according to the flags
-        if ((flags & ARGS_ARE_XY_VALUES) != 0) 
+        if ((flags & ARGS_ARE_XY_VALUES) != 0)
         {
             xtranslate = argument1;
             ytranslate = argument2;
-        } 
-        else 
+        }
+        else
         {
+            // TODO unused?
             point1 = argument1;
             point2 = argument2;
         }
 
         // Get the scale values (if any)
-        if ((flags & WE_HAVE_A_SCALE) != 0) 
+        if ((flags & WE_HAVE_A_SCALE) != 0)
         {
             int i = bais.readSignedShort();
             xscale = yscale = (double) i / (double) 0x4000;
-        } 
-        else if ((flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0) 
+        }
+        else if ((flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0)
         {
             short i = bais.readSignedShort();
             xscale = (double) i / (double) 0x4000;
             i = bais.readSignedShort();
             yscale = (double) i / (double) 0x4000;
-        } 
-        else if ((flags & WE_HAVE_A_TWO_BY_TWO) != 0) 
+        }
+        else if ((flags & WE_HAVE_A_TWO_BY_TWO) != 0)
         {
             int i = bais.readSignedShort();
             xscale = (double) i / (double) 0x4000;
@@ -145,149 +145,165 @@ public class GlyfCompositeComp
 
     /**
      * Sets the first index.
+     * 
      * @param idx the first index
      */
-    public void setFirstIndex(int idx) 
+    public void setFirstIndex(int idx)
     {
         firstIndex = idx;
     }
 
     /**
      * Returns the first index.
+     * 
      * @return the first index.
      */
-    public int getFirstIndex() 
+    public int getFirstIndex()
     {
         return firstIndex;
     }
 
     /**
      * Sets the index for the first contour.
+     * 
      * @param idx the index of the first contour
      */
-    public void setFirstContour(int idx) 
+    public void setFirstContour(int idx)
     {
         firstContour = idx;
     }
 
     /**
      * Returns the index of the first contour.
+     * 
      * @return the index of the first contour.
      */
-    public int getFirstContour() 
+    public int getFirstContour()
     {
         return firstContour;
     }
 
     /**
      * Returns argument 1.
+     * 
      * @return argument 1.
      */
-    public short getArgument1() 
+    public short getArgument1()
     {
         return argument1;
     }
 
     /**
      * Returns argument 2.
+     * 
      * @return argument 2.
      */
-    public short getArgument2() 
+    public short getArgument2()
     {
         return argument2;
     }
 
     /**
      * Returns the flags of the glyph.
+     * 
      * @return the flags.
      */
-    public short getFlags() 
+    public short getFlags()
     {
         return flags;
     }
 
     /**
      * Returns the index of the first contour.
+     * 
      * @return index of the first contour.
      */
-    public int getGlyphIndex() 
+    public int getGlyphIndex()
     {
         return glyphIndex;
     }
 
     /**
      * Returns the scale-01 value.
+     * 
      * @return the scale-01 value.
      */
-    public double getScale01() 
+    public double getScale01()
     {
         return scale01;
     }
 
     /**
      * Returns the scale-10 value.
+     * 
      * @return the scale-10 value.
      */
-    public double getScale10() 
+    public double getScale10()
     {
         return scale10;
     }
 
     /**
      * Returns the x-scaling value.
+     * 
      * @return the x-scaling value.
      */
-    public double getXScale() 
+    public double getXScale()
     {
         return xscale;
     }
 
     /**
      * Returns the y-scaling value.
+     * 
      * @return the y-scaling value.
      */
-    public double getYScale() 
+    public double getYScale()
     {
         return yscale;
     }
 
     /**
      * Returns the x-translation value.
+     * 
      * @return the x-translation value.
      */
-    public int getXTranslate() 
+    public int getXTranslate()
     {
         return xtranslate;
     }
 
     /**
      * Returns the y-translation value.
+     * 
      * @return the y-translation value.
      */
-    public int getYTranslate() 
+    public int getYTranslate()
     {
         return ytranslate;
     }
 
     /**
      * Transforms an x-coordinate of a point for this component.
+     * 
      * @param x The x-coordinate of the point to transform
      * @param y The y-coordinate of the point to transform
      * @return The transformed x-coordinate
      */
-    public int scaleX(int x, int y) 
+    public int scaleX(int x, int y)
     {
-        return Math.round((float)(x * xscale + y * scale10));
+        return Math.round((float) (x * xscale + y * scale10));
     }
 
     /**
      * Transforms a y-coordinate of a point for this component.
+     * 
      * @param x The x-coordinate of the point to transform
      * @param y The y-coordinate of the point to transform
      * @return The transformed y-coordinate
      */
-    public int scaleY(int x, int y) 
+    public int scaleY(int x, int y)
     {
-        return Math.round((float)(x * scale01 + y * yscale));
+        return Math.round((float) (x * scale01 + y * yscale));
     }
 }

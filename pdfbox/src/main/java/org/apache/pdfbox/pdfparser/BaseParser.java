@@ -47,7 +47,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * PDFParser and the COSStreamParser.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.61 $
+ * 
  */
 public abstract class BaseParser
 {
@@ -371,6 +371,7 @@ public abstract class BaseParser
                 }
                 else
                 {
+                    value.setDirect(true);
                     obj.setItem( key, value );
                 }
             }

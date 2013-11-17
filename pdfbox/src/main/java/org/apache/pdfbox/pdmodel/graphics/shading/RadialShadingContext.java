@@ -39,7 +39,6 @@ import org.apache.pdfbox.util.Matrix;
  * This class represents the PaintContext of an radial shading.
  * 
  * @author lehmi
- * @version $Revision: $
  * 
  */
 public class RadialShadingContext implements PaintContext 
@@ -52,6 +51,8 @@ public class RadialShadingContext implements PaintContext
 
     private float[] coords;
     private float[] domain;
+    private int[] extend0Values;
+    private int[] extend1Values;
     private boolean[] extend;
     private double x1x0; 
     private double y1y0;
@@ -216,11 +217,14 @@ public class RadialShadingContext implements PaintContext
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         float[] input = new float[1];
         float inputValue;
+        boolean saveExtend0 = false;
+        boolean saveExtend1 = false;
         int[] data = new int[w * h * 3];
         for (int j = 0; j < h; j++) 
         {
             for (int i = 0; i < w; i++) 
             {
+                int index = (j * w + i) * 3;
                 float[] inputValues = calculateInputValues(x + i, y + j);
                 // choose 1 of the 2 values
                 if (inputValues[0] >= domain[0] && inputValues[0] <= domain[1])
@@ -256,7 +260,17 @@ public class RadialShadingContext implements PaintContext
                     // the shading has to be extended if extend[0] == true
                     if (extend[0])
                     {
-                        inputValue = domain[0];
+                        if (extend0Values == null)
+                        {
+                            inputValue = domain[0];
+                            saveExtend0 = true;
+                        }
+                        else
+                        {
+                            // use the chached values
+                            System.arraycopy(extend0Values, 0, data, index, 3);
+                            continue;
+                        }
                     }
                     else 
                     {
@@ -269,7 +283,17 @@ public class RadialShadingContext implements PaintContext
                     // the shading has to be extended if extend[1] == true
                     if (extend[1])
                     {
-                        inputValue = domain[1];
+                        if (extend1Values == null)
+                        {
+                            inputValue = domain[1];
+                            saveExtend1 = true;
+                        }
+                        else
+                        {
+                            // use the chached values 
+                            System.arraycopy(extend1Values, 0, data, index, 3);
+                            continue;
+                        }
                     }
                     else 
                     {
@@ -278,7 +302,6 @@ public class RadialShadingContext implements PaintContext
                 }
                 input[0] = (float)(domain[0] + (d1d0*inputValue));
                 float[] values = null;
-                int index = (j * w + i) * 3;
                 try 
                 {
                     values = function.eval(input);
@@ -299,6 +322,18 @@ public class RadialShadingContext implements PaintContext
                 data[index] = (int)(values[0]*255);
                 data[index+1] = (int)(values[1]*255);
                 data[index+2] = (int)(values[2]*255);
+                if (saveExtend0)
+                {
+                    // chache values
+                    extend0Values = new int[3];
+                    System.arraycopy(data, index, extend0Values, 0, 3);
+                }
+                if (saveExtend1)
+                {
+                    // chache values
+                    extend1Values = new int[3];
+                    System.arraycopy(data, index, extend1Values, 0, 3);
+                }
             }
         }
         raster.setPixels(0, 0, w, h, data);
