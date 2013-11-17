@@ -195,6 +195,7 @@ public class PDPageable implements Pageable, Printable
                 PDRectangle cropBox = page.findCropBox();
                 PageDrawer drawer = new PageDrawer();
                 drawer.drawPage( graphics, page, cropBox.createDimension() );
+                drawer.dispose();
                 return PAGE_EXISTS;
             }
             catch( IOException io )
