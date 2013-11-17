@@ -799,7 +799,8 @@ public class PDPage implements COSObjectable, Printable
         graphics.scale( scaling, scaling );
         PageDrawer drawer = new PageDrawer();
         drawer.drawPage( graphics, this, pageDimension );
-
+        drawer.dispose();
+        graphics.dispose();
         return retval;
     }
 
@@ -882,6 +883,7 @@ public class PDPage implements COSObjectable, Printable
             PageDrawer drawer = new PageDrawer();
             PDRectangle cropBox = findCropBox();
             drawer.drawPage( graphics, this, cropBox.createDimension() );
+            drawer.dispose();
             return PAGE_EXISTS;
         }
         catch( IOException io )

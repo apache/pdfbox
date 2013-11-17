@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -98,7 +99,9 @@ public class JBIG2Filter implements Filter
                 }
                 BufferedImage packedImage = 
                         new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-                packedImage.getGraphics().drawImage(bi, 0, 0, null);
+                Graphics graphics = packedImage.getGraphics();  
+                graphics.drawImage(bi, 0, 0, null);
+                graphics.dispose();
                 bi = packedImage;
             }
             DataBuffer dBuf = bi.getData().getDataBuffer();

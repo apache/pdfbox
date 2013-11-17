@@ -183,6 +183,7 @@ public abstract class PDXObjectImage extends PDXObject
         // TODO DecodeArray == [1,0]
         graphics.setComposite(AlphaComposite.DstIn);
         graphics.drawImage(baseImage, null, 0, 0);
+        graphics.dispose();
         return stencilMask;
     }
     
@@ -205,6 +206,7 @@ public abstract class PDXObjectImage extends PDXObject
     	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
     	   	 graphics.setComposite(AlphaComposite.DstIn);
     	   	 graphics.drawImage(maskImage, null, 0, 0);
+    	   	 graphics.dispose();
     	   	 return newImage;
         }
         else

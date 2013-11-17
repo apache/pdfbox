@@ -163,6 +163,17 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * Remove all cached resources.
+     */
+    public void dispose()
+    {
+        graphics = null;
+        linePath = null;
+        page = null;
+        pageSize = null;
+    }
+
+    /**
      * You should override this method if you want to perform an action when a
      * text is being processed.
      *
