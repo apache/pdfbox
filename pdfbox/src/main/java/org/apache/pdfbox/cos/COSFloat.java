@@ -18,9 +18,7 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
+import java.math.BigDecimal;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
@@ -32,7 +30,8 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
  */
 public class COSFloat extends COSNumber
 {
-    private float value;
+    private BigDecimal value;
+    private String valueAsString;
 
     /**
      * Constructor.
@@ -41,7 +40,8 @@ public class COSFloat extends COSNumber
      */
     public COSFloat( float aFloat )
     {
-        value = aFloat;
+        valueAsString = String.valueOf(aFloat);
+        value = new BigDecimal(valueAsString);
     }
 
     /**
@@ -55,7 +55,8 @@ public class COSFloat extends COSNumber
     {
         try
         {
-            value = Float.parseFloat( aFloat );
+            valueAsString = aFloat; 
+            value = new BigDecimal( valueAsString );
         }
         catch( NumberFormatException e )
         {
@@ -70,7 +71,8 @@ public class COSFloat extends COSNumber
      */
     public void setValue( float floatValue )
     {
-        value = floatValue;
+        valueAsString = String.valueOf(floatValue);
+        value = new BigDecimal(valueAsString);
     }
 
     /**
@@ -80,7 +82,7 @@ public class COSFloat extends COSNumber
      */
     public float floatValue()
     {
-        return value;
+        return value.floatValue();
     }
 
     /**
@@ -90,17 +92,17 @@ public class COSFloat extends COSNumber
      */
     public double doubleValue()
     {
-        return value;
+        return value.doubleValue();
     }
 
     /**
-     * This will get the integer value of this object.
+     * This will get the long value of this object.
      *
-     * @return The int value of this object,
+     * @return The long value of this object,
      */
     public long longValue()
     {
-        return (long)value;
+        return value.longValue();
     }
 
     /**
@@ -110,7 +112,7 @@ public class COSFloat extends COSNumber
      */
     public int intValue()
     {
-        return (int)value;
+        return value.intValue();
     }
 
     /**
@@ -118,7 +120,7 @@ public class COSFloat extends COSNumber
      */
     public boolean equals( Object o )
     {
-        return o instanceof COSFloat && Float.floatToIntBits(((COSFloat)o).value) == Float.floatToIntBits(value);
+        return o instanceof COSFloat && Float.floatToIntBits(((COSFloat)o).value.floatValue()) == Float.floatToIntBits(value.floatValue());
     }
 
     /**
@@ -126,7 +128,7 @@ public class COSFloat extends COSNumber
      */
     public int hashCode()
     {
-        return Float.floatToIntBits(value);
+        return value.hashCode();
     }
 
     /**
@@ -157,12 +159,6 @@ public class COSFloat extends COSNumber
      */
     public void writePDF( OutputStream output ) throws IOException
     {
-        DecimalFormat formatDecimal = (DecimalFormat)NumberFormat.getNumberInstance();
-        formatDecimal.setMaximumFractionDigits( 5 );
-        formatDecimal.setGroupingUsed( false );
-        DecimalFormatSymbols symbols = formatDecimal.getDecimalFormatSymbols();
-        symbols.setDecimalSeparator( '.' );
-        formatDecimal.setDecimalFormatSymbols( symbols );
-        output.write(formatDecimal.format( value ).getBytes("ISO-8859-1"));
+        output.write(valueAsString.getBytes("ISO-8859-1"));
     }
 }
