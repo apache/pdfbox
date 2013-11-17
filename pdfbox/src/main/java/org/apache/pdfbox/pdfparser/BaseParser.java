@@ -994,10 +994,11 @@ public abstract class BaseParser
             }
             else
             {
-                // if invalid chars was found
+                // if invalid chars was found: discard last
+                // hex character if it is not part of a pair
                 if (sBuf.length()%2!=0)
                 {
-                    sBuf.deleteCharAt(strmBuf.length-1);
+                    sBuf.deleteCharAt(sBuf.length()-1);
                 }
                 
                 // read till the closing bracket was found

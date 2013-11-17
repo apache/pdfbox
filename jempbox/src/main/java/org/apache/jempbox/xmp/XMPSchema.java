@@ -36,7 +36,7 @@ import org.w3c.dom.NodeList;
  * subclasses for access to specific properties.
  * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.8 $
+ * 
  */
 public class XMPSchema
 {
@@ -246,7 +246,15 @@ public class XMPSchema
      */
     public void setDateProperty(String propertyName, Calendar date)
     {
-        setTextProperty(propertyName, DateConverter.toISO8601(date));
+        if (date != null)
+        {
+            setTextProperty(propertyName, DateConverter.toISO8601(date));
+        }
+        else
+        {
+            // remove the value for the given property 
+            setTextProperty(propertyName, null);
+        }
     }
 
     /**
@@ -820,7 +828,8 @@ public class XMPSchema
                     }
                 }
             }
-            else if (property.getChildNodes().getLength() == 1 && Node.TEXT_NODE == property.getFirstChild().getNodeType())
+            else if (property.getChildNodes().getLength() == 1 
+                    && Node.TEXT_NODE == property.getFirstChild().getNodeType())
             {
                 retval = property.getFirstChild().getNodeValue();
             }

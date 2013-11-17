@@ -193,9 +193,21 @@ public class PreflightConfiguration
 
     public void replaceProcess(String processName, Class<? extends ValidationProcess> process)
     {
-        this.processes.put(processName, process);
+        if (process == null) 
+        {
+            removeProcess(processName);
+        }
+        else 
+        {
+            this.processes.put(processName, process);
+        }
     }
 
+    public void removeProcess(String processName)
+    {
+        this.processes.remove(processName);
+    }
+    
     public Collection<String> getPageValidationProcessNames()
     {
         return this.innerProcesses.keySet();
@@ -203,9 +215,19 @@ public class PreflightConfiguration
 
     public void replacePageProcess(String processName, Class<? extends ValidationProcess> process)
     {
-        this.innerProcesses.put(processName, process);
+        if (process == null) {
+            removePageProcess(processName);    
+        }
+        else {
+            this.innerProcesses.put(processName, process);
+        }
     }
 
+    public void removePageProcess(String processName)
+    {
+        this.innerProcesses.remove(processName);
+    }
+    
     public boolean isErrorOnMissingProcess()
     {
         return errorOnMissingProcess;

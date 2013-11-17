@@ -94,18 +94,15 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * EOF-marker.
      */
-    protected static final char[] EOF_MARKER = new char[]
-    { '%', '%', 'E', 'O', 'F' };
+    protected static final char[] EOF_MARKER = new char[] { '%', '%', 'E', 'O', 'F' };
     /**
      * StartXRef-marker.
      */
-    protected static final char[] STARTXREF_MARKER = new char[]
-    { 's', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f' };
+    protected static final char[] STARTXREF_MARKER = new char[] { 's', 't', 'a', 'r', 't', 'x', 'r', 'e', 'f' };
     /**
      * obj-marker.
      */
-    protected static final char[] OBJ_MARKER = new char[]
-    { 'o', 'b', 'j' };
+    protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
 
     private final File pdfFile;
     private final RandomAccessBufferedFileInputStream raStream;
@@ -365,15 +362,6 @@ public class NonSequentialPDFParser extends PDFParser
         COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
 
-        // JIRA-1557 - ensure that all COSObject are loaded in the trailer
-        for (COSBase trailerEntry : trailer.getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, false);
-            }
-        }
         // ---- prepare encryption if necessary
         COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
         if (trailerEncryptItem != null)
@@ -413,11 +401,23 @@ public class NonSequentialPDFParser extends PDFParser
             catch (Exception e)
             {
                 throw new IOException("Error (" + e.getClass().getSimpleName()
-                        + ") while creating security handler for decryption: " 
-                        + e.getMessage() /*, e TODO: remove remark with Java 1.6 */);
+                        + ") while creating security handler for decryption: " + e.getMessage() /*
+                                                                                                 * , e TODO: remove
+                                                                                                 * remark with Java 1.6
+                                                                                                 */);
             }
         }
 
+        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
+        // PDFBOX-1606 - after securityHandler has been instantiated
+        for (COSBase trailerEntry : trailer.getValues())
+        {
+            if (trailerEntry instanceof COSObject)
+            {
+                COSObject tmpObj = (COSObject) trailerEntry;
+                parseObjectDynamically(tmpObj, false);
+            }
+        }
         // ---- parse catalog or root object
         COSObject root = (COSObject) xrefTrailerResolver.getTrailer().getItem(COSName.ROOT);
 
@@ -1049,9 +1049,7 @@ public class NonSequentialPDFParser extends PDFParser
                             .intValue());
 
                     if (!(parsedObjects.contains(objId) /*
-                                                         * ||
-                                                         * document.hasObjectInPool
-                                                         * ( objKey )
+                                                         * || document.hasObjectInPool ( objKey )
                                                          */))
                     {
                         Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
@@ -1223,8 +1221,7 @@ public class NonSequentialPDFParser extends PDFParser
                         // this is not legal
                         // the combination of a dict and the stream/endstream
                         // forms a complete stream object
-                        throw new IOException("Stream not preceded by dictionary (offset: " 
-                        + offsetOrObjstmObNr + ").");
+                        throw new IOException("Stream not preceded by dictionary (offset: " + offsetOrObjstmObNr + ").");
                     }
                     skipSpaces();
                     endObjectKey = readLine();
@@ -1483,8 +1480,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
 
             /*
-             * This needs to be dic.getItem because when we are parsing, the
-             * underlying object might still be null.
+             * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
              */
             COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
             if (streamLengthObj == null)

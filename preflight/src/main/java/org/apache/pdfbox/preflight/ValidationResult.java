@@ -78,7 +78,7 @@ public class ValidationResult
      * Create a Validation Result object. This constructor force the isValid to false and add all the given errors to
      * the list or ValidationErrors.
      * 
-     * @param error
+     * @param errors
      *            if error is null, no error is added to the list.
      */
     public ValidationResult(List<ValidationError> errors)
@@ -332,6 +332,30 @@ public class ValidationResult
         public void setWarning(boolean isWarning)
         {
             this.isWarning = isWarning;
+        }
+
+        @Override
+        public int hashCode() {
+            return errorCode.hashCode();
+        }
+
+        public boolean equals (Object o) {
+            if (o instanceof ValidationError) {
+                ValidationError ve = (ValidationError)o;
+                // check errorCode
+                if (errorCode==null && ve.errorCode!=null) {
+                    return false;
+                } else if (!errorCode.equals(ve.errorCode)) {
+                    return false;
+                }  else if (!details.equals(ve.details)) {
+                    return false;
+                }
+                // check warning
+                return isWarning==ve.isWarning;
+                
+            } else {
+                return false;
+            }
         }
 
     }

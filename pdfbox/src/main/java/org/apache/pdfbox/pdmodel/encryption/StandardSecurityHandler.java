@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
@@ -41,7 +43,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
  *
- * @version $Revision: 1.5 $
  */
 
 public class StandardSecurityHandler extends SecurityHandler
@@ -64,7 +65,7 @@ public class StandardSecurityHandler extends SecurityHandler
     /**
      * Protection policy class for this handler.
      */
-    public static final Class PROTECTION_POLICY_CLASS = StandardProtectionPolicy.class;
+    public static final Class<?> PROTECTION_POLICY_CLASS = StandardProtectionPolicy.class;
 
     /**
      * Standard padding for encryption.
@@ -124,14 +125,15 @@ public class StandardSecurityHandler extends SecurityHandler
      */
     private int computeRevisionNumber()
     {
-        if(version == 2
-            && !policy.getPermissions().canFillInForm()
-            && !policy.getPermissions().canExtractForAccessibility()
-            && !policy.getPermissions().canPrintDegraded() )
+        if(version < 2 && !policy.getPermissions().hasAnyRevision3PermissionSet())
         {
             return 2;
         }
-        return 3;
+        if ( version == 2 || version == 3 || policy.getPermissions().hasAnyRevision3PermissionSet())
+        {
+            return 3;
+        }
+        return 4;
     }
 
     /**
@@ -170,7 +172,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @throws CryptographyException If there is an error with decryption.
      */
     public void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
-    																 DecryptionMaterial decryptionMaterial)
+            DecryptionMaterial decryptionMaterial)
         throws CryptographyException, IOException
     {
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
@@ -270,8 +272,8 @@ public class StandardSecurityHandler extends SecurityHandler
         if (stdCryptFilterDictionary != null)
         {
             COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
-
-            if (cryptFilterMethod != null) {
+            if (cryptFilterMethod != null) 
+            {
                 setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()));
             }
         }
@@ -380,6 +382,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id.
      * @param encRevision The encryption algorithm revision.
      * @param length The encryption key length.
+     * @param encryptMetadata The encryption metadata
      *
      * @return True If the ownerPassword param is the owner password.
      *
@@ -461,26 +464,7 @@ public class StandardSecurityHandler extends SecurityHandler
             }
             else if( encRevision == 3 || encRevision == 4)
             {
-                /**
                 byte[] iterationKey = new byte[ rc4Key.length ];
-                byte[] dataToEncrypt = o;
-                for( int i=19; i>=0; i-- )
-                {
-                    System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
-                    for( int j=0; j< iterationKey.length; j++ )
-                    {
-                        iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
-                    }
-                    rc4.setKey( iterationKey );
-                    rc4.write( dataToEncrypt, result );
-                    dataToEncrypt = result.toByteArray();
-                    result.reset();
-                }
-                result.write( dataToEncrypt, 0, dataToEncrypt.length );
-                */
-                byte[] iterationKey = new byte[ rc4Key.length ];
-
-
                 byte[] otemp = new byte[ o.length ]; //sm
                 System.arraycopy( o, 0, otemp, 0, o.length ); //sm
                 rc4.write( o, result);//sm
@@ -498,10 +482,7 @@ public class StandardSecurityHandler extends SecurityHandler
                     otemp = result.toByteArray(); //sm
                 }
             }
-
-
             return result.toByteArray();
-
         }
         catch( NoSuchAlgorithmException e )
         {
@@ -518,6 +499,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
+     * @param encryptMetadata The encryption metadata
      *
      * @return The encrypted key bytes.
      *
@@ -606,6 +588,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id.
      * @param encRevision The revision of the encryption.
      * @param length The length of the encryption key.
+     * @param encryptMetadata The encryption metadata
      *
      * @return The user password.
      *
@@ -790,6 +773,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
+     * @param encryptMetadata The encryption metadata
      *
      * @return true If the plaintext password is the user password.
      *
@@ -814,7 +798,7 @@ public class StandardSecurityHandler extends SecurityHandler
             if( encRevision == 2 )
             {
                 //STEP 2
-                matches = arraysEqual( u, computedValue );
+                matches = Arrays.equals(u, computedValue);
             }
             else if( encRevision == 3 || encRevision == 4 )
             {
@@ -838,6 +822,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
+     * @param encryptMetadata The encryption metadata
      *
      * @return true If the plaintext password is the user password.
      *
@@ -869,6 +854,7 @@ public class StandardSecurityHandler extends SecurityHandler
      * @param id The document id.
      * @param encRevision The encryption algorithm revision.
      * @param length The encryption key length.
+     * @param encryptMetadata The encryption metadata
      *
      * @return True If the ownerPassword param is the owner password.
      *
@@ -892,29 +878,19 @@ public class StandardSecurityHandler extends SecurityHandler
 
     private static final boolean arraysEqual( byte[] first, byte[] second, int count )
     {
-        boolean equal = first.length >= count && second.length >= count;
-        for( int i=0; i<count && equal; i++ )
+        // both arrays have to have a minimum length of count
+        if (first.length < count || second.length < count)
         {
-            equal = first[i] == second[i];
+            return false;
         }
-        return equal;
+        for( int i=0; i<count; i++ )
+        {
+            if( first[i] != second[i])
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
-    /**
-     * This will compare two byte[] for equality.
-     *
-     * @param first The first byte array.
-     * @param second The second byte array.
-     *
-     * @return true If the arrays contain the exact same data.
-     */
-    private static final boolean arraysEqual( byte[] first, byte[] second )
-    {
-        boolean equal = first.length == second.length;
-        for( int i=0; i<first.length && equal; i++ )
-        {
-            equal = first[i] == second[i];
-        }
-        return equal;
-    }
 }

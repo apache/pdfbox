@@ -185,7 +185,8 @@ public class PDFParser extends BaseParser
                 }
                 try
                 {
-                    wasLastParsedObjectEOF = parseObject();
+                    // don't reset flag to false if it is already true
+                    wasLastParsedObjectEOF |= parseObject();
                 }
                 catch(IOException e)
                 {
