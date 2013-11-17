@@ -19,52 +19,55 @@ package org.apache.pdfbox.util;
 import java.util.HashMap;
 
 /**
- * This class allows a caller to normalize text in various ways.
- * It will load the ICU4J jar file if it is defined on the classpath.
+ * This class allows a caller to normalize text in various ways. It will load the ICU4J jar file if it is defined on the
+ * classpath.
  * 
  * @author <a href="mailto:carrier@digital-evidence.org">Brian Carrier</a>
- * @version $Revision: 1.0 $
+ * 
  */
-public class TextNormalize 
+public class TextNormalize
 {
     private ICU4JImpl icu4j = null;
-    private static final HashMap DIACHASH = new HashMap();
+    private static final HashMap<Integer, String> DIACHASH = new HashMap<Integer, String>();
     private String outputEncoding;
+
+    static
+    {
+        populateDiacHash();
+    }
 
     /**
      * 
      * @param encoding The Encoding that the text will eventually be written as (or null)
      */
-    public TextNormalize(String encoding) 
+    public TextNormalize(String encoding)
     {
         findICU4J();
-        populateDiacHash();
-        this.outputEncoding = encoding;
+        outputEncoding = encoding;
     }
 
-    private void findICU4J() 
+    private void findICU4J()
     {
         // see if we can load the icu4j classes from the classpath
-        try 
+        try
         {
             this.getClass().getClassLoader().loadClass("com.ibm.icu.text.Bidi");
             this.getClass().getClassLoader().loadClass("com.ibm.icu.text.Normalizer");
             icu4j = new ICU4JImpl();
-        } 
-        catch (ClassNotFoundException e) 
+        }
+        catch (ClassNotFoundException e)
         {
             icu4j = null;
         }
     }
+
     /*
-     * Adds non-decomposing diacritics to the hash with their related
-     * combining character. These are values that the unicode spec claims
-     * are equivalent but are not mapped in the form NFKC normalization method.
-     * Determined by going through the Combining Diacritical Marks section of 
-     * the Unicode spec and identifying which characters are not mapped to by 
-     * the normalization. 
+     * Adds non-decomposing diacritics to the hash with their related combining character. These are values that the
+     * unicode spec claims are equivalent but are not mapped in the form NFKC normalization method. Determined by going
+     * through the Combining Diacritical Marks section of the Unicode spec and identifying which characters are not
+     * mapped to by the normalization.
      */
-    private void populateDiacHash()
+    private static void populateDiacHash()
     {
         DIACHASH.put(new Integer(0x0060), "\u0300");
         DIACHASH.put(new Integer(0x02CB), "\u0300");
@@ -100,74 +103,70 @@ public class TextNormalize
     }
 
     /**
-     * Takes a line of text in presentation order and converts it to logical order.
-     * For most text other than Arabic and Hebrew, the presentation and logical
-     * orders are the same. However, for Arabic and Hebrew, they are different and
-     * if the text involves both RTL and LTR text then the Unicode BIDI algorithm
-     * must be used to determine how to map between them.  
+     * Takes a line of text in presentation order and converts it to logical order. For most text other than Arabic and
+     * Hebrew, the presentation and logical orders are the same. However, for Arabic and Hebrew, they are different and
+     * if the text involves both RTL and LTR text then the Unicode BIDI algorithm must be used to determine how to map
+     * between them.
      * 
      * @param str Presentation form of line to convert (i.e. left most char is first char)
      * @param isRtlDominant true if the PAGE has a dominant right to left ordering
      * @return Logical form of string (or original string if ICU4J library is not on classpath)
      */
-    public String makeLineLogicalOrder(String str, boolean isRtlDominant) 
+    public String makeLineLogicalOrder(String str, boolean isRtlDominant)
     {
-        if (icu4j != null) 
+        if (icu4j != null)
         {
             return icu4j.makeLineLogicalOrder(str, isRtlDominant);
         }
-        else 
+        else
         {
             return str;
         }
     }
 
     /**
-     * Normalize the presentation forms of characters in the string.
-     * For example, convert the single "fi" ligature to "f" and "i".
+     * Normalize the presentation forms of characters in the string. For example, convert the single "fi" ligature to
+     * "f" and "i".
      * 
      * @param str String to normalize
      * @return Normalized string (or original string if ICU4J library is not on classpath)
      */
-    public String normalizePres(String str) 
+    public String normalizePres(String str)
     {
-        if (icu4j != null) 
+        if (icu4j != null)
         {
             return icu4j.normalizePres(str);
         }
-        else 
+        else
         {
             return str;
         }
     }
-    
+
     /**
-     * Normalize the diacritic, for example, 
-     * convert non-combining diacritic characters to their combining
-     * counterparts. 
+     * Normalize the diacritic, for example, convert non-combining diacritic characters to their combining counterparts.
      * 
-     * @param str String to normalize 
+     * @param str String to normalize
      * @return Normalized string (or original string if ICU4J library is not on classpath)
      */
     public String normalizeDiac(String str)
     {
         /*
-         * Unicode contains special combining forms of the diacritic characters
-         * and we want to use these. 
+         * Unicode contains special combining forms of the diacritic characters and we want to use these.
          */
-        if(outputEncoding != null && outputEncoding.toUpperCase().startsWith("UTF"))
+        if (outputEncoding != null && outputEncoding.toUpperCase().startsWith("UTF"))
         {
             Integer c = new Integer(str.charAt(0));
             // convert the characters not defined in the Unicode spec
-            if(DIACHASH.containsKey(c))
+            if (DIACHASH.containsKey(c))
             {
-                return (String)DIACHASH.get(c);
+                return (String) DIACHASH.get(c);
             }
-            else if (icu4j != null) 
+            else if (icu4j != null)
             {
                 return icu4j.normalizeDiac(str);
             }
-            else 
+            else
             {
                 return str;
             }

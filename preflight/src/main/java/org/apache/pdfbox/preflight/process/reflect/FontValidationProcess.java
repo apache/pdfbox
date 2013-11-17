@@ -32,6 +32,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE3;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -42,6 +43,8 @@ import org.apache.pdfbox.preflight.font.Type1FontValidator;
 import org.apache.pdfbox.preflight.font.Type3FontValidator;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+
 
 public class FontValidationProcess extends AbstractProcess
 {
@@ -49,17 +52,22 @@ public class FontValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() || !vPath.isExpectedType(PDFont.class))
-        {
-            throw new ValidationException("Font validation process needs at least one PDFont object");
+        if (vPath.isEmpty()) {
+            return;
         }
-
-        PDFont font = (PDFont) vPath.peek();
-        FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
-        if (fontContainer == null)
-        { // if fontContainer isn't null the font is already checked
-            FontValidator<? extends FontContainer> validator = getFontValidator(context, font);
-            validator.validate();
+        else if (!vPath.isExpectedType(PDFont.class)) 
+        {
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_INVALID_DATA, "Font validation process needs at least one PDFont object"));
+        } 
+        else
+        {
+            PDFont font = (PDFont) vPath.peek();
+            FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
+            if (fontContainer == null)
+            { // if fontContainer isn't null the font is already checked
+                FontValidator<? extends FontContainer> validator = getFontValidator(context, font);
+                if (validator != null) validator.validate();
+            }
         }
     }
 
@@ -70,7 +78,6 @@ public class FontValidationProcess extends AbstractProcess
      * @return
      */
     protected FontValidator<? extends FontContainer> getFontValidator(PreflightContext context, PDFont font)
-            throws ValidationException
     {
         String subtype = font.getSubType();
         if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype))
@@ -98,7 +105,8 @@ public class FontValidationProcess extends AbstractProcess
         }
         else
         {
-            throw new ValidationException("Unknown font type : " + subtype);
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE, "Unknown font type : " + subtype));
+            return null;
         }
     }
 

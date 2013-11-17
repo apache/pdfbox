@@ -940,11 +940,7 @@ public interface PreflightConstants
      * a category has an invalid value in one property description (must be internal or external)
      */
     String ERROR_METADATA_CATEGORY_PROPERTY_INVALID = "7.5.1";
-
-    /**
-     * the infor dictionary is corrupt or value can't be read
-     */
-    String ERROR_METADATA_DICT_INFO_CORRUPT = "7.12";
+    
     /**
      * Error about PDF processing : that is not necessary a specific PDF/A validation error
      * but a PDF specification requirement that isn't respected.
@@ -954,4 +950,8 @@ public interface PreflightConstants
      * A Mandatory element is missing
      */
     String ERROR_PDF_PROCESSING_MISSING = "8.1";
+    /**
+     * the infor dictionary is corrupt or value can't be read
+     */
+    String ERROR_METADATA_DICT_INFO_CORRUPT = "7.12";
 }

@@ -41,6 +41,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -54,14 +55,19 @@ public class ExtGStateValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class))
-        {
-            throw new ValidationException("ExtGState validation required at least a Resource dictionary");
+        if (vPath.isEmpty()) {
+            return;
         }
-
-        COSDictionary extGStatesDict = (COSDictionary) vPath.peek();
-        List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(context, extGStatesDict);
-        validateTransparencyRules(context, listOfExtGState);
+        else if (!vPath.isExpectedType(COSDictionary.class)) 
+        {
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_XOBJECT_INVALID_TYPE, "ExtGState validation required at least a Resource dictionary"));
+        }
+        else
+        {
+            COSDictionary extGStatesDict = (COSDictionary) vPath.peek();
+            List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(context, extGStatesDict);
+            validateTransparencyRules(context, listOfExtGState);
+        }
     }
 
     /**
@@ -76,7 +82,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context, COSDictionary egsEntry)
             throws ValidationException
-    {
+            {
         List<COSDictionary> listOfExtGState = new ArrayList<COSDictionary>(0);
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary extGStates = COSUtils.getAsDictionary(egsEntry, cosDocument);
@@ -99,7 +105,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             }
         }
         return listOfExtGState;
-    }
+            }
 
     /**
      * Validate all ExtGState dictionaries of this container

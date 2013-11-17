@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -35,6 +36,8 @@ import org.apache.pdfbox.preflight.xobject.XObjFormValidator;
 import org.apache.pdfbox.preflight.xobject.XObjImageValidator;
 import org.apache.pdfbox.preflight.xobject.XObjPostscriptValidator;
 import org.apache.pdfbox.preflight.xobject.XObjectValidator;
+
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 public class GraphicObjectPageValidationProcess extends AbstractProcess
 {
@@ -62,14 +65,16 @@ public class GraphicObjectPageValidationProcess extends AbstractProcess
             }
             else
             {
-                throw new ValidationException("Invalid XObject subtype");
+                context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_XOBJECT_INVALID_TYPE, "Invalid XObject subtype"));
             }
         }
         else
         {
-            throw new ValidationException("Graphic validation process needs at least one PDFont object");
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT, "Graphic validation process needs at least one PDXObject"));
         }
 
-        validator.validate();
+        if (validator != null) {
+            validator.validate();
+        }
     }
 }

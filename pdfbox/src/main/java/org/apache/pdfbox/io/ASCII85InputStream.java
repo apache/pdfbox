@@ -17,14 +17,14 @@
 package org.apache.pdfbox.io;
 
 import java.io.FilterInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class represents an ASCII85 stream.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ *
  */
 public class ASCII85InputStream extends FilterInputStream
 {
@@ -35,12 +35,20 @@ public class ASCII85InputStream extends FilterInputStream
     private byte[] ascii;
     private byte[] b;
 
+    private static final char TERMINATOR = '~';
+    private static final char OFFSET = '!';
+    private static final char NEWLINE = '\n';
+    private static final char RETURN = '\r';
+    private static final char SPACE = ' ';
+    private static final char PADDING_U = 'u';
+    private static final char Z = 'z';
+
     /**
      * Constructor.
      *
      * @param is The input stream to actually read from.
      */
-    public ASCII85InputStream( InputStream is )
+    public ASCII85InputStream(InputStream is)
     {
         super(is);
         index = 0;
@@ -59,9 +67,9 @@ public class ASCII85InputStream extends FilterInputStream
      */
     public final int read() throws IOException
     {
-        if( index >= n )
+        if (index >= n)
         {
-            if(eof)
+            if (eof)
             {
                 return -1;
             }
@@ -70,69 +78,72 @@ public class ASCII85InputStream extends FilterInputStream
             byte z;
             do
             {
-                int zz=(byte)in.read();
-                if(zz==-1)
+                int zz = (byte) in.read();
+                if (zz == -1)
                 {
-                    eof=true;
+                    eof = true;
                     return -1;
                 }
-                z = (byte)zz;
-            }  while( z=='\n' || z=='\r' || z==' ');
+                z = (byte) zz;
+            } while (z == NEWLINE || z == RETURN || z == SPACE);
 
-            if (z == '~' || z=='x')
+            if (z == TERMINATOR)
             {
-                eof=true;
-                ascii=b=null;
+                eof = true;
+                ascii = b = null;
                 n = 0;
                 return -1;
             }
-            else if (z == 'z')
+            else if (z == Z)
             {
-                b[0]=b[1]=b[2]=b[3]=0;
+                b[0] = b[1] = b[2] = b[3] = 0;
                 n = 4;
             }
             else
             {
-                ascii[0]=z; // may be EOF here....
-                for (k=1;k<5;++k)
+                ascii[0] = z; // may be EOF here....
+                for (k = 1; k < 5; ++k)
                 {
                     do
                     {
-                        int zz=(byte)in.read();
-                        if(zz==-1)
+                        int zz = (byte) in.read();
+                        if (zz == -1)
                         {
-                            eof=true;
+                            eof = true;
                             return -1;
                         }
-                        z=(byte)zz;
-                    } while ( z=='\n' || z=='\r' || z==' ' );
-                    ascii[k]=z;
-                    if (z == '~' || z=='x')
+                        z = (byte) zz;
+                    } while (z == NEWLINE || z == RETURN || z == SPACE);
+                    ascii[k] = z;
+                    if (z == TERMINATOR)
                     {
+                        // don't include ~ as padding byte
+                        ascii[k] = (byte) PADDING_U;
                         break;
                     }
                 }
                 n = k - 1;
-                if ( n==0 )
+                if (n == 0)
                 {
                     eof = true;
                     ascii = null;
                     b = null;
                     return -1;
                 }
-                if ( k < 5 )
+                if (k < 5)
                 {
-                    for (++k; k < 5; ++k )
+                    for (++k; k < 5; ++k)
                     {
-                        ascii[k] = 0x21;
+                        // use 'u' for padding
+                        ascii[k] = (byte) PADDING_U;
                     }
-                    eof=true;
+                    eof = true;
                 }
                 // decode stream
-                long t=0;
-                for ( k=0; k<5; ++k)
+                long t = 0;
+                for (k = 0; k < 5; ++k)
                 {
-                    z=(byte)(ascii[k] - 0x21);
+                    z = (byte) (ascii[k] - OFFSET);
                     if (z < 0 || z > 93)
                     {
                         n = 0;
@@ -143,10 +154,10 @@ public class ASCII85InputStream extends FilterInputStream
                     }
                     t = (t * 85L) + z;
                 }
-                for ( k = 3; k>=0; --k)
+                for (k = 3; k >= 0; --k)
                 {
-                    b[k] = (byte)(t & 0xFFL);
-                    t>>>=8;
+                    b[k] = (byte) (t & 0xFFL);
+                    t >>>= 8;
                 }
             }
         }
@@ -166,24 +177,24 @@ public class ASCII85InputStream extends FilterInputStream
      */
     public final int read(byte[] data, int offset, int len) throws IOException
     {
-        if(eof && index>=n)
+        if (eof && index >= n)
         {
             return -1;
         }
-        for(int i=0;i<len;i++)
+        for (int i = 0; i < len; i++)
         {
-            if(index<n)
+            if (index < n)
             {
-                data[i+offset]=b[index++];
+                data[i + offset] = b[index++];
             }
             else
             {
                 int t = read();
-                if ( t == -1 )
+                if (t == -1)
                 {
                     return i;
                 }
-                data[i+offset]=(byte)t;
+                data[i + offset] = (byte) t;
             }
         }
         return len;

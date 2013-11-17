@@ -178,24 +178,23 @@ public class PDPixelMap extends PDXObjectImage
 
         try
         {
-            int width = getWidth();
-            int height = getHeight();
-            int bpc = getBitsPerComponent();
-
             byte[] array = getPDStream().getByteArray();
             if (array.length == 0)
             {
                 LOG.error("Something went wrong ... the pixelmap doesn't contain any data.");
                 return null;
             }
-            // Get the ColorModel right
+            int width = getWidth();
+            int height = getHeight();
+            int bpc = getBitsPerComponent();
+
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
                 LOG.error("getColorSpace() returned NULL.");
                 return null;
             }
-
+            // Get the ColorModel right
             ColorModel cm = null;
             if (colorspace instanceof PDIndexed)
             {

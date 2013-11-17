@@ -22,12 +22,14 @@
 package org.apache.pdfbox.preflight.process;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.PAGE_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
@@ -47,7 +49,7 @@ public class PageTreeValidationProcess extends AbstractProcess
         }
         else
         {
-            throw new ValidationException("There are no Catalog entry in the Document.");
+            context.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
         }
     }
 

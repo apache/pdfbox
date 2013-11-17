@@ -165,7 +165,7 @@ public class PreflightDocument extends PDDocument
         Collection<String> processes = config.getProcessNames();
         for (String name : processes)
         {
-            ContextHelper.validateElement(context, name);
+                ContextHelper.validateElement(context, name);
         }
     }
 

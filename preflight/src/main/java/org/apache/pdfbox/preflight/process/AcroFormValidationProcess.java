@@ -26,6 +26,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ACROFORM_DICTIONARY
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -66,7 +68,7 @@ public class AcroFormValidationProcess extends AbstractProcess
         }
         else
         {
-            throw new ValidationException("There are no Catalog entry in the Document.");
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
         }
     }
 

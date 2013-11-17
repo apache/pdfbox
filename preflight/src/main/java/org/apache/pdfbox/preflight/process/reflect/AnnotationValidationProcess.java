@@ -21,8 +21,10 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.annotation.AnnotationValidator;
@@ -36,19 +38,24 @@ public class AnnotationValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty() || !vPath.isExpectedType(COSDictionary.class))
-        {
-            throw new ValidationException("Annotation validation process needs at least one COSDictionary object");
+        if (vPath.isEmpty()) {
+            return;
         }
-
-        COSDictionary annotDict = (COSDictionary) vPath.peek();
-
-        PreflightConfiguration config = context.getConfig();
-        AnnotationValidatorFactory factory = config.getAnnotFact();
-        AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
-        if (annotValidator != null)
+        else if (!vPath.isExpectedType(COSDictionary.class))
         {
-            annotValidator.validate();
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_ANNOT_INVALID_ELEMENT, "Annotation validation process needs at least one COSDictionary object"));
+        }
+        else
+        {
+            COSDictionary annotDict = (COSDictionary) vPath.peek();
+
+            PreflightConfiguration config = context.getConfig();
+            AnnotationValidatorFactory factory = config.getAnnotFact();
+            AnnotationValidator annotValidator = factory.getAnnotationValidator(context, annotDict);
+            if (annotValidator != null)
+            {
+                annotValidator.validate();
+            }
         }
     }
 
