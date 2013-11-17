@@ -729,7 +729,7 @@ public class PDPage implements COSObjectable, Printable
         //the default size is not really good resolution,
         //so create an image that is twice the size
         //and let the client scale it down.
-        return convertToImage(8, 2 * DEFAULT_USER_SPACE_UNIT_DPI);
+        return convertToImage(BufferedImage.TYPE_INT_RGB, 2 * DEFAULT_USER_SPACE_UNIT_DPI);
     }
 
     /**
