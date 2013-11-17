@@ -20,9 +20,6 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.Random;
 
 import junit.framework.Test;
@@ -37,15 +34,6 @@ public class TestCOSFloat extends TestCOSNumber
 {
     // Use random number to ensure various float values are expressed in the test
     private Random rnd;
-    private DecimalFormat formatDecimal;
-    {
-        formatDecimal = (DecimalFormat) NumberFormat.getNumberInstance();
-        formatDecimal.setMaximumFractionDigits(10);
-        formatDecimal.setGroupingUsed(false);
-        DecimalFormatSymbols symbols = formatDecimal.getDecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        formatDecimal.setDecimalFormatSymbols(symbols);
-    }
 
     public void setUp()
     {
@@ -131,7 +119,9 @@ public class TestCOSFloat extends TestCOSNumber
         {
             float num = i * rnd.nextFloat();
             COSFloat testFloat = new COSFloat(num);
-            assertEquals((double) num, testFloat.doubleValue());
+            // compare the string representation instead of the numeric values 
+            // as the cast from float to double adds some more fraction digits
+            assertEquals(Float.toString(num), Double.toString(testFloat.doubleValue()));
         }
     }
 
@@ -170,7 +160,8 @@ public class TestCOSFloat extends TestCOSNumber
                 num = i * rnd.nextFloat();
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.accept(visitor);
-                testByteArrays(formatDecimal.format(num).getBytes("ISO-8859-1"),
+                assertEquals(Float.toString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                testByteArrays(Float.toString(num).getBytes("ISO-8859-1"),
                         outStream.toByteArray());
                 outStream.reset();
             }
@@ -195,7 +186,8 @@ public class TestCOSFloat extends TestCOSNumber
                 num = i * rnd.nextFloat();
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.writePDF(outStream);
-                testByteArrays(formatDecimal.format(num).getBytes("ISO-8859-1"),
+                assertEquals(Float.toString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                testByteArrays(Float.toString(num).getBytes("ISO-8859-1"),
                         outStream.toByteArray());
                 outStream.reset();
             }
