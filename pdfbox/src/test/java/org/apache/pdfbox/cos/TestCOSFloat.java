@@ -20,6 +20,7 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.Random;
 
 import junit.framework.Test;
@@ -160,8 +161,8 @@ public class TestCOSFloat extends TestCOSNumber
                 num = i * rnd.nextFloat();
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.accept(visitor);
-                assertEquals(Float.toString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
-                testByteArrays(Float.toString(num).getBytes("ISO-8859-1"),
+                assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                testByteArrays(floatToString(num).getBytes("ISO-8859-1"),
                         outStream.toByteArray());
                 outStream.reset();
             }
@@ -186,16 +187,42 @@ public class TestCOSFloat extends TestCOSNumber
                 num = i * rnd.nextFloat();
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.writePDF(outStream);
-                assertEquals(Float.toString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
-                testByteArrays(Float.toString(num).getBytes("ISO-8859-1"),
+                assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                testByteArrays(floatToString(num).getBytes("ISO-8859-1"),
                         outStream.toByteArray());
                 outStream.reset();
             }
+            // test a corner case as described in PDFBOX-1778
+            num = 0.000000000000000000000000000000001f;
+            COSFloat test = new COSFloat(num);
+            test.writePDF(outStream);
+            assertEquals(floatToString(num), outStream.toString("ISO-8859-1"));
+            outStream.reset();
         }
         catch (IOException e)
         {
             fail("Failed to write " + num + " exception: " + e.getMessage());
         }
+    }
+
+    private String floatToString(float value)
+    {
+        // use a BigDecimal as intermediate state to avoid 
+        // a floating point string representation of the float value
+        return removeTrailingNull(new BigDecimal(String.valueOf(value)).toPlainString()); 
+    }
+    
+    private String removeTrailingNull(String value)
+    {
+        // remove fraction digit "0" only
+        if (value.indexOf(".") > -1 && !value.endsWith(".0"))
+        {
+            while (value.endsWith("0") && !value.endsWith(".0"))
+            {
+                value = value.substring(0,value.length()-1);
+            }
+        }
+        return value;
     }
 
     /**

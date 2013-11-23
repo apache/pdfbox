@@ -40,8 +40,7 @@ public class COSFloat extends COSNumber
      */
     public COSFloat( float aFloat )
     {
-        valueAsString = String.valueOf(aFloat);
-        value = new BigDecimal(valueAsString);
+        setValue(aFloat);
     }
 
     /**
@@ -71,8 +70,23 @@ public class COSFloat extends COSNumber
      */
     public void setValue( float floatValue )
     {
-        valueAsString = String.valueOf(floatValue);
-        value = new BigDecimal(valueAsString);
+        // use a BigDecimal as intermediate state to avoid 
+        // a floating point string representation of the float value
+        value = new BigDecimal(String.valueOf(floatValue));
+        valueAsString = removeNullDigits(value.toPlainString());
+    }
+
+    private String removeNullDigits(String value)
+    {
+        // remove fraction digit "0" only
+        if (value.indexOf(".") > -1 && !value.endsWith(".0"))
+        {
+            while (value.endsWith("0") && !value.endsWith(".0"))
+            {
+                value = value.substring(0,value.length()-1);
+            }
+        }
+        return value;
     }
 
     /**
@@ -136,7 +150,7 @@ public class COSFloat extends COSNumber
      */
     public String toString()
     {
-        return "COSFloat{" + value + "}";
+        return "COSFloat{" + valueAsString + "}";
     }
 
     /**
