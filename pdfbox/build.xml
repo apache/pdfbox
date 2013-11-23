@@ -116,9 +116,12 @@
     <property name="ikvmc" value="${ikvm.dir}/bin/ikvmc.exe"/>
 
     <path id="pdfbox.build.classpath">
-        <fileset dir="${jar.dir}" >
-            <include name="**/*.jar" />
-        </fileset>
+        <pathelement path="${bcprov.jar}" />
+        <pathelement path="${bcmail.jar}" />
+        <pathelement path="${bcpkix.jar}" />
+        <pathelement path="${icu4j.jar}" />
+        <pathelement path="${logging.jar}" />
+        <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.jar}" />
         <pathelement path="${jempbox.jar}" />
         <pathelement path="${pdfbox.dest.dir}" />
@@ -126,19 +129,17 @@
     </path>
 
     <path id="fontbox.build.classpath">
-        <fileset dir="${jar.dir}" >
-            <include name="**/*.jar" />
-        </fileset>
+        <pathelement path="${logging.jar}" />
+        <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.dest.dir}" />
         <pathelement path="${fontbox.resources.dir}" />
     </path>
 
     <path id="jempbox.build.classpath">
-        <fileset dir="${jar.dir}" >
-            <include name="**/*.jar" />
-        </fileset>
-        <pathelement path="${fontbox.dest.dir}" />
-        <pathelement path="${fontbox.resources.dir}" />
+        <pathelement path="${logging.jar}" />
+        <pathelement path="${junit.jar}" />
+        <pathelement path="${jempbox.dest.dir}" />
+        <pathelement path="${jempbox.resources.dir}" />
     </path>
 
     <path id="checkstyle.classpath">
