@@ -141,8 +141,9 @@
 
     <path id="jempbox.build.classpath">
         <pathelement path="${logging.jar}" />
-        <pathelement path="${fontbox.dest.dir}" />
-        <pathelement path="${fontbox.resources.dir}" />
+        <pathelement path="${junit.jar}" />
+        <pathelement path="${jempbox.dest.dir}" />
+        <pathelement path="${jempbox.resources.dir}" />
     </path>
 
     <path id="checkstyle.classpath">
