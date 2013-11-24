@@ -918,6 +918,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName MAX_LEN = new COSName("MaxLen");
+    /**
+     * A common COSName value.
+     */
     public static final COSName MAX_WIDTH = new COSName( "MaxWidth" );
     /**
      * A common COSName value.
