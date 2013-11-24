@@ -296,7 +296,7 @@ public class PDFText2HTML extends PDFTextStripper
                     push(buffer, text.charAt(i), textPositions.get(i));
                 }
             }
-            else if (!text.isEmpty())
+            else if (text.length() > 0)
             {
                 // The normalized text does not match the number of TextPositions, so we'll just
                 // have a look at its first entry.
