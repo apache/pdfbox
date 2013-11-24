@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.2
+Release Notes -- Apache PDFBox -- Version 1.8.3
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.1 release. It 
+This is an incremental bugfix release based on the earlier 1.8.2 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,36 +13,77 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug Fixes
 
-[PDFBOX-1093] - Copy Page from one Document to another: Page Content Stream Linked 
-                to Original Document
-[PDFBOX-1561] - PDFBox throws exception with PDFTextStripper.getText
-[PDFBOX-1580] - Oracle JVM crashes because of embedded fonts.
-[PDFBOX-1583] - wasted work in PDDocument.addSignature(...)
-[PDFBOX-1586] - IndexOutOfBoundsException when saving a document (at random)
-[PDFBOX-1592] - Addition of 'null' in COSString when extracting form fields
-[PDFBOX-1599] - ConvertToImage gets ClassCastException with Checkboxes in PDFForm
-[PDFBOX-1601] - java.lang.IllegalArgumentException: Width (4032) and height (-2880) 
-                cannot be <= 0
-[PDFBOX-1602] - Erroneous values for TextPosition get{X,Y}[DirAdj]
-[PDFBOX-1603] - Regression in PDDocument.loadNonSeq ?
-[PDFBOX-1605] - PDPropBuildDataDict: use COSName instead of COSString as name value
-[PDFBOX-1609] - EXCEPTION_ACCESS_VIOLATION with PDF file and image conversion
-[PDFBOX-1610] - Corrupted result pdf when overlay one document with another one
-[PDFBOX-1611] - Avoid IndexOutOfBoundsException when extracting the font matrix of 
-                a Type1 font
-[PDFBOX-1612] - Avoid ArrayOutOfBoundsException when creating a PDPixelMap using an
-                indexed colorspace
-[PDFBOX-1615] - Color map not correctly copied when PDF file is split
+[PDFBOX-465] - invalid date formats
+[PDFBOX-823] - NullPointerException in DateConverter.toISO8601(DateConverter.java:221)
+[PDFBOX-837] - Wrong RevisionNumber when disabling all permissions and using 128bit 
+               encryption
+[PDFBOX-1219] - org.apache.jempbox.impl.DateConverter unable to parse correct date 
+                value
+[PDFBOX-1342] - Tags not fully preserved when merging PDFs.
+[PDFBOX-1412] - NullPointerException when getting fields from a PDF file
+[PDFBOX-1564] - Extending COSName to produce PDF/A with correct OutputIntents
+[PDFBOX-1576] - StackOverflowError [COSDictionary.toString(COSDictionary.java:1418)]
+[PDFBOX-1606] - NonSequentialPDFParser produces garbage text in document info
+[PDFBOX-1607] - StringIndexOutOfBoundsException in PDFParser
+[PDFBOX-1617] - Null pointer exception
+[PDFBOX-1622] - TextNormalize init not thread-safe, may lead to infinite loop
+[PDFBOX-1627] - Exception in thread "main" java.lang.NullPointerException
+[PDFBOX-1629] - Null PointerException
+[PDFBOX-1630] - An interesting Exception error
+[PDFBOX-1631] - Group Exception
+[PDFBOX-1632] - Exception with validation
+[PDFBOX-1633] - DateConverter needs to work
+[PDFBOX-1638] - PDCcitt doesn't use color space
+[PDFBOX-1639] - Infinite loop with PDFParser used by tika.
+[PDFBOX-1643] - Check for missing validation processes does not work properly in 
+                Preflight
+[PDFBOX-1653] - Fix pdfbox eating up big chunks of memory for identical CID mappings
+[PDFBOX-1655] - Wasted work (or incorrect behavior) in 
+                PDCIDFontType2Font.readCIDToGIDMapping
+[PDFBOX-1657] - glyph contours missing
+[PDFBOX-1663] - Hello World using a TrueType font ArrayIndexOutOfBoundsException
+[PDFBOX-1674] - Preflight doesn't correctly parse PDF if obj identifier not followed by 
+                line terminator
+[PDFBOX-1681] - java.lang.IllegalArgumentException: Color parameter outside of expected 
+                range: Red
+[PDFBOX-1692] - java.lang.OutOfMemoryError: Java heap space
+[PDFBOX-1694] - Bug in org.apache.pdfbox.io.Ascii85InputStream
+[PDFBOX-1696] - Bug in org.apache.pdfbox.io.Ascii85OutputStream
+[PDFBOX-1714] - Merging PDFs results in java.io.IOException: expected='R' actual='0'
+[PDFBOX-1719] - NPE while signing PDF - acroform without fields
+[PDFBOX-1730] - Image in PDF has extremely different colors when rendered
+[PDFBOX-1735] - Convert page pdf to image
+[PDFBOX-1737] - Skip whitespaces when resolving a XRef
+[PDFBOX-1743] - OutOfMemoryError in fontbox
+[PDFBOX-1749] - Out of memory exception when parsing TTF file
+[PDFBOX-1753] - The font gets gibbrish when adding a line of text to an existing PDF with
+                a table
+[PDFBOX-1758] - Preflight doesn't report Filespec dictionary that refers (indirectly) to an 
+                EmbeddedFile entry in some cases
+[PDFBOX-1764] - PDFBox takes ages to render page 2 of the attached PDF
+[PDFBOX-1768] - cannot build last source code
+[PDFBOX-1778] - Rounding issue in generated PDF file
+[PDFBOX-1780] - previous revision is damaged after signing
 
 Improvement
 
-[PDFBOX-1293] - PDFImageWriter should use logging instead of System.out.println
-[PDFBOX-1581] - Add PDDocument.save(File) and PDDocument.loadNonSeq(InputStream, ...)
+[PDFBOX-1213] - Adding style information to the PDF to HTML converter
+[PDFBOX-1564] - Extending COSName to produce PDF/A with correct OutputIntents
+[PDFBOX-1613] - The ability to inject the time/random component into the COSWriter process 
+                to write a PDF document allows some advanced signature creation scenarios 
+                where the signature is generated on a separate server that does not hold the 
+                full PDF document.
+[PDFBOX-1687] - add dispose() in pdfbox\pdmodel\PDPage.convertToImage()
+[PDFBOX-1690] - Add description to embedded file
+[PDFBOX-1702] - Performance improvement in PDPageContentStream.drawString
+[PDFBOX-1744] - Be resilient to PDFs with missing version info
+[PDFBOX-1782] - Add getMaxLength() and setMaxLength() methods to PDTextbox
 
 New Feature
 
-[PDFBOX-1565] - Add support for Lab color spaces
-
+[PDFBOX-1054] - DateConverter: allow for external adding of potential date parsing formats
+[PDFBOX-1766] - [PATCH] Visible Signature using PDFbox
+[PDFBOX-1540] - Add XML output option to preflight
 
 Release Contents
 ----------------
