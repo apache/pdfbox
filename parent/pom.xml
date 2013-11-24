@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>10</version>
+    <version>13</version>
     <relativePath />
   </parent>
 
@@ -104,7 +104,7 @@
           <plugin>
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
-            <version>0.6</version>
+            <version>0.10</version>
             <configuration>
               <excludes>
                 <exclude>release.properties</exclude>
