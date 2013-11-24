@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.jempbox.xmp.XMPMetadata;
@@ -29,7 +28,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
-
 
 /**
  * This is an example that creates a simple PDF/A document.
@@ -98,13 +96,7 @@ public class CreatePDFA
             pdfaid.setAbout("");
             metadata.importXMPMetadata(xmp);
     
-            
-            // retrieve icc
-            // this file cannot be added in PDFBox, it must be downloaded
-            // its localization is http://www.color.org/sRGB_IEC61966-2-1_black_scaled.icc
-            // UNIX command to retrieve :
-            // wget -O target/sRGB_IEC61966-2-1_black_scaled.icc http://www.color.org/sRGB_IEC61966-2-1_black_scaled.icc
-            InputStream colorProfile = new FileInputStream("target/sRGB_IEC61966-2-1_black_scaled.icc");
+            InputStream colorProfile = CreatePDFA.class.getResourceAsStream("/org/apache/pdfbox/resources/pdfa/sRGB Color Space Profile.icm");
             // create output intent
             PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
             oi.setInfo("sRGB IEC61966-2.1"); 
