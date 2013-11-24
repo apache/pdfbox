@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDDocumentCatalogAdditionalActions;
@@ -443,6 +444,56 @@ public class PDDocumentCatalog implements COSObjectable
         root.setItem( COSName.MARK_INFO, markInfo );
     }
 
+    /**
+     * Get the list of OutputIntents defined in the document.
+     * 
+     * @return The list of PDOoutputIntent
+     */
+    public List<PDOutputIntent> getOutputIntent () {
+        List<PDOutputIntent> retval = new ArrayList<PDOutputIntent>();
+        COSArray array = (COSArray)root.getItem(COSName.OUTPUT_INTENTS);
+        if (array!=null) {
+            for (COSBase cosBase : array)
+            {
+                PDOutputIntent oi = new PDOutputIntent((COSStream)cosBase);
+                retval.add(oi);
+            }
+        }
+        return retval;
+    }
+
+    /**
+     * Add an OutputIntent to the list.
+     * 
+     * If there is not OutputIntent, the list is created and the first
+     * element added.
+     * 
+     * @param outputIntent the OutputIntent to add.
+     */
+    public void addOutputIntent (PDOutputIntent outputIntent) {
+        COSArray array = (COSArray)root.getItem(COSName.OUTPUT_INTENTS);
+        if (array==null) {
+            array = new COSArray();
+            root.setItem(COSName.OUTPUT_INTENTS, array);
+        }
+        array.add(outputIntent.getCOSObject());
+    }
+
+    /**
+     * Replace the list of OutputIntents of the document.
+     * 
+     * @param outputIntents the list of OutputIntents, if the list is empty all
+     * OutputIntents are removed.
+     */
+    public void setOutputIntents (List<PDOutputIntent> outputIntents) {
+        COSArray array = new COSArray();
+        for (PDOutputIntent intent : outputIntents)
+        {
+            array.add(intent.getCOSObject());
+        }
+        root.setItem(COSName.OUTPUT_INTENTS, array);
+    }
+    
     /**
      * Set the page display mode, see the PAGE_MODE_XXX constants.
      * @return A string representing the page mode.
