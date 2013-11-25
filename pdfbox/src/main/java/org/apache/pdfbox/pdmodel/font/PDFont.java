@@ -49,15 +49,6 @@ import org.apache.pdfbox.util.ResourceLoader;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This is the base class for all PDF fonts.
  *
@@ -106,7 +97,7 @@ public abstract class PDFont implements COSObjectable
     /**
      *  A list a floats representing the widths.
      */
-    private List<Integer> widths = null;
+    private List<Float> widths = null;
 
     /**
      * The static map of the default Adobe font metrics.
@@ -790,15 +781,16 @@ public abstract class PDFont implements COSObjectable
      * The widths of the characters.  This will be null for the standard 14 fonts.
      *
      * @return The widths of the characters.
+     *
      */
-    public List<Integer> getWidths()
+    public List<Float> getWidths()
     {
         if (widths == null)
         {
             COSArray array = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
             if (array != null)
             {
-                widths = COSArrayList.convertIntegerCOSArrayToList(array);
+                widths = COSArrayList.convertFloatCOSArrayToList(array);
             }
         }
         return widths;
@@ -809,7 +801,7 @@ public abstract class PDFont implements COSObjectable
      *
      * @param widthsList The widths of the character codes.
      */
-    public void setWidths(List<Integer> widthsList)
+    public void setWidths(List<Float> widthsList)
     {
         widths = widthsList;
         font.setItem( COSName.WIDTHS, COSArrayList.converterToCOSArray( widths ) );

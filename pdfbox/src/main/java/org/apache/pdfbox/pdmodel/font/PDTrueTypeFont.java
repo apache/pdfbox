@@ -383,14 +383,14 @@ public class PDTrueTypeFont extends PDSimpleFont
             // instead of an array containing the same value for every glyphid 
             boolean isMonospaced = fd.isFixedPitch();
             int nWidths=lastChar-firstChar+1;
-            List<Integer> widths = new ArrayList<Integer>(nWidths);
+            List<Float> widths = new ArrayList<Float>(nWidths);
             // use the first width as default
             // proportional fonts -> width of the .notdef character
             // monospaced-fonts -> the first width
             int defaultWidth = Math.round(widthValues[0] * scaling);
             for (int i = 0; i < nWidths; i++)
             {
-                widths.add(defaultWidth);
+                widths.add((float)defaultWidth);
             }
             // Encoding singleton to have acces to the chglyph name to
             // unicode cpoint point mapping of Adobe's glyphlist.txt
@@ -412,11 +412,11 @@ public class PDTrueTypeFont extends PDSimpleFont
                 {
                     if (isMonospaced)
                     {
-                        widths.set(e.getKey().intValue() - firstChar, defaultWidth);
+                        widths.set(e.getKey().intValue() - firstChar, (float)defaultWidth);
                     }
                     else
                     {
-                        widths.set(e.getKey().intValue() - firstChar, Math.round(widthValues[gid] * scaling));
+                        widths.set(e.getKey().intValue() - firstChar, (float)Math.round(widthValues[gid] * scaling));
                     }
                 }
             }
