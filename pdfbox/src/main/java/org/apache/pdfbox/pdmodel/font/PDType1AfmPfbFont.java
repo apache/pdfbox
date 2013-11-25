@@ -143,12 +143,12 @@ public class PDType1AfmPfbFont extends PDType1Font
         List<CharMetric> listmetric = metric.getCharMetrics();
         Encoding encoding = getFontEncoding();
         int maxWidths = 256;
-        List<Integer> widths = new ArrayList<Integer>(maxWidths);
+        List<Float> widths = new ArrayList<Float>(maxWidths);
         int zero = 250;
         Iterator<CharMetric> iter = listmetric.iterator();
         for (int i = 0; i < maxWidths; i++)
         {
-            widths.add(zero);
+            widths.add((float)zero);
         }
         while (iter.hasNext())
         {
@@ -161,13 +161,13 @@ public class PDType1AfmPfbFont extends PDType1Font
                 if (m.getWx() > 0)
                 {
                     int width = Math.round(m.getWx());
-                    widths.set(n, width);
+                    widths.set(n, (float)width);
                     // germandbls has 2 character codes !! Don't ask me why .....
                     // StandardEncoding = 0373 = 251
                     // WinANSIEncoding = 0337 = 223
                     if (m.getName().equals("germandbls") && n != 223)
                     {
-                        widths.set(0337, width);
+                        widths.set(0337, (float)width);
                     }
                 }
             }

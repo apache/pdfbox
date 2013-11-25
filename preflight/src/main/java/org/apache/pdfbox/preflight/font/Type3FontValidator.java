@@ -276,7 +276,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkCharProcsAndMetrics() throws ValidationException
     {
-        List<Integer> widths = font.getWidths();
+        List<Float> widths = font.getWidths();
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
