@@ -176,11 +176,12 @@ public class PageDrawer extends PDFStreamEngine
                         {
                             // transform the rectangle using the given matrix
                             AffineTransform at = matrix.createAffineTransform();
+                            at.scale(1, -1);
                             at.transform(point, point);
                         }
-                        g.translate((int) point.getX(), -(int) point.getY());
+                        graphics.translate((int) point.getX(), -(int) point.getY());
                         processSubStream(page, appearance.getResources(), appearance.getStream());
-                        g.translate(-(int) point.getX(), (int) point.getY());
+                        graphics.translate(-(int) point.getX(), (int) point.getY());
                     }
                 }
             }
