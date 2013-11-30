@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util.operator.pagedrawer;
 
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
 import org.apache.pdfbox.util.ImageParameters;
 import org.apache.pdfbox.util.Matrix;
@@ -36,7 +34,6 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  * Implementation of content stream operator for page drawer.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
  */
 public class BeginInlineImage extends OperatorProcessor
 {
@@ -55,7 +52,6 @@ public class BeginInlineImage extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments)  throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
-        PDPage page = drawer.getPage();
         //begin inline image object
         ImageParameters params = operator.getImageParameters();
         PDInlinedImage image = new PDInlinedImage();
@@ -68,39 +64,7 @@ public class BeginInlineImage extends OperatorProcessor
             log.warn("BeginInlineImage.process(): createImage returned NULL");
             return;
         }
-        int imageWidth = awtImage.getWidth();
-        int imageHeight = awtImage.getHeight();
-        double pageHeight = drawer.getPageSize().getHeight();
-        
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
-        int pageRotation = page.findRotation();
-
-        AffineTransform ctmAT = ctm.createAffineTransform();
-        ctmAT.scale(1f/imageWidth, 1f/imageHeight);
-        Matrix rotationMatrix = new Matrix();
-        rotationMatrix.setFromAffineTransform( ctmAT );
-        // calculate the inverse rotation angle
-        // scaleX = m00 = cos
-        // shearX = m01 = -sin
-        // tan = sin/cos
-        double angle = Math.atan(ctmAT.getShearX()/ctmAT.getScaleX());
-        Matrix translationMatrix = null;
-        if (pageRotation == 0 || pageRotation == 180) 
-        {
-            translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getXScale()), (float)(pageHeight-2*ctm.getYPosition()-Math.cos(angle)*ctm.getYScale())); 
-        }
-        else if (pageRotation == 90 || pageRotation == 270) 
-        {
-            translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getYScale()), (float)(pageHeight-2*ctm.getYPosition())); 
-        }
-        rotationMatrix = rotationMatrix.multiply(translationMatrix);
-        rotationMatrix.setValue(0, 1, (-1)*rotationMatrix.getValue(0, 1));
-        rotationMatrix.setValue(1, 0, (-1)*rotationMatrix.getValue(1, 0));
-        AffineTransform at = new AffineTransform(
-                rotationMatrix.getValue(0,0),rotationMatrix.getValue(0,1),
-                rotationMatrix.getValue(1,0), rotationMatrix.getValue( 1, 1),
-                rotationMatrix.getValue(2,0),rotationMatrix.getValue(2,1)
-                );
-        drawer.drawImage(awtImage, at);
+        drawer.drawImage(awtImage, ctm.createAffineTransform());
     }
 }
