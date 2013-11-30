@@ -50,6 +50,10 @@ import org.w3c.dom.NamedNodeMap;
 public final class PdfaExtensionHelper
 {
 
+    public static final String CLOSED_CHOICE = "closed Choice of ";
+
+    public static final String OPEN_CHOICE = "open Choice of ";
+
     private PdfaExtensionHelper()
     {
     }
@@ -240,8 +244,10 @@ public final class PdfaExtensionHelper
             return TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Simple);
         }
         // else all other cases
-        if ("closed Choice of Text".equals(valueType)) {
-            valueType = "Text";
+        if (valueType.startsWith(CLOSED_CHOICE)) {
+            valueType = valueType.substring(CLOSED_CHOICE.length());
+        } else if (valueType.startsWith(OPEN_CHOICE)) {
+            valueType = valueType.substring(OPEN_CHOICE.length());
         }
         int pos = valueType.indexOf(' ');
         Cardinality card = Cardinality.Simple;
