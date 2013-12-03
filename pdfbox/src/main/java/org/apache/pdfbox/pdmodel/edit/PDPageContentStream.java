@@ -66,7 +66,6 @@ public class PDPageContentStream
      */
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
-    private PDPage page;
     private OutputStream output;
     private boolean inTextMode = false;
     private PDResources resources;
@@ -186,15 +185,6 @@ public class PDPageContentStream
     public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress,
             boolean resetContext) throws IOException
     {
-
-        page = sourcePage;
-        resources = page.getResources();
-        if (resources == null)
-        {
-            resources = new PDResources();
-            page.setResources(resources);
-        }
-
         // Get the pdstream from the source page instead of creating a new one
         PDStream contents = sourcePage.getContents();
         boolean hasContent = contents != null;
@@ -276,6 +266,14 @@ public class PDPageContentStream
         }
         formatDecimal.setMaximumFractionDigits(10);
         formatDecimal.setGroupingUsed(false);
+        // this has to be done here, as the resources will be set to null when reseting the content stream
+        resources = sourcePage.getResources();
+        if (resources == null)
+        {
+            resources = new PDResources();
+            sourcePage.setResources(resources);
+        }
+
     }
 
     /**
@@ -1513,7 +1511,6 @@ public class PDPageContentStream
         output.close();
         currentNonStrokingColorSpace = null;
         currentStrokingColorSpace = null;
-        page = null;
         resources = null;
     }
 }
