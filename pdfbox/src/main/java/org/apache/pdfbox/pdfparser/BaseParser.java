@@ -1008,7 +1008,7 @@ public abstract class BaseParser
                 do 
                 {
                     c = pdfSource.read();
-                } while ( c != '>' && c < 0 );
+                } while ( c != '>' && c >= 0 );
                 
                 // might have reached EOF while looking for the closing bracket
                 // this can happen for malformed PDFs only. Make sure that there is
