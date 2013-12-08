@@ -68,9 +68,7 @@ public class XMPMetadata
     /**
      * Contructor of an empty default XMPMetaData
      * 
-     * @throws CreateXMPMetadataException
-     *             If DOM Document associated could not be created
-     */
+      */
     protected XMPMetadata()
     {
         this(XmpConstants.DEFAULT_XPACKET_BEGIN, XmpConstants.DEFAULT_XPACKET_ID, XmpConstants.DEFAULT_XPACKET_BYTES,
@@ -80,7 +78,6 @@ public class XMPMetadata
     /**
      * creates blank XMP doc with specified parameters
      * 
-     * @throws CreateXMPMetadataException
      * @param xpacketBegin
      *            Value of xpacketBegin
      * @param xpacketId
@@ -89,8 +86,6 @@ public class XMPMetadata
      *            Value of xpacketBytes
      * @param xpacketEncoding
      *            Value of xpacket encoding
-     * @throws CreateXMPMetadataException
-     *             If DOM Document associated could not be created
      */
     protected XMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes, String xpacketEncoding)
     {
@@ -411,15 +406,18 @@ public class XMPMetadata
         return (XMPRightsManagementSchema) getSchema(XMPRightsManagementSchema.class);
     }
 
-    /**
+
+    /*
      * Get the Photoshop schema This method return null if not found
-     * 
+     *
      * @return The PhotoshopSchema schema or null if not declared
      */
     public PhotoshopSchema getPhotoshopSchema()
     {
-        return (PhotoshopSchema) getSchema(PhotoshopSchema.PHOTOSHOPURI);
+        return (PhotoshopSchema) getSchema(PhotoshopSchema.class);
     }
+
+
 
     /**
      * Create and add a XMP Basic schema to this metadata This method return the created schema to enter information

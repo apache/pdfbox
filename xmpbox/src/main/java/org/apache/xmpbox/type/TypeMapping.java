@@ -32,18 +32,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.AdobePDFSchema;
-import org.apache.xmpbox.schema.DublinCoreSchema;
-import org.apache.xmpbox.schema.PDFAExtensionSchema;
-import org.apache.xmpbox.schema.PDFAIdentificationSchema;
-import org.apache.xmpbox.schema.PhotoshopSchema;
-import org.apache.xmpbox.schema.XMPBasicJobTicketSchema;
-import org.apache.xmpbox.schema.XMPBasicSchema;
-import org.apache.xmpbox.schema.XMPMediaManagementSchema;
-import org.apache.xmpbox.schema.XMPRightsManagementSchema;
-import org.apache.xmpbox.schema.XMPSchema;
-import org.apache.xmpbox.schema.XMPSchemaFactory;
-import org.apache.xmpbox.schema.XmpSchemaException;
+import org.apache.xmpbox.schema.*;
 
 public final class TypeMapping
 {
@@ -105,6 +94,9 @@ public final class TypeMapping
         addNameSpace(XMPRightsManagementSchema.class);
         addNameSpace(PhotoshopSchema.class);
         addNameSpace(XMPBasicJobTicketSchema.class);
+        addNameSpace(ExifSchema.class);
+        addNameSpace(TiffSchema.class);
+        addNameSpace(XMPageTextSchema.class);
 
     }
 
@@ -318,7 +310,7 @@ public final class TypeMapping
     /**
      * Give type of specified property in specified schema (given by its namespaceURI)
      * 
-     * @param prop
+     * @param name
      *            the property Qualified Name
      * @return Property type declared for namespace specified, null if unknown
      */
