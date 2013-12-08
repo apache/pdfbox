@@ -46,7 +46,7 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest
         schemaClass = XMPMediaManagementSchema.class;
     }
 
-    @Parameters
+    @Parameters(name = "{0} {1} '{2}'")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
         List<Object[]> data = new ArrayList<Object[]>();

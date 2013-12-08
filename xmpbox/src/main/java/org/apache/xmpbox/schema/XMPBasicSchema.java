@@ -83,6 +83,9 @@ public class XMPBasicSchema extends XMPSchema
     @PropertyType(type = Types.Thumbnail, card = Cardinality.Alt)
     public static final String THUMBNAILS = "Thumbnails";
 
+    @PropertyType(type= Types.Date, card = Cardinality.Simple)
+    public static final String MODIFIER_DATE = "ModifierDate";
+
     private ArrayProperty altThumbs;
 
     /**
@@ -298,6 +301,12 @@ public class XMPBasicSchema extends XMPSchema
         setModifyDateProperty(tt);
     }
 
+    public void setModifierDate(Calendar date)
+    {
+        DateType tt = (DateType) instanciateSimple(MODIFIER_DATE, date);
+        setModifierDateProperty(tt);
+    }
+
     /**
      * Set the ModifyDate property
      * 
@@ -305,6 +314,11 @@ public class XMPBasicSchema extends XMPSchema
      *            the Modify Date property to set
      */
     public void setModifyDateProperty(DateType date)
+    {
+        addProperty(date);
+    }
+
+    public void setModifierDateProperty(DateType date)
     {
         addProperty(date);
     }
@@ -528,6 +542,11 @@ public class XMPBasicSchema extends XMPSchema
         return (DateType) getProperty(MODIFYDATE);
     }
 
+    public DateType getModifierDateProperty()
+    {
+        return (DateType) getProperty(MODIFIER_DATE);
+    }
+
     /**
      * Get the ModifyDate property value
      * 
@@ -539,6 +558,17 @@ public class XMPBasicSchema extends XMPSchema
         if (modifyDate != null)
         {
             return modifyDate.getValue();
+        }
+        return null;
+
+    }
+
+    public Calendar getModifierDate()
+    {
+        DateType modifierDate = (DateType) getProperty(MODIFIER_DATE);
+        if (modifierDate != null)
+        {
+            return modifierDate.getValue();
         }
         return null;
 

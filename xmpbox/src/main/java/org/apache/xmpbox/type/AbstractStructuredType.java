@@ -114,7 +114,7 @@ public abstract class AbstractStructuredType extends AbstractComplexProperty
 
     public final String getPreferedPrefix()
     {
-        return prefix;
+        return preferedPrefix;
     }
 
     protected void addSimpleProperty(String propertyName, Object value)

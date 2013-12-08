@@ -28,19 +28,22 @@ public enum Types
 
     // basic
     Text(true, null, TextType.class), Date(true, null, DateType.class), Boolean(true, null, BooleanType.class), Integer(
-            true, null, IntegerType.class), Real(true, null, RealType.class),
+            true, null, IntegerType.class), Real(true, null, RealType.class),GPSCoordinate(true,Text,TextType.class),
 
     ProperName(true, Text, ProperNameType.class), Locale(true, Text, LocaleType.class), AgentName(true, Text,
             AgentNameType.class), GUID(true, Text, GUIDType.class), XPath(true, Text, XPathType.class), Part(true,
             Text, PartType.class), URL(true, Text, URLType.class), URI(true, Text, URIType.class), Choice(true, Text,
             ChoiceType.class), MIMEType(true, Text, MIMEType.class), LangAlt(true, Text, TextType.class), RenditionClass(
-            true, Text, RenditionClassType.class),
+            true, Text, RenditionClassType.class), Rational(true,Text,RationalType.class),
 
     Layer(false, Structured, LayerType.class), Thumbnail(false, Structured, ThumbnailType.class), ResourceEvent(false,
             Structured, ResourceEventType.class), ResourceRef(false, Structured, ResourceRefType.class), Version(false,
             Structured, VersionType.class), PDFASchema(false, Structured, PDFASchemaType.class), PDFAField(false,
             Structured, PDFAFieldType.class), PDFAProperty(false, Structured, PDFAPropertyType.class), PDFAType(false,
-            Structured, PDFATypeType.class), Job(false, Structured, JobType.class);
+            Structured, PDFATypeType.class), Job(false, Structured, JobType.class),OECF(false,Structured,
+            OECFType.class), CFAPattern(false,Structured, CFAPatternType.class),DeviceSettings(false,Structured,
+            DeviceSettingsType.class),Flash(false,Structured,FlashType.class),Dimensions(false,Structured,
+            DimensionsType.class);
 
     // For defined types
 

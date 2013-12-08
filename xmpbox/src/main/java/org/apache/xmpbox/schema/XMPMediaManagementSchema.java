@@ -24,16 +24,7 @@ package org.apache.xmpbox.schema;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.AgentNameType;
-import org.apache.xmpbox.type.ArrayProperty;
-import org.apache.xmpbox.type.Cardinality;
-import org.apache.xmpbox.type.PropertyType;
-import org.apache.xmpbox.type.RenditionClassType;
-import org.apache.xmpbox.type.ResourceRefType;
-import org.apache.xmpbox.type.StructuredType;
-import org.apache.xmpbox.type.TextType;
-import org.apache.xmpbox.type.Types;
-import org.apache.xmpbox.type.URIType;
+import org.apache.xmpbox.type.*;
 
 /**
  * Representation of XMPMediaManagement Schema
@@ -44,6 +35,16 @@ import org.apache.xmpbox.type.URIType;
 @StructuredType(preferedPrefix = "xmpMM", namespace = "http://ns.adobe.com/xap/1.0/mm/")
 public class XMPMediaManagementSchema extends XMPSchema
 {
+
+    @PropertyType(type = Types.URL, card = Cardinality.Simple)
+    public static final String LAST_URL = "LastURL";
+
+
+    @PropertyType(type = Types.ResourceRef, card = Cardinality.Simple)
+    public static final String RENDITION_OF = "RenditionOf";
+
+    @PropertyType(type = Types.Integer, card = Cardinality.Simple)
+    public static final String SAVE_ID = "SaveID";
 
     /**
      * Constructor of XMPMediaManagement Schema with preferred prefix
@@ -126,6 +127,8 @@ public class XMPMediaManagementSchema extends XMPSchema
         addProperty(tt);
     }
 
+
+
     /**
      * Get DocumentId property
      * 
@@ -147,6 +150,98 @@ public class XMPMediaManagementSchema extends XMPSchema
         return tt != null ? tt.getStringValue() : null;
     }
 
+    /**
+     * Set DocumentId value
+     *
+     * @param url
+     *            DocumentId value to set
+     */
+    public void setLastURL(String url)
+    {
+        URLType tt = (URLType) instanciateSimple(LAST_URL, url);
+        setLastURLProperty(tt);
+    }
+
+    /**
+     * Set DocumentId Property
+     *
+     * @param tt
+     *            DocumentId Property to set
+     */
+    public void setLastURLProperty(URLType tt)
+    {
+        addProperty(tt);
+    }
+
+
+
+    /**
+     * Get DocumentId property
+     *
+     * @return DocumentId property
+     */
+    public URLType getLastURLProperty()
+    {
+        return (URLType) getProperty(LAST_URL);
+    }
+
+    /**
+     * Get DocumentId value
+     *
+     * @return DocumentId value
+     */
+    public String getLastURL()
+    {
+        URLType tt = getLastURLProperty();
+        return tt != null ? tt.getStringValue() : null;
+    }
+
+    /**
+     * Set DocumentId value
+     *
+     * @param url
+     *            DocumentId value to set
+     */
+    public void setSaveId(Integer url)
+    {
+        IntegerType tt = (IntegerType) instanciateSimple(SAVE_ID, url);
+        setSaveIDProperty(tt);
+    }
+
+    /**
+     * Set DocumentId Property
+     *
+     * @param tt
+     *            DocumentId Property to set
+     */
+    public void setSaveIDProperty(IntegerType tt)
+    {
+        addProperty(tt);
+    }
+
+
+
+    /**
+     * Get DocumentId property
+     *
+     * @return DocumentId property
+     */
+    public IntegerType getSaveIDProperty()
+    {
+        return (IntegerType) getProperty(SAVE_ID);
+    }
+
+    /**
+     * Get DocumentId value
+     *
+     * @return DocumentId value
+     */
+    public Integer getSaveID()
+    {
+        IntegerType tt = getSaveIDProperty();
+        return tt != null ? tt.getValue() : null;
+    }
+
     // --------------------------------------- Manager
     // ----------------------------
 
@@ -156,7 +251,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set Manager value
      * 
-     * @param url
+     * @param value
      *            Manager value to set
      */
     public void setManager(String value)
@@ -256,7 +351,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set ManageUI value
      * 
-     * @param url
+     * @param value
      *            ManageUI value to set
      */
     public void setManageUI(String value)
@@ -306,7 +401,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set ManagerVariant value
      * 
-     * @param url
+     * @param value
      *            ManagerVariant value to set
      */
     public void setManagerVariant(String value)
@@ -356,7 +451,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set InstanceId value
      * 
-     * @param url
+     * @param value
      *            InstanceId value to set
      */
     public void setInstanceID(String value)
@@ -418,7 +513,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * set ManageFrom Property
      * 
-     * @param tt
+     * @param resourceRef
      *            ManageFrom Property to set
      */
     public void setManagedFromProperty(ResourceRefType resourceRef)
@@ -505,7 +600,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set renditionClass Value
      * 
-     * @param url
+     * @param value
      *            renditionClass Value to set
      */
     public void setRenditionClass(String value)
@@ -605,7 +700,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set VersionId value
      * 
-     * @param url
+     * @param value
      *            VersionId value to set
      */
     public void setVersionID(String value)

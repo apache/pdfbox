@@ -21,32 +21,14 @@
 
 package org.apache.xmpbox.type;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.xmpbox.XMPMetadata;
 
-/**
- * to be used at runtime
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-/**
- * Annotation to specify type expected for a property
- */
-public @interface PropertyType
+public class RationalType extends TextType
 {
 
-    /**
-     * get valuetype defined in this description that must be used to build properties descriptions in schema
-     * descriptions
-     * 
-     * 
-     */
-    // String propertyType();
-
-    Types type();
-
-    Cardinality card() default Cardinality.Simple;
+    public RationalType(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName, Object value)
+    {
+        super(metadata, namespaceURI, prefix, propertyName, value);
+    }
 
 }

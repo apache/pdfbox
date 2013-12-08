@@ -53,10 +53,6 @@ public class PhotoshopSchema extends XMPSchema
         super(metadata, ownPrefix);
     }
 
-    public static final String PREFERED_PREFIX = "photoshop";
-
-    public static final String PHOTOSHOPURI = "http://ns.adobe.com/photoshop/1.0/";
-
     @PropertyType(type = Types.URI, card = Cardinality.Simple)
     public static final String ANCESTORID = "AncestorID";
 
