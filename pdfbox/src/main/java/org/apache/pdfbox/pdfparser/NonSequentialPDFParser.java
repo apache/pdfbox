@@ -110,6 +110,7 @@ public class NonSequentialPDFParser extends PDFParser
     protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
 
     private final File pdfFile;
+    private long fileLen;
     private final RandomAccessBufferedFileInputStream raStream;
 
     /**
@@ -558,7 +559,7 @@ public class NonSequentialPDFParser extends PDFParser
         long skipBytes;
 
         // ---- read trailing bytes into buffer
-        final long fileLen = pdfFile.length();
+        fileLen = pdfFile.length();
 
         FileInputStream fIn = null;
         try
@@ -1518,31 +1519,34 @@ public class NonSequentialPDFParser extends PDFParser
                 throw new IOException("Missing length for stream.");
             }
 
+            boolean useReadUntilEnd = false;
             // ---- get output stream to copy data to
             out = stream.createFilteredStream(streamLengthObj);
-
-            long remainBytes = streamLengthObj.longValue();
-            int bytesRead = 0;
-            boolean unexpectedEndOfStream = false;
-            while (remainBytes > 0)
+            if (validateStreamLength(streamLengthObj.longValue()))
             {
-                final int readBytes = pdfSource.read(streamCopyBuf, 0,
-                        (remainBytes > streamCopyBufLen) ? streamCopyBufLen : (int) remainBytes);
-                if (readBytes <= 0)
-                {
-                    // throw new IOException(
-                    // "No more bytes from stream but expected: " + remainBytes
-                    // );
-                    unexpectedEndOfStream = true;
-                    break;
-                }
-                out.write(streamCopyBuf, 0, readBytes);
-                remainBytes -= readBytes;
-                bytesRead += readBytes;
+	            long remainBytes = streamLengthObj.longValue();
+	            int bytesRead = 0;
+	            while (remainBytes > 0)
+	            {
+	                final int readBytes = pdfSource.read(streamCopyBuf, 0,
+	                        (remainBytes > streamCopyBufLen) ? streamCopyBufLen : (int) remainBytes);
+	                if (readBytes <= 0)
+	                {
+	                    useReadUntilEnd = true;
+	                    pdfSource.unread(bytesRead);
+	                    break;
+	                }
+	                out.write(streamCopyBuf, 0, readBytes);
+	                remainBytes -= readBytes;
+	                bytesRead += readBytes;
+	            }
             }
-            if (unexpectedEndOfStream)
+            else
             {
-                pdfSource.unread(bytesRead);
+                useReadUntilEnd = true;
+            }
+            if (useReadUntilEnd)
+            {
                 out = stream.createFilteredStream(streamLengthObj);
                 readUntilEndStream(out);
             }
@@ -1563,6 +1567,28 @@ public class NonSequentialPDFParser extends PDFParser
         return stream;
     }
 
+    private boolean validateStreamLength(long streamLength) throws IOException
+    {
+    	boolean streamLengthIsValid = true;
+    	long originOffset = pdfSource.getOffset();
+    	long expectedEndOfStream = originOffset + streamLength;
+    	if (expectedEndOfStream > fileLen)
+    	{
+    		streamLengthIsValid = false;
+    		LOG.error("The end of the stream is out of range, using workaround to read the stream");
+    	}
+    	else
+    	{
+			pdfSource.seek(expectedEndOfStream);
+	    	if (!checkBytesAtOffset("endstream".getBytes("ISO-8859-1")))
+	    	{
+	    		streamLengthIsValid = false;
+	    		LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
+	    	}
+    		pdfSource.seek(originOffset);
+    	}
+    	return streamLengthIsValid;
+    }
     private void readUntilEndStream(final OutputStream out) throws IOException
     {
 
@@ -1742,6 +1768,11 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private long calculateFixingOffset(long objectOffset, byte[] string) throws IOException
     {
+    	if (objectOffset < 0)
+    	{
+    		LOG.error("Invalid object offset " + objectOffset + " for object " + new String(string));
+    		return 0;
+    	}
     	long originOffset = pdfSource.getOffset();
     	pdfSource.seek(objectOffset);
     	// most likely the object can be found at the given offset
