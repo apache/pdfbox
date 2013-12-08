@@ -1580,6 +1580,7 @@ public class NonSequentialPDFParser extends PDFParser
     	else
     	{
 			pdfSource.seek(expectedEndOfStream);
+			skipSpaces();
 	    	if (!checkBytesAtOffset("endstream".getBytes("ISO-8859-1")))
 	    	{
 	    		streamLengthIsValid = false;
