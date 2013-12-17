@@ -1521,9 +1521,9 @@ public class NonSequentialPDFParser extends PDFParser
 
             boolean useReadUntilEnd = false;
             // ---- get output stream to copy data to
-            out = stream.createFilteredStream(streamLengthObj);
             if (validateStreamLength(streamLengthObj.longValue()))
             {
+                out = stream.createFilteredStream(streamLengthObj);
 	            long remainBytes = streamLengthObj.longValue();
 	            int bytesRead = 0;
 	            while (remainBytes > 0)
@@ -1533,6 +1533,7 @@ public class NonSequentialPDFParser extends PDFParser
 	                if (readBytes <= 0)
 	                {
 	                    useReadUntilEnd = true;
+	                    out.close();
 	                    pdfSource.unread(bytesRead);
 	                    break;
 	                }
@@ -1604,8 +1605,8 @@ public class NonSequentialPDFParser extends PDFParser
         // beginning of buffer
         while ((bufSize = pdfSource.read(streamCopyBuf, charMatchCount, streamCopyBufLen - charMatchCount)) > 0)
         {
-            bufSize += charMatchCount;
-
+        	// number of already matching chars
+            int startingMatchCount = charMatchCount;
             int bIdx = charMatchCount;
             int quickTestIdx;
 
@@ -1684,9 +1685,9 @@ public class NonSequentialPDFParser extends PDFParser
             }
             if (charMatchCount == keyw.length)
             {
-                // keyword matched; unread matched keyword (endstream/endobj)
-                // and following buffered content
-                pdfSource.unread(streamCopyBuf, contentBytes, bufSize - contentBytes);
+                // keyword matched; 
+            	// unread matched keyword (endstream/endobj) and following buffered content
+           		pdfSource.unread(streamCopyBuf, contentBytes, bufSize - contentBytes - keyw.length + startingMatchCount);
                 break;
 
             }
@@ -1850,7 +1851,9 @@ public class NonSequentialPDFParser extends PDFParser
     		for (COSObjectKey objectKey : xrefOffset.keySet())
     		{
     			Long objectOffset = xrefOffset.get(objectKey);
-    			if (objectOffset != null)
+    			// a negative offset number represents a object number itself
+    			// see type 2 entry in xref stream
+    			if (objectOffset != null && objectOffset > 0)
     			{
         			long objectNr = objectKey.getNumber();
         			long objectGen = objectKey.getGeneration();
