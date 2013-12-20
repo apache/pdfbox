@@ -22,16 +22,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.util.List;
 
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
-
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
-
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFileInputStream;
 import org.apache.pdfbox.io.RandomAccessFileOutputStream;
@@ -40,7 +37,7 @@ import org.apache.pdfbox.io.RandomAccessFileOutputStream;
  * This class represents a stream object in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.41 $
+ * 
  */
 public class COSStream extends COSDictionary
 {
@@ -263,7 +260,6 @@ public class COSStream extends COSDictionary
     {
         FilterManager manager = getFilterManager();
         Filter filter = manager.getFilter( filterName );
-        InputStream input;
 
         boolean done = false;
         IOException exception = null;
@@ -287,6 +283,7 @@ public class COSStream extends COSDictionary
             //try again with one less byte.
             for( int tryCount=0; !done && tryCount<5; tryCount++ )
             {
+                InputStream input = null;
                 try
                 {
                     input = new BufferedInputStream(
@@ -300,6 +297,10 @@ public class COSStream extends COSDictionary
                     length--;
                     exception = io;
                 }
+                finally
+                {
+                	IOUtils.closeQuietly(input);
+                }
             }
             if( !done )
             {
@@ -309,6 +310,7 @@ public class COSStream extends COSDictionary
                 length = writtenLength;
                 for( int tryCount=0; !done && tryCount<5; tryCount++ )
                 {
+                    InputStream input = null;
                     try
                     {
                         input = new BufferedInputStream(
@@ -321,6 +323,10 @@ public class COSStream extends COSDictionary
                     {
                         length--;
                         exception = io;
+                    }
+                    finally
+                    {
+                    	IOUtils.closeQuietly(input);
                     }
                 }
             }
@@ -373,13 +379,13 @@ public class COSStream extends COSDictionary
     {
         FilterManager manager = getFilterManager();
         Filter filter = manager.getFilter( filterName );
-        InputStream input;
 
-        input = new BufferedInputStream(
+        InputStream input = new BufferedInputStream(
             new RandomAccessFileInputStream( file, filteredStream.getPosition(),
                                                    filteredStream.getLength() ), BUFFER_SIZE );
         filteredStream = new RandomAccessFileOutputStream( file );
         filter.encode( input, filteredStream, this, filterIndex );
+        IOUtils.closeQuietly(input);
     }
 
     /**
