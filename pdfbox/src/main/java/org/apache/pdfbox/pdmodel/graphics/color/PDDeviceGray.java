@@ -17,19 +17,18 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.color.ColorSpace;
-
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
 import java.awt.Transparency;
-
 import java.io.IOException;
 
 /**
  * This class represents a Gray color space.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * 
  */
 public class PDDeviceGray extends PDColorSpace
 {
@@ -86,11 +85,24 @@ public class PDDeviceGray extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-        ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-        int[] nBits = {bpc};
-        ColorModel colorModel = new ComponentColorModel(cs, nBits, false,false,
-                Transparency.OPAQUE,DataBuffer.TYPE_BYTE);
+    	ColorModel colorModel = null;
+    	if (bpc == 8)
+    	{
+    		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+            int[] nBits = {bpc};
+            colorModel = new ComponentColorModel(cs, nBits, false, false, Transparency.OPAQUE,DataBuffer.TYPE_BYTE);
+    	}
+    	else
+    	{
+        	int numEntries = 1 << bpc;
+            // calculate all possible values
+            byte[] indexedValues = new byte[numEntries];
+            for (int i = 0; i < numEntries; i++) 
+            {
+            	indexedValues[i] = (byte)(i*255/(numEntries - 1));
+            }
+            colorModel = new IndexColorModel(bpc, numEntries, indexedValues, indexedValues, indexedValues);
+    	}
         return colorModel;
-
     }
 }
