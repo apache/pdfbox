@@ -1743,16 +1743,26 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private boolean checkBytesAtOffset(byte[] string) throws IOException
     {
-    	byte[] bytesRead = new byte[string.length];
     	boolean bytesMatching = false;
 		if (pdfSource.peek() == string[0])
 		{
-			pdfSource.read(bytesRead, 0, string.length);
+	    	int length = string.length;
+	    	byte[] bytesRead = new byte[length];
+			int numberOfBytes = pdfSource.read(bytesRead, 0, length);
+			while (numberOfBytes < length)
+			{
+				int readMore =  pdfSource.read(bytesRead, numberOfBytes, length-numberOfBytes);
+				if (readMore < 0)
+				{
+					break;
+				}
+				numberOfBytes += readMore;
+			}
 			if (Arrays.equals(string, bytesRead))
 			{
 				bytesMatching = true;
 			}
-			pdfSource.unread(bytesRead);
+			pdfSource.unread(bytesRead, 0, numberOfBytes);
 		}
 		return bytesMatching;
     }
