@@ -42,7 +42,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * close() on this object when you are done using it!!
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.28 $
+ * 
  */
 public class COSDocument extends COSBase implements Closeable
 {
@@ -567,6 +567,35 @@ public class COSDocument extends COSBase implements Closeable
             if (tmpFile != null) 
             {
                 tmpFile.delete();
+            }
+            if (trailer != null)
+            {
+            	trailer.clear();
+            	trailer = null;
+            }
+            // Clear object pool
+            List<COSObject> list = getObjects();
+            if (list != null && !list.isEmpty()) 
+            {
+                for (COSObject object : list) 
+                {
+                    COSBase cosObject = object.getObject();
+                    // clear the resources of the pooled objects
+                    if (cosObject instanceof COSStream)
+                    {
+                    	((COSStream)cosObject).close();
+                    }
+                    else if (cosObject instanceof COSDictionary)
+                    {
+                    	((COSDictionary)cosObject).clear();
+                    }
+                    else if (cosObject instanceof COSArray)
+                    {
+                    	((COSArray)cosObject).clear();
+                    }
+                    // TODO are there other kind of COSObjects to be cleared?
+                }
+                list.clear();
             }
             closed = true;
         }

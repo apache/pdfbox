@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -41,6 +43,11 @@ import org.apache.pdfbox.io.RandomAccessFileOutputStream;
  */
 public class COSStream extends COSDictionary
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(COSStream.class);
+
     private static final int BUFFER_SIZE=16384;
 
     private RandomAccess file;
@@ -273,6 +280,7 @@ public class COSStream extends COSDictionary
             //if the length is zero then don't bother trying to decode
             //some filters don't work when attempting to decode
             //with a zero length stream.  See zlib_error_01.pdf
+        	IOUtils.closeQuietly(unFilteredStream);
             unFilteredStream = new RandomAccessFileOutputStream( file );
             done = true;
         }
@@ -288,6 +296,7 @@ public class COSStream extends COSDictionary
                 {
                     input = new BufferedInputStream(
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
+                	IOUtils.closeQuietly(unFilteredStream);
                     unFilteredStream = new RandomAccessFileOutputStream( file );
                     filter.decode( input, unFilteredStream, this, filterIndex );
                     done = true;
@@ -315,6 +324,7 @@ public class COSStream extends COSDictionary
                     {
                         input = new BufferedInputStream(
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
+                    	IOUtils.closeQuietly(unFilteredStream);
                         unFilteredStream = new RandomAccessFileOutputStream( file );
                         filter.decode( input, unFilteredStream, this, filterIndex );
                         done = true;
@@ -383,6 +393,7 @@ public class COSStream extends COSDictionary
         InputStream input = new BufferedInputStream(
             new RandomAccessFileInputStream( file, filteredStream.getPosition(),
                                                    filteredStream.getLength() ), BUFFER_SIZE );
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         filter.encode( input, filteredStream, this, filterIndex );
         IOUtils.closeQuietly(input);
@@ -413,8 +424,10 @@ public class COSStream extends COSDictionary
      */
     public OutputStream createFilteredStream() throws IOException
     {
+    	IOUtils.closeQuietly(unFilteredStream);
+    	unFilteredStream = null;
+    	IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
-        unFilteredStream = null;
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
     }
 
@@ -431,9 +444,11 @@ public class COSStream extends COSDictionary
      */
     public OutputStream createFilteredStream( COSBase expectedLength ) throws IOException
     {
+      	IOUtils.closeQuietly(unFilteredStream);
+       	unFilteredStream = null;
+    	IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         filteredStream.setExpectedLength( expectedLength );
-        unFilteredStream = null;
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
     }
 
@@ -448,6 +463,7 @@ public class COSStream extends COSDictionary
     {
         setItem(COSName.FILTER, filters);
         // kill cached filtered streams
+    	IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
     }
 
@@ -460,8 +476,35 @@ public class COSStream extends COSDictionary
      */
     public OutputStream createUnfilteredStream() throws IOException
     {
-        unFilteredStream = new RandomAccessFileOutputStream( file );
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
+    	IOUtils.closeQuietly(unFilteredStream);
+        unFilteredStream = new RandomAccessFileOutputStream( file );
         return new BufferedOutputStream( unFilteredStream, BUFFER_SIZE );
+    }
+    
+    public void close()
+    {
+    	try
+    	{
+    		if (file != null)
+    		{
+    			file.close();
+    			file = null;
+    		}
+    	}
+    	catch (IOException exception)
+    	{
+    		LOG.error("Exception occured when closing the file.", exception);
+    	}
+    	if (filteredStream != null)
+    	{
+    		IOUtils.closeQuietly(filteredStream);
+    	}
+    	if (unFilteredStream != null)
+    	{
+    		IOUtils.closeQuietly(unFilteredStream);
+    	}
+    	clear();
     }
 }
