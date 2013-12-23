@@ -29,7 +29,7 @@ import org.apache.fontbox.util.BoundingBox;
  * @see <A href="http://partners.adobe.com/asn/developer/type/">AFM Documentation</A>
  *
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class AFMParser
 {
@@ -287,7 +287,6 @@ public class AFMParser
 
 
     private InputStream input;
-    private FontMetric result;
 
     /**
      * A method to test parsing of all AFM documents in the resources
@@ -329,21 +328,13 @@ public class AFMParser
      * This will parse the AFM document.  This will close the Input stream
      * when the parsing is finished.
      *
+     * @return the parsed FontMetric
+     * 
      * @throws IOException If there is an IO error reading the document.
      */
-    public void parse() throws IOException
+    public FontMetric parse() throws IOException
     {
-        result = parseFontMetric();
-    }
-
-    /**
-     * This will get the result of the parsing.
-     *
-     * @return The parsed java object.
-     */
-    public FontMetric getResult()
-    {
-        return result;
+    	return parseFontMetric();
     }
 
     /**
