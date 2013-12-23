@@ -175,8 +175,8 @@ public class PDType1Font extends PDSimpleFont
                 try
                 {
                     AFMParser parser = new AFMParser(afmStream);
-                    parser.parse();
-                    metrics.put(name, parser.getResult());
+                    FontMetric metric = parser.parse(); 
+                    metrics.put(name, metric);
                 }
                 finally
                 {

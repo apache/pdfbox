@@ -43,7 +43,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * This is implementation of the Type1 Font with a afm and a pfb file.
  * 
  * @author <a href="mailto:m.g.n@gmx.de">Michael Niedermair</a>
- * @version $Revision: 1.5 $
+ * 
  */
 public class PDType1AfmPfbFont extends PDType1Font
 {
@@ -117,8 +117,7 @@ public class PDType1AfmPfbFont extends PDType1Font
 
         // read the afm
         AFMParser parser = new AFMParser(afm);
-        parser.parse();
-        metric = parser.getResult();
+        metric = parser.parse();
         setFontEncoding(afmToDictionary(new AFMEncoding(metric)));
 
         // set the values

@@ -420,9 +420,7 @@ public class PDType1CFont extends PDSimpleFont
         try
         {
             AFMParser afmParser = new AFMParser(is);
-            afmParser.parse();
-
-            FontMetric result = afmParser.getResult();
+            FontMetric result = afmParser.parse();
 
             // Replace default FontBBox value with a newly computed one
             BoundingBox bounds = result.getFontBBox();

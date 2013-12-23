@@ -27,11 +27,10 @@ import org.apache.pdfbox.cos.COSBase;
  * This will handle the encoding from an AFM font.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.8 $
+ * 
  */
 public class AFMEncoding extends Encoding
 {
-    private FontMetric metric = null;
 
     /**
      * Constructor.
@@ -40,8 +39,7 @@ public class AFMEncoding extends Encoding
      */
     public AFMEncoding( FontMetric fontInfo )
     {
-        metric = fontInfo;
-        Iterator<CharMetric> characters = metric.getCharMetrics().iterator();
+        Iterator<CharMetric> characters = fontInfo.getCharMetrics().iterator();
         while( characters.hasNext() )
         {
             CharMetric nextMetric = (CharMetric)characters.next();
