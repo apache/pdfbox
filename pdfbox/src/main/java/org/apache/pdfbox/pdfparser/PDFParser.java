@@ -442,7 +442,7 @@ public class PDFParser extends BaseParser
      */
     public PDDocument getPDDocument() throws IOException
     {
-        return new PDDocument( getDocument() );
+        return new PDDocument( getDocument(), this );
     }
 
     /**
@@ -980,5 +980,23 @@ public class PDFParser extends BaseParser
             }
         }
         return false;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearResources() {
+    	super.clearResources();
+    	if (conflictList != null)
+    	{
+    		conflictList.clear();
+    		conflictList = null;
+    	}
+    	if (xrefTrailerResolver != null)
+    	{
+    		xrefTrailerResolver.clearResources();
+    		xrefTrailerResolver = null;
+    	}
     }
 }
