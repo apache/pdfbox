@@ -496,4 +496,16 @@ public class PDFStreamParser extends BaseParser
         return isSpaceOrReturn( pdfSource.peek() );
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearResources() {
+    	super.clearResources();
+    	if (streamObjects != null)
+    	{
+    		streamObjects.clear();
+    		streamObjects = null;
+    	}
+    }
 }

@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -65,10 +66,26 @@ public class XrefTrailerResolver
         private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
         
         /**
-         *  Default cosntructor.
+         *  Default constructor.
          */
         private XrefTrailerObj()
         {
+        }
+        
+        /**
+         * Release all used resources.
+         */
+        public void clearResources()
+        {
+        	if (trailer != null)
+        	{
+        		trailer.clear();
+        		trailer = null;
+        	}
+        	if (xrefTable != null)
+        	{
+        		xrefTable.clear();
+        	}
         }
     }
 
@@ -283,4 +300,26 @@ public class XrefTrailerResolver
         }
         return refObjNrs;
     }
+    
+    /**
+     * Release all used resources.
+     */
+    public void clearResources()
+    {
+    	if (curXrefTrailerObj != null)
+    	{
+    		curXrefTrailerObj.clearResources();
+    		curXrefTrailerObj = null;
+    	}
+    	if (resolvedXrefTrailer != null)
+    	{
+    		resolvedXrefTrailer.clearResources();
+    		resolvedXrefTrailer = null;
+    	}
+    	if (bytePosToXrefMap != null)
+    	{
+    		bytePosToXrefMap.clear();
+    	}
+    }
+
 }
