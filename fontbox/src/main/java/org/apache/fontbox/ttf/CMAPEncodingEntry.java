@@ -415,7 +415,7 @@ public class CMAPEncodingEntry
 			int firstCode = data.readUnsignedShort();
 			int entryCount = data.readUnsignedShort();
 			short idDelta = data.readSignedShort();
-			int idRangeOffset = data.readUnsignedShort();
+			int idRangeOffset = data.readUnsignedShort() - (maxSubHeaderIndex + 1 - i - 1) * 8 - 2;
 			subHeaders[i] = new SubHeader(firstCode, entryCount, idDelta, idRangeOffset);
 		}
 		long startGlyphIndexOffset = data.getCurrentPosition();
@@ -424,26 +424,31 @@ public class CMAPEncodingEntry
 		{
 			SubHeader sh = subHeaders[i];
 			int firstCode = sh.getFirstCode();
-			for ( int j = 0 ; j < sh.getEntryCount() ; ++j)
+			int idRangeOffset = sh.getIdRangeOffset();
+			int idDelta = sh.getIdDelta();
+			int entryCount = sh.getEntryCount();
+			data.seek(startGlyphIndexOffset + idRangeOffset);
+			for (int j = 0; j < entryCount; ++j)
 			{
 				// ---- compute the Character Code
-				int charCode = ( i * 8 );
-				charCode = (charCode << 8 ) + (firstCode + j);
-
-				// ---- Go to the CharacterCOde position in the Sub Array 
-				//      of the glyphIndexArray 
-				//      glyphIndexArray contains Unsigned Short so add (j * 2) bytes 
-				//      at the index position
-				data.seek(startGlyphIndexOffset + sh.getIdRangeOffset() + (j*2));
+				int charCode = i;
+				charCode = (charCode << 8) + (firstCode + j);
+				
+				// ---- Go to the CharacterCOde position in the Sub Array
+				// of the glyphIndexArray
+				// glyphIndexArray contains Unsigned Short so add (j * 2) bytes
+				// at the index position
 				int p = data.readUnsignedShort();
-				// ---- compute the glyphIndex 
-				p = p + sh.getIdDelta() % 65536;
-
+				// ---- compute the glyphIndex
+				if (p > 0)
+				{
+					p = (p + idDelta) % 65536;
+				}
 				glyphIdToCharacterCode[p] = charCode;
 				characterCodeToGlyphId.put(charCode, p);
 			}
 		}
-	}
+	}	
 
 	/**
 	 * Initialize the CMapEntry when it is a subtype 0
