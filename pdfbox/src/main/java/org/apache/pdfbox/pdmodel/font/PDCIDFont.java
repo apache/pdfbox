@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -324,18 +326,31 @@ public abstract class PDCIDFont extends PDSimpleFont
             cmap = cmapObjects.get(cidSystemInfo);
             if (cmap == null)
             {
-                String resourceName = resourceRootCMAP + cidSystemInfo;
+            	InputStream cmapStream = null;
                 try
                 {
-                    cmap = parseCmap(resourceRootCMAP, ResourceLoader.loadResource(resourceName));
-                    if (cmap == null)
+                    // look for a predefined CMap with the given name
+                    cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cidSystemInfo);
+                    if (cmapStream != null)
                     {
-                        LOG.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
+                    	cmap = parseCmap(resourceRootCMAP, cmapStream);
+                    	if (cmap == null)
+                    	{
+                    		LOG.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
+                    	}
+                    }
+                    else
+                    {
+                		LOG.debug("Debug: '" + cidSystemInfo + "' isn't a predefined CMap, most likely it's embedded in the pdf itself.");
                     }
                 }
                 catch (IOException exception)
                 {
                     LOG.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo + "'");
+                }
+                finally
+                {
+                	IOUtils.closeQuietly(cmapStream);
                 }
             }
         }
