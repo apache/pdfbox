@@ -27,6 +27,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
+import java.io.InputStream;
 import java.util.HashMap;
 
 import org.apache.fontbox.afm.FontMetric;
@@ -44,6 +45,7 @@ import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -427,18 +429,31 @@ public abstract class PDSimpleFont extends PDFont
 
         if (cmap == null && cmapName != null) 
         {
-            String resourceName = resourceRootCMAP + cmapName;
+        	InputStream cmapStream = null;
             try 
             {
-                cmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
-                if( cmap == null && encodingName == null)
+                // look for a predefined CMap with the given name
+                cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cmapName);
+                if (cmapStream != null)
                 {
-                    LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+                	cmap = parseCmap(resourceRootCMAP, cmapStream);
+                	if (cmap == null && encodingName == null)
+                	{
+                		LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'");
+                	}
+                }
+                else
+                {
+            		LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's embedded in the pdf itself.");
                 }
             }
             catch(IOException exception) 
             {
                 LOG.error("Error: Could not find predefined CMAP file for '" + cmapName + "'" );
+            }
+            finally
+            {
+            	IOUtils.closeQuietly(cmapStream);
             }
         }
     }
