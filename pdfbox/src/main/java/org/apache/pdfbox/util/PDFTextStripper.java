@@ -1939,7 +1939,7 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         if (text instanceof WordSeparator) 
         {
-            normalized.add(createWord(lineBuilder.toString(), wordPositions));
+            normalized.add(createWord(lineBuilder.toString(), new ArrayList<TextPosition>(wordPositions)));
             lineBuilder = new StringBuilder();
             wordPositions.clear();
         }
