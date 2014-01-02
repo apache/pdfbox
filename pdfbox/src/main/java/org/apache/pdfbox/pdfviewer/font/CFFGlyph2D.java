@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFFont;
+import org.apache.fontbox.cff.CFFFontROS;
 import org.apache.fontbox.cff.CharStringRenderer;
 import org.apache.pdfbox.encoding.Encoding;
 
@@ -54,14 +55,30 @@ public class CFFGlyph2D implements Glyph2D
     public CFFGlyph2D(CFFFont cffFont, Encoding encoding)
     {
         fontname = cffFont.getName();
-        Map<String, Integer> nameToCode = encoding != null ? encoding.getNameToCodeMap() : null;
         Collection<CFFFont.Mapping> mappings = cffFont.getMappings();
-        Map<Integer, String> codeToNameMap = new LinkedHashMap<Integer, String>();
+        Map<String, Integer> nameToCode = new LinkedHashMap<String, Integer>();
+        // start with CFF built-in encoding        
         for (CFFFont.Mapping mapping : mappings)
         {
-            codeToNameMap.put(mapping.getCode(), mapping.getName());
+        	int code;
+        	if (cffFont instanceof CFFFontROS) 
+        	{
+        		code = mapping.getSID();
+        	}
+        	else 
+        	{
+        		code = mapping.getCode();
+        	}
+        	nameToCode.put(mapping.getName(), code);        
         }
-
+        // override with PDF Encoding
+        if (encoding != null) 
+        {
+        	for (Map.Entry<Integer, String> entry : encoding.getCodeToNameMap().entrySet()) 
+        	{
+        		nameToCode.put(entry.getValue(), entry.getKey());
+        	}
+        }
         CharStringRenderer renderer = cffFont.createRenderer();
         int glyphId = 0;
         for (CFFFont.Mapping mapping : mappings)
@@ -78,13 +95,7 @@ public class CFFGlyph2D implements Glyph2D
             if (glyph != null)
             {
                 glyphs.put(glyphId, glyph);
-                int code = mapping.getSID();
-                String name = mapping.getName();
-                if (nameToCode != null && nameToCode.containsKey(name))
-                {
-                    code = nameToCode.get(name);
-                }
-                codeToGlyph.put(code, glyphId);
+                codeToGlyph.put(nameToCode.get(mapping.getName()), glyphId);
                 glyphId++;
             }
         }

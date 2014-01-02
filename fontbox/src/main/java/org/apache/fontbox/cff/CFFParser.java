@@ -584,7 +584,8 @@ public class CFFParser
         }
         else
         {
-            return CFFStandardString.getName(0);
+        	// technically this maps to .notdef, but we need a unique glyph name
+        	return "SID" + index;
         }
     }
 
