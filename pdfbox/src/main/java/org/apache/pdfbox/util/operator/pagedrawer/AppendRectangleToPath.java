@@ -30,7 +30,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  * Implementation of content stream operator for page drawer.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * 
  */
 public class AppendRectangleToPath extends OperatorProcessor
 {
@@ -72,6 +72,9 @@ public class AppendRectangleToPath extends OperatorProcessor
         path.lineTo(xStart+width, yStart);
         path.lineTo(xStart+width, yStart+height);
         path.lineTo(xStart, yStart+height);
-        path.lineTo(xStart, yStart);
+        // close the subpath instead of adding the last line
+        // so that a possible set line cap style isn't taken into account
+        // at the "beginning" of the rectangle
+        path.closePath();
     }
 }
