@@ -41,13 +41,12 @@ import org.apache.pdfbox.util.PDFOperator;
  * This will parse a PDF byte stream and extract operands and such.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.32 $
+ * 
  */
 public class PDFStreamParser extends BaseParser
 {
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
     private RandomAccess file;
-    private PDFOperator lastBIToken = null;
 
     /**
      * Constructor that takes a stream to parse.
@@ -355,12 +354,11 @@ public class PDFStreamParser extends BaseParser
             {
                 String next = readString();
                 retval = PDFOperator.getOperator( next );
-
                 if( next.equals( "BI" ) )
                 {
-                    lastBIToken = (PDFOperator)retval;
+                	PDFOperator beginImageOP = (PDFOperator)retval;
                     COSDictionary imageParams = new COSDictionary();
-                    lastBIToken.setImageParameters( new ImageParameters( imageParams ) );
+                    beginImageOP.setImageParameters( new ImageParameters( imageParams ) );
                     Object nextToken = null;
                     while( (nextToken = parseNextToken()) instanceof COSName )
                     {
@@ -369,7 +367,7 @@ public class PDFStreamParser extends BaseParser
                     }
                     //final token will be the image data, maybe??
                     PDFOperator imageData = (PDFOperator)nextToken;
-                    lastBIToken.setImageData( imageData.getImageData() );
+                    beginImageOP.setImageData( imageData.getImageData() );
                 }
                 break;
             }
@@ -382,39 +380,29 @@ public class PDFStreamParser extends BaseParser
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id + "'" );
                 }
                 ByteArrayOutputStream imageData = new ByteArrayOutputStream();
-                //boolean foundEnd = false;
-                if( this.isWhitespace() )
+                if( isWhitespace() )
                 {
                     //pull off the whitespace character
                     pdfSource.read();
                 }
-                int twoBytesAgo = 0;
                 int lastByte = pdfSource.read();
                 int currentByte = pdfSource.read();
-                //PDF spec is kinda unclear about this.  Should a whitespace
-                //always appear before EI? Not sure, I found a PDF
-                //(UnderstandingWebSphereClassLoaders.pdf) which has EI as part
-                //of the image data and will stop parsing prematurely if there is
-                //not a check for <whitespace>EI<whitespace>.
-                // Not all whitespaces are allowed here. see PDFBOX1561
-                while( !(isSpaceOrReturn( twoBytesAgo ) &&
-                         lastByte == 'E' &&
+                // PDF spec is kinda unclear about this. Should a whitespace
+                // always appear before EI? Not sure, so that we just read
+                // until EI<whitespace>.
+                // Be aware not all kind of whitespaces are allowed here. see PDFBOX1561
+                while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
-                         isSpaceOrReturn() //&&
-                         //amyuni2_05d__pdf1_3_acro4x.pdf has image data that
-                         //is compressed, so expectedBytes is useless here.
-                         //count >= expectedBytes
-                         ) &&
+                         isSpaceOrReturn()) &&
                        !pdfSource.isEOF() )
                 {
                     imageData.write( lastByte );
-                    twoBytesAgo = lastByte;
                     lastByte = currentByte;
                     currentByte = pdfSource.read();
                 }
-                pdfSource.unread( 'I' ); //unread the EI operator
-                pdfSource.unread( 'E' );
+                // the EI operator isn't unread, as it won't be processed anyway
                 retval = PDFOperator.getOperator( "ID" );
+                // save the image data to the operator, so that it can be accessed it later
                 ((PDFOperator)retval).setImageData( imageData.toByteArray() );
                 break;
             }
@@ -491,6 +479,12 @@ public class PDFStreamParser extends BaseParser
         return c == 10 || c == 13 || c == 32;
     }
 
+    /**
+     * Checks if the next char is a space or a return.
+     * 
+     * @return true if the next char is a space or a return
+     * @throws IOException if something went wrong
+     */
     private boolean isSpaceOrReturn() throws IOException
     {
         return isSpaceOrReturn( pdfSource.peek() );
@@ -500,7 +494,8 @@ public class PDFStreamParser extends BaseParser
      * {@inheritDoc}
      */
     @Override
-    public void clearResources() {
+    public void clearResources() 
+    {
     	super.clearResources();
     	if (streamObjects != null)
     	{
