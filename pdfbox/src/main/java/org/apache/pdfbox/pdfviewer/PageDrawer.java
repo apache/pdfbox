@@ -273,7 +273,7 @@ public class PageDrawer extends PDFStreamEngine
                 // Type3 fonts don't use the same units within the font matrix as all the other fonts
                 at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
                 // Type3 fonts are using streams for each character
-                drawType3String((PDType3Font) font, text.getCharacter(), at);
+                drawType3String((PDType3Font) font, text, at);
             }
             else
             {
@@ -346,17 +346,18 @@ public class PageDrawer extends PDFStreamEngine
      * Render the text using a type 3 font.
      * 
      * @param font the type3 font
-     * @param string the string to be rendered
+     * @param text the text to be rendered
      * @param at the transformation
      * 
      * @throws IOException if something went wrong
      */
-    private void drawType3String(PDType3Font font, String string, AffineTransform at) throws IOException
+    private void drawType3String(PDType3Font font, TextPosition text, AffineTransform at) throws IOException
     {
-        int stringLength = string.length();
-        for (int i = 0; i < stringLength; i++)
+    	int[] codePoints = text.getCodePoints();
+    	int textLength = codePoints.length;
+        for (int i = 0; i < textLength; i++)
         {
-            COSStream stream = font.getCharStream(string.charAt(i));
+            COSStream stream = font.getCharStream((char)codePoints[i]);
             if (stream != null)
             {
                 // save the current graphics state
@@ -372,7 +373,7 @@ public class PageDrawer extends PDFStreamEngine
             }
             else
             {
-                LOG.debug("drawType3String: stream for character " + string.charAt(i) + " not found");
+                LOG.debug("drawType3String: stream for character " + (char)codePoints[i] + " not found");
             }
         }
     }
