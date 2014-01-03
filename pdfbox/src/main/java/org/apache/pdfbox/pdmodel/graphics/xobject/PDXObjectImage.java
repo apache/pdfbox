@@ -154,10 +154,18 @@ public abstract class PDXObjectImage extends PDXObject
         if (smask != null)
         {
             BufferedImage smaskBI = smask.getRGBImage();
-            COSArray decodeArray = smask.getDecode();
-            CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
-            BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
-            return rgbImage;
+            if (smaskBI != null)
+            {
+	            COSArray decodeArray = smask.getDecode();
+	            CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
+	            BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+	            return rgbImage;
+            }
+            else
+            {
+            	// this may happen if the smask is somehow broken, e.g. unsupported filter
+                LOG.warn("masking getRGBImage returned NULL");
+            }
         }
         return baseImage;
     }
