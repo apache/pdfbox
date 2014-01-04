@@ -144,6 +144,8 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         graphics.translate(0, pageSize.height);
         graphics.scale(1, -1);
+        // initialize the used stroke with CAP_BUTT instead of CAP_SQUARE
+        graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
         if (page.getContents() != null)
