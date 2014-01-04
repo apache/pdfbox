@@ -45,7 +45,8 @@ public class CFFGlyph2D implements Glyph2D
     private static final Log LOG = LogFactory.getLog(CFFGlyph2D.class);
 
     private HashMap<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
-    private HashMap<Integer, Integer> codeToGlyph = new HashMap<Integer, Integer>();
+    private HashMap<String, Integer> nameToGlyph = new HashMap<String, Integer>();
+    private Map<Integer, String> codeToName = new LinkedHashMap<Integer, String>();
     private String fontname = null;
 
     /**
@@ -56,7 +57,6 @@ public class CFFGlyph2D implements Glyph2D
     {
         fontname = cffFont.getName();
         Collection<CFFFont.Mapping> mappings = cffFont.getMappings();
-        Map<String, Integer> nameToCode = new LinkedHashMap<String, Integer>();
         // start with CFF built-in encoding        
         for (CFFFont.Mapping mapping : mappings)
         {
@@ -69,14 +69,15 @@ public class CFFGlyph2D implements Glyph2D
         	{
         		code = mapping.getCode();
         	}
-        	nameToCode.put(mapping.getName(), code);        
+        	codeToName.put(code, mapping.getName());        
         }
-        // override with PDF Encoding
+        // override existing entries with an optional PDF Encoding
         if (encoding != null) 
         {
-        	for (Map.Entry<Integer, String> entry : encoding.getCodeToNameMap().entrySet()) 
+        	Map<Integer, String> encodingCodeToName = encoding.getCodeToNameMap();
+        	for (Integer key : encodingCodeToName.keySet())
         	{
-        		nameToCode.put(entry.getValue(), entry.getKey());
+        		codeToName.put(key, encodingCodeToName.get(key));
         	}
         }
         CharStringRenderer renderer = cffFont.createRenderer();
@@ -95,7 +96,7 @@ public class CFFGlyph2D implements Glyph2D
             if (glyph != null)
             {
                 glyphs.put(glyphId, glyph);
-                codeToGlyph.put(nameToCode.get(mapping.getName()), glyphId);
+                nameToGlyph.put(mapping.getName(), glyphId);
                 glyphId++;
             }
         }
@@ -124,10 +125,14 @@ public class CFFGlyph2D implements Glyph2D
     @Override
     public GeneralPath getPathForCharactercode(int code)
     {
-        if (codeToGlyph.containsKey(code))
-        {
-            return getPathForGlyphId(codeToGlyph.get(code));
-        }
+    	if (codeToName.containsKey(code))
+    	{
+    		String name = codeToName.get(code);
+    		if (nameToGlyph.containsKey(name))
+    		{
+                return getPathForGlyphId(nameToGlyph.get(name));
+    		}
+    	}
         else
         {
             LOG.debug(fontname + ": glyphmapping for " + code + " not found!");
@@ -158,9 +163,13 @@ public class CFFGlyph2D implements Glyph2D
         {
             glyphs.clear();
         }
-        if (codeToGlyph != null)
+        if (codeToName != null)
         {
-            codeToGlyph.clear();
+        	codeToName.clear();
+        }
+        if (nameToGlyph != null)
+        {
+        	nameToGlyph.clear();
         }
     }
 }
