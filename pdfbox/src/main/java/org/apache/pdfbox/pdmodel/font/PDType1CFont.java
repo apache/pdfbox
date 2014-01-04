@@ -104,21 +104,6 @@ public class PDType1CFont extends PDSimpleFont
         load();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String encode( byte[] bytes, int offset, int length ) throws IOException
-    {
-        String character = getCharacter(bytes, offset, length);
-        if( character == null )
-        {
-            log.debug("No character for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
-            return null;
-        }
-
-        return character;
-    }
-    
     public int encodeToCID( byte[] bytes, int offset, int length )
     {
       if (length > 2)
@@ -133,15 +118,6 @@ public class PDType1CFont extends PDSimpleFont
       return code;
     }
     
-    private String getCharacter( byte[] bytes, int offset, int length )
-    {
-        int code = encodeToCID(bytes, offset, length);
-        if (code == -1) {
-        	return null;
-        }
-        return (String)this.codeToCharacter.get(code);
-    }
-
     /**
      * {@inheritDoc}
      */
