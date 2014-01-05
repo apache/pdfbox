@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,7 +44,6 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -65,7 +63,7 @@ import org.w3c.dom.NodeList;
  * An image class for JPegs.
  *
  * @author mathiak
- * @version $Revision: 1.5 $
+ * 
  */
 public class PDJpeg extends PDXObjectImage
 {
@@ -351,7 +349,6 @@ public class PDJpeg extends PDXObjectImage
             Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
             if (readers == null || !readers.hasNext()) 
             {
-                input.close();
                 throw new RuntimeException("No ImageReaders found");
             }
             reader = (ImageReader) readers.next();
@@ -388,6 +385,17 @@ public class PDJpeg extends PDXObjectImage
         }
         finally
         {
+            try
+            {
+                if (input != null)
+                {
+                    input.close();
+                }
+            }
+            catch (IOException exception)
+            {
+                // swallow the exception
+            }
             if (reader != null)
             {
                 reader.dispose();
