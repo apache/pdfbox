@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFFontROS;
-import org.apache.fontbox.cff.CharStringRenderer;
 import org.apache.pdfbox.encoding.Encoding;
 
 /**
@@ -80,14 +79,13 @@ public class CFFGlyph2D implements Glyph2D
         		codeToName.put(key, encodingCodeToName.get(key));
         	}
         }
-        CharStringRenderer renderer = cffFont.createRenderer();
         int glyphId = 0;
         for (CFFFont.Mapping mapping : mappings)
         {
             GeneralPath glyph = null;
             try
             {
-                glyph = renderer.render(mapping.toType1Sequence());
+                glyph = mapping.getType1CharString().getPath();
             }
             catch (IOException exception)
             {

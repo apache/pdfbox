@@ -17,13 +17,7 @@
 package org.apache.fontbox.cff;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.fontbox.cff.charset.CFFCharset;
 import org.apache.fontbox.cff.encoding.CFFEncoding;
@@ -32,11 +26,10 @@ import org.apache.fontbox.cff.encoding.CFFEncoding;
  * This class represents a CFF/Type2 Font.
  * 
  * @author Villu Ruusmann
- * 
+ * @author John Hewson
  */
 public class CFFFont
 {
-
     private String fontname = null;
     private Map<String, Object> topDict = new LinkedHashMap<String, Object>();
     private Map<String, Object> privateDict = new LinkedHashMap<String, Object>();
@@ -45,6 +38,7 @@ public class CFFFont
     private Map<String, byte[]> charStringsDict = new LinkedHashMap<String, byte[]>();
     private IndexData globalSubrIndex = null;
     private IndexData localSubrIndex = null;
+    private Map<String, Type2CharString> charStringCache = new HashMap<String, Type2CharString>();
 
     /**
      * The name of the font.
@@ -220,44 +214,25 @@ public class CFFFont
     /**
      * Return the Width value of the given Glyph identifier.
      * 
-     * @param SID
+     * @param sid SID
      * @return -1 if the SID is missing from the Font.
      * @throws IOException if something went wrong
      * 
      */
-    public int getWidth(int SID) throws IOException
+    public int getWidth(int sid) throws IOException
     {
-        int nominalWidth = privateDict.containsKey("nominalWidthX") ? ((Number) privateDict.get("nominalWidthX"))
-                .intValue() : 0;
-        int defaultWidth = privateDict.containsKey("defaultWidthX") ? ((Number) privateDict.get("defaultWidthX"))
-                .intValue() : 1000;
-
         for (Mapping m : getMappings())
         {
-            if (m.getSID() == SID)
+            if (m.getSID() == sid)
             {
-
-                CharStringRenderer csr = null;
-                if (((Number) getProperty("CharstringType")).intValue() == 2)
-                {
-                    List<Object> lSeq = m.toType2Sequence();
-                    csr = new CharStringRenderer(false);
-                    csr.render(lSeq);
-                }
-                else
-                {
-                    List<Object> lSeq = m.toType1Sequence();
-                    csr = new CharStringRenderer();
-                    csr.render(lSeq);
-                }
-
-                // ---- If the CharString has a Width nominalWidthX must be added,
-                // otherwise it is the default width.
-                return csr.getWidth() != 0 ? csr.getWidth() + nominalWidth : defaultWidth;
+                Type1CharString charstring = m.getType1CharString();
+                return charstring.getWidth();
             }
         }
 
-        // ---- SID Width not found, return the nodef width
+        // SID not found, return the nodef width
+        int nominalWidth = getNominalWidthX(sid);
+        int defaultWidth = getDefaultWidthX(sid);
         return getNotDefWidth(defaultWidth, nominalWidth);
     }
 
@@ -271,23 +246,8 @@ public class CFFFont
      */
     protected int getNotDefWidth(int defaultWidth, int nominalWidth) throws IOException
     {
-        CharStringRenderer csr;
-        byte[] glyphDesc = this.getCharStringsDict().get(".notdef");
-        if (((Number) getProperty("CharstringType")).intValue() == 2)
-        {
-            Type2CharStringParser parser = new Type2CharStringParser();
-            List<Object> lSeq = parser.parse(glyphDesc, getGlobalSubrIndex(), getLocalSubrIndex());
-            csr = new CharStringRenderer(false);
-            csr.render(lSeq);
-        }
-        else
-        {
-            Type1CharStringParser parser = new Type1CharStringParser();
-            List<Object> lSeq = parser.parse(glyphDesc, getLocalSubrIndex());
-            csr = new CharStringRenderer();
-            csr.render(lSeq);
-        }
-        return csr.getWidth() != 0 ? csr.getWidth() + nominalWidth : defaultWidth;
+        Type1CharString charstring = getType1CharString(".notdef");
+        return charstring.getWidth() != 0 ? charstring.getWidth() + nominalWidth : defaultWidth;
     }
 
     /**
@@ -331,6 +291,25 @@ public class CFFFont
     }
 
     /**
+     * Returns the SID for a given glyph name.
+     * @param name glyph name
+     * @return SID
+     */
+    private int getSIDForName(String name)
+    {
+        int sid = 0; // .notdef
+        for (Mapping m : getMappings())
+        {
+            if (m.getName().equals(name))
+            {
+                sid = m.getSID();
+                break;
+            }
+        }
+      return sid;
+    }
+
+    /**
      * Returns the character strings dictionary.
      * 
      * @return the dictionary
@@ -341,25 +320,65 @@ public class CFFFont
     }
 
     /**
-     * Creates a CharStringConverter for this font.
-     * 
-     * @return the new CharStringConverter
+     * Returns the Type 1 CharString for the character with the given name.
+     *
+     * @return Type 1 CharString
+     * @throws IOException if something went wrong
+     *
      */
-    public CharStringConverter createConverter()
+    public Type1CharString getType1CharString(String name) throws IOException
     {
-        Number defaultWidthX = (Number) getProperty("defaultWidthX");
-        Number nominalWidthX = (Number) getProperty("nominalWidthX");
-        return new CharStringConverter(defaultWidthX.intValue(), nominalWidthX.intValue());
+        return getType1CharString(name, getSIDForName(name));
     }
 
     /**
-     * Creates a CharStringRenderer for this font.
-     * 
-     * @return the new CharStringRenderer
+     * Returns the Type 1 CharString for the character with the given name and SID.
+     *
+     * @return Type 1 CharString
      */
-    public CharStringRenderer createRenderer()
+    private Type1CharString getType1CharString(String name, int sid) throws IOException
     {
-        return new CharStringRenderer();
+        Type2CharString type2 = charStringCache.get(name);
+        if (type2 == null)
+        {
+            Type2CharStringParser parser = new Type2CharStringParser();
+            List<Object> type2seq = parser.parse(charStringsDict.get(name), globalSubrIndex, localSubrIndex);
+            type2 = new Type2CharString(this, type2seq, getDefaultWidthX(sid), getNominalWidthX(sid));
+            charStringCache.put(name, type2);
+        }
+        return type2;
+    }
+
+    /**
+     * Returns the defaultWidthX for the given SID.
+     *
+     * @param sid SID
+     * @return defaultWidthX
+     */
+    protected int getDefaultWidthX(int sid)
+    {
+        Number num = (Number)getProperty("defaultWidthX");
+        if (num == null)
+        {
+            return 1000;
+        }
+        return num.intValue();
+    }
+
+    /**
+     * Returns the nominalWidthX for the given SID.
+     *
+     * @param sid SID
+     * @return defaultWidthX
+     */
+    protected int getNominalWidthX(int sid)
+    {
+        Number num = (Number)getProperty("nominalWidthX");
+        if (num == null)
+        {
+            return 0;
+        }
+        return num.intValue();
     }
 
     /**
@@ -414,7 +433,6 @@ public class CFFFont
 
     /**
      * This class is used for the font mapping.
-     * 
      */
     public class Mapping
     {
@@ -424,27 +442,14 @@ public class CFFFont
         private byte[] mappedBytes;
 
         /**
-         * Converts the mapping into a Type1-sequence.
-         * 
-         * @return the Type1-sequence
+         * Returns the Type 1 CharString for the character.
+         *
+         * @return the Type 1 CharString
          * @throws IOException if an error occurs during reading
          */
-        public List<Object> toType1Sequence() throws IOException
+        public Type1CharString getType1CharString() throws IOException
         {
-            CharStringConverter converter = createConverter();
-            return converter.convert(toType2Sequence());
-        }
-
-        /**
-         * Converts the mapping into a Type2-sequence.
-         * 
-         * @return the Type2-sequence
-         * @throws IOException if an error occurs during reading
-         */
-        public List<Object> toType2Sequence() throws IOException
-        {
-            Type2CharStringParser parser = new Type2CharStringParser();
-            return parser.parse(getBytes(), getGlobalSubrIndex(), getLocalSubrIndex());
+            return CFFFont.this.getType1CharString(mappedName, mappedSID);
         }
 
         /**

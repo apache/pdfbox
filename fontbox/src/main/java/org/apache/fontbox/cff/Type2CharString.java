@@ -22,161 +22,156 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A class to translate Type2 CharString command sequence to Type1 CharString command sequence.
+ * Represents a Type 2 CharString by converting it into an equivalent Type 1 CharString.
  * 
  * @author Villu Ruusmann
- * @version $Revision$
+ * @author John Hewson
  */
-public class CharStringConverter extends CharStringHandler
+public class Type2CharString extends Type1CharString
 {
-
-    private int defaultWidthX = 0;
+    private int defWidthX = 0;
     private int nominalWidthX = 0;
-    private List<Object> sequence = null;
     private int pathCount = 0;
+    private List<Object> type2sequence;
 
     /**
      * Constructor.
-     * 
-     * @param defaultWidth default width
-     * @param nominalWidth nominal width
-     * 
-     * @deprecated Use {@link CharStringConverter#CharStringConverter(int, int)} instead
+     * @param font Parent CFF font
+     * @param sequence Type 2 char string sequence
+     * @param defaultWidthX default width
+     * @param nomWidthX nominal width width
      */
-    public CharStringConverter(int defaultWidth, int nominalWidth, IndexData fontGlobalSubrIndex, IndexData fontLocalSubrIndex)
+    public Type2CharString(CFFFont font, List<Object> sequence, int defaultWidthX, int nomWidthX)
     {
-        defaultWidthX = defaultWidth;
-        nominalWidthX = nominalWidth;
+        super(font);
+        type2sequence = sequence;
+        defWidthX = defaultWidthX;
+        nominalWidthX = nomWidthX;
+        convertType1ToType2(sequence);
     }
 
     /**
-     * Constructor.
-     * 
-     * @param defaultWidth default width
-     * @param nominalWidth nominal width
-     * 
+     * Returns the advance width of the glyph.
+     * @return the width
      */
-    public CharStringConverter(int defaultWidth, int nominalWidth)
+    public int getWidth()
     {
-        defaultWidthX = defaultWidth;
-        nominalWidthX = nominalWidth;
-    }
-    /**
-     * Converts a sequence of Type1/Type2 commands into a sequence of CharStringCommands.
-     * @param commandSequence the type1/type2 sequence
-     * @return the CHarStringCommandSequence
-     */
-    public List<Object> convert(List<Object> commandSequence)
-    {
-        sequence = new ArrayList<Object>();
-        pathCount = 0;
-        handleSequence(commandSequence);
-        return sequence;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
-    {
-
-        if (CharStringCommand.TYPE1_VOCABULARY.containsKey(command.getKey()))
+        int width = super.getWidth();
+        if (width == 0)
         {
-            return handleType1Command(numbers, command);
-        } 
+            return defWidthX;
+        }
         else
         {
-            return handleType2Command(numbers, command);
+            return nominalWidthX + width;
         }
     }
 
-    private List<Integer> handleType1Command(List<Integer> numbers,
-            CharStringCommand command)
+    /**
+     * Returns the Type 2 char string sequence.
+     * @return the Type 2 sequence
+     */
+    public List<Object> getType2Sequence()
     {
-        String name = CharStringCommand.TYPE1_VOCABULARY.get(command.getKey());
+        return type2sequence;
+    }
+
+    /**
+     * Converts a sequence of Type 2 commands into a sequence of Type 1 commands.
+     * @param sequence the Type 2 char string sequence
+     */
+    private void convertType1ToType2(List<Object> sequence)
+    {
+        type1Sequence = new ArrayList<Object>();
+        pathCount = 0;
+        CharStringHandler handler = new CharStringHandler() {
+            public void handleCommand(List<Integer> numbers, CharStringCommand command)
+            {
+                Type2CharString.this.handleCommand(numbers, command);
+            }
+        };
+        handler.handleSequence(sequence);
+    }
+
+    @SuppressWarnings(value = { "unchecked" })
+    private void handleCommand(List<Integer> numbers, CharStringCommand command)
+    {
+        String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
 
         if ("hstem".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() % 2 != 0);
             expandStemHints(numbers, true);
-        } 
+        }
         else if ("vstem".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() % 2 != 0);
             expandStemHints(numbers, false);
-        } 
+        }
         else if ("vmoveto".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
-        } 
+        }
         else if ("rlineto".equals(name))
         {
             addCommandList(split(numbers, 2), command);
-        } 
+        }
         else if ("hlineto".equals(name))
         {
             drawAlternatingLine(numbers, true);
-        } 
+        }
         else if ("vlineto".equals(name))
         {
             drawAlternatingLine(numbers, false);
-        } 
+        }
         else if ("rrcurveto".equals(name))
         {
             addCommandList(split(numbers, 6), command);
-        } 
+        }
         else if ("endchar".equals(name))
         {
-            numbers = clearStack(numbers, numbers.size() > 0);
+            numbers = clearStack(numbers, numbers.size() == 5);
             closePath();
-            addCommand(numbers, command);
-        } 
+            if (numbers.size() == 4)
+            {
+                // deprecated "seac" operator
+                numbers.add(0, 0);
+                addCommand(numbers, new CharStringCommand(12, 6));
+            }
+            else
+            {
+                addCommand(numbers, command);
+            }
+        }
         else if ("rmoveto".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() > 2);
             markPath();
             addCommand(numbers, command);
-        } 
+        }
         else if ("hmoveto".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() > 1);
             markPath();
             addCommand(numbers, command);
-        } 
+        }
         else if ("vhcurveto".equals(name))
         {
             drawAlternatingCurve(numbers, false);
-        } 
+        }
         else if ("hvcurveto".equals(name))
         {
             drawAlternatingCurve(numbers, true);
-        } 
-        else if ("return".equals(name))
-        {
-            return numbers;
         }
-        else
+        else if ("hflex".equals(name))
         {
-            addCommand(numbers, command);
-        }
-        return null;
-    }
-
-    @SuppressWarnings(value = { "unchecked" })
-    private List<Integer> handleType2Command(List<Integer> numbers,
-            CharStringCommand command)
-    {
-        String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
-        if ("hflex".equals(name))
-        {
-            List<Integer> first = Arrays.asList(numbers.get(0), Integer.valueOf(0), 
-                    numbers.get(1), numbers.get(2), numbers.get(3), Integer.valueOf(0));
-            List<Integer> second = Arrays.asList(numbers.get(4), Integer.valueOf(0), 
-                    numbers.get(5), Integer.valueOf(-numbers.get(2).intValue()), 
-                    numbers.get(6), Integer.valueOf(0));
+            List<Integer> first = Arrays.asList(numbers.get(0), 0,
+                    numbers.get(1), numbers.get(2), numbers.get(3), 0);
+            List<Integer> second = Arrays.asList(numbers.get(4), 0,
+                    numbers.get(5), -numbers.get(2),
+                    numbers.get(6), 0);
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
         } 
         else if ("flex".equals(name))
@@ -188,18 +183,19 @@ public class CharStringConverter extends CharStringHandler
         else if ("hflex1".equals(name))
         {
             List<Integer> first = Arrays.asList(numbers.get(0), numbers.get(1), 
-                    numbers.get(2), numbers.get(3), numbers.get(4), Integer.valueOf(0));
-            List<Integer> second = Arrays.asList(numbers.get(5), Integer.valueOf(0),
-                    numbers.get(6), numbers.get(7), numbers.get(8), Integer.valueOf(0));
+                    numbers.get(2), numbers.get(3), numbers.get(4), 0);
+            List<Integer> second = Arrays.asList(numbers.get(5), 0,
+                    numbers.get(6), numbers.get(7), numbers.get(8), 0);
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
         }
         else if ("flex1".equals(name))
         {
             int dx = 0;
             int dy = 0;
-            for(int i = 0; i < 5; i++){
-                dx += numbers.get(i * 2).intValue();
-                dy += numbers.get(i * 2 + 1).intValue();
+            for(int i = 0; i < 5; i++)
+            {
+                dx += numbers.get(i * 2);
+                dy += numbers.get(i * 2 + 1);
             }
             List<Integer> first = numbers.subList(0, 6);
             List<Integer> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8), 
@@ -251,29 +247,25 @@ public class CharStringConverter extends CharStringHandler
         {
             addCommand(numbers, command);
         }
-        return null;
     }
 
     private List<Integer> clearStack(List<Integer> numbers, boolean flag)
     {
-
-        if (sequence.size() == 0)
+        if (type1Sequence.size() == 0)
         {
             if (flag)
             {
-                addCommand(Arrays.asList(Integer.valueOf(0), Integer
-                        .valueOf(numbers.get(0).intValue() + nominalWidthX)),
+                addCommand(Arrays.asList(0, numbers.get(0) + nominalWidthX),
                         new CharStringCommand(13));
 
                 numbers = numbers.subList(1, numbers.size());
             } 
             else
             {
-                addCommand(Arrays.asList(Integer.valueOf(0), Integer
-                        .valueOf(defaultWidthX)), new CharStringCommand(13));
+                addCommand(Arrays.asList(0, defWidthX),
+                    new CharStringCommand(13));
             }
         }
-
         return numbers;
     }
 
@@ -293,8 +285,8 @@ public class CharStringConverter extends CharStringHandler
 
     private void closePath()
     {
-        CharStringCommand command = pathCount > 0 ? (CharStringCommand) sequence
-                .get(sequence.size() - 1)
+        CharStringCommand command = pathCount > 0 ? (CharStringCommand) type1Sequence
+                .get(type1Sequence.size() - 1)
                 : null;
 
         CharStringCommand closepathCommand = new CharStringCommand(9);
@@ -322,14 +314,14 @@ public class CharStringConverter extends CharStringHandler
             boolean last = numbers.size() == 5;
             if (horizontal)
             {
-                addCommand(Arrays.asList(numbers.get(0), Integer.valueOf(0),
+                addCommand(Arrays.asList(numbers.get(0), 0,
                         numbers.get(1), numbers.get(2), last ? numbers.get(4)
                                 : Integer.valueOf(0), numbers.get(3)),
                         new CharStringCommand(8));
             } 
             else
             {
-                addCommand(Arrays.asList(Integer.valueOf(0), numbers.get(0),
+                addCommand(Arrays.asList(0, numbers.get(0),
                         numbers.get(1), numbers.get(2), numbers.get(3),
                         last ? numbers.get(4) : Integer.valueOf(0)),
                         new CharStringCommand(8));
@@ -351,33 +343,32 @@ public class CharStringConverter extends CharStringHandler
                         first ? numbers.get(0) : Integer.valueOf(0), numbers
                                 .get(first ? 2 : 1),
                         numbers.get(first ? 3 : 2), numbers.get(first ? 4 : 3),
-                        Integer.valueOf(0)), new CharStringCommand(8));
+                        0), new CharStringCommand(8));
             } 
             else
             {
                 addCommand(Arrays.asList(first ? numbers.get(0) : Integer
                         .valueOf(0), numbers.get(first ? 1 : 0), numbers
                         .get(first ? 2 : 1), numbers.get(first ? 3 : 2),
-                        Integer.valueOf(0), numbers.get(first ? 4 : 3)),
+                        0, numbers.get(first ? 4 : 3)),
                         new CharStringCommand(8));
             }
             numbers = numbers.subList(first ? 5 : 4, numbers.size());
         }
     }
 
-    private void addCommandList(List<List<Integer>> numbers,
-            CharStringCommand command)
+    private void addCommandList(List<List<Integer>> numbers, CharStringCommand command)
     {
-        for (int i = 0; i < numbers.size(); i++)
+        for (List<Integer> ns : numbers)
         {
-            addCommand(numbers.get(i), command);
+            addCommand(ns, command);
         }
     }
 
     private void addCommand(List<Integer> numbers, CharStringCommand command)
     {
-        sequence.addAll(numbers);
-        sequence.add(command);
+        type1Sequence.addAll(numbers);
+        type1Sequence.add(command);
     }
 
     private static <E> List<List<E>> split(List<E> list, int size)
