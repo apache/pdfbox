@@ -29,7 +29,7 @@ import org.apache.fontbox.cff.encoding.CFFEncoding;
  * This class creates all needed AFM font metric data from a CFFFont ready to be read from a AFMPaser.
  * 
  * @author Villu Ruusmann
- * @version $Revision$
+ * 
  */
 public class AFMFormatter
 {
@@ -116,16 +116,14 @@ public class AFMFormatter
     private static List<CharMetric> renderFont(CFFFont font) throws IOException
     {
         List<CharMetric> metrics = new ArrayList<CharMetric>();
-        CharStringRenderer renderer = font.createRenderer();
         Collection<CFFFont.Mapping> mappings = font.getMappings();
         for (CFFFont.Mapping mapping : mappings)
         {
             CharMetric metric = new CharMetric();
             metric.code = mapping.getCode();
             metric.name = mapping.getName();
-            renderer.render(mapping.toType1Sequence());
-            metric.width = renderer.getWidth();
-            metric.bounds = renderer.getBounds();
+            metric.width = mapping.getType1CharString().getWidth();
+            metric.bounds = mapping.getType1CharString().getBounds();
             metrics.add(metric);
         }
         return metrics;

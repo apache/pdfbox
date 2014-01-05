@@ -174,7 +174,7 @@ public class Type1FontFormatter
 
         for (CFFFont.Mapping mapping : mappings)
         {
-            byte[] type1Bytes = formatter.format(mapping.toType1Sequence());
+            byte[] type1Bytes = formatter.format(mapping.getType1CharString().getType1Sequence());
 
             byte[] charstringBytes = Type1FontUtil.charstringEncrypt(
                     type1Bytes, 4);

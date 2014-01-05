@@ -25,8 +25,6 @@ import java.util.Map;
  * This is an interface to a text encoder.
  *
  * @author Ben Litchfield
- * @version $Revision: 1.1 $
- * 
  * 
  */
 public abstract class Encoding
@@ -153,10 +151,8 @@ public abstract class Encoding
      * @param code The character code.
      *
      * @return The name of the character.
-     *
-     * @throws IOException If there is no name for the code.
      */
-    public String getName( int code ) throws IOException
+    public String getName( int code )
     {
         String name = codeToName.get( code );
         if( name == null )

@@ -21,24 +21,21 @@ import java.util.List;
 
 /**
  * A Handler for CharStringCommands.
- * 
+ *
  * @author Villu Ruusmann
- * @version $Revision$
+ * 
  */
 public abstract class CharStringHandler
 {
-
     /**
      * Handler for a sequence of CharStringCommands.
-     * 
+     *
      * @param sequence of CharStringCommands
-     * 
-     * @return may return a command sequence of a subroutine
+     *
      */
     @SuppressWarnings(value = { "unchecked" })
-    public List<Integer> handleSequence(List<Object> sequence)
+    public void handleSequence(List<Object> sequence)
     {
-        List<Integer> numbers = null;
         int offset = 0;
         int size = sequence.size();
         for (int i = 0; i < size; i++)
@@ -46,30 +43,18 @@ public abstract class CharStringHandler
             Object object = sequence.get(i);
             if (object instanceof CharStringCommand)
             {
-                if (numbers == null)
-                    numbers = (List) sequence.subList(offset, i);
-                else 
-                    numbers.addAll((List) sequence.subList(offset, i));
-                List<Integer> stack = handleCommand(numbers, (CharStringCommand) object);
-                if (stack != null && !stack.isEmpty())
-                    numbers = stack;
-                else
-                    numbers = null;
+                List<Integer> numbers = (List) sequence.subList(offset, i);
+                handleCommand(numbers, (CharStringCommand) object);
                 offset = i + 1;
             }
         }
-        if (numbers != null && !numbers.isEmpty())
-            return numbers;
-        else
-            return null;
     }
+
     /**
      * Handler for CharStringCommands.
-     *  
+     *
      * @param numbers a list of numbers
      * @param command the CharStringCommand
-     * 
-     * @return may return a command sequence of a subroutine
      */
-    public abstract List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command);
+    public abstract void handleCommand(List<Integer> numbers, CharStringCommand command);
 }
