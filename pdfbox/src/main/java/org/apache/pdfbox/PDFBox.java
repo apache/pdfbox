@@ -61,10 +61,6 @@ public class PDFBox
                 {
                     ExtractImages.main(arguments);
                 } 
-                else if (command.equals("Overlay")) 
-                {
-                    Overlay.main(arguments);
-                } 
                 else if (command.equals("OverlayPDF")) 
                 {
                     OverlayPDF.main(arguments);
@@ -136,7 +132,6 @@ public class PDFBox
         System.err.println("  Encrypt"); 
         System.err.println("  ExtractText"); 
         System.err.println("  ExtractImages"); 
-        System.err.println("  Overlay");
         System.err.println("  OverlayPDF"); 
         System.err.println("  PrintPDF");
         System.err.println("  PDFDebugger"); 
