@@ -114,6 +114,7 @@
         <configuration>
           <argLine>-Xmx64m</argLine>
           <excludes>
+            <exclude>org/apache/pdfbox/TestAll.java</exclude>
             <exclude>org/apache/pdfbox/util/TestPDFToImage.java</exclude>
             <exclude>org/apache/pdfbox/encryption/TestPublicKeyEncryption.java</exclude>
           </excludes>
