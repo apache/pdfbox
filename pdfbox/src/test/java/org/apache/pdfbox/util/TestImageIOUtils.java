@@ -103,7 +103,7 @@ public class TestImageIOUtils extends TestCase
     {
         String inDir = "src/test/resources/input/rendering";
         String outDir = "target/test-output/";
-
+        new File(outDir).mkdir();
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
             public boolean accept(File dir, String name)
