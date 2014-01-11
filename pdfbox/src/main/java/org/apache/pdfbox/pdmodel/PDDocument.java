@@ -1314,8 +1314,11 @@ public class PDDocument implements Closeable
     		pageMap = null;
     	}
     	securityHandler = null;
-        document.close();
-        document = null;
+    	if (document != null)
+    	{
+	        document.close();
+	        document = null;
+    	}
         if (parser != null)
         {
         	parser.clearResources();
