@@ -113,13 +113,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>-Xmx64m</argLine>
-          <includes>
-            <include>org/apache/pdfbox/TestAll.java</include>
-            <include>org/apache/pdfbox/util/TestTextStripper.java</include>
-            <!--
-            <include>org/apache/pdfbox/util/TestPDFToImage.java</include>
-            -->
-          </includes>
+          <excludes>
+            <exclude>org/apache/pdfbox/util/TestPDFToImage.java</exclude>
+            <exclude>org/apache/pdfbox/encryption/TestPublicKeyEncryption.java</exclude>
+          </excludes>
           <systemPropertyVariables>
             <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
           </systemPropertyVariables>

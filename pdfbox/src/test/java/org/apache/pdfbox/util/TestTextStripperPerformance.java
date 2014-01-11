@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * Test the performance of the PDF text stripper utility.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * 
  */
 public class TestTextStripperPerformance extends TestCase
 {
@@ -119,6 +119,8 @@ public class TestTextStripperPerformance extends TestCase
                 }
             });
 
+            new File("src/test/resources/output").mkdir();
+            
             for (int n = 0; n < testFiles.length; n++)
             {
                 doTestFile(testFiles[n], false);
