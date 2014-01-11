@@ -23,6 +23,11 @@
 
 	<packaging>bundle</packaging>
 
+  <properties>
+      <skip.external.resources>true</skip.external.resources>
+  </properties>
+
+
 	<parent>
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
@@ -141,6 +146,27 @@
 					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>maven-download-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <id>get-isartor</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>http://www.pdfa.org/wp-content/uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <!--<md5></md5>-->
+                            <skip>${skip.external.resources}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
 		</plugins>
 	</build>
@@ -166,7 +192,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

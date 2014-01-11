@@ -21,21 +21,9 @@
 
 package org.apache.pdfbox.preflight;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import junit.framework.Assert;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -46,18 +34,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import static org.junit.Assert.*;
+
+import java.io.*;
+import java.util.*;
 
 @RunWith(Parameterized.class)
-public class TestIsartorValidationFromClasspath
+public class TestIsartor
 {
 
     protected static FileOutputStream isartorResultFile = null;
 
     protected String expectedError;
 
-    protected String path;
+    protected File path;
 
-    public TestIsartorValidationFromClasspath(String path, String error)
+    protected static Logger logger = Logger.getLogger(TestIsartor.class);
+
+    public TestIsartor(File path, String error)
     {
         this.path = path;
         this.expectedError = error;
@@ -103,7 +97,7 @@ public class TestIsartorValidationFromClasspath
         try
         {
             System.out.println(path);
-            InputStream input = this.getClass().getResourceAsStream(path);
+            InputStream input = new FileInputStream(path);
 
             ValidationResult result = null;
             try
@@ -120,8 +114,8 @@ public class TestIsartorValidationFromClasspath
                 result = e.getResult();
             }
 
-            Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
-            Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
+            assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
+            assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
 
             // could contain more than one error
             boolean found = false;
@@ -137,7 +131,7 @@ public class TestIsartorValidationFromClasspath
                 }
                 if (isartorResultFile != null)
                 {
-                    String log = path.replace(".pdf", "") + "#" + error.getErrorCode() + "#" + error.getDetails()
+                    String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode() + "#" + error.getDetails()
                             + "\n";
                     isartorResultFile.write(log.getBytes());
                 }
@@ -154,12 +148,12 @@ public class TestIsartorValidationFromClasspath
                     {
                         message.append(error.getErrorCode()).append(" ");
                     }
-                    Assert.fail(message.toString());
+                    fail(message.toString());
                 }
             }
             else
             {
-                Assert.assertEquals(path + " : Invalid error code returned.", this.expectedError, result
+                assertEquals(path + " : Invalid error code returned.", this.expectedError, result
                         .getErrorsList().get(0).getErrorCode());
             }
         }
@@ -174,35 +168,29 @@ public class TestIsartorValidationFromClasspath
         }
     }
 
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
         // load expected errors
         File f = new File("src/test/resources/expected_errors.txt");
-        System.out.println(f.exists());
         InputStream expected = new FileInputStream(f);
         Properties props = new Properties();
         props.load(expected);
         IOUtils.closeQuietly(expected);
         // prepare config
         List<Object[]> data = new ArrayList<Object[]>();
-        InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
-        if (is != null)
-        {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String line = reader.readLine();
-            while (line != null)
-            {
-                String fn = new File(line).getName();
+
+        File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
+            if (isartor.isDirectory()) {
+            Collection<?> pdfFiles = FileUtils.listFiles(isartor,new String[] {"pdf","PDF"},true);
+            for (Object  pdfFile : pdfFiles) {
+                String fn = ((File)pdfFile).getName();
                 String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
-                Object[] tmp = new Object[] { "/" + line, error };
+                Object [] tmp = new Object [] {(File)pdfFile,error};
                 data.add(tmp);
-                line = reader.readLine();
             }
-        }
-        else
-        {
-            System.out.println("TestIsartorValidationFromClasspath2.initializeParameters(): No input files found");
+        } else {
+            logger.warn("Isartor data set not present, skipping Isartor validation");
         }
         return data;
     }
