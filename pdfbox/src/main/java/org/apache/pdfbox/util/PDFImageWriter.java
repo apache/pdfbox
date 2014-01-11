@@ -63,10 +63,13 @@ public class PDFImageWriter extends PDFStreamEngine
     }
 
     /**
-     * Converts a given page range of a PDF document to bitmap images.
-     * 
+     * Converts a given page range of a PDF document to bitmap images by calling
+     * {@link writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
+     * String outputPrefix, int imageType, int resolution)} with imageType {@link BufferedImage}.TYPE_INT_RGB
+     * and screen resolution, or 96dpi if screen resolution is unavailable.
+     *  
      * @param document the PDF document
-     * @param imageType the target format (ex. "png")
+     * @param imageFormat the target format (ex. "png")
      * @param password the password (needed if the PDF is encrypted)
      * @param startPage the start page (1 is the first page)
      * @param endPage the end page (set to Integer.MAX_VALUE for all pages)
@@ -74,7 +77,7 @@ public class PDFImageWriter extends PDFStreamEngine
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public boolean writeImage(PDDocument document, String imageType, String password, int startPage, int endPage,
+    public boolean writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
             String outputPrefix) throws IOException
     {
         int resolution;
@@ -86,7 +89,7 @@ public class PDFImageWriter extends PDFStreamEngine
         {
             resolution = 96;
         }
-        return writeImage(document, imageType, password, startPage, endPage, outputPrefix, 8, resolution);
+        return writeImage(document, imageFormat, password, startPage, endPage, outputPrefix, BufferedImage.TYPE_INT_RGB, resolution);
     }
 
     /**
