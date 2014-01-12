@@ -245,7 +245,7 @@ public class PDResources implements COSObjectable
                     PDXObject xobject = null;
                     try
                     {
-                        xobject = PDXObject.createXObject(xobjectsDictionary.getDictionaryObject(objName));
+                        xobject = PDXObject.createXObject(xobjectsDictionary.getDictionaryObject(objName), objName.getName());
                     }
                     catch (IOException exception)
                     {
@@ -634,6 +634,38 @@ public class PDResources implements COSObjectable
             addXObjectToDictionary(xobject, objMapping);
         }
         return objMapping;
+    }
+
+    /**
+     * Remove the xobject with given name.
+     * 
+     * @param xobjectName the name of the xobject to be removed.
+     */
+    public void removeXObject(String xobjectName)
+    {
+        COSDictionary xobjectsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.XOBJECT);
+        xobjectsDictionary.removeItem(COSName.getPDFName(xobjectName));
+        if (xobjects != null && xobjects.containsKey(xobjectName))
+        {
+        	xobjectMappings.remove(xobjects.get(xobjectName));
+        	xobjects.remove(xobjectName);
+        }
+    }
+    
+    /**
+     * Remove the font with given name.
+     * 
+     * @param fontName the name of the font to be removed.
+     */
+    public void removeFont(String fontName)
+    {
+        COSDictionary xobjectsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.FONT);
+        xobjectsDictionary.removeItem(COSName.getPDFName(fontName));
+        if (fonts != null && fonts.containsKey(fontName))
+        {
+        	fontMappings.remove(fonts.get(fontName));
+        	fonts.remove(fontName);
+        }
     }
 
     private void addXObjectToDictionary(PDXObject xobject, String xobjectName)
