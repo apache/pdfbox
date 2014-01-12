@@ -99,7 +99,7 @@ public abstract class PDXObjectImage extends PDXObject
      */
     public static PDXObject createThumbnailXObject(COSBase xobject) throws IOException
     {
-        return commonXObjectCreation(xobject, true);
+        return commonXObjectCreation(xobject, true, null);
     }
 
     /**
