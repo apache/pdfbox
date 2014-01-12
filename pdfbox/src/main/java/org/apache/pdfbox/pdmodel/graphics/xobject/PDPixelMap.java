@@ -269,17 +269,6 @@ public class PDPixelMap extends PDXObjectImage
                         map = new byte[] {(byte)0x00, (byte)0xff};
                     }
                 }
-                else if (colorspace instanceof PDICCBased)
-                {
-                    if ( ((PDICCBased)colorspace).getNumberOfComponents() == 1)
-                    {
-                        map = new byte[] {(byte)0xff};
-                    }
-                    else
-                    {
-                        map = new byte[] {(byte)0x00, (byte)0xff};
-                    }
-                }
                 else
                 {
                     map = new byte[] {(byte)0x00, (byte)0xff};
