@@ -918,8 +918,15 @@ public class COSWriter implements ICOSVisitor
                 COSBase current = i.next();
                 if( current instanceof COSDictionary )
                 {
-                    addObjectToWrite( current );
-                    writeReference( current );
+                	if (current.isDirect())
+                	{
+                		visitFromDictionary((COSDictionary)current);
+                	}
+                	else
+                	{
+                		addObjectToWrite( current );
+                		writeReference( current );
+                	}
                 }
                 else if( current instanceof COSObject )
                 {
