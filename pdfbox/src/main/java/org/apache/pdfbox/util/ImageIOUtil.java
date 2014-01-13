@@ -156,9 +156,12 @@ public class ImageIOUtil
                         writerParams.setCompressionQuality(quality);
                     }
                     IIOMetadata meta = createMetadata( image, imageWriter, writerParams, resolution);
-                    imageWriter.setOutput( output );
-                    imageWriter.write( null, new IIOImage( image, null, meta ), writerParams );
-                    foundWriter = true;
+                    if (meta != null)
+                    {
+                    	imageWriter.setOutput( output );
+                    	imageWriter.write( null, new IIOImage( image, null, meta ), writerParams );
+                    	foundWriter = true;
+                    }
                 }
                 catch( IIOException io )
                 {
@@ -208,7 +211,7 @@ public class ImageIOUtil
 
     private static boolean addResolution(IIOMetadata meta, int resolution)
     {
-        if (!meta.isReadOnly() && meta.isStandardMetadataFormatSupported())
+        if (meta != null && !meta.isReadOnly() && meta.isStandardMetadataFormatSupported())
         {
             IIOMetadataNode root = (IIOMetadataNode)meta.getAsTree(STANDARD_METADATA_FORMAT);
             IIOMetadataNode dim = getChildNode(root, "Dimension");
