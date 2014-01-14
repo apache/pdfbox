@@ -106,6 +106,7 @@ public class PreflightParser extends NonSequentialPDFParser
     public PreflightParser(File file, RandomAccess rafi) throws IOException
     {
         super(file, rafi);
+        this.setLenient(false);
         this.originalDocument = new FileDataSource(file);
     }
 
@@ -122,6 +123,7 @@ public class PreflightParser extends NonSequentialPDFParser
     public PreflightParser(DataSource input) throws IOException
     {
         super(input.getInputStream());
+        this.setLenient(false);
         this.originalDocument = input;
     }
 
