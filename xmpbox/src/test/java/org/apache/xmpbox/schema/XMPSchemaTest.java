@@ -139,12 +139,14 @@ public class XMPSchemaTest
     @Test
     public void rdfAboutTest()
     {
-        Assert.assertNull(schem.getAboutValue());
+        Assert.assertEquals("",schem.getAboutValue());
         String about = "about";
         schem.setAboutAsSimple(about);
         Assert.assertEquals(about, schem.getAboutValue());
+        schem.setAboutAsSimple("");
+        Assert.assertEquals("",schem.getAboutValue());
         schem.setAboutAsSimple(null);
-        Assert.assertNull(schem.getAboutValue());
+        Assert.assertEquals("",schem.getAboutValue());
     }
 
     @Test(expected = BadFieldValueException.class)
