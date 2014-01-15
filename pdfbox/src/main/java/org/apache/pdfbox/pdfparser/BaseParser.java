@@ -1639,7 +1639,7 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             pdfSource.unread(intBuffer.toString().getBytes("ISO-8859-1"));
-            throw new IOException( "Error: Expected an integer type, actual='" + intBuffer + "'" );
+            throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getOffset());
         }
         return retval;
     }
@@ -1666,7 +1666,7 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
-            throw new IOException( "Error: Expected a long type, actual='" + longBuffer + "'" );
+            throw new IOException( "Error: Expected a long type at offset "+pdfSource.getOffset());
         }
         return retval;
     }

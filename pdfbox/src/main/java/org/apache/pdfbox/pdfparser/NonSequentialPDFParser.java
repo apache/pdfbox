@@ -114,6 +114,11 @@ public class NonSequentialPDFParser extends PDFParser
     private final RandomAccessBufferedFileInputStream raStream;
 
     /**
+     * is parser using auto healing capacity ?
+     */
+    private boolean isLenient = true;
+
+    /**
      * The security handler.
      */
     protected SecurityHandler securityHandler = null;
@@ -331,8 +336,10 @@ public class NonSequentialPDFParser extends PDFParser
 
         long startXrefOffset = document.getStartXref();
         // check the startxref offset
-        startXrefOffset -= calculateFixingOffset(startXrefOffset);
-        document.setStartXref(startXrefOffset);
+        if (isLenient) {
+            startXrefOffset -= calculateFixingOffset(startXrefOffset);
+            document.setStartXref(startXrefOffset);
+        }
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV
         // reference
@@ -356,7 +363,7 @@ public class NonSequentialPDFParser extends PDFParser
                 }
                 COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
                 prev = trailer.getInt(COSName.PREV);
-                if (prev > -1)
+                if (isLenient && prev > -1)
                 {
                 	// check the xref table reference
                 	long fixingOffset = calculateFixingOffset(prev);
@@ -364,14 +371,14 @@ public class NonSequentialPDFParser extends PDFParser
 	            	{
 	            		prev -= fixingOffset;
 	            		trailer.setLong(COSName.PREV, prev);
-	            	} 
-                }            	
+	            	}
+                }
             }
             else
             {
                 // parse xref stream
                 prev = parseXrefObjStream(prev);
-                if (prev > -1)
+                if (isLenient && prev > -1)
                 {
                 	// check the xref table reference
                 	long fixingOffset = calculateFixingOffset(prev);
@@ -380,8 +387,8 @@ public class NonSequentialPDFParser extends PDFParser
 	            		prev -= fixingOffset;
 	                    COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
 	            		trailer.setLong(COSName.PREV, prev);
-	            	} 
-                }            	
+	            	}
+                }
             }
         }
 
@@ -390,8 +397,10 @@ public class NonSequentialPDFParser extends PDFParser
         COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
 
-        // check the offsets of all referenced objects 
-        checkXrefOffsets();
+        // check the offsets of all referenced objects
+        if (isLenient) {
+            checkXrefOffsets();
+        }
         
         // ---- prepare encryption if necessary
         COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
@@ -781,6 +790,30 @@ public class NonSequentialPDFParser extends PDFParser
         return this.pdfFile;
     }
 
+    /**
+     * Return true if parser is lenient. Meaning auto healing capacity of the parser are used.
+     *
+     * @return true if parser is lenient
+     */
+    public boolean isLenient () {
+        return isLenient;
+    }
+
+    /**
+     * Change the parser leniency flag.
+     *
+     * This method can only be called before the parsing of the file.
+     *
+     * @param lenient
+     *
+     * @throws IllegalArgumentException if the method is called after parsing.
+     */
+    public void setLenient (boolean lenient) throws IllegalArgumentException {
+        if (initialParseDone) {
+            throw new IllegalArgumentException("Cannot change leniency after parsing");
+        }
+        this.isLenient = lenient;
+    }
     /**
      * Remove the temporary file. A temporary file is created if this class is
      * instantiated with an InputStream
