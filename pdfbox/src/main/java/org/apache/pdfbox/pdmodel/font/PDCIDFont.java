@@ -273,7 +273,7 @@ public abstract class PDCIDFont extends PDSimpleFont
      */
     public float getFontWidth( int charCode ) 
     {
-        float width = -1;
+        float width = getDefaultWidth();
         if (widthCache.containsKey(charCode)) 
         {
             width = widthCache.get(charCode);
