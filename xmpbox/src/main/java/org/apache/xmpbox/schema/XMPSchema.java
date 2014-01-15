@@ -122,7 +122,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get the RDF about value.
      * 
-     * @return The RDF 'about' value.
+     * @return The RDF 'about' value. If there are not rdf:about attribute, an empty string is returned.
      */
     public String getAboutValue()
     {
@@ -131,7 +131,7 @@ public class XMPSchema extends AbstractStructuredType
         {
             return prop.getValue();
         }
-        return null;
+        return ""; // PDFBOX-1685 : if missing rdf:about should be considered as empty string
     }
 
     /**
