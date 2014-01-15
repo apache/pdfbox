@@ -28,13 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
+import org.apache.pdfbox.io.*;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessFileInputStream;
-import org.apache.pdfbox.io.RandomAccessFileOutputStream;
-
 /**
  * This class represents a stream object in a PDF document.
  *
@@ -61,6 +58,16 @@ public class COSStream extends COSDictionary
      */
     private RandomAccessFileOutputStream unFilteredStream;
 
+    private RandomAccess clone (RandomAccess file) {
+        if (file == null) {
+            return null;
+        } else if (file instanceof RandomAccessFile) {
+            return file;
+        } else {
+            return ((RandomAccessBuffer)file).clone();
+        }
+    }
+
     /**
      * Constructor.  Creates a new stream with an empty dictionary.
      *
@@ -69,7 +76,7 @@ public class COSStream extends COSDictionary
     public COSStream( RandomAccess storage )
     {
         super();
-        file = storage;
+        file = clone(storage);
     }
 
     /**
@@ -81,7 +88,7 @@ public class COSStream extends COSDictionary
     public COSStream( COSDictionary dictionary, RandomAccess storage )
     {
         super( dictionary );
-        file = storage;
+        file = clone(storage);
     }
 
     /**
