@@ -59,6 +59,30 @@ public class RandomAccessBuffer implements RandomAccess
         bufferListMaxIndex = 0;
     }
 
+    @Override
+    public RandomAccessBuffer clone() {
+        RandomAccessBuffer copy = new RandomAccessBuffer();
+
+        copy.bufferList = new ArrayList<byte[]>(bufferList.size());
+        for (byte [] buffer : bufferList) {
+            byte [] newBuffer = new byte [buffer.length];
+            System.arraycopy(buffer,0,newBuffer,0,buffer.length);
+            copy.bufferList.add(newBuffer);
+        }
+        if (currentBuffer!=null) {
+            copy.currentBuffer = copy.bufferList.get(copy.bufferList.size()-1);
+        } else {
+            copy.currentBuffer = null;
+        }
+        copy.pointer = pointer;
+        copy.currentBufferPointer = currentBufferPointer;
+        copy.size = size;
+        copy.bufferListIndex = bufferListIndex;
+        copy.bufferListMaxIndex = bufferListMaxIndex;
+
+        return copy;
+    }
+
     /**
      * {@inheritDoc}
      */
