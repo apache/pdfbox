@@ -281,6 +281,17 @@ public class PDFTextStripper extends PDFStreamEngine
     {
         super.resetEngine();
         currentPageNo = 0;
+        document = null;
+        if (charactersByArticle != null)
+        {
+        	charactersByArticle.clear();
+        }
+        if (characterListMapping != null)
+        {
+        	characterListMapping.clear();
+        }
+        startBookmark = null;
+        endBookmark = null;
     }
     
     /**
@@ -1803,7 +1814,7 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void setListItemPatterns(List<Pattern> patterns)
     {
-            listOfPatterns = patterns;
+    	listOfPatterns = patterns;
     }
 
     /**
