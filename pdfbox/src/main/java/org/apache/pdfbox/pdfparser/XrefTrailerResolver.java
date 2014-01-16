@@ -65,10 +65,26 @@ public class XrefTrailerResolver
         private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
         
         /**
-         *  Default cosntructor.
+         *  Default constructor.
          */
         private XrefTrailerObj()
         {
+        }
+        
+        /**
+         * Release all used resources.
+         */
+        public void clearResources()
+        {
+        	if (trailer != null)
+        	{
+        		trailer.clear();
+        		trailer = null;
+        	}
+        	if (xrefTable != null)
+        	{
+        		xrefTable.clear();
+        	}
         }
     }
 
@@ -283,4 +299,26 @@ public class XrefTrailerResolver
         }
         return refObjNrs;
     }
+    
+    /**
+     * Release all used resources.
+     */
+    public void clearResources()
+    {
+    	if (curXrefTrailerObj != null)
+    	{
+    		curXrefTrailerObj.clearResources();
+    		curXrefTrailerObj = null;
+    	}
+    	if (resolvedXrefTrailer != null)
+    	{
+    		resolvedXrefTrailer.clearResources();
+    		resolvedXrefTrailer = null;
+    	}
+    	if (bytePosToXrefMap != null)
+    	{
+    		bytePosToXrefMap.clear();
+    	}
+    }
+
 }

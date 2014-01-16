@@ -48,6 +48,7 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -124,7 +125,8 @@ public class PDDocument implements Pageable
      */
     private Long documentId;
 
-    
+    private BaseParser parser; 
+
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
      * at least one page for the document to be valid.
@@ -694,7 +696,19 @@ public class PDDocument implements Pageable
      */
     public PDDocument( COSDocument doc )
     {
+        this(doc, null);
+    }
+
+    /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     * 
+     * @param doc The COSDocument that this document wraps.
+     * @param usedParser the parser which is used to read the pdf
+     */
+    public PDDocument(COSDocument doc, BaseParser usedParser)
+    {
         document = doc;
+        parser = usedParser;
     }
 
     /**
@@ -1525,7 +1539,25 @@ public class PDDocument implements Pageable
      */
     public void close() throws IOException
     {
-        document.close();
+    	documentCatalog = null;
+    	documentInformation = null;
+    	encParameters = null;
+    	if (pageMap != null)
+    	{
+    		pageMap.clear();
+    		pageMap = null;
+    	}
+    	securityHandler = null;
+    	if (document != null)
+    	{
+	        document.close();
+	        document = null;
+    	}
+        if (parser != null)
+        {
+        	parser.clearResources();
+        	parser = null;
+        }
     }
 
 

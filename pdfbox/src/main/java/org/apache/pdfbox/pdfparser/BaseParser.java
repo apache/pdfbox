@@ -38,6 +38,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.WrappedIOException;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
@@ -556,6 +557,10 @@ public abstract class BaseParser
                                                           PROP_PUSHBACK_SIZE, ioe );
                         }
                         // create new filtered stream
+                        if (out != null)
+                        {
+                        	IOUtils.closeQuietly(out);
+                        }
                         out = stream.createFilteredStream( streamLength );
                         // scan until we find endstream:
                         readUntilEndStream( out );
@@ -1705,4 +1710,16 @@ public abstract class BaseParser
         return buffer;
     }
 
+    /**
+     * Release all used resources.
+     */
+    public void clearResources()
+    {
+    	document = null;
+    	if (pdfSource != null)
+    	{
+    		IOUtils.closeQuietly(pdfSource);
+    		pdfSource = null;
+    	}
+    }
 }
