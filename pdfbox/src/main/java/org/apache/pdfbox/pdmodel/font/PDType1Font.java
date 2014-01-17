@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +30,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
+import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.Encoding;
@@ -59,6 +62,8 @@ public class PDType1Font extends PDSimpleFont
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
     private PDType1CFont type1CFont = null;
+    private Type1Font type1font = null;
+
     /**
      * Standard Base 14 Font.
      */
@@ -218,9 +223,32 @@ public class PDType1Font extends PDSimpleFont
                 {
                     type1CFont = new PDType1CFont(super.font);
                 }
-                catch (IOException exception)
+                catch (IOException e)
                 {
-                    LOG.info("Can't read the embedded type1C font " + fd.getFontName());
+                    LOG.error("Can't read the embedded Type1C font " + fd.getFontName(), e);
+                }
+            }
+
+            // or it may contain a PFB
+            PDStream fontFile = ((PDFontDescriptorDictionary) fd).getFontFile();
+            if (fontFile != null)
+            {
+                try
+                {
+                    COSStream stream = fontFile.getStream();
+                    int length1 = stream.getInt(COSName.LENGTH1);
+                    int length2 = stream.getInt(COSName.LENGTH2);
+
+                    // the PFB embedded as two segments back-to-back
+                    byte[] bytes = fontFile.getByteArray();
+                    byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
+                    byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
+
+                    type1font =  Type1Font.createWithSegments(segment1, segment2);
+                }
+                catch (IOException e)
+                {
+                    LOG.error("Can't read the embedded Type1 font " + fd.getFontName(), e);
                 }
             }
         }
@@ -311,7 +339,7 @@ public class PDType1Font extends PDSimpleFont
 
     /**
      * Tries to get the encoding for the type1 font.
-     * 
+     *
      */
     private void getEncodingFromFont(boolean extractEncoding)
     {
@@ -518,10 +546,20 @@ public class PDType1Font extends PDSimpleFont
     /**
      * Returns the embedded Type1C font if available.
      * 
-     * @return the type1C font
+     * @return the Type1C font
      */
     public PDType1CFont getType1CFont()
     {
         return type1CFont;
+    }
+
+    /**
+     * Returns the embedded Type font if available.
+     *
+     * @return the Type1 font
+     */
+    public Type1Font getType1Font()
+    {
+        return type1font;
     }
 }

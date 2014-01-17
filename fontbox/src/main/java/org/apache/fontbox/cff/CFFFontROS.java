@@ -158,6 +158,19 @@ public class CFFFontROS extends CFFFont
     }
 
     /**
+     * {@inheritDoc}
+     */
+    protected Mapping createMapping(int code, int sid, String name, byte[] bytes)
+    {
+        Mapping mapping = new Mapping();
+        mapping.setCode(sid); // code = sid
+        mapping.setSID(sid);
+        mapping.setName(name);
+        mapping.setBytes(bytes);
+        return  mapping;
+    }
+
+    /**
      * Returns the Width value of the given Glyph identifier
      *
      * @param cid CID

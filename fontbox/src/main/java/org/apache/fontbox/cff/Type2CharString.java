@@ -16,6 +16,8 @@
  */
 package org.apache.fontbox.cff;
 
+import org.apache.fontbox.type1.Type1CharStringReader;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,14 +38,17 @@ public class Type2CharString extends Type1CharString
 
     /**
      * Constructor.
-     * @param font Parent CFF font
+     * @param reader Parent CFF font
+     * @param fontName font name
+     * @param glyphName glyph name
      * @param sequence Type 2 char string sequence
      * @param defaultWidthX default width
-     * @param nomWidthX nominal width width
+     * @param nomWidthX nominal width
      */
-    public Type2CharString(CFFFont font, List<Object> sequence, int defaultWidthX, int nomWidthX)
+    public Type2CharString(Type1CharStringReader reader, String fontName, String glyphName, List<Object> sequence,
+                           int defaultWidthX, int nomWidthX)
     {
-        super(font);
+        super(reader, fontName, glyphName);
         type2sequence = sequence;
         defWidthX = defaultWidthX;
         nominalWidthX = nomWidthX;
@@ -63,7 +68,7 @@ public class Type2CharString extends Type1CharString
         }
         else
         {
-            return nominalWidthX + width;
+            return width;
         }
     }
 
@@ -85,16 +90,16 @@ public class Type2CharString extends Type1CharString
         type1Sequence = new ArrayList<Object>();
         pathCount = 0;
         CharStringHandler handler = new CharStringHandler() {
-            public void handleCommand(List<Integer> numbers, CharStringCommand command)
+            public List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
             {
-                Type2CharString.this.handleCommand(numbers, command);
+                return Type2CharString.this.handleCommand(numbers, command);
             }
         };
         handler.handleSequence(sequence);
     }
 
     @SuppressWarnings(value = { "unchecked" })
-    private void handleCommand(List<Integer> numbers, CharStringCommand command)
+    private List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
     {
         String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
 
@@ -247,6 +252,7 @@ public class Type2CharString extends Type1CharString
         {
             addCommand(numbers, command);
         }
+        return null;
     }
 
     private List<Integer> clearStack(List<Integer> numbers, boolean flag)
