@@ -18,11 +18,13 @@ package org.apache.fontbox.cff;
 
 
 import java.util.List;
+import java.util.Stack;
 
 /**
  * A Handler for CharStringCommands.
  *
  * @author Villu Ruusmann
+ * @author John Hewson
  * 
  */
 public abstract class CharStringHandler
@@ -33,21 +35,26 @@ public abstract class CharStringHandler
      * @param sequence of CharStringCommands
      *
      */
-    @SuppressWarnings(value = { "unchecked" })
-    public void handleSequence(List<Object> sequence)
+    public List<Integer> handleSequence(List<Object> sequence)
     {
-        int offset = 0;
-        int size = sequence.size();
-        for (int i = 0; i < size; i++)
+        Stack<Integer> stack = new Stack<Integer>();
+        for (Object obj : sequence)
         {
-            Object object = sequence.get(i);
-            if (object instanceof CharStringCommand)
+            if (obj instanceof CharStringCommand)
             {
-                List<Integer> numbers = (List) sequence.subList(offset, i);
-                handleCommand(numbers, (CharStringCommand) object);
-                offset = i + 1;
+                List<Integer> results = handleCommand(stack, (CharStringCommand)obj);
+                stack.clear();  // this is basically returning the new stack
+                if (results != null)
+                {
+                    stack.addAll(results);
+                }
+            }
+            else
+            {
+                stack.push((Integer)obj);
             }
         }
+        return stack;
     }
 
     /**
@@ -56,5 +63,5 @@ public abstract class CharStringHandler
      * @param numbers a list of numbers
      * @param command the CharStringCommand
      */
-    public abstract void handleCommand(List<Integer> numbers, CharStringCommand command);
+    public abstract List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command);
 }

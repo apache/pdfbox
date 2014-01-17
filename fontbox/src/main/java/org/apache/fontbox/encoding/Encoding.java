@@ -131,18 +131,11 @@ public abstract class Encoding
      *
      * @param name The name of the character.
      *
-     * @return The code for the character.
-     *
-     * @throws IOException If there is no character code for the name.
+     * @return The code for the character or null if it is not in the encoding.
      */
-    public int getCode( String name ) throws IOException
+    public Integer getCode( String name )
     {
-        Integer code = nameToCode.get( name );
-        if( code == null )
-        {
-            throw new IOException( "No character code for character name '" + name + "'" );
-        }
-        return code.intValue();
+        return nameToCode.get( name );
     }
 
     /**

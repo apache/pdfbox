@@ -21,6 +21,8 @@ import java.util.*;
 
 import org.apache.fontbox.cff.charset.CFFCharset;
 import org.apache.fontbox.cff.encoding.CFFEncoding;
+import org.apache.fontbox.type1.Type1CharStringReader;
+import org.apache.fontbox.type1.Type1Mapping;
 
 /**
  * This class represents a CFF/Type2 Font.
@@ -28,7 +30,7 @@ import org.apache.fontbox.cff.encoding.CFFEncoding;
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class CFFFont
+public class CFFFont implements Type1CharStringReader
 {
     private String fontname = null;
     private Map<String, Object> topDict = new LinkedHashMap<String, Object>();
@@ -130,11 +132,21 @@ public class CFFFont
     }
 
     /**
+     * Get the mappings for the font as Type1Mapping
+     *
+     * @return the Type1Mapping
+     */
+    public Collection<? extends Type1Mapping> getType1Mappings()
+    {
+        return getMappings();
+    }
+
+    /**
      * Get the mapping (code/SID/charname/bytes) for this font.
      * 
      * @return mappings for codes < 256 and for codes > = 256
      */
-    public Collection<Mapping> getMappings()
+    public Collection<CFFFont.Mapping> getMappings()
     {
         List<Mapping> mappings = new ArrayList<Mapping>();
         Set<String> mappedNames = new HashSet<String>();
@@ -151,11 +163,7 @@ public class CFFFont
             {
                 continue;
             }
-            Mapping mapping = new Mapping();
-            mapping.setCode(entry.getCode());
-            mapping.setSID(entry.getSID());
-            mapping.setName(charName);
-            mapping.setBytes(bytes);
+            Mapping mapping = createMapping(entry.getCode(), entry.getSID(), charName, bytes);
             mappings.add(mapping);
             mappedNames.add(charName);
         }
@@ -175,11 +183,7 @@ public class CFFFont
                 {
                     continue;
                 }
-                Mapping mapping = new Mapping();
-                mapping.setCode(supplement.getCode());
-                mapping.setSID(supplement.getGlyph());
-                mapping.setName(charName);
-                mapping.setBytes(bytes);
+                Mapping mapping = createMapping(supplement.getCode(), supplement.getGlyph(), charName, bytes);
                 mappings.add(mapping);
                 mappedNames.add(charName);
             }
@@ -198,17 +202,30 @@ public class CFFFont
             {
                 continue;
             }
-            Mapping mapping = new Mapping();
-            mapping.setCode(code++);
-            mapping.setSID(entry.getSID());
-            mapping.setName(name);
-            mapping.setBytes(bytes);
-
+            Mapping mapping = createMapping(code++, entry.getSID(), name, bytes);
             mappings.add(mapping);
-
             mappedNames.add(name);
         }
         return mappings;
+    }
+
+    /**
+     * Returns a new mapping. Overridden in subclasses.
+     *
+     * @param code chatacter code
+     * @param sid SID
+     * @param name glyph name
+     * @param bytes charstring bytes
+     * @return a new mapping object
+     */
+    protected Mapping createMapping(int code, int sid, String name, byte[] bytes)
+    {
+        Mapping mapping = new Mapping();
+        mapping.setCode(code);
+        mapping.setSID(sid);
+        mapping.setName(name);
+        mapping.setBytes(bytes);
+        return  mapping;
     }
 
     /**
@@ -320,11 +337,7 @@ public class CFFFont
     }
 
     /**
-     * Returns the Type 1 CharString for the character with the given name.
-     *
-     * @return Type 1 CharString
-     * @throws IOException if something went wrong
-     *
+     * {@inheritDoc}
      */
     public Type1CharString getType1CharString(String name) throws IOException
     {
@@ -343,7 +356,7 @@ public class CFFFont
         {
             Type2CharStringParser parser = new Type2CharStringParser();
             List<Object> type2seq = parser.parse(charStringsDict.get(name), globalSubrIndex, localSubrIndex);
-            type2 = new Type2CharString(this, type2seq, getDefaultWidthX(sid), getNominalWidthX(sid));
+            type2 = new Type2CharString(this, fontname, name, type2seq, getDefaultWidthX(sid), getNominalWidthX(sid));
             charStringCache.put(name, type2);
         }
         return type2;
@@ -432,9 +445,9 @@ public class CFFFont
     }
 
     /**
-     * This class is used for the font mapping.
+     * {@inheritDoc}
      */
-    public class Mapping
+    public class Mapping implements Type1Mapping
     {
         private int mappedCode;
         private int mappedSID;
@@ -442,10 +455,7 @@ public class CFFFont
         private byte[] mappedBytes;
 
         /**
-         * Returns the Type 1 CharString for the character.
-         *
-         * @return the Type 1 CharString
-         * @throws IOException if an error occurs during reading
+         * {@inheritDoc}
          */
         public Type1CharString getType1CharString() throws IOException
         {
@@ -453,23 +463,21 @@ public class CFFFont
         }
 
         /**
-         * Gets the value for the code.
-         * 
-         * @return the code
+         * {@inheritDoc}
          */
         public int getCode()
         {
             return mappedCode;
         }
 
-        private void setCode(int code)
+        protected void setCode(int code)
         {
             mappedCode = code;
         }
 
         /**
          * Gets the value for the SID.
-         * 
+         *
          * @return the SID
          */
         public int getSID()
@@ -477,37 +485,33 @@ public class CFFFont
             return mappedSID;
         }
 
-        private void setSID(int sid)
+        protected void setSID(int sid)
         {
             this.mappedSID = sid;
         }
 
         /**
-         * Gets the value for the name.
-         * 
-         * @return the name
+         * {@inheritDoc}
          */
         public String getName()
         {
             return mappedName;
         }
 
-        private void setName(String name)
+        protected void setName(String name)
         {
             this.mappedName = name;
         }
 
         /**
-         * Gets the value for the bytes.
-         * 
-         * @return the bytes
+         * {@inheritDoc}
          */
         public byte[] getBytes()
         {
             return mappedBytes;
         }
 
-        private void setBytes(byte[] bytes)
+        protected void setBytes(byte[] bytes)
         {
             this.mappedBytes = bytes;
         }

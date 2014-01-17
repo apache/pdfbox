@@ -23,6 +23,7 @@ import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Parser for a pfb-file.
@@ -193,5 +194,23 @@ public class PfbParser
     public int size() 
     {
         return pfbdata.length;
+    }
+
+    /**
+     * Returns the first segment
+     * @return first segment bytes
+     */
+    public byte[] getSegment1()
+    {
+        return Arrays.copyOfRange(pfbdata, 0, lengths[0]);
+    }
+
+    /**
+     * Returns the second segment
+     * @return second segment bytes
+     */
+    public byte[] getSegment2()
+    {
+        return Arrays.copyOfRange(pfbdata, lengths[0], lengths[0] + lengths[1]);
     }
 }

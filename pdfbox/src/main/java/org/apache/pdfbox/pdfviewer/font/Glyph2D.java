@@ -28,16 +28,6 @@ import java.awt.geom.GeneralPath;
  */
 public interface Glyph2D
 {
-
-    /**
-     * Returns the path describing the glyph for the given glyphId.
-     * 
-     * @param glyphId the glyphId
-     * 
-     * @return the GeneralPath for the given glyphId
-     */
-    public GeneralPath getPathForGlyphId(int glyphId);
-
     /**
      * Returns the path describing the glyph for the given character code.
      * 
@@ -45,7 +35,7 @@ public interface Glyph2D
      * 
      * @return the GeneralPath for the given character code
      */
-    public GeneralPath getPathForCharactercode(int code);
+    public GeneralPath getPathForCharacterCode(int code);
 
     /**
      * Returns the number of glyphs provided by the given font.

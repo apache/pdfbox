@@ -193,9 +193,12 @@ public class TTFGlyph2D implements Glyph2D
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the path describing the glyph for the given glyphId.
+     *
+     * @param glyphId the glyphId
+     *
+     * @return the GeneralPath for the given glyphId
      */
-    @Override
     public GeneralPath getPathForGlyphId(int glyphId)
     {
         GeneralPath glyphPath = null;
@@ -334,7 +337,7 @@ public class TTFGlyph2D implements Glyph2D
      * {@inheritDoc}
      */
     @Override
-    public GeneralPath getPathForCharactercode(int code)
+    public GeneralPath getPathForCharacterCode(int code)
     {
 
         int glyphId = getGlyphcode(code);

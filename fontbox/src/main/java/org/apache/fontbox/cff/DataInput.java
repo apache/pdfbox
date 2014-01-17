@@ -103,6 +103,21 @@ public class DataInput
     }
 
     /**
+     * Peeks one single unsigned byte from the buffer.
+     * @return the unsigned byte as int
+     * @throws IOException if an error occurs during reading
+     */
+    public int peekUnsignedByte(int offset) throws IOException
+    {
+        int b = peek(offset);
+        if (b < 0)
+        {
+            throw new EOFException();
+        }
+        return b;
+    }
+
+    /**
      * Read one single short value from the buffer.
      * @return the short value
      * @throws IOException if an error occurs during reading
@@ -170,6 +185,19 @@ public class DataInput
             bufferPosition++;
             return value;
         } 
+        catch (RuntimeException re)
+        {
+            return -1;
+        }
+    }
+
+    private int peek(int offset)
+    {
+        try
+        {
+            int value = inputBuffer[bufferPosition + offset] & 0xff;
+            return value;
+        }
         catch (RuntimeException re)
         {
             return -1;
