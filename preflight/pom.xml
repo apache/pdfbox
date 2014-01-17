@@ -175,7 +175,6 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -188,17 +187,14 @@
 			<artifactId>xmpbox</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- TODO add or automatic ? -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.12</version>
+			<version>1.2.17</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- TODO find a suitable place to store the isator test pdfs <dependency> 
@@ -207,13 +203,11 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15on</artifactId>
-			<version>1.48</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.48</version>
 			<optional>true</optional>
 		</dependency>
 
