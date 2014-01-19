@@ -211,24 +211,30 @@ public class PDColorState implements Cloneable
                     sMsg += "\nInterpretating as RGB";
                     break;
                 case 4: // CMYK
-                    // do a rough conversion to RGB as I'm not getting the CMYK to work.
-                    // http://www.codeproject.com/KB/applications/xcmyk.aspx
-                    float r,
-                    g,
-                    b,
-                    k;
-                    k = components[3];
+                    try
+                    {
+                        // try to use the default CMYK color profile
+                        float[] rgb = PDDeviceCMYK.INSTANCE.getJavaColorSpace().toRGB(components);
+                        cGuess = new Color(rgb[0], rgb[1], rgb[2]);
+                        sMsg += "\nInterpretating as CMYK using default ICC profile";
+                    }
+                    catch (Exception e1)
+                    {
+                        // fallback to naive conversion to RGB
+                        float r, g, b, k;
+                        k = components[3];
 
-                    r = components[0] * (1f - k) + k;
-                    g = components[1] * (1f - k) + k;
-                    b = components[2] * (1f - k) + k;
+                        r = components[0] * (1f - k) + k;
+                        g = components[1] * (1f - k) + k;
+                        b = components[2] * (1f - k) + k;
 
-                    r = (1f - r);
-                    g = (1f - g);
-                    b = (1f - b);
+                        r = (1f - r);
+                        g = (1f - g);
+                        b = (1f - b);
 
-                    cGuess = new Color(r, g, b);
-                    sMsg += "\nInterpretating as CMYK";
+                        cGuess = new Color(r, g, b);
+                        sMsg += "\nInterpretating as CMYK without ICC profile";
+                    }
                     break;
                 default:
 

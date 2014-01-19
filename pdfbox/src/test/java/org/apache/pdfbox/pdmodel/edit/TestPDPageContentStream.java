@@ -23,7 +23,7 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.color.ColorSpaceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.awt.Color;
@@ -38,7 +38,7 @@ public class TestPDPageContentStream extends TestCase {
     public void testSetCmykColors() throws IOException, COSVisitorException {
         PDDocument doc = new PDDocument();
 
-        ColorSpace colorSpace = new ColorSpaceCMYK();
+        ColorSpace colorSpace = PDDeviceCMYK.INSTANCE.getJavaColorSpace();
 
         PDPage page = new PDPage();
         doc.addPage(page);
