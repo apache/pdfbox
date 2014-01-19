@@ -78,6 +78,16 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+        </excludes>
       </resource>
     </resources>
     <plugins>
@@ -138,6 +148,7 @@
         <configuration>
           <excludes>
             <exclude>src/main/resources/org/apache/pdfbox/resources/cmap/*</exclude>
+            <exclude>src/main/resources/org/apache/pdfbox/resources/icc/*</exclude>
             <exclude>src/test/resources/input/rendering/*.ai</exclude>
             <exclude>src/test/resources/output/*</exclude>
             <exclude>release.properties</exclude>
