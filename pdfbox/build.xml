@@ -110,9 +110,6 @@
     <property name="testfiles.encryption.url" value="${jiraattachment.url}/12413268/input-ext_encryption.jar"/>
     <property name="testfiles.encryption.jar" value="${download.dir}/input-ext_encryption.jar"/>
 
-    <property name="adobefiles.url" value="${maven.repo2}/com/adobe/pdf/pcfi/2010.08.09/pcfi-2010.08.09.jar"/>
-    <property name="adobefiles.jar" value="${download.dir}/pcfi-2010.08.09.jar"/>
-
     <property name="file" value=""/>
 
     <!--.NET properties -->
@@ -186,7 +183,7 @@
         <mkdir dir="${jempbox.dest.dir}"/>
     </target>
 
-    <target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init,get.adobefiles"
+    <target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init"
             description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
         <javac srcdir="${pdfbox.src.dir}" destdir="${pdfbox.dest.dir}"
@@ -220,25 +217,6 @@
     </target>
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
-
-    <target name="find.adobefiles">
-        <available property="adobefiles.found" file="${dest.dir}/org/apache/pdfbox/resources/cmap"/>
-    </target>
-
-    <target name="get.adobefiles"
-            unless="adobefiles.found" depends="find.adobefiles"
-            description="Download and unpack afm and cmap files from Adobe">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${adobefiles.url}"/>
-            <param name="destfile" value="${adobefiles.jar}"/>
-        </antcall>
-        <unjar src="${adobefiles.jar}" dest="${pdfbox.dest.dir}/org/apache/pdfbox/resources/afm">
-            <patternset>
-                <include name="com/adobe/pdf/pcfi/afm/*.afm"/>
-            </patternset>
-            <mapper type="flatten"/>
-        </unjar>
-    </target>
 
     <target name="find.testfiles">
         <available property="testfiles.found"
