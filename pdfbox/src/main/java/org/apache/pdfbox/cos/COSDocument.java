@@ -95,6 +95,8 @@ public class COSDocument extends COSBase implements Closeable
     
     private boolean closed = false;
 
+    private boolean isXRefStream;
+    
     /**
      * Flag to skip malformed or otherwise unparseable input where possible.
      */
@@ -757,16 +759,22 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Determines it the trailer is a XRef stream or not.
+     * Determines if the trailer is a XRef stream or not.
      * 
      * @return true if the trailer is a XRef stream
      */
     public boolean isXRefStream()
     {
-        if (trailer != null)
-        {
-            return COSName.XREF.equals(trailer.getItem(COSName.TYPE));
-        }
-        return false;
+        return isXRefStream;
+    }
+    
+    /**
+     * Sets isXRefStream to the given value.
+     * 
+     * @param isXRefStreamValue the new value for isXRefStream
+     */
+    public void setIsXRefStream(boolean isXRefStreamValue)
+    {
+        isXRefStream = isXRefStreamValue;
     }
 }

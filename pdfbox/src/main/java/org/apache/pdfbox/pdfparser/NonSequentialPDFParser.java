@@ -353,6 +353,7 @@ public class NonSequentialPDFParser extends PDFParser
             // -- parse xref
             if (pdfSource.peek() == X)
             {
+                document.setIsXRefStream(false);
                 // xref table and trailer
                 // use existing parser to parse xref table
                 parseXrefTable(prev);
@@ -376,6 +377,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
             else
             {
+                document.setIsXRefStream(true);
                 // parse xref stream
                 prev = parseXrefObjStream(prev);
                 if (isLenient && prev > -1)
