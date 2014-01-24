@@ -23,7 +23,6 @@ import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.awt.BasicStroke;
-import java.awt.Graphics2D;
 import java.io.IOException;
 
 /**
@@ -45,10 +44,6 @@ public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
     {
         super.process( operator, arguments );
         float lineWidth = (float)context.getGraphicsState().getLineWidth();
-        if (lineWidth == 0) 
-        {
-            lineWidth = 1;
-        }
         PageDrawer drawer = (PageDrawer)context;
         BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null)
