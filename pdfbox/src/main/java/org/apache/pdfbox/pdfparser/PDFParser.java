@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
@@ -237,6 +238,7 @@ public class PDFParser extends BaseParser
 
             // get resolved xref table + trailer
             document.setTrailer( xrefTrailerResolver.getTrailer() );
+            document.setIsXRefStream(XRefType.STREAM == xrefTrailerResolver.getXrefType());
             document.addXRefTable( xrefTrailerResolver.getXrefTable() );
 
             if( !document.isEncrypted() )
@@ -738,7 +740,7 @@ public class PDFParser extends BaseParser
         }
 
         // signal start of new XRef
-        xrefTrailerResolver.nextXrefObj( startByteOffset );
+        xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
 
         /*
          * Xref tables can have multiple sections.
@@ -880,7 +882,7 @@ public class PDFParser extends BaseParser
      */
     public void parseXrefStream( COSStream stream, long objByteOffset ) throws IOException
     {
-        xrefTrailerResolver.nextXrefObj( objByteOffset );
+        xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
         xrefTrailerResolver.setTrailer( stream );
         PDFXrefStreamParser parser =
             new PDFXrefStreamParser( stream, document, forceParsing, xrefTrailerResolver );
