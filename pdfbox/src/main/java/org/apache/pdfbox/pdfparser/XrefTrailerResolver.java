@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -63,6 +62,9 @@ public class XrefTrailerResolver
     private class XrefTrailerObj
     {
         protected COSDictionary trailer = null;
+
+        private XRefType xrefType;
+
         private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
         
         /**
@@ -77,18 +79,33 @@ public class XrefTrailerResolver
          */
         public void clearResources()
         {
-        	if (trailer != null)
-        	{
-        		trailer.clear();
-        		trailer = null;
-        	}
-        	if (xrefTable != null)
-        	{
-        		xrefTable.clear();
-        	}
+            if (trailer != null)
+            {
+                trailer.clear();
+                trailer = null;
+            }
+            if (xrefTable != null)
+            {
+                xrefTable.clear();
+            }
         }
     }
 
+    /** 
+     * The XRefType of a trailer.
+     */
+    public enum XRefType
+    {
+        /**
+         * XRef table type.
+         */
+        TABLE, 
+        /**
+         * XRef stream type.
+         */
+        STREAM;
+    }
+    
     private final Map<Long, XrefTrailerObj> bytePosToXrefMap = new HashMap<Long, XrefTrailerObj>();
     private XrefTrailerObj curXrefTrailerObj   = null;
     private XrefTrailerObj resolvedXrefTrailer = null;
@@ -96,32 +113,59 @@ public class XrefTrailerResolver
     /** Log instance. */
     private static final Log LOG = LogFactory.getLog( XrefTrailerResolver.class );
 
-    public final COSDictionary getFirstTrailer() {
-    	if (bytePosToXrefMap.isEmpty()) return null;
-    	
-    	Set<Long> offsets = bytePosToXrefMap.keySet();
-    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
-    	return bytePosToXrefMap.get(sortedOffset.first()).trailer;
+    /**
+     * Returns the first trailer if at least one exists.
+     * 
+     * @return the first trailer or null
+     */
+    public final COSDictionary getFirstTrailer() 
+    {
+        if (bytePosToXrefMap.isEmpty())
+        {
+            return null;
+        }
+        Set<Long> offsets = bytePosToXrefMap.keySet();
+        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        return bytePosToXrefMap.get(sortedOffset.first()).trailer;
     }
     
-    public final COSDictionary getLastTrailer() {
-    	if (bytePosToXrefMap.isEmpty()) return null;
-    	
-    	Set<Long> offsets = bytePosToXrefMap.keySet();
-    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
-    	return bytePosToXrefMap.get(sortedOffset.last()).trailer;
+    /**
+     * Returns the last trailer if at least one exists.
+     * 
+     * @return the last trailer ir null
+     */
+    public final COSDictionary getLastTrailer() 
+    {
+        if (bytePosToXrefMap.isEmpty()) 
+        {
+            return null;
+        }
+        Set<Long> offsets = bytePosToXrefMap.keySet();
+        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        return bytePosToXrefMap.get(sortedOffset.last()).trailer;
     }
     
     /**
      * Signals that a new XRef object (table or stream) starts.
      * @param startBytePos the offset to start at
-     *
+     * @param type the type of the Xref object
      */
-    public void nextXrefObj( final long startBytePos )
+    public void nextXrefObj( final long startBytePos, XRefType type )
     {
         bytePosToXrefMap.put( startBytePos, curXrefTrailerObj = new XrefTrailerObj() );
+        curXrefTrailerObj.xrefType = type;
     }
 
+    /**
+     * Returns the XRefTxpe of the resolved trailer.
+     * 
+     * @return the XRefType or null.
+     */
+    public XRefType getXrefType()
+    { 
+        return ( resolvedXrefTrailer == null ) ? null : resolvedXrefTrailer.xrefType; 
+    } 
+    
     /**
      * Populate XRef HashMap of current XRef object.
      * Will add an Xreftable entry that maps ObjectKeys to byte offsets in the file.
@@ -306,20 +350,20 @@ public class XrefTrailerResolver
      */
     public void clearResources()
     {
-    	if (curXrefTrailerObj != null)
-    	{
-    		curXrefTrailerObj.clearResources();
-    		curXrefTrailerObj = null;
-    	}
-    	if (resolvedXrefTrailer != null)
-    	{
-    		resolvedXrefTrailer.clearResources();
-    		resolvedXrefTrailer = null;
-    	}
-    	if (bytePosToXrefMap != null)
-    	{
-    		bytePosToXrefMap.clear();
-    	}
+        if (curXrefTrailerObj != null)
+        {
+            curXrefTrailerObj.clearResources();
+            curXrefTrailerObj = null;
+        }
+        if (resolvedXrefTrailer != null)
+        {
+            resolvedXrefTrailer.clearResources();
+            resolvedXrefTrailer = null;
+        }
+        if (bytePosToXrefMap != null)
+        {
+            bytePosToXrefMap.clear();
+        }
     }
 
 }

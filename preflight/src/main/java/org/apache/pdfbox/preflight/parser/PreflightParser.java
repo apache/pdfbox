@@ -76,6 +76,7 @@ import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 import org.apache.pdfbox.preflight.Format;
@@ -346,7 +347,7 @@ public class PreflightParser extends NonSequentialPDFParser
         }
 
         // signal start of new XRef
-        xrefTrailerResolver.nextXrefObj(startByteOffset);
+        xrefTrailerResolver.nextXrefObj(startByteOffset,XRefType.TABLE);
 
         /*
          * Xref tables can have multiple sections. Each starts with a starting object id and a count.

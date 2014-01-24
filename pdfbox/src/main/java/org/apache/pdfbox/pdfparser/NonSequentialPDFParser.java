@@ -56,6 +56,7 @@ import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -353,7 +354,6 @@ public class NonSequentialPDFParser extends PDFParser
             // -- parse xref
             if (pdfSource.peek() == X)
             {
-                document.setIsXRefStream(false);
                 // xref table and trailer
                 // use existing parser to parse xref table
                 parseXrefTable(prev);
@@ -377,7 +377,6 @@ public class NonSequentialPDFParser extends PDFParser
             }
             else
             {
-                document.setIsXRefStream(true);
                 // parse xref stream
                 prev = parseXrefObjStream(prev);
                 if (isLenient && prev > -1)
@@ -398,7 +397,7 @@ public class NonSequentialPDFParser extends PDFParser
         xrefTrailerResolver.setStartxref(startXrefOffset);
         COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
-
+        document.setIsXRefStream(XRefType.STREAM == xrefTrailerResolver.getXrefType());
         // check the offsets of all referenced objects
         if (isLenient) {
             checkXrefOffsets();
