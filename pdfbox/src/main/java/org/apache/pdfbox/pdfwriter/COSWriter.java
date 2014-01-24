@@ -1061,15 +1061,7 @@ public class COSWriter implements ICOSVisitor
                         }
                         else
                         {
-                            if (subValue.isDirect())
-                            {
-                                subValue.accept( this );                                
-                            } 
-                            else 
-                            {
-                                addObjectToWrite( subValue );
-                                writeReference( subValue );                                                  
-                            }
+                            subValue.accept( this );                                
                         }
                     }
                     else
