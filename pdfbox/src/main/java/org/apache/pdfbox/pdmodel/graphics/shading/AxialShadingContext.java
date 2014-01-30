@@ -17,9 +17,13 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -38,23 +42,20 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * This class represents the PaintContext of an axial shading.
  * 
- * @author lehmi
- * 
  */
 public class AxialShadingContext implements PaintContext 
 {
 
-    private ColorModel colorModel;
+    private ColorModel outputColorModel;
     private ColorSpace shadingColorSpace;
     private PDFunction shadingTinttransform;
     private PDShadingType2 shadingType;
 
     private float[] coords;
     private float[] domain;
-    private int[] extend0Values;
-    private int[] extend1Values;
+    private float[] background;
     private boolean[] extend;
-    private double x1x0; 
+    private double x1x0;
     private double y1y0;
     private float d1d0;
     private double denom;
@@ -70,112 +71,91 @@ public class AxialShadingContext implements PaintContext
      * @param shadingType2 the shading type to be used
      * @param colorModelValue the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
+     * @param transformationMatrix the transformation matrix
      * @param pageHeight height of the current page
      * 
      */
     public AxialShadingContext(PDShadingType2 shadingType2, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, int pageHeight) 
+            AffineTransform xform, Matrix transformationMatrix, int pageHeight) 
     {
         shadingType = shadingType2;
         coords = shadingType.getCoords().toFloatArray();
-        if (ctm != null)
+
+        if (transformationMatrix != null)
         {
-            // the shading is used in combination with the sh-operator
-            float[] coordsTemp = new float[coords.length]; 
-            // transform the coords from shading to user space
-            ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 2);
-            // move the 0,0-reference
-            coordsTemp[1] = pageHeight - coordsTemp[1];
-            coordsTemp[3] = pageHeight - coordsTemp[3];
-            // transform the coords from user to device space
-            xform.transform(coordsTemp, 0, coords, 0, 2);
+            // transform the coords using the given matrix
+            transformationMatrix.createAffineTransform().transform(coords, 0, coords, 0, 2);
         }
-        else
-        {
-            // the shading is used as pattern colorspace in combination
-            // with a fill-, stroke- or showText-operator
-            float translateY = (float)xform.getTranslateY();
-            // move the 0,0-reference including the y-translation from user to device space
-            coords[1] = pageHeight + translateY - coords[1];
-            coords[3] = pageHeight + translateY - coords[3];
-        }
-        // colorSpace 
-        try 
+        xform.transform(coords, 0, coords, 0, 2);
+        // get the shading colorSpace
+        try
         {
             PDColorSpace cs = shadingType.getColorSpace();
             if (!(cs instanceof PDDeviceRGB))
             {
                 // we have to create an instance of the shading colorspace if it isn't RGB
                 shadingColorSpace = cs.getJavaColorSpace();
+                // get the tint transformation function if the colorspace has one
                 if (cs instanceof PDDeviceN)
                 {
-                    shadingTinttransform = ((PDDeviceN)cs).getTintTransform();
+                    shadingTinttransform = ((PDDeviceN) cs).getTintTransform();
                 }
                 else if (cs instanceof PDSeparation)
                 {
-                    shadingTinttransform = ((PDSeparation)cs).getTintTransform();
+                    shadingTinttransform = ((PDSeparation) cs).getTintTransform();
                 }
             }
-        } 
-        catch (IOException exception) 
+        }
+        catch (IOException exception)
         {
             LOG.error("error while creating colorSpace", exception);
         }
-        // colorModel
-        if (colorModelValue != null)
-        {
-            colorModel = colorModelValue;
-        }
-        else
-        {
-            try
-            {
-                // TODO bpc != 8 ??  
-                colorModel = shadingType.getColorSpace().createColorModel(8);
-            }
-            catch(IOException exception)
-            {
-                LOG.error("error while creating colorModel", exception);
-            }
-        }
+        // create the output colormodel using RGB+alpha as colorspace
+        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
+                DataBuffer.TYPE_BYTE);
         // domain values
         if (shadingType.getDomain() != null)
         {
             domain = shadingType.getDomain().toFloatArray();
         }
-        else 
+        else
         {
             // set default values
-            domain = new float[]{0,1};
+            domain = new float[] { 0, 1 };
         }
         // extend values
         COSArray extendValues = shadingType.getExtend();
         if (shadingType.getExtend() != null)
         {
             extend = new boolean[2];
-            extend[0] = ((COSBoolean)extendValues.get(0)).getValue();
-            extend[1] = ((COSBoolean)extendValues.get(1)).getValue();
+            extend[0] = ((COSBoolean) extendValues.get(0)).getValue();
+            extend[1] = ((COSBoolean) extendValues.get(1)).getValue();
         }
         else
         {
             // set default values
-            extend = new boolean[]{false,false};
+            extend = new boolean[] { false, false };
         }
         // calculate some constants to be used in getRaster
-        x1x0 = coords[2] - coords[0]; 
+        x1x0 = coords[2] - coords[0];
         y1y0 = coords[3] - coords[1];
-        d1d0 = domain[1]-domain[0];
-        denom = Math.pow(x1x0,2) + Math.pow(y1y0, 2);
-        // TODO take a possible Background value into account
-        
+        d1d0 = domain[1] - domain[0];
+        denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
+
+        // get background values if available
+        COSArray bg = shadingType2.getBackground();
+        if (bg != null)
+        {
+            background = bg.toFloatArray();
+        }
     }
     /**
      * {@inheritDoc}
      */
     public void dispose() 
     {
-        colorModel = null;
+        outputColorModel = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
         shadingType = null;
@@ -186,7 +166,7 @@ public class AxialShadingContext implements PaintContext
      */
     public ColorModel getColorModel() 
     {
-        return colorModel;
+        return outputColorModel;
     }
 
     /**
@@ -196,38 +176,49 @@ public class AxialShadingContext implements PaintContext
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        int[] data = new int[w * h * 3];
-        boolean saveExtend0 = false;
-        boolean saveExtend1 = false;
-        for (int j = 0; j < h; j++) 
+        boolean useBackground = false;
+        int[] data = new int[w * h * 4];
+        for (int j = 0; j < h; j++)
         {
-            for (int i = 0; i < w; i++) 
+            for (int i = 0; i < w; i++)
             {
-                int index = (j * w + i) * 3;
-                double inputValue = x1x0 * (x + i - coords[0]); 
+                useBackground = false;
+                double inputValue = x1x0 * (x + i - coords[0]);
                 inputValue += y1y0 * (y + j - coords[1]);
-                inputValue /= denom;
+                // TODO this happens if start == end, see PDFBOX-1442
+                if (denom == 0)
+                {
+                    if (background != null)
+                    {
+                        useBackground = true;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    inputValue /= denom;
+                }
                 // input value is out of range
                 if (inputValue < domain[0])
                 {
                     // the shading has to be extended if extend[0] == true
                     if (extend[0])
                     {
-                        if (extend0Values == null)
+                        inputValue = domain[0];
+                    }
+                    else
+                    {
+                        if (background != null)
                         {
-                            inputValue = domain[0];
-                            saveExtend0 = true;
+                            useBackground = true;
                         }
                         else
                         {
-                            // use the chached values
-                            System.arraycopy(extend0Values, 0, data, index, 3);
                             continue;
                         }
-                    }
-                    else 
-                    {
-                        continue;
                     }
                 }
                 // input value is out of range
@@ -236,61 +227,102 @@ public class AxialShadingContext implements PaintContext
                     // the shading has to be extended if extend[1] == true
                     if (extend[1])
                     {
-                        if (extend1Values == null)
+                        inputValue = domain[1];
+                    }
+                    else
+                    {
+                        if (background != null)
                         {
-                            inputValue = domain[1];
-                            saveExtend1 = true;
+                            useBackground = true;
                         }
                         else
                         {
-                            // use the chached values
-                            System.arraycopy(extend1Values, 0, data, index, 3);
                             continue;
                         }
                     }
-                    else 
+                }
+                float[] values = null;
+                int index = (j * w + i) * 4;
+                if (useBackground)
+                {
+                    // use the given backgound color values
+                    values = background;
+                }
+                else
+                {
+                    try
                     {
-                        continue;
+                        float input = (float) (domain[0] + (d1d0 * inputValue));
+                        values = shadingType.evalFunction(input);
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error while processing a function", exception);
                     }
                 }
-                float input = (float)(domain[0] + (d1d0*inputValue));
-                float[] values = null;
-                try 
+                // convert color values from shading colorspace to RGB if necessary
+                if (shadingColorSpace != null)
                 {
-                    values = shadingType.evalFunction(input);
-                    // convert color values from shading colorspace to RGB 
-                    if (shadingColorSpace != null)
+                    if (shadingTinttransform != null)
                     {
-                        if (shadingTinttransform != null)
+                        try
                         {
                             values = shadingTinttransform.eval(values);
                         }
-                        values = shadingColorSpace.toRGB(values);
+                        catch (IOException exception)
+                        {
+                            LOG.error("error while processing a function", exception);
+                        }
                     }
-                } 
-                catch (IOException exception) 
-                {
-                    LOG.error("error while processing a function", exception);
+                    values = shadingColorSpace.toRGB(values);
                 }
-                data[index] = (int)(values[0]*255);
-                data[index+1] = (int)(values[1]*255);
-                data[index+2] = (int)(values[2]*255);
-                if (saveExtend0)
-                {
-                    // chache values
-                    extend0Values = new int[3];
-                    System.arraycopy(data, index, extend0Values, 0, 3);
-                }
-                if (saveExtend1)
-                {
-                    // chache values
-                    extend1Values = new int[3];
-                    System.arraycopy(data, index, extend1Values, 0, 3);
-                }
+                data[index] = (int) (values[0] * 255);
+                data[index + 1] = (int) (values[1] * 255);
+                data[index + 2] = (int) (values[2] * 255);
+                data[index + 3] = 255;
             }
         }
         raster.setPixels(0, 0, w, h, data);
         return raster;
     }
 
+    /**
+     * Returns the coords values.
+     * 
+     * @return the coords values as array
+     */
+    public float[] getCoords() 
+    {
+        return coords;
+    }
+        
+    /**
+     * Returns the domain values.
+     * 
+     * @return the domain values as array
+     */
+    public float[] getDomain() 
+    {
+        return domain;
+    }
+        
+    /**
+     * Returns the extend values.
+     * 
+     * @return the extend values as array
+     */
+    public boolean[] getExtend() 
+    {
+        return extend;
+    }
+    
+    /**
+     * Returns the function used for the shading tint transformation.
+     * 
+     * @return the shading tint transformation function
+     */
+    public PDFunction getShadingTintTransform() 
+    {
+        return shadingTinttransform;
+    }
 }
