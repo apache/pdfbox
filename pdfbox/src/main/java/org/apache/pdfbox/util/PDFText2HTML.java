@@ -215,7 +215,7 @@ public class PDFText2HTML extends PDFTextStripper
     @Override
     protected void writeParagraphEnd() throws IOException
     {
-        writeString(fontState.clear());
+        super.writeString(fontState.clear()); // do not escape HTML
         super.writeParagraphEnd();
     }
 
