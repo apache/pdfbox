@@ -21,6 +21,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -29,15 +30,14 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 /**
  * This represents resources for a shading type 5 (Lattice-Form Gouraud-Shaded Triangle Meshes).
  *
- * @version $Revision: 1.0 $
  */
 public class PDShadingType5 extends PDShadingResources
 {
     
     private PDFunction function = null;
     /**
-     * An array of 2 × n numbers specifying the linear mapping of sample values 
-     * into the range appropriate for the function’s output values. 
+     * An array of 2^n numbers specifying the linear mapping of sample values 
+     * into the range appropriate for the function's output values. 
      * Default value: same as the value of Range
      */
     private COSArray decode = null;
@@ -81,7 +81,9 @@ public class PDShadingType5 extends PDShadingResources
     {
         if (function == null)
         {
-            function = PDFunction.create(getCOSDictionary().getDictionaryObject(COSName.FUNCTION));
+            COSBase dictionaryFunctionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            if (dictionaryFunctionObject != null)
+                function = PDFunction.create(dictionaryFunctionObject);
         }
         return function;
     }
