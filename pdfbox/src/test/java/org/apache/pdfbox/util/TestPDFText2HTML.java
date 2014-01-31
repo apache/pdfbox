@@ -30,16 +30,16 @@ import junit.framework.TestCase;
 
 public class TestPDFText2HTML extends TestCase {
 
-    private PDDocument createDocument() throws IOException {
+    private PDDocument createDocument(String title, PDFont font, String text) throws IOException {
         PDDocument doc = new PDDocument();
+        doc.getDocumentInformation().setTitle(title);
         PDPage page = new PDPage();
         doc.addPage(page);
-        PDFont font = PDType1Font.HELVETICA;
         PDPageContentStream contentStream = new PDPageContentStream(doc, page);
         contentStream.beginText();
         contentStream.setFont(font, 12);
         contentStream.moveTextPositionByAmount(100, 700);
-        contentStream.drawString("<foo>");
+        contentStream.drawString(text);
         contentStream.endText();
         contentStream.close();
         return doc;
@@ -47,15 +47,23 @@ public class TestPDFText2HTML extends TestCase {
 
     public void testEscapeTitle() throws IOException {
         PDFTextStripper stripper = new PDFText2HTML("UTF-8");
-        PDDocument doc = createDocument();
-        doc.getDocumentInformation().setTitle("<script>\u3042");
+        PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
         String text = stripper.getText(doc);
        
         Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
         assertTrue(m.find());
         assertEquals("&lt;script&gt;&#12354;", m.group(1));
-        
+
         assertTrue(text.indexOf("&lt;foo&gt;") >= 0);
-        
+    }
+
+    public void testStyle() throws IOException {
+        PDFTextStripper stripper = new PDFText2HTML("UTF-8");
+        PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
+        String text = stripper.getText(doc);
+
+        Matcher bodyMatcher = Pattern.compile("<p>(.*?)</p>").matcher(text);
+        assertTrue("body p exists", bodyMatcher.find());
+        assertEquals("body p", "<b>&lt;bold&gt;</b>", bodyMatcher.group(1));
     }
 }
