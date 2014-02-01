@@ -126,18 +126,14 @@ public class PDFunctionType0 extends PDFunction
                 // Successive values are adjacent in the bit stream; 
                 // there is no padding at byte boundaries.
                 ImageInputStream mciis = new MemoryCacheImageInputStream(getPDStream().createInputStream());
-                for (int i = 0; i < numberOfInputValues; i++)
+                for (int i = 0; i < arraySize; i++)
                 {
-                    int sizeInputValues = sizes.getInt(i);
-                    for (int j = 0; j < sizeInputValues; j++)
+                    for (int k = 0; k < numberOfOutputValues; k++)
                     {
-                        for (int k = 0; k < numberOfOutputValues; k++)
-                        {
-                            // TODO will this cast work properly for 32 bitsPerSample or should be use long[]?
-                            samples[index][k] = (int) mciis.readBits(bitsPerSample); 
-                        }
-                        index++;
+                        // TODO will this cast work properly for 32 bitsPerSample or should we use long[]?
+                        samples[index][k] = (int) mciis.readBits(bitsPerSample); 
                     }
+                    index++;
                 }
                 mciis.close();
             }
@@ -388,12 +384,10 @@ public class PDFunctionType0 extends PDFunction
                     }
                     return resultSample;
                 }
-                int[] coord1 = coord.clone();
-                int[] coord2 = coord.clone();
-                coord1[step] = inPrev[step];
-                coord2[step] = inNext[step];
-                int[] sample1 = getSamples()[calcSampleIndex(coord1)];
-                int[] sample2 = getSamples()[calcSampleIndex(coord2)];
+                coord[step] = inPrev[step];
+                int[] sample1 = getSamples()[calcSampleIndex(coord)];
+                coord[step] = inNext[step];
+                int[] sample2 = getSamples()[calcSampleIndex(coord)];
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
                     resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
@@ -409,12 +403,10 @@ public class PDFunctionType0 extends PDFunction
                     coord[step] = inPrev[step];
                     return rinterpol(coord, step + 1);
                 }
-                int[] coord1 = coord.clone();
-                int[] coord2 = coord.clone();
-                coord1[step] = inPrev[step];
-                coord2[step] = inNext[step];
-                float[] sample1 = rinterpol(coord1, step + 1);
-                float[] sample2 = rinterpol(coord2, step + 1);
+                coord[step] = inPrev[step];
+                float[] sample1 = rinterpol(coord, step + 1);
+                coord[step] = inNext[step];
+                float[] sample2 = rinterpol(coord, step + 1);
                 for (int i = 0; i < numberOfOutputValues; ++i)
                 {
                     resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
@@ -439,7 +431,6 @@ public class PDFunctionType0 extends PDFunction
         int numberOfInputValues = input.length;
         int numberOfOutputValues = getNumberOfOutputParameters();
 
-        float[] outputValues = new float[numberOfOutputValues];
         int[] inputPrev = new int[numberOfInputValues];
         int[] inputNext = new int[numberOfInputValues];
 
@@ -505,7 +496,7 @@ public class PDFunctionType0 extends PDFunction
 //            }
 //        }
 //        
-        outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
+        float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
 
         for (int i = 0; i < numberOfOutputValues; i++)
         {
