@@ -22,6 +22,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -32,13 +33,13 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * This represents resources for a function based shading.
  *
- * @version $Revision: 1.0 $
  */
 public class PDShadingType1 extends PDShadingResources
 {
     
     private COSArray domain = null;
     private PDFunction function = null;
+    private PDFunction[] functionArray = null;
     
     /**
      * Constructor using the given shading dictionary.
@@ -148,4 +149,61 @@ public class PDShadingType1 extends PDShadingResources
         return function;
     }
 
+    /**
+     * Provide the function(s) of the shading dictionary as array.
+     * 
+     * @return an array containing the function(s) 
+     * @throws IOException throw if something went wrong
+     */
+    private PDFunction[] getFunctionsArray() throws IOException
+    {
+        if (functionArray == null)
+        {
+            COSBase functionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            if (functionObject instanceof COSDictionary)
+            {
+                functionArray = new PDFunction[1];
+                functionArray[0] = PDFunction.create(functionObject);
+            }
+            else
+            {
+                COSArray functionCOSArray = (COSArray)functionObject;
+                int numberOfFunctions = functionCOSArray.size();
+                functionArray = new PDFunction[numberOfFunctions];
+                for (int i=0; i<numberOfFunctions; i++)
+                {
+                    functionArray[i] = PDFunction.create(functionCOSArray.get(i));
+                }
+            }
+        }
+        return functionArray;
+    }
+    
+    /**
+     * Convert the input value using the functions of the shading dictionary.
+     * 
+     * @param inputValue the input value
+     * @return the output values
+     * @throws IOException thrown if something went wrong
+     */
+    public float[] evalFunction(float [] input) throws IOException
+    {
+        PDFunction[] functions = getFunctionsArray();
+        int numberOfFunctions = functions.length;
+        float[] returnValues = null;
+        if (numberOfFunctions == 1)
+        {
+            returnValues = functions[0].eval(input);
+        }
+        else
+        {
+            returnValues = new float[numberOfFunctions];
+            for (int i=0; i<numberOfFunctions;i++)
+            {
+                float[] newValue = functions[i].eval(input);
+                returnValues[i] = newValue[0];
+            }
+        }
+        return returnValues;
+    }
 }
