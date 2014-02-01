@@ -259,7 +259,6 @@ public abstract class GouraudShadingContext implements PaintContext
     @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
-        float[] values = new float[numberOfColorComponents];
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         if (!triangleList.isEmpty())
         {
@@ -269,6 +268,7 @@ public abstract class GouraudShadingContext implements PaintContext
                 for (int col = 0; col < w; col++)
                 {
                     Point2D p = new Point(x + col, y + row);
+                    float[] values = new float[numberOfColorComponents];
 
                     //TODO test optmization after ch14.pdf works:
                     // check whether point is in combined java area
