@@ -35,14 +35,17 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
 import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * This represents the resources for a shading pattern.
  *
- * @version $Revision: 1.0 $
  */
 public class PDShadingPatternResources extends PDPatternResources
 {
@@ -217,7 +220,11 @@ public class PDShadingPatternResources extends PDPatternResources
                 paint = new RadialShadingPaint((PDShadingType3)getShading(), getMatrix(), pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE4:
+                paint = new Type4ShadingPaint((PDShadingType4)getShading(), getMatrix(), pageHeight);
+                break;
             case PDShadingResources.SHADING_TYPE5:
+                paint = new Type5ShadingPaint((PDShadingType5)getShading(), getMatrix(), pageHeight);
+                break;
             case PDShadingResources.SHADING_TYPE6:
             case PDShadingResources.SHADING_TYPE7:
                 LOG.debug( "Error: Unsupported shading type " + shadingType );
