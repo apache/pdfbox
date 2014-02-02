@@ -281,8 +281,9 @@ public class PDColorState implements Cloneable
     public void setColorSpace(PDColorSpace value)
     {
         colorSpace = value;
-        // Clear color cache and current pattern
+        // Clear color/paint cache and current pattern
         color = null;
+        paint = null;
         pattern = null;
     }
 
@@ -314,8 +315,9 @@ public class PDColorState implements Cloneable
     public void setColorSpaceValue(float[] value)
     {
         colorSpaceValue.setFloatArray(value);
-        // Clear color cache and current pattern
+        // Clear color/paint and current pattern
         color = null;
+        paint = null;
         pattern = null;
     }
 
@@ -337,8 +339,9 @@ public class PDColorState implements Cloneable
     public void setPattern(PDPatternResources patternValue)
     {
         pattern = patternValue;
-        // Clear color cache
+        // Clear color/paint cache
         color = null;
+        paint = null;
     }
 
 }
