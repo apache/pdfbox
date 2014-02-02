@@ -17,6 +17,8 @@
 package org.apache.pdfbox.pdmodel.common.function;
 
 import java.io.IOException;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
  * This class represents a type 0 function in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Tilman Hausherr <tilman@snafu.de>
  * 
  */
 public class PDFunctionType0 extends PDFunction
@@ -38,18 +41,18 @@ public class PDFunctionType0 extends PDFunction
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(PDFunctionType0.class);
+    private static final Log LOG = LogFactory.getLog(PDFunctionType0.class);
 
     /**
      * An array of 2 x m numbers specifying the linear mapping of input values 
-     * into the domain of the function's sample table. 
-     * Default value: [ 0 (Size0 - 1) 0 (Size1 - 1) ...].
+     * into the domain of the function's sample table. Default value: [ 0 (Size0
+     * - 1) 0 (Size1 - 1) ...].
      */
     private COSArray encode = null;
     /**
      * An array of 2 x n numbers specifying the linear mapping of sample values 
-     * into the range appropriate for the function's output values. 
-     * Default value: same as the value of Range
+     * into the range appropriate for the function's output values. Default
+     * value: same as the value of Range
      */
     private COSArray decode = null;
     /**
@@ -65,23 +68,25 @@ public class PDFunctionType0 extends PDFunction
     /**
      * Constructor.
      *
-     * @param functionStream The function .
+     * @param function The function.
      */
     public PDFunctionType0(COSBase function)
     {
-        super( function );
+        super(function);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getFunctionType()
     {
         return 0;
     }
+
     /**
-     * The "Size" entry, which is the number of samples in
-     * each input dimension of the sample table.
+     * The "Size" entry, which is the number of samples in each input dimension
+     * of the sample table.
      *
      * @return A List of java.lang.Integer objects.
      */
@@ -89,7 +94,7 @@ public class PDFunctionType0 extends PDFunction
     {
         if (size == null)
         {
-            size = (COSArray)getDictionary().getDictionaryObject( COSName.SIZE );
+            size = (COSArray) getDictionary().getDictionaryObject(COSName.SIZE);
         }
         return size;
     }
@@ -107,60 +112,39 @@ public class PDFunctionType0 extends PDFunction
             int numberOfInputValues = getNumberOfInputParameters();
             int numberOfOutputValues = getNumberOfOutputParameters();
             COSArray sizes = getSize();
-            for (int i=0;i<numberOfInputValues;i++)
+            for (int i = 0; i < numberOfInputValues; i++)
             {
                 arraySize *= sizes.getInt(i);
             }
-            samples = new int[arraySize][getNumberOfOutputParameters()];
+            samples = new int[arraySize][numberOfOutputValues];
             int bitsPerSample = getBitsPerSample();
             int index = 0;
-            int arrayIndex = 0;
-            try {
-                byte[] samplesArray = getPDStream().getByteArray();
-                for (int i=0;i<numberOfInputValues;i++) 
+            try
                 {
-                    int sizeInputValues = sizes.getInt(i);
-                    for (int j=0;j<sizeInputValues;j++)
+                // PDF spec 1.7 p.171:
+                // Each sample value is represented as a sequence of BitsPerSample bits. 
+                // Successive values are adjacent in the bit stream; 
+                // there is no padding at byte boundaries.
+                ImageInputStream mciis = new MemoryCacheImageInputStream(getPDStream().createInputStream());
+                for (int i = 0; i < arraySize; i++)
+                {
+                    for (int k = 0; k < numberOfOutputValues; k++)
                     {
-                        int bitsLeft = 0;
-                        int bitsToRead = bitsPerSample;
-                        int currentValue = 0;
-                        for (int k=0;k<numberOfOutputValues;k++)
-                        {
-                            if (bitsLeft == 0)
-                            {
-                                currentValue = (samplesArray[arrayIndex++]+256)%256;
-                                bitsLeft = 8;
-                            }
-                            int value = 0;
-                            while (bitsToRead > 0)
-                            {
-                                int bits = Math.min(bitsToRead, bitsLeft);
-                                value = value << bits;
-                                int valueToAdd = currentValue >> (8 - bits); 
-                                value |= valueToAdd;
-                                bitsToRead -= bits;
-                                bitsLeft -= bits;
-                                if (bitsLeft == 0 && bitsToRead > 0)
-                                {
-                                    currentValue = (samplesArray[arrayIndex++]+256)%256;
-                                    bitsLeft = 8;
-                                }
-                            }
-                            samples[index][k] = value;
-                            bitsToRead = bitsPerSample;
-                        }
-                        index++;
+                        // TODO will this cast work properly for 32 bitsPerSample or should we use long[]?
+                        samples[index][k] = (int) mciis.readBits(bitsPerSample); 
                     }
+                    index++;
                 }
+                mciis.close();
             }
             catch (IOException exception)
             {
-                log.error("IOException while reading the sample values of this function.");
+                LOG.error("IOException while reading the sample values of this function.", exception);
             }
         }
         return samples;
     }
+
     /**
      * Get the number of bits that the output value will take up.  
      * 
@@ -170,18 +154,30 @@ public class PDFunctionType0 extends PDFunction
      */
     public int getBitsPerSample()
     {
-        return getDictionary().getInt( COSName.BITS_PER_SAMPLE );
+        return getDictionary().getInt(COSName.BITS_PER_SAMPLE);
     }
 
     /**
-     * Set the number of bits that the output value will take up.  Valid values
+     * Get the order of interpolation between samples. Valid values are 1 and 3,
+     * specifying linear and cubic spline interpolation, respectively. Default
+     * is 1. See p.170 in PDF spec 1.7.
+     *
+     * @return order of interpolation.
+     */
+    public int getOrder()
+    {
+        return getDictionary().getInt(COSName.ORDER, 1);
+    }
+
+    /**
+     * Set the number of bits that the output value will take up. Valid values
      * are 1,2,4,8,12,16,24,32.
      *
      * @param bps The number of bits for each output value.
      */
-    public void setBitsPerSample( int bps )
+    public void setBitsPerSample(int bps)
     {
-        getDictionary().setInt( COSName.BITS_PER_SAMPLE, bps );
+        getDictionary().setInt(COSName.BITS_PER_SAMPLE, bps);
     }
     
     /**
@@ -193,17 +189,17 @@ public class PDFunctionType0 extends PDFunction
     {
         if (encode == null)
         {
-            encode = (COSArray)getDictionary().getDictionaryObject( COSName.ENCODE );
+            encode = (COSArray) getDictionary().getDictionaryObject(COSName.ENCODE);
             // the default value is [0 (size[0]-1) 0 (size[1]-1) ...]
             if (encode == null)
             {
                 encode = new COSArray();
                 COSArray sizeValues = getSize();
                 int sizeValuesSize = sizeValues.size();
-                for (int i=0; i <sizeValuesSize; i++)
+                for (int i = 0; i < sizeValuesSize; i++)
                 {
-                    encode.add( COSInteger.ZERO );
-                    encode.add( COSInteger.get( sizeValues.getInt(i) - 1) );
+                    encode.add(COSInteger.ZERO);
+                    encode.add(COSInteger.get(sizeValues.getInt(i) - 1));
                 }
             }
         }
@@ -219,7 +215,7 @@ public class PDFunctionType0 extends PDFunction
     {
         if (decode == null)
         {
-            decode = (COSArray)getDictionary().getDictionaryObject( COSName.DECODE );
+            decode = (COSArray) getDictionary().getDictionaryObject(COSName.DECODE);
             // if decode is null, the default values are the range values
             if (decode == null)
             {
@@ -236,13 +232,13 @@ public class PDFunctionType0 extends PDFunction
      *
      * @return The encode parameter range or null if none is set.
      */
-    public PDRange getEncodeForParameter( int paramNum )
+    public PDRange getEncodeForParameter(int paramNum)
     {
         PDRange retval = null;
         COSArray encodeValues = getEncodeValues();
-        if( encodeValues != null && encodeValues.size() >= paramNum*2+1 )
+        if (encodeValues != null && encodeValues.size() >= paramNum * 2 + 1)
         {
-            retval = new PDRange(encodeValues, paramNum );
+            retval = new PDRange(encodeValues, paramNum);
         }
         return retval;
     }
@@ -250,7 +246,7 @@ public class PDFunctionType0 extends PDFunction
     /**
      * This will set the encode values.
      *
-     * @param range The new encode values.
+     * @param encodeValues The new encode values.
      */
     public void setEncodeValues(COSArray encodeValues)
     {
@@ -265,13 +261,13 @@ public class PDFunctionType0 extends PDFunction
      *
      * @return The decode parameter range or null if none is set.
      */
-    public PDRange getDecodeForParameter( int paramNum )
+    public PDRange getDecodeForParameter(int paramNum)
     {
         PDRange retval = null;
         COSArray decodeValues = getDecodeValues();
-        if( decodeValues != null && decodeValues.size() >= paramNum*2+1 )
+        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
         {
-            retval = new PDRange(decodeValues, paramNum );
+            retval = new PDRange(decodeValues, paramNum);
         }
         return retval;
     }
@@ -279,7 +275,7 @@ public class PDFunctionType0 extends PDFunction
     /**
      * This will set the decode values.
      *
-     * @param range The new decode values.
+     * @param decodeValues The new decode values.
      */
     public void setDecodeValues(COSArray decodeValues)
     {
@@ -288,61 +284,228 @@ public class PDFunctionType0 extends PDFunction
     }
     
     /**
+     * calculate array index (structure described in p.171 PDF spec 1.7) in
+     * multiple dimensions.
+     *
+     * @param vector with coordinates
+     * @return index in flat array
+     */
+    private int calcSampleIndex(int[] vector)
+    {
+        // inspiration: http://stackoverflow.com/a/12113479/535646
+        // but used in reverse
+        float[] sizeValues = getSize().toFloatArray();
+        int index = 0;
+        int sizeProduct = 1;
+        int dimension = vector.length;
+        for (int i = dimension - 2; i >= 0; --i)
+        {
+            sizeProduct *= sizeValues[i];
+        }
+        for (int i = dimension - 1; i >= 0; --i)
+        {
+            index += sizeProduct * vector[i];
+            if (i - 1 >= 0)
+            {
+                sizeProduct /= sizeValues[i - 1];
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Inner class do to an interpolation in the Nth dimension by comparing the
+     * content size of N-1 dimensional objects. This is done with the help of
+     * recursive calls. To understand the algorithm without recursion, here is a
+     * <a
+     * href="http://harmoniccode.blogspot.de/2011/04/bilinear-color-interpolation.html">bilinear
+     * interpolation</a> and here's a <a
+     * href="https://en.wikipedia.org/wiki/Trilinear_interpolation">trilinear
+     * interpolation</a> (external links).
+     */
+    class Rinterpol
+    {
+        final float[] in; // coordinate that is to be interpolated
+        final int[] inPrev; // coordinate of the "ceil" point
+        final int[] inNext; // coordinate of the "floor" point
+        final int numberOfInputValues;
+        final int numberOfOutputValues = getNumberOfOutputParameters();
+
+        /**
+         * Constructor.
+         *
+         * @param input the input coordinates
+         * @param inputPrev coordinate of the "ceil" point
+         * @param inputNext coordinate of the "floor" point
+         *
+         */
+        public Rinterpol(float[] input, int[] inputPrev, int[] inputNext)
+        {
+            in = input;
+            inPrev = inputPrev;
+            inNext = inputNext;
+            numberOfInputValues = input.length;
+        }
+
+        /**
+         * Calculate the interpolation.
+         *
+         * @return interpolated result sample
+         */
+        public float[] rinterpolate()
+        {
+            return rinterpol(new int[numberOfInputValues], 0);
+        }
+
+        /**
+         * Do a linear interpolation if the two coordinates can be known, or
+         * call itself recursively twice.
+         *
+         * @param coord coord partially set coordinate (not set from step
+         * upwards); gets fully filled in the last call ("leaf"), where it is
+         * used to get the correct sample
+         * @param step between 0 (first call) and dimension - 1
+         * @return interpolated result sample
+         */
+        private float[] rinterpol(int[] coord, int step)
+        {
+            float[] resultSample = new float[numberOfOutputValues];
+            if (step == in.length - 1)
+            {
+                // leaf
+
+                if (inPrev[step] == inNext[step])
+                {
+                    coord[step] = inPrev[step];
+                    int[] tmpSample = getSamples()[calcSampleIndex(coord)];
+                    for (int i = 0; i < numberOfOutputValues; ++i)
+                    {
+                        resultSample[i] = tmpSample[i];
+                    }
+                    return resultSample;
+                }
+                coord[step] = inPrev[step];
+                int[] sample1 = getSamples()[calcSampleIndex(coord)];
+                coord[step] = inNext[step];
+                int[] sample2 = getSamples()[calcSampleIndex(coord)];
+                for (int i = 0; i < numberOfOutputValues; ++i)
+                {
+                    resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
+                }
+                return resultSample;
+            }
+            else
+            {
+                // branch
+
+                if (inPrev[step] == inNext[step])
+                {
+                    coord[step] = inPrev[step];
+                    return rinterpol(coord, step + 1);
+                }
+                coord[step] = inPrev[step];
+                float[] sample1 = rinterpol(coord, step + 1);
+                coord[step] = inNext[step];
+                float[] sample2 = rinterpol(coord, step + 1);
+                for (int i = 0; i < numberOfOutputValues; ++i)
+                {
+                    resultSample[i] = interpolate(in[step], inPrev[step], inNext[step], sample1[i], sample2[i]);
+                }
+                return resultSample;
+            }
+        }
+    }
+
+    /**
     * {@inheritDoc}
     */
+    @Override
     public float[] eval(float[] input) throws IOException
     {
         //This involves linear interpolation based on a set of sample points.
         //Theoretically it's not that difficult ... see section 3.9.1 of the PDF Reference.
+
         float[] sizeValues = getSize().toFloatArray();
         int bitsPerSample = getBitsPerSample();
+        float maxSample = (float) (Math.pow(2, bitsPerSample) - 1.0);
         int numberOfInputValues = input.length;
         int numberOfOutputValues = getNumberOfOutputParameters();
-        int intInputValuesPrevious = 0;
-        int intInputValuesNext = 0;
-        for (int i=0; i<numberOfInputValues; i++) {
+
+        int[] inputPrev = new int[numberOfInputValues];
+        int[] inputNext = new int[numberOfInputValues];
+
+        for (int i = 0; i < numberOfInputValues; i++)
+        {
             PDRange domain = getDomainForInput(i);
-            PDRange encode = getEncodeForParameter(i);
+            PDRange encodeValues = getEncodeForParameter(i);
             input[i] = clipToRange(input[i], domain.getMin(), domain.getMax());
-            input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), encode.getMin(), encode.getMax());
-            input[i] = clipToRange(input[i], 0, sizeValues[i]-1);
-            intInputValuesPrevious += (int)Math.floor(input[i]);
-            intInputValuesNext += (int)Math.ceil(input[i]);
+            input[i] = interpolate(input[i], domain.getMin(), domain.getMax(), 
+                    encodeValues.getMin(), encodeValues.getMax());
+            input[i] = clipToRange(input[i], 0, sizeValues[i] - 1);
+            inputPrev[i] = (int) Math.floor(input[i]);
+            inputNext[i] = (int) Math.ceil(input[i]);
         }
-        float[] outputValuesPrevious = null;
-        float[] outputValuesNext = null;
-        outputValuesPrevious = getSample(intInputValuesPrevious);
-        outputValuesNext = getSample(intInputValuesNext);
-        float[] outputValues = new float[numberOfOutputValues];
-        for (int i=0;i<numberOfOutputValues;i++) 
+
+        // old code for N=1 and N=2, don't delete in case one uses this for optimization
+//
+//        if (numberOfInputValues == 1)
+//        {
+//            int[] sample1 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputPrev[0]
+//            })];
+//            int[] sample2 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputNext[0]
+//            })];
+//            for (int i = 0; i < numberOfOutputValues; ++i)
+//            {
+//                outputValues[i] = inputPrev[0] == inputNext[0] ? sample1[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample1[i], sample2[i]);
+//            }
+//            //TODO optimize so that sample is collected only when needed
+//        }
+//        if (numberOfInputValues == 2)
+//        {
+//            int[] sample1 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputPrev[0], inputPrev[1]
+//            })];
+//            int[] sample2 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputPrev[0], inputNext[1]
+//            })];
+//            int[] sample3 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputNext[0], inputPrev[1]
+//            })];
+//            int[] sample4 = getSamples()[calcSampleIndex(new int[]
+//            {
+//                inputNext[0], inputNext[1]
+//            })];
+//
+//            for (int i = 0; i < numberOfOutputValues; ++i)
+//            {
+//                // bilinear color interpolation, see e.g.
+//                // http://harmoniccode.blogspot.de/2011/04/bilinear-color-interpolation.html
+//                // interpolate the color at top and bottom edges (x-axis)
+//                // then interpolate the color between these two results (y-axis)
+//                double lowerVal = inputPrev[0] == inputNext[0] ? sample1[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample1[i], sample3[i]);
+//                double upperVal = inputPrev[0] == inputNext[0] ? sample2[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample2[i], sample4[i]);
+//                outputValues[i] = (float) (inputPrev[1] == inputNext[1] ? lowerVal : interpolate(input[1], inputPrev[1], inputNext[1], (float) lowerVal, (float) upperVal));
+//                //TODO optimize so that sample is collected only when needed
+//            }
+//        }
+//        
+        float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
+
+        for (int i = 0; i < numberOfOutputValues; i++)
         {
             PDRange range = getRangeForOutput(i);
-            PDRange decode = getDecodeForParameter(i);
-            // TODO using only a linear interpolation. 
-            // See "Order" entry in table 3.36 of the PDF reference
-            outputValues[i] = (outputValuesPrevious[i] + outputValuesNext[i]) / 2;
-            outputValues[i] = interpolate(outputValues[i], 0, (float)Math.pow(2, bitsPerSample), decode.getMin(), decode.getMax());
+            PDRange decodeValues = getDecodeForParameter(i);
+            outputValues[i] = interpolate(outputValues[i], 0, maxSample, decodeValues.getMin(), decodeValues.getMax());
             outputValues[i] = clipToRange(outputValues[i], range.getMin(), range.getMax());
         }
 
         return outputValues;
     }
-    
-    /**
-     * Get the samples for the given input values.
-     * 
-     * @param indexValue the index into the sample values array
-     * @return an array with the corresponding samples
-     */
-    private float[] getSample(int indexValue)
-    {
-        int[] sampleValues = getSamples()[indexValue];
-        int numberOfValues = sampleValues.length;
-        float[] result = new float[numberOfValues];
-        for (int i=0;i<numberOfValues;i++)
-        {
-            result[i] = sampleValues[i];
         }
-        return result;
-    }
-}
