@@ -211,10 +211,10 @@ public class PDShadingPatternResources extends PDPatternResources
                 paint = new Type1ShadingPaint((PDShadingType1)getShading(), getMatrix(), pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE2:
-                paint = new AxialShadingPaint((PDShadingType2)getShading(), null, pageHeight);
+                paint = new AxialShadingPaint((PDShadingType2)getShading(), getMatrix(), pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE3:
-                paint = new RadialShadingPaint((PDShadingType3)getShading(), null, pageHeight);
+                paint = new RadialShadingPaint((PDShadingType3)getShading(), getMatrix(), pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE4:
             case PDShadingResources.SHADING_TYPE5:
