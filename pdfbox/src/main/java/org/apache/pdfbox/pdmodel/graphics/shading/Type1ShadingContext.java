@@ -142,7 +142,6 @@ class Type1ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public void dispose()
     {
         outputColorModel = null;
@@ -154,7 +153,6 @@ class Type1ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public ColorModel getColorModel()
     {
         return outputColorModel;
@@ -163,7 +161,6 @@ class Type1ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public Raster getRaster(int x, int y, int w, int h)
     {
         // create writable raster
