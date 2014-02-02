@@ -32,9 +32,11 @@ import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
 import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -205,13 +207,15 @@ public class PDShadingPatternResources extends PDPatternResources
         int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
         switch (shadingType)
         {
+            case PDShadingResources.SHADING_TYPE1: 
+                paint = new Type1ShadingPaint((PDShadingType1)getShading(), getMatrix(), pageHeight);
+                break;
             case PDShadingResources.SHADING_TYPE2:
                 paint = new AxialShadingPaint((PDShadingType2)getShading(), null, pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE3:
                 paint = new RadialShadingPaint((PDShadingType3)getShading(), null, pageHeight);
                 break;
-            case PDShadingResources.SHADING_TYPE1: 
             case PDShadingResources.SHADING_TYPE4:
             case PDShadingResources.SHADING_TYPE5:
             case PDShadingResources.SHADING_TYPE6:
