@@ -53,7 +53,6 @@ public class Type1ShadingPaint implements Paint
     /**
      * {@inheritDoc}
      */
-    @Override
     public int getTransparency()
     {
         return 0;
@@ -62,7 +61,6 @@ public class Type1ShadingPaint implements Paint
     /**
      * {@inheritDoc}
      */
-    @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
     {
