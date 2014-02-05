@@ -577,7 +577,7 @@ public class CFFParser
         {
             return CFFStandardString.getName(index);
         }
-        if (index - 391 <= stringIndex.getCount())
+        if (index - 391 < stringIndex.getCount())
         {
             DataInput dataInput = new DataInput(stringIndex.getBytes(index - 391));
             return dataInput.getString();
