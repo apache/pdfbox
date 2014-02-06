@@ -76,8 +76,8 @@
     <property name="bcpkix.url" value="${maven.repo2}/org/bouncycastle/bcpkix-jdk15on/1.48/${bcpkix.name}.jar" />
     <property name="bcpkix.jar" value="${jar.dir}/${bcpkix.name}.jar" />
 
-    <property name="junit.name" value="junit-4.8.1" />
-    <property name="junit.url" value="${maven.repo2}/junit/junit/4.8.1/${junit.name}.jar" />
+    <property name="junit.name" value="junit-4.11" />
+    <property name="junit.url" value="${maven.repo2}/junit/junit/4.11/${junit.name}.jar" />
     <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
     <property name="logging.name" value="commons-logging-1.1.1" />
