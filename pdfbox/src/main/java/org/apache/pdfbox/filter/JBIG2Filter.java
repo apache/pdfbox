@@ -28,6 +28,7 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,14 +80,13 @@ public class JBIG2Filter implements Filter
         }
         if (st != null)
         {
-            reader.setInput(ImageIO.createImageInputStream(new SequenceInputStream(st.getFilteredStream(),
-                    compressedData)));
+            compressedData = new SequenceInputStream(st.getFilteredStream(),
+                    compressedData);
         }
-        else
-        {
-            reader.setInput(ImageIO.createImageInputStream(compressedData));
-        }
+        ImageInputStream iis = ImageIO.createImageInputStream(compressedData);
+        reader.setInput(iis);
         BufferedImage bi = reader.read(0);
+        iis.close();
         reader.dispose();
         if (bi != null)
         {
