@@ -90,7 +90,7 @@ public class TestImageIOUtils extends TestCase
         List<PDPage> pages = document.getDocumentCatalog().getAllPages();
         BufferedImage image = RenderUtil.convertToImage(pages.get(0), imageType, resolution);
         String fileName = outputPrefix + 1;
-        System.out.println("Writing: " + fileName + "." + imageFormat);
+        LOG.info("Writing: " + fileName + "." + imageFormat);
         ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
     }
 
@@ -101,8 +101,8 @@ public class TestImageIOUtils extends TestCase
      */
     public void testRenderImage() throws Exception
     {
-        String inDir = "src/test/resources/input/rendering";
-        String outDir = "target/test-output/";
+    	String inDir = "src/test/resources/input/ImageIOUtil";
+    	String outDir = "target/test-output/ImageIOUtil/";
         new File(outDir).mkdir();
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
