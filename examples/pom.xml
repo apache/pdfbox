@@ -62,6 +62,11 @@
         <artifactId>lucene-analyzers-common</artifactId>
         <version>${lucene.version}</version>
     </dependency>  
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.9.3</version>
+    </dependency>
   </dependencies>
 
   <build>

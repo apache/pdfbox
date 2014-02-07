@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.ant;
+package org.apache.pdfbox.examples.ant;
 
 import java.io.File;
 
