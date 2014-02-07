@@ -41,11 +41,7 @@ public class PDFBox
             boolean exitAfterCallingMain = true;
             try 
             {
-                if (command.equals("ConvertColorspace")) 
-                {
-                    ConvertColorspace.main(arguments);
-                } 
-                else if (command.equals("Decrypt")) 
+                if (command.equals("Decrypt")) 
                 {
                     Decrypt.main(arguments);
                 } 
