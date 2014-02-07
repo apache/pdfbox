@@ -121,9 +121,11 @@ class Type1ShadingContext implements PaintContext
 
         try
         {
-            // get inverse transform to be independent of current user / device space 
+            // get inverse transform to be independent of 
+            // shading matrix and current user / device space 
             // when handling actual pixels in getRaster()
             rat = matrix.createAffineTransform().createInverse();
+            rat.concatenate(currentTransformationMatrix.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
         catch (NoninvertibleTransformException ex)
