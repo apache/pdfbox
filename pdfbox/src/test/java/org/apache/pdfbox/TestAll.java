@@ -92,7 +92,6 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPDDocumentInformation.class );
         suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
-        suite.addTestSuite( org.apache.pdfbox.TestTextToPdf.class );
         suite.addTest( org.apache.pdfbox.pdmodel.common.function.TestFunctions.suite() );
 
         suite.addTestSuite( TestIOUtils.class );
@@ -101,8 +100,6 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPackedBitArray.class );
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
 
-        suite.addTestSuite( TestExtractText.class );
-        
         suite.addTestSuite(TestPDPageContentStream.class);
         
         suite.addTestSuite(TestPDNameTreeNode.class);
