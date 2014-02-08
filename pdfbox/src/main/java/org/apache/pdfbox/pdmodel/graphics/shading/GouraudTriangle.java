@@ -22,7 +22,7 @@ import java.awt.geom.Point2D;
 
 /**
  * Helper class to deal with Gouraud triangles for type 4 and 5 shading.
- * 
+ *
  * @author Tilman Hausherr
  */
 public class GouraudTriangle
@@ -31,34 +31,45 @@ public class GouraudTriangle
      * the polygon representing the triangle.
      */
     protected final Polygon polygon = new Polygon();
-    /** 
+    /**
      * point A of the triangle.
      */
     protected final Point2D pointA;
-    /** 
+    /**
      * point B of the triangle.
      */
     protected final Point2D pointB;
-    /** 
+    /**
      * point C of the triangle.
      */
     protected final Point2D pointC;
-    /** 
+    /**
      * the color of point A.
      */
     protected final float[] colorA;
-    /** 
+    /**
      * the color of point B.
      */
     protected final float[] colorB;
-    /** 
+    /**
      * the color of point C.
      */
     protected final float[] colorC;
-    
-    
+
+    /*
+     * intermediate constants
+     */
+    private final double xBminusA;
+    private final double yBminusA;
+    private final double xCminusA;
+    private final double yCminusA;
+    private final double xCminusB;
+    private final double yCminusB;
+    private final double area;
+
     /**
      * Constructor for using 3 points and their colors.
+     *
      * @param a point A of the triangle
      * @param aColor color of point A
      * @param b point B of the triangle
@@ -74,6 +85,16 @@ public class GouraudTriangle
         colorA = aColor;
         colorB = bColor;
         colorC = cColor;
+
+        // calculate constants
+        xBminusA = pointB.getX() - pointA.getX();
+        yBminusA = pointB.getY() - pointA.getY();
+        xCminusA = pointC.getX() - pointA.getX();
+        yCminusA = pointC.getY() - pointA.getY();
+        xCminusB = pointC.getX() - pointB.getX();
+        yCminusB = pointC.getY() - pointB.getY();
+        area = getArea(pointA, pointB, pointC);
+
         polygon.addPoint((int) Math.round(a.getX()), (int) Math.round(a.getY()));
         polygon.addPoint((int) Math.round(b.getX()), (int) Math.round(b.getY()));
         polygon.addPoint((int) Math.round(c.getX()), (int) Math.round(c.getY()));
@@ -81,17 +102,36 @@ public class GouraudTriangle
 
     /**
      * Check whether the point is within the triangle.
-     * 
+     *
      * @param p Point
-     * 
+     *
      * @return true if yes, false if no
      */
     public boolean contains(Point2D p)
     {
-        // if there is ever a need to optimize, go here
+        // inspiration:
         // http://stackoverflow.com/a/9755252/535646
+        // see also:
         // http://math.stackexchange.com/q/51326
-        return polygon.contains(p);
+        // http://www.gamedev.net/topic/295943-is-this-a-better-point-in-triangle-test-2d/
+        // java function can't be used because polygon takes integer coordinates
+
+        double xPminusA = p.getX() - pointA.getX();
+        double yPminusA = p.getY() - pointA.getY();
+
+        boolean signAB = (xBminusA * yPminusA - yBminusA * xPminusA) > 0;
+
+        if ((xCminusA * yPminusA - yCminusA * xPminusA > 0) == signAB)
+        {
+            return false;
+        }
+
+        if ((xCminusB * (p.getY() - pointB.getY()) - yCminusB * (p.getX() - pointB.getX()) > 0) != signAB)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -102,13 +142,13 @@ public class GouraudTriangle
     {
         // inspiration: http://stackoverflow.com/a/2145584/535646
         // test: http://www.mathopenref.com/coordtrianglearea.html
-        return Math.abs((a.getX() - c.getX()) * (b.getY() - a.getY()) - (a.getX() - b.getX()) 
+        return Math.abs((a.getX() - c.getX()) * (b.getY() - a.getY()) - (a.getX() - b.getX())
                 * (c.getY() - a.getY())) / 2;
     }
 
     /**
      * calculate color weights with barycentric interpolation.
-     * 
+     *
      * @param p Point within triangle
      *
      * @return array of weights (between 0 and 1) for a b c
@@ -116,9 +156,11 @@ public class GouraudTriangle
     public double[] getWeights(Point2D p)
     {
         // http://classes.soe.ucsc.edu/cmps160/Fall10/resources/barycentricInterpolation.pdf
-        double area = getArea(pointA, pointB, pointC);
-        return new double[]{getArea(pointB, pointC, p) / area, getArea(pointA, pointC, p) 
-                / area, getArea(pointA, pointB, p) / area};
+        return new double[]
+        {
+            getArea(pointB, pointC, p) / area, getArea(pointA, pointC, p)
+            / area, getArea(pointA, pointB, p) / area
+        };
     }
 
 }
