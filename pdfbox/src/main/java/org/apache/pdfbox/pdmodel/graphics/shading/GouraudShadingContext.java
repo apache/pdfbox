@@ -152,7 +152,7 @@ public abstract class GouraudShadingContext implements PaintContext
      *
      * @throws IOException if something went wrong
      */
-    protected Vertex readVertex(ImageInputStream input, byte flag, long maxSrcCoord, long maxSrcColor, 
+    protected Vertex readVertex(ImageInputStream input, byte flag, long maxSrcCoord, long maxSrcColor,
             PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab) throws IOException
     {
         float[] colorComponentTab = new float[numberOfColorComponents];
@@ -165,7 +165,7 @@ public abstract class GouraudShadingContext implements PaintContext
         {
             int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(), colRangeTab[n].getMax());
-            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color) 
+            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
                     + "-> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(flag, new Point2D.Double(dstX, dstY), colorComponentTab);
@@ -248,7 +248,7 @@ public abstract class GouraudShadingContext implements PaintContext
      * @param dstMax max dst value
      * @return interpolated value
      */
-    private float interpolate(float src, float srcMax, float dstMin, float dstMax)
+    private float interpolate(float src, long srcMax, float dstMin, float dstMax)
     {
         return dstMin + (src * (dstMax - dstMin) / srcMax);
     }
@@ -260,68 +260,68 @@ public abstract class GouraudShadingContext implements PaintContext
     public final Raster getRaster(int x, int y, int w, int h)
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        if (!triangleList.isEmpty())
+        int[] data = new int[w * h * 4];
+        for (int row = 0; row < h; row++)
         {
-            int[] data = new int[w * h * 4];
-            for (int row = 0; row < h; row++)
+            for (int col = 0; col < w; col++)
             {
-                for (int col = 0; col < w; col++)
+                Point2D p = new Point(x + col, y + row);
+                GouraudTriangle triangle = null;
+                for (GouraudTriangle tryTriangle : triangleList)
                 {
-                    Point2D p = new Point(x + col, y + row);
-                    float[] values = new float[numberOfColorComponents];
-
-                    //TODO test optmization after ch14.pdf works:
-                    // check whether point is in combined java area
-                    for (GouraudTriangle triangle : triangleList)
+                    if (tryTriangle.contains(p))
                     {
-                        if (triangle.contains(p))
-                        {
-                            double[] weights = triangle.getWeights(p);
-                            for (int i = 0; i < numberOfColorComponents; ++i)
-                            {
-                                values[i] = (float) (triangle.colorA[i] * weights[0] + triangle.colorB[i] * weights[1] 
-                                        + triangle.colorC[i] * weights[2]);
-                            }
-                            //TODO optimize: quit loop when triangle is found
-                        }
-                        else
-                        {
-                            if (background != null)
-                            {
-                                values = background;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-
-                        //TODO handle function
-                        // convert color values from shading colorspace to RGB
-                        if (shadingColorSpace != null)
-                        {
-                            if (shadingTinttransform != null)
-                            {
-                                try
-                                {
-                                    values = shadingTinttransform.eval(values);
-                                }
-                                catch (IOException exception)
-                                {
-                                    LOG.error("error while processing a function", exception);
-                                }
-                            }
-                            values = shadingColorSpace.toRGB(values);
-                        }
-
-                        int index = (row * w + col) * 4;
-                        data[index] = (int) (values[0] * 255);
-                        data[index + 1] = (int) (values[1] * 255);
-                        data[index + 2] = (int) (values[2] * 255);
-                        data[index + 3] = 255;
+                        triangle = tryTriangle;
+                        break;
                     }
-
                 }
+                float[] values;
+                if (triangle != null)
+                {
+                    double[] weights = triangle.getWeights(p);
+                    values = new float[numberOfColorComponents];
+                    for (int i = 0; i < numberOfColorComponents; ++i)
+                    {
+                        values[i] = (float) (triangle.colorA[i] * weights[0]
+                                + triangle.colorB[i] * weights[1]
+                                + triangle.colorC[i] * weights[2]);
+                    }
+                }
+                else
+                {
+                    if (background != null)
+                    {
+                        values = background;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                //TODO handle function
+                // convert color values from shading colorspace to RGB
+                if (shadingColorSpace != null)
+                {
+                    if (shadingTinttransform != null)
+                    {
+                        try
+                        {
+                            values = shadingTinttransform.eval(values);
+                        }
+                        catch (IOException exception)
+                        {
+                            LOG.error("error while processing a function", exception);
+                        }
+                    }
+                    values = shadingColorSpace.toRGB(values);
+                }
+
+                int index = (row * w + col) * 4;
+                data[index] = (int) (values[0] * 255);
+                data[index + 1] = (int) (values[1] * 255);
+                data[index + 2] = (int) (values[2] * 255);
+                data[index + 3] = 255;
             }
             raster.setPixels(0, 0, w, h, data);
         }
