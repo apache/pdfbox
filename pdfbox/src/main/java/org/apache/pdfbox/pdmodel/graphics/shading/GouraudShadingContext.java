@@ -220,7 +220,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public void dispose()
     {
         triangleList = null;
@@ -233,7 +232,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public final ColorModel getColorModel()
     {
         return outputColorModel;
@@ -256,7 +254,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
