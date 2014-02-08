@@ -25,7 +25,7 @@ import org.apache.pdfbox.cos.COSName;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
  */
-public class PDMMType1Font extends PDSimpleFont
+public class PDMMType1Font extends PDType1Font
 {
     /**
      * Constructor.
