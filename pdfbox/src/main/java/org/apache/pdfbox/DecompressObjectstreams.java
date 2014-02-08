@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
@@ -32,7 +33,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * objects.
  * @author <a href="adam@apache.org">Adam Nichols</a>
  */
-public class PdfDecompressor {
+public class DecompressObjectstreams {
 
     /**
      * This is a very simple program, so everything is in the main method.
@@ -56,7 +57,7 @@ public class PdfDecompressor {
         PDDocument doc = null;
         try {
             doc = PDDocument.load(inputFilename);
-            for(COSObject objStream : doc.getDocument().getObjectsByType("ObjStm")) {
+            for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM)) {
                 COSStream stream = (COSStream)objStream.getObject();
                 PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());
                 sp.parse();
@@ -80,8 +81,8 @@ public class PdfDecompressor {
      * Explains how to use the program.
      */
     private static void usage() {
-        System.err.println( "Usage: java -cp /path/to/pdfbox.jar;/path/to/commons-logging-api.jar "
-                + "org.apache.pdfbox.PdfDecompressor <input PDF File> [<Output PDF File>]\n"
+        System.err.println( "Usage: java -cp pdfbox-app-x.y.z.jar "
+                + "org.apache.pdfbox.DecompressObjectstreams <input PDF File> [<Output PDF File>]\n"
                 + "  <input PDF File>       The PDF document to decompress\n"
                 + "  <output PDF File>      The output filename (default is to replace .pdf with .unc.pdf)");
         System.exit(1);
