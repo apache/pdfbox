@@ -92,9 +92,8 @@ public class COSStandardOutputStream extends FilterOutputStream
     }
     
     /**
-     * This will get the current position in the stream.
+     * This will set the current position in the stream.
      *
-     * @return The current position in the stream.
      * @throws IOException 
      */
     public void setPos(long pos) throws IOException

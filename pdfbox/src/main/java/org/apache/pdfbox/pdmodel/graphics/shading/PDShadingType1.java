@@ -182,7 +182,7 @@ public class PDShadingType1 extends PDShadingResources
     /**
      * Convert the input value using the functions of the shading dictionary.
      * 
-     * @param inputValue the input value
+     * @param input the input values
      * @return the output values
      * @throws IOException thrown if something went wrong
      */

@@ -73,7 +73,6 @@ public class ConformingPDDocument extends PDDocument {
 
     /**
      * This will get an object from the pool.
-     * @param key The object key.
      * @return The object in the pool or a new one if it has not been parsed yet.
      * @throws IOException If there is an error getting the proxy object.
      */

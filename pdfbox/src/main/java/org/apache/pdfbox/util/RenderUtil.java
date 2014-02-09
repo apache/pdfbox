@@ -66,7 +66,7 @@ public class RenderUtil
      * 
      * @param document the document to be printed
      * @param printJob A printer job definition.
-     * @see RenderUtil#print()
+     * @see RenderUtil#print(PDDocument)
      * 
      * @throws PrinterException If there is an error while printing.
      */
@@ -76,7 +76,7 @@ public class RenderUtil
     }
 
     /**
-     * @see RenderUtil#print()
+     * @see RenderUtil#print(PDDocument)
      * 
      * @param document the document to be printed
      * @param printJob The printer job.
@@ -109,7 +109,7 @@ public class RenderUtil
      * This will send the given PDF to the default printer without prompting the user for any printer settings.
      * 
      * @param document the document to be printed
-     * @see RenderUtil#print()
+     * @see RenderUtil#print(PDDocument)
      * 
      * @throws PrinterException If there is an error while printing.
      */
