@@ -185,7 +185,7 @@ public abstract class PDPatternResources implements COSObjectable
     /**
      * This will return the paint of the pattern.
      * 
-     * @param the height of the current page
+     * @param pageHeight the height of the current page
      * 
      * @return the paint of the pattern
      */

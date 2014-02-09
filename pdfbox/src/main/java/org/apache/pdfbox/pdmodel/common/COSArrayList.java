@@ -94,7 +94,7 @@ public class COSArrayList<E> implements List<E>
     }
 
     /**
-     * @deprecated use the {@link #COSArrayList(E, COSBase, COSDictionary, COSName)} method instead
+     * @deprecated use the {@link #COSArrayList(Object, COSBase, COSDictionary, COSName)} method instead
      */
     public COSArrayList( E actualObject, COSBase item, COSDictionary dictionary, String dictionaryKey )
     {

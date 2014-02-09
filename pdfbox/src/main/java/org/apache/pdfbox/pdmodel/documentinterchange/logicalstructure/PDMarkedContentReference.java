@@ -52,8 +52,7 @@ public class PDMarkedContentReference implements COSObjectable
     /**
      * Constructor for an existing marked content reference.
      * 
-     * @param pageDic the page dictionary
-     * @param mcid the marked content indentifier
+     * @param dictionary the page dictionary
      */
     public PDMarkedContentReference(COSDictionary dictionary)
     {

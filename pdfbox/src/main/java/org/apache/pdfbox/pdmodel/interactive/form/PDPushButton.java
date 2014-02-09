@@ -32,7 +32,7 @@ public class PDPushButton extends PDField
 {
 
     /**
-     * @see org.apache.pdfbox.pdmodel.field.PDField#COSField(org.apache.pdfbox.cos.COSDictionary)
+     * @see PDField#PDField(PDAcroForm, COSDictionary)
      *
      * @param theAcroForm The acroForm for this field.
      * @param field The field for this push button.
@@ -43,7 +43,7 @@ public class PDPushButton extends PDField
     }
 
     /**
-     * @see as.interactive.pdf.form.cos.COSField#setValue(java.lang.String)
+     * @see PDField#setValue(java.lang.String)
      *
      * @param value The new value for the field.
      *

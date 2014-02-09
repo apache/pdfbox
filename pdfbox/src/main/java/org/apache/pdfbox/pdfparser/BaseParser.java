@@ -1604,7 +1604,7 @@ public abstract class BaseParser
     /**
      * This will read a long from the Stream and throw an {@link IllegalArgumentException} if the long value
      * has more than 10 digits (i.e. : bigger than {@link #OBJECT_NUMBER_THRESHOLD})
-     * @return
+     * @return the object number being read.
      * @throws IOException
      */
     protected long readObjectNumber() throws IOException
@@ -1619,7 +1619,7 @@ public abstract class BaseParser
     /**
      * This will read a integer from the Stream and throw an {@link IllegalArgumentException} if the integer value
      * has more than the maximum object revision (i.e. : bigger than {@link #GENERATION_NUMBER_THRESHOLD})
-     * @return
+     * @return the generation number being read.
      * @throws IOException
      */
     protected int readGenerationNumber() throws IOException

@@ -66,7 +66,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * This class implements the public key security handler
  * described in the PDF specification.
  *
- * @see PDF Spec 1.6 p104
+ * [PDF 1.6: p 104]
  *
  * @see PublicKeyProtectionPolicy to see how to protect document with this security handler.
  *
@@ -132,7 +132,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
      * called from there. Only if decryption of single objects is needed this should be called instead.
      *
      * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
-     * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()} (not used by this handler)
+     * @param documentIDArray  document id which is returned via {@link org.apache.pdfbox.cos.COSDocument#getDocumentID()} (not used by this handler)
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
