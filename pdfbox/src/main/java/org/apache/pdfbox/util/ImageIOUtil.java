@@ -121,7 +121,7 @@ public class ImageIOUtil
      * @param imageFormat the target format (ex. "png")
      * @param outputStream the output stream to be used for writing
      * @param resolution resolution to be used when writing the image
-     * @param quality quality to be used when compressing the image (0 < quality < 1.0f)
+     * @param quality quality to be used when compressing the image (0 &lt; quality &lt; 1.0f)
      * 
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
