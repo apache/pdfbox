@@ -17,10 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.geom.AffineTransform;
-import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -42,18 +39,12 @@ public class PDXObjectForm extends PDXObject
 {
 
     /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDXObjectForm.class);
-    
-    /**
      * The XObject subtype.
      */
     public static final String SUB_TYPE = "Form";
-    private String name = null;
     
     /**
-     * Standard constuctor.
+     * Standard constructor.
      * 
      * @param formStream The XObject is passed as a COSStream.
      */
@@ -70,23 +61,10 @@ public class PDXObjectForm extends PDXObject
      */
     public PDXObjectForm(COSStream formStream)
     {
-    	this(formStream, null);
-    }
-    
-    /**
-     * Standard constructor including the name of the XObjectForm
-     * to avoid recursions.
-     * 
-     * @param formStream The XObject is passed as a COSStream.
-     * @param xobjectName The name of the XObjectForm.
-     */
-    public PDXObjectForm(COSStream formStream, String xobjectName)
-    {
         super(formStream);
         getCOSStream().setName(COSName.SUBTYPE, SUB_TYPE);
-        name = xobjectName;
     }
-
+    
     /**
      * This will get the form type, currently 1 is the only form type.
      * 
@@ -120,26 +98,6 @@ public class PDXObjectForm extends PDXObject
         if (resources != null)
         {
             retval = new PDResources(resources);
-            // check for a recursion, see PDFBOX-1813
-            if (name != null)
-            {
-            	Map<String, PDXObject> xobjects = retval.getXObjects();
-            	if (xobjects != null && xobjects.containsKey(name))
-            	{
-            	    PDXObject xobject = xobjects.get(name);
-            	    if (xobject instanceof PDXObjectForm)
-            	    {
-            	        int length1 = getCOSStream().getInt(COSName.LENGTH);
-                        int length2 = xobject.getCOSStream().getInt(COSName.LENGTH);
-                        // seems to be the same object
-            	        if (length1 == length2)
-            	        {
-            	            retval.removeXObject(name);
-                            LOG.debug("Removed XObjectForm "+name+" to avoid a recursion");
-            	        }
-            	    }
-            	}
-            }
         }
         return retval;
     }

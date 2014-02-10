@@ -246,7 +246,7 @@ public class PDResources implements COSObjectable
                     PDXObject xobject = null;
                     try
                     {
-                        xobject = PDXObject.createXObject(xobjectsDictionary.getDictionaryObject(objName), objName.getName());
+                        xobject = PDXObject.createXObject(xobjectsDictionary.getDictionaryObject(objName));
                     }
                     catch (IOException exception)
                     {
