@@ -60,10 +60,12 @@ public class TestTextStripperPerformance extends TestCase
      * Validate text extraction on a single file.
      *
      * @param file The file to validate
+     * @param outDir the output directory
      * @param bLogResult Whether to log the extracted text
+     * 
      * @throws Exception when there is an exception
      */
-    public void doTestFile(File file, boolean bLogResult)
+    public void doTestFile(File file, String outDir, boolean bLogResult)
         throws Exception
     {
 
@@ -75,7 +77,7 @@ public class TestTextStripperPerformance extends TestCase
         {
             document = PDDocument.load(file);
 
-            File outFile = new File(file.getParentFile().getParentFile(), "output/" + file.getName() + ".txt");
+            File outFile = new File(outDir + "/" + file.getName() + ".txt");
             os = new FileOutputStream(outFile);
             writer = new OutputStreamWriter(os);
 
@@ -107,8 +109,9 @@ public class TestTextStripperPerformance extends TestCase
         throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
-        File testDir = new File("src/test/resources/input");
-
+        String inDir = "src/test/resources/input";
+        String outDir = "target/test-output/performance";
+        File testDir = new File(inDir);
         if ((filename == null) || (filename.length() == 0))
         {
             File[] testFiles = testDir.listFiles(new FilenameFilter()
@@ -119,11 +122,11 @@ public class TestTextStripperPerformance extends TestCase
                 }
             });
 
-            new File("src/test/resources/output").mkdir();
+            new File(outDir).mkdir();
             
             for (int n = 0; n < testFiles.length; n++)
             {
-                doTestFile(testFiles[n], false);
+                doTestFile(testFiles[n], outDir, false);
             }
         }
         else
