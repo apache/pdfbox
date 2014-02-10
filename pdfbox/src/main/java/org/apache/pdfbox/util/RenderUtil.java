@@ -209,8 +209,7 @@ public class RenderUtil
         }
         graphics.scale(scaleX, scaleY);
         PageDrawer drawer = new PageDrawer();
-        // TODO The following reduces accuracy. It should really be a Dimension2D.Float.
-        drawer.drawPage(graphics, page, page.findCropBox().createDimension());
+        drawer.drawPage(graphics, page, page.findCropBox());
         drawer.dispose();
     }
 }

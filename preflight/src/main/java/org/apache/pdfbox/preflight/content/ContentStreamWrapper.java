@@ -73,7 +73,8 @@ public class ContentStreamWrapper extends ContentStreamEngine
             PDStream pstream = this.processeedPage.getContents();
             if (pstream != null)
             {
-                processStream(processeedPage, processeedPage.findResources(), pstream.getStream());
+                processStream(processeedPage.findResources(), pstream.getStream(), 
+                		processeedPage.findCropBox(), processeedPage.findRotation());
             }
         }
         catch (ContentStreamException e)
@@ -98,7 +99,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
         try
         {
             resetEnginContext();
-            processSubStream(this.processeedPage, xobj.getResources(), xobj.getCOSStream());
+            processSubStream(xobj.getResources(), xobj.getCOSStream());
         }
         catch (ContentStreamException e)
         {
@@ -123,7 +124,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
         {
             COSDictionary res = (COSDictionary) pattern.getDictionaryObject(COSName.RESOURCES);
             resetEnginContext();
-            processSubStream(this.processeedPage, new PDResources(res), pattern);
+            processSubStream(new PDResources(res), pattern);
         }
         catch (ContentStreamException e)
         {

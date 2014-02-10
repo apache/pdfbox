@@ -94,8 +94,8 @@ public class PDFPagePanel extends JPanel
                 g2D.translate(pageDimension.getWidth(), 0.0f);
                 g2D.rotate(Math.toRadians(rotation));
             }
-
-            drawer.drawPage( g, page, drawDimension );
+            PDRectangle pageSize = new PDRectangle((float)drawDimension.getWidth(), (float)drawDimension.getHeight());
+            drawer.drawPage( g, page, pageSize );
         }
         catch( IOException e )
         {

@@ -72,7 +72,7 @@ public class Invoke extends OperatorProcessor
             }
             // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
-            context.processSubStream( context.getCurrentPage(), pdResources, formContentstream );
+            context.processSubStream( pdResources, formContentstream );
         }
     }
 }

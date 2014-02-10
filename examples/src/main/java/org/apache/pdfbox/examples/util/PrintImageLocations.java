@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.util;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.exceptions.WrappedIOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -34,7 +33,6 @@ import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import java.util.List;
@@ -100,7 +98,8 @@ public class PrintImageLocations extends PDFStreamEngine
                 {
                     PDPage page = (PDPage)allPages.get( i );
                     System.out.println( "Processing page: " + i );
-                    printer.processStream( page, page.findResources(), page.getContents().getStream() );
+                    printer.processStream( page.findResources(), page.getContents().getStream(),
+                    		page.findCropBox(), page.findRotation() );
                 }
             }
             finally
@@ -132,30 +131,19 @@ public class PrintImageLocations extends PDFStreamEngine
             if( xobject instanceof PDXObjectImage )
             {
                 PDXObjectImage image = (PDXObjectImage)xobject;
-                PDPage page = getCurrentPage();
                 int imageWidth = image.getWidth();
                 int imageHeight = image.getHeight();
-                double pageHeight = page.getMediaBox().getHeight();
                 System.out.println("*******************************************************************");
                 System.out.println("Found image [" + objectName.getName() + "]");
         
                 Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
-                float yScaling = ctmNew.getYScale();
-                float angle = (float)Math.acos(ctmNew.getValue(0, 0)/ctmNew.getXScale());
-                if (ctmNew.getValue(0, 1) < 0 && ctmNew.getValue(1, 0) > 0)
-                {
-                    angle = (-1)*angle;
-                }
-                ctmNew.setValue(2, 1, (float)(pageHeight - ctmNew.getYPosition() - Math.cos(angle)*yScaling));
-                ctmNew.setValue(2, 0, (float)(ctmNew.getXPosition() - Math.sin(angle)*yScaling));
-                // because of the moved 0,0-reference, we have to shear in the opposite direction
-                ctmNew.setValue(0, 1, (-1)*ctmNew.getValue(0, 1));
-                ctmNew.setValue(1, 0, (-1)*ctmNew.getValue(1, 0));
-                AffineTransform ctmAT = ctmNew.createAffineTransform();
-                ctmAT.scale(1f/imageWidth, 1f/imageHeight);
+                AffineTransform imageTransform = ctmNew.createAffineTransform();
+                imageTransform.scale(1.0 / imageWidth, -1.0 / imageHeight);
+                imageTransform.translate(0, -imageHeight);
 
-                float imageXScale = ctmNew.getXScale();
-                float imageYScale = ctmNew.getYScale();
+                
+                double imageXScale = imageTransform.getScaleX();
+                double imageYScale = imageTransform.getScaleY();
                 System.out.println("position = " + ctmNew.getXPosition() + ", " + ctmNew.getYPosition());
                 // size in pixel
                 System.out.println("size = " + imageWidth + "px, " + imageHeight + "px");
@@ -175,24 +163,18 @@ public class PrintImageLocations extends PDFStreamEngine
             {
                 // save the graphics state
                 getGraphicsStack().push( (PDGraphicsState)getGraphicsState().clone() );
-                PDPage page = getCurrentPage();
                 
                 PDXObjectForm form = (PDXObjectForm)xobject;
                 COSStream invoke = (COSStream)form.getCOSObject();
                 PDResources pdResources = form.getResources();
-                if(pdResources == null)
-                {
-                    pdResources = page.findResources();
-                }
-                // if there is an optional form matrix, we have to
-                // map the form space to the user space
+                // if there is an optional form matrix, we have to map the form space to the user space
                 Matrix matrix = form.getMatrix();
                 if (matrix != null) 
                 {
                     Matrix xobjectCTM = matrix.multiply( getGraphicsState().getCurrentTransformationMatrix());
                     getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
                 }
-                processSubStream( page, pdResources, invoke );
+                processSubStream( pdResources, invoke );
                 
                 // restore the graphics state
                 setGraphicsState( (PDGraphicsState)getGraphicsStack().pop() );
