@@ -184,7 +184,6 @@ public class PDFStreamEngine
     {
         validCharCnt = 0;
         totalCharCnt = 0;
-        drawingRectangle = null;
     }
 
     /**
@@ -290,7 +289,7 @@ public class PDFStreamEngine
      * 
      * @param str The string to be processed.
      * 
-     * @return the processed string.
+     * @return the altered string
      */
     protected String inspectFontEncoding(String str)
     {
@@ -698,6 +697,37 @@ public class PDFStreamEngine
     public int getTotalCharCnt()
     {
         return totalCharCnt;
+    }
+
+    /**
+     * Remove all cached resources.
+     */
+    public void dispose()
+    {
+        resetEngine();
+        drawingRectangle = null;
+        graphicsState = null;
+        textLineMatrix = null;
+        textMatrix = null;
+        if (graphicsStack != null)
+        {
+            graphicsStack.clear();
+            graphicsStack = null;
+        }
+        if (streamResourcesStack != null)
+        {
+            streamResourcesStack.clear();
+            streamResourcesStack = null;
+        }
+        if (operators != null)
+        {
+            operators.clear();
+            operators = null;
+        }
+        if (unsupportedOperators != null)
+        {
+            unsupportedOperators.clear();
+        }
     }
 
 }
