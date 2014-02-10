@@ -82,9 +82,9 @@ import org.apache.pdfbox.util.TextPosition;
 
 /**
  * This will paint a page in a PDF document to a graphics context.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ *
  */
 public class PageDrawer extends PDFStreamEngine
 {
@@ -182,10 +182,30 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * This will draw the page to the requested context.
+     * 
+     * @param g The graphics context to draw onto.
+     * @param stream The stream to be used.
+     * @param resources resources to be used when drawing the stream
+     * @param pageDimension The size of the page to draw.
+     * 
+     * @throws IOException If there is an IO error while drawing the page.
+     */
+    public void drawStream(Graphics g, COSStream stream, PDResources resources, PDRectangle pageDimension)
+            throws IOException
+    {
+        graphics = (Graphics2D) g;
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        processStream(resources, stream, pageDimension, 0);
+    }
+
+    /**
      * Remove all cached resources.
      */
     public void dispose()
     {
+        super.dispose();
         if (fontGlyph2D != null)
         {
             Iterator<Glyph2D> iter = fontGlyph2D.values().iterator();
@@ -358,7 +378,6 @@ public class PageDrawer extends PDFStreamEngine
                 ctm.setFromAffineTransform(at);
                 getGraphicsState().setCurrentTransformationMatrix(ctm);
                 processSubStream(font.getType3Resources(), stream);
-
                 // restore the saved graphics state
                 setGraphicsState((PDGraphicsState) getGraphicsStack().pop());
             }

@@ -21,24 +21,51 @@ import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.ColoredTilingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * This represents the resources for a tiling pattern.
  *
- * @version $Revision: 1.0 $
  */
 public class PDTilingPatternResources extends PDPatternResources
 {
-    
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDTilingPatternResources.class);
+
+    /**
+     * paint type 1 = colored tiling pattern.
+     */
+    public static final int COLORED_TILING_PATTERN = 1;
+    /**
+     * paint type 2 = uncolored tiling pattern.
+     */
+    public static final int UNCOLORED_TILING_PATTERN = 2;
+
+    /**
+     * tiling type 1 = constant spacing.
+     */
+    public static final int TILING_CONSTANT_SPACING = 1;
+    /**
+     * tiling type 2 = no distortion.
+     */
+    public static final int TILING_NO_DISTORTION = 2;
+    /**
+     * tiling type 3 = constant spacing and faster tiling.
+     */
+    public static final int TILING_CONSTANT_SPACING_FASTER_TILING = 3;
+
     /**
      * Default constructor.
      */
@@ -279,8 +306,20 @@ public class PDTilingPatternResources extends PDPatternResources
     @Override
     public Paint getPaint(int pageHeight) throws IOException
     {
-        // TODO Auto-generated method stub
-        return null;
+        Paint paint = null;
+        int paintType = getPaintType();
+        switch (paintType)
+        {
+        case COLORED_TILING_PATTERN:
+            paint = new ColoredTilingPaint(this);
+            break;
+        case UNCOLORED_TILING_PATTERN:
+            LOG.debug("Error: Unsupported pattern type " + paintType);
+            break;
+        default:
+            throw new IOException("Error: Unknown paint type " + getPaintType());
+        }
+        return paint;
     }
 
 }
