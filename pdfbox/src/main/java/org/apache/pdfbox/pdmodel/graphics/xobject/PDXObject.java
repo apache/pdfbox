@@ -119,21 +119,7 @@ public abstract class PDXObject implements COSObjectable
      */
     public static PDXObject createXObject(COSBase xobject) throws IOException
     {
-        return createXObject(xobject, null);
-    }
-
-    /**
-     * Create the correct xobject from the cos base.
-     * 
-     * @param xobject The cos level xobject to create.
-     * @param xobjectName The name of the xobject, sued to detect a possible recursion
-     * 
-     * @return a pdmodel xobject
-     * @throws IOException If there is an error creating the xobject.
-     */
-    public static PDXObject createXObject(COSBase xobject, String xobjectName) throws IOException
-    {
-        return commonXObjectCreation(xobject, false, xobjectName);
+        return commonXObjectCreation(xobject, false);
     }
 
     /**
@@ -142,12 +128,11 @@ public abstract class PDXObject implements COSObjectable
      * @param xobject The cos level xobject to create.
      * @param isThumb specify if the xobject represent a Thumbnail Image (in this case, the subtype null must be
      * considered as an Image)
-     * @param xobjectName The name of the xobject, used to detect a possible recursion
      * 
      * @return a pdmodel xobject
      * @throws IOException If there is an error creating the xobject.
      */
-    protected static PDXObject commonXObjectCreation(COSBase xobject, boolean isThumb, String xobjectName)
+    protected static PDXObject commonXObjectCreation(COSBase xobject, boolean isThumb)
     {
         PDXObject retval = null;
         if (xobject == null)
@@ -190,7 +175,7 @@ public abstract class PDXObject implements COSObjectable
             }
             else if (PDXObjectForm.SUB_TYPE.equals(subtype))
             {
-                retval = new PDXObjectForm(xstream, xobjectName);
+                retval = new PDXObjectForm(xstream);
             }
             else
             {

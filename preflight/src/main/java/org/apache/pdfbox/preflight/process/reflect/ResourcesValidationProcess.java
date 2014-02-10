@@ -185,7 +185,7 @@ public class ResourcesValidationProcess extends AbstractProcess
                     try
                     {
                         COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-                        PDXObject pdXObject = PDXObject.createXObject(stream, entry.getKey().getName());
+                        PDXObject pdXObject = PDXObject.createXObject(stream);
                         if (pdXObject != null)
                         {
                             ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
