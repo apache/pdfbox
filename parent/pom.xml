@@ -250,6 +250,13 @@
         </roles>
     </developer>
     <developer>
+        <id>jahewson</id>
+        <name>John Hewson</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
         <id>jukka</id>
         <name>Jukka Zitting</name>
         <roles>
@@ -287,6 +294,13 @@
     <developer>
         <id>tboehme</id>
         <name>Timo Boehme</name>
+        <roles>
+          <role>PMC Member</role>
+        </roles>
+    </developer>
+    <developer>
+        <id>tilman</id>
+        <name>Tilman Hausherr</name>
         <roles>
           <role>PMC Member</role>
         </roles>
