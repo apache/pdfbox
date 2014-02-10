@@ -453,7 +453,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 }
             }
             characterListMapping.clear();
-            processStream( page, page.findResources(), content );
+            processStream( page.findResources(), content, page.findCropBox(), page.findRotation() );
             writePage();
             endPage( page );
         }

@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdfviewer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -102,20 +101,13 @@ public class PageDrawer extends PDFStreamEngine
      */
     private int clippingWindingRule = -1;
 
-    /**
-     * Size of the page.
-     */
-    protected Dimension pageSize;
-    /**
-     * Current page to be rendered.
-     */
-    protected PDPage page;
-
     private GeneralPath linePath = new GeneralPath();
 
     private Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     private Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
 
+    private int pageHeight;
+    
     /**
      * Default constructor, loads properties from file.
      * 
@@ -130,19 +122,18 @@ public class PageDrawer extends PDFStreamEngine
      * This will draw the page to the requested context.
      * 
      * @param g The graphics context to draw onto.
-     * @param p The page to draw.
-     * @param pageDimension The size of the page to draw.
+     * @param page The page to draw.
+     * @param pageSize The size of the page to draw.
      * 
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawPage(Graphics g, PDPage p, Dimension pageDimension) throws IOException
+    public void drawPage(Graphics g, PDPage page, PDRectangle pageSize) throws IOException
     {
         graphics = (Graphics2D) g;
-        page = p;
-        pageSize = pageDimension;
+        pageHeight = (int)pageSize.getHeight();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics.translate(0, pageSize.height);
+        graphics.translate(0, pageHeight);
         graphics.scale(1, -1);
         // initialize the used stroke with CAP_BUTT instead of CAP_SQUARE
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
@@ -151,7 +142,7 @@ public class PageDrawer extends PDFStreamEngine
         if (page.getContents() != null)
         {
             PDResources resources = page.findResources();
-            processStream(page, resources, page.getContents().getStream());
+            processStream(resources, page.getContents().getStream(), page.findCropBox(), page.findRotation());
         }
         List<PDAnnotation> annotations = page.getAnnotations();
         for (int i = 0; i < annotations.size(); i++)
@@ -182,7 +173,7 @@ public class PageDrawer extends PDFStreamEngine
                             at.transform(point, point);
                         }
                         graphics.translate((int) point.getX(), -(int) point.getY());
-                        processSubStream(page, appearance.getResources(), appearance.getStream());
+                        processSubStream(appearance.getResources(), appearance.getStream());
                         graphics.translate(-(int) point.getX(), (int) point.getY());
                     }
                 }
@@ -211,8 +202,6 @@ public class PageDrawer extends PDFStreamEngine
         }
         graphics = null;
         linePath = null;
-        page = null;
-        pageSize = null;
     }
 
     /**
@@ -234,7 +223,7 @@ public class PageDrawer extends PDFStreamEngine
                 paint = graphicsState.getNonStrokingColor().getJavaColor();
                 if (paint == null)
                 {
-                    paint = graphicsState.getNonStrokingColor().getPaint(pageSize.height);
+                    paint = graphicsState.getNonStrokingColor().getPaint(pageHeight);
                 }
                 break;
             case PDTextState.RENDERING_MODE_STROKE_TEXT:
@@ -242,7 +231,7 @@ public class PageDrawer extends PDFStreamEngine
                 paint = graphicsState.getStrokingColor().getJavaColor();
                 if (paint == null)
                 {
-                    paint = graphicsState.getStrokingColor().getPaint(pageSize.height);
+                    paint = graphicsState.getStrokingColor().getPaint(pageHeight);
                 }
                 break;
             case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
@@ -355,8 +344,8 @@ public class PageDrawer extends PDFStreamEngine
      */
     private void drawType3String(PDType3Font font, TextPosition text, AffineTransform at) throws IOException
     {
-    	int[] codePoints = text.getCodePoints();
-    	int textLength = codePoints.length;
+        int[] codePoints = text.getCodePoints();
+        int textLength = codePoints.length;
         for (int i = 0; i < textLength; i++)
         {
             COSStream stream = font.getCharStream((char)codePoints[i]);
@@ -368,7 +357,7 @@ public class PageDrawer extends PDFStreamEngine
                 Matrix ctm = new Matrix();
                 ctm.setFromAffineTransform(at);
                 getGraphicsState().setCurrentTransformationMatrix(ctm);
-                processSubStream(page, font.getType3Resources(), stream);
+                processSubStream(font.getType3Resources(), stream);
 
                 // restore the saved graphics state
                 setGraphicsState((PDGraphicsState) getGraphicsStack().pop());
@@ -583,26 +572,6 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Get the page that is currently being drawn.
-     * 
-     * @return The page that is being drawn.
-     */
-    public PDPage getPage()
-    {
-        return page;
-    }
-
-    /**
-     * Get the size of the page that is currently being drawn.
-     * 
-     * @return The size of the page that is being drawn.
-     */
-    public Dimension getPageSize()
-    {
-        return pageSize;
-    }
-
-    /**
      * Get the current line path to be drawn.
      * 
      * @return The current line path to be drawn.
@@ -642,7 +611,7 @@ public class PageDrawer extends PDFStreamEngine
         Paint nonStrokingPaint = getGraphicsState().getNonStrokingColor().getJavaColor();
         if (nonStrokingPaint == null)
         {
-            nonStrokingPaint = getGraphicsState().getNonStrokingColor().getPaint(pageSize.height);
+            nonStrokingPaint = getGraphicsState().getNonStrokingColor().getPaint(pageHeight);
         }
         if (nonStrokingPaint == null)
         {
@@ -691,7 +660,7 @@ public class PageDrawer extends PDFStreamEngine
         Paint strokingPaint = getGraphicsState().getStrokingColor().getJavaColor();
         if (strokingPaint == null)
         {
-            strokingPaint = getGraphicsState().getStrokingColor().getPaint(pageSize.height);
+            strokingPaint = getGraphicsState().getStrokingColor().getPaint(pageHeight);
         }
         if (strokingPaint == null)
         {
@@ -842,10 +811,10 @@ public class PageDrawer extends PDFStreamEngine
             LOG.debug("Function based shading not yet supported");
             break;
         case 2:
-            paint = new AxialShadingPaint((PDShadingType2) shading, ctm, pageSize.height);
+            paint = new AxialShadingPaint((PDShadingType2) shading, ctm, pageHeight);
             break;
         case 3:
-            paint = new RadialShadingPaint((PDShadingType3) shading, ctm, pageSize.height);
+            paint = new RadialShadingPaint((PDShadingType3) shading, ctm, pageHeight);
             break;
         case 4:
         case 5:

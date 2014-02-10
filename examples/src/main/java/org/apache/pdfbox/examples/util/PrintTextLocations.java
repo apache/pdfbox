@@ -89,7 +89,8 @@ public class PrintTextLocations extends PDFTextStripper
                     PDStream contents = page.getContents();
                     if( contents != null )
                     {
-                        printer.processStream( page, page.findResources(), page.getContents().getStream() );
+                        printer.processStream( page.findResources(), page.getContents().getStream(),
+                        		page.findCropBox(), page.findRotation() );
                     }
                 }
             }

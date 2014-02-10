@@ -36,9 +36,9 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
@@ -53,7 +53,7 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  * class.
  * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.38 $
+ * 
  */
 public class PDFStreamEngine
 {
@@ -78,11 +78,12 @@ public class PDFStreamEngine
 
     private Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
 
-    private PDPage page;
-
     private int validCharCnt;
     private int totalCharCnt;
 
+    private int pageRotation = 0;
+    private PDRectangle drawingRectangle = null;
+    
     /**
      * Flag to skip malformed or otherwise unparseable input where possible.
      */
@@ -183,40 +184,42 @@ public class PDFStreamEngine
     {
         validCharCnt = 0;
         totalCharCnt = 0;
+        drawingRectangle = null;
     }
 
     /**
      * This will process the contents of the stream.
      * 
-     * @param aPage The page.
      * @param resources The location to retrieve resources.
      * @param cosStream the Stream to execute.
-     * 
+     * @param drawingSize the size of the page
+     * @param rotation the page rotation
      * 
      * @throws IOException if there is an error accessing the stream.
      */
-    public void processStream(PDPage aPage, PDResources resources, COSStream cosStream) throws IOException
+    public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize, int rotation)
+            throws IOException
     {
-        graphicsState = new PDGraphicsState(aPage.findCropBox());
+        drawingRectangle = drawingSize;
+        pageRotation = rotation;
+        graphicsState = new PDGraphicsState(drawingRectangle);
         textMatrix = null;
         textLineMatrix = null;
         graphicsStack.clear();
         streamResourcesStack.clear();
-        processSubStream(aPage, resources, cosStream);
+        processSubStream(resources, cosStream);
     }
 
     /**
      * Process a sub stream of the current stream.
      * 
-     * @param aPage The page used for drawing.
      * @param resources The resources used when processing the stream.
      * @param cosStream The stream to process.
      * 
      * @throws IOException If there is an exception while processing the stream.
      */
-    public void processSubStream(PDPage aPage, PDResources resources, COSStream cosStream) throws IOException
+    public void processSubStream(PDResources resources, COSStream cosStream) throws IOException
     {
-        page = aPage;
         if (resources != null)
         {
             streamResourcesStack.push(resources);
@@ -286,6 +289,8 @@ public class PDFStreamEngine
      * encoded by a glyph.
      * 
      * @param str The string to be processed.
+     * 
+     * @return the processed string.
      */
     protected String inspectFontEncoding(String str)
     {
@@ -362,9 +367,8 @@ public class PDFStreamEngine
         textStateParameters.setValue(1, 1, fontSizeText);
         textStateParameters.setValue(2, 1, riseText);
 
-        int pageRotation = page.findRotation();
-        float pageHeight = page.findCropBox().getHeight();
-        float pageWidth = page.findCropBox().getWidth();
+        float pageHeight = drawingRectangle.getHeight();
+        float pageWidth = drawingRectangle.getWidth();
 
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Matrix textXctm = new Matrix();
@@ -674,16 +678,6 @@ public class PDFStreamEngine
     public PDResources getResources()
     {
         return streamResourcesStack.peek();
-    }
-
-    /**
-     * Get the current page that is being processed.
-     * 
-     * @return The page being processed.
-     */
-    public PDPage getCurrentPage()
-    {
-        return page;
     }
 
     /**

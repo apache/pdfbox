@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
@@ -62,7 +61,6 @@ public class Invoke extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         PageDrawer drawer = (PageDrawer) context;
-        PDPage page = drawer.getPage();
         COSName objectName = (COSName) arguments.get(0);
         Map<String, PDXObject> xobjects = drawer.getResources().getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(objectName.getName());
@@ -105,7 +103,7 @@ public class Invoke extends OperatorProcessor
         else if (xobject instanceof PDXObjectForm)
         {
             // save the graphics state
-            context.getGraphicsStack().push((PDGraphicsState) context.getGraphicsState().clone());
+        	drawer.getGraphicsStack().push((PDGraphicsState) drawer.getGraphicsState().clone());
 
             PDXObjectForm form = (PDXObjectForm) xobject;
             COSStream formContentstream = form.getCOSStream();
@@ -115,13 +113,13 @@ public class Invoke extends OperatorProcessor
             Matrix matrix = form.getMatrix();
             if (matrix != null)
             {
-                Matrix xobjectCTM = matrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix());
-                context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+                Matrix xobjectCTM = matrix.multiply(drawer.getGraphicsState().getCurrentTransformationMatrix());
+                drawer.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
             }
-            getContext().processSubStream(page, pdResources, formContentstream);
+            drawer.processSubStream(pdResources, formContentstream);
 
             // restore the graphics state
-            context.setGraphicsState((PDGraphicsState) context.getGraphicsStack().pop());
+            drawer.setGraphicsState((PDGraphicsState) drawer.getGraphicsStack().pop());
         }
     }
 }

@@ -406,7 +406,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         PreflightPath vPath = context.getValidationPath();
         PDFAType3StreamParser parser = new PDFAType3StreamParser(context, vPath.getClosestPathElement(PDPage.class));
         parser.resetEngine();
-        parser.processSubStream(null, resources, charStream);
+        parser.processSubStream(resources, charStream);
         return parser.getWidth();
     }
 
