@@ -39,7 +39,7 @@ public class MapUtil
      * @param prefix The prefix to use when generating the key.
      * @return The new unique key that does not currently exist in the map.
      */
-    public static final String getNextUniqueKey( Map map, String prefix )
+    public static final String getNextUniqueKey( Map<String,?> map, String prefix )
     {
         int counter = 0;
         while( map != null && map.get( prefix+counter ) != null )
