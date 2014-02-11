@@ -230,7 +230,7 @@ public class PDPage implements COSObjectable
     {
         PDResources retval = getResources();
         PDPageNode parentNode = getParent();
-        if (retval == null && parent != null)
+        if (retval == null && parentNode != null)
         {
             retval = parentNode.findResources();
         }
@@ -422,7 +422,7 @@ public class PDPage implements COSObjectable
      */
     public PDRectangle getBleedBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray) page.getDictionaryObject(COSName.BLEED_BOX);
         if (array != null)
         {
@@ -460,7 +460,7 @@ public class PDPage implements COSObjectable
      */
     public PDRectangle getTrimBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray) page.getDictionaryObject(COSName.TRIM_BOX);
         if (array != null)
         {
@@ -498,7 +498,7 @@ public class PDPage implements COSObjectable
      */
     public PDRectangle getArtBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray) page.getDictionaryObject(COSName.ART_BOX);
         if (array != null)
         {
@@ -710,7 +710,7 @@ public class PDPage implements COSObjectable
      */
     public List<PDAnnotation> getAnnotations() throws IOException
     {
-        COSArrayList<PDAnnotation> retval = null;
+        COSArrayList<PDAnnotation> retval;
         COSArray annots = (COSArray) page.getDictionaryObject(COSName.ANNOTS);
         if (annots == null)
         {
