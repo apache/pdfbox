@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,7 +78,9 @@ public class PDCIDFontType2Font extends PDCIDFont
             COSStream stream = (COSStream) map;
             try
             {
-                byte[] mapAsBytes = IOUtils.toByteArray(stream.getUnfilteredStream());
+                InputStream is = stream.getUnfilteredStream();
+                byte[] mapAsBytes = IOUtils.toByteArray(is);
+                IOUtils.closeQuietly(is);
                 int numberOfInts = mapAsBytes.length / 2;
                 cid2gid = new int[numberOfInts];
                 int offset = 0;
