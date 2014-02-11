@@ -254,7 +254,7 @@ public class PDPage implements COSObjectable, Printable
     {
         PDResources retval = getResources();
         PDPageNode parentNode = getParent();
-        if( retval == null && parent != null )
+        if( retval == null && parentNode != null )
         {
             retval = parentNode.findResources();
         }
@@ -454,7 +454,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDRectangle getBleedBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray)page.getDictionaryObject( COSName.BLEED_BOX );
         if( array != null )
         {
@@ -493,7 +493,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDRectangle getTrimBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray)page.getDictionaryObject( COSName.TRIM_BOX );
         if( array != null )
         {
@@ -532,7 +532,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public PDRectangle getArtBox()
     {
-        PDRectangle retval = null;
+        PDRectangle retval;
         COSArray array = (COSArray)page.getDictionaryObject( COSName.ART_BOX );
         if( array != null )
         {
@@ -751,7 +751,6 @@ public class PDPage implements COSObjectable, Printable
         int heightPx = Math.round(heightPt * scaling);
         //TODO The following reduces accuracy. It should really be a Dimension2D.Float.
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
-        BufferedImage retval = null;
         int rotationAngle = findRotation();
         // normalize the rotation angle
         if (rotationAngle < 0)
@@ -763,6 +762,7 @@ public class PDPage implements COSObjectable, Printable
             rotationAngle -= 360;
         }
         // swap width and height
+        BufferedImage retval;
         if (rotationAngle == 90 || rotationAngle == 270)
         {
             retval = new BufferedImage( heightPx, widthPx, imageType );
@@ -839,7 +839,7 @@ public class PDPage implements COSObjectable, Printable
      */
     public List<PDAnnotation> getAnnotations() throws IOException
     {
-        COSArrayList<PDAnnotation> retval = null;
+        COSArrayList<PDAnnotation> retval;
         COSArray annots = (COSArray)page.getDictionaryObject(COSName.ANNOTS);
         if (annots == null)
         {
