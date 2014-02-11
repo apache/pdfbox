@@ -47,6 +47,7 @@ import org.apache.pdfbox.encoding.EncodingManager;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import static org.apache.pdfbox.pdmodel.font.PDFont.resourceRootCMAP;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
@@ -404,7 +405,9 @@ public abstract class PDSimpleFont extends PDFont
                     COSStream encodingStream = (COSStream)encoding;
                     try 
                     {
-                        cmap = parseCmap( null, encodingStream.getUnfilteredStream() );
+                        InputStream is = encodingStream.getUnfilteredStream();
+                        cmap = parseCmap(null, is);
+                        IOUtils.closeQuietly(is);
                     }
                     catch(IOException exception) 
                     {
@@ -470,7 +473,9 @@ public abstract class PDSimpleFont extends PDFont
             {
                 try 
                 {
-                    toUnicodeCmap = parseCmap( resourceRootCMAP, ((COSStream)toUnicode).getUnfilteredStream());
+                    InputStream is = ((COSStream) toUnicode).getUnfilteredStream();
+                    toUnicodeCmap = parseCmap(resourceRootCMAP, is);
+                    IOUtils.closeQuietly(is);
                 }
                 catch(IOException exception) 
                 {
