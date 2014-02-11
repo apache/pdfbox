@@ -44,6 +44,7 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
@@ -299,11 +300,12 @@ public class PDJpeg extends PDXObjectImage
     {
         InputStream data = getPDStream().getPartiallyFilteredStream( DCT_FILTERS );
         byte[] buf = new byte[1024];
-        int amountRead = -1;
+        int amountRead;
         while( (amountRead = data.read( buf )) != -1 )
         {
             out.write( buf, 0, amountRead );
         }
+        IOUtils.closeQuietly(data);
     }
 
     private int getHeaderEndPos(byte[] imageAsBytes)

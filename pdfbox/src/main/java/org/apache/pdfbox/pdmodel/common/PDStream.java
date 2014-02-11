@@ -35,6 +35,7 @@ import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -249,21 +250,21 @@ public class PDStream implements COSObjectable
         InputStream is = stream.getFilteredStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         List<COSName> filters = getFilters();
-        COSName nextFilter = null;
         boolean done = false;
         for (int i = 0; i < filters.size() && !done; i++)
         {
-            os.reset();
-            nextFilter = filters.get(i);
+            COSName nextFilter = filters.get(i);
             if (stopFilters.contains(nextFilter.getName()))
             {
                 done = true;
-            } 
+            }
             else
             {
                 Filter filter = manager.getFilter(nextFilter);
                 filter.decode(is, os, stream, i);
+                IOUtils.closeQuietly(is);
                 is = new ByteArrayInputStream(os.toByteArray());
+                os.reset();
             }
         }
         return is;
