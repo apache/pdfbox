@@ -182,7 +182,9 @@ public class PDCcitt extends PDXObjectImage
         WritableRaster raster = colorModel.createCompatibleWritableRaster(cols, rows);
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
         bufferData = buffer.getData();
-        IOUtils.populateBuffer(stream.getUnfilteredStream(), bufferData);
+        InputStream is = stream.getUnfilteredStream();
+        IOUtils.populateBuffer(is, bufferData);
+        IOUtils.closeQuietly(is);
         BufferedImage image = new BufferedImage(colorModel, raster, false, null);
         if (!blackIsOne)
         {
@@ -229,6 +231,7 @@ public class PDCcitt extends PDXObjectImage
         // We should use another format than TIFF to get rid of the TiffWrapper
         InputStream data = new TiffWrapper(getPDStream().getPartiallyFilteredStream(FAX_FILTERS), getCOSStream());
         IOUtils.copy(data, out);
+        IOUtils.closeQuietly(data);
     }
 
     /**
