@@ -44,14 +44,13 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 /**
  * An image class for CCITT Fax.
- * 
+ *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @author paul king
- * 
+ *
  */
 public class PDCcitt extends PDXObjectImage
 {
-
     private static final List<String> FAX_FILTERS = new ArrayList<String>();
 
     static
@@ -62,7 +61,7 @@ public class PDCcitt extends PDXObjectImage
 
     /**
      * Standard constructor.
-     * 
+     *
      * @param ccitt The PDStream that already contains all ccitt information.
      */
     public PDCcitt(PDStream ccitt)
@@ -73,12 +72,11 @@ public class PDCcitt extends PDXObjectImage
 
     /**
      * Construct from a tiff file.
-     * 
+     *
      * @param doc The document to create the image as part of.
      * @param raf The random access TIFF file which contains a suitable CCITT compressed image
      * @throws IOException If there is an error reading the tiff data.
      */
-
     public PDCcitt(PDDocument doc, RandomAccess raf) throws IOException
     {
         super(new PDStream(doc), "tiff");
@@ -103,7 +101,7 @@ public class PDCcitt extends PDXObjectImage
 
     /**
      * Returns an image of the CCITT Fax, or null if TIFFs are not supported. (Requires additional JAI Image filters )
-     * 
+     *
      * {@inheritDoc}
      */
     public BufferedImage getRGBImage() throws IOException
@@ -182,7 +180,9 @@ public class PDCcitt extends PDXObjectImage
         WritableRaster raster = colorModel.createCompatibleWritableRaster(cols, rows);
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
         bufferData = buffer.getData();
-        IOUtils.populateBuffer(stream.getUnfilteredStream(), bufferData);
+        InputStream is = stream.getUnfilteredStream();
+        IOUtils.populateBuffer(is, bufferData);
+        IOUtils.closeQuietly(is);
         BufferedImage image = new BufferedImage(colorModel, raster, false, null);
         if (!blackIsOne)
         {
@@ -221,7 +221,7 @@ public class PDCcitt extends PDXObjectImage
 
     /**
      * This writes a tiff to out.
-     * 
+     *
      * {@inheritDoc}
      */
     public void write2OutputStream(OutputStream out) throws IOException
@@ -229,11 +229,12 @@ public class PDCcitt extends PDXObjectImage
         // We should use another format than TIFF to get rid of the TiffWrapper
         InputStream data = new TiffWrapper(getPDStream().getPartiallyFilteredStream(FAX_FILTERS), getCOSStream());
         IOUtils.copy(data, out);
+        IOUtils.closeQuietly(data);
     }
 
     /**
      * Extract the ccitt stream from the tiff file.
-     * 
+     *
      * @param raf - TIFF File
      * @param os - Stream to write raw ccitt data two
      * @param parms - COSDictionary which the encoding parameters are added to
@@ -296,102 +297,102 @@ public class PDCcitt extends PDXObjectImage
                 {
                     switch (type)
                     {
-                    case 1:
-                    {
-                        val = val >> 24;
-                        break; // byte value
+                        case 1:
+                        {
+                            val = val >> 24;
+                            break; // byte value
+                        }
+                        case 3:
+                        {
+                            val = val >> 16;
+                            break; // short value
+                        }
+                        case 4:
+                        {
+                            break; // long value
+                        }
+                        default:
+                        {
+                            // do nothing
+                        }
                     }
-                    case 3:
+                }
+                switch (tag)
+                {
+                    case 256:
                     {
-                        val = val >> 16;
-                        break; // short value
+                        parms.setInt(COSName.COLUMNS, val);
+                        break;
                     }
-                    case 4:
+                    case 257:
                     {
-                        break; // long value
+                        parms.setInt(COSName.ROWS, val);
+                        break;
+                    }
+                    case 259:
+                    {
+                        if (val == 4)
+                        {
+                            k = -1;
+                        }
+                        if (val == 3)
+                        {
+                            k = 0;
+                        }
+                        break; // T6/T4 Compression
+                    }
+                    case 262:
+                    {
+                        if (val == 1)
+                        {
+                            parms.setBoolean(COSName.BLACK_IS_1, true);
+                        }
+                        break;
+                    }
+                    case 273:
+                    {
+                        if (count == 1)
+                        {
+                            dataoffset = val;
+                        }
+                        break;
+                    }
+                    case 279:
+                    {
+                        if (count == 1)
+                        {
+                            datalength = val;
+                        }
+                        break;
+                    }
+                    case 292:
+                    {
+                        if (val == 1)
+                        {
+                            k = 50; // T4 2D - arbitary K value
+                        }
+                        break;
+                    }
+                    case 324:
+                    {
+                        if (count == 1)
+                        {
+                            dataoffset = val;
+                        }
+                        break;
+                    }
+                    case 325:
+                    {
+                        if (count == 1)
+                        {
+                            datalength = val;
+                        }
+                        break;
                     }
                     default:
                     {
                         // do nothing
                     }
-                    }
-                }
-                switch (tag)
-                {
-                case 256:
-                {
-                    parms.setInt(COSName.COLUMNS, val);
-                    break;
-                }
-                case 257:
-                {
-                    parms.setInt(COSName.ROWS, val);
-                    break;
-                }
-                case 259:
-                {
-                    if (val == 4)
-                    {
-                        k = -1;
-                    }
-                    if (val == 3)
-                    {
-                        k = 0;
-                    }
-                    break; // T6/T4 Compression
-                }
-                case 262:
-                {
-                    if (val == 1)
-                    {
-                        parms.setBoolean(COSName.BLACK_IS_1, true);
-                    }
-                    break;
-                }
-                case 273:
-                {
-                    if (count == 1)
-                    {
-                        dataoffset = val;
-                    }
-                    break;
-                }
-                case 279:
-                {
-                    if (count == 1)
-                    {
-                        datalength = val;
-                    }
-                    break;
-                }
-                case 292:
-                {
-                    if (val == 1)
-                    {
-                        k = 50; // T4 2D - arbitary K value
-                    }
-                    break;
-                }
-                case 324:
-                {
-                    if (count == 1)
-                    {
-                        dataoffset = val;
-                    }
-                    break;
-                }
-                case 325:
-                {
-                    if (count == 1)
-                    {
-                        datalength = val;
-                    }
-                    break;
-                }
-                default:
-                {
-                    // do nothing
-                }
                 }
             }
 
@@ -444,11 +445,10 @@ public class PDCcitt extends PDXObjectImage
     /**
      * Extends InputStream to wrap the data from the CCITT Fax with a suitable TIFF Header. For details see
      * www.tiff.org, which contains useful information including pointers to the TIFF 6.0 Specification
-     * 
+     *
      */
     private class TiffWrapper extends InputStream
     {
-
         private int currentOffset; // When reading, where in the tiffheader are we.
         private byte[] tiffheader; // Byte array to store tiff header data
         private InputStream datastream; // Original InputStream
@@ -478,8 +478,9 @@ public class PDCcitt extends PDXObjectImage
         }
 
         /**
-         * For simple read, take a byte from the tiffheader array or pass through.
-         * 
+         * For simple read, take a byte from the tiffheader array or pass
+         * through.
+         *
          * {@inheritDoc}
          */
         public int read() throws IOException
@@ -494,7 +495,7 @@ public class PDCcitt extends PDXObjectImage
         /**
          * For read methods only return as many bytes as we have left in the header if we've exhausted the header, pass
          * through to the InputStream of the raw CCITT data.
-         * 
+         *
          * {@inheritDoc}
          */
         public int read(byte[] data) throws IOException
@@ -516,9 +517,10 @@ public class PDCcitt extends PDXObjectImage
         }
 
         /**
-         * For read methods only return as many bytes as we have left in the header if we've exhausted the header, pass
-         * through to the InputStream of the raw CCITT data.
-         * 
+         * For read methods only return as many bytes as we have left in the
+         * header if we've exhausted the header, pass through to the InputStream
+         * of the raw CCITT data.
+         *
          * {@inheritDoc}
          */
         public int read(byte[] data, int off, int len) throws IOException
@@ -542,7 +544,7 @@ public class PDCcitt extends PDXObjectImage
         /**
          * When skipping if any header data not yet read, only allow to skip what we've in the buffer Otherwise just
          * pass through.
-         * 
+         *
          * {@inheritDoc}
          */
         public long skip(long n) throws IOException
@@ -571,7 +573,7 @@ public class PDCcitt extends PDXObjectImage
 
             final int numOfTags = 10; // The maximum tags we'll fill
             final int maxAdditionalData = 24; // The maximum amount of additional data
-                                              // outside the IFDs. (bytes)
+            // outside the IFDs. (bytes)
 
             // The length of the header will be the length of the basic header (10)
             // plus 12 bytes for each IFD, 4 bytes as a pointer to the next IFD (will be 0)
@@ -621,7 +623,7 @@ public class PDCcitt extends PDXObjectImage
                         COSDictionary dic = (COSDictionary) parmsArray.getObject(i);
                         if (dic != null
                                 && (dic.getDictionaryObject(COSName.COLUMNS) != null || dic
-                                        .getDictionaryObject(COSName.ROWS) != null))
+                                .getDictionaryObject(COSName.ROWS) != null))
                         {
                             decodeParms = dic;
                         }
