@@ -122,11 +122,13 @@ public class TestTextStripperPerformance extends TestCase
                 }
             });
 
-            new File(outDir).mkdir();
-            
-            for (int n = 0; n < testFiles.length; n++)
+            File outDirFile =  new File(outDir);
+            if (outDirFile.mkdirs())
             {
-                doTestFile(testFiles[n], outDir, false);
+                for (int n = 0; n < testFiles.length; n++)
+                {
+                    doTestFile(testFiles[n], outDir, false);
+                }
             }
         }
         else
