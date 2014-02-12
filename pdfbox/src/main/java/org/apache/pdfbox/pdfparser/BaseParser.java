@@ -539,12 +539,13 @@ public abstract class BaseParser
                         // we got a buffered stream wrapper around filteredStream thus first flush to underlying stream
                         out.flush();
                         InputStream writtenStreamBytes = stream.getFilteredStream();
-                        ByteArrayOutputStream     bout = new ByteArrayOutputStream( length );
+                        ByteArrayOutputStream bout = new ByteArrayOutputStream( length );
                         
                         while ( ( readCount = writtenStreamBytes.read( strmBuf ) ) >= 0 )
                         {
                             bout.write( strmBuf, 0, readCount );
                         }
+                        IOUtils.closeQuietly(writtenStreamBytes);
                         try
                         {
                             pdfSource.unread( bout.toByteArray() );
@@ -556,11 +557,8 @@ public abstract class BaseParser
                                                           "Try increasing push back buffer using system property " +
                                                           PROP_PUSHBACK_SIZE, ioe );
                         }
-                        // create new filtered stream
-                        if (out != null)
-                        {
-                        	IOUtils.closeQuietly(out);
-                        }
+                        // close and create new filtered stream
+                      	IOUtils.closeQuietly(out);
                         out = stream.createFilteredStream( streamLength );
                         // scan until we find endstream:
                         readUntilEndStream( out );
@@ -592,7 +590,6 @@ public abstract class BaseParser
                 else if(endStream.startsWith(ENDSTREAM_STRING))
                 {
                     String extra = endStream.substring(9, endStream.length());
-                    endStream = endStream.substring(0, 9);
                     byte[] array = extra.getBytes("ISO-8859-1");
                     pdfSource.unread(array);
                 }
@@ -658,7 +655,7 @@ public abstract class BaseParser
                 // reduce compare operations by first test last character we would have to
                 // match if current one matches; if it is not a character from keywords
                 // we can move behind the test character;
-                // this shortcut is inspired by Boyer–Moore string search algorithm
+                // this shortcut is inspired by the Boyer-Moore string search algorithm
                 // and can reduce parsing time by approx. 20%
                 if ( ( charMatchCount == 0 ) &&
                          ( ( quickTestIdx = bIdx + quickTestOffset ) < maxQuicktestIdx ) ) 
@@ -692,7 +689,6 @@ public abstract class BaseParser
                         // maybe ENDSTREAM is missing but we could have ENDOBJ
                         keyw = ENDOBJ;
                         charMatchCount++;
-                        
                     } 
                     else 
                     {
@@ -721,7 +717,6 @@ public abstract class BaseParser
                 // keyword matched; unread matched keyword (endstream/endobj) and following buffered content
                 pdfSource.unread( strmBuf, contentBytes, bufSize - contentBytes );
                 break;
-                
             } 
             else 
             {
@@ -970,7 +965,7 @@ public abstract class BaseParser
      * This is necessary in order to detect malformed input and
      * be able to skip to next object start.
      *
-     * We assume starting '<' was already read.
+     * We assume starting '&lt;' was already read.
      * 
      * @return The parsed PDF string.
      *
@@ -1045,9 +1040,9 @@ public abstract class BaseParser
             throw new IOException( "expected='[' actual='" + ch + "'" );
         }
         COSArray po = new COSArray();
-        COSBase pbo = null;
+        COSBase pbo;
         skipSpaces();
-        int i = 0;
+        int i;
         while( ((i = pdfSource.peek()) > 0) && ((char)i != ']') )
         {
             pbo = parseDirObject();
@@ -1122,7 +1117,6 @@ public abstract class BaseParser
      */
     protected COSName parseCOSName() throws IOException
     {
-        COSName retval = null;
         int c = pdfSource.read();
         if( (char)c != '/')
         {
@@ -1180,8 +1174,7 @@ public abstract class BaseParser
         {
             pdfSource.unread(c);
         }
-        retval = COSName.getPDFName( buffer.toString() );
-        return retval;
+        return COSName.getPDFName( buffer.toString() );
     }
 
     /**
