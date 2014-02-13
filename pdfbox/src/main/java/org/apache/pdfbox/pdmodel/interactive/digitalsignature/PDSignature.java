@@ -265,14 +265,7 @@ public class PDSignature implements COSObjectable
    */
   public Calendar getSignDate()
   {
-    try
-    {
-      return dictionary.getDate(COSName.M);
-    }
-    catch (IOException e)
-    {
-      return null;
-    }
+    return dictionary.getDate(COSName.M);
   }
 
   /**
