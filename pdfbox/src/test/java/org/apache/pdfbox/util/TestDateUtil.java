@@ -69,31 +69,15 @@ public class TestDateUtil extends TestCase
     {
         TimeZone timezone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        try 
-        {
-            assertCalendarEquals( new GregorianCalendar( 2005, 4, 12 ), 
-                    DateConverter.toCalendar( "D:05/12/2005" ) );
-            assertCalendarEquals( new GregorianCalendar( 2005, 4,12,15,57,16 ), 
-                    DateConverter.toCalendar( "5/12/2005 15:57:16" ) );
-        }
-        catch (IOException ex) 
-        {
-            ex.printStackTrace();
-        }
-        finally 
-        {
-            TimeZone.setDefault(timezone);
-        }
-        // check that new toCalendar gives NullPointer for a null arg
-        try 
-        { 
-            DateConverter.toCalendar(null, null);
-            assertNotNull(null);    // failed to have expected exception
-        } 
-        catch (NullPointerException ex) 
-        {
-            // expected outcome
-        }   
+
+        assertCalendarEquals( new GregorianCalendar( 2005, 4, 12 ),
+                DateConverter.toCalendar( "D:05/12/2005" ) );
+        assertCalendarEquals( new GregorianCalendar( 2005, 4,12,15,57,16 ),
+                DateConverter.toCalendar( "5/12/2005 15:57:16" ) );
+
+        TimeZone.setDefault(timezone);
+        // check that new toCalendarSTATIC gives null for a null arg
+        assertNull(DateConverter.toCalendar((String)null));
     }
     
     /**
@@ -128,7 +112,7 @@ public class TestDateUtil extends TestCase
     }
 
     /**
-     * Check toCalendar.
+     * Check toCalendarSTATIC.
      * @param yr expected year value
      *  If an IOException is the expected result, yr should be null
      * @param mon expected month value
@@ -136,7 +120,7 @@ public class TestDateUtil extends TestCase
      * @param hr expected hour value
      * @param min expected minute value
      * @param sec expected second value
-     * @param tz represents expected timezone offset 
+     * @param offset represents expected timezone offset
      * @param orig  A date to be parsed.
      * @throws Exception If an unexpected error occurs.
      */
@@ -149,25 +133,17 @@ public class TestDateUtil extends TestCase
         String iso8601Date = String.format("%04d-%02d-%02d"
                 + "T%02d:%02d:%02d%+03d:00", 
                 yr,mon,day,hr,min,sec,offset);
-        Calendar cal = null;
-        try 
-        {
-            cal = DateConverter.toCalendar(orig);
-        }
-        catch (IOException ex) 
-        {
-            assertEquals(yr, BAD);
-        }
+        Calendar cal = DateConverter.toCalendar(orig);
         if (cal != null) 
         {
             assertEquals(iso8601Date, DateConverter.toISO8601(cal));
             assertEquals(pdfDate, DateConverter.toString(cal));
         }
-        // new toCalendar()
-        cal = DateConverter.toCalendar(orig, null);
+        // new toCalendarSTATIC()
+        cal = DateConverter.toCalendar(orig);
         if (yr == BAD) 
         {
-            assertEquals(cal.get(Calendar.YEAR), DateConverter.INVALID_YEAR);
+            assertEquals(null, cal);
         }
         else
         {
@@ -368,8 +344,8 @@ public class TestDateUtil extends TestCase
         checkToString(1991, 11, 1, 1, 14, 15, tzMcMurdo, +0);
         checkToString(1992, 12, 1, 1, 14, 15, tzMcMurdo, +0);
     }
-   
-    private static void checkParseTZ(int expect, String src) 
+
+    private static void checkParseTZ(int expect, String src)
     {
         GregorianCalendar dest = DateConverter.newGreg();
         DateConverter.parseTZoffset(src, dest, new ParsePosition(0));
