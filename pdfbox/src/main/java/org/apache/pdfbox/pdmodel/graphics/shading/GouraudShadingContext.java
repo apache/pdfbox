@@ -30,8 +30,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -209,7 +207,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public void dispose()
     {
         triangleList = null;
@@ -222,7 +219,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public final ColorModel getColorModel()
     {
         return outputColorModel;
@@ -245,7 +241,6 @@ public abstract class GouraudShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
