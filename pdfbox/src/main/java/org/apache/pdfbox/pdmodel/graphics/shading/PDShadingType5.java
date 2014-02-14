@@ -16,38 +16,32 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-
-
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
- * This represents resources for a shading type 5 (Lattice-Form Gouraud-Shaded Triangle Meshes).
+ * This represents resources for a shading type 5 (Lattice-Form Gouraud-Shaded
+ * Triangle Meshes).
  *
  */
 public class PDShadingType5 extends PDShadingResources
 {
-    
-    private PDFunction function = null;
+
     /**
-     * An array of 2^n numbers specifying the linear mapping of sample values 
-     * into the range appropriate for the function's output values. 
-     * Default value: same as the value of Range
+     * An array of 2^n numbers specifying the linear mapping of sample values
+     * into the range appropriate for the function's output values. Default
+     * value: same as the value of Range
      */
     private COSArray decode = null;
-    
+
     /**
      * Constructor using the given shading dictionary.
      *
      * @param shadingDictionary The dictionary for this shading.
      */
-    public PDShadingType5( COSDictionary shadingDictionary )
+    public PDShadingType5(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -61,42 +55,14 @@ public class PDShadingType5 extends PDShadingResources
     }
 
     /**
-     * This will set the function for the color conversion.
-     *
-     * @param newFunction The new function.
-     */
-    public void setFunction(PDFunction newFunction)
-    {
-        function = newFunction;
-        getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
-    }
-
-    /**
-     * This will return the function used to convert the color values.
-     *
-     * @return The function
-     * @exception IOException If we are unable to create the PDFunction object. 
-     */
-    public PDFunction getFunction() throws IOException
-    {
-        if (function == null)
-        {
-            COSBase dictionaryFunctionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
-            if (dictionaryFunctionObject != null)
-                function = PDFunction.create(dictionaryFunctionObject);
-        }
-        return function;
-    }
-
-    /**
-     * The bits per component of this shading.  
-     * This will return -1 if one has not been set.
+     * The bits per component of this shading. This will return -1 if one has
+     * not been set.
      *
      * @return The number of bits per component.
      */
     public int getBitsPerComponent()
     {
-        return getCOSDictionary().getInt( COSName.BITS_PER_COMPONENT, -1 );
+        return getCOSDictionary().getInt(COSName.BITS_PER_COMPONENT, -1);
     }
 
     /**
@@ -104,20 +70,20 @@ public class PDShadingType5 extends PDShadingResources
      *
      * @param bpc The number of bits per component.
      */
-    public void setBitsPerComponent( int bpc )
+    public void setBitsPerComponent(int bpc)
     {
-        getCOSDictionary().setInt( COSName.BITS_PER_COMPONENT, bpc );
+        getCOSDictionary().setInt(COSName.BITS_PER_COMPONENT, bpc);
     }
 
     /**
-     * The bits per coordinate of this shading.  
-     * This will return -1 if one has not been set.
+     * The bits per coordinate of this shading. This will return -1 if one has
+     * not been set.
      *
      * @return The number of bits per coordinate.
      */
     public int getBitsPerCoordinate()
     {
-        return getCOSDictionary().getInt( COSName.BITS_PER_COORDINATE, -1 );
+        return getCOSDictionary().getInt(COSName.BITS_PER_COORDINATE, -1);
     }
 
     /**
@@ -125,20 +91,20 @@ public class PDShadingType5 extends PDShadingResources
      *
      * @param bpc The number of bits per coordinate.
      */
-    public void setBitsPerCoordinate( int bpc )
+    public void setBitsPerCoordinate(int bpc)
     {
-        getCOSDictionary().setInt( COSName.BITS_PER_COORDINATE, bpc );
+        getCOSDictionary().setInt(COSName.BITS_PER_COORDINATE, bpc);
     }
 
     /**
-     * The vertices per row of this shading.  
-     * This will return -1 if one has not been set.
+     * The vertices per row of this shading. This will return -1 if one has not
+     * been set.
      *
      * @return The number of vertices per row.
      */
     public int getVerticesPerRow()
     {
-        return getCOSDictionary().getInt( COSName.VERTICES_PER_ROW, -1 );
+        return getCOSDictionary().getInt(COSName.VERTICES_PER_ROW, -1);
     }
 
     /**
@@ -146,21 +112,21 @@ public class PDShadingType5 extends PDShadingResources
      *
      * @param vpr The number of vertices per row.
      */
-    public void setVerticesPerRow( int vpr )
+    public void setVerticesPerRow(int vpr)
     {
-        getCOSDictionary().setInt( COSName.VERTICES_PER_ROW, vpr );
+        getCOSDictionary().setInt(COSName.VERTICES_PER_ROW, vpr);
     }
 
     /**
      * Returns all decode values as COSArray.
-     * 
-     * @return the decode array. 
+     *
+     * @return the decode array.
      */
-    private COSArray getDecodeValues() 
+    private COSArray getDecodeValues()
     {
         if (decode == null)
         {
-            decode = (COSArray)getCOSDictionary().getDictionaryObject( COSName.DECODE );
+            decode = (COSArray) getCOSDictionary().getDictionaryObject(COSName.DECODE);
         }
         return decode;
     }
@@ -183,15 +149,14 @@ public class PDShadingType5 extends PDShadingResources
      *
      * @return The decode parameter range or null if none is set.
      */
-    public PDRange getDecodeForParameter( int paramNum )
+    public PDRange getDecodeForParameter(int paramNum)
     {
         PDRange retval = null;
         COSArray decodeValues = getDecodeValues();
-        if( decodeValues != null && decodeValues.size() >= paramNum*2+1 )
+        if (decodeValues != null && decodeValues.size() >= paramNum * 2 + 1)
         {
-            retval = new PDRange(decodeValues, paramNum );
+            retval = new PDRange(decodeValues, paramNum);
         }
         return retval;
     }
-
 }

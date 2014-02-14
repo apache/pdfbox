@@ -16,18 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-
-
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -36,17 +31,15 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDShadingType1 extends PDShadingResources
 {
-    
+
     private COSArray domain = null;
-    private PDFunction function = null;
-    private PDFunction[] functionArray = null;
-    
+
     /**
      * Constructor using the given shading dictionary.
      *
      * @param shadingDictionary The dictionary for this shading.
      */
-    public PDShadingType1( COSDictionary shadingDictionary )
+    public PDShadingType1(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -61,14 +54,14 @@ public class PDShadingType1 extends PDShadingResources
 
     /**
      * This will get the optional Matrix of a function based shading.
-     * 
+     *
      * @return the matrix
      */
     public Matrix getMatrix()
     {
         Matrix retval = null;
-        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject( COSName.MATRIX );
-        if( array != null )
+        COSArray array = (COSArray) getCOSDictionary().getDictionaryObject(COSName.MATRIX);
+        if (array != null)
         {
             retval = new Matrix();
             retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
@@ -83,7 +76,7 @@ public class PDShadingType1 extends PDShadingResources
 
     /**
      * Sets the optional Matrix entry for the function based shading.
-     * 
+     *
      * @param transform the transformation matrix
      */
     public void setMatrix(AffineTransform transform)
@@ -93,117 +86,33 @@ public class PDShadingType1 extends PDShadingResources
         transform.getMatrix(values);
         for (double v : values)
         {
-            matrix.add(new COSFloat((float)v));
+            matrix.add(new COSFloat((float) v));
         }
         getCOSDictionary().setItem(COSName.MATRIX, matrix);
     }
 
     /**
      * This will get the optional Domain values of a function based shading.
-     * 
+     *
      * @return the domain values
      */
     public COSArray getDomain()
     {
         if (domain == null)
         {
-            domain = (COSArray)getCOSDictionary().getDictionaryObject( COSName.DOMAIN );
+            domain = (COSArray) getCOSDictionary().getDictionaryObject(COSName.DOMAIN);
         }
         return domain;
     }
 
     /**
      * Sets the optional Domain entry for the function based shading.
-     * 
+     *
      * @param newDomain the domain array
      */
     public void setDomain(COSArray newDomain)
     {
         domain = newDomain;
         getCOSDictionary().setItem(COSName.DOMAIN, newDomain);
-    }
-
-    /**
-     * This will set the function for the color conversion.
-     *
-     * @param newFunction The new function.
-     */
-    public void setFunction(PDFunction newFunction)
-    {
-        function = newFunction;
-        getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
-    }
-
-    /**
-     * This will return the function used to convert the color values.
-     *
-     * @return The function
-     * @exception IOException If we are unable to create the PDFunction object. 
-     */
-    public PDFunction getFunction() throws IOException
-    {
-        if (function == null)
-        {
-            function = PDFunction.create(getCOSDictionary().getDictionaryObject(COSName.FUNCTION));
-        }
-        return function;
-    }
-
-    /**
-     * Provide the function(s) of the shading dictionary as array.
-     * 
-     * @return an array containing the function(s) 
-     * @throws IOException throw if something went wrong
-     */
-    private PDFunction[] getFunctionsArray() throws IOException
-    {
-        if (functionArray == null)
-        {
-            COSBase functionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
-            if (functionObject instanceof COSDictionary)
-            {
-                functionArray = new PDFunction[1];
-                functionArray[0] = PDFunction.create(functionObject);
-            }
-            else
-            {
-                COSArray functionCOSArray = (COSArray)functionObject;
-                int numberOfFunctions = functionCOSArray.size();
-                functionArray = new PDFunction[numberOfFunctions];
-                for (int i=0; i<numberOfFunctions; i++)
-                {
-                    functionArray[i] = PDFunction.create(functionCOSArray.get(i));
-                }
-            }
-        }
-        return functionArray;
-    }
-    
-    /**
-     * Convert the input value using the functions of the shading dictionary.
-     * 
-     * @param input the input values
-     * @return the output values
-     * @throws IOException thrown if something went wrong
-     */
-    public float[] evalFunction(float [] input) throws IOException
-    {
-        PDFunction[] functions = getFunctionsArray();
-        int numberOfFunctions = functions.length;
-        float[] returnValues = null;
-        if (numberOfFunctions == 1)
-        {
-            returnValues = functions[0].eval(input);
-        }
-        else
-        {
-            returnValues = new float[numberOfFunctions];
-            for (int i=0; i<numberOfFunctions;i++)
-            {
-                float[] newValue = functions[i].eval(input);
-                returnValues[i] = newValue[0];
-            }
-        }
-        return returnValues;
     }
 }
