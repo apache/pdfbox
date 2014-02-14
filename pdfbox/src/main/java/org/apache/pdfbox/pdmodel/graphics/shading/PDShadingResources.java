@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 
@@ -40,6 +41,8 @@ public abstract class PDShadingResources implements COSObjectable
     private COSArray background = null;
     private PDRectangle bBox = null;
     private PDColorSpace colorspace = null;
+    private PDFunction function = null;
+    private PDFunction[] functionArray = null;
     
     /**
      * shading type 1 = function based shading.
@@ -295,4 +298,128 @@ public abstract class PDShadingResources implements COSObjectable
         return shading;
     }
 
+    /**
+     * This will set the function for the color conversion.
+     *
+     * @param newFunction The new function.
+     */
+    public void setFunction(PDFunction newFunction)
+    {
+        functionArray = null;
+        function = newFunction;
+        if (newFunction == null)
+        {
+            getCOSDictionary().removeItem(COSName.FUNCTION);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
+        }
+    }
+
+    /**
+     * This will set the functions COSArray for the color conversion.
+     *
+     * @param newFunctions The new COSArray containing all functions.
+     */
+    public void setFunction(COSArray newFunctions)
+    {
+        functionArray = null;
+        function = null;
+        if (newFunctions == null)
+        {
+            getCOSDictionary().removeItem(COSName.FUNCTION);
+        }
+        else
+        {
+            getCOSDictionary().setItem(COSName.FUNCTION, newFunctions);
+        }
+    }
+
+    /**
+     * This will return the function used to convert the color values.
+     *
+     * @return The function
+     * @exception IOException If we are unable to create the PDFunction object.
+     */
+    public PDFunction getFunction() throws IOException
+    {
+        if (function == null)
+        {
+            COSBase dictionaryFunctionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            if (dictionaryFunctionObject != null)
+                function = PDFunction.create(dictionaryFunctionObject);
+        }
+        return function;
+    }
+
+    /**
+     * Provide the function(s) of the shading dictionary as array.
+     * 
+     * @return an array containing the function(s) 
+     * @throws IOException throw if something went wrong
+     */
+    private PDFunction[] getFunctionsArray() throws IOException
+    {
+        if (functionArray == null)
+        {
+            COSBase functionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            if (functionObject instanceof COSDictionary)
+            {
+                functionArray = new PDFunction[1];
+                functionArray[0] = PDFunction.create(functionObject);
+            }
+            else
+            {
+                COSArray functionCOSArray = (COSArray)functionObject;
+                int numberOfFunctions = functionCOSArray.size();
+                functionArray = new PDFunction[numberOfFunctions];
+                for (int i=0; i<numberOfFunctions; i++)
+                {
+                    functionArray[i] = PDFunction.create(functionCOSArray.get(i));
+                }
+            }
+        }
+        return functionArray;
+    }
+    
+    /**
+     * Convert the input value using the functions of the shading dictionary.
+     *
+     * @param inputValue the input value
+     * @return the output values
+     * @throws IOException thrown if something went wrong
+     */
+    public float[] evalFunction(float inputValue) throws IOException
+    {
+        return evalFunction(new float[] {inputValue});
+    }
+    
+    /**
+     * Convert the input values using the functions of the shading dictionary.
+     * 
+     * @param input the input values
+     * @return the output values
+     * @throws IOException thrown if something went wrong
+     */
+    public float[] evalFunction(float [] input) throws IOException
+    {
+        PDFunction[] functions = getFunctionsArray();
+        int numberOfFunctions = functions.length;
+        float[] returnValues = null;
+        if (numberOfFunctions == 1)
+        {
+            returnValues = functions[0].eval(input);
+        }
+        else
+        {
+            returnValues = new float[numberOfFunctions];
+            for (int i=0; i<numberOfFunctions;i++)
+            {
+                float[] newValue = functions[i].eval(input);
+                returnValues[i] = newValue[0];
+            }
+        }
+        return returnValues;
+    }
 }
