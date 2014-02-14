@@ -43,8 +43,6 @@ public class Type5ShadingContext extends GouraudShadingContext
 {
     private static final Log LOG = LogFactory.getLog(Type5ShadingContext.class);
 
-    private PDShadingType5 shadingType;
-
     /**
      * Constructor creates an instance to be used for fill operations.
      *
@@ -53,7 +51,7 @@ public class Type5ShadingContext extends GouraudShadingContext
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     * 
+     *
      * @throws IOException if something went wrong
      */
     public Type5ShadingContext(PDShadingType5 shadingType5, ColorModel colorModelValue,
@@ -61,20 +59,18 @@ public class Type5ShadingContext extends GouraudShadingContext
     {
         super(shadingType5, colorModelValue, xform, ctm, pageHeight);
 
-        shadingType = shadingType5;
-
         LOG.debug("Type5ShadingContext");
 
-        bitsPerColorComponent = shadingType.getBitsPerComponent();
+        bitsPerColorComponent = shadingType5.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shadingType.getBitsPerCoordinate();
+        bitsPerCoordinate = shadingType5.getBitsPerCoordinate();
         LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         long maxSrcCoord = (int) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (int) Math.pow(2, bitsPerColorComponent) - 1;
         LOG.debug("maxSrcCoord: " + maxSrcCoord);
         LOG.debug("maxSrcColor: " + maxSrcColor);
 
-        COSDictionary cosDictionary = shadingType.getCOSDictionary();
+        COSDictionary cosDictionary = shadingType5.getCOSDictionary();
         COSStream cosStream = (COSStream) cosDictionary;
 
         //The Decode key specifies how
@@ -93,30 +89,25 @@ public class Type5ShadingContext extends GouraudShadingContext
         PDRange[] colRangeTab = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRangeTab[i] = shadingType.getDecodeForParameter(2 + i);
+            colRangeTab[i] = shadingType5.getDecodeForParameter(2 + i);
         }
 
         LOG.debug("bitsPerCoordinate: " + bitsPerCoordinate);
-        if (shadingType.getFunction() != null)
-        {
-            LOG.error("function based type 4 shading not implemented, please file issue with sample file");
-        }
-        LOG.debug("function: " + shadingType.getFunction()); //TODO implement function based shading
 
         // get background values if available
-        COSArray bg = shadingType.getBackground();
+        COSArray bg = shadingType5.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
         }
 
         //TODO missing: BBox, AntiAlias (p. 305 in 1.7 spec)
-
+        
         // p318:
         //  reading in sequence from higher-order to lower-order bit positions
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getFilteredStream());
 
-        int verticesPerRow = shadingType.getVerticesPerRow(); //TODO check >=2
+        int verticesPerRow = shadingType5.getVerticesPerRow(); //TODO check >=2
         LOG.debug("verticesPerRow" + verticesPerRow);
 
         try
@@ -157,8 +148,6 @@ public class Type5ShadingContext extends GouraudShadingContext
         }
 
         mciis.close();
-
-        createArea();
     }
 
     /**
@@ -168,7 +157,6 @@ public class Type5ShadingContext extends GouraudShadingContext
     public void dispose()
     {
         super.dispose();
-        shadingType = null;
     }
 
 }

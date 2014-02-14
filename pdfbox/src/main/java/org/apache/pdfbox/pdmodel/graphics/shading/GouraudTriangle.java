@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.Polygon;
 import java.awt.geom.Point2D;
 
 /**
@@ -27,10 +26,6 @@ import java.awt.geom.Point2D;
  */
 public class GouraudTriangle
 {
-    /**
-     * the polygon representing the triangle.
-     */
-    protected final Polygon polygon = new Polygon();
     /**
      * point A of the triangle.
      */
@@ -94,10 +89,6 @@ public class GouraudTriangle
         xCminusB = pointC.getX() - pointB.getX();
         yCminusB = pointC.getY() - pointB.getY();
         area = getArea(pointA, pointB, pointC);
-
-        polygon.addPoint((int) Math.round(a.getX()), (int) Math.round(a.getY()));
-        polygon.addPoint((int) Math.round(b.getX()), (int) Math.round(b.getY()));
-        polygon.addPoint((int) Math.round(c.getX()), (int) Math.round(c.getY()));
     }
 
     /**
@@ -114,7 +105,7 @@ public class GouraudTriangle
         // see also:
         // http://math.stackexchange.com/q/51326
         // http://www.gamedev.net/topic/295943-is-this-a-better-point-in-triangle-test-2d/
-        // java function can't be used because polygon takes integer coordinates
+        // java function can't be used because java polygon class takes integer coordinates
 
         double xPminusA = p.getX() - pointA.getX();
         double yPminusA = p.getY() - pointA.getY();

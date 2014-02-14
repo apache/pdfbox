@@ -22,7 +22,6 @@ import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -31,6 +30,8 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,11 +80,8 @@ public abstract class GouraudShadingContext implements PaintContext
     protected float[] background;
     private ColorSpace shadingColorSpace;
     private PDFunction shadingTinttransform;
-    /**
-     * color conversion function.
-     */
-    protected PDFunction function = null; //TODO implement common PDShadingtype for 4 and 5
-    private Area area = new Area(); //TODO for later optimization
+    private final boolean hasFunction;
+    private final PDShadingResources gouraudShadingType;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -99,8 +97,10 @@ public abstract class GouraudShadingContext implements PaintContext
     protected GouraudShadingContext(PDShadingResources shadingType, ColorModel colorModelValue,
             AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
+        gouraudShadingType = shadingType;
         triangleList = new ArrayList<GouraudTriangle>();
         colorSpace = shadingType.getColorSpace();
+        hasFunction = shadingType.getFunction() != null;
         LOG.debug("colorSpace: " + colorSpace);
         numberOfColorComponents = colorSpace.getNumberOfComponents();
         LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
@@ -207,17 +207,6 @@ public abstract class GouraudShadingContext implements PaintContext
     }
 
     /**
-     * create a java area that includes all the triangles.
-     */
-    protected void createArea()
-    {
-        for (GouraudTriangle triangle : triangleList)
-        {
-            area.add(new Area(triangle.polygon));
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -298,8 +287,19 @@ public abstract class GouraudShadingContext implements PaintContext
                         continue;
                     }
                 }
+                
+                if (hasFunction)
+                {
+                    try
+                    {
+                        values = gouraudShadingType.evalFunction(values);
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error while processing a function", exception);
+                    }
+                }                   
 
-                //TODO handle function
                 // convert color values from shading colorspace to RGB
                 if (shadingColorSpace != null)
                 {
