@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-
-
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
@@ -27,13 +25,12 @@ import org.apache.pdfbox.cos.COSDictionary;
  */
 public class PDShadingType3 extends PDShadingType2
 {
-    
     /**
      * Constructor using the given shading dictionary.
      *
      * @param shadingDictionary The dictionary for this shading.
      */
-    public PDShadingType3( COSDictionary shadingDictionary )
+    public PDShadingType3(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
@@ -45,5 +42,4 @@ public class PDShadingType3 extends PDShadingType2
     {
         return PDShadingResources.SHADING_TYPE3;
     }
-
 }

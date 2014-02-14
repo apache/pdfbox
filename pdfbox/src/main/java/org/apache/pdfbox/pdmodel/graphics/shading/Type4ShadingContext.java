@@ -34,48 +34,46 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of a type 4 (Gouraud triangle mesh) shading context.
- * 
+ * This represents the Paint of a type 4 (Gouraud triangle mesh) shading
+ * context.
+ *
  * @author Tilman Hausherr
  */
 class Type4ShadingContext extends GouraudShadingContext
 {
     private static final Log LOG = LogFactory.getLog(Type4ShadingContext.class);
 
-    private PDShadingType4 shadingType;
     private int bitsPerFlag;
-    
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     * 
+     *
      * @param shadingType4 the shading type to be used
      * @param colorModelValue the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     * 
+     *
      */
     public Type4ShadingContext(PDShadingType4 shadingType4, ColorModel colorModelValue,
             AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
         super(shadingType4, colorModelValue, xform, ctm, pageHeight);
-        
+
         ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-        shadingType = shadingType4;
 
         LOG.debug("Type4ShadingContext");
 
-        bitsPerColorComponent = shadingType.getBitsPerComponent();
+        bitsPerColorComponent = shadingType4.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shadingType.getBitsPerCoordinate();
+        bitsPerCoordinate = shadingType4.getBitsPerCoordinate();
         LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         long maxSrcCoord = (int) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (int) Math.pow(2, bitsPerColorComponent) - 1;
         LOG.debug("maxSrcCoord: " + maxSrcCoord);
         LOG.debug("maxSrcColor: " + maxSrcColor);
 
-        COSDictionary cosDictionary = shadingType.getCOSDictionary();
+        COSDictionary cosDictionary = shadingType4.getCOSDictionary();
         COSStream cosStream = (COSStream) cosDictionary;
 
         //The Decode key specifies how
@@ -94,28 +92,22 @@ class Type4ShadingContext extends GouraudShadingContext
         PDRange[] colRangeTab = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRangeTab[i] = shadingType.getDecodeForParameter(2 + i);
+            colRangeTab[i] = shadingType4.getDecodeForParameter(2 + i);
         }
 
         LOG.debug("bitsPerCoordinate: " + bitsPerCoordinate);
-        bitsPerFlag = shadingType.getBitsPerFlag();
-        if (shadingType.getFunction() != null)
-        {
-            LOG.error("function based type 4 shading not implemented, please file issue with sample file");
-        }
-        LOG.debug("function: " + shadingType.getFunction()); //TODO implement function based shading
+        bitsPerFlag = shadingType4.getBitsPerFlag();
         LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
         LOG.debug("Stream size: " + cosStream.getInt(COSName.LENGTH));
-        
+
         // get background values if available
-        COSArray bg = shadingType.getBackground();
+        COSArray bg = shadingType4.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
         }
-        
+
         //TODO missing: BBox, AntiAlias (p. 305 in 1.7 spec)
-        
         // p318:
         //  reading in sequence from higher-order to lower-order bit positions
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getFilteredStream());
@@ -129,9 +121,9 @@ class Type4ShadingContext extends GouraudShadingContext
                 {
                     case 0:
                         Vertex v1 = readVertex(mciis, flag, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRangeTab);
-                        Vertex v2 = readVertex(mciis, (byte) mciis.readBits(bitsPerFlag), maxSrcCoord, maxSrcColor, 
+                        Vertex v2 = readVertex(mciis, (byte) mciis.readBits(bitsPerFlag), maxSrcCoord, maxSrcColor,
                                 rangeX, rangeY, colRangeTab);
-                        Vertex v3 = readVertex(mciis, (byte) mciis.readBits(bitsPerFlag), maxSrcCoord, maxSrcColor, 
+                        Vertex v3 = readVertex(mciis, (byte) mciis.readBits(bitsPerFlag), maxSrcCoord, maxSrcColor,
                                 rangeX, rangeY, colRangeTab);
 
                         // add them after they're read, so that they are never added if there is a premature EOF
@@ -190,12 +182,11 @@ class Type4ShadingContext extends GouraudShadingContext
         mciis.close();
         transformVertices(vertexList, ctm, xform, pageHeight);
         createTriangleList(vertexList);
-        createArea();
     }
 
     /**
      * Create GouraudTriangle list from vertices, see p.316 of pdf spec 1.7.
-     * 
+     *
      * @param vertexList list of vertices
      */
     private void createTriangleList(ArrayList<Vertex> vertexList)
@@ -259,6 +250,5 @@ class Type4ShadingContext extends GouraudShadingContext
     public void dispose()
     {
         super.dispose();
-        shadingType = null;
     }
 }
