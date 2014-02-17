@@ -133,10 +133,28 @@ public class Type5ShadingContext extends GouraudShadingContext
                         Vertex vijplus1 = prevVertexRow.get(vj + 1); // v i,j+1
                         Vertex viplus1j = vertexList.get(vj); // v i+1,j
                         Vertex viplus1jplus1 = vertexList.get(vj + 1); // v i+1,j+1
-                        triangleList.add(new GouraudTriangle(vij.point, vij.color, vijplus1.point, vijplus1.color, 
-                                viplus1j.point, viplus1j.color));
-                        triangleList.add(new GouraudTriangle(vijplus1.point, vijplus1.color, viplus1j.point, 
-                                viplus1j.color, viplus1jplus1.point, viplus1jplus1.color));
+                        GouraudTriangle g = new GouraudTriangle(vij.point, vij.color,
+                                vijplus1.point, vijplus1.color,
+                                viplus1j.point, viplus1j.color);
+                        if (!g.isEmpty())
+                        {
+                            triangleList.add(g);
+                        }
+                        else
+                        {
+                            LOG.debug("triangle is empty!");
+                        }
+                        g = new GouraudTriangle(vijplus1.point, vijplus1.color,
+                                viplus1j.point, viplus1j.color,
+                                viplus1jplus1.point, viplus1jplus1.color);
+                        if (!g.isEmpty())
+                        {
+                            triangleList.add(g);
+                        }
+                        else
+                        {
+                            LOG.debug("triangle is empty!");
+                        }
                     }
                 }
                 prevVertexRow = vertexList;

@@ -245,81 +245,84 @@ public abstract class GouraudShadingContext implements PaintContext
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
-        for (int row = 0; row < h; row++)
+        if (!triangleList.isEmpty() || background != null)
         {
-            for (int col = 0; col < w; col++)
+            for (int row = 0; row < h; row++)
             {
-                Point2D p = new Point(x + col, y + row);
-                GouraudTriangle triangle = null;
-                for (GouraudTriangle tryTriangle : triangleList)
+                for (int col = 0; col < w; col++)
                 {
-                    if (tryTriangle.contains(p))
+                    Point2D p = new Point(x + col, y + row);
+                    GouraudTriangle triangle = null;
+                    for (GouraudTriangle tryTriangle : triangleList)
                     {
-                        triangle = tryTriangle;
-                        break;
+                        if (tryTriangle.contains(p))
+                        {
+                            triangle = tryTriangle;
+                            break;
+                        }
                     }
-                }
-                float[] values;
-                if (triangle != null)
-                {
-                    double[] weights = triangle.getWeights(p);
-                    values = new float[numberOfColorComponents];
-                    for (int i = 0; i < numberOfColorComponents; ++i)
+                    float[] values;
+                    if (triangle != null)
                     {
-                        values[i] = (float) (triangle.colorA[i] * weights[0]
-                                + triangle.colorB[i] * weights[1]
-                                + triangle.colorC[i] * weights[2]);
-                    }
-                }
-                else
-                {
-                    if (background != null)
-                    {
-                        values = background;
+                        double[] weights = triangle.getWeights(p);
+                        values = new float[numberOfColorComponents];
+                        for (int i = 0; i < numberOfColorComponents; ++i)
+                        {
+                            values[i] = (float) (triangle.colorA[i] * weights[0]
+                                    + triangle.colorB[i] * weights[1]
+                                    + triangle.colorC[i] * weights[2]);
+                        }
                     }
                     else
                     {
-                        continue;
+                        if (background != null)
+                        {
+                            values = background;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
-                }
-                
-                if (hasFunction)
-                {
-                    try
-                    {
-                        values = gouraudShadingType.evalFunction(values);
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.error("error while processing a function", exception);
-                    }
-                }                   
 
-                // convert color values from shading colorspace to RGB
-                if (shadingColorSpace != null)
-                {
-                    if (shadingTinttransform != null)
+                    if (hasFunction)
                     {
                         try
                         {
-                            values = shadingTinttransform.eval(values);
+                            values = gouraudShadingType.evalFunction(values);
                         }
                         catch (IOException exception)
                         {
                             LOG.error("error while processing a function", exception);
                         }
                     }
-                    values = shadingColorSpace.toRGB(values);
-                }
 
-                int index = (row * w + col) * 4;
-                data[index] = (int) (values[0] * 255);
-                data[index + 1] = (int) (values[1] * 255);
-                data[index + 2] = (int) (values[2] * 255);
-                data[index + 3] = 255;
+                    // convert color values from shading colorspace to RGB
+                    if (shadingColorSpace != null)
+                    {
+                        if (shadingTinttransform != null)
+                        {
+                            try
+                            {
+                                values = shadingTinttransform.eval(values);
+                            }
+                            catch (IOException exception)
+                            {
+                                LOG.error("error while processing a function", exception);
+                            }
+                        }
+                        values = shadingColorSpace.toRGB(values);
+                    }
+
+                    int index = (row * w + col) * 4;
+                    data[index] = (int) (values[0] * 255);
+                    data[index + 1] = (int) (values[1] * 255);
+                    data[index + 2] = (int) (values[2] * 255);
+                    data[index + 3] = 255;
+                }
             }
-            raster.setPixels(0, 0, w, h, data);
         }
+        raster.setPixels(0, 0, w, h, data);
         return raster;
     }
 }
