@@ -239,7 +239,15 @@ class Type4ShadingContext extends GouraudShadingContext
                     break;
             }
             ++vi;
-            triangleList.add(new GouraudTriangle(a, aColor, b, bColor, c, cColor));
+            GouraudTriangle g = new GouraudTriangle(a, aColor, b, bColor, c, cColor);
+            if (!g.isEmpty())
+            {
+                triangleList.add(g);
+            }
+            else
+            {
+                LOG.debug("triangle is empty!");
+            }
         }
     }
 
