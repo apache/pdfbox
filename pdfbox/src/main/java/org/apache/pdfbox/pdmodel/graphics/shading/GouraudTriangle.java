@@ -138,6 +138,16 @@ public class GouraudTriangle
     }
 
     /**
+     * Tell whether a triangle is empty.
+     * 
+     * @return true if the area is empty, false if not.
+     */
+    boolean isEmpty()
+    {
+        return area == 0;
+    }
+
+    /**
      * calculate color weights with barycentric interpolation.
      *
      * @param p Point within triangle
