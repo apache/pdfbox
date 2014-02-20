@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.lang.Math;
 
 /**
- * This class represents a type 2 function in a PDF document.
+ * This class represents a Type 2 (exponential interpolation) function in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
@@ -61,27 +61,27 @@ public class PDFunctionType2 extends PDFunction
     }
 
     /**
+     * Performs exponential interpolation
+     *
     * {@inheritDoc}
     */
     public float[] eval(float[] input) throws IOException
     {
-        //This function performs exponential interpolation.
-        //It uses only a single value as its input, but may produce a multi-valued output.
-        //See PDF Reference section 3.9.2.
-                
-        double inputValue = input[0];
-        double exponent = getN();
         COSArray c0 = getC0();
         COSArray c1 = getC1();
-        int c0Size = c0.size();
-        float[] functionResult = new float[c0Size];
-        for (int j=0;j<c0Size;j++)
+
+        // exponential interpolation
+        float xToN = (float)Math.pow(input[0], getN()); // x^N
+
+        float[] result = new float[c0.size()];
+        for (int j = 0; j < result.length; j++)
         {
-            //y[j] = C0[j] + x^N*(C1[j] - C0[j])
-            functionResult[j] = ((COSNumber)c0.get(j)).floatValue() + (float)Math.pow(inputValue,exponent)*(((COSNumber)c1.get(j)).floatValue() - ((COSNumber)c0.get(j)).floatValue());
+            float C0j = ((COSNumber)c0.get(j)).floatValue();
+            float C1j = ((COSNumber)c1.get(j)).floatValue();
+            result[j] = C0j + xToN * (C1j - C0j);
         }
-        // clip to range if available
-        return clipToRange(functionResult);
+
+        return clipToRange(result);
     }
     
     /**
@@ -129,5 +129,15 @@ public class PDFunctionType2 extends PDFunction
     public float getN()
     {
         return getDictionary().getFloat(COSName.N);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String toString()
+    {
+        return "FunctionType2{" +
+                "C0:" + getC0() + " " +
+                "C1:" + getC1() + "}";
     }
 }

@@ -99,11 +99,13 @@ public class TestImageIOUtils extends TestCase
      * 
      * @throws Exception when there is an exception
      */
+     
     public void testRenderImage() throws Exception
     {
-    	String inDir = "src/test/resources/input/ImageIOUtil";
-    	String outDir = "target/test-output/ImageIOUtil/";
+        String inDir = "src/test/resources/input/ImageIOUtil";
+        String outDir = "target/test-output/ImageIOUtil/";
         new File(outDir).mkdir();
+
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
             public boolean accept(File dir, String name)

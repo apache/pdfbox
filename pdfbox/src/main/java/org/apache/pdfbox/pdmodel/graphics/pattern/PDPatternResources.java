@@ -17,20 +17,15 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 
-import java.awt.Paint;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
 
 /**
- * This represents the resources for a pattern colorspace.
- *
- * @version $Revision: 1.0 $
+ * This represents the resources for a pattern color space.
  */
 public abstract class PDPatternResources implements COSObjectable
 {
@@ -181,14 +176,4 @@ public abstract class PDPatternResources implements COSObjectable
         }
         return pattern;
     }
-    
-    /**
-     * This will return the paint of the pattern.
-     * 
-     * @param pageHeight the height of the current page
-     * 
-     * @return the paint of the pattern
-     */
-    public abstract Paint getPaint(int pageHeight) throws IOException;
-    
 }

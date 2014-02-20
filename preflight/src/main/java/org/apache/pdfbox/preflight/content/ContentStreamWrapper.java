@@ -41,9 +41,8 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.text.PDTextState;
-import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -60,11 +59,12 @@ public class ContentStreamWrapper extends ContentStreamEngine
         super(_context, _page);
     }
 
+
     /**
      * Process the validation of a PageContent (The page is initialized by the constructor)
-     * 
+     *
      * @return A list of validation error. This list is empty if the validation succeed.
-     * @throws ValidationException.
+     * @throws ValidationException
      */
     public void validPageContentStream() throws ValidationException
     {
@@ -94,7 +94,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
      * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
-    public void validXObjContentStream(PDXObjectForm xobj) throws ValidationException
+    public void validXObjContentStream(PDFormXObject xobj) throws ValidationException
     {
         try
         {

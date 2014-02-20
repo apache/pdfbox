@@ -66,6 +66,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
@@ -82,9 +84,9 @@ import org.apache.pdfbox.util.TextPosition;
 
 /**
  * This will paint a page in a PDF document to a graphics context.
- *
+ * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- *
+ * 
  */
 public class PageDrawer extends PDFStreamEngine
 {
@@ -183,12 +185,12 @@ public class PageDrawer extends PDFStreamEngine
 
     /**
      * This will draw the page to the requested context.
-     * 
+     *
      * @param g The graphics context to draw onto.
      * @param stream The stream to be used.
      * @param resources resources to be used when drawing the stream
      * @param pageDimension The size of the page to draw.
-     * 
+     *
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawStream(Graphics g, COSStream stream, PDResources resources, PDRectangle pageDimension)
@@ -240,25 +242,16 @@ public class PageDrawer extends PDFStreamEngine
             {
             case PDTextState.RENDERING_MODE_FILL_TEXT:
                 composite = graphicsState.getNonStrokeJavaComposite();
-                paint = graphicsState.getNonStrokingColor().getJavaColor();
-                if (paint == null)
-                {
-                    paint = graphicsState.getNonStrokingColor().getPaint(pageHeight);
-                }
+                paint = getNonStrokingPaint();
                 break;
             case PDTextState.RENDERING_MODE_STROKE_TEXT:
                 composite = graphicsState.getStrokeJavaComposite();
-                paint = graphicsState.getStrokingColor().getJavaColor();
-                if (paint == null)
-                {
-                    paint = graphicsState.getStrokingColor().getPaint(pageHeight);
-                }
+                paint = getStrokingPaint();
                 break;
             case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
                 // basic support for text rendering mode "invisible"
-                Color nsc = graphicsState.getStrokingColor().getJavaColor();
-                float[] components = { Color.black.getRed(), Color.black.getGreen(), Color.black.getBlue() };
-                paint = new Color(nsc.getColorSpace(), components, 0f);
+                // TODO why are we drawing anything at all?
+                paint = Color.BLACK;
                 composite = graphicsState.getStrokeJavaComposite();
                 break;
             default:
@@ -267,7 +260,7 @@ public class PageDrawer extends PDFStreamEngine
                         + " in PageDrawer.processTextPosition()." + " Using RenderingMode "
                         + PDTextState.RENDERING_MODE_FILL_TEXT + " instead");
                 composite = graphicsState.getNonStrokeJavaComposite();
-                paint = graphicsState.getNonStrokingColor().getJavaColor();
+                paint = getNonStrokingPaint();
             }
             graphics.setComposite(composite);
             graphics.setPaint(paint);
@@ -378,8 +371,9 @@ public class PageDrawer extends PDFStreamEngine
                 ctm.setFromAffineTransform(at);
                 getGraphicsState().setCurrentTransformationMatrix(ctm);
                 processSubStream(font.getType3Resources(), stream);
+
                 // restore the saved graphics state
-                setGraphicsState((PDGraphicsState) getGraphicsStack().pop());
+                setGraphicsState(getGraphicsStack().pop());
             }
             else
             {
@@ -431,7 +425,6 @@ public class PageDrawer extends PDFStreamEngine
      * @return the corresponding AWT font
      * @throws IOException if something went wrong
      */
-
     private Font createAWTFont(PDSimpleFont font) throws IOException
     {
         Font awtFont = null;
@@ -482,7 +475,7 @@ public class PageDrawer extends PDFStreamEngine
             {
                 // Fallback: we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
-                LOG.info("Using font " + awtFont.getName() + " instead");
+                LOG.info("Using font " + awtFont.getName() + " instead of " + font.getBaseFont());
                 font.setIsFontSubstituted(true);
             }
             awtFonts.put(font, awtFont);
@@ -627,15 +620,11 @@ public class PageDrawer extends PDFStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
-        Paint nonStrokingPaint = getGraphicsState().getNonStrokingColor().getJavaColor();
+        Paint nonStrokingPaint = getNonStrokingPaint();
         if (nonStrokingPaint == null)
         {
-            nonStrokingPaint = getGraphicsState().getNonStrokingColor().getPaint(pageHeight);
-        }
-        if (nonStrokingPaint == null)
-        {
-            LOG.info("ColorSpace " + getGraphicsState().getNonStrokingColor().getColorSpace().getName()
-                    + " doesn't provide a non-stroking color, using white instead!");
+            LOG.info("ColorSpace " + getGraphicsState().getNonStrokingColorSpace().getName() +
+                     " doesn't provide a non-stroking color, using white instead!");
             nonStrokingPaint = Color.WHITE;
         }
         graphics.setPaint(nonStrokingPaint);
@@ -644,6 +633,20 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         graphics.fill(getLinePath());
         getLinePath().reset();
+    }
+
+    // returns the stroking AWT Paint.
+    private Paint getStrokingPaint() throws IOException
+    {
+        return getGraphicsState().getStrokingColorSpace()
+                .toPaint(getGraphicsState().getStrokingColor(), pageHeight);
+    }
+
+    // returns the non-stroking AWT Paint.
+    private Paint getNonStrokingPaint() throws IOException
+    {
+        return getGraphicsState().getNonStrokingColorSpace()
+                .toPaint(getGraphicsState().getNonStrokingColor(), pageHeight);
     }
 
     /**
@@ -676,15 +679,11 @@ public class PageDrawer extends PDFStreamEngine
     public void strokePath() throws IOException
     {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
-        Paint strokingPaint = getGraphicsState().getStrokingColor().getJavaColor();
+        Paint strokingPaint = getStrokingPaint();
         if (strokingPaint == null)
         {
-            strokingPaint = getGraphicsState().getStrokingColor().getPaint(pageHeight);
-        }
-        if (strokingPaint == null)
-        {
-            LOG.info("ColorSpace " + getGraphicsState().getStrokingColor().getColorSpace().getName()
-                    + " doesn't provide a stroking color, using white instead!");
+            LOG.info("ColorSpace " + getGraphicsState().getStrokingColorSpace().getName() +
+                     " doesn't provide a stroking color, using white instead!");
             strokingPaint = Color.WHITE;
         }
         graphics.setPaint(strokingPaint);
@@ -695,22 +694,10 @@ public class PageDrawer extends PDFStreamEngine
         path.reset();
     }
 
-    /**
-     * Called when the color changed.
-     * 
-     * @param bStroking true for the stroking color, false for the non-stroking color
-     * @throws IOException if an I/O error occurs
-     */
-    @Deprecated
-    public void colorChanged(boolean bStroking) throws IOException
-    {
-        // logger().info("changing " + (bStroking ? "" : "non") + "stroking color");
-    }
-
     // This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
     /**
      * use the current transformation matrix to transform a single point.
-     * 
+     *
      * @param x x-coordinate of the point to be transform
      * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
@@ -798,24 +785,11 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Fill with Shading. Called by SHFill operator.
      * 
-     * @param ShadingName The name of the Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     * 
-     * @deprecated use {@link #shFill(COSName)} instead.
-     */
-    public void SHFill(COSName ShadingName) throws IOException
-    {
-        shFill(ShadingName);
-    }
-
-    /**
-     * Fill with Shading. Called by SHFill operator.
-     * 
      * @param shadingName The name of the Shading Dictionary to use for this fill instruction.
      * 
      * @throws IOException If there is an IO error while shade-filling the clipping area.
      */
+    // TODO would this now be better off using PDPattern?
     public void shFill(COSName shadingName) throws IOException
     {
         PDShadingResources shading = getResources().getShadings().get(shadingName.getName());

@@ -16,106 +16,65 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
-import java.awt.image.ColorModel;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 
-import java.awt.Transparency;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * This class represents a CMYK color space.
+ * Allows colors to be specified according to the subtractive CMYK (cyan, magenta, yellow, black)
+ * model typical of printers and other paper-based output devices.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author John Hewson
+ * @author Ben Litchfield
  */
-public class PDDeviceCMYK extends PDColorSpace
+public final class PDDeviceCMYK extends PDDeviceColorSpace
 {
-    /**
-     * The single instance of this class.
-     */
-    public static final PDDeviceCMYK INSTANCE = new PDDeviceCMYK();
-
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "DeviceCMYK";
-
-    /**
-     * The abbreviated name of this color space.
-     */
-    public static final String ABBREVIATED_NAME = "CMYK";
-
-    /**
-     * The external resources
-     */
-    private static Properties defaultProfile = new Properties();
-
+    /**  The single instance of this class. */
+    public static final PDDeviceCMYK INSTANCE;
     static
     {
         try
         {
-            ResourceLoader.loadProperties(
-                    "org/apache/pdfbox/resources/PDDeviceCMYK.properties",
-                    defaultProfile);
+            INSTANCE = new PDDeviceCMYK();
         }
-        catch (IOException io)
+        catch (IOException e)
         {
-            throw new RuntimeException("Error loading resources", io);
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Constructs a new PDDeviceCMYK object.
-     */
-    private PDDeviceCMYK()
+    private final ICC_ColorSpace awtColorSpace;
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0, 1 });
+
+    private PDDeviceCMYK() throws IOException
     {
+        awtColorSpace = getAWTColorSpace();
     }
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
-    public String getName()
+    // loads the ICC color profile for CMYK
+    private static ICC_ColorSpace getAWTColorSpace() throws IOException
     {
-        return NAME;
-    }
-
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
-    {
-        return 4;
-    }
-
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     */
-    protected ColorSpace createColorSpace() throws IOException
-    {
-        ColorSpace colorSpace;
+        ICC_ColorSpace colorSpace;
         InputStream profile = null;
         try
         {
-            profile = ResourceLoader.loadResource(defaultProfile.getProperty("DeviceCMYK"));
+            Properties properties = ResourceLoader.loadProperties(
+                    "org/apache/pdfbox/resources/PDDeviceCMYK.properties", new Properties());
+
+            profile = ResourceLoader.loadResource(properties.getProperty("DeviceCMYK"));
             if (profile == null)
             {
-                throw new IOException("Default CMYK color profile cannot be opened");
+                throw new IOException("Default CMYK color profile could not be loaded");
             }
             ICC_Profile iccProfile = ICC_Profile.getInstance(profile);
             colorSpace = new ICC_ColorSpace(iccProfile);
@@ -127,27 +86,39 @@ public class PDDeviceCMYK extends PDColorSpace
         return colorSpace;
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel(int bpc) throws IOException
+    @Override
+    public String getName()
     {
+        return COSName.DEVICECMYK.getName();
+    }
 
-        int[] nbBits = { bpc, bpc, bpc, bpc };
-        ComponentColorModel componentColorModel =
-                new ComponentColorModel(getJavaColorSpace(),
-                        nbBits,
-                        false,
-                        false,
-                        Transparency.OPAQUE,
-                        DataBuffer.TYPE_BYTE);
-        return componentColorModel;
+    @Override
+    public int getNumberOfComponents()
+    {
+        return 4;
+    }
 
+    @Override
+    public float[] getDefaultDecode()
+    {
+        return new float[] { 0, 1, 0, 1, 0, 1, 0, 1 };
+    }
+
+    @Override
+    public PDColor getInitialColor()
+    {
+        return INITIAL_COLOR;
+    }
+
+    @Override
+    public float[] toRGB(float[] value)
+    {
+        return awtColorSpace.toRGB(value);
+    }
+
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        return toRGBImageAWT(raster, awtColorSpace);
     }
 }

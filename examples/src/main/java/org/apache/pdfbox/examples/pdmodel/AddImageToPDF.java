@@ -28,10 +28,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDCcitt;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-
+import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
  * This is an example that creates a reads a document and adds an image to it..
@@ -43,7 +42,6 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
  */
 public class AddImageToPDF
 {
-
     /**
      * Add an image to an existing PDF document.
      *
@@ -66,14 +64,14 @@ public class AddImageToPDF
             //we will add the image to the first page.
             PDPage page = (PDPage)doc.getDocumentCatalog().getAllPages().get( 0 );
 
-            PDXObjectImage ximage = null;
+            PDImageXObject ximage;
             if( image.toLowerCase().endsWith( ".jpg" ) )
             {
-                ximage = new PDJpeg(doc, new FileInputStream( image ) );
+                ximage = JPEGFactory.createFromStream(doc, new FileInputStream(image));
             }
             else if (image.toLowerCase().endsWith(".tif") || image.toLowerCase().endsWith(".tiff"))
             {
-                ximage = new PDCcitt(doc, new RandomAccessFile(new File(image),"r"));
+                ximage = CCITTFactory.createFromRandomAccess(doc, new RandomAccessFile(new File(image),"r"));
             }
             else
             {

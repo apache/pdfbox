@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.util;
 
+import org.apache.pdfbox.cos.COSDictionary;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,7 +30,7 @@ public class PDFOperator
 {
     private String theOperator;
     private byte[] imageData;
-    private ImageParameters imageParameters;
+    private COSDictionary imageParameters;
 
     /** map for singleton operator objects; use {@link ConcurrentHashMap} for better scalability with multiple threads */
     private final static ConcurrentHashMap<String,PDFOperator> operators = new ConcurrentHashMap<String, PDFOperator>();
@@ -126,7 +128,7 @@ public class PDFOperator
      *
      * @return The image parameters.
      */
-    public ImageParameters getImageParameters()
+    public COSDictionary getImageParameters()
     {
         return imageParameters;
     }
@@ -136,7 +138,7 @@ public class PDFOperator
      *
      * @param params The image parameters.
      */
-    public void setImageParameters( ImageParameters params)
+    public void setImageParameters( COSDictionary params)
     {
         imageParameters = params;
     }

@@ -69,26 +69,22 @@ public class TestPDFunctionType4 extends TestCase
                 new float[] {-1.0f, 1.0f, -1.0f, 1.0f},
                 new float[] {-1.0f, 1.0f});
 
-        COSArray input = new COSArray();
-        input.setFloatArray(new float[] {0.8f, 0.1f});
-        COSArray output = function.eval(input);
+        float[] input = new float[] {0.8f, 0.1f};
+        float[] output = function.eval(input);
 
-        assertEquals(1, output.size());
-        assertEquals(0.9f, ((COSFloat)output.get(0)).floatValue(), 0.0001f);
+        assertEquals(1, output.length);
+        assertEquals(0.9f, output[0], 0.0001f);
 
-        input = new COSArray();
-        input.setFloatArray(new float[] {0.8f, 0.3f}); //results in 1.1f being outside Range
+        input = new float[] {0.8f, 0.3f}; //results in 1.1f being outside Range
         output = function.eval(input);
 
-        assertEquals(1, output.size());
-        assertEquals(new COSFloat(1.0f), output.get(0));
+        assertEquals(1, output.length);
+        assertEquals(1f, output[0]);
 
-        input = new COSArray();
-        input.setFloatArray(new float[] {0.8f, 1.2f}); //input argument outside Dimension
-        output = function.eval(input);
+        input = new float[] {0.8f, 1.2f}; //input argument outside Dimension
 
-        assertEquals(1, output.size());
-        assertEquals(new COSFloat(1.0f), output.get(0));
+        assertEquals(1, output.length);
+        assertEquals(1f, output[0]);
     }
 
     /**
@@ -104,12 +100,11 @@ public class TestPDFunctionType4 extends TestCase
                 new float[] {-1.0f, 1.0f, -1.0f, 1.0f},
                 new float[] {-1.0f, 1.0f});
 
-        COSArray input = new COSArray();
-        input.setFloatArray(new float[] {-0.7f, 0.0f});
-        COSArray output = function.eval(input);
+        float[] input = new float[] {-0.7f, 0.0f };
+        float[] output = function.eval(input);
 
-        assertEquals(1, output.size());
-        assertEquals(0.0f, ((COSFloat)output.get(0)).floatValue(), 0.0001f);
+        assertEquals(1, output.length);
+        assertEquals(0.0f, output[0], 0.0001f);
         //TODO not sure if this is really correct
     }
 

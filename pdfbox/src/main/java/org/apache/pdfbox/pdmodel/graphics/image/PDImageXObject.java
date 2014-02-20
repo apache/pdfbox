@@ -1,0 +1,407 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.pdfbox.pdmodel.graphics.image;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.filter.JPXFilter;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * An Image XObject.
+ *
+ * @author John Hewson
+ * @author Ben Litchfield
+ */
+public final class PDImageXObject extends PDXObject implements PDImage
+{
+    private BufferedImage cachedImage;
+    private Map<String, PDColorSpace> colorSpaces;  // from current resource dictionary
+
+    /**
+     * Creates a thumbnail Image XObject from the given COSBase and name.
+     * @param cosStream the COS stream
+     * @return an XObject
+     * @throws IOException if there is an error creating the XObject.
+     */
+    public static PDImageXObject createThumbnail(COSStream cosStream) throws IOException
+    {
+        // thumbnails are special, any non-null subtype is treated as being "Image"
+        PDStream pdStream = new PDStream(cosStream);
+        return new PDImageXObject(pdStream, null);
+    }
+
+    /**
+     * Creates an Image XObject in the given document.
+     * @param document the current document
+     */
+    public PDImageXObject(PDDocument document)
+    {
+        this(new PDStream(document), null);
+    }
+
+    /**
+     * Creates an Image XObject with the given stream as its contents and current color spaces.
+     * @param stream the XObject stream to read
+     * @param colorSpaces the color spaces in the current resources dictionary, null for masks
+     */
+    public PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces)
+    {
+        super(stream, COSName.IMAGE);
+        this.colorSpaces = colorSpaces;
+    }
+
+    /**
+     * Returns the metadata associated with this XObject, or null if there is none.
+     * @return the metadata associated with this object.
+     */
+    public PDMetadata getMetadata()
+    {
+        COSStream cosStream = (COSStream) getCOSStream().getDictionaryObject(COSName.METADATA);
+        if (cosStream != null)
+        {
+            return new PDMetadata(cosStream);
+        }
+        return null;
+    }
+
+    /**
+     * Sets the metadata associated with this XObject, or null if there is none.
+     * @param meta the metadata associated with this object
+     */
+    public void setMetadata(PDMetadata meta)
+    {
+        getCOSStream().setItem(COSName.METADATA, meta);
+    }
+
+    /**
+     * Returns the key of this XObject in the structural parent tree.
+     * @return this object's key the structural parent tree
+     */
+    public int getStructParent()
+    {
+        return getCOSStream().getInt(COSName.STRUCT_PARENT, 0);
+    }
+
+    /**
+     * Sets the key of this XObject in the structural parent tree.
+     * @param key the new key for this XObject
+     */
+    public void setStructParent(int key)
+    {
+        getCOSStream().setInt(COSName.STRUCT_PARENT, key);
+    }
+
+    /**
+     * {@inheritDoc}
+     * The returned images are cached for the lifetime of this XObject.
+     */
+    public BufferedImage getImage() throws IOException
+    {
+        if (cachedImage != null)
+        {
+            return cachedImage;
+        }
+
+        // get image as RGB
+        BufferedImage image = SampledImageReader.getRGBImage(this);
+
+        // soft mask (overrides explicit mask)
+        PDImageXObject softMask = getSoftMask();
+        if (softMask != null)
+        {
+            image = applyMask(image, softMask.getOpaqueImage());
+        }
+        else
+        {
+            // explicit mask
+            PDImageXObject mask = getMask();
+            if (mask != null)
+            {
+                image = applyMask(image, mask.getOpaqueImage());
+            }
+        }
+
+        cachedImage = image;
+        return image;
+    }
+
+    /**
+     * {@inheritDoc}
+     * The returned images are not cached.
+     */
+    public BufferedImage getStencilImage(Paint paint) throws IOException
+    {
+        if (!isStencil())
+        {
+            throw new IllegalStateException("Image is not a stencil");
+        }
+        return SampledImageReader.getStencilImage(this, paint);
+    }
+
+    /**
+     * Returns an RGB buffered image containing the opaque image stream without any masks applied.
+     * If this Image XObject is a mask then the buffered image will contain the raw mask.
+     * @return the image without any masks applied
+     * @throws IOException if the image cannot be read
+     */
+    public BufferedImage getOpaqueImage() throws IOException
+    {
+        return SampledImageReader.getRGBImage(this);
+    }
+
+    // explicit mask: RGB + Binary -> ARGB
+    // soft mask: RGB + Gray -> ARGB
+    private BufferedImage applyMask(BufferedImage image, BufferedImage mask) throws IOException
+    {
+        if (mask == null)
+        {
+            return image;
+        }
+
+        // TODO color key masking (not a Stream?)
+
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        // compose to ARGB
+        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        // scale mask to fit image
+        if (mask.getWidth() != width || mask.getHeight() != height)
+        {
+            BufferedImage mask2 = new BufferedImage(width, height, mask.getType());
+            Graphics2D g = mask2.createGraphics();
+            g.drawImage(mask, 0, 0, width, height, 0, 0, mask.getWidth(), mask.getHeight(), null);
+            g.dispose();
+            mask = mask2;
+        }
+
+        WritableRaster src = image.getRaster();
+        WritableRaster dest = masked.getRaster();
+        WritableRaster alpha = mask.getRaster();
+
+        float[] rgb = new float[3];
+        float[] rgba = new float[4];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                src.getPixel(x, y, rgb);
+
+                rgba[0] = rgb[0];
+                rgba[1] = rgb[1];
+                rgba[2] = rgb[2];
+                rgba[3] = alpha.getPixel(x, y, (float[])null)[0];
+
+                dest.setPixel(x, y, rgba);
+            }
+        }
+
+        return masked;
+    }
+
+    /**
+     * Returns the Mask Image XObject associated with this image, or null if there is none.
+     * @return Mask Image XObject
+     */
+    public PDImageXObject getMask()
+    {
+        COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.MASK);
+        if (cosStream != null)
+        {
+            return new PDImageXObject(new PDStream(cosStream), null); // always DeviceGray
+        }
+        return null;
+    }
+
+    /**
+     * Returns the Soft Mask Image XObject associated with this image, or null if there is none.
+     * @return the SMask Image XObject, or null.
+     */
+    public PDImageXObject getSoftMask()
+    {
+        COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.SMASK);
+        if (cosStream != null)
+        {
+            return new PDImageXObject(new PDStream(cosStream), null);  // always DeviceGray
+        }
+        return null;
+    }
+
+    public int getBitsPerComponent()
+    {
+        return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC, -1);
+    }
+
+    public void setBitsPerComponent(int bpc)
+    {
+        getCOSStream().setInt(COSName.BITS_PER_COMPONENT, bpc);
+    }
+
+    public PDColorSpace getColorSpace() throws IOException
+    {
+        COSBase cosBase = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
+        if (cosBase != null)
+        {
+            return PDColorSpace.create(cosBase, colorSpaces, null);
+        }
+        else
+        {
+            // examine filters
+            COSBase filter = getCOSStream().getDictionaryObject(COSName.FILTER);
+            if (COSName.JPX_DECODE.equals(filter))
+            {
+                // JPX images may embed a color space
+                InputStream input = getStream().createInputStream();
+                try
+                {
+                    return JPXFilter.getColorSpace(input);
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(input);
+                }
+            }
+            else
+            {
+                // TODO what does the PDF spec say about this?
+                // if the ColorSpace is missing, we try and guess it
+                if (COSName.CCITTFAX_DECODE.equals(filter) ||
+                    COSName.CCITTFAX_DECODE_ABBREVIATION.equals(filter) ||
+                    COSName.JBIG2_DECODE.equals(filter) ||
+                    isStencil())
+                {
+                    return PDDeviceGray.INSTANCE;
+                }
+                else
+                {
+                    // this method must not return null
+                    throw new IOException("could not determine color space");
+                }
+            }
+        }
+    }
+
+    public PDStream getStream() throws IOException
+    {
+        return getPDStream();
+    }
+
+    public void setColorSpace(PDColorSpace cs)
+    {
+        getCOSStream().setItem(COSName.COLORSPACE, cs != null ? cs.getCOSObject() : null);
+    }
+
+    public int getHeight()
+    {
+        return getCOSStream().getInt(COSName.HEIGHT, -1);
+    }
+
+    public void setHeight(int h)
+    {
+        getCOSStream().setInt(COSName.HEIGHT, h);
+    }
+
+    public int getWidth()
+    {
+        return getCOSStream().getInt(COSName.WIDTH, -1);
+    }
+
+    public void setWidth(int w)
+    {
+        getCOSStream().setInt(COSName.WIDTH, w);
+    }
+
+    public void setDecode(COSArray decode)
+    {
+        getCOSStream().setItem(COSName.DECODE, decode);
+    }
+
+    public COSArray getDecode()
+    {
+        COSBase decode = getCOSStream().getDictionaryObject(COSName.DECODE);
+        if (decode != null && decode instanceof COSArray)
+        {
+            return (COSArray) decode;
+        }
+        return null;
+    }
+
+    public boolean isStencil()
+    {
+        return getCOSStream().getBoolean(COSName.IMAGE_MASK, false);
+    }
+
+    public void setStencil(boolean isStencil)
+    {
+        getCOSStream().setBoolean(COSName.IMAGE_MASK, isStencil);
+    }
+
+    /**
+     * This will get the suffix for this image type, e.g. jpg/png.
+     * @return The image suffix.
+     */
+    public String getSuffix()
+    {
+        List<COSName> filters = getPDStream().getFilters();
+
+        if (filters.contains(COSName.DCT_DECODE))
+        {
+            return "jpg";
+        }
+        else if (filters.contains(COSName.JPX_DECODE))
+        {
+            return "jpx";
+        }
+        else if (filters.contains(COSName.CCITTFAX_DECODE))
+        {
+            return "tiff";
+        }
+        else if (filters.contains(COSName.FLATE_DECODE))
+        {
+            return "png";
+        }
+        else
+        {
+            // TODO more...
+            return null;
+        }
+    }
+}

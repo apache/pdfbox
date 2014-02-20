@@ -31,10 +31,9 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.content.ContentStreamEngine;
-import org.apache.pdfbox.util.ImageParameters;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
@@ -46,7 +45,7 @@ public class PDFAType3StreamParser extends ContentStreamEngine
     private boolean firstOperator = true;
     private float width = 0;
 
-    private PDInlinedImage image = null;
+    private PDInlineImage image = null;
     private BoundingBox box = null;
 
     public PDFAType3StreamParser(PreflightContext context, PDPage page)
@@ -69,7 +68,7 @@ public class PDFAType3StreamParser extends ContentStreamEngine
     {
         resetEngine();
         processSubStream(null, type3Stream);
-        return image.createImage();
+        return image.getImage();
     }
 
     /**
@@ -90,10 +89,9 @@ public class PDFAType3StreamParser extends ContentStreamEngine
 
         if (operation.equals("BI"))
         {
-            ImageParameters params = operator.getImageParameters();
-            image = new PDInlinedImage();
-            image.setImageParameters(params);
-            image.setImageData(operator.getImageData());
+            image = new PDInlineImage(operator.getImageParameters(),
+                                      operator.getImageData(),
+                                      getResources().getColorSpaces());
 
             validImageFilter(operator);
             validImageColorSpace(operator);

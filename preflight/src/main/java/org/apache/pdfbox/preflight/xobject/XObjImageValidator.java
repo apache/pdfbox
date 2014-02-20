@@ -32,8 +32,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -49,9 +48,9 @@ import org.apache.pdfbox.preflight.utils.RenderingIntents;
  */
 public class XObjImageValidator extends AbstractXObjValidator
 {
-    protected PDXObjectImage xImage = null;
+    protected PDImageXObject xImage = null;
 
-    public XObjImageValidator(PreflightContext context, PDXObjectImage xobj)
+    public XObjImageValidator(PreflightContext context, PDImageXObject xobj)
     {
         super(context, xobj.getCOSStream());
         this.xImage = xobj;
@@ -143,7 +142,7 @@ public class XObjImageValidator extends AbstractXObjValidator
             {
                 PreflightConfiguration config = context.getConfig();
                 ColorSpaceHelperFactory csFact = config.getColorSpaceHelperFact();
-                PDColorSpace pdCS = PDColorSpaceFactory.createColorSpace(csImg);
+                PDColorSpace pdCS = PDColorSpace.create(csImg);
                 ColorSpaceHelper csh = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_PATTERN);
                 csh.validate();
             }

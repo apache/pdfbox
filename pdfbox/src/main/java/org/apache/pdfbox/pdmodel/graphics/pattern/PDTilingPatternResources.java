@@ -16,13 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
-
-import java.awt.Paint;
 import java.awt.geom.AffineTransform;
-import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -30,20 +25,13 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.ColoredTilingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * This represents the resources for a tiling pattern.
- *
  */
 public class PDTilingPatternResources extends PDPatternResources
 {
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDTilingPatternResources.class);
-
     /**
      * paint type 1 = colored tiling pattern.
      */
@@ -299,27 +287,4 @@ public class PDTilingPatternResources extends PDPatternResources
         }
         getCOSDictionary().setItem(COSName.MATRIX, matrix);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Paint getPaint(int pageHeight) throws IOException
-    {
-        Paint paint = null;
-        int paintType = getPaintType();
-        switch (paintType)
-        {
-        case COLORED_TILING_PATTERN:
-            paint = new ColoredTilingPaint(this);
-            break;
-        case UNCOLORED_TILING_PATTERN:
-            LOG.debug("Error: Unsupported pattern type " + paintType);
-            break;
-        default:
-            throw new IOException("Error: Unknown paint type " + getPaintType());
-        }
-        return paint;
-    }
-
 }

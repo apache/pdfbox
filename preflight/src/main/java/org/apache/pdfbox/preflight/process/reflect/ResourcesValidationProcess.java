@@ -43,7 +43,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
@@ -185,7 +185,7 @@ public class ResourcesValidationProcess extends AbstractProcess
                     try
                     {
                         COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-                        PDXObject pdXObject = PDXObject.createXObject(stream);
+                        PDXObject pdXObject = PDXObject.createXObject(stream, entry.getKey().getName(), resources);
                         if (pdXObject != null)
                         {
                             ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);

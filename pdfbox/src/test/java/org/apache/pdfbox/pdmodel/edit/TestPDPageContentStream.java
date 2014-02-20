@@ -38,15 +38,12 @@ public class TestPDPageContentStream extends TestCase {
     public void testSetCmykColors() throws IOException, COSVisitorException {
         PDDocument doc = new PDDocument();
 
-        ColorSpace colorSpace = PDDeviceCMYK.INSTANCE.getJavaColorSpace();
-
         PDPage page = new PDPage();
         doc.addPage(page);
 
         PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, true);
         // pass a non-stroking color in CMYK color space
-        contentStream.setNonStrokingColor(
-                new Color(colorSpace, new float[]{0.1f, 0.2f, 0.3f, 0.4f}, 1.0f));
+        contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f, 0.4f);
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct
@@ -72,8 +69,7 @@ public class TestPDPageContentStream extends TestCase {
 
         contentStream = new PDPageContentStream(doc, page, false, false);
         // pass a non-stroking color in CMYK color space
-        contentStream.setStrokingColor(new Color(colorSpace,
-                new float[]{0.5f, 0.6f, 0.7f, 0.8f}, 1.0f));
+        contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct

@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import java.io.IOException;
 
 /**
- * This class represents a type 3 function in a PDF document.
+ * This class represents a Type 3 (stitching) function in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $

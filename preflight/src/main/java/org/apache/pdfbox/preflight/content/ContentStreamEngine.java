@@ -28,7 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TOO_M
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_GRAPHIC_STATES;
 
-import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,13 +40,9 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDCIEBasedColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
-import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -79,14 +74,14 @@ import org.apache.pdfbox.util.operator.SetLineDashPattern;
 import org.apache.pdfbox.util.operator.SetLineJoinStyle;
 import org.apache.pdfbox.util.operator.SetLineWidth;
 import org.apache.pdfbox.util.operator.SetMatrix;
-import org.apache.pdfbox.util.operator.SetNonStrokingCMYKColor;
+import org.apache.pdfbox.util.operator.SetNonStrokingDeviceCMYKColor;
 import org.apache.pdfbox.util.operator.SetNonStrokingColor;
 import org.apache.pdfbox.util.operator.SetNonStrokingColorSpace;
-import org.apache.pdfbox.util.operator.SetNonStrokingRGBColor;
-import org.apache.pdfbox.util.operator.SetStrokingCMYKColor;
+import org.apache.pdfbox.util.operator.SetNonStrokingDeviceRGBColor;
+import org.apache.pdfbox.util.operator.SetStrokingDeviceCMYKColor;
 import org.apache.pdfbox.util.operator.SetStrokingColor;
 import org.apache.pdfbox.util.operator.SetStrokingColorSpace;
-import org.apache.pdfbox.util.operator.SetStrokingRGBColor;
+import org.apache.pdfbox.util.operator.SetStrokingDeviceRGBColor;
 import org.apache.pdfbox.util.operator.SetTextFont;
 import org.apache.pdfbox.util.operator.SetTextLeading;
 import org.apache.pdfbox.util.operator.SetTextRenderingMode;
@@ -102,7 +97,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
     private enum ColorSpaceType
     {
-        RGB, CMYK, ALL;
+        RGB, CMYK, ALL
     }
 
     protected PreflightContext context = null;
@@ -131,11 +126,11 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
         registerOperatorProcessor("j", new SetLineJoinStyle());
         registerOperatorProcessor("J", new SetLineCapStyle());
-        registerOperatorProcessor("K", new SetStrokingCMYKColor());
-        registerOperatorProcessor("k", new SetNonStrokingCMYKColor());
+        registerOperatorProcessor("K", new SetStrokingDeviceCMYKColor());
+        registerOperatorProcessor("k", new SetNonStrokingDeviceCMYKColor());
 
-        registerOperatorProcessor("rg", new SetNonStrokingRGBColor());
-        registerOperatorProcessor("RG", new SetStrokingRGBColor());
+        registerOperatorProcessor("rg", new SetNonStrokingDeviceRGBColor());
+        registerOperatorProcessor("RG", new SetStrokingDeviceRGBColor());
 
         registerOperatorProcessor("SC", new SetStrokingColor());
         registerOperatorProcessor("SCN", new SetStrokingColor());
@@ -281,13 +276,12 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
     /**
      * Throw a ContentStreamException if the LZW filter is used in a InlinedImage.
      * 
-     * @param operator
-     *            the InlinedImage object (BI to EI)
+     * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
     protected void validImageFilter(PDFOperator operator) throws ContentStreamException
     {
-        COSDictionary dict = operator.getImageParameters().getDictionary();
+        COSDictionary dict = operator.getImageParameters();
         /*
          * Search a Filter declaration in the InlinedImage dictionary. The LZWDecode Filter is forbidden.
          */
@@ -297,16 +291,15 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
     }
 
     /**
-     * This method validates if the ColorSpace used by the InlinedImage is consistent with the color space defined in
-     * OutputIntent dictionaries.
+     * This method validates if the ColorSpace used by the InlinedImage is consistent with
+     * the color space defined in OutputIntent dictionaries.
      * 
-     * @param operator
-     *            the InlinedImage object (BI to EI)
+     * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validImageColorSpace(PDFOperator operator) throws ContentStreamException, IOException
+    protected void validImageColorSpace(PDFOperator operator) throws IOException
     {
-        COSDictionary dict = operator.getImageParameters().getDictionary();
+        COSDictionary dict = operator.getImageParameters();
 
         COSBase csInlinedBase = dict.getItem(COSName.CS);
         ColorSpaceHelper csHelper = null;
@@ -314,9 +307,8 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         {
             if (COSUtils.isString(csInlinedBase, cosDocument))
             {
-                /*
-                 * In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed color spaces are allowed.
-                 */
+                // In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed
+                // color spaces are allowed.
                 String colorSpace = COSUtils.getAsString(csInlinedBase, cosDocument);
                 ColorSpaces cs = null;
 
@@ -326,11 +318,9 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
                 }
                 catch (IllegalArgumentException e)
                 {
-                    /*
-                     * The color space is unknown. Try to access the resources dictionary, the color space can be a
-                     * reference.
-                     */
-                    PDColorSpace pdCS = (PDColorSpace) this.getColorSpaces().get(colorSpace);
+                    // The color space is unknown. Try to access the resources dictionary,
+                    // the color space can be a reference.
+                    PDColorSpace pdCS = (PDColorSpace) this.getResources().getColorSpaces().get(colorSpace);
                     if (pdCS != null)
                     {
                         cs = ColorSpaces.valueOf(pdCS.getName());
@@ -349,7 +339,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
             if (csHelper == null)
             {
-                PDColorSpace pdCS = PDColorSpaceFactory.createColorSpace(csInlinedBase);
+                PDColorSpace pdCS = PDColorSpace.create(csInlinedBase);
                 PreflightConfiguration cfg = context.getConfig();
                 ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
                 csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
@@ -360,15 +350,15 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
     }
 
     /**
-     * This method validates if the ColorOperator can be used with the color space defined in OutputIntent dictionaries.
+     * This method validates if the ColorOperator can be used with the color space
+     * defined in OutputIntent dictionaries.
      * 
-     * @param operator
-     *            the color operator
+     * @param operation the color operator
      * @throws ContentStreamException
      */
     protected void checkColorOperators(String operation) throws ContentStreamException
     {
-        PDColorState cs = getColorState(operation);
+        PDColorSpace cs = getColorSpace(operation);
 
         if ("rg".equals(operation) || "RG".equals(operation))
         {
@@ -413,36 +403,29 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         }
     }
 
-    private boolean validColorSpace(PDColorState colorState, ColorSpaceType expectedType) throws ContentStreamException
+    private boolean validColorSpace(PDColorSpace colorSpace, ColorSpaceType expectedType)
+            throws ContentStreamException
     {
-        boolean result = true;
-        if (colorState == null)
+        if (colorSpace == null)
         {
-            result = validColorSpaceDestOutputProfile(expectedType);
+            return validColorSpaceDestOutputProfile(expectedType);
         }
         else
         {
-            PDColorSpace cs = colorState.getColorSpace();
-            if (isDeviceIndependent(cs, expectedType))
-            {
-                result = true;
-            }
-            else
-            {
-                result = validColorSpaceDestOutputProfile(expectedType);
-            }
+            return isDeviceIndependent(colorSpace, expectedType) ||
+                   validColorSpaceDestOutputProfile(expectedType);
         }
-        return result;
     }
 
-    /**
-     * Check if the ColorProfile provided by the DestOutputProfile entry isn't null and if the ColorSpace represented by
-     * the Profile has the right type (RGB or CMYK)
+    /*
+     * Check if the ColorProfile provided by the DestOutputProfile entry isn't null and
+     * if the ColorSpace represented by the Profile has the right type (RGB or CMYK)
      * 
      * @param expectedType
      * @return
      */
-    private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType) throws ContentStreamException
+    private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType)
+            throws ContentStreamException
     {
         boolean result = false;
         ICCProfileWrapper profileWrapper;
@@ -472,74 +455,54 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         return result;
     }
 
-    /**
-     * Return true if the given ColorSpace is an independent device ColorSpace. If the color space is an ICCBased, check
-     * the embedded profile color (RGB or CMYK)
-     * 
-     * @param cs
-     * @return
+    /*
+     * Return true if the given ColorSpace is an independent device ColorSpace.
+     * If the color space is an ICCBased, check the embedded profile color (RGB or CMYK)
      */
     private boolean isDeviceIndependent(PDColorSpace cs, ColorSpaceType expectedType)
     {
-        boolean result = (cs instanceof PDCalGray || cs instanceof PDCalRGB || cs instanceof PDLab);
         if (cs instanceof PDICCBased)
         {
-            PDICCBased iccBased = (PDICCBased) cs;
-            try
+            int type = ((PDICCBased)cs).getColorSpaceType();
+            switch (expectedType)
             {
-                ColorSpace iccColorSpace = iccBased.getJavaColorSpace();
-                switch (expectedType)
-                {
-                case RGB:
-                    result = (iccColorSpace.getType() == ICC_ColorSpace.TYPE_RGB);
-                    break;
-                case CMYK:
-                    result = (iccColorSpace.getType() == ICC_ColorSpace.TYPE_CMYK);
-                    break;
-                default:
-                    result = true;
-                    break;
-                }
-            }
-            catch (IOException e)
-            {
-                result = false;
+                case RGB: return type == ICC_ColorSpace.TYPE_RGB;
+                case CMYK: return type == ICC_ColorSpace.TYPE_CMYK;
+                default: return true;
             }
         }
-        return result;
+        else
+        {
+            return cs instanceof PDCIEBasedColorSpace;
+        }
     }
 
-    /**
-     * Return the current color state used by the operation
-     * 
-     * @param operation
-     * @return
+    /*
+     * Return the current color space used by the operation
      */
-    private PDColorState getColorState(String operation)
+    private PDColorSpace getColorSpace(String operation)
     {
         if (getGraphicsState() == null)
         {
             return null;
         }
 
-        PDColorState colorState;
-        if (operation.equals("rg") || operation.equals("g") || operation.equals("k") || operation.equals("f")
-                || operation.equals("F") || operation.equals("f*"))
+        if (operation.equals("rg") || operation.equals("g") || operation.equals("k") ||
+            operation.equals("f") || operation.equals("F") || operation.equals("f*"))
         {
             // non stroking operator
-            colorState = getGraphicsState().getNonStrokingColor();
+            return getGraphicsState().getNonStrokingColorSpace();
         }
         else
         {
             // stroking operator
-            colorState = getGraphicsState().getStrokingColor();
+            return getGraphicsState().getStrokingColorSpace();
         }
-        return colorState;
     }
 
     /**
-     * This method validates if the ColorSpace used as operand is consistent with the color space defined in
-     * OutputIntent dictionaries.
+     * This method validates if the ColorSpace used as operand is consistent with
+     * the color space defined in OutputIntent dictionaries.
      * 
      * @param operator
      * @param arguments
@@ -582,7 +545,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
             /*
              * The color space is unknown. Try to access the resources dictionary, the color space can be a reference.
              */
-            PDColorSpace pdCS = (PDColorSpace) this.getColorSpaces().get(colorSpaceName);
+            PDColorSpace pdCS = (PDColorSpace) this.getResources().getColorSpaces().get(colorSpaceName);
             if (pdCS != null)
             {
                 cs = ColorSpaces.valueOf(pdCS.getName());
@@ -600,7 +563,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
         if (csHelper == null)
         {
-            PDColorSpace pdCS = PDColorSpaceFactory.createColorSpace(COSName.getPDFName(colorSpaceName));
+            PDColorSpace pdCS = PDColorSpace.create(COSName.getPDFName(colorSpaceName));
             PreflightConfiguration cfg = context.getConfig();
             ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
             csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);

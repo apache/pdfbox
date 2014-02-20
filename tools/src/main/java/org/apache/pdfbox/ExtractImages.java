@@ -16,7 +16,9 @@
  */
 package org.apache.pdfbox;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -27,9 +29,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.TIFFInputStream;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * This will read a read pdf and extract images. <br/><br/>
@@ -186,9 +190,9 @@ public class ExtractImages
                 String key = xobjectIter.next();
                 PDXObject xobject = xobjects.get( key );
                 // write the images
-                if (xobject instanceof PDXObjectImage)
+                if (xobject instanceof PDImageXObject)
                 {
-                    PDXObjectImage image = (PDXObjectImage)xobject;
+                    PDImageXObject image = (PDImageXObject)xobject;
                     String name = null;
                     if (addKey) 
                     {
@@ -199,15 +203,50 @@ public class ExtractImages
                         name = getUniqueFileName( prefix, image.getSuffix() );
                     }
                     System.out.println( "Writing image:" + name );
-                    image.write2file( name );
+                    write2file( image, name );
                 }
                 // maybe there are more images embedded in a form object
-                else if (xobject instanceof PDXObjectForm)
+                else if (xobject instanceof PDFormXObject)
                 {
-                    PDXObjectForm xObjectForm = (PDXObjectForm)xobject;
+                    PDFormXObject xObjectForm = (PDFormXObject)xobject;
                     PDResources formResources = xObjectForm.getResources();
                     processResources(formResources, prefix, addKey);
                 }
+            }
+        }
+    }
+
+    /**
+     * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg".
+     * The suffix is automatically set by the
+     * @param filename the filename
+     * @throws IOException When somethings wrong with the corresponding file.
+     */
+    private void write2file(PDImageXObject xobj, String filename) throws IOException
+    {
+        FileOutputStream out = null;
+        try
+        {
+            out = new FileOutputStream(filename + "." + xobj.getSuffix());
+            BufferedImage image = xobj.getImage();
+            if (image != null)
+            {
+                if ("tiff".equals(xobj.getSuffix()))
+                {
+                    TIFFInputStream.writeToOutputStream(xobj, out);
+                }
+                else
+                {
+                    ImageIOUtil.writeImage(image, xobj.getSuffix(), out);
+                }
+            }
+            out.flush();
+        }
+        finally
+        {
+            if (out != null)
+            {
+                out.close();
             }
         }
     }

@@ -24,9 +24,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
@@ -128,9 +128,9 @@ public class PrintImageLocations extends PDFStreamEngine
             COSName objectName = (COSName)arguments.get( 0 );
             Map<String, PDXObject> xobjects = getResources().getXObjects();
             PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
-            if( xobject instanceof PDXObjectImage )
+            if( xobject instanceof PDImageXObject)
             {
-                PDXObjectImage image = (PDXObjectImage)xobject;
+                PDImageXObject image = (PDImageXObject)xobject;
                 int imageWidth = image.getWidth();
                 int imageHeight = image.getHeight();
                 System.out.println("*******************************************************************");
@@ -159,12 +159,12 @@ public class PrintImageLocations extends PDFStreamEngine
                 System.out.println("size = " + imageXScale + "mm, " + imageYScale + "mm");
                 System.out.println();
             }
-            else if(xobject instanceof PDXObjectForm)
+            else if(xobject instanceof PDFormXObject)
             {
                 // save the graphics state
                 getGraphicsStack().push( (PDGraphicsState)getGraphicsState().clone() );
                 
-                PDXObjectForm form = (PDXObjectForm)xobject;
+                PDFormXObject form = (PDFormXObject)xobject;
                 COSStream invoke = (COSStream)form.getCOSObject();
                 PDResources pdResources = form.getResources();
                 // if there is an optional form matrix, we have to map the form space to the user space

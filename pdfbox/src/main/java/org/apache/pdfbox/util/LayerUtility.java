@@ -36,9 +36,9 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 
 /**
@@ -129,7 +129,7 @@ public class LayerUtility
      * @return a Form XObject containing the original page's content
      * @throws IOException if an I/O error occurs
      */
-    public PDXObjectForm importPageAsForm(PDDocument sourceDoc, int pageNumber) throws IOException
+    public PDFormXObject importPageAsForm(PDDocument sourceDoc, int pageNumber) throws IOException
     {
         PDPage page = (PDPage)sourceDoc.getDocumentCatalog().getAllPages().get(pageNumber);
         return importPageAsForm(sourceDoc, page);
@@ -146,12 +146,12 @@ public class LayerUtility
      * @return a Form XObject containing the original page's content
      * @throws IOException if an I/O error occurs
      */
-    public PDXObjectForm importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
+    public PDFormXObject importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
     {
         COSStream pageStream = (COSStream)page.getContents().getCOSObject();
         PDStream newStream = new PDStream(targetDoc,
                 pageStream.getUnfilteredStream(), false);
-        PDXObjectForm form = new PDXObjectForm(newStream);
+        PDFormXObject form = new PDFormXObject(newStream);
 
         //Copy resources
         PDResources pageRes = page.findResources();
@@ -223,7 +223,7 @@ public class LayerUtility
      * @throws IOException if an I/O error occurs
      */
     public PDOptionalContentGroup appendFormAsLayer(PDPage targetPage,
-            PDXObjectForm form, AffineTransform transform,
+            PDFormXObject form, AffineTransform transform,
             String layerName) throws IOException
     {
         PDDocumentCatalog catalog = targetDoc.getDocumentCatalog();

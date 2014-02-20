@@ -24,270 +24,283 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.PDRange;
 
-import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-
 import java.io.IOException;
 
 /**
- * This class represents a Lab color space.
+ * A Lab colour space is a CIE-based ABC colour space with two transformation stages.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDLab extends PDColorSpace
+public final class PDLab extends PDCIEBasedColorSpace
 {
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "Lab";
+    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
 
     private COSArray array;
     private COSDictionary dictionary;
+    private PDColor initialColor;
 
     /**
-     * Constructor.
+     * Creates a new Lab color space.
      */
     public PDLab()
     {
         array = new COSArray();
         dictionary = new COSDictionary();
-        array.add( COSName.LAB );
-        array.add( dictionary );
+        array.add(COSName.LAB);
+        array.add(dictionary);
     }
 
     /**
-     * Constructor with array.
-     *
-     * @param lab The underlying color space.
+     * Creates a new Lab color space from a PDF array.
+     * @param lab the color space array
      */
-    public PDLab( COSArray lab )
+    public PDLab(COSArray lab)
     {
         array = lab;
-        dictionary = (COSDictionary)array.getObject( 1 );
+        dictionary = (COSDictionary)array.getObject(1);
     }
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
+    @Override
     public String getName()
     {
-        return NAME;
+        return COSName.LAB.getName();
     }
 
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
+    @Override
     public COSBase getCOSObject()
     {
         return array;
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    @Override
+    public float[] toRGB(float[] value)
     {
-        return new ColorSpaceLab(getWhitepoint(), getBlackPoint(), getARange(), getBRange());
+        float minA = getARange().getMin();
+        float maxA = getARange().getMax();
+        float minB = getBRange().getMin();
+        float maxB = getBRange().getMax();
+
+        // scale to range
+        float l = value[0] * 100;
+        float a = minA + (value[1] * (maxA - minA));
+        float b = minB + (value[2] * (maxB - minB));
+
+        return labToRGB(l, a, b, getWhitepoint(), getBlackPoint());
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
+    // CIE LAB to RGB, see http://en.wikipedia.org/wiki/Lab_color_space
+    private float[] labToRGB(float l, float a, float b,
+                             PDTristimulus whitepoint,
+                             PDTristimulus blackpoint)
     {
-        int[] nBits = {bpc, bpc, bpc};
-        return new ComponentColorModel( getJavaColorSpace(),
-                   nBits,
-                   false,
-                   false,
-                   Transparency.OPAQUE,
-                   DataBuffer.TYPE_BYTE);
+        // L*
+        float lstar = (l + 16f) * (1f / 116f);
+
+        // white point
+        float wpX = whitepoint.getX();
+        float wpY = whitepoint.getY();
+        float wpZ = whitepoint.getZ();
+
+        // TODO: how to use the blackpoint? scale linearly between black & white?
+
+        // XYZ
+        float x = wpX * inverse(lstar + a * (1f / 500f));
+        float y = wpY * inverse(lstar);
+        float z = wpZ * inverse(lstar - b * (1f / 200f));
+
+        // XYZ to RGB
+        return CIEXYZ.toRGB(new float[] { x, y, z });
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    // reverse transformation (f^-1)
+    private float inverse(float x)
+    {
+        if (x > 6.0 / 29.0)
+        {
+            return x * x * x;
+        }
+        else
+        {
+            return (108f / 841f) * (x - (4f / 29f));
+        }
+    }
+
+    @Override
+    public int getNumberOfComponents()
     {
         return 3;
     }
 
+    @Override
+    public float[] getDefaultDecode()
+    {
+        PDRange a = getARange();
+        PDRange b = getARange();
+        return new float[] { 0, 100, a.getMin(), a.getMax(), b.getMin(), b.getMax() };
+    }
+
+    @Override
+    public PDColor getInitialColor()
+    {
+        if (initialColor != null)
+        {
+            initialColor = new PDColor(new float[] {
+                    0,
+                    Math.max(0, getARange().getMin()),
+                    Math.max(0, getBRange().getMin()) });
+        }
+        return initialColor;
+    }
+
     /**
-     * This will return the whitepoint tristimulus.  As this is a required field
-     * this will never return null.  A default of 1,1,1 will be returned if the
-     * pdf does not have any values yet.
-     *
-     * @return The whitepoint tristimulus.
+     * This will return the whitepoint tristimulus.
+     * As this is a required field this will never return null.
+     * A default of 1,1,1 will be returned if the pdf does not have any values yet.
+     * @return the whitepoint tristimulus
      */
     public PDTristimulus getWhitepoint()
     {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.WHITE_POINT );
-        if( wp == null )
+        COSArray wp = (COSArray)dictionary.getDictionaryObject(COSName.WHITE_POINT);
+        if(wp == null)
         {
             wp = new COSArray();
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.WHITE_POINT, wp );
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
+            dictionary.setItem(COSName.WHITE_POINT, wp);
         }
-        return new PDTristimulus( wp );
+        return new PDTristimulus(wp);
     }
 
     /**
-     * This will set the whitepoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param wp The whitepoint tristimulus.
-     */
-    public void setWhitepoint( PDTristimulus wp )
-    {
-        COSBase wpArray = wp.getCOSObject();
-        if( wpArray != null )
-        {
-            dictionary.setItem( COSName.WHITE_POINT, wpArray );
-        }
-    }
-
-    /**
-     * This will return the BlackPoint tristimulus.  This is an optional field but
-     * has defaults so this will never return null.
+     * This will return the BlackPoint tristimulus.
+     * This is an optional field but has defaults so this will never return null.
      * A default of 0,0,0 will be returned if the pdf does not have any values yet.
-     *
-     * @return The blackpoint tristimulus.
+     * @return the blackpoint tristimulus
      */
     public PDTristimulus getBlackPoint()
     {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.BLACK_POINT );
-        if( bp == null )
+        COSArray bp = (COSArray)dictionary.getDictionaryObject(COSName.BLACK_POINT);
+        if(bp == null)
         {
             bp = new COSArray();
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            dictionary.setItem( COSName.BLACK_POINT, bp );
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
+            dictionary.setItem(COSName.BLACK_POINT, bp);
         }
-        return new PDTristimulus( bp );
-    }
-
-    /**
-     * This will set the BlackPoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param bp The BlackPoint tristimulus.
-     */
-    public void setBlackPoint( PDTristimulus bp )
-    {
-
-        COSBase bpArray = null;
-        if( bp != null )
-        {
-            bpArray = bp.getCOSObject();
-        }
-        dictionary.setItem( COSName.BLACK_POINT, bpArray );
+        return new PDTristimulus(bp);
     }
 
     private COSArray getRangeArray()
     {
-        COSArray range = (COSArray)dictionary.getDictionaryObject( COSName.RANGE );
-        if( range == null )
+        COSArray range = (COSArray)dictionary.getDictionaryObject(COSName.RANGE);
+        if(range == null)
         {
             range = new COSArray();
-            dictionary.setItem( COSName.RANGE, array );
-            range.add( new COSFloat( -100 ) );
-            range.add( new COSFloat( 100 ) );
-            range.add( new COSFloat( -100 ) );
-            range.add( new COSFloat( 100 ) );
+            dictionary.setItem(COSName.RANGE, array);
+            range.add(new COSFloat(-100));
+            range.add(new COSFloat(100));
+            range.add(new COSFloat(-100));
+            range.add(new COSFloat(100));
         }
         return range;
     }
 
     /**
-     * This will get the valid range for the a component.  If none is found
-     * then the default will be returned, which is -100 to 100.
-     *
-     * @return The a range.
+     * This will get the valid range for the "a" component.
+     * If none is found then the default will be returned, which is -100 to 100.
+     * @return the "a" range
      */
     public PDRange getARange()
     {
         COSArray range = getRangeArray();
-        return new PDRange( range, 0 );
+        return new PDRange(range, 0);
     }
 
     /**
-     * This will set the a range for this color space.
-     *
-     * @param range The new range for the a component.
-     */
-    public void setARange( PDRange range )
-    {
-        COSArray rangeArray = null;
-        //if null then reset to defaults
-        if( range == null )
-        {
-            rangeArray = getRangeArray();
-            rangeArray.set( 0, new COSFloat( -100 ) );
-            rangeArray.set( 1, new COSFloat( 100 ) );
-        }
-        else
-        {
-            rangeArray = range.getCOSArray();
-        }
-        dictionary.setItem( COSName.RANGE, rangeArray );
-    }
-
-    /**
-     * This will get the valid range for the b component.  If none is found
-     * then the default will be returned, which is -100 to 100.
-     *
-     * @return The b range.
+     * This will get the valid range for the "b" component.
+     * If none is found  then the default will be returned, which is -100 to 100.
+     * @return the "b" range
      */
     public PDRange getBRange()
     {
         COSArray range = getRangeArray();
-        return new PDRange( range, 1 );
+        return new PDRange(range, 1);
     }
 
     /**
-     * This will set the b range for this color space.
-     *
-     * @param range The new range for the b component.
+     * This will set the whitepoint tristimulus.
+     * As this is a required field this null should not be passed into this function.
+     * @param whitepoint the whitepoint tristimulus
      */
-    public void setBRange( PDRange range )
+    public void setWhitepoint(PDTristimulus whitepoint)
+    {
+        COSBase wpArray = whitepoint.getCOSObject();
+        if(wpArray != null)
+        {
+            dictionary.setItem(COSName.WHITE_POINT, wpArray);
+        }
+    }
+
+    /**
+     * This will set the BlackPoint tristimulus.
+     * As this is a required field this null should not be passed into this function.
+     * @param blackpoint the BlackPoint tristimulus
+     */
+    public void setBlackPoint(PDTristimulus blackpoint)
+    {
+        COSBase bpArray = null;
+        if(blackpoint != null)
+        {
+            bpArray = blackpoint.getCOSObject();
+        }
+        dictionary.setItem(COSName.BLACK_POINT, bpArray);
+    }
+
+    /**
+     * This will set the a range for the "a" component.
+     * @param range the new range for the "a" component
+     */
+    public void setARange(PDRange range)
     {
         COSArray rangeArray = null;
         //if null then reset to defaults
-        if( range == null )
+        if(range == null)
         {
             rangeArray = getRangeArray();
-            rangeArray.set( 2, new COSFloat( -100 ) );
-            rangeArray.set( 3, new COSFloat( 100 ) );
+            rangeArray.set(0, new COSFloat(-100));
+            rangeArray.set(1, new COSFloat(100));
         }
         else
         {
             rangeArray = range.getCOSArray();
         }
-        dictionary.setItem( COSName.RANGE, rangeArray );
+        dictionary.setItem(COSName.RANGE, rangeArray);
+        initialColor = null;
+    }
+
+    /**
+     * This will set the "b" range for this color space.
+     * @param range the new range for the "b" component
+     */
+    public void setBRange(PDRange range)
+    {
+        COSArray rangeArray = null;
+        //if null then reset to defaults
+        if(range == null)
+        {
+            rangeArray = getRangeArray();
+            rangeArray.set(2, new COSFloat(-100));
+            rangeArray.set(3, new COSFloat(100));
+        }
+        else
+        {
+            rangeArray = range.getCOSArray();
+        }
+        dictionary.setItem(COSName.RANGE, rangeArray);
+        initialColor = null;
     }
 }

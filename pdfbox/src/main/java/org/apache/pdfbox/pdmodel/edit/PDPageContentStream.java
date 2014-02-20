@@ -44,13 +44,12 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 
 /**
  * This class is a convenience for creating page content streams.  You MUST
@@ -70,8 +69,8 @@ public class PDPageContentStream
     private boolean inTextMode = false;
     private PDResources resources;
 
-    private PDColorSpace currentStrokingColorSpace = new PDDeviceGray();
-    private PDColorSpace currentNonStrokingColorSpace = new PDDeviceGray();
+    private PDColorSpace currentStrokingColorSpace = PDDeviceGray.INSTANCE;
+    private PDColorSpace currentNonStrokingColorSpace = PDDeviceGray.INSTANCE;
 
     // cached storage component for getting color values
     private float[] colorComponents = new float[4];
@@ -334,7 +333,7 @@ public class PDPageContentStream
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public void drawImage(PDXObjectImage image, float x, float y) throws IOException
+    public void drawImage(PDImageXObject image, float x, float y) throws IOException
     {
         drawXObject(image, x, y, image.getWidth(), image.getHeight());
     }
@@ -371,7 +370,7 @@ public class PDPageContentStream
             throw new IOException("Error: drawXObject is not allowed within a text block.");
         }
         String xObjectPrefix = null;
-        if (xobject instanceof PDXObjectImage)
+        if (xobject instanceof PDImageXObject)
         {
             xObjectPrefix = "Im";
         }
@@ -635,8 +634,9 @@ public class PDPageContentStream
             appendRawCommands(components[i]);
             appendRawCommands(SPACE);
         }
-        if (currentStrokingColorSpace instanceof PDSeparation || currentStrokingColorSpace instanceof PDPattern
-                || currentStrokingColorSpace instanceof PDDeviceN || currentStrokingColorSpace instanceof PDICCBased)
+        if (currentStrokingColorSpace instanceof PDSeparation ||
+            currentStrokingColorSpace instanceof PDPattern ||
+            currentStrokingColorSpace instanceof PDICCBased)
         {
             appendRawCommands(SET_STROKING_COLOR_COMPLEX);
         }
@@ -647,7 +647,7 @@ public class PDPageContentStream
     }
 
     /**
-     * Set the stroking color, specified as RGB.
+     * Set the stroking color, specified as RGB or Gray.
      *
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -664,19 +664,14 @@ public class PDPageContentStream
             color.getColorComponents(colorComponents);
             setStrokingColor(colorComponents[0]);
         }
-        else if (colorSpace.getType() == ColorSpace.TYPE_CMYK)
-        {
-            color.getColorComponents(colorComponents);
-            setStrokingColor(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
-        }
         else
         {
-            throw new IOException("Error: unknown colorspace:" + colorSpace);
+            throw new IOException("Error: unknown color space:" + colorSpace);
         }
     }
 
     /**
-     * Set the non stroking color, specified as RGB.
+     * Set the non stroking color, specified as RGB or Gray.
      *
      * @param color The color to set.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -693,14 +688,9 @@ public class PDPageContentStream
             color.getColorComponents(colorComponents);
             setNonStrokingColor(colorComponents[0]);
         }
-        else if (colorSpace.getType() == ColorSpace.TYPE_CMYK)
-        {
-            color.getColorComponents(colorComponents);
-            setNonStrokingColor(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3]);
-        }
         else
         {
-            throw new IOException("Error: unknown colorspace:" + colorSpace);
+            throw new IOException("Error: unknown color space:" + colorSpace);
         }
     }
 
@@ -806,9 +796,9 @@ public class PDPageContentStream
             appendRawCommands(components[i]);
             appendRawCommands(SPACE);
         }
-        if (currentNonStrokingColorSpace instanceof PDSeparation || currentNonStrokingColorSpace instanceof PDPattern
-                || currentNonStrokingColorSpace instanceof PDDeviceN
-                || currentNonStrokingColorSpace instanceof PDICCBased)
+        if (currentNonStrokingColorSpace instanceof PDSeparation ||
+            currentNonStrokingColorSpace instanceof PDPattern ||
+            currentNonStrokingColorSpace instanceof PDICCBased)
         {
             appendRawCommands(SET_NON_STROKING_COLOR_COMPLEX);
         }

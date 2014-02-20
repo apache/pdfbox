@@ -24,27 +24,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDInlinedImage;
-import org.apache.pdfbox.util.ImageParameters;
+import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
+ * Begins an inline image.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  */
 public class BeginInlineImage extends OperatorProcessor
 {
-
     /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(BeginInlineImage.class);
-
-    /**
-     * process : BI : begin inline image.
+     * BI begin inline image.
      * @param operator The operator that is being executed.
      * @param arguments List
      * @throws IOException If there is an error displaying the inline image.
@@ -52,18 +45,12 @@ public class BeginInlineImage extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments)  throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
-        //begin inline image object
-        ImageParameters params = operator.getImageParameters();
-        PDInlinedImage image = new PDInlinedImage();
-        image.setImageParameters( params );
-        image.setImageData( operator.getImageData() );
-        BufferedImage awtImage = image.createImage( context.getColorSpaces() );
 
-        if (awtImage == null) 
-        {
-            log.warn("BeginInlineImage.process(): createImage returned NULL");
-            return;
-        }
+        PDInlineImage image = new PDInlineImage(operator.getImageParameters(),
+                                                operator.getImageData(),
+                                                context.getResources().getColorSpaces());
+
+        BufferedImage awtImage = image.getImage();
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
         drawer.drawImage(awtImage, ctm.createAffineTransform());
     }

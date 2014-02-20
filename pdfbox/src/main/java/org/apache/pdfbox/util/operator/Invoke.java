@@ -20,8 +20,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFMarkedContentExtractor;
 import org.apache.pdfbox.util.PDFOperator;
@@ -41,38 +41,39 @@ import java.util.Map;
 public class Invoke extends OperatorProcessor
 {
     /**
-     * process : Do - Invoke a named xobject.
+     * Do: Invoke the named XObject.
      * 
      * @param operator The operator that is being executed.
      * @param arguments List
-     *
      * @throws IOException If there is an error processing this operator.
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSName name = (COSName) arguments.get( 0 );
+        COSName name = (COSName) arguments.get(0);
 
         Map<String,PDXObject> xobjects = context.getXObjects();
-        PDXObject xobject = (PDXObject) xobjects.get(name.getName());
+        PDXObject xobject = xobjects.get(name.getName());
         if (context instanceof PDFMarkedContentExtractor)
         {
             ((PDFMarkedContentExtractor) context).xobject(xobject);
         }
 
-        if(xobject instanceof PDXObjectForm)
+        if(xobject instanceof PDFormXObject)
         {
-            PDXObjectForm form = (PDXObjectForm)xobject;
+            PDFormXObject form = (PDFormXObject)xobject;
             COSStream formContentstream = form.getCOSStream();
+
             // if there is an optional form matrix, we have to map the form space to the user space
             Matrix matrix = form.getMatrix();
             if (matrix != null) 
             {
-                Matrix xobjectCTM = matrix.multiply( context.getGraphicsState().getCurrentTransformationMatrix());
+                Matrix xobjectCTM = matrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix());
                 context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
             }
+
             // find some optional resources, instead of using the current resources
             PDResources pdResources = form.getResources();
-            context.processSubStream( pdResources, formContentstream );
+            context.processSubStream(pdResources, formContentstream);
         }
     }
 }

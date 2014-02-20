@@ -23,16 +23,13 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-
-
 
 import java.io.IOException;
 
 /**
- * This class represents a Shading Pattern color space.
+ * This class represents a Shading Pattern.
  *  See section 4.6.3 of the PDF 1.7 specification.
  *
  * @author <a href="mailto:Daniel.Wilson@BlackLocustSoftware.com">Daniel wilson</a>
@@ -45,7 +42,7 @@ public class PDShading implements COSObjectable
     private COSArray domain = null;
     private COSArray extend = null;
     private PDFunction function = null;
-    private PDColorSpace colorspace = null;
+    private PDColorSpace colorSpace = null;
     
     /**
      * The name of this object.
@@ -121,11 +118,11 @@ public class PDShading implements COSObjectable
     */
     public PDColorSpace getColorSpace() throws IOException
     {
-        if (colorspace == null)
+        if (colorSpace == null)
         {
-            colorspace = PDColorSpaceFactory.createColorSpace(DictShading.getDictionaryObject(COSName.COLORSPACE));
+            colorSpace = PDColorSpace.create(DictShading.getDictionaryObject(COSName.COLORSPACE));
         }
-        return colorspace;
+        return colorSpace;
     }
     
     /**

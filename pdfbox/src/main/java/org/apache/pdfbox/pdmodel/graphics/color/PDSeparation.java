@@ -16,205 +16,185 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
- * This class represents a Separation color space.
+ * A Separation color space used to specify either additional colorants or for isolating the
+ * control of individual colour components of a device colour space for a subtractive device.
+ * When such a space is the current colour space, the current colour shall be a single-component
+ * value, called a tint, that controls the given colorant or colour components only.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDSeparation extends PDColorSpace
+public class PDSeparation extends PDSpecialColorSpace
 {
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(PDSeparation.class);
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 1 });
+
+    // array indexes
+    private static final int COLORANT_NAMES = 1;
+    private static final int ALTERNATE_CS = 2;
+    private static final int TINT_TRANSFORM = 3;
+
+    // fields
+    private PDColorSpace alternateColorSpace = null;
+    private PDFunction tintTransform = null;
 
     /**
-     * The name of this color space.
-     */
-    public static final String NAME = "Separation";
-
-
-    /**
-     * Constructor.
+     * Creates a new Separation color space.
      */
     public PDSeparation()
     {
         array = new COSArray();
-        array.add( COSName.SEPARATION );
-        array.add( COSName.getPDFName( "" ) );
+        array.add(COSName.SEPARATION);
+        array.add(COSName.getPDFName(""));
     }
 
     /**
-     * Constructor.
-     *
-     * @param separation The array containing all separation information.
+     * Creates a new Separation color space from a PDF color space array.
+     * @param separation an array containing all separation information
      */
-    public PDSeparation( COSArray separation )
+    public PDSeparation(COSArray separation) throws IOException
     {
         array = separation;
+        alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
+        tintTransform = PDFunction.create(array.getObject(TINT_TRANSFORM));
     }
 
-    /**
-     * This will return the name of the color space.  For a PDSeparation object
-     * this will always return "Separation"
-     *
-     * @return The name of the color space.
-     */
+    @Override
     public String getName()
     {
-        return NAME;
+        return COSName.SEPARATION.getName();
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public int getNumberOfComponents()
     {
-        return getAlternateColorSpace().getNumberOfComponents();
+        return 1;
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    @Override
+    public float[] getDefaultDecode()
     {
-        try
-        {
-            PDColorSpace alt = getAlternateColorSpace();
-            return alt.getJavaColorSpace();
-        }
-        catch (IOException ioexception)
-        {
-            log.error(ioexception, ioexception);
-
-            throw ioexception;
-        }
-        catch (Exception exception)
-        {
-            log.error(exception, exception);
-            throw new IOException("Failed to Create ColorSpace");
-        }
+        return new float[] { 0, 1 };
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
+    @Override
+    public PDColor getInitialColor()
     {
-        log.info("About to create ColorModel for " + getAlternateColorSpace().toString());
-        return getAlternateColorSpace().createColorModel(bpc);
+        return INITIAL_COLOR;
+    }
+
+    @Override
+    public float[] toRGB(float[] value) throws IOException
+    {
+        float[] altColor = tintTransform.eval(value);
+        return alternateColorSpace.toRGB(altColor);
+    }
+
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        // use the tint transform to convert the sample into
+        // the alternate color space (this is usually 1:many)
+        WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
+                raster.getWidth(), raster.getHeight(),
+                alternateColorSpace.getNumberOfComponents(),
+                new Point(0, 0));
+
+        int numAltComponents = alternateColorSpace.getNumberOfComponents();
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        float[] samples = new float[1];
+        int[] alt = new int[numAltComponents];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                raster.getPixel(x, y, samples);
+                samples[0] /= 255; // 0..1
+
+                // TODO special colorants: None, All
+
+                float[] result = tintTransform.eval(samples);
+                for (int s = 0; s < numAltComponents; s++)
+                {
+                    // scale to 0..255
+                    alt[s] = (int)(result[s] * 255);
+                }
+
+                altRaster.setPixel(x, y, alt);
+            }
+        }
+
+        // convert the alternate color space to RGB
+        return alternateColorSpace.toRGBImage(altRaster);
     }
 
     /**
-     * This will get the separation name.
-     *
-     * @return The name in the separation.
+     * Returns the colorant name.
+     * @return the name of the colorant
      */
     public String getColorantName()
     {
-        COSName name = (COSName)array.getObject( 1 );
+        COSName name = (COSName)array.getObject(COLORANT_NAMES);
         return name.getName();
     }
 
     /**
-     * This will set the separation name.
-     *
-     * @param name The separation name.
+     * Sets the colorant name.
+     * @param name the name of the colorant
      */
-    public void setColorantName( String name )
+    public void setColorantName(String name)
     {
-        array.set( 1, COSName.getPDFName( name ) );
+        array.set(1, COSName.getPDFName(name));
     }
 
     /**
-     * This will get the alternate color space for this separation.
-     *
-     * @return The alternate color space.
-     *
-     * @throws IOException If there is an error getting the alternate color space.
+     * Sets the alternate color space.
+     * @param colorSpace The alternate color space.
      */
-    public PDColorSpace getAlternateColorSpace() throws IOException
+    public void setAlternateColorSpace(PDColorSpace colorSpace)
     {
-        COSBase alternate = array.getObject( 2 );
-        PDColorSpace cs = PDColorSpaceFactory.createColorSpace( alternate );
-        return cs;
-    }
-
-    /**
-     * This will set the alternate color space.
-     *
-     * @param cs The alternate color space.
-     */
-    public void setAlternateColorSpace( PDColorSpace cs )
-    {
+        alternateColorSpace = colorSpace;
         COSBase space = null;
-        if( cs != null )
+        if (colorSpace != null)
         {
-            space = cs.getCOSObject();
+            space = colorSpace.getCOSObject();
         }
-        array.set( 2, space );
+        array.set(ALTERNATE_CS, space);
     }
 
     /**
-     * This will get the tint transform function.
-     *
-     * @return The tint transform function.
-     *
-     * @throws IOException If there is an error creating the PDFunction
+     * Sets the tint transform function.
+     * @param tint the tint transform function
      */
-    public PDFunction getTintTransform() throws IOException
+    public void setTintTransform(PDFunction tint)
     {
-        return PDFunction.create( array.getObject( 3 ) );
+        tintTransform = tint;
+        array.set(TINT_TRANSFORM, tint);
     }
 
-    /**
-     * This will set the tint transform function.
-     *
-     * @param tint The tint transform function.
-     */
-    public void setTintTransform( PDFunction tint )
+    @Override
+    public String toString()
     {
-        array.set( 3, tint );
-    }
-
-    /**
-     * Returns the components of the color in the alternate colorspace for the given tint value.
-     * @param tintValue the tint value
-     * @return COSArray with the color components
-     * @throws IOException If the tint function is not supported
-     */
-    public COSArray calculateColorValues(COSBase tintValue) throws IOException
-    {
-        PDFunction tintTransform = getTintTransform();
-        COSArray tint = new COSArray();
-        tint.add(tintValue);
-        return tintTransform.eval(tint);
+        return getName() + "{" +
+                "\"" + getColorantName() + "\"" + " " +
+                alternateColorSpace.getName() + " " +
+                tintTransform + "}";
     }
 }

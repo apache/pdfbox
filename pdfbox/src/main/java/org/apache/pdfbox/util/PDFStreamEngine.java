@@ -44,7 +44,7 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
@@ -547,12 +547,32 @@ public class PDFStreamEngine
     }
 
     /**
-     * @return Returns the colorSpaces.
+     * Transforms the given point using the current transformation matrix
+     *
+     * @param x x-coordinate of the point to be transformed
+     * @param y y-coordinate of the point to be transformed
+     * @return the transformed point
      */
-    public Map<String, PDColorSpace> getColorSpaces()
+   /* public Point2D.Double transformPoint(double x, double y)
     {
-        return streamResourcesStack.peek().getColorSpaces();
-    }
+        double[] position = { x, y };
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
+        ctm.createAffineTransform().transform(position, 0, position, 0, 1);
+        return new Point2D.Double(position[0], position[1]);
+    }*/
+
+    /**
+     * Transforms the given width using the current transformation matrix
+     *
+     * @param width the width to be transformed
+     * @return the transformed width
+     */
+    /*public double transformWidth(double width) {
+        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
+        double x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
+        double y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
+        return width * Math.sqrt(0.5 * (x * x + y * y));
+    }*/
 
     /**
      * @return Returns the colorSpaces.

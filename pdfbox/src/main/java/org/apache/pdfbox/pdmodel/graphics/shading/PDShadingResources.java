@@ -28,7 +28,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 
 /**
  * This represents resources for a shading.
@@ -40,7 +39,7 @@ public abstract class PDShadingResources implements COSObjectable
     private COSDictionary dictionary;
     private COSArray background = null;
     private PDRectangle bBox = null;
-    private PDColorSpace colorspace = null;
+    private PDColorSpace colorSpace = null;
     private PDFunction function = null;
     private PDFunction[] functionArray = null;
     
@@ -226,29 +225,29 @@ public abstract class PDShadingResources implements COSObjectable
      *
      * @return The color space for the shading.
      *
-     * @throws IOException If there is an error getting the colorspace.
+     * @throws IOException If there is an error getting the color space.
      */
     public PDColorSpace getColorSpace() throws IOException
     {
-        if( colorspace == null )
+        if( colorSpace == null )
         {
             COSBase colorSpaceDictionary = dictionary.getDictionaryObject( COSName.CS, COSName.COLORSPACE );
-            colorspace = PDColorSpaceFactory.createColorSpace( colorSpaceDictionary );
+            colorSpace = PDColorSpace.create(colorSpaceDictionary);
         }
-        return colorspace;
+        return colorSpace;
     }
 
     /**
      * This will set the color space for the shading.
      *
-     * @param newColorspace The color space
+     * @param colorSpace The color space
      */
-    public void setColorSpace( PDColorSpace newColorspace )
+    public void setColorSpace( PDColorSpace colorSpace )
     {
-        colorspace = newColorspace;
-        if( newColorspace != null )
+        this.colorSpace = colorSpace;
+        if( colorSpace != null )
         {
-            dictionary.setItem( COSName.COLORSPACE, newColorspace.getCOSObject() );
+            dictionary.setItem( COSName.COLORSPACE, colorSpace.getCOSObject() );
         }
         else
         {

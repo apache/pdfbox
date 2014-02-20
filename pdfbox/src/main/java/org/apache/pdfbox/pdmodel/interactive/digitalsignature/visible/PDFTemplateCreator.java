@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
@@ -109,7 +109,7 @@ public class PDFTemplateCreator
         this.pdfBuilder.createSignatureRectangle(pdSignatureField, properties);
         this.pdfBuilder.createFormaterRectangle(properties.getFormaterRectangleParams());
         PDRectangle formater = pdfStructure.getFormaterRectangle();
-        this.pdfBuilder.createSignatureImage(template, properties.getImageStream());
+        this.pdfBuilder.createSignatureImage(template, properties.getImage());
 
         // create form stream, form and  resource. 
         this.pdfBuilder.createHolderFormStream(template);
@@ -126,7 +126,7 @@ public class PDFTemplateCreator
         this.pdfBuilder.createInnerFormResource();
         PDResources innerFormResource = pdfStructure.getInnerFormResources();
         this.pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnterFormStream(), formater);
-        PDXObjectForm innerForm = pdfStructure.getInnerForm();
+        PDFormXObject innerForm = pdfStructure.getInnerForm();
        
         // inner form must be in the holder form as we wrote
         this.pdfBuilder.insertInnerFormToHolerResources(innerForm, holderFormResources);
@@ -137,7 +137,7 @@ public class PDFTemplateCreator
         this.pdfBuilder.createImageFormResources();
         PDResources imageFormResources = pdfStructure.getImageFormResources();
         this.pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, formater, transform,
-                pdfStructure.getJpedImage());
+                pdfStructure.getImage());
        
         // now inject procSetArray
         this.pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources, holderFormResources,

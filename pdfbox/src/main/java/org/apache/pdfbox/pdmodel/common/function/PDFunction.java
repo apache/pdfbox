@@ -248,23 +248,11 @@ public abstract class PDFunction implements COSObjectable
         getDictionary().setItem(COSName.DOMAIN, domainValues);
     }
 
-
     /**
-     * Evaluates the function at the given input.
-     * ReturnValue = f(input)
-     *
-     * @param input The COSArray of input values for the function. 
-     * In many cases will be an array of a single value, but not always.
-     * 
-     * @return The of outputs the function returns based on those inputs. 
-     * In many cases will be an COSArray of a single value, but not always.
-     * 
-     * @throws IOException an IOExcpetion is thrown if something went wrong processing the function.
-     * 
+     * @deprecated Replaced by {@link #eval(float[] input)}
      */
     public COSArray eval(COSArray input) throws IOException
     {
-        // TODO should we mark this method as deprecated? 
         float[] outputValues = eval(input.toFloatArray());
         COSArray array = new COSArray();
         array.setFloatArray(outputValues);
@@ -371,4 +359,11 @@ public abstract class PDFunction implements COSObjectable
         return yRangeMin + ((x - xRangeMin) * (yRangeMax - yRangeMin)/(xRangeMax - xRangeMin));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String toString()
+    {
+        return "FunctionType" + getFunctionType();
+    }
 }
