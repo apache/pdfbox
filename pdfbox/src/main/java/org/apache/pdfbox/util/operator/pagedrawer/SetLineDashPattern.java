@@ -30,20 +30,17 @@ import java.io.IOException;
 /**
  * Implementation of content stream operator for page drawer.
  *
- * @author <a href="mailto:andreas@lehmi.de">Andreas Lehmkühler</a>
- * @version $Revision: 1.0 $
+ * @author Andreas Lehmkühler
+ * @author John Hewson
  */
 public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineDashPattern
 {
-
     /**
      * Set the line dash pattern.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException If an error occurs while processing the font.
+     * @param operator the operator that is being executed.
+     * @param arguments arguments
      */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         super.process( operator, arguments );
         PDLineDashPattern lineDashPattern = context.getGraphicsState().getLineDashPattern();
@@ -74,10 +71,9 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
         }
         else
         {
-            float[] dash = lineDashPattern.getCOSDashPattern().toFloatArray(); // TODO !!!!
-            float phase = lineDashPattern.getPhaseStart(); // TODO !!!
+            float[] dash = lineDashPattern.getCOSDashPattern().toFloatArray();
+            float phase = lineDashPattern.getPhaseStart();
             drawer.setStroke(new BasicStroke(lineWidth, endCap, lineJoin, miterLimit, dash, phase));
         }
     }
-    
 }

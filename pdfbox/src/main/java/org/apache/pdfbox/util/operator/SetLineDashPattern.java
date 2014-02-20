@@ -29,20 +29,16 @@ import java.io.IOException;
 /**
  * Implementation of content stream operator for page drawer.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class SetLineDashPattern extends OperatorProcessor
 {
-
     /**
      * Set the line dash pattern.
      * @param operator The operator that is being executed.
      * @param arguments List
-     *
-     * @throws IOException If an error occurs while processing the font.
      */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    public void process(PDFOperator operator, List<COSBase> arguments)
     {
         COSArray dashArray = (COSArray)arguments.get( 0 );
         int dashPhase = ((COSNumber)arguments.get( 1 )).intValue();
