@@ -772,7 +772,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void drawImage(Image awtImage, AffineTransform at)
     {
-        graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
+        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         int width = awtImage.getWidth(null);
         int height = awtImage.getHeight(null);

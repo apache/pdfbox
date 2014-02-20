@@ -93,22 +93,22 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     public final float[] toRGB(float[] value)
     {
         float a = value[0];
-        float b = value[0];
-        float c = value[0];
+        float b = value[1];
+        float c = value[2];
 
         PDGamma g = getGamma();
-        PDMatrix m = getLinearInterpretation();
+        PDMatrix m = getGammaMatrix();
 
         float xA = m.getValue(0, 0);
-        float xB = m.getValue(0, 1);
-        float xC = m.getValue(0, 2);
+        float xB = m.getValue(1, 0);
+        float xC = m.getValue(2, 0);
 
-        float yA = m.getValue(1, 0);
+        float yA = m.getValue(0, 1);
         float yB = m.getValue(1, 1);
-        float yC = m.getValue(1, 2);
+        float yC = m.getValue(2, 1);
 
-        float zA = m.getValue(2, 0);
-        float zB = m.getValue(2, 1);
+        float zA = m.getValue(0, 2);
+        float zB = m.getValue(1, 2);
         float zC = m.getValue(2, 2);
 
         float v1 = (float)Math.pow(a, g.getR());  // A ^ G_R
@@ -119,7 +119,11 @@ public class PDCalRGB extends PDCIEBasedColorSpace
         float y = yA * v1 + yB * v2 + yC * v3;
         float z = zA * v1 + zB * v2 + zC * v3;
 
-        // TODO scale XYZ values using blackpoint and whitepoint?
+        // TODO scale XYZ values using blackpoint
+
+        x /= getWhitepoint().getX();
+        y /= getWhitepoint().getY();
+        z /= getWhitepoint().getZ();
 
         return CIEXYZ.toRGB(new float[] { x, y, z });
     }
@@ -186,7 +190,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      * If the underlying dictionary contains null then the identity matrix will be returned.
      * @return the linear interpretation matrix
      */
-    public final PDMatrix getLinearInterpretation()
+    public final PDMatrix getGammaMatrix()
     {
         COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
         if(matrix == null)
@@ -245,7 +249,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      * Passing in null will clear the matrix.
      * @param matrix the new linear interpretation matrix, or null
      */
-    public final void setLinearInterpretation(PDMatrix matrix)
+    public final void setGammaMatrix(PDMatrix matrix)
     {
         COSArray matrixArray = null;
         if(matrix != null)

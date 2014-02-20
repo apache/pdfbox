@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
@@ -77,14 +78,39 @@ final class SampledImageReader
         Graphics2D g = masked.createGraphics();
 
         // draw the mask
-        g.drawImage(mask, 0, 0, null);
+        //g.drawImage(mask, 0, 0, null);
 
         // fill with paint using src-in
-        g.setComposite(AlphaComposite.SrcIn);
+        //g.setComposite(AlphaComposite.SrcIn);
         g.setPaint(paint);
         g.fillRect(0, 0, mask.getWidth(), mask.getHeight());
-
         g.dispose();
+
+        // set the alpha
+        int width = masked.getWidth();
+        int height = masked.getHeight();
+        WritableRaster raster = masked.getRaster();
+        WritableRaster alpha = mask.getRaster();
+
+        float[] rgba = new float[4];
+        final float[] transparent = new float[4];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                raster.getPixel(x, y, rgba);
+
+                if (alpha.getPixel(x, y, (float[])null)[0] == 255)
+                {
+                    raster.setPixel(x, y, transparent);
+                }
+                else
+                {
+                    raster.setPixel(x, y, rgba);
+                }
+            }
+        }
+
         return masked;
     }
 
