@@ -30,8 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
@@ -331,14 +330,14 @@ public class PDOutlineItem extends PDOutlineNode
     }
 
     /**
-     * Get the text color of this node.  Default is black and this method
+     * Get the RGB text color of this node.  Default is black and this method
      * will never return null.
      *
      * @return The structure element of this node.
      */
-    public PDColorState getTextColor()
+    public PDColor getTextColor()
     {
-        PDColorState retval = null;
+        PDColor retval = null;
         COSArray csValues = (COSArray)node.getDictionaryObject( COSName.C );
         if( csValues == null )
         {
@@ -346,23 +345,22 @@ public class PDOutlineItem extends PDOutlineNode
             csValues.growToSize( 3, new COSFloat( 0 ) );
             node.setItem( COSName.C, csValues );
         }
-        retval = new PDColorState(csValues);
-        retval.setColorSpace( PDDeviceRGB.INSTANCE );
+        retval = new PDColor(csValues.toFloatArray());
         return retval;
     }
 
     /**
-     * Set the text color for this node.  The colorspace must be a PDDeviceRGB.
+     * Set the RGB text color for this node.
      *
      * @param textColor The text color for this node.
      */
-    public void setTextColor( PDColorState textColor )
+    public void setTextColor( PDColor textColor )
     {
-        node.setItem( COSName.C, textColor.getCOSColorSpaceValue() );
+        node.setItem( COSName.C, textColor.toCOSArray() );
     }
 
     /**
-     * Set the text color for this node.  The colorspace must be a PDDeviceRGB.
+     * Set the RGB text color for this node.
      *
      * @param textColor The text color for this node.
      */

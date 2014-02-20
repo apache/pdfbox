@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -32,8 +32,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -49,7 +50,6 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDVisibleSigBuilder implements PDFTemplateBuilder
 {
-
     private PDFTemplateStructure pdfStructure;
     private static final Log logger = LogFactory.getLog(PDVisibleSigBuilder.class);
 
@@ -169,20 +169,17 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createSignatureImage(PDDocument template, InputStream inputStream) throws IOException
+    public void createSignatureImage(PDDocument template, BufferedImage image) throws IOException
     {
-        PDJpeg img = new PDJpeg(template, inputStream);
-        pdfStructure.setJpedImage(img);
-        logger.info("Visible Signature Image has been created");
-        // pdfStructure.setTemplate(template);
-        inputStream.close();
+        pdfStructure.setImage(JPEGFactory.createFromImage(template, image));
 
+        logger.info("Visible Signature Image has been created");
+        // pdfStructure.setTemplate(template);'
     }
 
     @Override
     public void createFormaterRectangle(byte[] params)
     {
-
         PDRectangle formrect = new PDRectangle();
         formrect.setUpperRightX(params[0]);
         formrect.setUpperRightY(params[1]);
@@ -191,7 +188,6 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
         pdfStructure.setFormaterRectangle(formrect);
         logger.info("Formater rectangle has been created");
-
     }
 
     @Override
@@ -215,7 +211,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public void createHolderForm(PDResources holderFormResources, PDStream holderFormStream, PDRectangle formrect)
     {
 
-        PDXObjectForm holderForm = new PDXObjectForm(holderFormStream);
+        PDFormXObject holderForm = new PDFormXObject(holderFormStream);
         holderForm.setResources(holderFormResources);
         holderForm.setBBox(formrect);
         holderForm.setFormType(1);
@@ -225,7 +221,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createAppearanceDictionary(PDXObjectForm holderForml, PDSignatureField signatureField)
+    public void createAppearanceDictionary(PDFormXObject holderForml, PDSignatureField signatureField)
             throws IOException
     {
 
@@ -261,7 +257,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void createInnerForm(PDResources innerFormResources, PDStream innerFormStream, PDRectangle formrect)
     {
-        PDXObjectForm innerForm = new PDXObjectForm(innerFormStream);
+        PDFormXObject innerForm = new PDFormXObject(innerFormStream);
         innerForm.setResources(innerFormResources);
         innerForm.setBBox(formrect);
         innerForm.setFormType(1);
@@ -271,7 +267,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void insertInnerFormToHolerResources(PDXObjectForm innerForm, PDResources holderFormResources)
+    public void insertInnerFormToHolerResources(PDFormXObject innerForm, PDResources holderFormResources)
     {
         String name = holderFormResources.addXObject(innerForm, "FRM");
         pdfStructure.setInnerFormName(name);
@@ -297,10 +293,9 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     @Override
     public void createImageForm(PDResources imageFormResources, PDResources innerFormResource,
-            PDStream imageFormStream, PDRectangle formrect, AffineTransform affineTransform, PDJpeg img)
+            PDStream imageFormStream, PDRectangle formrect, AffineTransform at, PDImageXObject img)
             throws IOException
     {
-
         /*
          * if you need text on the visible signature 
          * 
@@ -309,9 +304,9 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
          * 
          * Map<String, PDFont> fonts = new HashMap<String, PDFont>(); fonts.put("arial", font);
          */
-        PDXObjectForm imageForm = new PDXObjectForm(imageFormStream);
+        PDFormXObject imageForm = new PDFormXObject(imageFormStream);
         imageForm.setBBox(formrect);
-        imageForm.setMatrix(affineTransform);
+        imageForm.setMatrix(at);
         imageForm.setResources(imageFormResources);
         imageForm.setFormType(1);
         /*
@@ -329,7 +324,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void injectProcSetArray(PDXObjectForm innerForm, PDPage page, PDResources innerFormResources,
+    public void injectProcSetArray(PDFormXObject innerForm, PDPage page, PDResources innerFormResources,
             PDResources imageFormResources, PDResources holderFormResources, COSArray procSet)
     {
 

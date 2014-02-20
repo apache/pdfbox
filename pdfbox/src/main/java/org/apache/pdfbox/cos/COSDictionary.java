@@ -43,8 +43,7 @@ public class COSDictionary extends COSBase
 	 * The name-value pairs of this dictionary. The pairs are kept in the
 	 * order they were added to the dictionary.
 	 */
-	protected final Map<COSName, COSBase> items =
-			new LinkedHashMap<COSName, COSBase>();
+	protected Map<COSName, COSBase> items = new LinkedHashMap<COSName, COSBase>();
 
 	/**
 	 * Constructor.
@@ -1433,6 +1432,15 @@ public class COSDictionary extends COSBase
 		}
 		return retval;
 	}
+
+    /**
+     * Returns an unmodifiable view of this dictionary.
+     * @return
+     */
+    public COSDictionary asUnmodifiableDictionary()
+    {
+        return new UnmodifiableCOSDictionary(this);
+    }
 
 	/**
 	 * {@inheritDoc}

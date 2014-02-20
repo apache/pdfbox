@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.ImageParameters;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
@@ -360,7 +359,7 @@ public class PDFStreamParser extends BaseParser
                 {
                 	PDFOperator beginImageOP = (PDFOperator)retval;
                     COSDictionary imageParams = new COSDictionary();
-                    beginImageOP.setImageParameters( new ImageParameters( imageParams ) );
+                    beginImageOP.setImageParameters( imageParams );
                     Object nextToken = null;
                     while( (nextToken = parseNextToken()) instanceof COSName )
                     {

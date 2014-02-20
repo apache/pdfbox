@@ -22,8 +22,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
 /**
  * The Box Style specifies visual characteristics for displaying box areas.
@@ -84,13 +83,12 @@ public class PDBoxStyle implements COSObjectable
     }
 
     /**
-     * Get the color to be used for the guidelines.  This is guaranteed to
-     * not return null.  The color space will always be DeviceRGB and the
-     * default color is [0,0,0].
+     * Get the RGB color to be used for the guidelines.  This is guaranteed to
+     * not return null. The default color is [0,0,0].
      *
      *@return The guideline color.
      */
-    public PDColorState getGuidelineColor()
+    public PDColor getGuidelineColor()
     {
         COSArray colorValues = (COSArray)dictionary.getDictionaryObject( "C" );
         if( colorValues == null )
@@ -101,9 +99,8 @@ public class PDBoxStyle implements COSObjectable
             colorValues.add( COSInteger.ZERO );
             dictionary.setItem( "C", colorValues );
         }
-        PDColorState instance = new PDColorState( colorValues );
-        instance.setColorSpace( PDDeviceRGB.INSTANCE );
-        return instance;
+        PDColor color = new PDColor(colorValues.toFloatArray());
+        return color;
     }
 
     /**
@@ -112,12 +109,12 @@ public class PDBoxStyle implements COSObjectable
      *
      * @param color The new colorspace value.
      */
-    public void setGuideLineColor( PDColorState color )
+    public void setGuideLineColor( PDColor color )
     {
         COSArray values = null;
         if( color != null )
         {
-            values = color.getCOSColorSpaceValue();
+            values = color.toCOSArray();
         }
         dictionary.setItem( "C", values );
     }

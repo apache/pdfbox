@@ -32,8 +32,8 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
 /**
  * This will extract all true type-fonts of a pdf.
@@ -204,9 +204,9 @@ public class ExtractTTFFonts
             {
                 String key = xobjectIter.next();
                 PDXObject xobject = xobjects.get(key);
-                if (xobject instanceof PDXObjectForm)
+                if (xobject instanceof PDFormXObject)
                 {
-                    PDXObjectForm xObjectForm = (PDXObjectForm) xobject;
+                    PDFormXObject xObjectForm = (PDFormXObject) xobject;
                     PDResources formResources = xObjectForm.getResources();
                     processResources(formResources, prefix, addKey);
                 }

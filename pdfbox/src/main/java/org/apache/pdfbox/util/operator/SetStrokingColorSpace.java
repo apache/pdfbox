@@ -21,25 +21,20 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
- * <p>Structal modification of the PDFEngine class :
- * the long sequence of conditions in processOperator is remplaced by
- * this strategy pattern.</p>
+ * Sets the stroking color space.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-
 public class SetStrokingColorSpace extends OperatorProcessor
 {
-    private static final float[] EMPTY_FLOAT_ARRAY = new float[0];
-
     /**
      * CS Set color space for stroking operations.
      * @param operator The operator that is being executed.
@@ -48,26 +43,13 @@ public class SetStrokingColorSpace extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        //(PDF 1.1) Set color space for stroking operations
-        COSName name = (COSName)arguments.get( 0 );
-        PDColorSpace cs = PDColorSpaceFactory.createColorSpace( name, context.getColorSpaces(), 
-                context.getResources().getPatterns() );
-        PDColorState color = context.getGraphicsState().getStrokingColor();
-        color.setColorSpace( cs );
-        int numComponents = cs.getNumberOfComponents();
-        float[] values = EMPTY_FLOAT_ARRAY;
-        if( numComponents >= 0 )
-        {
-            values = new float[numComponents];
-            for( int i=0; i<numComponents; i++ )
-            {
-                values[i] = 0f;
-            }
-            if( cs instanceof PDDeviceCMYK )
-            {
-                values[3] = 1f;
-            }
-        }
-        color.setColorSpaceValue( values );
+        COSName name = (COSName)arguments.get(0);
+
+        PDColorSpace cs = PDColorSpace.create(name,
+                context.getResources().getColorSpaces(),
+                context.getResources().getPatterns());
+
+        context.getGraphicsState().setStrokingColorSpace(cs);
+        context.getGraphicsState().setStrokingColor(cs.getInitialColor());
     }
 }

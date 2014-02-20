@@ -33,9 +33,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 
 /**
@@ -71,7 +71,7 @@ public class TestLayerUtility extends TestCase
         try
         {
             LayerUtility layerUtil = new LayerUtility(targetDoc);
-            PDXObjectForm form = layerUtil.importPageAsForm(overlay1Doc, 0);
+            PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
             PDDocumentCatalog catalog = targetDoc.getDocumentCatalog();
             PDPage targetPage = (PDPage)catalog.getAllPages().get(0);
             layerUtil.wrapInSaveRestore(targetPage);

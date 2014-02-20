@@ -16,31 +16,16 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
-
-import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
-import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -52,11 +37,6 @@ public class PDShadingPatternResources extends PDPatternResources
     private PDExtendedGraphicsState extendedGraphicsState;
     private PDShadingResources shading;
     private COSArray matrix = null;
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDShadingPatternResources.class);
 
     /**
      * Default constructor.
@@ -198,40 +178,5 @@ public class PDShadingPatternResources extends PDPatternResources
         {
             getCOSDictionary().removeItem(COSName.SHADING);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Paint getPaint(int pageHeight) throws IOException
-    {
-        Paint paint = null;
-        PDShadingResources shadingResources = getShading();
-        int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
-        switch (shadingType)
-        {
-            case PDShadingResources.SHADING_TYPE1: 
-                paint = new Type1ShadingPaint((PDShadingType1)getShading(), getMatrix(), pageHeight);
-                break;
-            case PDShadingResources.SHADING_TYPE2:
-                paint = new AxialShadingPaint((PDShadingType2)getShading(), getMatrix(), pageHeight);
-                break;
-            case PDShadingResources.SHADING_TYPE3:
-                paint = new RadialShadingPaint((PDShadingType3)getShading(), getMatrix(), pageHeight);
-                break;
-            case PDShadingResources.SHADING_TYPE4:
-                paint = new Type4ShadingPaint((PDShadingType4)getShading(), getMatrix(), pageHeight);
-                break;
-            case PDShadingResources.SHADING_TYPE5:
-                paint = new Type5ShadingPaint((PDShadingType5)getShading(), getMatrix(), pageHeight);
-                break;
-            case PDShadingResources.SHADING_TYPE6:
-            case PDShadingResources.SHADING_TYPE7:
-                LOG.debug( "Error: Unsupported shading type " + shadingType );
-                break;
-            default:
-                throw new IOException( "Error: Unknown shading type " + shadingType );
-        }
-        return paint;
     }
 }

@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdfwriter;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
-import org.apache.pdfbox.util.ImageParameters;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
@@ -141,8 +139,7 @@ public class ContentStreamWriter
             if( op.getOperation().equals( "BI" ) )
             {
                 output.write( "BI".getBytes("ISO-8859-1") );
-                ImageParameters params = op.getImageParameters();
-                COSDictionary dic = params.getDictionary();
+                COSDictionary dic = op.getImageParameters();
                 for( COSName key : dic.keySet() )
                 {
                     Object value = dic.getDictionaryObject( key );

@@ -16,13 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
-import java.io.ByteArrayOutputStream;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -31,48 +30,31 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
- * This class represents an Indexed color space.
+ * An Indexed colour space specifies that an area is to be painted using a colour table
+ * of arbitrary colours from another color space.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author John Hewson
+ * @author Ben Litchfield
  */
-public class PDIndexed extends PDColorSpace
+public final class PDIndexed extends PDSpecialColorSpace
 {
-
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "Indexed";
-
-    /**
-     * The abbreviated name of this color space.
-     */
-    public static final String ABBREVIATED_NAME = "I";
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
 
     private COSArray array;
+    private PDColorSpace baseColorSpace = null;
 
-    private PDColorSpace baseColorspace = null;
-    private ColorModel baseColorModel = null;
-
-    /**
-     * The lookup data as byte array.
-     */
+    // cached lookup data
     private byte[] lookupData;
-
-    private byte[] indexedColorValues;
-    private int indexNumOfComponents;
-    private int maxIndex;
-
-    /**
-     * Indexed color values are always 8bit based.
-     */
-    private static final int INDEXED_BPC = 8;
+    private float[][] colorTable;
+    private int actualMaxIndex;
+    private int[][] rgbColorTable;
 
     /**
-     * Constructor, default DeviceRGB, hival 255.
+     * Creates a new Indexed color space.
+     * Default DeviceRGB, hival 255.
      */
     public PDIndexed()
     {
@@ -84,161 +66,143 @@ public class PDIndexed extends PDColorSpace
     }
 
     /**
-     * Constructor.
-     * 
-     * @param indexedArray The array containing the indexed parameters
+     * Creates a new Indexed color space from the given PDF array.
+     * @param indexedArray the array containing the indexed parameters
      */
-    public PDIndexed(COSArray indexedArray)
+    public PDIndexed(COSArray indexedArray) throws IOException
     {
         array = indexedArray;
+        baseColorSpace = PDColorSpace.create(array.getObject(1));
+        readColorTable();
+        initRgbColorTable();
     }
 
-    /**
-     * This will return the number of color components. This will return the number of color components in the base
-     * color.
-     * 
-     * @return The number of components in this color space.
-     * 
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
-    {
-        return getBaseColorSpace().getNumberOfComponents();
-    }
-
-    /**
-     * This will return the name of the color space.
-     * 
-     * @return The name of the color space.
-     */
+    @Override
     public String getName()
     {
-        return NAME;
+        return COSName.INDEXED.getName();
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     * 
-     * @return A color space that can be used for Java AWT operations.
-     * 
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    @Override
+    public int getNumberOfComponents()
     {
-        return getBaseColorSpace().getJavaColorSpace();
+        return 1;
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     * 
-     * @param bpc The number of bits per component.
-     * 
-     * @return A color model that can be used for Java AWT operations.
-     * 
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel(int bpc) throws IOException
+    @Override
+    public float[] getDefaultDecode()
     {
-        return createColorModel(bpc, -1);
+        int n = getNumberOfComponents();
+        return new float[] { 0, (float)Math.pow(2, n - 1) };
     }
 
-    /**
-     * Create a Java color model for this colorspace including the given mask value.
-     * 
-     * @param bpc The number of bits per component of the indexed color model.
-     * @param mask the mask value, -1 indicates no mask
-     * 
-     * @return A color model that can be used for Java AWT operations.
-     * 
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel(int bpc, int mask) throws IOException
+    @Override
+    public PDColor getInitialColor()
     {
-        ColorModel colorModel = getBaseColorModel(INDEXED_BPC);
-        calculateIndexedColorValues(colorModel, bpc);
-        if (mask > -1)
+        return INITIAL_COLOR;
+    }
+
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    private void initRgbColorTable() throws IOException
+    {
+        int numBaseComponents = baseColorSpace.getNumberOfComponents();
+
+        // convert the color table into a 1-row BufferedImage in the base color space,
+        // using a writable raster for high performance
+        WritableRaster baseRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
+                actualMaxIndex + 1, 1, numBaseComponents, new Point(0, 0));
+
+        int[] base = new int[numBaseComponents];
+        for (int i = 0, n = actualMaxIndex; i <= n; i++)
         {
-            return new IndexColorModel(bpc, maxIndex + 1, indexedColorValues, 0, colorModel.hasAlpha(), mask);
+            for (int c = 0; c < numBaseComponents; c++)
+            {
+                base[c] = (int)(colorTable[i][c] * 255f);
+            }
+            baseRaster.setPixel(i, 0, base);
         }
-        else
+
+        // convert the base image to RGB
+        BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster);
+        WritableRaster rgbRaster = rgbImage.getRaster();
+
+        // build an RGB lookup table from the raster
+        rgbColorTable = new int[actualMaxIndex + 1][3];
+        int[] nil = null;
+
+        for (int i = 0, n = actualMaxIndex; i <= n; i++)
         {
-            return new IndexColorModel(bpc, maxIndex + 1, indexedColorValues, 0, colorModel.hasAlpha());
+            rgbColorTable[i] = rgbRaster.getPixel(i, 0, nil);
         }
     }
 
-    /**
-     * This will get the color space that acts as the index for this color space.
-     * 
-     * @return The base color space.
-     * 
-     * @throws IOException If there is error creating the base color space.
-     */
-    public PDColorSpace getBaseColorSpace() throws IOException
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    @Override
+    public float[] toRGB(float[] value)
     {
-        if (baseColorspace == null)
+        if (value.length > 1)
         {
-            COSBase base = array.getObject(1);
-            baseColorspace = PDColorSpaceFactory.createColorSpace(base);
+            throw new IllegalArgumentException("Indexed color spaces must have one color value");
         }
-        return baseColorspace;
+
+        // scale and clamp input value
+        int index = Math.round(255f * value[0]);
+        index = Math.max(index, 0);
+        index = Math.min(index, actualMaxIndex);
+
+        // lookup rgb
+        int[] rgb = rgbColorTable[index];
+        return new float[] { rgb[0] / 255f, rgb[1] / 255f, rgb[2] / 255f };
     }
 
-    /**
-     * This will set the base color space.
-     * 
-     * @param base The base color space to use as the index.
-     */
-    public void setBaseColorSpace(PDColorSpace base)
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
-        array.set(1, base.getCOSObject());
-        baseColorspace = base;
+        // use lookup table
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+
+        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        WritableRaster rgbRaster = rgbImage.getRaster();
+
+        int[] src = new int[1];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                raster.getPixel(x, y, src);
+                int index = Math.min(src[0], actualMaxIndex);
+                rgbRaster.setPixel(x, y, rgbColorTable[index]);
+            }
+        }
+
+        return rgbImage;
     }
 
     /**
-     * Get the highest value for the lookup.
-     * 
-     * @return The hival entry.
+     * Returns the base color space.
+     * @return the base color space.
      */
-    public int getHighValue()
+    public PDColorSpace getBaseColorSpace()
+    {
+        return baseColorSpace;
+    }
+
+    // returns "hival" array element
+    private int gettHival()
     {
         return ((COSNumber) array.getObject(2)).intValue();
     }
 
-    /**
-     * This will set the highest value that is allowed. This cannot be higher than 255.
-     * 
-     * @param high The highest value for the lookup table.
-     */
-    public void setHighValue(int high)
-    {
-        array.set(2, high);
-    }
-
-    /**
-     * This will perform a lookup into the color lookup table.
-     * 
-     * @param lookupIndex The zero-based index into the table, should not exceed the high value.
-     * @param componentNumber The component number, probably 1,2,3,3.
-     * 
-     * @return The value that was from the lookup table.
-     * 
-     * @throws IOException If there is an error looking up the color.
-     */
-    public int lookupColor(int lookupIndex, int componentNumber) throws IOException
-    {
-        PDColorSpace baseColor = getBaseColorSpace();
-        byte[] data = getLookupData();
-        int numberOfComponents = baseColor.getNumberOfComponents();
-        return (data[lookupIndex * numberOfComponents + componentNumber] + 256) % 256;
-    }
-
-    /**
-     * Get the lookup data table.
-     * 
-     * @return a byte array containing the the lookup data.
-     * @throws IOException if an error occurs.
-     */
-    public byte[] getLookupData() throws IOException
+    // reads the lookup table data from the array
+    private byte[] getLookupData() throws IOException
     {
         if (lookupData == null)
         {
@@ -249,19 +213,7 @@ public class PDIndexed extends PDColorSpace
             }
             else if (lookupTable instanceof COSStream)
             {
-                // Data will be small so just load the whole thing into memory for
-                // easier processing
-                COSStream lookupStream = (COSStream) lookupTable;
-                InputStream input = lookupStream.getUnfilteredStream();
-                ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
-                byte[] buffer = new byte[1024];
-                int amountRead;
-                while ((amountRead = input.read(buffer, 0, buffer.length)) != -1)
-                {
-                    output.write(buffer, 0, amountRead);
-                }
-                lookupData = output.toByteArray();
-                IOUtils.closeQuietly(input);
+                lookupData = new PDStream((COSStream)lookupTable).getByteArray();
             }
             else if (lookupTable == null)
             {
@@ -275,98 +227,56 @@ public class PDIndexed extends PDColorSpace
         return lookupData;
     }
 
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    private void readColorTable() throws IOException
+    {
+        byte[] lookupData = getLookupData();
+        int maxIndex = Math.min(gettHival(), 255);
+        int numComponents = baseColorSpace.getNumberOfComponents();
+
+        // some tables are too short
+        if (lookupData.length / numComponents < maxIndex + 1f)
+        {
+            maxIndex = (int)Math.floor(lookupData.length / numComponents) - 1;
+        }
+        actualMaxIndex = maxIndex;  // TODO "actual" is ugly, tidy this up
+
+        colorTable = new float[maxIndex + 1][numComponents];
+        for (int i = 0, offset = 0; i <= maxIndex; i++)
+        {
+            for (int c = 0; c < numComponents; c++)
+            {
+                colorTable[i][c] = (lookupData[offset] & 0xff) / 255f;
+                offset++;
+            }
+        }
+    }
+
     /**
-     * This will set a color in the color lookup table.
-     * 
-     * @param lookupIndex The zero-based index into the table, should not exceed the high value.
-     * @param componentNumber The component number, probably 1,2,3,3.
-     * @param color The color that will go into the table.
-     * 
-     * @throws IOException If there is an error looking up the color.
+     * Sets the base color space.
+     * @param base the base color space
      */
-    public void setLookupColor(int lookupIndex, int componentNumber, int color) throws IOException
+    public void setBaseColorSpace(PDColorSpace base)
     {
-        PDColorSpace baseColor = getBaseColorSpace();
-        int numberOfComponents = baseColor.getNumberOfComponents();
-        byte[] data = getLookupData();
-        data[lookupIndex * numberOfComponents + componentNumber] = (byte) color;
-        COSString string = new COSString(data);
-        array.set(3, string);
+        array.set(1, base.getCOSObject());
+        baseColorSpace = base;
     }
 
     /**
-     * Returns the components of the color for the given index.
-     * 
-     * @param index the index of the color value
-     * @return COSArray with the color components
-     * @throws IOException If the tint function is not supported
+     * Sets the highest value that is allowed. This cannot be higher than 255.
+     * @param high the highest value for the lookup table
      */
-    public float[] calculateColorValues(int index) throws IOException
+    public void setHighValue(int high)
     {
-        // TODO bpc != 8 ??
-        calculateIndexedColorValues(getBaseColorModel(INDEXED_BPC), 8);
-        float[] colorValues = null;
-        if (index < maxIndex)
-        {
-            int bufferIndex = index * indexNumOfComponents;
-            colorValues = new float[indexNumOfComponents];
-            for (int i = 0; i < indexNumOfComponents; i++)
-            {
-                colorValues[i] = (float) indexedColorValues[bufferIndex + i];
-            }
-        }
-        return colorValues;
+        array.set(2, high);
     }
 
-    private ColorModel getBaseColorModel(int bpc) throws IOException
+    public String toString()
     {
-        if (baseColorModel == null)
-        {
-            baseColorModel = getBaseColorSpace().createColorModel(bpc);
-            if (baseColorModel.getTransferType() != DataBuffer.TYPE_BYTE)
-            {
-                throw new IOException("Not implemented");
-            }
-        }
-        return baseColorModel;
+        return "Indexed{base:" + baseColorSpace + " " +
+                "hival:" + gettHival() + " " +
+                "lookup:(" + colorTable.length + " entries)}";
     }
-
-    private void calculateIndexedColorValues(ColorModel colorModel, int bpc) throws IOException
-    {
-        if (indexedColorValues == null)
-        {
-            // number of possible color values in the target color space
-            int numberOfColorValues = 1 << bpc;
-            // number of indexed color values
-            int highValue = getHighValue();
-            // choose the correct size, sometimes there are more indexed values than needed
-            // and sometimes there are fewer indexed value than possible
-            maxIndex = Math.min(numberOfColorValues - 1, highValue);
-            byte[] index = getLookupData();
-            // despite all definitions there may be less values within the lookup data
-            int numberOfColorValuesFromIndex = (index.length / baseColorModel.getNumComponents()) - 1;
-            maxIndex = Math.min(maxIndex, numberOfColorValuesFromIndex);
-            // does the colorspace have an alpha channel?
-            boolean hasAlpha = baseColorModel.hasAlpha();
-            indexNumOfComponents = 3 + (hasAlpha ? 1 : 0);
-            int buffersize = (maxIndex + 1) * indexNumOfComponents;
-            indexedColorValues = new byte[buffersize];
-            byte[] inData = new byte[baseColorModel.getNumComponents()];
-            int bufferIndex = 0;
-            for (int i = 0; i <= maxIndex; i++)
-            {
-                System.arraycopy(index, i * inData.length, inData, 0, inData.length);
-                // calculate RGB values
-                indexedColorValues[bufferIndex] = (byte) colorModel.getRed(inData);
-                indexedColorValues[bufferIndex + 1] = (byte) colorModel.getGreen(inData);
-                indexedColorValues[bufferIndex + 2] = (byte) colorModel.getBlue(inData);
-                if (hasAlpha)
-                {
-                    indexedColorValues[bufferIndex + 3] = (byte) colorModel.getAlpha(inData);
-                }
-                bufferIndex += indexNumOfComponents;
-            }
-        }
-    }
-
 }

@@ -16,105 +16,40 @@
  */
 package org.apache.pdfbox.util.operator;
 
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
-import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
-import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
-import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
-import org.apache.pdfbox.util.PDFOperator;
-import java.io.IOException;
 
 /**
- * <p>Set the non stroking color space.</p>
- * 
- * @version $Revision: 1.0 $
+ * sc,scn Sets the colour to use for stroking non-stroking operations.
+ *
+ * @author John Hewson
  */
-public class SetNonStrokingColor extends OperatorProcessor 
+public class SetNonStrokingColor extends SetColor
 {
-
     /**
-     * Log instance.
+     * Returns the non-stroking color.
+     * @return The non-stroking color.
      */
-    private static final Log LOG = LogFactory.getLog(SetNonStrokingColor.class);
-
-    /**
-     * sc,scn Set color space for non stroking operations.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     * @throws IOException If an error occurs while processing the font.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    protected PDColor getColor()
     {
-        PDColorSpace colorSpace = context.getGraphicsState().getNonStrokingColor().getColorSpace();
-        if (colorSpace != null) 
-        {
-            OperatorProcessor newOperator = null;
-            if (colorSpace instanceof PDDeviceGray) 
-            {
-                newOperator = new SetNonStrokingGrayColor();
-            }
-            else if (colorSpace instanceof PDDeviceRGB)
-            {
-                newOperator = new SetNonStrokingRGBColor();
-            }
-            else if (colorSpace instanceof PDDeviceCMYK)
-            {
-                newOperator = new SetNonStrokingCMYKColor();
-            }
-            else if (colorSpace instanceof PDICCBased)
-            {
-                newOperator = new SetNonStrokingICCBasedColor();
-            }
-            else if (colorSpace instanceof PDCalRGB)
-            {
-                newOperator = new SetNonStrokingCalRGBColor();
-            }   
-            else if (colorSpace instanceof PDSeparation)
-            {
-                newOperator = new SetNonStrokingSeparation();
-            }
-            else if (colorSpace instanceof PDDeviceN)
-            {
-                newOperator = new SetNonStrokingDeviceN();
-            }
-            else if (colorSpace instanceof PDPattern)
-            {
-                newOperator = new SetNonStrokingPattern();
-            }
-            else if (colorSpace instanceof PDIndexed)
-            {
-                newOperator = new SetNonStrokingIndexed();
-            }
-            else if (colorSpace instanceof PDLab)
-            {
-                newOperator = new SetNonStrokingLabColor();
-            }
+        return context.getGraphicsState().getNonStrokingColor();
+    }
 
-            if (newOperator != null) 
-            {
-                newOperator.setContext(getContext());
-                newOperator.process(operator, arguments);
-            }
-            else 
-            {
-                LOG.warn("Not supported colorspace "+colorSpace.getName() 
-                        + " within operator "+operator.getOperation());
-            }
-        }
-        else
-        {
-            LOG.warn("Colorspace not found in "+getClass().getName()+".process!!");
-        }
+    /**
+     * Sets the non-stroking color.
+     * @param color The new non-stroking color.
+     */
+    protected void setColor(PDColor color)
+    {
+        context.getGraphicsState().setNonStrokingColor(color);
+    }
+
+    /**
+     * Returns the non-stroking color space.
+     * @return The non-stroking color space.
+     */
+    protected PDColorSpace getColorSpace()
+    {
+        return context.getGraphicsState().getNonStrokingColorSpace();
     }
 }

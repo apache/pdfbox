@@ -40,11 +40,12 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -147,7 +148,7 @@ public class SinglePageValidationProcess extends AbstractProcess
                 {
                     thumbBase = ((COSObject) thumbBase).getObject();
                 }
-                PDXObject thumbImg = PDXObjectImage.createThumbnailXObject(thumbBase);
+                PDXObject thumbImg = PDImageXObject.createThumbnail((COSStream)thumbBase);
                 ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
             }
             catch (IOException e)

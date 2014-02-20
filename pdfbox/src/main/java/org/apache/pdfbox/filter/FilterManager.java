@@ -41,7 +41,7 @@ public class FilterManager
     {
         Filter flateFilter = new FlateFilter();
         Filter dctFilter = new DCTFilter();
-        Filter ccittFaxFilter = new CCITTFaxDecodeFilter();
+        Filter ccittFaxFilter = new CCITTFaxFilter();
         Filter lzwFilter = new LZWFilter();
         Filter asciiHexFilter = new ASCIIHexFilter();
         Filter ascii85Filter = new ASCII85Filter();

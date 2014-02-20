@@ -17,210 +17,61 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
-
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-
-import java.io.IOException;
 
 /**
- * This class represents a Cal Gray color space.
+ * A CalGray colour space is a special case of a single-component CIE-based colour space.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author John Hewson
+ * @author Ben Litchfield
  */
-public class PDCalGray extends PDColorSpace
+public final class PDCalGray extends PDCalRGB
 {
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "CalGray";
-
-    private COSArray array;
-    private COSDictionary dictionary;
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
 
     /**
-     * Constructor.
+     * Create a new CalGray color space.
      */
     public PDCalGray()
     {
         array = new COSArray();
         dictionary = new COSDictionary();
-        array.add( COSName.CALGRAY );
-        array.add( dictionary );
+        array.add(COSName.CALGRAY);
+        array.add(dictionary);
     }
 
     /**
-     * Constructor with array.
-     *
-     * @param gray The underlying color space.
+     * Creates a new CalGray color space using the given COS array.
+     * @param array the COS array which represents this color space
      */
-    public PDCalGray( COSArray gray )
+    public PDCalGray(COSArray array)
     {
-        array = gray;
-        dictionary = (COSDictionary)array.getObject( 1 );
+        this.array = array;
+        dictionary = (COSDictionary)array.getObject(1);
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public String getName()
+    {
+        return COSName.CALGRAY.getName();
+    }
+
+    @Override
+    public int getNumberOfComponents()
     {
         return 1;
     }
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
-    public String getName()
+    @Override
+    public float[] getDefaultDecode()
     {
-        return NAME;
+        return new float[] { 0, 1 };
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    @Override
+    public PDColor getInitialColor()
     {
-        throw new IOException( "Not implemented" );
-    }
-
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
-    {
-        throw new IOException( "Not implemented" );
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
-    {
-        return array;
-    }
-
-    /**
-     * This will get the gamma value.  If none is present then the default of 1
-     * will be returned.
-     *
-     * @return The gamma value.
-     */
-    public float getGamma()
-    {
-        float retval = 1.0f;
-        COSNumber gamma = (COSNumber)dictionary.getDictionaryObject( COSName.GAMMA );
-        if( gamma != null )
-        {
-            retval = gamma.floatValue();
-        }
-        return retval;
-    }
-
-    /**
-     * Set the gamma value.
-     *
-     * @param value The new gamma value.
-     */
-    public void setGamma( float value )
-    {
-        dictionary.setItem( COSName.GAMMA, new COSFloat( value ) );
-    }
-
-    /**
-     * This will return the whitepoint tristimulus.  As this is a required field
-     * this will never return null.  A default of 1,1,1 will be returned if the
-     * pdf does not have any values yet.
-     *
-     * @return The whitepoint tristimulus.
-     */
-    public PDTristimulus getWhitepoint()
-    {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.WHITE_POINT );
-        if( wp == null )
-        {
-            wp = new COSArray();
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.WHITE_POINT, wp );
-        }
-        return new PDTristimulus( wp );
-    }
-
-    /**
-     * This will set the whitepoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param wp The whitepoint tristimulus.
-     */
-    public void setWhitepoint( PDTristimulus wp )
-    {
-        COSBase wpArray = wp.getCOSObject();
-        if( wpArray != null )
-        {
-            dictionary.setItem( COSName.WHITE_POINT, wpArray );
-        }
-    }
-
-    /**
-     * This will return the BlackPoint tristimulus.  This is an optional field but
-     * has defaults so this will never return null.
-     * A default of 0,0,0 will be returned if the pdf does not have any values yet.
-     *
-     * @return The blackpoint tristimulus.
-     */
-    public PDTristimulus getBlackPoint()
-    {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.BLACK_POINT );
-        if( bp == null )
-        {
-            bp = new COSArray();
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            dictionary.setItem( COSName.BLACK_POINT, bp );
-        }
-        return new PDTristimulus( bp );
-    }
-
-    /**
-     * This will set the BlackPoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param bp The BlackPoint tristimulus.
-     */
-    public void setBlackPoint( PDTristimulus bp )
-    {
-        COSBase bpArray = null;
-        if( bp != null )
-        {
-            bpArray = bp.getCOSObject();
-        }
-        dictionary.setItem( COSName.BLACK_POINT, bpArray );
+        return INITIAL_COLOR;
     }
 }

@@ -47,8 +47,7 @@ class Type1ShadingContext implements PaintContext
     private static final Log LOG = LogFactory.getLog(Type1ShadingContext.class);
 
     private ColorModel outputColorModel;
-    private ColorSpace shadingColorSpace;
-    private PDFunction shadingTinttransform;
+    private PDColorSpace shadingColorSpace;
     private PDShadingType1 shadingType;
     private AffineTransform rat;
     private float[] domain;
@@ -66,32 +65,12 @@ class Type1ShadingContext implements PaintContext
      *
      */
     public Type1ShadingContext(PDShadingType1 shadingType1, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix currentTransformationMatrix, int pageHeight)
+            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
         shadingType = shadingType1;
 
-        // colorSpace 
-        try
-        {
-            PDColorSpace cs = shadingType.getColorSpace();
-            if (!(cs instanceof PDDeviceRGB))
-            {
-                // we have to create an instance of the shading colorspace if it isn't RGB
-                shadingColorSpace = cs.getJavaColorSpace();
-                if (cs instanceof PDDeviceN)
-                {
-                    shadingTinttransform = ((PDDeviceN) cs).getTintTransform();
-                }
-                else if (cs instanceof PDSeparation)
-                {
-                    shadingTinttransform = ((PDSeparation) cs).getTintTransform();
-                }
-            }
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error while creating colorSpace", exception);
-        }
+        // color space
+        shadingColorSpace = shadingType.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
@@ -125,7 +104,7 @@ class Type1ShadingContext implements PaintContext
             // shading matrix and current user / device space 
             // when handling actual pixels in getRaster()
             rat = matrix.createAffineTransform().createInverse();
-            rat.concatenate(currentTransformationMatrix.createAffineTransform().createInverse());
+            rat.concatenate(ctm.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
         catch (NoninvertibleTransformException ex)
@@ -149,7 +128,6 @@ class Type1ShadingContext implements PaintContext
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shadingTinttransform = null;
         shadingType = null;
     }
 
@@ -194,30 +172,33 @@ class Type1ShadingContext implements PaintContext
                         continue;
                     }
                 }
-
-                try
+                // evaluate function
+                if (useBackground)
                 {
-                    if (useBackground)
-                    {
-                        values = background;
-                    }
-                    else
+                    values = background;
+                }
+                else
+                {
+                    try
                     {
                         values = shadingType.evalFunction(values);
                     }
-                    // convert color values from shading colorspace to RGB 
-                    if (shadingColorSpace != null)
+                    catch (IOException exception)
                     {
-                        if (shadingTinttransform != null)
-                        {
-                            values = shadingTinttransform.eval(values);
-                        }
-                        values = shadingColorSpace.toRGB(values);
+                        LOG.error("error while processing a function", exception);
                     }
                 }
-                catch (IOException exception)
+                // convert color values from shading color space to RGB
+                if (shadingColorSpace != null)
                 {
-                    LOG.error("error while processing a function", exception);
+                    try
+                    {
+                        values = shadingColorSpace.toRGB(values);
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error processing color space", exception);
+                    }
                 }
                 data[index] = (int) (values[0] * 255);
                 data[index + 1] = (int) (values[1] * 255);
@@ -232,10 +213,5 @@ class Type1ShadingContext implements PaintContext
     public float[] getDomain()
     {
         return domain;
-    }
-
-    public PDFunction getShadingTintTransform()
-    {
-        return shadingTinttransform;
     }
 }

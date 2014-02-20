@@ -24,8 +24,6 @@ package org.apache.pdfbox.preflight.graphic;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -72,26 +70,18 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
     protected void processIndexedColorSpace(PDColorSpace pdcs)
     {
         PDIndexed indexed = (PDIndexed) pdcs;
-        try
+        PDColorSpace based = indexed.getBaseColorSpace();
+        ColorSpaces colorSpace = ColorSpaces.valueOf(based.getName());
+        switch (colorSpace)
         {
-            PDColorSpace based = indexed.getBaseColorSpace();
-            ColorSpaces colorSpace = ColorSpaces.valueOf(based.getName());
-            switch (colorSpace)
-            {
-            case Indexed:
-            case Indexed_SHORT:
-            case Pattern:
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpace
-                        .getLabel() + " ColorSpace is forbidden"));
-                break;
-            default:
-                processAllColorSpace(based);
-            }
-        }
-        catch (IOException e)
-        {
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read Indexed Color Space : " + e.getMessage()));
+        case Indexed:
+        case Indexed_SHORT:
+        case Pattern:
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpace
+                    .getLabel() + " ColorSpace is forbidden"));
+            break;
+        default:
+            processAllColorSpace(based);
         }
     }
 }

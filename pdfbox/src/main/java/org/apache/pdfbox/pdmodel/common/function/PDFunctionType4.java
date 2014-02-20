@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.common.function.type4.Operators;
 import java.io.IOException;
 
 /**
- * This class represents a type 4 function in a PDF document.
+ * This class represents a Type 4 (PostScript calculator) function in a PDF document.
  * <p>
  * See section 3.9.4 of the PDF 1.4 Reference.
  *

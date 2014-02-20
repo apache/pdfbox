@@ -35,7 +35,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
@@ -53,9 +53,9 @@ public class XObjFormValidator extends AbstractXObjValidator
     /**
      * High level object which represents the XObjectForm
      */
-    PDXObjectForm pdXObj = null;
+    PDFormXObject pdXObj = null;
 
-    public XObjFormValidator(PreflightContext context, PDXObjectForm xobj)
+    public XObjFormValidator(PreflightContext context, PDFormXObject xobj)
     {
         super(context, xobj.getCOSStream());
         this.pdXObj = xobj;

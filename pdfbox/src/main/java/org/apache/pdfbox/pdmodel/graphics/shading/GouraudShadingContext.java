@@ -55,7 +55,7 @@ public abstract class GouraudShadingContext implements PaintContext
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
     private ColorModel outputColorModel;
-    private PDColorSpace colorSpace;
+    private PDColorSpace shadingColorSpace;
     /**
      * number of color components.
      */
@@ -76,8 +76,6 @@ public abstract class GouraudShadingContext implements PaintContext
      * background values.
      */
     protected float[] background;
-    private ColorSpace shadingColorSpace;
-    private PDFunction shadingTinttransform;
     private final boolean hasFunction;
     private final PDShadingResources gouraudShadingType;
 
@@ -97,41 +95,19 @@ public abstract class GouraudShadingContext implements PaintContext
     {
         gouraudShadingType = shadingType;
         triangleList = new ArrayList<GouraudTriangle>();
-        colorSpace = shadingType.getColorSpace();
         hasFunction = shadingType.getFunction() != null;
-        LOG.debug("colorSpace: " + colorSpace);
-        numberOfColorComponents = colorSpace.getNumberOfComponents();
-        LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
+
+        shadingColorSpace = shadingType.getColorSpace();
+        LOG.debug("colorSpace: " + shadingColorSpace);
+        numberOfColorComponents = shadingColorSpace.getNumberOfComponents();
+
         LOG.debug("BBox: " + shadingType.getBBox());
         LOG.debug("Background: " + shadingType.getBackground());
 
-        // create the output colormodel using RGB+alpha as colorspace
+        // create the output color model using RGB+alpha as color space
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
                 DataBuffer.TYPE_BYTE);
-
-        // get the shading colorSpace
-        try
-        {
-            if (!(colorSpace instanceof PDDeviceRGB))
-            {
-                // we have to create an instance of the shading colorspace if it isn't RGB
-                shadingColorSpace = colorSpace.getJavaColorSpace();
-                if (colorSpace instanceof PDDeviceN)
-                {
-                    shadingTinttransform = ((PDDeviceN) colorSpace).getTintTransform();
-                }
-                else if (colorSpace instanceof PDSeparation)
-                {
-                    shadingTinttransform = ((PDSeparation) colorSpace).getTintTransform();
-                }
-            }
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error while creating colorSpace", exception);
-        }
-
     }
 
     /**
@@ -211,9 +187,7 @@ public abstract class GouraudShadingContext implements PaintContext
     {
         triangleList = null;
         outputColorModel = null;
-        colorSpace = null;
         shadingColorSpace = null;
-        shadingTinttransform = null;
     }
 
     /**
@@ -297,21 +271,14 @@ public abstract class GouraudShadingContext implements PaintContext
                         }
                     }
 
-                    // convert color values from shading colorspace to RGB
-                    if (shadingColorSpace != null)
+                    // convert from shading color space to to RGB
+                    try
                     {
-                        if (shadingTinttransform != null)
-                        {
-                            try
-                            {
-                                values = shadingTinttransform.eval(values);
-                            }
-                            catch (IOException exception)
-                            {
-                                LOG.error("error while processing a function", exception);
-                            }
-                        }
                         values = shadingColorSpace.toRGB(values);
+                    }
+                    catch (IOException exception)
+                    {
+                        LOG.error("error processing color space", exception);
                     }
 
                     int index = (row * w + col) * 4;

@@ -32,8 +32,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -48,7 +48,6 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDFTemplateStructure
 {
-
     private PDPage page;
     private PDDocument template;
     private PDAcroForm acroForm;
@@ -58,15 +57,15 @@ public class PDFTemplateStructure
     private PDRectangle singatureRectangle;
     private AffineTransform affineTransform;
     private COSArray procSet;
-    private PDJpeg jpedImage;
+    private PDImageXObject image;
     private PDRectangle formaterRectangle;
     private PDStream holderFormStream;
     private PDResources holderFormResources;
-    private PDXObjectForm holderForm;
+    private PDFormXObject holderForm;
     private PDAppearanceDictionary appearanceDictionary;
     private PDStream innterFormStream;
     private PDResources innerFormResources;
-    private PDXObjectForm innerForm;
+    private PDFormXObject innerForm;
     private PDStream imageFormStream;
     private PDResources imageFormResources;
     private List<PDField> acroFormFields;
@@ -74,12 +73,12 @@ public class PDFTemplateStructure
     private String imageFormName;
     private String imageName;
     private COSDocument visualSignature;
-    private PDXObjectForm imageForm;
+    private PDFormXObject imageForm;
     private COSDictionary widgetDictionary;
 
     /**
      * Returns document page.
-     * @return the document page.
+     * @return
      */
     public PDPage getPage()
     {
@@ -99,7 +98,7 @@ public class PDFTemplateStructure
      * Gets PDDocument template.
      * This represents a digital signature
      *  that can be attached to a document
-     * @return the template to be used.
+     * @return
      */
     public PDDocument getTemplate()
     {
@@ -119,7 +118,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets Acroform
-     * @return the documents AcroForm.  
+     * @return
      */
     public PDAcroForm getAcroForm()
     {
@@ -137,7 +136,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets Signature field
-     * @return the signature filed to be used.
+     * @return
      */
     public PDSignatureField getSignatureField()
     {
@@ -155,7 +154,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets PDSignature
-     * @return the signature object.
+     * @return
      */
     public PDSignature getPdSignature()
     {
@@ -174,7 +173,7 @@ public class PDFTemplateStructure
     /**
      * Gets Dictionary of AcroForm. Thats <b> /DR </b>
      * entry in the AcroForm
-     * @return the AcroForms dictionary object.
+     * @return
      */
     public COSDictionary getAcroFormDictionary()
     {
@@ -194,7 +193,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets SignatureRectangle
-     * @return the signatures rectangle.
+     * @return
      */
     public PDRectangle getSingatureRectangle()
     {
@@ -212,7 +211,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets AffineTransform
-     * @return the affine transform.
+     * @return
      */
     public AffineTransform getAffineTransform()
     {
@@ -230,7 +229,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets ProcSet Array
-     * @return the proc set array.
+     * @return
      */
     public COSArray getProcSet()
     {
@@ -248,25 +247,25 @@ public class PDFTemplateStructure
 
     /**
      * Gets the image of visible signature
-     * @return the image used for a visioble signature.
+     * @return
      */
-    public PDJpeg getJpedImage()
+    public PDImageXObject getImage()
     {
-        return jpedImage;
+        return image;
     }
 
     /**
      * Sets the image of visible signature
-     * @param jpedImage
+     * @param image Image XObject
      */
-    public void setJpedImage(PDJpeg jpedImage)
+    public void setImage(PDImageXObject image)
     {
-        this.jpedImage = jpedImage;
+        this.image = image;
     }
 
     /**
      * Gets formatter rectangle
-     * @return the rectangle used by the formatter.
+     * @return
      */
     public PDRectangle getFormaterRectangle()
     {
@@ -284,7 +283,7 @@ public class PDFTemplateStructure
 
     /**
      * Sets HolderFormStream
-     * @return the form stream of the holder.
+     * @return
      */
     public PDStream getHolderFormStream()
     {
@@ -305,9 +304,9 @@ public class PDFTemplateStructure
      * That form is here <b> AcroForm/DR/XObject/{holder form name} </b>
      * By default, name stars with FRM. We also add number of form
      * to the name.
-     * @return the holder form.
+     * @return
      */
-    public PDXObjectForm getHolderForm()
+    public PDFormXObject getHolderForm()
     {
         return holderForm;
     }
@@ -316,14 +315,14 @@ public class PDFTemplateStructure
      * In the structure, form will be contained by XObject in the <b>AcroForm/DR/ </b>
      * @param holderForm
      */
-    public void setHolderForm(PDXObjectForm holderForm)
+    public void setHolderForm(PDFormXObject holderForm)
     {
         this.holderForm = holderForm;
     }
 
     /**
      * Gets Holder form resources
-     * @return the holder forms ressources.
+     * @return
      */
     public PDResources getHolderFormResources()
     {
@@ -342,7 +341,7 @@ public class PDFTemplateStructure
     /**
      * Gets AppearanceDictionary
      * That is <b>/AP</b> entry the appearance dictionary.
-     * @return the appearance dictionary.
+     * @return
      */
     public PDAppearanceDictionary getAppearanceDictionary()
     {
@@ -361,7 +360,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets Inner form Stream.
-     * @return the inner form's stream.
+     * @return
      */
     public PDStream getInnterFormStream()
     {
@@ -379,7 +378,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets inner form Resource
-     * @return the inner form's resources.
+     * @return
      */
     public PDResources getInnerFormResources()
     {
@@ -400,9 +399,9 @@ public class PDFTemplateStructure
      * <b> AcroForm/DR/XObject/{holder form name}/Resources/XObject/{inner name} </b>
      * By default inner form name starts with "n". Then we add number of form
      * to the name.
-     * @return the inner form.
+     * @return
      */
-    public PDXObjectForm getInnerForm()
+    public PDFormXObject getInnerForm()
     {
         return innerForm;
     }
@@ -412,14 +411,14 @@ public class PDFTemplateStructure
      * <b> AcroForm/DR/XObject/{holder form name}/Resources/XObject/{destination} </b>
      * @param innerForm
      */
-    public void setInnerForm(PDXObjectForm innerForm)
+    public void setInnerForm(PDFormXObject innerForm)
     {
         this.innerForm = innerForm;
     }
 
     /**
      * Gets name of inner form
-     * @return the inner form's name.
+     * @return
      */
     public String getInnerFormName()
     {
@@ -437,7 +436,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets Image form stream
-     * @return the image form's stream.
+     * @return
      */
     public PDStream getImageFormStream()
     {
@@ -455,7 +454,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets image form resources
-     * @return the image form's resources.
+     * @return
      */
     public PDResources getImageFormResources()
     {
@@ -475,9 +474,9 @@ public class PDFTemplateStructure
      * Gets Image form. Image form is in this structure: 
      * <b>/AcroForm/DR/{holder form}/Resources/XObject /{inner form} </b>
      * /Resources/XObject/{image form name}.
-     * @return the image form.
+     * @return
      */
-    public PDXObjectForm getImageForm()
+    public PDFormXObject getImageForm()
     {
         return imageForm;
     }
@@ -491,14 +490,14 @@ public class PDFTemplateStructure
      * Sets image form
      * @param imageForm
      */
-    public void setImageForm(PDXObjectForm imageForm)
+    public void setImageForm(PDFormXObject imageForm)
     {
         this.imageForm = imageForm;
     }
 
     /**
      * Gets image form name
-     * @return the image form's name.
+     * @return
      */
     public String getImageFormName()
     {
@@ -516,7 +515,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets visible signature image name
-     * @return the visible signature image's name 
+     * @return
      */
     public String getImageName()
     {
@@ -535,7 +534,7 @@ public class PDFTemplateStructure
     /**
      * Gets COSDocument of visible Signature.
      * @see org.apache.pdfbox.cos.COSDocument
-     * @return the document representing the visual signature. 
+     * @return
      */
     public COSDocument getVisualSignature()
     {
@@ -555,7 +554,7 @@ public class PDFTemplateStructure
 
     /**
      * Gets acroFormFields
-     * @return the fields within the AcroForm.
+     * @return
      */
     public List<PDField> getAcroFormFields()
     {
@@ -573,7 +572,7 @@ public class PDFTemplateStructure
     
    /**
     * Gets AP of the created template
-    * @return the appearance stream of the created template.
+    * @return
     * @throws IOException
     * @throws COSVisitorException
     */
@@ -594,8 +593,8 @@ public class PDFTemplateStructure
     /**
      * Gets Widget Dictionary.
      * {@link org.apache.pdfbox.pdmodel.interactive.form.PDField}
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget() 
-     * @return the dictionary representing the widget.
+     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget()
+     * @return
      */
     public COSDictionary getWidgetDictionary()
     {
@@ -605,7 +604,7 @@ public class PDFTemplateStructure
     /**
      * Sets Widget Dictionary.
      * {@link org.apache.pdfbox.pdmodel.interactive.form.PDField}
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget() 
+     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget()
      * @param widgetDictionary
      */
     public void setWidgetDictionary(COSDictionary widgetDictionary)

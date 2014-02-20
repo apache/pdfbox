@@ -28,10 +28,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDCcitt;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-
+import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
  * This is an example that creates a simple document.
@@ -43,7 +42,6 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
  */
 public class ImageToPDF
 {
-
     /**
      * create the second sample document from the PDF file format specification.
      *
@@ -64,14 +62,14 @@ public class ImageToPDF
             PDPage page = new PDPage();
             doc.addPage( page );
 
-            PDXObjectImage ximage = null;
+            PDImageXObject pdImage;
             if( image.toLowerCase().endsWith( ".jpg" ) )
             {
-                ximage = new PDJpeg(doc, new FileInputStream( image ) );
+                pdImage = JPEGFactory.createFromStream(doc, new FileInputStream(image));
             }
             else if (image.toLowerCase().endsWith(".tif") || image.toLowerCase().endsWith(".tiff"))
             {
-                ximage = new PDCcitt(doc, new RandomAccessFile(new File(image),"r"));
+                pdImage = CCITTFactory.createFromRandomAccess(doc, new RandomAccessFile(new File(image),"r"));
             }
             else
             {
@@ -81,7 +79,7 @@ public class ImageToPDF
             }
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
 
-            contentStream.drawImage( ximage, 20, 20 );
+            contentStream.drawImage( pdImage, 20, 20 );
 
             contentStream.close();
             doc.save( file );

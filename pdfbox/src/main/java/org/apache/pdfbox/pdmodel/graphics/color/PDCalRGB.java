@@ -24,258 +24,234 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 
-import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.io.IOException;
 
 /**
- * This class represents a Cal RGB color space.
+ * A CalRGB colour space is a CIE-based colour space with one transformation stage instead of two.
+ * In this type of space, A, B, and C represent calibrated red, green, and blue colour values.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDCalRGB extends PDColorSpace
+public class PDCalRGB extends PDCIEBasedColorSpace
 {
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "CalRGB";
+    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
 
-    private COSArray array;
-    private COSDictionary dictionary;
+    protected COSArray array;
+    protected COSDictionary dictionary;
 
     /**
-     * Constructor.
+     * Creates a new CalRGB color space.
      */
     public PDCalRGB()
     {
         array = new COSArray();
         dictionary = new COSDictionary();
-        array.add( COSName.CALRGB );
-        array.add( dictionary );
+        array.add(COSName.CALRGB);
+        array.add(dictionary);
     }
 
     /**
-     * Constructor with array.
-     *
-     * @param rgb The underlying color space.
+     * Creates a new CalRGB color space using the given COS array.
+     * @param rgb the cos array which represents this color space
      */
-    public PDCalRGB( COSArray rgb )
+    public PDCalRGB(COSArray rgb)
     {
         array = rgb;
-        dictionary = (COSDictionary)array.getObject( 1 );
+        dictionary = (COSDictionary)array.getObject(1);
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public String getName()
+    {
+        return COSName.CALRGB.getName();
+    }
+
+    @Override
+    public int getNumberOfComponents()
     {
         return 3;
     }
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
-    public String getName()
+    @Override
+    public float[] getDefaultDecode()
     {
-        return NAME;
+        return new float[] { 0, 1, 0, 1, 0, 1 };
+    }
+
+    @Override
+    public PDColor getInitialColor()
+    {
+        return INITIAL_COLOR;
+    }
+
+    //
+    // WARNING: this method is performance sensitive, modify with care!
+    //
+    @Override
+    public final float[] toRGB(float[] value)
+    {
+        float a = value[0];
+        float b = value[0];
+        float c = value[0];
+
+        PDGamma g = getGamma();
+        PDMatrix m = getLinearInterpretation();
+
+        float xA = m.getValue(0, 0);
+        float xB = m.getValue(0, 1);
+        float xC = m.getValue(0, 2);
+
+        float yA = m.getValue(1, 0);
+        float yB = m.getValue(1, 1);
+        float yC = m.getValue(1, 2);
+
+        float zA = m.getValue(2, 0);
+        float zB = m.getValue(2, 1);
+        float zC = m.getValue(2, 2);
+
+        float v1 = (float)Math.pow(a, g.getR());  // A ^ G_R
+        float v2 = (float)Math.pow(b, g.getG());  // B ^ G_G
+        float v3 = (float)Math.pow(c, g.getB());  // C ^ G_B   NOTE: PDF32000 p147 is mistaken
+
+        float x = xA * v1 + xB * v2 + xC * v3;
+        float y = yA * v1 + yB * v2 + yC * v3;
+        float z = zA * v1 + zB * v2 + zC * v3;
+
+        // TODO scale XYZ values using blackpoint and whitepoint?
+
+        return CIEXYZ.toRGB(new float[] { x, y, z });
     }
 
     /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
+     * Returns the whitepoint tristimulus.
+     * A default of 1,1,1 will be returned if the PDF does not have any values yet.
+     * @return the whitepoint tristimulus.
      */
-    protected ColorSpace createColorSpace()
+    public final PDTristimulus getWhitepoint()
     {
-        return new ColorSpaceCalRGB(getGamma(),getWhitepoint(),getBlackPoint(),getLinearInterpretation());
-    }
-
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
-    {
-        int[] nBits = {bpc, bpc, bpc};
-        return new ComponentColorModel( getJavaColorSpace(),
-                   nBits,
-                   false,
-                   false,
-                   Transparency.OPAQUE,
-                   DataBuffer.TYPE_BYTE);
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
-    {
-        return array;
-    }
-
-    /**
-     * This will return the whitepoint tristimulus.  As this is a required field
-     * this will never return null.  A default of 1,1,1 will be returned if the
-     * pdf does not have any values yet.
-     *
-     * @return The whitepoint tristimulus.
-     */
-    public PDTristimulus getWhitepoint()
-    {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.WHITE_POINT );
-        if( wp == null )
+        COSArray wp = (COSArray)dictionary.getDictionaryObject(COSName.WHITE_POINT);
+        if(wp == null)
         {
             wp = new COSArray();
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.WHITE_POINT, wp );
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
+            dictionary.setItem(COSName.WHITE_POINT, wp);
         }
-        return new PDTristimulus( wp );
+        return new PDTristimulus(wp);
     }
 
     /**
-     * This will set the whitepoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param wp The whitepoint tristimulus.
+     * Returns the blackpoint tristimulus.
+     * A default of 0,0,0 will be returned if the PDF does not have any values yet.
+     * @return the blackpoint tristimulus
      */
-    public void setWhitepoint( PDTristimulus wp )
+    public final PDTristimulus getBlackPoint()
     {
-        COSBase wpArray = wp.getCOSObject();
-        if( wpArray != null )
-        {
-            dictionary.setItem( COSName.WHITE_POINT, wpArray );
-        }
-    }
-
-    /**
-     * This will return the BlackPoint tristimulus.  This is an optional field but
-     * has defaults so this will never return null.
-     * A default of 0,0,0 will be returned if the pdf does not have any values yet.
-     *
-     * @return The blackpoint tristimulus.
-     */
-    public PDTristimulus getBlackPoint()
-    {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.BLACK_POINT );
-        if( bp == null )
+        COSArray bp = (COSArray)dictionary.getDictionaryObject(COSName.BLACK_POINT);
+        if(bp == null)
         {
             bp = new COSArray();
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            dictionary.setItem( COSName.BLACK_POINT, bp );
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
+            dictionary.setItem(COSName.BLACK_POINT, bp);
         }
-        return new PDTristimulus( bp );
+        return new PDTristimulus(bp);
     }
 
     /**
-     * This will set the BlackPoint tristimulus.  As this is a required field
-     * this null should not be passed into this function.
-     *
-     * @param bp The BlackPoint tristimulus.
+     * Returns the the gamma value.
+     * If none is present then the default of 1,1,1 will be returned.
+     * @return the gamma value
      */
-    public void setBlackPoint( PDTristimulus bp )
+    public final PDGamma getGamma()
     {
-
-        COSBase bpArray = null;
-        if( bp != null )
-        {
-            bpArray = bp.getCOSObject();
-        }
-        dictionary.setItem( COSName.BLACK_POINT, bpArray );
-    }
-
-    /**
-     * This will get the gamma value.  If none is present then the default of 1,1,1
-     * will be returned.
-     *
-     * @return The gamma value.
-     */
-    public PDGamma getGamma()
-    {
-        COSArray gamma = (COSArray)dictionary.getDictionaryObject( COSName.GAMMA );
-        if( gamma == null )
+        COSArray gamma = (COSArray)dictionary.getDictionaryObject(COSName.GAMMA);
+        if(gamma == null)
         {
             gamma = new COSArray();
-            gamma.add( new COSFloat( 1.0f ) );
-            gamma.add( new COSFloat( 1.0f ) );
-            gamma.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.GAMMA, gamma );
+            gamma.add(new COSFloat(1.0f));
+            gamma.add(new COSFloat(1.0f));
+            gamma.add(new COSFloat(1.0f));
+            dictionary.setItem(COSName.GAMMA, gamma);
         }
-        return new PDGamma( gamma );
+        return new PDGamma(gamma);
     }
 
     /**
-     * Set the gamma value.
-     *
-     * @param value The new gamma value.
+     * Returns the linear interpretation matrix.
+     * If the underlying dictionary contains null then the identity matrix will be returned.
+     * @return the linear interpretation matrix
      */
-    public void setGamma( PDGamma value )
+    public final PDMatrix getLinearInterpretation()
     {
-        COSArray gamma = null;
-        if( value != null )
+        COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
+        if(matrix == null)
         {
-            gamma = value.getCOSArray();
-        }
-        dictionary.setItem( COSName.GAMMA, gamma );
-    }
-
-    /**
-     * This will get the linear interpretation array.  This is guaranteed to not
-     * return null.  If the underlying dictionary contains null then the identity
-     * matrix will be returned.
-     *
-     * @return The linear interpretation matrix.
-     */
-    public PDMatrix getLinearInterpretation()
-    {
-        PDMatrix retval = null;
-        COSArray matrix = (COSArray)dictionary.getDictionaryObject( COSName.MATRIX );
-        if( matrix == null )
-        {
-            retval = new PDMatrix();
-            setLinearInterpretation( retval );
+            return new PDMatrix();
         }
         else
         {
-            retval = new PDMatrix( matrix );
+           return new PDMatrix(matrix);
         }
-        return retval;
     }
 
     /**
-     * This will set the linear interpretation matrix.  Passing in null will
-     * clear the matrix.
-     *
-     * @param matrix The new linear interpretation matrix.
+     * Sets the whitepoint tristimulus
+     * @param whitepoint the whitepoint tristimulus, which may not be null
      */
-    public void setLinearInterpretation( PDMatrix matrix )
+    public final void setWhitepoint(PDTristimulus whitepoint)
+    {
+        COSBase wpArray = whitepoint.getCOSObject();
+        if(wpArray != null)
+        {
+            dictionary.setItem(COSName.WHITE_POINT, wpArray);
+        }
+    }
+
+    /**
+     * Sets the blackpoint tristimulus
+     * @param blackpoint the blackpoint tristimulus, which may not be null
+     */
+    public final void setBlackPoint(PDTristimulus blackpoint)
+    {
+        COSBase bpArray = null;
+        if(blackpoint != null)
+        {
+            bpArray = blackpoint.getCOSObject();
+        }
+        dictionary.setItem(COSName.BLACK_POINT, bpArray);
+    }
+
+    /**
+     * Sets the gamma value.
+     * @param gamma the new gamma value
+     */
+    public final void setGamma(PDGamma gamma)
+    {
+        COSArray array = null;
+        if(gamma != null)
+        {
+            array = gamma.getCOSArray();
+        }
+        dictionary.setItem(COSName.GAMMA, array);
+    }
+
+    /**
+     * Sets the linear interpretation matrix.
+     * Passing in null will clear the matrix.
+     * @param matrix the new linear interpretation matrix, or null
+     */
+    public final void setLinearInterpretation(PDMatrix matrix)
     {
         COSArray matrixArray = null;
-        if( matrix != null )
+        if(matrix != null)
         {
             matrixArray = matrix.getCOSArray();
         }
-        dictionary.setItem( COSName.MATRIX, matrixArray );
+        dictionary.setItem(COSName.MATRIX, matrixArray);
     }
 }

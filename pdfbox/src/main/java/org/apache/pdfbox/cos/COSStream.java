@@ -175,7 +175,7 @@ public class COSStream extends COSDictionary
      *
      * @throws IOException when encoding/decoding causes an exception
      */
-    public InputStream getUnfilteredStream() throws IOException
+    public InputStream  getUnfilteredStream() throws IOException
     {
         InputStream retval = null;
         if( unFilteredStream == null )
@@ -305,7 +305,8 @@ public class COSStream extends COSDictionary
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                 	IOUtils.closeQuietly(unFilteredStream);
                     unFilteredStream = new RandomAccessFileOutputStream( file );
-                    filter.decode( input, unFilteredStream, this, filterIndex );
+                    filter.decode( input, unFilteredStream, this.asUnmodifiableDictionary(),
+                                   filterIndex );
                     done = true;
                 }
                 catch( IOException io )
@@ -333,7 +334,8 @@ public class COSStream extends COSDictionary
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                     	IOUtils.closeQuietly(unFilteredStream);
                         unFilteredStream = new RandomAccessFileOutputStream( file );
-                        filter.decode( input, unFilteredStream, this, filterIndex );
+                        filter.decode( input, unFilteredStream, this.asUnmodifiableDictionary(),
+                                       filterIndex );
                         done = true;
                     }
                     catch( IOException io )

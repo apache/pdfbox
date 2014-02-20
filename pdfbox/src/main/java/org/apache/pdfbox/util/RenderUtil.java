@@ -153,8 +153,8 @@ public class RenderUtil
         float scale = resolution / (float) PDPage.DEFAULT_USER_SPACE_UNIT_DPI;
         int widthPx = Math.round(widthPt * scale);
         int heightPx = Math.round(heightPt * scale);
-        BufferedImage retval = null;
         int rotationAngle = page.findRotation();
+
         // normalize the rotation angle
         if (rotationAngle < 0)
         {
@@ -164,25 +164,38 @@ public class RenderUtil
         {
             rotationAngle -= 360;
         }
+
         // swap width and height
+        BufferedImage image;
         if (rotationAngle == 90 || rotationAngle == 270)
         {
-            retval = new BufferedImage(heightPx, widthPx, imageType);
+            image = new BufferedImage(heightPx, widthPx, imageType);
         }
         else
         {
-            retval = new BufferedImage(widthPx, heightPx, imageType);
+            image = new BufferedImage(widthPx, heightPx, imageType);
         }
-        Graphics2D graphics2D = (Graphics2D) retval.getGraphics();
-        renderPage(page, graphics2D, retval.getWidth(), retval.getHeight(), scale, scale);
-        graphics2D.dispose();
-        return retval;
+
+        // use a transparent background if the imageType supports alpha
+        Graphics2D g = image.createGraphics();
+        if (image.getColorModel().hasAlpha())
+        {
+            g.setBackground(TRANSPARENT_WHITE);
+        }
+        else
+        {
+            g.setBackground(Color.WHITE);
+        }
+
+        renderPage(page, g, image.getWidth(), image.getHeight(), scale, scale);
+        g.dispose();
+
+        return image;
     }
 
     private static void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX, float scaleY)
             throws IOException
     {
-        graphics.setBackground(TRANSPARENT_WHITE);
         graphics.clearRect(0, 0, width, height);
         int rotationAngle = page.findRotation();
         if (rotationAngle != 0)

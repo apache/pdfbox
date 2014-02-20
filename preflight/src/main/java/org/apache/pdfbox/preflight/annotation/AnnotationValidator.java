@@ -36,7 +36,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -197,7 +198,8 @@ public abstract class AnnotationValidator
                 }
 
                 // Appearance stream is a XObjectForm, check it.
-                ContextHelper.validateElement(ctx, new PDXObjectForm(COSUtils.getAsStream(apn, cosDocument)),
+                ContextHelper.validateElement(ctx, new PDFormXObject(
+                        new PDStream(COSUtils.getAsStream(apn, cosDocument)), "N"),
                         GRAPHIC_PROCESS);
             }
         } // else ok, nothing to check,this field is optional
@@ -221,9 +223,7 @@ public abstract class AnnotationValidator
     /**
      * This method validates the Popup entry. This entry shall contain an other Annotation. This annotation is validated
      * with the right AnnotationValidator.
-     * 
-     * @param errors
-     * @return
+     *
      * @throws ValidationException
      */
     protected boolean checkPopup() throws ValidationException
@@ -265,9 +265,7 @@ public abstract class AnnotationValidator
     /**
      * Checks if all mandatory fields of an annotation are present. If some fields are missing, the method returns false
      * and the errors list is updated.
-     * 
-     * @param errors
-     *            list of errors which is updated if validation fails
+     *
      * @return true if validation succeed, false otherwise.
      */
     protected boolean checkMandatoryFields()

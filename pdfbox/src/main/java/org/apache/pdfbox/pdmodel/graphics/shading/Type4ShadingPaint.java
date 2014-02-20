@@ -27,14 +27,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an type4 shading.
- *
+ * This represents the Paint of an Type 4 shading.
  */
 public class Type4ShadingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(Type4ShadingPaint.class);
+
     private PDShadingType4 shading;
     private Matrix currentTransformationMatrix;
     private int pageHeight;
@@ -75,7 +78,7 @@ public class Type4ShadingPaint implements Paint
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Type4ShadingPaint.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
             return null;
         }
     }

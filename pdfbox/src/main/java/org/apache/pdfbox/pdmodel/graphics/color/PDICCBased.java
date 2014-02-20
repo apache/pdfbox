@@ -24,20 +24,20 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import java.awt.Color;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
+import java.awt.color.CMMException;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
+import java.awt.color.ProfileDataException;
+import java.awt.image.BufferedImage;
 
+import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -45,177 +45,137 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a ICC profile color space.
+ * ICCBased colour spaces are based on a cross-platform colour profile as defined by the
+ * International Color Consortium (ICC).
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDICCBased extends PDColorSpace
+public final class PDICCBased extends PDCIEBasedColorSpace
 {
-   
-    
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDICCBased.class);
 
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "ICCBased";
-
-    //private COSArray array;
     private PDStream stream;
+    private int numberOfComponents = -1;
+    private ICC_Profile iccProfile;
+    private PDColorSpace alternateColorSpace;
+    private ICC_ColorSpace awtColorSpace;
+    private PDColor initialColor;
 
     /**
-     *  Number of color components.
+     * Creates a new ICC color space with an empty stream.
+     * @param doc the document to store the ICC data
      */
-    private int numberOfComponents = -1;
-    
-    /**
-     * Default constructor, creates empty stream.
-     *
-     * @param doc The document to store the icc data.
-     */
-    public PDICCBased( PDDocument doc )
+    public PDICCBased(PDDocument doc)
     {
         array = new COSArray();
-        array.add( COSName.ICCBASED );
-        array.add( new PDStream( doc ) );
+        array.add(COSName.ICCBASED);
+        array.add(new PDStream(doc));
     }
 
     /**
-     * Constructor.
-     *
-     * @param iccArray The ICC stream object.
+     * Creates a new ICC color space using the PDF array.
+     * @param iccArray the ICC stream object
      */
-    public PDICCBased( COSArray iccArray )
+    public PDICCBased(COSArray iccArray) throws IOException
     {
         array = iccArray;
-        stream = new PDStream( (COSStream)iccArray.getObject( 1 ) );
+        stream = new PDStream((COSStream)iccArray.getObject(1));
+        loadICCProfile();
     }
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
+    @Override
     public String getName()
     {
-        return NAME;
+        return COSName.ICCBASED.getName();
     }
 
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
+    @Override
     public COSBase getCOSObject()
     {
         return array;
     }
 
     /**
-     * Get the pd stream for this icc color space.
-     *
-     * @return Get the stream for this icc based color space.
+     * Get the underlying ICC profile stream.
+     * @return the underlying ICC profile stream
      */
     public PDStream getPDStream()
     {
         return stream;
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    // load the ICC profile, or init alternateColorSpace color space
+    private void loadICCProfile() throws IOException
     {
         InputStream profile = null;
-        ColorSpace cSpace = null;
         try
         {
             profile = stream.createInputStream();
-            ICC_Profile iccProfile = ICC_Profile.getInstance( profile );
-            cSpace = new ICC_ColorSpace( iccProfile );
-            float[] components = new float[numberOfComponents];
-            // there maybe a ProfileDataException or a CMMException as there
-            // are some issues when loading ICC_Profiles, see PDFBOX-1295
-            // Try to create a color as test ...
-            new Color(cSpace,components,1f);
+            iccProfile = ICC_Profile.getInstance(profile);
+            awtColorSpace = new ICC_ColorSpace(iccProfile);
+
+            // set initial colour
+            float[] initial = new float[getColorSpaceType()];
+            for (int c = 0; c < getNumberOfComponents(); c++)
+            {
+                initial[c] = Math.max(0, getRangeForComponent(c).getMin());
+            }
+            initialColor = new PDColor(initial);
+
+            // create a color in order to trigger a ProfileDataException
+            // or CMMException due to invalid profiles, see PDFBOX-1295
+            new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
         }
         catch (RuntimeException e)
         {
-            // we are using an alternate colorspace as fallback
-            LOG.debug("Can't read ICC-profile, using alternate colorspace instead");
-            List alternateCSList = getAlternateColorSpaces();
-            PDColorSpace alternate = (PDColorSpace)alternateCSList.get(0);
-            cSpace = alternate.getJavaColorSpace();
+            if (e instanceof ProfileDataException || e instanceof CMMException)
+            {
+                // fall back to alternateColorSpace color space
+                LOG.debug("Can't read ICC-profile, using alternate color space");
+                alternateColorSpace = getAlternateColorSpaces().get(0);
+                initialColor = alternateColorSpace.getInitialColor();
+            }
+            else
+            {
+                throw e;
+            }
         }
         finally
         {
-            if( profile != null )
-            {
-                profile.close();
-            }
+            IOUtils.closeQuietly(profile);
         }
-        return cSpace;
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
+    @Override
+    public float[] toRGB(float[] value) throws IOException
     {
-
-            int[] nbBits;
-            int numOfComponents = getNumberOfComponents();
-            switch (numOfComponents) 
-            {
-                case 1:
-                    // DeviceGray
-                    nbBits = new int[]{ bpc };
-                    break;
-                case 3:
-                    // DeviceRGB
-                    nbBits = new int[]{ bpc, bpc, bpc };
-                    break;
-                case 4:
-                    // DeviceCMYK
-                    nbBits = new int[]{ bpc, bpc, bpc, bpc };
-                    break;
-                default:
-                    throw new IOException( "Unknown colorspace number of components:" + numOfComponents );
-            }
-            ComponentColorModel componentColorModel =
-                    new ComponentColorModel( getJavaColorSpace(),
-                                             nbBits,
-                                             false,
-                                             false,
-                                             Transparency.OPAQUE,
-                                             DataBuffer.TYPE_BYTE );
-            return componentColorModel;
-        
+        if (awtColorSpace != null)
+        {
+            // WARNING: toRGB is very slow when used with LUT-based ICC profiles
+            return awtColorSpace.toRGB(value);
+        }
+        else
+        {
+            return alternateColorSpace.toRGB(value);
+        }
     }
 
-    /**
-     * This will return the number of color components.  As of PDF 1.4 this will
-     * be 1,3,4.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        if (awtColorSpace != null)
+        {
+            return toRGBImageAWT(raster, awtColorSpace);
+        }
+        else
+        {
+            return alternateColorSpace.toRGBImage(raster);
+        }
+    }
+
+    @Override
+    public int getNumberOfComponents()
     {
         if (numberOfComponents < 0)
         {
@@ -224,173 +184,194 @@ public class PDICCBased extends PDColorSpace
         return numberOfComponents;
     }
 
-    /**
-     * This will set the number of color components.
-     *
-     * @param n The number of color components.
-     */
-    public void setNumberOfComponents( int n )
+    @Override
+    public float[] getDefaultDecode()
     {
-        numberOfComponents = n;
-        stream.getStream().setInt( COSName.N, n );
+        if (awtColorSpace != null)
+        {
+            int n = getNumberOfComponents();
+            float[] decode = new float[n * 2];
+            for (int i = 0; i < n; i++)
+            {
+                decode[i * 2] = awtColorSpace.getMinValue(i);
+                decode[i * 2 + 1] = awtColorSpace.getMaxValue(i);
+            }
+            return decode;
+        }
+        else
+        {
+            return alternateColorSpace.getDefaultDecode();
+        }
+    }
+
+    @Override
+    public PDColor getInitialColor()
+    {
+        return initialColor;
     }
 
     /**
-     * This will return a list of alternate color spaces(PDColorSpace) if the display application
-     * does not support this icc stream.
-     *
-     * @return A list of alternate color spaces.
-     *
-     * @throws IOException If there is an error getting the alternate color spaces.
+     * Returns a list of alternate color spaces for non-conforming readers.
+     * WARNING: Do not use the information in a conforming reader.
+     * @return A list of alternateColorSpace color spaces.
+     * @throws IOException If there is an error getting the alternateColorSpace color spaces.
      */
-    public List getAlternateColorSpaces() throws IOException
+    public List<PDColorSpace> getAlternateColorSpaces() throws IOException
     {
-        COSBase alternate = stream.getStream().getDictionaryObject( COSName.ALTERNATE );
-        COSArray alternateArray = null;
-        if( alternate == null )
+        COSBase alternate = stream.getStream().getDictionaryObject(COSName.ALTERNATE);
+        COSArray alternateArray;
+        if(alternate == null)
         {
             alternateArray = new COSArray();
             int numComponents = getNumberOfComponents();
-            COSName csName = null;
-            if( numComponents == 1 )
+            COSName csName;
+            if(numComponents == 1)
             {
                 csName = COSName.DEVICEGRAY;
             }
-            else if( numComponents == 3 )
+            else if(numComponents == 3)
             {
                 csName = COSName.DEVICERGB;
             }
-            else if( numComponents == 4 )
+            else if(numComponents == 4)
             {
                 csName = COSName.DEVICECMYK;
             }
             else
             {
-                throw new IOException( "Unknown colorspace number of components:" + numComponents );
+                throw new IOException("Unknown color space number of components:" + numComponents);
             }
-            alternateArray.add( csName );
+            alternateArray.add(csName);
         }
         else
         {
-            if( alternate instanceof COSArray )
+            if(alternate instanceof COSArray)
             {
                 alternateArray = (COSArray)alternate;
             }
-            else if( alternate instanceof COSName )
+            else if(alternate instanceof COSName)
             {
                 alternateArray = new COSArray();
-                alternateArray.add( alternate );
+                alternateArray.add(alternate);
             }
             else
             {
-                throw new IOException( "Error: expected COSArray or COSName and not " +
-                    alternate.getClass().getName() );
+                throw new IOException("Error: expected COSArray or COSName and not " +
+                    alternate.getClass().getName());
             }
         }
-        List retval = new ArrayList();
-        for( int i=0; i<alternateArray.size(); i++ )
+        List<PDColorSpace> list = new ArrayList<PDColorSpace>();
+        for(int i=0; i<alternateArray.size(); i++)
         {
-            retval.add( PDColorSpaceFactory.createColorSpace( alternateArray.get( i ) ) );
+            list.add(PDColorSpace.create(alternateArray.get(i)));
         }
-        return new COSArrayList( retval, alternateArray );
+        return list;
     }
 
-    /**
-     * This will set the list of alternate color spaces.  This should be a list
-     * of PDColorSpace objects.
-     *
-     * @param list The list of colorspace objects.
-     */
-    public void setAlternateColorSpaces( List list )
+    private COSArray getRangeArray(int n)
     {
-        COSArray altArray = null;
-        if( list != null )
-        {
-            altArray = COSArrayList.converterToCOSArray( list );
-        }
-        stream.getStream().setItem( COSName.ALTERNATE, altArray );
-    }
-
-    private COSArray getRangeArray( int n )
-    {
-        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject( COSName.RANGE);
-        if( rangeArray == null )
+        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject(COSName.RANGE);
+        if(rangeArray == null)
         {
             rangeArray = new COSArray();
-            stream.getStream().setItem( COSName.RANGE, rangeArray );
-            while( rangeArray.size() < n*2 )
+            stream.getStream().setItem(COSName.RANGE, rangeArray);
+            while(rangeArray.size() < n*2)
             {
-                rangeArray.add( new COSFloat( -100 ) );
-                rangeArray.add( new COSFloat( 100 ) );
+                rangeArray.add(new COSFloat(-100));
+                rangeArray.add(new COSFloat(100));
             }
         }
         return rangeArray;
     }
 
     /**
-     * This will get the range for a certain component number.  This is will never
-     * return null.  If it is not present then the range -100 to 100 will
-     * be returned.
-     *
-     * @param n The component number to get the range for.
-     *
-     * @return The range for this component.
+     * Returns the range for a certain component number.
+     * This is will never return null.
+     * If it is not present then the range 0..1 will be returned.
+     * @param n the component number to get the range for
+     * @return the range for this component
      */
-    public PDRange getRangeForComponent( int n )
+    public PDRange getRangeForComponent(int n)
     {
-        COSArray rangeArray = getRangeArray( n );
-        return new PDRange( rangeArray, n );
+        COSArray rangeArray = getRangeArray(n);
+
+        if (rangeArray.size() == 0)
+        {
+            return new PDRange(); // 0..1
+        }
+        return new PDRange(rangeArray, n);
     }
 
     /**
-     * This will set the a range for this color space.
-     *
-     * @param range The new range for the a component.
-     * @param n The component to set the range for.
-     */
-    public void setRangeForComponent( PDRange range, int n )
-    {
-        COSArray rangeArray = getRangeArray( n );
-        rangeArray.set( n*2, new COSFloat( range.getMin() ) );
-        rangeArray.set( n*2+1, new COSFloat( range.getMax() ) );
-    }
-
-    /**
-     * This will get the metadata stream for this object.  Null if there is no
-     * metadata stream.
-     *
-     * @return The metadata stream, if it exists.
+     * Returns the metadata stream for this object, or null if there is no metadata stream.
+     * @return the metadata stream, or null if there is none
      */
     public COSStream getMetadata()
     {
-        return (COSStream)stream.getStream().getDictionaryObject( COSName.METADATA );
+        return (COSStream)stream.getStream().getDictionaryObject(COSName.METADATA);
     }
 
     /**
-     * This will set the metadata stream that is associated with this color space.
-     *
-     * @param metadata The new metadata stream.
+     * Returns the type of the color space in the ICC profile.
+     * Will be one of {@code TYPE_GRAY}, {@code TYPE_RGB}, or {@code TYPE_CMYK}.
+     * @return an ICC color space type
      */
-    public void setMetadata( COSStream metadata )
+    public int getColorSpaceType()
     {
-        stream.getStream().setItem( COSName.METADATA, metadata );
+        return iccProfile.getColorSpaceType();
+    }
+
+    /**
+     * Sets the number of color components.
+     * @param n the number of color components
+     */
+    // TODO it's probably not safe to use this
+    @Deprecated
+    public void setNumberOfComponents(int n)
+    {
+        numberOfComponents = n;
+        stream.getStream().setInt(COSName.N, n);
+    }
+
+    /**
+     * Sets the list of alternateColorSpace color spaces.
+     * This should be a list of PDColorSpace objects.
+     * @param list the list of color space objects
+     */
+    public void setAlternateColorSpaces(List list)
+    {
+        COSArray altArray = null;
+        if(list != null)
+        {
+            altArray = COSArrayList.converterToCOSArray(list);
+        }
+        stream.getStream().setItem(COSName.ALTERNATE, altArray);
+    }
+
+    /**
+     * Sets the range for this color space.
+     * @param range the new range for the a component
+     * @param n the component to set the range for
+     */
+    public void setRangeForComponent(PDRange range, int n)
+    {
+        COSArray rangeArray = getRangeArray(n);
+        rangeArray.set(n*2, new COSFloat(range.getMin()));
+        rangeArray.set(n*2+1, new COSFloat(range.getMax()));
     }
     
-    // Need more info on the ICCBased ones ... Array contains very little.
     /**
-     * {@inheritDoc}
+     * Sets the metadata stream that is associated with this color space.
+     * @param metadata the new metadata stream
      */
+    public void setMetadata(COSStream metadata)
+    {
+        stream.getStream().setItem(COSName.METADATA, metadata);
+    }
+
+    @Override
     public String toString()
     {
-        String retVal = super.toString() + "\n\t Number of Components: ";
-        try
-        {
-            retVal = retVal + getNumberOfComponents();
-        }
-        catch (IOException exception)
-        {
-            retVal = retVal + exception.toString();
-        }
-        return retVal;
+        return getName() + "{numberOfComponents: " + getNumberOfComponents() + "}";
     }
 }

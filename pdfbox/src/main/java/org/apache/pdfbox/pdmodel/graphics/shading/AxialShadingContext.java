@@ -45,10 +45,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class AxialShadingContext implements PaintContext 
 {
-
     private ColorModel outputColorModel;
-    private ColorSpace shadingColorSpace;
-    private PDFunction shadingTinttransform;
+    private PDColorSpace shadingColorSpace;
     private PDShadingType2 shadingType;
 
     private float[] coords;
@@ -71,45 +69,24 @@ public class AxialShadingContext implements PaintContext
      * @param shadingType2 the shading type to be used
      * @param colorModelValue the color model to be used
      * @param xform transformation for user to device space
-     * @param transformationMatrix the transformation matrix
+     * @param ctm the transformation matrix
      * @param pageHeight height of the current page
      * 
      */
     public AxialShadingContext(PDShadingType2 shadingType2, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix transformationMatrix, int pageHeight) 
+            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
         shadingType = shadingType2;
         coords = shadingType.getCoords().toFloatArray();
 
-        if (transformationMatrix != null)
+        if (ctm != null)
         {
             // transform the coords using the given matrix
-            transformationMatrix.createAffineTransform().transform(coords, 0, coords, 0, 2);
+            ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
         }
         xform.transform(coords, 0, coords, 0, 2);
         // get the shading colorSpace
-        try
-        {
-            PDColorSpace cs = shadingType.getColorSpace();
-            if (!(cs instanceof PDDeviceRGB))
-            {
-                // we have to create an instance of the shading colorspace if it isn't RGB
-                shadingColorSpace = cs.getJavaColorSpace();
-                // get the tint transformation function if the colorspace has one
-                if (cs instanceof PDDeviceN)
-                {
-                    shadingTinttransform = ((PDDeviceN) cs).getTintTransform();
-                }
-                else if (cs instanceof PDSeparation)
-                {
-                    shadingTinttransform = ((PDSeparation) cs).getTintTransform();
-                }
-            }
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error while creating colorSpace", exception);
-        }
+        shadingColorSpace = shadingType.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
@@ -157,7 +134,6 @@ public class AxialShadingContext implements PaintContext
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shadingTinttransform = null;
         shadingType = null;
     }
 
@@ -260,21 +236,14 @@ public class AxialShadingContext implements PaintContext
                         LOG.error("error while processing a function", exception);
                     }
                 }
-                // convert color values from shading colorspace to RGB if necessary
-                if (shadingColorSpace != null)
+                // convert color values from shading color space to RGB if necessary
+                try
                 {
-                    if (shadingTinttransform != null)
-                    {
-                        try
-                        {
-                            values = shadingTinttransform.eval(values);
-                        }
-                        catch (IOException exception)
-                        {
-                            LOG.error("error while processing a function", exception);
-                        }
-                    }
                     values = shadingColorSpace.toRGB(values);
+                }
+                catch (IOException exception)
+                {
+                    LOG.error("error processing color space", exception);
                 }
                 data[index] = (int) (values[0] * 255);
                 data[index + 1] = (int) (values[1] * 255);
@@ -314,15 +283,5 @@ public class AxialShadingContext implements PaintContext
     public boolean[] getExtend() 
     {
         return extend;
-    }
-    
-    /**
-     * Returns the function used for the shading tint transformation.
-     * 
-     * @return the shading tint transformation function
-     */
-    public PDFunction getShadingTintTransform() 
-    {
-        return shadingTinttransform;
     }
 }

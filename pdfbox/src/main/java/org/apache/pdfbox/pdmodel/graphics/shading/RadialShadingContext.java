@@ -31,11 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -44,10 +40,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class RadialShadingContext implements PaintContext 
 {
-
     private ColorModel outputColorModel;
-    private ColorSpace shadingColorSpace;
-    private PDFunction shadingTinttransform;
+    private PDColorSpace shadingColorSpace;
     private PDShadingType3 shadingType;
 
     private float[] coords;
@@ -75,20 +69,20 @@ public class RadialShadingContext implements PaintContext
      * @param shadingType3 the shading type to be used
      * @param colorModelValue the color model to be used
      * @param xform transformation for user to device space
-     * @param transformationMatrix the transformation matrix
+     * @param ctm the transformation matrix
      * @param pageHeight height of the current page
      * 
      */
     public RadialShadingContext(PDShadingType3 shadingType3, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix transformationMatrix, int pageHeight) 
+            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
         shadingType = shadingType3;
         coords = shadingType.getCoords().toFloatArray();
 
-        if (transformationMatrix != null)
+        if (ctm != null)
         {
             // transform the coords using the given matrix
-            AffineTransform at = transformationMatrix.createAffineTransform();
+            AffineTransform at = ctm.createAffineTransform();
             at.transform(coords, 0, coords, 0, 1);
             at.transform(coords, 3, coords, 3, 1);
             coords[2] *= at.getScaleX();
@@ -102,27 +96,7 @@ public class RadialShadingContext implements PaintContext
         coords[5] *= xform.getScaleX();
 
         // get the shading colorSpace
-        try
-        {
-            PDColorSpace cs = shadingType.getColorSpace();
-            if (!(cs instanceof PDDeviceRGB))
-            {
-                // we have to create an instance of the shading colorspace if it isn't RGB
-                shadingColorSpace = cs.getJavaColorSpace();
-                if (cs instanceof PDDeviceN)
-                {
-                    shadingTinttransform = ((PDDeviceN) cs).getTintTransform();
-                }
-                else if (cs instanceof PDSeparation)
-                {
-                    shadingTinttransform = ((PDSeparation) cs).getTintTransform();
-                }
-            }
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error while creating colorSpace", exception);
-        }
+        shadingColorSpace = shadingType.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
@@ -175,7 +149,6 @@ public class RadialShadingContext implements PaintContext
         outputColorModel = null;
         shadingType = null;
         shadingColorSpace = null;
-        shadingTinttransform = null;
     }
 
     /**
@@ -313,21 +286,14 @@ public class RadialShadingContext implements PaintContext
                         LOG.error("error while processing a function", exception);
                     }
                 }
-                // convert color values from shading colorspace to RGB
-                if (shadingColorSpace != null)
+                // convert color values from shading color space to RGB
+                try
                 {
-                    if (shadingTinttransform != null)
-                    {
-                        try
-                        {
-                            values = shadingTinttransform.eval(values);
-                        }
-                        catch (IOException exception)
-                        {
-                            LOG.error("error while processing a function", exception);
-                        }
-                    }
                     values = shadingColorSpace.toRGB(values);
+                }
+                catch (IOException exception)
+                {
+                    LOG.error("error processing color space", exception);
                 }
                 data[index] = (int) (values[0] * 255);
                 data[index + 1] = (int) (values[1] * 255);
@@ -403,15 +369,4 @@ public class RadialShadingContext implements PaintContext
     {
         return extend;
     }
-    
-    /**
-     * Returns the function used for the shading tint transformation.
-     * 
-     * @return the shading tint transformation function
-     */
-    public PDFunction getShadingTintTransform() 
-    {
-        return shadingTinttransform;
-    }
-
 }

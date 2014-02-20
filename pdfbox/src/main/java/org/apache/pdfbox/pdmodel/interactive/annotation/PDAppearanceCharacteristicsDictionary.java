@@ -22,8 +22,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
 /**
  * This class represents an appearance characteristics dictionary.
@@ -200,12 +201,12 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @return the normal icon.
      */
-    public PDXObjectForm getNormalIcon()
+    public PDFormXObject getNormalIcon()
     {
         COSBase i = this.getDictionary().getDictionaryObject("I");
         if (i instanceof COSStream)
         {
-            return new PDXObjectForm((COSStream) i);
+            return new PDFormXObject(new PDStream((COSStream) i), "I");
         }
         return null;
     }
@@ -215,12 +216,12 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @return the rollover icon
      */
-    public PDXObjectForm getRolloverIcon()
+    public PDFormXObject getRolloverIcon()
     {
         COSBase i = this.getDictionary().getDictionaryObject("RI");
         if (i instanceof COSStream)
         {
-            return new PDXObjectForm((COSStream) i);
+            return new PDFormXObject(new PDStream((COSStream) i), "RI");
         }
         return null;
     }
@@ -230,12 +231,12 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @return the alternate icon.
      */
-    public PDXObjectForm getAlternateIcon()
+    public PDFormXObject getAlternateIcon()
     {
         COSBase i = this.getDictionary().getDictionaryObject("IX");
         if (i instanceof COSStream)
         {
-            return new PDXObjectForm((COSStream) i);
+            return new PDFormXObject(new PDStream((COSStream) i), "IX");
         }
         return null;
     }

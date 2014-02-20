@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -26,8 +26,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
@@ -104,10 +104,10 @@ public interface PDFTemplateBuilder {
     /**
      * Creates signature image
      * @param template
-     * @param InputStream
+     * @param image
      * @throws IOException
      */
-	public void createSignatureImage(PDDocument template, InputStream InputStream) throws IOException;
+	public void createSignatureImage(PDDocument template, BufferedImage image) throws IOException;
 	
 	/**
 	 * 
@@ -140,7 +140,7 @@ public interface PDFTemplateBuilder {
 	 * @param signatureField
 	 * @throws IOException
 	 */
-	public void createAppearanceDictionary(PDXObjectForm holderForml, PDSignatureField signatureField) throws IOException;
+	public void createAppearanceDictionary(PDFormXObject holderForml, PDSignatureField signatureField) throws IOException;
 	
 	/**
 	 * 
@@ -168,7 +168,7 @@ public interface PDFTemplateBuilder {
 	 * @param innerForm
 	 * @param holderFormResources
 	 */
-	public void insertInnerFormToHolerResources(PDXObjectForm innerForm, PDResources holderFormResources);
+	public void insertInnerFormToHolerResources(PDFormXObject innerForm, PDResources holderFormResources);
 	
 	/**
 	 * 
@@ -192,7 +192,7 @@ public interface PDFTemplateBuilder {
 	 * @throws IOException
 	 */
 	public void createImageForm(PDResources imageFormResources, PDResources innerFormResource, PDStream imageFormStream, PDRectangle formrect,
-			AffineTransform affineTransform, PDJpeg img) throws IOException;
+			AffineTransform affineTransform, PDImageXObject img) throws IOException;
 	
 	/**
 	 * Inject procSetArray 
@@ -203,7 +203,7 @@ public interface PDFTemplateBuilder {
 	 * @param holderFormResources
 	 * @param procSet
 	 */
-	public void injectProcSetArray(PDXObjectForm innerForm, PDPage page, PDResources innerFormResources, PDResources imageFormResources,
+	public void injectProcSetArray(PDFormXObject innerForm, PDPage page, PDResources innerFormResources, PDResources imageFormResources,
 			PDResources holderFormResources, COSArray procSet);
 	
 	/**

@@ -18,9 +18,12 @@ package org.apache.pdfbox.pdmodel.graphics;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.text.PDTextState;
 import org.apache.pdfbox.util.Matrix;
 
@@ -38,10 +41,12 @@ public class PDGraphicsState implements Cloneable
     //Here are some attributes of the Graphics state, but have not been created yet.
     //
     //clippingPath
-    private PDColorState strokingColor = new PDColorState();
-    private PDColorState nonStrokingColor = new PDColorState();
+    private PDColor strokingColor = PDColor.DEVICE_GRAY_BLACK;
+    private PDColor nonStrokingColor = PDColor.DEVICE_GRAY_BLACK;
+    private PDColorSpace strokingColorSpace = PDDeviceGray.INSTANCE;
+    private PDColorSpace nonStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDTextState textState = new PDTextState();
-    private double lineWidth = 0;
+    private double lineWidth = 0.0;
     private int lineCap = 0;
     private int lineJoin = 0;
     private double miterLimit = 0;
@@ -421,8 +426,8 @@ public class PDGraphicsState implements Cloneable
             clone = (PDGraphicsState)super.clone();
             clone.setTextState( (PDTextState)textState.clone() );
             clone.setCurrentTransformationMatrix( currentTransformationMatrix.copy() );
-            clone.strokingColor = (PDColorState)strokingColor.clone();
-            clone.nonStrokingColor = ((PDColorState)nonStrokingColor.clone());
+            clone.strokingColor = strokingColor; // immutable
+            clone.nonStrokingColor = nonStrokingColor; // immutable
             if( lineDashPattern != null )
             {
                 clone.setLineDashPattern( (PDLineDashPattern)lineDashPattern.clone() );
@@ -440,23 +445,83 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Returns the stroking color state.
+     * Returns the stroking color.
      *
-     * @return stroking color state
+     * @return stroking color
      */
-    public PDColorState getStrokingColor()
+    public PDColor getStrokingColor()
     {
         return strokingColor;
     }
 
     /**
-     * Returns the non-stroking color state.
+     * Sets the stroking color.
      *
-     * @return non-stroking color state
+     * @param color The new stroking color
      */
-    public PDColorState getNonStrokingColor()
+    public void setStrokingColor(PDColor color)
+    {
+        strokingColor = color;
+    }
+
+    /**
+     * Returns the non-stroking color.
+     *
+     * @return The non-stroking color
+     */
+    public PDColor getNonStrokingColor()
     {
         return nonStrokingColor;
+    }
+
+    /**
+     * Sets the non-stroking color.
+     *
+     * @param color The new non-stroking color
+     */
+    public void setNonStrokingColor(PDColor color)
+    {
+        nonStrokingColor = color;
+    }
+
+    /**
+     * Returns the stroking color space.
+     *
+     * @return The stroking color space.
+     */
+    public PDColorSpace getStrokingColorSpace()
+    {
+        return strokingColorSpace;
+    }
+
+    /**
+     * Sets the the stroking color space.
+     *
+     * @param colorSpace The new stroking color space.
+     */
+    public void setStrokingColorSpace(PDColorSpace colorSpace)
+    {
+        strokingColorSpace = colorSpace;
+    }
+
+    /**
+     * Returns the non-stroking color space.
+     *
+     * @return The non-stroking color space.
+     */
+    public PDColorSpace getNonStrokingColorSpace()
+    {
+        return nonStrokingColorSpace;
+    }
+
+    /**
+     * Sets the the non-stroking color space.
+     *
+     * @param colorSpace The new non-stroking color space.
+     */
+    public void setNonStrokingColorSpace(PDColorSpace colorSpace)
+    {
+        nonStrokingColorSpace = colorSpace;
     }
 
     /**

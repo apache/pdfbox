@@ -48,32 +48,35 @@ public class SetLineDashPattern extends org.apache.pdfbox.util.operator.SetLineD
         super.process( operator, arguments );
         PDLineDashPattern lineDashPattern = context.getGraphicsState().getLineDashPattern();
         PageDrawer drawer = (PageDrawer)context;
-        BasicStroke stroke = (BasicStroke)drawer.getStroke();
-        if (stroke == null) 
+        BasicStroke stroke = drawer.getStroke();
+
+        final int endCap, lineJoin;
+        final float lineWidth, miterLimit;
+
+        if (stroke != null)
         {
-            if (lineDashPattern.isDashPatternEmpty()) 
-            {
-                drawer.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f) );
-            }
-            else
-            {
-                drawer.setStroke(new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, 
-                        lineDashPattern.getCOSDashPattern().toFloatArray(), lineDashPattern.getPhaseStart()) );
-            }
+            endCap = stroke.getEndCap();
+            lineJoin = stroke.getLineJoin();
+            miterLimit = stroke.getMiterLimit();
+            lineWidth = stroke.getLineWidth();
         }
-        else 
+        else
         {
-            if (lineDashPattern.isDashPatternEmpty()) 
-            {
-                drawer.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), 
-                        stroke.getLineJoin(), stroke.getMiterLimit()) );
-            }
-            else
-            {
-                drawer.setStroke( new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), 
-                        stroke.getMiterLimit(), lineDashPattern.getCOSDashPattern().toFloatArray(), 
-                        lineDashPattern.getPhaseStart()) );
-            }
+            endCap = BasicStroke.CAP_SQUARE;
+            lineJoin = BasicStroke.JOIN_MITER;
+            miterLimit = 10.0f;
+            lineWidth = 1.0f;
+        }
+
+        if (lineDashPattern.isDashPatternEmpty())
+        {
+            drawer.setStroke(new BasicStroke(lineWidth, endCap, lineJoin, miterLimit));
+        }
+        else
+        {
+            float[] dash = lineDashPattern.getCOSDashPattern().toFloatArray(); // TODO !!!!
+            float phase = lineDashPattern.getPhaseStart(); // TODO !!!
+            drawer.setStroke(new BasicStroke(lineWidth, endCap, lineJoin, miterLimit, dash, phase));
         }
     }
     

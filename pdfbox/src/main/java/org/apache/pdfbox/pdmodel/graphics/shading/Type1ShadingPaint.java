@@ -23,17 +23,21 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
+import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * This represents the Paint of an type1 shading.
- *
  */
 public class Type1ShadingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(Type1ShadingPaint.class);
+
     private PDShadingType1 shading;
-    private Matrix currentTransformationMatrix;
+    private Matrix ctm;
     private int pageHeight;
 
     /**
@@ -41,13 +45,13 @@ public class Type1ShadingPaint implements Paint
      *
      * @param shadingType1 the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue the height of the page
+     * @param pageHeight the height of the page
      */
-    public Type1ShadingPaint(PDShadingType1 shadingType1, Matrix ctm, int pageHeightValue)
+    public Type1ShadingPaint(PDShadingType1 shadingType1, Matrix ctm, int pageHeight)
     {
         shading = shadingType1;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
+        this.ctm = ctm;
+        this.pageHeight = pageHeight;
     }
 
     /**
@@ -66,6 +70,14 @@ public class Type1ShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
     {
-        return new Type1ShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+        try
+        {
+            return new Type1ShadingContext(shading, cm, xform, ctm, pageHeight);
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex);
+            return null;
+        }
     }
 }

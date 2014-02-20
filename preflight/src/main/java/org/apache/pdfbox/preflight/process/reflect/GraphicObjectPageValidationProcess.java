@@ -25,8 +25,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
@@ -47,13 +47,13 @@ public class GraphicObjectPageValidationProcess extends AbstractProcess
         PreflightPath vPath = context.getValidationPath();
 
         XObjectValidator validator = null;
-        if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectImage.class))
+        if (!vPath.isEmpty() && vPath.isExpectedType(PDImageXObject.class))
         {
-            validator = new XObjImageValidator(context, (PDXObjectImage) vPath.peek());
+            validator = new XObjImageValidator(context, (PDImageXObject) vPath.peek());
         }
-        else if (!vPath.isEmpty() && vPath.isExpectedType(PDXObjectForm.class))
+        else if (!vPath.isEmpty() && vPath.isExpectedType(PDFormXObject.class))
         {
-            validator = new XObjFormValidator(context, (PDXObjectForm) vPath.peek());
+            validator = new XObjFormValidator(context, (PDFormXObject) vPath.peek());
         }
         else if (!vPath.isEmpty() && vPath.isExpectedType(COSStream.class))
         {

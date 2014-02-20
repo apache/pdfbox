@@ -16,93 +16,166 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.pdfbox.cos.COSArray;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.ColoredTilingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
+import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
 
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
+import java.awt.Color;
+import java.awt.Paint;
+import java.awt.image.BufferedImage;
 
+import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.Map;
 
 /**
- * This class represents a Pattern color space.
+ * A Pattern color space is either a Tiling pattern or a Shading pattern.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author John Hewson
+ * @author Ben Litchfield
  */
-public class PDPattern extends PDColorSpace
+public final class PDPattern extends PDSpecialColorSpace
 {
-    private COSArray array;
+    private static final Log LOG = LogFactory.getLog(PDPattern.class);
+
+    private Map<String, PDPatternResources> patterns;
 
     /**
-     * The name of this color space.
+     * Creates a new Pattern color space.
      */
-    public static final String NAME = "Pattern";
-
-    /**
-     * Default constructor.
-     */
-    public PDPattern()
+    public PDPattern(Map<String, PDPatternResources> patterns)
     {
-        array = new COSArray();
-        array.add( COSName.PATTERN );
+        this.patterns = patterns;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param pattern The pattern array.
-     */
-    public PDPattern( COSArray pattern)
-    {
-        array = pattern;
-    }
-
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
+    @Override
     public String getName()
     {
-        return NAME;
+        return COSName.PATTERN.getName();
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public int getNumberOfComponents()
     {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color space.
-     */
-    protected ColorSpace createColorSpace() throws IOException
+    @Override
+    public float[] getDefaultDecode()
     {
-        throw new IOException( "Not implemented" );
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
+    @Override
+    public PDColor getInitialColor()
     {
-        throw new IOException( "Not implemented" );
+        return PDColor.EMPTY_PATTERN;
+    }
+
+    @Override
+    public float[] toRGB(float[] value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Paint toPaint(PDColor color) throws IOException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Paint toPaint(PDColor color, int pageHeight) throws IOException
+    {
+        if (!patterns.containsKey(color.getPatternName()))
+        {
+            throw new IOException("pattern " + color.getPatternName() + " was not found");
+        }
+
+        PDPatternResources pattern = patterns.get(color.getPatternName());
+        if (pattern instanceof PDTilingPatternResources)
+        {
+            return toTilingPaint((PDTilingPatternResources)pattern, color);
+        }
+        else
+        {
+            return toShadingPaint((PDShadingPatternResources)pattern, pageHeight);
+        }
+    }
+
+    public Paint toTilingPaint(PDTilingPatternResources tilingPattern, PDColor color)
+            throws IOException
+    {
+        if (tilingPattern.getPatternType() == PDTilingPatternResources.COLORED_TILING_PATTERN)
+        {
+            // colored tiling pattern
+            // TODO we should be passing the color to ColoredTilingPaint
+            return new ColoredTilingPaint(tilingPattern);
+        }
+        else
+        {
+            // uncolored tiling pattern
+            // TODO ...
+            LOG.debug("Not implemented: uncoloured tiling patterns");
+            return new Color(0, 0, 0, 0); // transparent
+        }
+    }
+    public Paint toShadingPaint(PDShadingPatternResources shadingPattern, int pageHeight)
+            throws IOException
+    {
+        PDShadingResources shadingResources = shadingPattern.getShading();
+        int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
+        switch (shadingType)
+        {
+            case PDShadingResources.SHADING_TYPE1:
+                return new Type1ShadingPaint((PDShadingType1)shadingResources,
+                                             shadingPattern.getMatrix(), pageHeight);
+            case PDShadingResources.SHADING_TYPE2:
+                return new AxialShadingPaint((PDShadingType2)shadingResources,
+                                             shadingPattern.getMatrix(), pageHeight);
+            case PDShadingResources.SHADING_TYPE3:
+                return new RadialShadingPaint((PDShadingType3)shadingResources,
+                                              shadingPattern.getMatrix(), pageHeight);
+            case PDShadingResources.SHADING_TYPE4:
+                return new Type4ShadingPaint((PDShadingType4)shadingResources,
+                                             shadingPattern.getMatrix(), pageHeight);
+            case PDShadingResources.SHADING_TYPE5:
+                return new Type5ShadingPaint((PDShadingType5)shadingResources,
+                                             shadingPattern.getMatrix(), pageHeight);
+            case PDShadingResources.SHADING_TYPE6:
+            case PDShadingResources.SHADING_TYPE7:
+                // TODO ...
+                LOG.debug("Not implemented, shading type: " + shadingType);
+                return new Color(0, 0, 0, 0); // transparent
+            default:
+                throw new IOException("Invalid shading type: " + shadingType);
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Pattern";
     }
 }

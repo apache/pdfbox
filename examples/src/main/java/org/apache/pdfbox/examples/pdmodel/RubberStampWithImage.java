@@ -23,9 +23,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -91,7 +91,7 @@ public class RubberStampWithImage
 
                     // Create a PDXObjectImage with the given jpg
                     FileInputStream fin = new FileInputStream( args[2] );
-                    PDJpeg mypic = new PDJpeg(document,fin);
+                    PDImageXObject mypic = JPEGFactory.createFromStream(document, fin);
                     
                     //Define and set the target rectangle
                     PDRectangle myrect = new PDRectangle();
@@ -100,10 +100,10 @@ public class RubberStampWithImage
                     myrect.setLowerLeftX(250);
                     myrect.setLowerLeftY(550);
 
-                    // Create a PDXObjectForm
+                    // Create a PDFormXObject
                     PDStream formstream = new PDStream(document);
                     OutputStream os = formstream.createOutputStream();
-                    PDXObjectForm form = new PDXObjectForm(formstream);
+                    PDFormXObject form = new PDFormXObject(formstream);
                     form.setResources(new PDResources());
                     form.setBBox(myrect);
                     form.setFormType(1);
@@ -138,7 +138,7 @@ public class RubberStampWithImage
         }        
     }
     
-    private void drawXObject( PDXObjectImage xobject, PDResources resources, OutputStream os, 
+    private void drawXObject( PDImageXObject xobject, PDResources resources, OutputStream os,
             float x, float y, float width, float height ) throws IOException
     {
         // This is similar to PDPageContentStream.drawXObject()

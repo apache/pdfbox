@@ -16,93 +16,70 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import org.apache.pdfbox.cos.COSName;
+
 import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.Transparency;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 /**
- * This class represents a Gray color space.
+ * A color space with black, white, and intermediate shades of gray.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDDeviceGray extends PDColorSpace
+public final class PDDeviceGray extends PDDeviceColorSpace
 {
-    /**
-     * The name of this color space.
-     */
-    public static final String NAME = "DeviceGray";
+    /** The single instance of this class. */
+    public static final PDDeviceGray INSTANCE = new PDDeviceGray();
 
-    /**
-     * The abbreviated name of this color space.
-     */
-    public static final String ABBREVIATED_NAME = "G";
+    private static final ColorSpace COLOR_SPACE_GRAY = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
 
-    /**
-     * This will return the name of the color space.
-     *
-     * @return The name of the color space.
-     */
-    public String getName()
+    private PDDeviceGray()
     {
-        return NAME;
     }
 
-    /**
-     * This will get the number of components that this color space is made up of.
-     *
-     * @return The number of components in this color space.
-     *
-     * @throws IOException If there is an error getting the number of color components.
-     */
-    public int getNumberOfComponents() throws IOException
+    @Override
+    public String getName()
+    {
+        return COSName.DEVICEGRAY.getName();
+    }
+
+    @Override
+    public int getNumberOfComponents()
     {
         return 1;
     }
 
-    /**
-     * Create a Java colorspace for this colorspace.
-     *
-     * @return A color space that can be used for Java AWT operations.
-     */
-    protected ColorSpace createColorSpace()
+    @Override
+    public float[] getDefaultDecode()
     {
-        return ColorSpace.getInstance( ColorSpace.CS_GRAY );
+        return new float[] { 0, 1 };
     }
 
-    /**
-     * Create a Java color model for this colorspace.
-     *
-     * @param bpc The number of bits per component.
-     *
-     * @return A color model that can be used for Java AWT operations.
-     *
-     * @throws IOException If there is an error creating the color model.
-     */
-    public ColorModel createColorModel( int bpc ) throws IOException
+    @Override
+    public PDColor getInitialColor()
     {
-    	ColorModel colorModel = null;
-    	if (bpc == 8)
-    	{
-    		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-            int[] nBits = {bpc};
-            colorModel = new ComponentColorModel(cs, nBits, false, false, Transparency.OPAQUE,DataBuffer.TYPE_BYTE);
-    	}
-    	else
-    	{
-        	int numEntries = 1 << bpc;
-            // calculate all possible values
-            byte[] indexedValues = new byte[numEntries];
-            for (int i = 0; i < numEntries; i++) 
-            {
-            	indexedValues[i] = (byte)(i*255/(numEntries - 1));
-            }
-            colorModel = new IndexColorModel(bpc, numEntries, indexedValues, indexedValues, indexedValues);
-    	}
-        return colorModel;
+        return INITIAL_COLOR;
+    }
+
+    @Override
+    public float[] toRGB(float[] value)
+    {
+        return COLOR_SPACE_GRAY.toRGB(value);
+    }
+
+    @Override
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        return toRGBImageAWT(raster, COLOR_SPACE_GRAY);
     }
 }

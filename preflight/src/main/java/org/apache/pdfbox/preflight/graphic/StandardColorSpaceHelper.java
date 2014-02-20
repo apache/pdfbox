@@ -38,13 +38,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceNAttributes;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -300,7 +301,8 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 return;
             }
 
-            PDColorSpace altColor = deviceN.getAlternateColorSpace();
+            COSBase cosAlt = ((COSArray)pdcs.getCOSObject()).getObject(2);
+            PDColorSpace altColor = PDColorSpace.create(cosAlt);
             if (altColor != null)
             {
                 processAllColorSpace(altColor);
@@ -349,29 +351,21 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     protected void processIndexedColorSpace(PDColorSpace pdcs)
     {
         PDIndexed indexed = (PDIndexed) pdcs;
-        try
+        PDColorSpace based = indexed.getBaseColorSpace();
+        ColorSpaces cs = ColorSpaces.valueOf(based.getName());
+        if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT)
         {
-            PDColorSpace based = indexed.getBaseColorSpace();
-            ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-            if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT)
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
-                        "Indexed color space can't be used as Base color space"));
-                return;
-            }
-            if (cs == ColorSpaces.Pattern)
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
-                        "Pattern color space can't be used as Base color space"));
-                return;
-            }
-            processAllColorSpace(based);
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
+                    "Indexed color space can't be used as Base color space"));
+            return;
         }
-        catch (IOException e)
+        if (cs == ColorSpaces.Pattern)
         {
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read Indexed color space : " + e.getMessage()));
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
+                    "Pattern color space can't be used as Base color space"));
+            return;
         }
+        processAllColorSpace(based);
     }
 
     /**
@@ -384,11 +378,10 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      */
     protected void processSeparationColorSpace(PDColorSpace pdcs)
     {
-        PDSeparation separation = (PDSeparation) pdcs;
         try
         {
-
-            PDColorSpace altCol = separation.getAlternateColorSpace();
+            COSBase cosAlt = ((COSArray)pdcs.getCOSObject()).getObject(2);
+            PDColorSpace altCol = PDColorSpace.create(cosAlt);
             if (altCol != null)
             {
                 ColorSpaces acs = ColorSpaces.valueOf(altCol.getName());

@@ -32,11 +32,10 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 import org.apache.pdfbox.util.MapUtil;
 
@@ -44,7 +43,6 @@ import org.apache.pdfbox.util.MapUtil;
  * This represents a set of resources available at the page/pages/stream level.
  * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author By BM
  * 
  */
 public class PDResources implements COSObjectable
@@ -55,7 +53,7 @@ public class PDResources implements COSObjectable
     private Map<String, PDColorSpace> colorspaces = null;
     private Map<String, PDXObject> xobjects = null;
     private Map<PDXObject, String> xobjectMappings = null;
-    private HashMap<String, PDXObjectImage> images = null;
+    private HashMap<String, PDImageXObject> images = null;
     private Map<String, PDExtendedGraphicsState> graphicsStates = null;
     private Map<String, PDPatternResources> patterns = null;
     private Map<String, PDShadingResources> shadings = null;
@@ -232,21 +230,24 @@ public class PDResources implements COSObjectable
             // at least an empty map will be returned
             // TODO we should return null instead of an empty map
             xobjects = new HashMap<String, PDXObject>();
-            COSDictionary xobjectsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.XOBJECT);
-            if (xobjectsDictionary == null)
+
+            COSDictionary dict = (COSDictionary) resources.getDictionaryObject(COSName.XOBJECT);
+
+            if (dict == null)
             {
-                xobjectsDictionary = new COSDictionary();
-                resources.setItem(COSName.XOBJECT, xobjectsDictionary);
+                dict = new COSDictionary();
+                resources.setItem(COSName.XOBJECT, dict);
             }
             else
             {
                 xobjects = new HashMap<String, PDXObject>();
-                for (COSName objName : xobjectsDictionary.keySet())
+                for (COSName objName : dict.keySet())
                 {
                     PDXObject xobject = null;
                     try
                     {
-                        xobject = PDXObject.createXObject(xobjectsDictionary.getDictionaryObject(objName));
+                        xobject = PDXObject.createXObject(dict.getDictionaryObject(objName),
+                                                          objName.getName(), this);
                     }
                     catch (IOException exception)
                     {
@@ -266,24 +267,24 @@ public class PDResources implements COSObjectable
     /**
      * This will get the map of images. An empty map will be returned if there are no underlying images. So far the keys
      * are COSName of the image and the value is the corresponding PDXObjectImage.
-     * 
+     *
      * @return The map of images.
      * @throws IOException If there is an error writing the picture.
      * 
      * @deprecated use {@link #getXObjects()} instead, as the images map isn't synchronized with the XObjects map.
      */
-    public Map<String, PDXObjectImage> getImages() throws IOException
+    public Map<String, PDImageXObject> getImages() throws IOException
     {
         if (images == null)
         {
             Map<String, PDXObject> allXObjects = getXObjects();
-            images = new HashMap<String, PDXObjectImage>();
+            images = new HashMap<String, PDImageXObject>();
             for (Map.Entry<String, PDXObject> entry : allXObjects.entrySet())
             {
                 PDXObject xobject = entry.getValue();
-                if (xobject instanceof PDXObjectImage)
+                if (xobject instanceof PDImageXObject)
                 {
-                    images.put(entry.getKey(), (PDXObjectImage) xobject);
+                    images.put(entry.getKey(), (PDImageXObject) xobject);
                 }
             }
         }
@@ -350,7 +351,7 @@ public class PDResources implements COSObjectable
                     PDColorSpace colorspace = null;
                     try
                     {
-                        colorspace = PDColorSpaceFactory.createColorSpace(cs);
+                        colorspace = PDColorSpace.create(cs, null, getPatterns());
                     }
                     catch (IOException exception)
                     {

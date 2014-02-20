@@ -17,73 +17,87 @@
 package org.apache.pdfbox.filter;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpaceFactory;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 
 /**
- * This is used for the JPXDecode filter.
+ * Decompress data encoded using the wavelet-based JPEG 2000 standard,
+ * reproducing the original data.
  *
- * @author <a href="mailto:timo.boehme@ontochem.com">Timo Boehme</a>
+ * Requires the Java Advanced Imaging (JAI) Image I/O Tools to be installed from java.net, see
+ * <a href="http://download.java.net/media/jai-imageio/builds/release/1.1/">jai-imageio</a>.
+ * Alternatively you can build from the source available in the
+ * <a href="https://java.net/projects/jai-imageio-core/">jai-imageio-core svn repo</a>.
  *
+ * Mac OS X users should download the tar.gz file for linux and unpack it to obtain the
+ * required jar files. The .so file can be safely ignored.
+ *
+ * @author John Hewson
+ * @author Timo Boehme
  */
 public class JPXFilter implements Filter
 {
-
-    /** Log instance. */
-    private static final Log LOG = LogFactory.getLog(JPXFilter.class);
-
     /**
-     * Decode JPEG2000 data using Java ImageIO library.
+     * Decode JPEG 2000 data using Java ImageIO library.
      *
      * {@inheritDoc}
-     *
      */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex)
-            throws IOException
+    public void decode(InputStream compressedData, OutputStream result, COSDictionary options,
+                       int filterIndex) throws IOException
     {
-        BufferedImage bi = ImageIO.read(compressedData);
-        if (bi != null)
+        BufferedImage image = readJPX(compressedData);
+
+        WritableRaster raster = image.getRaster();
+        if (raster.getDataBuffer().getDataType() != DataBuffer.TYPE_BYTE)
         {
-            DataBuffer dBuf = bi.getData().getDataBuffer();
-            if (dBuf.getDataType() == DataBuffer.TYPE_BYTE)
-            {
-                // maybe some wrong/missing values have to be revised/added
-                ColorModel colorModel = bi.getColorModel();
-                if (options.getItem(COSName.COLORSPACE) == null)
-                {
-                    options.setItem(COSName.COLORSPACE,
-                            PDColorSpaceFactory.createColorSpace(null, colorModel.getColorSpace()));
-                }
-                options.setInt(COSName.BITS_PER_COMPONENT, colorModel.getPixelSize() / colorModel.getNumComponents());
-                options.setInt(COSName.HEIGHT, bi.getHeight());
-                options.setInt(COSName.WIDTH, bi.getWidth());
-                result.write(((DataBufferByte) dBuf).getData());
-            }
-            else
-            {
-                LOG.error("Image data buffer not of type byte but type " + dBuf.getDataType());
-            }
+            throw new IOException("Not implemented: greater than 8-bit depth");
         }
+        DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
+        result.write(buffer.getData());
+    }
+
+    private static BufferedImage readJPX(InputStream input) throws IOException
+    {
+        // try to read using JAI Image I/O
+        ImageIO.setUseCache(false);
+        BufferedImage image = ImageIO.read(input);
+
+        if (image == null)
+        {
+            throw new MissingImageReaderException("Cannot read JPEG 2000 (JPX) image: " +
+                    "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
+        }
+
+        return image;
+    }
+
+    /**
+     * Returns the embedded color space from a JPX file.
+     * @param input The JPX input stream
+     */
+    // TODO this method is something of a hack, we'd rather be able to return info from decode(...)
+    public static PDColorSpace getColorSpace(InputStream input) throws IOException
+    {
+        BufferedImage image = readJPX(input);
+        return new PDJPXColorSpace(image.getColorModel().getColorSpace());
     }
 
     /**
      * {@inheritDoc}
      */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex)
-            throws IOException
+    public void encode(InputStream rawData, OutputStream result, COSDictionary options,
+                       int filterIndex) throws IOException
     {
-        LOG.error("Warning: JPXFilter.encode is not implemented yet, skipping this stream.");
+        throw new UnsupportedOperationException("JPX encoding not implemented");
     }
 }

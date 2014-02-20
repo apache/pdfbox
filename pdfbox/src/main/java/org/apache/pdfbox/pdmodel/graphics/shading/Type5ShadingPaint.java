@@ -27,15 +27,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an type5 shading.
- *
- *
+ * This represents the Paint of a Type 5 shading.
  */
 public class Type5ShadingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(Type5ShadingPaint.class);
+
     private PDShadingType5 shading;
     private Matrix currentTransformationMatrix;
     private int pageHeight;
@@ -76,7 +78,7 @@ public class Type5ShadingPaint implements Paint
         }
         catch (IOException ex)
         {
-            Logger.getLogger(Type5ShadingPaint.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
             return null;
         }
     }
