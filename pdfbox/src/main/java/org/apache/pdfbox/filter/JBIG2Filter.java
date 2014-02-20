@@ -28,6 +28,7 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +60,22 @@ public class JBIG2Filter implements Filter
     public void decode(InputStream compressedData, OutputStream result, COSDictionary options,
                        int filterIndex) throws IOException
     {
+        // find suitable image reader
+        Iterator readers = ImageIO.getImageReadersByFormatName("JBIG2");
+        ImageReader reader = null;
+        while(readers.hasNext()) {
+            reader = (ImageReader)readers.next();
+            if(reader.canReadRaster()) {
+                break;
+            }
+        }
+
+        if (reader == null)
+        {
+            throw new MissingImageReaderException("Cannot read JBIG2 image: " +
+                    "jbig2-imageio is not installed");
+        }
+
         COSInteger bits = (COSInteger) options.getDictionaryObject(COSName.BITS_PER_COMPONENT);
         COSDictionary params = (COSDictionary) options.getDictionaryObject(COSName.DECODE_PARMS);
 
@@ -68,21 +85,28 @@ public class JBIG2Filter implements Filter
             globals = (COSStream) params.getDictionaryObject(COSName.JBIG2_GLOBALS);
         }
 
-        BufferedImage image;
         if (globals != null)
         {
-            image = ImageIO.read(new SequenceInputStream(globals.getFilteredStream(),
-                    compressedData));
+            ImageInputStream iis = ImageIO.createImageInputStream(
+                    new SequenceInputStream(globals.getFilteredStream(),
+                                            compressedData));
+            reader.setInput(iis);
         }
         else
         {
-            image = ImageIO.read(compressedData);
+            ImageInputStream iis = ImageIO.createImageInputStream(compressedData);
+            reader.setInput(iis);
         }
 
-        if (image == null)
+        BufferedImage image;
+        try
         {
-            throw new MissingImageReaderException("Cannot read JBIG2 image: " +
-                    "jbig2-imageio is not installed");
+            image = reader.read(0);
+        }
+        catch (Exception e)
+        {
+            // wrap and rethrow any exceptions
+            throw new IOException("Could not read JBIG2 image", e);
         }
 
         // I am assuming since JBIG2 is always black and white
