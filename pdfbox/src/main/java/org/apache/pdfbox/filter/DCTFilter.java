@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -66,9 +67,9 @@ public final class DCTFilter implements Filter
                     "a suitable JAI I/O image filter is not installed");
         }
 
-        ImageInputStream iis = ImageIO.createImageInputStream(input);
-        reader.setInput(iis);
-        Raster raster = reader.readRaster(0, null);
+        // I'd planned to use ImageReader#readRaster but it is buggy
+        BufferedImage hack = ImageIO.read(input);
+        Raster raster = hack.getRaster();
 
         // special handling for 4-component images
         if (raster.getNumBands() == 4)
@@ -95,6 +96,11 @@ public final class DCTFilter implements Filter
                 case 1: LOG.warn("YCbCr JPEGs not implemented"); break; // TODO YCbCr
                 case 2: raster = fromYCCKtoCMYK(raster); break;
             }
+        }
+        else if (raster.getNumBands() == 3)
+        {
+            // BGR to RGB
+            raster = fromBGRtoRGB(raster);
         }
 
         DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
@@ -127,7 +133,6 @@ public final class DCTFilter implements Filter
     private WritableRaster fromYCCKtoCMYK(Raster raster) throws IOException
     {
         WritableRaster writableRaster = raster.createCompatibleWritableRaster();
-        writableRaster.setRect(raster);
 
         int[] value = new int[4];
         for (int y = 0, height = raster.getHeight(); y < height; y++)
@@ -152,7 +157,7 @@ public final class DCTFilter implements Filter
                 int magenta = 255 - g;
                 int yellow = 255 - b;
 
-                // update raster in-place
+                // update new raster
                 value[0] = cyan;
                 value[1] = magenta;
                 value[2] = yellow;
@@ -160,6 +165,28 @@ public final class DCTFilter implements Filter
                 writableRaster.setPixel(x, y, value);
             }
         }
+        return writableRaster;
+    }
+
+    // converts from BGR to RGB
+    private WritableRaster fromBGRtoRGB(Raster raster) throws IOException
+    {
+        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+
+        int[] bgr = new int[3];
+        int[] rgb = new int[3];
+        for (int y = 0, height = raster.getHeight(); y < height; y++)
+        {
+            for (int x = 0, width = raster.getWidth(); x < width; x++)
+            {
+                raster.getPixel(x, y, bgr);
+                rgb[0] = bgr[2];
+                rgb[1] = bgr[1];
+                rgb[2] = bgr[0];
+                writableRaster.setPixel(x, y, rgb);
+            }
+        }
+
         return writableRaster;
     }
 
