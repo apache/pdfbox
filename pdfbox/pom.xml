@@ -94,7 +94,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx64m</argLine>
+          <argLine>-Xmx128m</argLine>
           <excludes>
             <exclude>org/apache/pdfbox/TestAll.java</exclude>
             <exclude>org/apache/pdfbox/util/TestPDFToImage.java</exclude>
