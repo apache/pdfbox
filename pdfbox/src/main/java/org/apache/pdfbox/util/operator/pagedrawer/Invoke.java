@@ -77,7 +77,7 @@ public class Invoke extends OperatorProcessor
                 {
                     PDColorSpace colorSpace = drawer.getGraphicsState().getNonStrokingColorSpace();
                     PDColor color = drawer.getGraphicsState().getNonStrokingColor();
-                    awtImage = image.getStencilImage(colorSpace.toPaint(color));
+                    awtImage = image.getStencilImage(colorSpace.toPaint(color)); // <--- TODO: pass page height?
                 }
                 else
                 {
