@@ -67,9 +67,23 @@ public final class DCTFilter implements Filter
                     "a suitable JAI I/O image filter is not installed");
         }
 
-        // I'd planned to use ImageReader#readRaster but it is buggy
-        BufferedImage hack = ImageIO.read(input);
-        Raster raster = hack.getRaster();
+        ImageInputStream iis = ImageIO.createImageInputStream(input);
+        reader.setInput(iis);
+
+        // get the raster using horrible JAI workarounds
+        Raster raster;
+        try
+        {
+            // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
+            BufferedImage image = reader.read(0);
+            raster = image.getRaster();
+        }
+        catch (IIOException e)
+        {
+            // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
+            // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+            raster = reader.readRaster(0, null);
+        }
 
         // special handling for 4-component images
         if (raster.getNumBands() == 4)
