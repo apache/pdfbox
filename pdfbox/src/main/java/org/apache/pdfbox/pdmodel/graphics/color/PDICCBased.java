@@ -124,7 +124,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             initialColor = new PDColor(initial);
 
             // create a color in order to trigger a ProfileDataException
-            // or CMMException due to invalid profiles, see PDFBOX-1295
+            // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
             new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
         }
         catch (RuntimeException e)
@@ -132,7 +132,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             if (e instanceof ProfileDataException || e instanceof CMMException)
             {
                 // fall back to alternateColorSpace color space
-                LOG.debug("Can't read ICC-profile, using alternate color space");
+                LOG.error("Can't read embedded ICC profile, using alternate color space");
+                awtColorSpace = null;
                 alternateColorSpace = getAlternateColorSpaces().get(0);
                 initialColor = alternateColorSpace.getInitialColor();
             }
