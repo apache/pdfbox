@@ -146,7 +146,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         PDImageXObject softMask = getSoftMask();
         if (softMask != null)
         {
-            image = applyMask(image, softMask.getOpaqueImage());
+            image = applyMask(image, softMask.getOpaqueImage(), true);
         }
         else
         {
@@ -154,7 +154,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             PDImageXObject mask = getMask();
             if (mask != null)
             {
-                image = applyMask(image, mask.getOpaqueImage());
+                image = applyMask(image, mask.getOpaqueImage(), false);
             }
         }
 
@@ -188,7 +188,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     // explicit mask: RGB + Binary -> ARGB
     // soft mask: RGB + Gray -> ARGB
-    private BufferedImage applyMask(BufferedImage image, BufferedImage mask) throws IOException
+    private BufferedImage applyMask(BufferedImage image, BufferedImage mask, boolean isSoft)
+            throws IOException
     {
         if (mask == null)
         {
@@ -228,7 +229,15 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 rgba[0] = rgb[0];
                 rgba[1] = rgb[1];
                 rgba[2] = rgb[2];
-                rgba[3] = alpha.getPixel(x, y, (float[])null)[0];
+
+                if (isSoft)
+                {
+                    rgba[3] = alpha.getPixel(x, y, (float[])null)[0];
+                }
+                else
+                {
+                    rgba[3] = 255 - alpha.getPixel(x, y, (float[])null)[0];
+                }
 
                 dest.setPixel(x, y, rgba);
             }
