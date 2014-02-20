@@ -90,11 +90,8 @@ import org.apache.pdfbox.util.TextPosition;
  */
 public class PageDrawer extends PDFStreamEngine
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
+    private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
 
     private Graphics2D graphics;
 
@@ -251,7 +248,7 @@ public class PageDrawer extends PDFStreamEngine
             case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
                 // basic support for text rendering mode "invisible"
                 // TODO why are we drawing anything at all?
-                paint = Color.BLACK;
+                paint = COLOR_TRANSPARENT;
                 composite = graphicsState.getStrokeJavaComposite();
                 break;
             default:
