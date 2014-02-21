@@ -35,7 +35,6 @@ import java.awt.color.ColorSpace;
  */
 public class PDCalRGB extends PDCIEBasedColorSpace
 {
-    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
 
     protected COSArray array;
@@ -86,46 +85,16 @@ public class PDCalRGB extends PDCIEBasedColorSpace
         return INITIAL_COLOR;
     }
 
-    //
-    // WARNING: this method is performance sensitive, modify with care!
-    //
     @Override
     public final float[] toRGB(float[] value)
     {
-        float a = value[0];
-        float b = value[1];
-        float c = value[2];
+        // this is a hack, we simply skip CIE calibration of the RGB value
+        return new float[] { value[0], value[1], value[2] };
+    }
 
-        PDGamma g = getGamma();
-        PDMatrix m = getGammaMatrix();
-
-        float xA = m.getValue(0, 0);
-        float xB = m.getValue(1, 0);
-        float xC = m.getValue(2, 0);
-
-        float yA = m.getValue(0, 1);
-        float yB = m.getValue(1, 1);
-        float yC = m.getValue(2, 1);
-
-        float zA = m.getValue(0, 2);
-        float zB = m.getValue(1, 2);
-        float zC = m.getValue(2, 2);
-
-        float v1 = (float)Math.pow(a, g.getR());  // A ^ G_R
-        float v2 = (float)Math.pow(b, g.getG());  // B ^ G_G
-        float v3 = (float)Math.pow(c, g.getB());  // C ^ G_B   NOTE: PDF32000 p147 is mistaken
-
-        float x = xA * v1 + xB * v2 + xC * v3;
-        float y = yA * v1 + yB * v2 + yC * v3;
-        float z = zA * v1 + zB * v2 + zC * v3;
-
-        // TODO scale XYZ values using blackpoint
-
-        x /= getWhitepoint().getX();
-        y /= getWhitepoint().getY();
-        z /= getWhitepoint().getZ();
-
-        return CIEXYZ.toRGB(new float[] { x, y, z });
+    private float clamp(float value)
+    {
+        return Math.min(Math.max(value, 0), 1);
     }
 
     /**
