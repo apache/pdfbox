@@ -85,60 +85,68 @@ public class JBIG2Filter implements Filter
             globals = (COSStream) params.getDictionaryObject(COSName.JBIG2_GLOBALS);
         }
 
-        if (globals != null)
-        {
-            ImageInputStream iis = ImageIO.createImageInputStream(
-                    new SequenceInputStream(globals.getFilteredStream(),
-                                            compressedData));
-            reader.setInput(iis);
-        }
-        else
-        {
-            ImageInputStream iis = ImageIO.createImageInputStream(compressedData);
-            reader.setInput(iis);
-        }
-
-        BufferedImage image;
+        ImageInputStream iis = null;
         try
         {
-            image = reader.read(0);
-        }
-        catch (Exception e)
-        {
-            // wrap and rethrow any exceptions
-            throw new IOException("Could not read JBIG2 image", e);
-        }
-
-        // I am assuming since JBIG2 is always black and white
-        // depending on your renderer this might or might be needed
-        if (image.getColorModel().getPixelSize() != bits.intValue())
-        {
-            if (bits.intValue() != 1)
+            if (globals != null)
             {
-                LOG.warn("Attempting to handle a JBIG2 with more than 1-bit depth");
+                iis = ImageIO.createImageInputStream(
+                        new SequenceInputStream(globals.getFilteredStream(), compressedData));
+                reader.setInput(iis);
             }
-            BufferedImage packedImage = new BufferedImage(image.getWidth(), image.getHeight(),
-                    BufferedImage.TYPE_BYTE_BINARY);
-            Graphics graphics = packedImage.getGraphics();
-            graphics.drawImage(image, 0, 0, null);
-            graphics.dispose();
-            image = packedImage;
-        }
+            else
+            {
+                iis = ImageIO.createImageInputStream(compressedData);
+                reader.setInput(iis);
+            }
 
-        DataBuffer dBuf = image.getData().getDataBuffer();
-        if (dBuf.getDataType() == DataBuffer.TYPE_BYTE)
-        {
-            result.write(((DataBufferByte) dBuf).getData());
+            BufferedImage image;
+            try
+            {
+                image = reader.read(0);
+            }
+            catch (Exception e)
+            {
+                // wrap and rethrow any exceptions
+                throw new IOException("Could not read JBIG2 image", e);
+            }
+
+            // I am assuming since JBIG2 is always black and white
+            // depending on your renderer this might or might be needed
+            if (image.getColorModel().getPixelSize() != bits.intValue())
+            {
+                if (bits.intValue() != 1)
+                {
+                    LOG.warn("Attempting to handle a JBIG2 with more than 1-bit depth");
+                }
+                BufferedImage packedImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                        BufferedImage.TYPE_BYTE_BINARY);
+                Graphics graphics = packedImage.getGraphics();
+                graphics.drawImage(image, 0, 0, null);
+                graphics.dispose();
+                image = packedImage;
+            }
+
+            DataBuffer dBuf = image.getData().getDataBuffer();
+            if (dBuf.getDataType() == DataBuffer.TYPE_BYTE)
+            {
+                result.write(((DataBufferByte) dBuf).getData());
+            }
+            else
+            {
+                throw new IOException("Unexpected image buffer type");
+            }
         }
-        else
+        finally
         {
-            throw new IOException("Unexpected image buffer type");
+            if (iis != null)
+            {
+                iis.close();
+            }
+            reader.dispose();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void encode(InputStream rawData, OutputStream result, COSDictionary options,
                        int filterIndex) throws IOException

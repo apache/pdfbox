@@ -67,58 +67,70 @@ public final class DCTFilter implements Filter
                     "a suitable JAI I/O image filter is not installed");
         }
 
-        ImageInputStream iis = ImageIO.createImageInputStream(input);
-        reader.setInput(iis);
-
-        // get the raster using horrible JAI workarounds
-        Raster raster;
+        ImageInputStream iis = null;
         try
         {
-            // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
-            BufferedImage image = reader.read(0);
-            raster = image.getRaster();
-        }
-        catch (IIOException e)
-        {
-            // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
-            // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
-            raster = reader.readRaster(0, null);
-        }
+            iis = ImageIO.createImageInputStream(input);
+            reader.setInput(iis);
 
-        // special handling for 4-component images
-        if (raster.getNumBands() == 4)
-        {
-            // get APP14 marker
-            Integer transform;
+            // get the raster using horrible JAI workarounds
+            Raster raster;
             try
             {
-                transform = getAdobeTransform(reader.getImageMetadata(0));
+                // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
+                BufferedImage image = reader.read(0);
+                raster = image.getRaster();
             }
             catch (IIOException e)
             {
-                // catches the error "Inconsistent metadata read from stream"
-                // which seems to be present indicate a YCCK image, but who knows?
-                LOG.warn("Inconsistent metadata read from JPEG stream");
-                transform = 2; // YCCK
+                // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
+                // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+                raster = reader.readRaster(0, null);
             }
-            int colorTransform = transform != null ? transform : 0;
 
-            // 0 = Unknown (RGB or CMYK), 1 = YCbCr, 2 = YCCK
-            switch (colorTransform)
+            // special handling for 4-component images
+            if (raster.getNumBands() == 4)
             {
-                case 0: break; // already CMYK
-                case 1: LOG.warn("YCbCr JPEGs not implemented"); break; // TODO YCbCr
-                case 2: raster = fromYCCKtoCMYK(raster); break;
-            }
-        }
-        else if (raster.getNumBands() == 3)
-        {
-            // BGR to RGB
-            raster = fromBGRtoRGB(raster);
-        }
+                // get APP14 marker
+                Integer transform;
+                try
+                {
+                    transform = getAdobeTransform(reader.getImageMetadata(0));
+                }
+                catch (IIOException e)
+                {
+                    // catches the error "Inconsistent metadata read from stream"
+                    // which seems to be present indicate a YCCK image, but who knows?
+                    LOG.warn("Inconsistent metadata read from JPEG stream");
+                    transform = 2; // YCCK
+                }
+                int colorTransform = transform != null ? transform : 0;
 
-        DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
-        output.write(dataBuffer.getData());
+                // 0 = Unknown (RGB or CMYK), 1 = YCbCr, 2 = YCCK
+                switch (colorTransform)
+                {
+                    case 0: break; // already CMYK
+                    case 1: LOG.warn("YCbCr JPEGs not implemented"); break; // TODO YCbCr
+                    case 2: raster = fromYCCKtoCMYK(raster); break;
+                }
+            }
+            else if (raster.getNumBands() == 3)
+            {
+                // BGR to RGB
+                raster = fromBGRtoRGB(raster);
+            }
+
+            DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
+            output.write(dataBuffer.getData());
+        }
+        finally
+        {
+            if (iis != null)
+            {
+                iis.close();
+            }
+            reader.dispose();
+        }
     }
 
     public void encode(InputStream rawData, OutputStream result,
