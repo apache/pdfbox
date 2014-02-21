@@ -74,4 +74,10 @@ public final class PDCalGray extends PDCalRGB
     {
         return INITIAL_COLOR;
     }
+
+    @Override
+    public final float[] toRGB(float[] value)
+    {
+        return super.toRGB(new float[] { value[0], value[0], value[0] });
+    }
 }

@@ -86,15 +86,10 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     }
 
     @Override
-    public final float[] toRGB(float[] value)
+    public float[] toRGB(float[] value)
     {
         // this is a hack, we simply skip CIE calibration of the RGB value
         return new float[] { value[0], value[1], value[2] };
-    }
-
-    private float clamp(float value)
-    {
-        return Math.min(Math.max(value, 0), 1);
     }
 
     /**
