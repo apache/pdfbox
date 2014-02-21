@@ -18,10 +18,16 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSName;
 
+import java.awt.Point;
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 
 import java.awt.image.BufferedImage;
 
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
@@ -79,6 +85,9 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
-       return toRGBImageAWT(raster, COLOR_SPACE_RGB);
+        ColorModel colorModel = new ComponentColorModel(COLOR_SPACE_RGB,
+                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+
+        return new BufferedImage(colorModel, raster, false, null);
     }
 }
