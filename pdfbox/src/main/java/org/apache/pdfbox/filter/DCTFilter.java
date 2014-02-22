@@ -74,6 +74,7 @@ public final class DCTFilter implements Filter
             reader.setInput(iis);
 
             // get the raster using horrible JAI workarounds
+            ImageIO.setUseCache(false);
             Raster raster;
             try
             {
