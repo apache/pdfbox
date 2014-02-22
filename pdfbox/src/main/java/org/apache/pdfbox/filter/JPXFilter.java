@@ -23,8 +23,11 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -66,19 +69,52 @@ public class JPXFilter implements Filter
         result.write(buffer.getData());
     }
 
+    // try to read using JAI Image I/O
     private static BufferedImage readJPX(InputStream input) throws IOException
     {
-        // try to read using JAI Image I/O
-        ImageIO.setUseCache(false);
-        BufferedImage image = ImageIO.read(input);
+        // find suitable image reader
+        Iterator readers = ImageIO.getImageReadersByFormatName("JPEG2000");
+        ImageReader reader = null;
+        while(readers.hasNext()) {
+            reader = (ImageReader)readers.next();
+            if(reader.canReadRaster()) {
+                break;
+            }
+        }
 
-        if (image == null)
+        if (reader == null)
         {
             throw new MissingImageReaderException("Cannot read JPEG 2000 (JPX) image: " +
                     "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
         }
 
-        return image;
+        ImageInputStream iis = null;
+        try
+        {
+            iis = ImageIO.createImageInputStream(input);
+            reader.setInput(iis);
+
+            BufferedImage image;
+            try
+            {
+                image = reader.read(0);
+            }
+            catch (Exception e)
+            {
+                // wrap and rethrow any exceptions
+                throw new IOException("Could not read JPEG 2000 (JPX) image", e);
+            }
+
+            return image;
+        }
+        finally
+        {
+            if (iis != null)
+            {
+                iis.close();
+            }
+            reader.dispose();
+        }
     }
 
     /**
