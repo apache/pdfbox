@@ -1342,8 +1342,16 @@ public class NonSequentialPDFParser extends PDFParser
 
                 if (!endObjectKey.startsWith("endobj"))
                 {
-                    throw new IOException("Object (" + readObjNr + ":" + readObjGen + ") at offset "
-                            + offsetOrObjstmObNr + " does not end with 'endobj'.");
+                    if (endObjectKey.endsWith(" obj") && isLenient)
+                    {
+                        LOG.warn("Object (" + readObjNr + ":" + readObjGen + ") at offset "
+                                + offsetOrObjstmObNr + " does not end with 'endobj' but with '" + endObjectKey + "'");
+                    }
+                    else
+                    {
+                        throw new IOException("Object (" + readObjNr + ":" + readObjGen + ") at offset "
+                                + offsetOrObjstmObNr + " does not end with 'endobj' but with '" + endObjectKey + "'");
+                    }
                 }
 
                 releasePdfSourceInputStream();
