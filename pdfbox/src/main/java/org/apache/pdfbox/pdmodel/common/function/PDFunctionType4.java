@@ -67,9 +67,8 @@ public class PDFunctionType4 extends PDFunction
     public float[] eval(float[] input) throws IOException
     {
         //Setup the input values
-        int numberOfInputValues = input.length;
         ExecutionContext context = new ExecutionContext(OPERATORS);
-        for (int i = numberOfInputValues - 1; i >= 0; i--)
+        for (int i = 0; i < input.length; i++)
         {
             PDRange domain = getDomainForInput(i);
             float value = clipToRange(input[i], domain.getMin(), domain.getMax());
