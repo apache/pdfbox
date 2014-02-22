@@ -90,6 +90,8 @@ public class PageDrawer extends PDFStreamEngine
 
     private GeneralPath linePath = new GeneralPath();
 
+    private BasicStroke stroke = null;
+    
     /**
      * Default constructor, loads properties from file.
      *
@@ -360,7 +362,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void setStroke(BasicStroke newStroke)
     {
-        getGraphics().setStroke( newStroke );
+        stroke = newStroke;
     }
 
     /**
@@ -371,7 +373,50 @@ public class PageDrawer extends PDFStreamEngine
      */
     public BasicStroke getStroke()
     {
-        return (BasicStroke)getGraphics().getStroke();
+        return stroke;
+    }
+    
+    /**
+     * Create a new stroke based on the current ctm and the current stroke.
+     * 
+     * @return the transformed stroke
+     */
+    private BasicStroke calculateStroke()
+    {
+        float lineWidth = (float)getGraphicsState().getLineWidth();
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        if (ctm != null && ctm.getXScale() > 0)
+        {
+            lineWidth = lineWidth * ctm.getXScale();
+        }
+        if (lineWidth < 0.25)
+        {
+            lineWidth = 0.25f;
+        }
+        BasicStroke currentStroke = null;
+        if (stroke == null)
+        {
+        	currentStroke = new BasicStroke(lineWidth);
+        }
+        else
+        {
+            float phaseStart = stroke.getDashPhase();
+            float[] dashArray = stroke.getDashArray();
+            if (dashArray != null)
+            {
+                if (ctm != null && ctm.getXScale() > 0)
+                {
+                    for (int i = 0; i < dashArray.length; ++i)
+                    {
+                        dashArray[i] *= ctm.getXScale();
+                    }
+                }
+                phaseStart *= ctm.getXScale();
+            }
+            currentStroke = new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(),
+                    stroke.getMiterLimit(), dashArray, phaseStart);
+        }
+        return currentStroke;
     }
     
     /**
@@ -394,6 +439,7 @@ public class PageDrawer extends PDFStreamEngine
             strokingPaint = Color.WHITE;
         }
         graphics.setPaint(strokingPaint);
+        graphics.setStroke(calculateStroke());
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         GeneralPath path = getLinePath();
