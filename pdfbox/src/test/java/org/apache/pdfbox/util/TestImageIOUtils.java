@@ -77,6 +77,10 @@ public class TestImageIOUtils extends TestCase
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", 
                     BufferedImage.TYPE_BYTE_BINARY, resolution);
+            // testing TIFF
+            imageType = "tif";
+            writeImage(document, imageType, outDir + file.getName() + "-bw-", BufferedImage.TYPE_BYTE_BINARY, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-co-", BufferedImage.TYPE_INT_RGB, resolution);
         }
         catch(Exception e)
         { 
