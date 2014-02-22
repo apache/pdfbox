@@ -18,30 +18,21 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
-import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
-import java.awt.BasicStroke;
 import java.io.IOException;
 
 /**
  * Implementation of content stream operator for page drawer.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * 
  */
 public class StrokePath extends OperatorProcessor
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(StrokePath.class);
 
     /**
      * S stroke the path.
@@ -53,51 +44,6 @@ public class StrokePath extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        ///dwilson 3/19/07 refactor
-        try
-        {
-            PageDrawer drawer = (PageDrawer) context;
-    
-            float lineWidth = (float) context.getGraphicsState().getLineWidth();
-            Matrix ctm = context.getGraphicsState().getCurrentTransformationMatrix();
-            if (ctm != null && ctm.getXScale() > 0)
-            {
-                lineWidth = lineWidth * ctm.getXScale();
-            }
-            
-            if (lineWidth < 0.25)
-            {
-                lineWidth = 0.25f;
-            }
-
-            BasicStroke stroke = drawer.getStroke();
-            if (stroke == null)
-            {
-                drawer.setStroke(new BasicStroke(lineWidth));
-            }
-            else
-            {
-                float phaseStart = stroke.getDashPhase();
-                float[] dashArray = stroke.getDashArray();
-                if (dashArray != null)
-                {
-                    if (ctm != null && ctm.getXScale() > 0)
-                    {
-                        for (int i = 0; i < dashArray.length; ++i)
-                        {
-                            dashArray[i] *= ctm.getXScale();
-                        }
-                    }
-                    phaseStart *= ctm.getXScale();
-                }
-                drawer.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(),
-                        stroke.getMiterLimit(), dashArray, phaseStart));
-            }
-            drawer.strokePath();
-        }
-        catch (Exception exception)
-        {
-            log.warn(exception, exception);
-        }
+        ((PageDrawer)context).strokePath();
     }
 }
