@@ -302,10 +302,10 @@ public class PDDeviceN extends PDSpecialColorSpace
                 int[] intSrc = new int[numSrcComponents];
                 raster.getPixel(x, y, intSrc);
 
-                // subtractive -> additive & scale to 0..1
+                // scale to 0..1
                 for (int s = 0; s < numSrcComponents; s++)
                 {
-                    src[s] =  /*1 -*/ (src[s] / 255);
+                    src[s] = src[s] / 255;
                 }
 
                 // convert to alternate color space via tint transform

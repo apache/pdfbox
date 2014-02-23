@@ -108,12 +108,12 @@ final class SampledImageReader
             throw new IOException("Image stream is empty");
         }
 
-        // get parameters
+        // get parameters, they must be valid or have been repaired
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final int numComponents = colorSpace.getNumberOfComponents();
-        final int width = pdImage.getWidth();                         // todo: what if -1?
-        final int height = pdImage.getHeight();                       // todo: what if -1?
-        final int bitsPerComponent = pdImage.getBitsPerComponent();   // todo: what if -1?
+        final int width = pdImage.getWidth();
+        final int height = pdImage.getHeight();
+        final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
         /*
