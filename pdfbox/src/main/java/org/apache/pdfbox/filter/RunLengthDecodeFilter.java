@@ -25,82 +25,51 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
- * This is a filter for the RunLength Decoder.
+ * Decompresses data encoded using a byte-oriented run-length encoding algorithm,
+ * reproducing the original text or binary data
  *
- * From the PDF Reference
- * <pre>
- * The RunLengthDecode filter decodes data that has been encoded in a simple
- * byte-oriented format based on run length. The encoded data is a sequence of
- * runs, where each run consists of a length byte followed by 1 to 128 bytes of data. If
- * the length byte is in the range 0 to 127, the following length + 1 (1 to 128) bytes
- * are copied literally during decompression. If length is in the range 129 to 255, the
- * following single byte is to be copied 257 ? length (2 to 128) times during decompression.
- * A length value of 128 denotes EOD.
- *
- * The compression achieved by run-length encoding depends on the input data. In
- * the best case (all zeros), a compression of approximately 64:1 is achieved for long
- * files. The worst case (the hexadecimal sequence 00 alternating with FF) results in
- * an expansion of 127:128.
- * </pre>
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
-public class RunLengthDecodeFilter implements Filter
+final class RunLengthDecodeFilter extends Filter
 {
-    /**
-     * Log instance.
-     */
     private static final Log log = LogFactory.getLog(RunLengthDecodeFilter.class);
-
     private static final int RUN_LENGTH_EOD = 128;
 
-    /**
-     * Constructor.
-     */
-    public RunLengthDecodeFilter()
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
-        //default constructor
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException
-    {
-        int dupAmount = -1;
+        int dupAmount;
         byte[] buffer = new byte[128];
-        while( (dupAmount = compressedData.read()) != -1 && dupAmount != RUN_LENGTH_EOD )
+        while ((dupAmount = encoded.read()) != -1 && dupAmount != RUN_LENGTH_EOD)
         {
-            if( dupAmount <= 127 )
+            if (dupAmount <= 127)
             {
-                int amountToCopy = dupAmount+1;
-                int compressedRead = 0;
-                while( amountToCopy > 0 )
+                int amountToCopy = dupAmount + 1;
+                int compressedRead;
+                while(amountToCopy > 0)
                 {
-                    compressedRead = compressedData.read( buffer, 0, amountToCopy );
-                    result.write( buffer, 0, compressedRead );
+                    compressedRead = encoded.read(buffer, 0, amountToCopy);
+                    decoded.write(buffer, 0, compressedRead);
                     amountToCopy -= compressedRead;
                 }
             }
             else
             {
-                int dupByte = compressedData.read();
-                for( int i=0; i<257-dupAmount; i++ )
+                int dupByte = encoded.read();
+                for (int i = 0; i < 257 - dupAmount; i++)
                 {
-                    result.write( dupByte );
+                    decoded.write(dupByte);
                 }
             }
         }
+        return new DecodeResult(parameters);
     }
 
-     /**
-     * {@inheritDoc}
-     */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
-        log.warn( "RunLengthDecodeFilter.encode is not implemented yet, skipping this stream." );
+        log.warn("RunLengthDecodeFilter.encode is not implemented yet, skipping this stream.");
     }
 }

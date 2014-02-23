@@ -21,7 +21,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +28,12 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
-import org.apache.pdfbox.filter.FilterManager;
+import org.apache.pdfbox.filter.FilterFactory;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -65,32 +68,34 @@ public final class PDInlineImage implements PDImage
                          Map<String, PDColorSpace> colorSpaces) throws IOException
     {
         this.parameters = parameters;
-        this.stream = createStream(data);
         this.colorSpaces = colorSpaces;
-    }
 
-    private PDStream createStream(byte[] data) throws IOException
-    {
+        DecodeResult decodeResult = null;
         if (getFilters() == null)
         {
-            return new PDMemoryStream(data);
+            this.stream = new PDMemoryStream(data);
         }
         else
         {
             List<String> filters = getFilters();
             ByteArrayInputStream in = new ByteArrayInputStream(data);
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
-            FilterManager filterManager = new FilterManager();
             for (int i = 0; i < filters.size(); i++)
             {
+                // TODO handling of abbreviated names belongs here, rather than in other classes
                 out.reset();
-                Filter filter = filterManager.getFilter(filters.get(i));
-                filter.decode(in, out, parameters.asUnmodifiableDictionary(), i);
+                Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
+                decodeResult = filter.decode(in, out, parameters, i);
                 in = new ByteArrayInputStream(out.toByteArray());
             }
             byte[] finalData = out.toByteArray();
+            this.stream = new PDMemoryStream(finalData);
+        }
 
-            return new PDMemoryStream(finalData);
+        // repair parameters
+        if (decodeResult != null)
+        {
+            parameters.addAll(decodeResult.getParameters());
         }
     }
 
@@ -129,7 +134,7 @@ public final class PDInlineImage implements PDImage
         }
         else
         {
-            // this method must not return null
+            // an image without a color space is always broken
             throw new IOException("could not determine color space");
         }
     }

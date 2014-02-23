@@ -22,16 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This is the used for the LZWDecode filter.  This represents the dictionary mappings
+ * This is the used for the LZWDecode filter. This represents the dictionary mappings
  * between codes and their values.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 final class LZWDictionary
 {
     private Map<Long,byte[]> codeToData = new HashMap<Long,byte[]>();
-    private LZWNode root = new LZWNode( 0 );
+    private LZWNode root = new LZWNode(0);
 
     private byte[] buffer = new byte[8];
     private int bufferNextWrite = 0;
@@ -41,50 +40,35 @@ final class LZWDictionary
     private LZWNode previous = null;
     private LZWNode current = root;
 
-    /**
-     * This will get the value for the code.  It will return null if the code is not
-     * defined.
-     *
-     * @param code The key to the data.
-     *
-     * @return The data that is mapped to the code.
+    /*
+     * This will get the value for the code.  It will return null if the code is not defined.
      */
-    public byte[] getData( long code )
+    public byte[] getData(long code)
     {
-        byte[] result = codeToData.get( code );
+        byte[] result = codeToData.get(code);
         if (result == null && code < 256) 
         {
-            addRootNode( (byte) code );
-            result = codeToData.get( code );
+            addRootNode((byte) code);
+            result = codeToData.get(code);
         }
         return result;
     }
 
-    /**
-     * This will take a visit from a byte[].  This will create new code entries as
-     * necessary.
-     *
-     * @param data The byte to get a visit from.
-     *
-     * @throws IOException If there is an error visiting this data.
+    /*
+     * This will take a visit from a byte[].  This will create new code entries as necessary.
      */
-    public void visit( byte[] data ) throws IOException
+    public void visit(byte[] data) throws IOException
     {
-        for( int i=0; i<data.length; i++ )
+        for(int i=0; i<data.length; i++)
         {
-            visit( data[i] );
+            visit(data[i]);
         }
     }
 
-    /**
-     * This will take a visit from a byte.  This will create new code entries as
-     * necessary.
-     *
-     * @param data The byte to get a visit from.
-     *
-     * @throws IOException If there is an error visiting this data.
+    /*
+     * This will take a visit from a byte.  This will create new code entries as necessary.
      */
-    public void visit( byte data ) throws IOException
+    public void visit(byte data) throws IOException
     {
         if (buffer.length == bufferNextWrite) 
         {
@@ -94,11 +78,11 @@ final class LZWDictionary
         }
         buffer[bufferNextWrite++] = data;
         previous = current;
-        current = current.getNode( data );
+        current = current.getNode(data);
         if (current == null) 
         {
             final long code;
-            if ( previous == root ) 
+            if (previous == root) 
             {
                 code = data & 0xFF;
             } 
@@ -106,28 +90,28 @@ final class LZWDictionary
             {
                 code = nextCode++;
             }
-            current = new LZWNode( code );
-            previous.setNode( data, current );
+            current = new LZWNode(code);
+            previous.setNode(data, current);
             byte[] sav = new byte[bufferNextWrite];
             System.arraycopy(buffer, 0, sav, 0, bufferNextWrite);
-            codeToData.put( code,  sav);
+            codeToData.put(code,  sav);
 
-            /**
-            System.out.print( "Adding " + code + "='" );
-            for( int i=0; i<bufferNextWrite; i++ )
+            /*
+            System.out.print("Adding " + code + "='");
+            for(int i=0; i<bufferNextWrite; i++)
             {
-                String hex = Integer.toHexString( ((buffer[i]&0xFF );
-                if( hex.length() <=1 )
+                String hex = Integer.toHexString(((buffer[i]&0xFF);
+                if(hex.length() <=1)
                 {
                     hex = "0" + hex;
                 }
-                if( i != bufferNextWrite -1 )
+                if(i != bufferNextWrite -1)
                 {
                     hex += " ";
                 }
-                System.out.print( hex.toUpperCase() );
+                System.out.print(hex.toUpperCase());
             }
-            System.out.println( "'" );
+            System.out.println("'");
             **/
             bufferNextWrite = 0;
             current = root;
@@ -136,9 +120,8 @@ final class LZWDictionary
         }
     }
 
-    /**
+    /*
      * This will get the next code that will be created.
-     *
      * @return The next code to be created.
      */
     public long getNextCode()
@@ -146,30 +129,28 @@ final class LZWDictionary
         return nextCode;
     }
 
-    /**
+    /*
      * This will get the size of the code in bits, 9, 10, or 11.
-     *
-     * @return The size of the code in bits.
      */
     public int getCodeSize()
     {
         return codeSize;
     }
 
-    /**
-     * This will determine the code size.
+    /*
+     * This will return the code size.
      */
     private void resetCodeSize()
     {
-        if ( nextCode < 512) 
+        if (nextCode < 512) 
         {
             codeSize = 9;
         } 
-        else if ( nextCode < 1024 ) 
+        else if (nextCode < 1024) 
         {
             codeSize = 10;
         } 
-        else if ( nextCode < 2048 ) 
+        else if (nextCode < 2048) 
         {
             codeSize = 11;
         } 
@@ -179,7 +160,7 @@ final class LZWDictionary
         }
     }
 
-    /**
+    /*
      * This will clear the internal buffer that the dictionary uses.
      */
     public void clear()
@@ -189,16 +170,12 @@ final class LZWDictionary
         previous = null;
     }
 
-    /**
-     * This will folow the path to the data node.
-     *
-     * @param data The path to the node.
-     *
-     * @return The node that resides at that path.
+    /*
+     * This will follow the path to the data node.
      */
-    public LZWNode getNode( byte[] data )
+    public LZWNode getNode(byte[] data)
     {
-        LZWNode result = root.getNode( data );
+        LZWNode result = root.getNode(data);
         if (result == null && data.length == 1) 
         {
             result = addRootNode(data[0]);
@@ -206,12 +183,12 @@ final class LZWDictionary
         return result;
     }
 
-    private LZWNode addRootNode( byte b) 
+    private LZWNode addRootNode(byte b) 
     {
         long code = b & 0xFF;
-        LZWNode result = new LZWNode( code );
-        root.setNode( b, result );
-        codeToData.put( code, new byte[] { b } );
+        LZWNode result = new LZWNode(code);
+        root.setNode(b, result);
+        codeToData.put(code, new byte[] { b });
         return result;
     }
 }

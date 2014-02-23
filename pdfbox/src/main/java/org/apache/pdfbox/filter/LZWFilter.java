@@ -31,133 +31,120 @@ import org.apache.pdfbox.io.NBitOutputStream;
 /**
  * This is the used for the LZWDecode filter.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.15 $
+ * @author Ben Litchfield
  */
-public class LZWFilter implements Filter
+final class LZWFilter extends Filter
 {
-
-    /**
-     * The LZW clear table code.
-     */
     public static final long CLEAR_TABLE = 256;
-    /**
-     * The LZW end of data code.
-     */
     public static final long EOD = 257;
 
-    /**
-     * {@inheritDoc}
-     */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
-        //log.debug("decode( )");
-        NBitInputStream in = null;
-        in = new NBitInputStream( compressedData );
-        in.setBitsInChunk( 9 );
+        //log.debug("decode()");
+        NBitInputStream in = new NBitInputStream(encoded);
+        in.setBitsInChunk(9);
         LZWDictionary dic = new LZWDictionary();
         byte firstByte = 0;
-        long nextCommand = 0;
-        while( (nextCommand = in.read() ) != EOD )
+        long nextCommand;
+        while ((nextCommand = in.read()) != EOD)
         {
-            // log.debug( "decode - nextCommand=" + nextCommand + ", bitsInChunk: " + in.getBitsInChunk());
+            // log.debug("decode - nextCommand=" + nextCommand + ", bitsInChunk: " + in.getBitsInChunk());
 
-            if( nextCommand == CLEAR_TABLE )
+            if (nextCommand == CLEAR_TABLE)
             {
-                in.setBitsInChunk( 9 );
+                in.setBitsInChunk(9);
                 dic = new LZWDictionary();
             }
             else
             {
-                byte[] data = dic.getData( nextCommand );
-                if( data == null )
+                byte[] data = dic.getData(nextCommand);
+                if (data == null)
                 {
-                    dic.visit( firstByte );
-                    data = dic.getData( nextCommand );
+                    dic.visit(firstByte);
+                    data = dic.getData(nextCommand);
                     dic.clear();
                 }
-                if( data == null )
+                if (data == null)
                 {
-                    throw new StreamCorruptedException( "Error: data is null" );
+                    throw new StreamCorruptedException("Error: data is null");
                 }
                 dic.visit(data);
 
-                //log.debug( "decode - dic.getNextCode(): " + dic.getNextCode());
+                //log.debug("decode - dic.getNextCode(): " + dic.getNextCode());
 
-                if( dic.getNextCode() >= 2047 )
+                if (dic.getNextCode() >= 2047)
                 {
-                    in.setBitsInChunk( 12 );
+                    in.setBitsInChunk(12);
                 }
-                else if( dic.getNextCode() >= 1023 )
+                else if (dic.getNextCode() >= 1023)
                 {
-                    in.setBitsInChunk( 11 );
+                    in.setBitsInChunk(11);
                 }
-                else if( dic.getNextCode() >= 511 )
+                else if (dic.getNextCode() >= 511)
                 {
-                    in.setBitsInChunk( 10 );
+                    in.setBitsInChunk(10);
                 }
                 else
                 {
-                    in.setBitsInChunk( 9 );
+                    in.setBitsInChunk(9);
                 }
                 /**
-                if( in.getBitsInChunk() != dic.getCodeSize() )
+                if (in.getBitsInChunk() != dic.getCodeSize())
                 {
-                    in.unread( nextCommand );
-                    in.setBitsInChunk( dic.getCodeSize() );
-                    System.out.print( "Switching " + nextCommand + " to " );
+                    in.unread(nextCommand);
+                    in.setBitsInChunk(dic.getCodeSize());
+                    System.out.print("Switching " + nextCommand + " to ");
                     nextCommand = in.read();
-                    System.out.println( "" +  nextCommand );
-                    data = dic.getData( nextCommand );
+                    System.out.println("" +  nextCommand);
+                    data = dic.getData(nextCommand);
                 }**/
                 firstByte = data[0];
-                result.write( data );
+                decoded.write(data);
             }
         }
-        result.flush();
+        decoded.flush();
+        return new DecodeResult(parameters);
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException
+    @Override
+    protected final void encode(InputStream rawData, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
-        //log.debug("encode( )");
-        PushbackInputStream input = new PushbackInputStream( rawData, 4096 );
+        //log.debug("encode()");
+        PushbackInputStream input = new PushbackInputStream(rawData, 4096);
         LZWDictionary dic = new LZWDictionary();
-        NBitOutputStream out = new NBitOutputStream( result );
-        out.setBitsInChunk( 9 ); //initially nine
-        out.write( CLEAR_TABLE );
+        NBitOutputStream out = new NBitOutputStream(encoded);
+        out.setBitsInChunk(9); //initially nine
+        out.write(CLEAR_TABLE);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int byteRead = 0;
-        for( int i=0; (byteRead = input.read()) != -1; i++ )
+        for (int i = 0; (byteRead = input.read()) != -1; i++)
         {
-            //log.debug( "byteRead = '" + (char)byteRead + "' (0x" + Integer.toHexString(byteRead) + "), i=" + i);
-            buffer.write( byteRead );
-            dic.visit( (byte)byteRead );
-            out.setBitsInChunk( dic.getCodeSize() );
+            //log.debug("byteRead = '" + (char)byteRead + "' (0x" + Integer.toHexString(byteRead) + "), i=" + i);
+            buffer.write(byteRead);
+            dic.visit((byte)byteRead);
+            out.setBitsInChunk(dic.getCodeSize());
 
-            //log.debug( "Getting node '" + new String( buffer.toByteArray() ) + "', buffer.size = " + buffer.size() );
-            LZWNode node = dic.getNode( buffer.toByteArray() );
+            //log.debug("Getting node '" + new String(buffer.toByteArray()) + "', buffer.size = " + buffer.size());
+            LZWNode node = dic.getNode(buffer.toByteArray());
             int nextByte = input.read();
-            if( nextByte != -1 )
+            if (nextByte != -1)
             {
-                //log.debug( "nextByte = '" + (char)nextByte + "' (0x" + Integer.toHexString(nextByte) + ")");
-                LZWNode next = node.getNode( (byte)nextByte );
-                if( next == null )
+                //log.debug("nextByte = '" + (char)nextByte + "' (0x" + Integer.toHexString(nextByte) + ")");
+                LZWNode next = node.getNode((byte)nextByte);
+                if (next == null)
                 {
                     //log.debug("encode - No next node, writing node and resetting buffer (" +
                     //          " node.getCode: " + node.getCode() + ")" +
                     //          " bitsInChunk: " + out.getBitsInChunk() +
                     //          ")");
-                    out.write( node.getCode() );
+                    out.write(node.getCode());
                     buffer.reset();
                 }
 
-                input.unread( nextByte );
+                input.unread(nextByte);
             }
             else
             {
@@ -165,47 +152,47 @@ public class LZWFilter implements Filter
                 //          " node.getCode: " + node.getCode() + ")" +
                 //          " bitsInChunk: " + out.getBitsInChunk() +
                 //          ")");
-                out.write( node.getCode() );
+                out.write(node.getCode());
                 buffer.reset();
                 break;
             }
 
-            if( dic.getNextCode() == 4096 )
+            if (dic.getNextCode() == 4096)
             {
                 //log.debug("encode - Clearing dictionary and unreading pending buffer data (" +
                 //          " bitsInChunk: " + out.getBitsInChunk() +
                 //          ")");
-                out.write( CLEAR_TABLE );
+                out.write(CLEAR_TABLE);
                 dic = new LZWDictionary();
-                input.unread( buffer.toByteArray() );
+                input.unread(buffer.toByteArray());
                 buffer.reset();
             }
         }
 
         // Fix the code size based on the fact that we are writing the EOD
         //
-        if( dic.getNextCode() >= 2047 )
+        if (dic.getNextCode() >= 2047)
         {
-            out.setBitsInChunk( 12 );
+            out.setBitsInChunk(12);
         }
-        else if( dic.getNextCode() >= 1023 )
+        else if (dic.getNextCode() >= 1023)
         {
-            out.setBitsInChunk( 11 );
+            out.setBitsInChunk(11);
         }
-        else if( dic.getNextCode() >= 511 )
+        else if (dic.getNextCode() >= 511)
         {
-            out.setBitsInChunk( 10 );
+            out.setBitsInChunk(10);
         }
         else
         {
-            out.setBitsInChunk( 9 );
+            out.setBitsInChunk(9);
         }
 
         //log.debug("encode - Writing EOD (" +
         //          " bitsInChunk: " + out.getBitsInChunk() +
         //          ")");
-        out.write( EOD );
+        out.write(EOD);
         out.close();
-        result.flush();
+        encoded.flush();
     }
 }

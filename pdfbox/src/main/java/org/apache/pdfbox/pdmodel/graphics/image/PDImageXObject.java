@@ -20,26 +20,19 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.filter.JPXFilter;
-import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
-import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +45,7 @@ import java.util.Map;
 public final class PDImageXObject extends PDXObject implements PDImage
 {
     private BufferedImage cachedImage;
+    private PDColorSpace colorSpace;
     private Map<String, PDColorSpace> colorSpaces;  // from current resource dictionary
 
     /**
@@ -71,7 +65,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Creates an Image XObject in the given document.
      * @param document the current document
      */
-    public PDImageXObject(PDDocument document)
+    public PDImageXObject(PDDocument document) throws IOException
     {
         this(new PDStream(document), null);
     }
@@ -81,10 +75,25 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * @param stream the XObject stream to read
      * @param colorSpaces the color spaces in the current resources dictionary, null for masks
      */
-    public PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces)
+    public PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces) throws IOException
     {
-        super(stream, COSName.IMAGE);
+        this(stream, colorSpaces, stream.getStream().getDecodeResult());
+    }
+
+    // repairs parameters using decode result
+    private PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces,
+                           DecodeResult decodeResult)
+    {
+        super(repair(stream, decodeResult), COSName.IMAGE);
         this.colorSpaces = colorSpaces;
+        this.colorSpace = decodeResult.getJPXColorSpace();
+    }
+
+    // repairs parameters using decode result
+    private static PDStream repair(PDStream stream, DecodeResult decodeResult)
+    {
+        stream.getStream().addAll(decodeResult.getParameters());
+        return stream;
     }
 
     /**
@@ -250,7 +259,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Returns the Mask Image XObject associated with this image, or null if there is none.
      * @return Mask Image XObject
      */
-    public PDImageXObject getMask()
+    public PDImageXObject getMask() throws IOException
     {
         COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.MASK);
         if (cosStream != null)
@@ -264,7 +273,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Returns the Soft Mask Image XObject associated with this image, or null if there is none.
      * @return the SMask Image XObject, or null.
      */
-    public PDImageXObject getSoftMask()
+    public PDImageXObject getSoftMask() throws IOException
     {
         COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.SMASK);
         if (cosStream != null)
@@ -276,7 +285,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     public int getBitsPerComponent()
     {
-        return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC, -1);
+        return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
     }
 
     public void setBitsPerComponent(int bpc)
@@ -286,46 +295,25 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cosBase = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
-        if (cosBase != null)
+        if (colorSpace == null)
         {
-            return PDColorSpace.create(cosBase, colorSpaces, null);
-        }
-        else
-        {
-            // examine filters
-            COSBase filter = getCOSStream().getDictionaryObject(COSName.FILTER);
-            if (COSName.JPX_DECODE.equals(filter))
+            COSBase cosBase = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
+            if (cosBase != null)
             {
-                // JPX images may embed a color space
-                InputStream input = getStream().createInputStream();
-                try
-                {
-                    return JPXFilter.getColorSpace(input);
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(input);
-                }
+                colorSpace = PDColorSpace.create(cosBase, colorSpaces, null);
+            }
+            else if (isStencil())
+            {
+                // stencil mask color space must be gray, it is often missing
+                return PDDeviceGray.INSTANCE;
             }
             else
             {
-                // TODO what does the PDF spec say about this?
-                // if the ColorSpace is missing, we try and guess it
-                if (COSName.CCITTFAX_DECODE.equals(filter) ||
-                    COSName.CCITTFAX_DECODE_ABBREVIATION.equals(filter) ||
-                    COSName.JBIG2_DECODE.equals(filter) ||
-                    isStencil())
-                {
-                    return PDDeviceGray.INSTANCE;
-                }
-                else
-                {
-                    // this method must not return null
-                    throw new IOException("could not determine color space");
-                }
+                // an image without a color space is always broken
+                throw new IOException("could not determine color space");
             }
         }
+        return colorSpace;
     }
 
     public PDStream getStream() throws IOException
@@ -340,7 +328,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     public int getHeight()
     {
-        return getCOSStream().getInt(COSName.HEIGHT, -1);
+        return getCOSStream().getInt(COSName.HEIGHT);
     }
 
     public void setHeight(int h)
@@ -350,7 +338,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     public int getWidth()
     {
-        return getCOSStream().getInt(COSName.WIDTH, -1);
+        return getCOSStream().getInt(COSName.WIDTH);
     }
 
     public void setWidth(int w)

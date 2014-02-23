@@ -30,6 +30,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 
@@ -48,17 +49,15 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
  * @author John Hewson
  * @author Timo Boehme
  */
-public class JPXFilter implements Filter
+public final class JPXFilter extends Filter
 {
-    /**
-     * Decode JPEG 2000 data using Java ImageIO library.
-     *
-     * {@inheritDoc}
-     */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
-        BufferedImage image = readJPX(compressedData);
+        DecodeResult result = new DecodeResult(new COSDictionary());
+        result.getParameters().addAll(parameters);
+        BufferedImage image = readJPX(encoded, result);
 
         WritableRaster raster = image.getRaster();
         if (raster.getDataBuffer().getDataType() != DataBuffer.TYPE_BYTE)
@@ -66,11 +65,13 @@ public class JPXFilter implements Filter
             throw new IOException("Not implemented: greater than 8-bit depth");
         }
         DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-        result.write(buffer.getData());
+        decoded.write(buffer.getData());
+
+        return result;
     }
 
     // try to read using JAI Image I/O
-    private static BufferedImage readJPX(InputStream input) throws IOException
+    private static BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
     {
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JPEG2000");
@@ -105,6 +106,28 @@ public class JPXFilter implements Filter
                 throw new IOException("Could not read JPEG 2000 (JPX) image", e);
             }
 
+            COSDictionary parameters = result.getParameters();
+
+            // "If the image stream uses the JPXDecode filter, this entry is optional
+            // and shall be ignored if present"
+            parameters.setInt(COSName.BITS_PER_COMPONENT, image.getColorModel().getComponentSize(0));
+
+            // "Decode shall be ignored, except in the case where the image is treated as a mask"
+            if (!parameters.getBoolean(COSName.IMAGE_MASK, false))
+            {
+                parameters.setItem(COSName.DECODE, null);
+            }
+
+            // override dimensions, see PDFBOX-1735
+            parameters.setInt(COSName.WIDTH, image.getWidth());
+            parameters.setInt(COSName.HEIGHT, image.getHeight());
+
+            // extract embedded color space
+            if (!parameters.containsKey(COSName.COLORSPACE))
+            {
+                result.setColorSpace(new PDJPXColorSpace(image.getColorModel().getColorSpace()));
+            }
+
             return image;
         }
         finally
@@ -117,22 +140,9 @@ public class JPXFilter implements Filter
         }
     }
 
-    /**
-     * Returns the embedded color space from a JPX file.
-     * @param input The JPX input stream
-     */
-    // TODO this method is something of a hack, we'd rather be able to return info from decode(...)
-    public static PDColorSpace getColorSpace(InputStream input) throws IOException
-    {
-        BufferedImage image = readJPX(input);
-        return new PDJPXColorSpace(image.getColorModel().getColorSpace());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
         throw new UnsupportedOperationException("JPX encoding not implemented");
     }

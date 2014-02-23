@@ -39,42 +39,28 @@ import org.apache.pdfbox.io.ccitt.FillOrderChangeInputStream;
  * @author Marcel Kammer
  * @author Paul King
  */
-public final class CCITTFaxFilter implements Filter
+final class CCITTFaxFilter extends Filter
 {
     private static final Log log = LogFactory.getLog(CCITTFaxFilter.class);
 
-    /**
-     * Constructor.
-     */
-    public CCITTFaxFilter()
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
-    }
+        DecodeResult result = new DecodeResult(new COSDictionary());
+        result.getParameters().addAll(parameters);
 
-    /**
-     * {@inheritDoc}
-     */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
-    {
         // get decode parameters
-        COSBase decodeP = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
-        COSDictionary decodeParms = null;
-        if (decodeP instanceof COSDictionary)
-        {
-            decodeParms = (COSDictionary)decodeP;
-        }
-        else if (decodeP instanceof COSArray)
-        {
-            decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(filterIndex);
-        }
+        COSDictionary decodeParms = (COSDictionary)
+                parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
 
         // get compressed data
-        int length = options.getInt(COSName.LENGTH, -1);
-        byte[] compressed = null;
+        int length = parameters.getInt(COSName.LENGTH, -1);
+        byte[] compressed;
         if (length != -1)
         {
             compressed = new byte[length];
-            long written = IOUtils.populateBuffer(compressedData, compressed);
+            long written = IOUtils.populateBuffer(encoded, compressed);
             if (written != compressed.length)
             {
                 log.warn("Buffer for compressed data did not match the length"
@@ -86,13 +72,13 @@ public final class CCITTFaxFilter implements Filter
             // inline images don't provide the length of the stream so that
             // we have to read until the end of the stream to find out the length
             // the streams inline images are stored in are mostly small ones
-            compressed = IOUtils.toByteArray(compressedData);
+            compressed = IOUtils.toByteArray(encoded);
         }
 
         // parse dimensions
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
-        int height = options.getInt(COSName.HEIGHT, COSName.H, 0);
+        int height = parameters.getInt(COSName.HEIGHT, COSName.H, 0);
         if (rows > 0 && height > 0)
         {
             // ensure that rows doesn't contain implausible data, see PDFBOX-771
@@ -141,7 +127,14 @@ public final class CCITTFaxFilter implements Filter
             invertBitmap(decompressed);
         }
 
-        result.write(decompressed);
+        // repair missing color space
+        if (!parameters.containsKey(COSName.COLORSPACE))
+        {
+            result.getParameters().setName(COSName.COLORSPACE, COSName.DEVICEGRAY.getName());
+        }
+
+        decoded.write(decompressed);
+        return new DecodeResult(parameters);
     }
 
     private void invertBitmap(byte[] bufferData)
@@ -152,11 +145,9 @@ public final class CCITTFaxFilter implements Filter
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
         log.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
     }

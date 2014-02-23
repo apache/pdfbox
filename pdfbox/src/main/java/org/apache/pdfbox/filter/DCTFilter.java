@@ -40,16 +40,15 @@ import javax.imageio.stream.ImageInputStream;
  * Decompresses data encoded using a DCT (discrete cosine transform)
  * technique based on the JPEG standard.
  *
- * This filter is called {@code DCTDecode} in the PDF Reference.
- *
  * @author John Hewson
  */
-public final class DCTFilter implements Filter
+final class DCTFilter extends Filter
 {
     private static final Log LOG = LogFactory.getLog(DCTFilter.class);
 
-    public void decode(InputStream input, OutputStream output,
-                       COSDictionary options, int filterIndex) throws IOException
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
@@ -70,7 +69,7 @@ public final class DCTFilter implements Filter
         ImageInputStream iis = null;
         try
         {
-            iis = ImageIO.createImageInputStream(input);
+            iis = ImageIO.createImageInputStream(encoded);
             reader.setInput(iis);
 
             // get the raster using horrible JAI workarounds
@@ -122,7 +121,7 @@ public final class DCTFilter implements Filter
             }
 
             DataBufferByte dataBuffer = (DataBufferByte)raster.getDataBuffer();
-            output.write(dataBuffer.getData());
+            decoded.write(dataBuffer.getData());
         }
         finally
         {
@@ -132,12 +131,7 @@ public final class DCTFilter implements Filter
             }
             reader.dispose();
         }
-    }
-
-    public void encode(InputStream rawData, OutputStream result,
-                       COSDictionary options, int filterIndex) throws IOException
-    {
-        LOG.warn("DCTFilter#encode is not implemented yet, skipping this stream.");
+        return new DecodeResult(parameters);
     }
 
     // reads the APP14 Adobe transform tag
@@ -221,5 +215,12 @@ public final class DCTFilter implements Filter
     private int clamp(float value)
     {
         return (int)((value < 0) ? 0 : ((value > 255) ? 255 : value));
+    }
+
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
+    {
+        LOG.warn("DCTFilter#encode is not implemented yet, skipping this stream.");
     }
 }

@@ -26,8 +26,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
-import org.apache.pdfbox.filter.FilterManager;
+import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.*;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -57,6 +58,7 @@ public class COSStream extends COSDictionary
      * The stream with no filters, this contains the useful data.
      */
     private RandomAccessFileOutputStream unFilteredStream;
+    private DecodeResult decodeResult;
 
     private RandomAccess clone (RandomAccess file) {
         if (file == null) {
@@ -217,6 +219,29 @@ public class COSStream extends COSDictionary
     }
 
     /**
+     * Returns the repaired stream parameters dictionary.
+     *
+     * @return the repaired stream parameters dictionary
+     * @throws IOException when encoding/decoding causes an exception
+     */
+    public DecodeResult getDecodeResult() throws IOException
+    {
+        if (unFilteredStream == null)
+        {
+            doDecode();
+        }
+
+        if (unFilteredStream == null)
+        {
+            throw new IOException("Stream was not read");
+        }
+        else
+        {
+            return decodeResult;
+        }
+    }
+
+    /**
      * visitor pattern double dispatch method.
      *
      * @param visitor The object to notify when visiting this object.
@@ -272,8 +297,7 @@ public class COSStream extends COSDictionary
      */
     private void doDecode( COSName filterName, int filterIndex ) throws IOException
     {
-        FilterManager manager = getFilterManager();
-        Filter filter = manager.getFilter( filterName );
+        Filter filter = FilterFactory.INSTANCE.getFilter( filterName );
 
         boolean done = false;
         IOException exception = null;
@@ -305,8 +329,7 @@ public class COSStream extends COSDictionary
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                 	IOUtils.closeQuietly(unFilteredStream);
                     unFilteredStream = new RandomAccessFileOutputStream( file );
-                    filter.decode( input, unFilteredStream, this.asUnmodifiableDictionary(),
-                                   filterIndex );
+                    decodeResult = filter.decode( input, unFilteredStream, this, filterIndex );
                     done = true;
                 }
                 catch( IOException io )
@@ -334,8 +357,7 @@ public class COSStream extends COSDictionary
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
                     	IOUtils.closeQuietly(unFilteredStream);
                         unFilteredStream = new RandomAccessFileOutputStream( file );
-                        filter.decode( input, unFilteredStream, this.asUnmodifiableDictionary(),
-                                       filterIndex );
+                        decodeResult = filter.decode( input, unFilteredStream, this, filterIndex);
                         done = true;
                     }
                     catch( IOException io )
@@ -396,8 +418,7 @@ public class COSStream extends COSDictionary
      */
     private void doEncode( COSName filterName, int filterIndex ) throws IOException
     {
-        FilterManager manager = getFilterManager();
-        Filter filter = manager.getFilter( filterName );
+        Filter filter = FilterFactory.INSTANCE.getFilter( filterName );
 
         InputStream input = new BufferedInputStream(
             new RandomAccessFileInputStream( file, filteredStream.getPosition(),

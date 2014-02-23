@@ -26,13 +26,11 @@ import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSDictionary;
 
-
 /**
  * This will test all of the filters in the PDFBox system.
  */
 public class TestFilters extends TestCase
 {
-
     /**
      * This will test all of the filters in the system.
      *
@@ -74,9 +72,8 @@ public class TestFilters extends TestCase
                         }
                     }
                 }
-        
-                FilterManager manager = new FilterManager();
-                for( Filter filter : manager.getFilters() ) 
+
+                for( Filter filter : FilterFactory.INSTANCE.getAllFilters() )
                 {
                     // Skip filters that don't currently support roundtripping
                     if( filter instanceof DCTFilter ||
@@ -89,14 +86,12 @@ public class TestFilters extends TestCase
                         }
 
                     ByteArrayOutputStream encoded = new ByteArrayOutputStream();
-                    filter.encode(
-                                  new ByteArrayInputStream( original ),
-                                  encoded, new COSDictionary(), 0 );
+                    filter.encode(new ByteArrayInputStream( original ),
+                                  encoded, new COSDictionary() );
 
                     ByteArrayOutputStream decoded = new ByteArrayOutputStream();
-                    filter.decode(
-                                  new ByteArrayInputStream( encoded.toByteArray() ),
-                                  decoded, new COSDictionary().asUnmodifiableDictionary(), 0 );
+                    filter.decode(new ByteArrayInputStream( encoded.toByteArray() ),
+                                  decoded, new COSDictionary() );
 
                     assertTrue(
                                "Data that is encoded and then decoded through "

@@ -19,7 +19,7 @@ package org.apache.pdfbox.cos;
 
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.filter.FilterManager;
+import org.apache.pdfbox.filter.FilterFactory;
 
 /**
  * Test class for {@link COSBase}.
@@ -28,14 +28,6 @@ public abstract class TestCOSBase extends TestCase
 {
     /** The COSBase abstraction of the object being tested. */
     protected COSBase testCOSBase;
-
-    /**
-     * Tests getFilterManager() - test that a filter manager is obtained... Not much to test here.
-     */
-    public void testGetFilterManager()
-    {
-        assertTrue(testCOSBase.getFilterManager() instanceof FilterManager);
-    }
 
     /**
      * Tests getCOSObject() - tests that the underlying object is returned.

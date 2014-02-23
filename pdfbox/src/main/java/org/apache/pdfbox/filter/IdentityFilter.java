@@ -22,43 +22,40 @@ import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
- * The IdentityFilter filter just passes the data through without any modifications.
- * This is defined in section 7.6.5 of the PDF 1.7 spec and also stated in table
- * 26.
+ * The IdentityFilter filter passes the data through without any modifications.
+ * It is defined in section 7.6.5 of the PDF 1.7 spec and also stated in table 26.
  * 
- * @author adam.nichols
+ * @author Adam Nichols
  */
-public class IdentityFilter implements Filter
+final class IdentityFilter extends Filter
 {
     private static final int BUFFER_SIZE = 1024;
     
-    /**
-     * {@inheritDoc}
-     */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters)
         throws IOException
     {
         byte[] buffer = new byte[BUFFER_SIZE];
-        int amountRead = 0;
-        while( (amountRead = compressedData.read( buffer, 0, BUFFER_SIZE )) != -1 )
+        int amountRead;
+        while((amountRead = encoded.read(buffer, 0, BUFFER_SIZE)) != -1)
         {
-            result.write( buffer, 0, amountRead );
+            decoded.write(buffer, 0, amountRead);
         }
-        result.flush();
+        decoded.flush();
+        return new DecodeResult(parameters);
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
+
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
         throws IOException
     {
         byte[] buffer = new byte[BUFFER_SIZE];
-        int amountRead = 0;
-        while( (amountRead = rawData.read( buffer, 0, BUFFER_SIZE )) != -1 )
+        int amountRead;
+        while((amountRead = input.read(buffer, 0, BUFFER_SIZE)) != -1)
         {
-            result.write( buffer, 0, amountRead );
+            encoded.write(buffer, 0, amountRead);
         }
-        result.flush();
+        encoded.flush();
     }
 }

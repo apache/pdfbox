@@ -27,117 +27,91 @@ import java.util.zip.Inflater;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is the used for the FlateDecode filter.
+ * Decompresses data encoded using the zlib/deflate compression method,
+ * reproducing the original text or binary data.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @author Marcel Kammer
- * @version $Revision: 1.12 $
  */
-public class FlateFilter implements Filter
+final class FlateFilter extends Filter
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(FlateFilter.class);
-
     private static final int BUFFER_SIZE = 16348;
 
-    /**
-     * {@inheritDoc}
-     */
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex )
-    throws IOException
+    @Override
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
-        COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
-        COSDictionary dict = null;
-        if( baseObj instanceof COSDictionary )
-        {
-            dict = (COSDictionary)baseObj;
-        }
-        else if( baseObj instanceof COSArray )
-        {
-            COSArray paramArray = (COSArray)baseObj;
-            if( filterIndex < paramArray.size() )
-            {
-                dict = (COSDictionary)paramArray.getObject( filterIndex );
-            }
-        }
-        else if( baseObj != null )
-        {
-            throw new IOException( "Error: Expected COSArray or COSDictionary and not "
-                    + baseObj.getClass().getName() );
-        }
-
-
         int predictor = -1;
         int colors = -1;
         int bitsPerPixel = -1;
         int columns = -1;
-        ByteArrayInputStream bais = null;
-        ByteArrayOutputStream baos = null;
-        if (dict!=null)
+
+        COSDictionary decodeParams = (COSDictionary)
+                parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+
+        if (decodeParams != null)
         {
-            predictor = dict.getInt(COSName.PREDICTOR);
-            if(predictor > 1)
+            predictor = decodeParams.getInt(COSName.PREDICTOR);
+            if (predictor > 1)
             {
-                colors = dict.getInt(COSName.COLORS);
-                bitsPerPixel = dict.getInt(COSName.BITS_PER_COMPONENT);
-                columns = dict.getInt(COSName.COLUMNS);
+                colors = decodeParams.getInt(COSName.COLORS);
+                bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT);
+                columns = decodeParams.getInt(COSName.COLUMNS);
             }
         }
 
+        ByteArrayInputStream bais = null;
+        ByteArrayOutputStream baos = null;
         try
         {
-            baos = decompress(compressedData);
-            // Decode data using given predictor
-            if (predictor==-1 || predictor == 1 )
+            baos = decompress(encoded);
+
+            // decode data using given predictor
+            if (predictor == -1 || predictor == 1)
             {
-                result.write(baos.toByteArray()); 
+                decoded.write(baos.toByteArray());
             }
             else
             {
-                /*
-                 * Reverting back to default values
-                 */
-                if( colors == -1 )
+                // reverting back to default values
+                if (colors == -1)
                 {
                     colors = 1;
                 }
-                if( bitsPerPixel == -1 )
+
+                if (bitsPerPixel == -1)
                 {
                     bitsPerPixel = 8;
                 }
-                if( columns == -1 )
+
+                if (columns == -1)
                 {
                     columns = 1;
                 }
 
-                // Copy data to ByteArrayInputStream for reading
+                // copy data to ByteArrayInputStream for reading
                 bais = new ByteArrayInputStream(baos.toByteArray());
 
                 byte[] decodedData = decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
                 bais.close();
                 bais = null;
 
-                result.write(decodedData);
+                decoded.write(decodedData);
             }
-            result.flush();
+            decoded.flush();
         } 
-        catch (DataFormatException exception) 
+        catch (DataFormatException e)
         {
             // if the stream is corrupt a DataFormatException may occur
             LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
-            // re-throw the exception, caller has to handle it
-            IOException io = new IOException();
-            io.initCause(exception);
-            throw io;
+
+            // re-throw the exception
+            throw new IOException(e);
         }
         finally
         {
@@ -150,29 +124,30 @@ public class FlateFilter implements Filter
                 baos.close();
             }
         }
+        return new DecodeResult(parameters);
     }
 
-    // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably 
+    // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably
     // missing Z_STREAM_END, see PDFBOX-1232 for details
     private ByteArrayOutputStream decompress(InputStream in) throws IOException, DataFormatException 
     { 
         ByteArrayOutputStream out = new ByteArrayOutputStream(); 
         byte[] buf = new byte[2048]; 
         int read = in.read(buf); 
-        if(read > 0) 
+        if (read > 0) 
         { 
             Inflater inflater = new Inflater(); 
             inflater.setInput(buf,0,read); 
             byte[] res = new byte[2048]; 
-            while(true) 
+            while (true) 
             { 
                 int resRead = inflater.inflate(res); 
-                if(resRead != 0) 
+                if (resRead != 0) 
                 { 
                     out.write(res,0,resRead); 
                     continue; 
                 } 
-                if(inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
+                if (inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
                 {
                     break;
                 } 
@@ -189,10 +164,10 @@ public class FlateFilter implements Filter
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];
-        if (predictor == 1 )
+        if (predictor == 1)
         {
-            // No prediction
-            int i = 0;
+            // no prediction
+            int i;
             while ((i = data.read(buffer)) != -1)
             {
                 baos.write(buffer, 0, i);
@@ -202,10 +177,9 @@ public class FlateFilter implements Filter
         {
             // calculate sizes
             int bitsPerPixel = colors * bitsPerComponent;
-            int bytesPerPixel = (bitsPerPixel + 7 ) / 8;
+            int bytesPerPixel = (bitsPerPixel + 7) / 8;
             int rowlength = (columns * bitsPerPixel + 7) / 8;
             byte[] actline = new byte[rowlength];
-            // Initialize lastline with Zeros according to PNG-specification
             byte[] lastline = new byte[rowlength];
 
             boolean done = false;
@@ -230,22 +204,19 @@ public class FlateFilter implements Filter
                 }
 
                 // read line
-                int i = 0;
-                int offset = 0;
+                int i, offset = 0;
                 while (offset < rowlength && ((i = data.read(actline, offset, rowlength - offset)) != -1))
                 {
                     offset += i;
                 }
 
-                // Do prediction as specified in PNG-Specification 1.2
+                // do prediction as specified in PNG-Specification 1.2
                 switch (linepredictor)
                 {
                     case 2:// PRED TIFF SUB
-                        /**
-                         * @TODO decode tiff with bitsPerComponent != 8;
-                         * e.g. for 4 bpc each nibble must be subtracted separately
-                         */
-                        if ( bitsPerComponent != 8 )
+                        // TODO decode tiff with bitsPerComponent != 8;
+                        // e.g. for 4 bpc each nibble must be subtracted separately
+                        if (bitsPerComponent != 8)
                         {
                             throw new IOException("TIFF-Predictor with " + bitsPerComponent
                                     + " bits per component not supported");
@@ -283,7 +254,7 @@ public class FlateFilter implements Filter
                             int avg = actline[p] & 0xff;
                             int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff: 0;
                             int up = lastline[p] & 0xff;
-                            actline[p] = (byte) ((avg +  (int)Math.floor( (left + up)/2 ) ) & 0xff);
+                            actline[p] = (byte) ((avg +  (int)Math.floor((left + up)/2)) & 0xff);
                         }
                         break;
                     case 14:// PRED PAETH
@@ -322,24 +293,22 @@ public class FlateFilter implements Filter
         return baos.toByteArray();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options, int filterIndex )
-    throws IOException
+    @Override
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
-        DeflaterOutputStream out = new DeflaterOutputStream(result);
-        int amountRead = 0;
-        int mayRead = rawData.available();
+        DeflaterOutputStream out = new DeflaterOutputStream(encoded);
+        int amountRead;
+        int mayRead = input.available();
         if (mayRead > 0)
         {
             byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
-            while ((amountRead = rawData.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+            while ((amountRead = input.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
             {
                 out.write(buffer, 0, amountRead);
             }
         }
         out.close();
-        result.flush();
+        encoded.flush();
     }
 }
