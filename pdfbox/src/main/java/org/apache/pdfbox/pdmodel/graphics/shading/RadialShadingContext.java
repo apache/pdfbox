@@ -252,20 +252,28 @@ public class RadialShadingContext implements PaintContext
                         {
                             inputValue = inputValues[1];
                         }
-                        // both are not in the domain (is this correct, or is there some miscalculation??)
+                        // both are not in the domain
                         else
                         {
-                            // TODO don't know what to do in such cases. The following works
-                            // with the given examples
-                            // choose the smaller if extend[0] is set to true
-                            if (extend[0])
-                            {
-                                inputValue = Math.min(inputValues[0], inputValues[1]);
-                            }
-                            // choose the bigger one in all other cases
-                            else
+                            if (extend[0] && extend[1])
                             {
                                 inputValue = Math.max(inputValues[0], inputValues[1]);
+                            }
+                            else if (extend[0])
+                            {
+                                inputValue = inputValues[0];
+                            }
+                            else if (extend[1])
+                            {
+                                inputValue = inputValues[1];
+                            }
+                            else if (background != null)
+                            {
+                                useBackground = true;
+                            }
+                            else
+                            {
+                                continue;
                             }
                         }
                     }
