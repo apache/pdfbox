@@ -185,7 +185,7 @@ public class ImageIOUtil
                                 writerParams.setCompressionType(writerParams.getCompressionTypes()[0]);
                             }
                         }
-                        writerParams.setCompressionQuality(0);
+                        writerParams.setCompressionQuality(quality);
                     }
                     IIOMetadata meta = createMetadata(image, imageWriter, writerParams, resolution);
                     if (meta != null)
