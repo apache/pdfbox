@@ -261,12 +261,22 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDImageXObject getMask() throws IOException
     {
-        COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.MASK);
-        if (cosStream != null)
+        COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
+        if (mask instanceof COSArray)
         {
-            return new PDImageXObject(new PDStream(cosStream), null); // always DeviceGray
+            // ...
+            System.out.println("color key");
+            return null;
         }
-        return null;
+        else
+        {
+            COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.MASK);
+            if (cosStream != null)
+            {
+                return new PDImageXObject(new PDStream(cosStream), null); // always DeviceGray
+            }
+            return null;
+        }
     }
 
     /**
