@@ -39,7 +39,7 @@ import org.apache.pdfbox.cos.COSStream;
 
 /**
  * Decompresses data encoded using the JBIG2 standard, reproducing the original
- * monochrome (1 bit per pixel)  image data (or an approximation of that data).
+ * monochrome (1 bit per pixel) image data (or an approximation of that data).
  *
  * Requires a JBIG2 plugin for Java Image I/O to be installed. A known working
  * plug-in is <a href="http://code.google.com/p/jbig2-imageio/">jbig2-imageio</a>
@@ -47,18 +47,13 @@ import org.apache.pdfbox.cos.COSStream;
  *
  * @author Timo Boehme
  */
-public class JBIG2Filter implements Filter
+final class JBIG2Filter extends Filter
 {
     private static final Log LOG = LogFactory.getLog(JBIG2Filter.class);
 
-    /**
-     * Decode JBIG2 data using Java ImageIO library.
-     *
-     * {@inheritDoc}
-     */
     @Override
-    public void decode(InputStream compressedData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
+    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters) throws IOException
     {
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JBIG2");
@@ -76,8 +71,11 @@ public class JBIG2Filter implements Filter
                     "jbig2-imageio is not installed");
         }
 
-        COSInteger bits = (COSInteger) options.getDictionaryObject(COSName.BITS_PER_COMPONENT);
-        COSDictionary params = (COSDictionary) options.getDictionaryObject(COSName.DECODE_PARMS);
+        DecodeResult result = new DecodeResult(new COSDictionary());
+        result.getParameters().addAll(parameters);
+
+        COSInteger bits = (COSInteger) parameters.getDictionaryObject(COSName.BITS_PER_COMPONENT);
+        COSDictionary params = (COSDictionary) parameters.getDictionaryObject(COSName.DECODE_PARMS);
 
         COSStream globals = null;
         if (params != null)
@@ -91,12 +89,12 @@ public class JBIG2Filter implements Filter
             if (globals != null)
             {
                 iis = ImageIO.createImageInputStream(
-                        new SequenceInputStream(globals.getFilteredStream(), compressedData));
+                        new SequenceInputStream(globals.getFilteredStream(), encoded));
                 reader.setInput(iis);
             }
             else
             {
-                iis = ImageIO.createImageInputStream(compressedData);
+                iis = ImageIO.createImageInputStream(encoded);
                 reader.setInput(iis);
             }
 
@@ -130,7 +128,7 @@ public class JBIG2Filter implements Filter
             DataBuffer dBuf = image.getData().getDataBuffer();
             if (dBuf.getDataType() == DataBuffer.TYPE_BYTE)
             {
-                result.write(((DataBufferByte) dBuf).getData());
+                decoded.write(((DataBufferByte) dBuf).getData());
             }
             else
             {
@@ -145,11 +143,19 @@ public class JBIG2Filter implements Filter
             }
             reader.dispose();
         }
+
+        // repair missing color space
+        if (!parameters.containsKey(COSName.COLORSPACE))
+        {
+            result.getParameters().setName(COSName.COLORSPACE, COSName.DEVICEGRAY.getName());
+        }
+
+        return new DecodeResult(parameters);
     }
 
     @Override
-    public void encode(InputStream rawData, OutputStream result, COSDictionary options,
-                       int filterIndex) throws IOException
+    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+            throws IOException
     {
         throw new UnsupportedOperationException("JBIG2 encoding not implemented");
     }

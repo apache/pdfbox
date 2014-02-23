@@ -19,7 +19,10 @@
 
 package org.apache.pdfbox.filter;
 
-class TIFFFaxDecoder {
+/**
+ * CCITT Fax decoder
+ */
+final class TIFFFaxDecoder {
 
     private int bitPointer, bytePointer;
     private byte[] data;

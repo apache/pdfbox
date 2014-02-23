@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.filter.FilterManager;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -24,35 +23,19 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 /**
  * The base object that all objects in the PDF document will extend.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.14 $
+ * @author Ben Litchfield
  */
 public abstract class COSBase implements COSObjectable
 {
+    private boolean needToBeUpdate;
+    private boolean direct;
+
     /**
      * Constructor.
      */
-  
-    private boolean needToBeUpdate;
-    
-    private boolean direct;
-  
     public COSBase()
     {
       needToBeUpdate = false;
-    }
-
-    /**
-     * This will get the filter manager to use to filter streams.
-     *
-     * @return The filter manager.
-     */
-    public FilterManager getFilterManager()
-    {
-        /**
-         * @todo move this to PDFdocument or something better
-         */
-        return new FilterManager();
     }
 
     /**
@@ -64,8 +47,6 @@ public abstract class COSBase implements COSObjectable
     {
         return this;
     }
-
-
 
     /**
      * visitor pattern double dispatch method.

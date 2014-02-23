@@ -20,39 +20,87 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is the interface that will be used to apply filters to a byte stream.
+ * A filter for stream data.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public interface Filter
+public abstract class Filter
 {
-    /**
-     * This will decode some compressed data.
-     *
-     * @param compressedData The compressed byte stream.
-     * @param result The place to write the uncompressed byte stream.
-     * @param options The options to use to encode the data.
-     * @param filterIndex The index to the filter being decoded.
-     *
-     * @throws IOException If there is an error decompressing the stream.
-     */
-    public void decode( InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException;
+    private static final Log log = LogFactory.getLog(Filter.class);
+
+    protected Filter()
+    {
+    }
 
     /**
-     * This will encode some data.
-     *
-     * @param rawData The raw data to encode.
-     * @param result The place to write to encoded results to.
-     * @param options The options to use to encode the data.
-     * @param filterIndex The index to the filter being encoded.
-     *
-     * @throws IOException If there is an error compressing the stream.
+     * Decodes data, producing the original non-encoded data.
+     * @param encoded the encoded byte stream
+     * @param decoded the stream where decoded data will be written
+     * @param parameters the parameters used for decoding
+     * @return repaired parameters dictionary, or the original parameters dictionary
+     * @throws IOException if the stream cannot be decoded
      */
-    public void encode( InputStream rawData, OutputStream result, COSDictionary options, int filterIndex ) 
-        throws IOException;
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary parameters,
+                            int index) throws IOException
+    {
+        COSDictionary params = new COSDictionary();
+        params.addAll(parameters);
+        params.setItem(COSName.DECODE_PARMS, getDecodeParams(params, index));
+        return decode(encoded, decoded, params.asUnmodifiableDictionary());
+    }
+
+    // implemented in subclasses
+    protected abstract DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                   COSDictionary parameters) throws IOException;
+
+    /**
+     * Encodes data.
+     * @param input the byte stream to encode
+     * @param encoded the stream where encoded data will be written
+     * @param parameters the parameters used for encoding
+     * @throws IOException if the stream cannot be encoded
+     */
+    public final void encode(InputStream input, OutputStream encoded, COSDictionary parameters,
+                            int index) throws IOException
+    {
+        encode(input, encoded, parameters.asUnmodifiableDictionary());
+    }
+
+    // implemented in subclasses
+    protected abstract void encode(InputStream input, OutputStream encoded,
+                                   COSDictionary parameters) throws IOException;
+
+    // gets the decode params for a specific filter index, this is used to
+    // normalise the DecodeParams entry so that it is always a dictionary
+    private COSDictionary getDecodeParams(COSDictionary dictionary, int index)
+    {
+        COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        if (obj instanceof COSDictionary)
+        {
+            return (COSDictionary)obj;
+        }
+        else if (obj instanceof COSArray)
+        {
+            COSArray array = (COSArray)obj;
+            if (index < array.size())
+            {
+                return (COSDictionary)array.getObject(index);
+            }
+        }
+        else if (obj != null)
+        {
+            log.error("Expected DecodeParams to be an Array or Dictionary but found " +
+                      obj.getClass().getName());
+        }
+        return new COSDictionary();
+    }
 }

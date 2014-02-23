@@ -1435,7 +1435,7 @@ public class COSDictionary extends COSBase
 
     /**
      * Returns an unmodifiable view of this dictionary.
-     * @return
+     * @return an unmodifiable view of this dictionary
      */
     public COSDictionary asUnmodifiableDictionary()
     {

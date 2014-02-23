@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
@@ -26,28 +24,11 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.filter.MissingImageReaderException;
-import org.apache.pdfbox.pdmodel.common.PDRange;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDCalRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
-import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
-import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDLab;
-import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -124,8 +105,7 @@ final class SampledImageReader
     {
         if (pdImage.getStream().getLength() == 0)
         {
-            LOG.warn("Image has empty stream");
-            return new BufferedImage(0, 0, BufferedImage.TYPE_INT_RGB);
+            throw new IOException("Image stream is empty");
         }
 
         // get parameters
@@ -216,14 +196,6 @@ final class SampledImageReader
                 decode[1] < 0 || decode[1] > 1))
             {
                 LOG.warn("Ignored invalid decode array: not compatible with ImageMask");
-                decode = null;
-            }
-
-            // JPX: decode shall be ignored, except when the image is treated as a mask
-            if (pdImage.getStream().getFilters() != null &&
-                pdImage.getStream().getFilters().contains(COSName.JPX_DECODE) &&
-               !pdImage.isStencil())
-            {
                 decode = null;
             }
 
