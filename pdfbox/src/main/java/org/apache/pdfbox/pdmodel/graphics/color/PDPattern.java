@@ -76,7 +76,7 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         throw new UnsupportedOperationException();
     }

@@ -134,7 +134,7 @@ public final class PDLab extends PDCIEBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         PDRange a = getARange();
         PDRange b = getARange();

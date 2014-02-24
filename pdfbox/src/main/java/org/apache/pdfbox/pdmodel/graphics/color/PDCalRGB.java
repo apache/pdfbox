@@ -74,7 +74,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         return new float[] { 0, 1, 0, 1, 0, 1 };
     }

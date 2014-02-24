@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -131,6 +132,7 @@ final class SampledImageReader
         {
             iis = new MemoryCacheImageInputStream(pdImage.getStream().createInputStream());
             final float sampleMax = (float)Math.pow(2, bitsPerComponent) - 1f;
+            final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             int padding = 0;
             if (width * numComponents * bitsPerComponent % 8 > 0)
@@ -154,11 +156,21 @@ final class SampledImageReader
                         // interpolate to domain
                         float output = dMin + (value * ((dMax - dMin) / sampleMax));
 
-                        // interpolate to TYPE_BYTE
-                        int outputByte = Math.round(((output - Math.min(dMin, dMax)) /
-                                                     Math.abs(dMax - dMin)) * 255f);
+                        if (isIndexed)
+                        {
+                            // indexed color spaces get the raw value, because the TYPE_BYTE
+                            // below cannot be reversed by the color space without it having
+                            // knowledge of the number of bits per component
+                            srcColorValues[c] = (byte)Math.round(output);
+                        }
+                        else
+                        {
+                            // interpolate to TYPE_BYTE
+                            int outputByte = Math.round(((output - Math.min(dMin, dMax)) /
+                                    Math.abs(dMax - dMin)) * 255f);
 
-                        srcColorValues[c] = (byte)outputByte;
+                            srcColorValues[c] = (byte)outputByte;
+                        }
                     }
 
                     raster.setDataElements(x, y, srcColorValues);
@@ -212,7 +224,7 @@ final class SampledImageReader
         // use color space default
         if (decode == null)
         {
-            return pdImage.getColorSpace().getDefaultDecode();
+            return pdImage.getColorSpace().getDefaultDecode(pdImage.getBitsPerComponent());
         }
 
         return decode;
