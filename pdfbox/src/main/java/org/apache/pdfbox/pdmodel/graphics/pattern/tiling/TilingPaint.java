@@ -81,10 +81,11 @@ public class TilingPaint extends TexturePaint
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
         Rectangle rect = getTransformedRect(pattern);
+        int width = Math.round((float)rect.getWidth());
+        int height = Math.round((float)rect.getHeight());
 
         // create raster
-        WritableRaster raster = cm.createCompatibleWritableRaster((int)rect.getWidth(),
-                                                                  (int)rect.getHeight());
+        WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
         BufferedImage image = new BufferedImage(cm, raster, false, null);
 
         // TODO xStep and yStep
@@ -93,9 +94,6 @@ public class TilingPaint extends TexturePaint
         Matrix matrix = (Matrix)pattern.getMatrix().clone();
         matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
         matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
-
-        int width = (int)rect.getWidth();
-        int height = (int)rect.getHeight();
 
         PageDrawer drawer = new PageDrawer();
         PDRectangle pdRect = new PDRectangle(0, 0, width, height);
