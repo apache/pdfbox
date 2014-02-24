@@ -227,7 +227,7 @@ public final class PDInlineImage implements PDImage
 
     public BufferedImage getImage() throws IOException
     {
-        return SampledImageReader.getRGBImage(this);
+        return SampledImageReader.getRGBImage(this, getColorKeyMask());
     }
 
     public BufferedImage getStencilImage(Paint paint) throws IOException
@@ -237,6 +237,20 @@ public final class PDInlineImage implements PDImage
             throw new IllegalStateException("Image is not a stencil");
         }
         return SampledImageReader.getStencilImage(this, paint);
+    }
+
+    /**
+     * Returns the color key mask array associated with this image, or null if there is none.
+     * @return Mask Image XObject
+     */
+    public COSArray getColorKeyMask()
+    {
+        COSBase mask = parameters.getDictionaryObject(COSName.IM, COSName.MASK);
+        if (mask instanceof COSArray)
+        {
+            return (COSArray)mask;
+        }
+        return null;
     }
 
     /**
