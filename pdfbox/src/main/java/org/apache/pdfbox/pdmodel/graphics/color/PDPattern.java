@@ -19,10 +19,10 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.ColoredTilingPaint;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.TilingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
@@ -53,14 +53,24 @@ public final class PDPattern extends PDSpecialColorSpace
 {
     private static final Log LOG = LogFactory.getLog(PDPattern.class);
 
-    private Map<String, PDPatternResources> patterns;
+    private Map<String, PDPatternDictionary> patterns;
+    private PDColorSpace underlyingColorSpace;
 
     /**
-     * Creates a new Pattern color space.
+     * Creates a new pattern color space.
      */
-    public PDPattern(Map<String, PDPatternResources> patterns)
+    public PDPattern(Map<String, PDPatternDictionary> patterns)
     {
         this.patterns = patterns;
+    }
+
+    /**
+     * Creates a new uncolored tiling pattern color space.
+     */
+    public PDPattern(Map<String, PDPatternDictionary> patterns, PDColorSpace colorSpace)
+    {
+        this.patterns = patterns;
+        this.underlyingColorSpace = colorSpace;
     }
 
     @Override
@@ -113,35 +123,32 @@ public final class PDPattern extends PDSpecialColorSpace
             throw new IOException("pattern " + color.getPatternName() + " was not found");
         }
 
-        PDPatternResources pattern = patterns.get(color.getPatternName());
-        if (pattern instanceof PDTilingPatternResources)
+        PDPatternDictionary pattern = patterns.get(color.getPatternName());
+        if (pattern instanceof PDTilingPattern)
         {
-            return toTilingPaint((PDTilingPatternResources)pattern, color);
+            return toTilingPaint((PDTilingPattern)pattern, color);
         }
         else
         {
-            return toShadingPaint((PDShadingPatternResources)pattern, pageHeight);
+            return toShadingPaint((PDShadingPattern)pattern, pageHeight);
         }
     }
 
-    public Paint toTilingPaint(PDTilingPatternResources tilingPattern, PDColor color)
+    public Paint toTilingPaint(PDTilingPattern tilingPattern, PDColor color)
             throws IOException
     {
-        if (tilingPattern.getPatternType() == PDTilingPatternResources.COLORED_TILING_PATTERN)
+        if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
         {
             // colored tiling pattern
-            // TODO we should be passing the color to ColoredTilingPaint
-            return new ColoredTilingPaint(tilingPattern);
+            return new TilingPaint(tilingPattern);
         }
         else
         {
             // uncolored tiling pattern
-            // TODO ...
-            LOG.debug("Not implemented: uncoloured tiling patterns");
-            return new Color(0, 0, 0, 0); // transparent
+            return new TilingPaint(tilingPattern, underlyingColorSpace, color);
         }
     }
-    public Paint toShadingPaint(PDShadingPatternResources shadingPattern, int pageHeight)
+    public Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight)
             throws IOException
     {
         PDShadingResources shadingResources = shadingPattern.getShading();

@@ -29,45 +29,42 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the resources for a shading pattern.
- *
+ * A shading pattern dictionary.
+ * @author Andreas Lehmkühler
  */
-public class PDShadingPatternResources extends PDPatternResources
+public class PDShadingPattern extends PDPatternDictionary
 {
     private PDExtendedGraphicsState extendedGraphicsState;
     private PDShadingResources shading;
     private COSArray matrix = null;
 
     /**
-     * Default constructor.
+     * Creates a new shading pattern.
      */
-    public PDShadingPatternResources()
+    public PDShadingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternResources.SHADING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternDictionary.TYPE_SHADING_PATTERN);
     }
 
     /**
-     * Prepopulated pattern resources.
-     *
+     * Creates a new shading pattern from the given COS dictionary.
      * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDShadingPatternResources( COSDictionary resourceDictionary )
+    public PDShadingPattern(COSDictionary resourceDictionary)
     {
         super(resourceDictionary);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getPatternType()
     {
-        return PDPatternResources.SHADING_PATTERN;
+        return PDPatternDictionary.TYPE_SHADING_PATTERN;
     }
 
     /**
      * This will get the optional Matrix of a Pattern.
-     * It maps the form space into the user space
+     * It maps the form space into the user space.
      * @return the form matrix
      */
     public Matrix getMatrix()
@@ -108,7 +105,6 @@ public class PDShadingPatternResources extends PDPatternResources
 
     /**
      * This will get the extended graphics state for this pattern.
-     *
      * @return The extended graphics state for this pattern.
      */
     public PDExtendedGraphicsState getExtendedGraphicsState()
@@ -126,7 +122,6 @@ public class PDShadingPatternResources extends PDPatternResources
 
     /**
      * This will set the extended graphics state for this pattern.
-     *
      * @param extendedGraphicsState The new extended graphics state for this pattern.
      */
     public void setExtendedGraphicsState( PDExtendedGraphicsState extendedGraphicsState )
@@ -144,9 +139,7 @@ public class PDShadingPatternResources extends PDPatternResources
 
     /**
      * This will get the shading resources for this pattern.
-     *
-     * @return The shading resourcesfor this pattern.
-     * 
+     * @return The shading resources for this pattern.
      * @throws IOException if something went wrong
      */
     public PDShadingResources getShading() throws IOException
@@ -164,7 +157,6 @@ public class PDShadingPatternResources extends PDPatternResources
 
     /**
      * This will set the shading resources for this pattern.
-     *
      * @param shadingResources The new shading resources for this pattern.
      */
     public void setShading( PDShadingResources shadingResources )

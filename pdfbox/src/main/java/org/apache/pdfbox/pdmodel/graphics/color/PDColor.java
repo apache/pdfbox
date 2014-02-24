@@ -20,12 +20,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 
-import java.awt.Paint;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * A color value, consisting of one or more color components, or for pattern color spaces,

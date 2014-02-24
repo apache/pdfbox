@@ -21,7 +21,7 @@ import org.apache.pdfbox.cos.COSArray;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -66,7 +66,7 @@ public abstract class PDColorSpace implements COSObjectable
      */
     public static PDColorSpace create(COSBase colorSpace,
                                       Map<String, PDColorSpace> colorSpaces,
-                                      Map<String, PDPatternResources> patterns)
+                                      Map<String, PDPatternDictionary> patterns)
                                       throws IOException
     {
         if (colorSpace instanceof COSName)
@@ -137,7 +137,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.PATTERN)
             {
-                return new PDPattern(patterns);
+                return new PDPattern(patterns, PDColorSpace.create(array.get(1)));
             }
             else
             {

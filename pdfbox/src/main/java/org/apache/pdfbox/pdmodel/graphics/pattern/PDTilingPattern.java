@@ -28,62 +28,52 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the resources for a tiling pattern.
+ * A tiling pattern dictionary.
+ * @author Andreas Lehmkühler
  */
-public class PDTilingPatternResources extends PDPatternResources
+public class PDTilingPattern extends PDPatternDictionary
 {
-    /**
-     * paint type 1 = colored tiling pattern.
-     */
-    public static final int COLORED_TILING_PATTERN = 1;
-    /**
-     * paint type 2 = uncolored tiling pattern.
-     */
-    public static final int UNCOLORED_TILING_PATTERN = 2;
+    /** paint type 1 = colored tiling pattern. */
+    public static final int PAINT_COLORED = 1;
 
-    /**
-     * tiling type 1 = constant spacing.
-     */
+    /** paint type 2 = uncolored tiling pattern. */
+    public static final int PAINT_UNCOLORED = 2;
+
+    /** tiling type 1 = constant spacing.*/
     public static final int TILING_CONSTANT_SPACING = 1;
-    /**
-     * tiling type 2 = no distortion.
-     */
+
+    /**  tiling type 2 = no distortion. */
     public static final int TILING_NO_DISTORTION = 2;
-    /**
-     * tiling type 3 = constant spacing and faster tiling.
-     */
+
+    /** tiling type 3 = constant spacing and faster tiling. */
     public static final int TILING_CONSTANT_SPACING_FASTER_TILING = 3;
 
     /**
-     * Default constructor.
+     * Creates a new tiling pattern.
      */
-    public PDTilingPatternResources()
+    public PDTilingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternResources.TILING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternDictionary.TYPE_TILING_PATTERN);
     }
 
     /**
-     * Prepopulated pattern resources.
-     *
+     * Creates a new tiling pattern from the given COS dictionary.
      * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDTilingPatternResources( COSDictionary resourceDictionary )
+    public PDTilingPattern(COSDictionary resourceDictionary)
     {
         super(resourceDictionary);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getPatternType()
     {
-        return PDPatternResources.TILING_PATTERN;
+        return PDPatternDictionary.TYPE_TILING_PATTERN;
     }
 
     /**
      * This will set the length of the content stream.
-     *
      * @param length The new stream length.
      */
     public void setLength(int length)
@@ -93,7 +83,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will return the length of the content stream.
-     *
      * @return The length of the content stream
      */
     public int getLength()
@@ -103,7 +92,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the paint type.
-     *
      * @param paintType The new paint type.
      */
     public void setPaintType(int paintType)
@@ -113,7 +101,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will return the paint type.
-     *
      * @return The paint type
      */
     public int getPaintType()
@@ -123,7 +110,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the tiling type.
-     *
      * @param tilingType The new tiling type.
      */
     public void setTilingType(int tilingType)
@@ -133,7 +119,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will return the tiling type.
-     *
      * @return The tiling type
      */
     public int getTilingType()
@@ -143,7 +128,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the XStep value.
-     *
      * @param xStep The new XStep value.
      */
     public void setXStep(int xStep)
@@ -153,7 +137,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will return the XStep value.
-     *
      * @return The XStep value
      */
     public int getXStep()
@@ -163,7 +146,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the YStep value.
-     *
      * @param yStep The new YStep value.
      */
     public void setYStep(int yStep)
@@ -173,7 +155,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will return the YStep value.
-     *
      * @return The YStep value
      */
     public int getYStep()
@@ -184,13 +165,13 @@ public class PDTilingPatternResources extends PDPatternResources
     /**
      * This will get the resources for this pattern.
      * This will return null if no resources are available at this level.
-     *
      * @return The resources for this pattern.
      */
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.RESOURCES );
+        COSDictionary resources = (COSDictionary)getCOSDictionary()
+                .getDictionaryObject( COSName.RESOURCES );
         if( resources != null )
         {
             retval = new PDResources( resources );
@@ -200,7 +181,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the resources for this pattern.
-     *
      * @param resources The new resources for this pattern.
      */
     public void setResources( PDResources resources )
@@ -235,7 +215,6 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will set the BBox (bounding box) for this Pattern.
-     *
      * @param bbox The new BBox for this Pattern.
      */
     public void setBBox(PDRectangle bbox)
@@ -252,24 +231,24 @@ public class PDTilingPatternResources extends PDPatternResources
 
     /**
      * This will get the optional Matrix of a Pattern.
-     * It maps the form space into the user space
+     * It maps the form space into the user space.
      * @return the form matrix
      */
     public Matrix getMatrix()
     {
-        Matrix retval = null;
-        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject( COSName.MATRIX );
-        if( array != null )
+        Matrix matrix = null;
+        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
+        if (array != null)
         {
-            retval = new Matrix();
-            retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            retval.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            retval.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            matrix = new Matrix();
+            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
+            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
+            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
+            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
+            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
+            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
         }
-        return retval;
+        return matrix;
     }
 
     /**

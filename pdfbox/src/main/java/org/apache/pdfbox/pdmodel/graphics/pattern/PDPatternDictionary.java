@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
-
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -25,37 +24,63 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * This represents the resources for a pattern color space.
+ * A Pattern dictionary from a page's resources.
+ * @author Andreas Lehmkühler
  */
-public abstract class PDPatternResources implements COSObjectable
+public abstract class PDPatternDictionary implements COSObjectable
 {
+    /** Tiling pattern type. */
+    public static final int TYPE_TILING_PATTERN = 1;
+
+    /** Shading pattern type. */
+    public static final int TYPE_SHADING_PATTERN = 2;
+
+    /**
+     * Create the correct PD Model pattern based on the COS base pattern.
+     * @param resourceDictionary the COS pattern dictionary
+     * @return the newly created pattern resources object
+     * @throws IOException If we are unable to create the PDPattern object.
+     */
+    public static PDPatternDictionary create(COSDictionary resourceDictionary) throws IOException
+    {
+        PDPatternDictionary pattern;
+        int patternType = resourceDictionary.getInt(COSName.PATTERN_TYPE, 0);
+        switch (patternType)
+        {
+            case TYPE_TILING_PATTERN:
+                pattern = new PDTilingPattern(resourceDictionary);
+                break;
+            case TYPE_SHADING_PATTERN:
+                pattern = new PDShadingPattern(resourceDictionary);
+                break;
+            default:
+                throw new IOException("Error: Unknown pattern type " + patternType);
+        }
+        return pattern;
+    }
+
     private COSDictionary patternDictionary;
 
-    public static final int TILING_PATTERN = 1;
-    public static final int SHADING_PATTERN = 2;
-    
     /**
-     * Default constructor.
+     * Creates a new Pattern dictionary.
      */
-    public PDPatternResources()
+    public PDPatternDictionary()
     {
         patternDictionary = new COSDictionary();
         patternDictionary.setName(COSName.TYPE, COSName.PATTERN.getName());
     }
 
     /**
-     * Prepopulated pattern resources.
-     *
+     * Creates a new Pattern dictionary from the given COS dictionary.
      * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDPatternResources( COSDictionary resourceDictionary )
+    public PDPatternDictionary(COSDictionary resourceDictionary)
     {
         patternDictionary = resourceDictionary;
     }
 
     /**
      * This will get the underlying dictionary.
-     *
      * @return The dictionary for these pattern resources.
      */
     public COSDictionary getCOSDictionary()
@@ -65,7 +90,6 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * Convert this standard java object to a COS object.
-     *
      * @return The cos object that matches this Java object.
      */
     public COSBase getCOSObject()
@@ -75,27 +99,24 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * Sets the filter entry of the encryption dictionary.
-     *
      * @param filter The filter name.
      */
     public void setFilter(String filter)
     {
-        patternDictionary.setItem( COSName.FILTER, COSName.getPDFName( filter ) );
+        patternDictionary.setItem(COSName.FILTER, COSName.getPDFName(filter));
     }
 
     /**
      * Get the name of the filter.
-     *
      * @return The filter name contained in this encryption dictionary.
      */
     public String getFilter()
     {
-        return patternDictionary.getNameAsString( COSName.FILTER );
+        return patternDictionary.getNameAsString(COSName.FILTER);
     }
 
     /**
      * This will set the length of the content stream.
-     *
      * @param length The new stream length.
      */
     public void setLength(int length)
@@ -105,17 +126,15 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * This will return the length of the content stream.
-     *
      * @return The length of the content stream
      */
     public int getLength()
     {
-        return patternDictionary.getInt( COSName.LENGTH, 0 );
+        return patternDictionary.getInt(COSName.LENGTH, 0);
     }
 
     /**
      * This will set the paint type.
-     *
      * @param paintType The new paint type.
      */
     public void setPaintType(int paintType)
@@ -125,7 +144,6 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * This will return the paint type.
-     *
      * @return The type of object that this is.
      */
     public String getType()
@@ -135,7 +153,6 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * This will set the pattern type.
-     *
      * @param patternType The new pattern type.
      */
     public void setPatternType(int patternType)
@@ -145,35 +162,7 @@ public abstract class PDPatternResources implements COSObjectable
 
     /**
      * This will return the pattern type.
-     *
      * @return The pattern type
      */
     public abstract int getPatternType();
-    
-    /**
-     * Create the correct PD Model pattern based on the COS base pattern.
-     * 
-     * @param resourceDictionary the COS pattern dictionary
-     * 
-     * @return the newly created pattern resources object
-     * 
-     * @throws IOException If we are unable to create the PDPattern object.
-     */
-    public static PDPatternResources create(COSDictionary resourceDictionary) throws IOException
-    {
-        PDPatternResources pattern = null;
-        int patternType = resourceDictionary.getInt( COSName.PATTERN_TYPE, 0 );
-        switch (patternType) 
-        {
-            case TILING_PATTERN: 
-                pattern = new PDTilingPatternResources(resourceDictionary);
-                break;
-            case SHADING_PATTERN: 
-                pattern = new PDShadingPatternResources(resourceDictionary);
-                break;
-            default:
-                throw new IOException( "Error: Unknown pattern type " + patternType );
-        }
-        return pattern;
-    }
 }

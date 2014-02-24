@@ -66,6 +66,9 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
@@ -178,25 +181,39 @@ public class PageDrawer extends PDFStreamEngine
                 }
             }
         }
+        graphics = null;
     }
 
     /**
-     * This will draw the page to the requested context.
+     * This will draw the pattern stream to the requested context.
      *
      * @param g The graphics context to draw onto.
-     * @param stream The stream to be used.
-     * @param resources resources to be used when drawing the stream
+     * @param pattern The tiling pattern to be used.
      * @param pageDimension The size of the page to draw.
-     *
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawStream(Graphics g, COSStream stream, PDResources resources, PDRectangle pageDimension)
-            throws IOException
+    public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDRectangle pageDimension,
+                                  Matrix matrix, PDColorSpace colorSpace, PDColor color)
+                                  throws IOException
     {
-        graphics = (Graphics2D) g;
+        graphics = g;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        processStream(resources, stream, pageDimension, 0);
+
+        initStream(pageDimension, 0);
+
+        // transform ctm
+        Matrix concat = getGraphicsState().getCurrentTransformationMatrix().multiply(matrix);
+        getGraphicsState().setCurrentTransformationMatrix(concat);
+
+        // color
+        if (colorSpace != null)
+        {
+            getGraphicsState().setNonStrokingColorSpace(colorSpace);
+            getGraphicsState().setNonStrokingColor(color);
+        }
+
+        processSubStream(pattern.getResources(), (COSStream)pattern.getCOSObject());
     }
 
     /**
