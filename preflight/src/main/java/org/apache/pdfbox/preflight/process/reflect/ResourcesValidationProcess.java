@@ -40,8 +40,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPatternResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -152,12 +152,12 @@ public class ResourcesValidationProcess extends AbstractProcess
     {
         try
         {
-            Map<String, PDPatternResources> patternResources = resources.getPatterns();
+            Map<String, PDPatternDictionary> patternResources = resources.getPatterns();
             if (patternResources != null)
             {
-                for (Entry<String, PDPatternResources> entry : patternResources.entrySet())
+                for (Entry<String, PDPatternDictionary> entry : patternResources.entrySet())
                 {
-                    if (entry.getValue() instanceof PDTilingPatternResources)
+                    if (entry.getValue() instanceof PDTilingPattern)
                     {
                         ContextHelper.validateElement(context, entry.getValue(), TILING_PATTERN_PROCESS);
                     }

@@ -57,10 +57,6 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class PDFStreamEngine
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
     /**
@@ -187,7 +183,24 @@ public class PDFStreamEngine
     }
 
     /**
-     * This will process the contents of the stream.
+     * Initialises a stream for processing.
+     *
+     * @param drawingSize the size of the page
+     * @param rotation the page rotation
+     */
+    protected void initStream(PDRectangle drawingSize, int rotation)
+    {
+        drawingRectangle = drawingSize;
+        pageRotation = rotation;
+        graphicsState = new PDGraphicsState(drawingRectangle);
+        textMatrix = null;
+        textLineMatrix = null;
+        graphicsStack.clear();
+        streamResourcesStack.clear();
+    }
+
+    /**
+     * This will initialise and process the contents of the stream.
      * 
      * @param resources The location to retrieve resources.
      * @param cosStream the Stream to execute.
@@ -199,13 +212,7 @@ public class PDFStreamEngine
     public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize, int rotation)
             throws IOException
     {
-        drawingRectangle = drawingSize;
-        pageRotation = rotation;
-        graphicsState = new PDGraphicsState(drawingRectangle);
-        textMatrix = null;
-        textLineMatrix = null;
-        graphicsStack.clear();
-        streamResourcesStack.clear();
+        initStream(drawingSize, rotation);
         processSubStream(resources, cosStream);
     }
 
