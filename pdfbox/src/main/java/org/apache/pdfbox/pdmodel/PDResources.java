@@ -213,7 +213,7 @@ public class PDResources implements COSObjectable
                     }
                 }
             }
-            setFonts(fonts);
+            fontMappings = reverseMap(fonts, PDFont.class);
         }
         return fonts;
     }
@@ -259,7 +259,7 @@ public class PDResources implements COSObjectable
                     }
                 }
             }
-            setXObjects(xobjects);
+            xobjectMappings = reverseMap(xobjects, PDXObject.class);
         }
         return xobjects;
     }
