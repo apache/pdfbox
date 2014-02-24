@@ -149,7 +149,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
 
         // get image as RGB
-        BufferedImage image = SampledImageReader.getRGBImage(this);
+        BufferedImage image = SampledImageReader.getRGBImage(this,  getColorKeyMask());
 
         // soft mask (overrides explicit mask)
         PDImageXObject softMask = getSoftMask();
@@ -192,7 +192,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public BufferedImage getOpaqueImage() throws IOException
     {
-        return SampledImageReader.getRGBImage(this);
+        return SampledImageReader.getRGBImage(this, null);
     }
 
     // explicit mask: RGB + Binary -> ARGB
@@ -204,8 +204,6 @@ public final class PDImageXObject extends PDXObject implements PDImage
         {
             return image;
         }
-
-        // TODO color key masking (not a Stream?)
 
         int width = image.getWidth();
         int height = image.getHeight();
@@ -264,8 +262,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
         if (mask instanceof COSArray)
         {
-            // ...
-            System.out.println("color key");
+            // color key mask, no explicit mask to return
             return null;
         }
         else
@@ -277,6 +274,20 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
             return null;
         }
+    }
+
+    /**
+     * Returns the color key mask array associated with this image, or null if there is none.
+     * @return Mask Image XObject
+     */
+    public COSArray getColorKeyMask()
+    {
+        COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
+        if (mask instanceof COSArray)
+        {
+            return (COSArray)mask;
+        }
+        return null;
     }
 
     /**

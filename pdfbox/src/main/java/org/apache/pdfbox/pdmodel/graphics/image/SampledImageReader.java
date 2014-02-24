@@ -52,7 +52,7 @@ final class SampledImageReader
     public static BufferedImage getStencilImage(PDImage pdImage, Paint paint) throws IOException
     {
         // get mask (this image)
-        BufferedImage mask = getRGBImage(pdImage);
+        BufferedImage mask = getRGBImage(pdImage, null);
 
         // compose to ARGB
         BufferedImage masked = new BufferedImage(mask.getWidth(), mask.getHeight(),
@@ -98,11 +98,14 @@ final class SampledImageReader
 
     /**
      * Returns the content of the given image as an AWT buffered image with an RGB color space.
+     * If a color key mask is provided then an ARGB image is returned instead.
      * This method never returns null.
+     * @param pdImage the image to read
+     * @param colorKey an optional color key mask
      * @return content of this image as an RGB buffered image
      * @throws IOException if the image cannot be read
      */
-    public static BufferedImage getRGBImage(PDImage pdImage) throws IOException
+    public static BufferedImage getRGBImage(PDImage pdImage, COSArray colorKey) throws IOException
     {
         if (pdImage.getStream().getLength() == 0)
         {
@@ -117,12 +120,12 @@ final class SampledImageReader
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
-        /*
-         * An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
-         * will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
-         * in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
-         * in PDColorSpace#toRGBImage expects and 8-bit range, i.e. 0-255.
-         */
+        //
+        // An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
+        // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
+        // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
+        // in PDColorSpace#toRGBImage expects and 8-bit range, i.e. 0-255.
+        //
         WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height,
                 numComponents, new Point(0, 0));
 
@@ -130,24 +133,45 @@ final class SampledImageReader
         ImageInputStream iis = null;
         try
         {
+            // create stream
             iis = new MemoryCacheImageInputStream(pdImage.getStream().createInputStream());
             final float sampleMax = (float)Math.pow(2, bitsPerComponent) - 1f;
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
+            // init color key mask
+            float[] colorKeyRanges = null;
+            BufferedImage colorKeyMask = null;
+            if (colorKey != null)
+            {
+                colorKeyRanges = colorKey.toFloatArray();
+                colorKeyMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            }
+
+            // calculate row padding
             int padding = 0;
             if (width * numComponents * bitsPerComponent % 8 > 0)
             {
                 padding = 8 - (width * numComponents * bitsPerComponent % 8);
             }
 
+            // read stream
             byte[] srcColorValues = new byte[numComponents];
+            byte[] alpha = new byte[1];
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
+                    boolean isMasked = true;
                     for (int c = 0; c < numComponents; c++)
                     {
                         int value = (int)iis.readBits(bitsPerComponent);
+
+                        // color key mask requires values before they are decoded
+                        if (colorKeyRanges != null)
+                        {
+                            isMasked &= value >= colorKeyRanges[c * 2] &&
+                                        value <= colorKeyRanges[c * 2 + 1];
+                        }
 
                         // decode array
                         final float dMin = decode[c * 2];
@@ -172,8 +196,14 @@ final class SampledImageReader
                             srcColorValues[c] = (byte)outputByte;
                         }
                     }
-
                     raster.setDataElements(x, y, srcColorValues);
+
+                    // set alpha channel in color key mask, if any
+                    if (colorKeyMask != null)
+                    {
+                        alpha[0] = (byte)(isMasked ? 255 : 0);
+                        colorKeyMask.getRaster().setDataElements(x, y, alpha);
+                    }
                 }
 
                 // rows are padded to the nearest byte
@@ -181,7 +211,17 @@ final class SampledImageReader
             }
 
             // use the color space to convert the image to RGB
-            return colorSpace.toRGBImage(raster);
+            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+
+            // apply color mask, if any
+            if (colorKeyMask != null)
+            {
+                return applyColorKeyMask(rgbImage, colorKeyMask);
+            }
+            else
+            {
+                return rgbImage;
+            }
         }
         finally
         {
@@ -190,6 +230,40 @@ final class SampledImageReader
                 iis.close();
             }
         }
+    }
+
+    // color key mask: RGB + Binary -> ARGB
+    private static BufferedImage applyColorKeyMask(BufferedImage image, BufferedImage mask)
+            throws IOException
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        // compose to ARGB
+        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        WritableRaster src = image.getRaster();
+        WritableRaster dest = masked.getRaster();
+        WritableRaster alpha = mask.getRaster();
+
+        float[] rgb = new float[3];
+        float[] rgba = new float[4];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                src.getPixel(x, y, rgb);
+
+                rgba[0] = rgb[0];
+                rgba[1] = rgb[1];
+                rgba[2] = rgb[2];
+                rgba[3] = 255 - alpha.getPixel(x, y, (float[])null)[0];
+
+                dest.setPixel(x, y, rgba);
+            }
+        }
+
+        return masked;
     }
 
     // gets decode array from dictionary or returns default
