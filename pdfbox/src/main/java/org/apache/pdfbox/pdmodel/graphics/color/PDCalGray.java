@@ -64,7 +64,7 @@ public final class PDCalGray extends PDCalRGB
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         return new float[] { 0, 1 };
     }

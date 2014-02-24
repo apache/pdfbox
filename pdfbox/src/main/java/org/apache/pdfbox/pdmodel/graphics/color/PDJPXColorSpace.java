@@ -55,7 +55,7 @@ public final class PDJPXColorSpace extends PDColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         int n = getNumberOfComponents();
         float[] decode = new float[n * 2];

@@ -169,7 +169,7 @@ public abstract class PDColorSpace implements COSObjectable
      * Returns the default decode array for this color space.
      * @return the default decode array
      */
-    public abstract float[] getDefaultDecode();
+    public abstract float[] getDefaultDecode(int bitsPerComponent);
 
     /**
      * Returns the initial color value for this color space.

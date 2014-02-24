@@ -85,7 +85,7 @@ public class PDSeparation extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         return new float[] { 0, 1 };
     }

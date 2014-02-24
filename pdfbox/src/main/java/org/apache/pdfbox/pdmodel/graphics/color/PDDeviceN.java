@@ -424,7 +424,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         int n = getNumberOfComponents();
         float[] decode = new float[n * 2];

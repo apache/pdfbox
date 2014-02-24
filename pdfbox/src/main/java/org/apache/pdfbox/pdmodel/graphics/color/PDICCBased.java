@@ -186,7 +186,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
         if (awtColorSpace != null)
         {
@@ -201,7 +201,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         else
         {
-            return alternateColorSpace.getDefaultDecode();
+            return alternateColorSpace.getDefaultDecode(bitsPerComponent);
         }
     }
 

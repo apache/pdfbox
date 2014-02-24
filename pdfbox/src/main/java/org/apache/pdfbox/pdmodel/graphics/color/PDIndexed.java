@@ -90,10 +90,9 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     @Override
-    public float[] getDefaultDecode()
+    public float[] getDefaultDecode(int bitsPerComponent)
     {
-        int n = getNumberOfComponents();
-        return new float[] { 0, (float)Math.pow(2, n - 1) };
+        return new float[] { 0, (float)Math.pow(2, bitsPerComponent) - 1 };
     }
 
     @Override
@@ -172,7 +171,8 @@ public final class PDIndexed extends PDSpecialColorSpace
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
-        float[] src = new float[1];
+        final int hival = gettHival();
+        int[] src = new int[1];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -180,10 +180,10 @@ public final class PDIndexed extends PDSpecialColorSpace
                 raster.getPixel(x, y, src);
 
                 // scale to 0..1
-                src[0] = src[0] / 255;
+                //src[0] = src[0] / 255f;
 
                 // scale to 0..hival and lookup
-                int index = Math.min(Math.round(src[0] * actualMaxIndex), actualMaxIndex);
+                int index = Math.min(src[0], actualMaxIndex);  //         ARRRRRGH WHY WONT ALTONA P9 WORK!?!?!?!
                 rgbRaster.setPixel(x, y, rgbColorTable[index]);
             }
         }
