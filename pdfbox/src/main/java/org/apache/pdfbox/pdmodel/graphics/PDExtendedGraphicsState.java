@@ -89,7 +89,7 @@ public class PDExtendedGraphicsState implements COSObjectable
         {
             if( key.equals( COSName.LW ) )
             {
-                gs.setLineWidth( getLineWidth().doubleValue() );
+                gs.setLineWidth( getLineWidth() );
             }
             else if( key.equals( COSName.LC ) )
             {
@@ -101,7 +101,7 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.ML ) )
             {
-                gs.setMiterLimit( getMiterLimit().doubleValue() );
+                gs.setMiterLimit( getMiterLimit() );
             }
             else if( key.equals( COSName.D ) )
             {

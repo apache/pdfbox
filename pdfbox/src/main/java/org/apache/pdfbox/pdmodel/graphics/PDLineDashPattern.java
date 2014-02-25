@@ -24,89 +24,69 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * This class represents the line dash pattern for a graphics state.  See PDF
- * Reference 1.5 section 4.3.2
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * A line dash pattern for stroking paths.
+ * Instances of PDLineDashPattern are immutable.
+ * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDLineDashPattern implements COSObjectable, Cloneable
+public final class PDLineDashPattern implements COSObjectable
 {
-    private COSArray lineDashPattern = null;
+    private final int phase;
+    private final float[] array;
 
     /**
-     * Creates a blank line dash pattern.  With no dashes and a phase of 0.
+     * Creates a new line dash pattern, with no dashes and a phase of 0.
      */
     public PDLineDashPattern()
     {
-        lineDashPattern = new COSArray();
-        lineDashPattern.add( new COSArray() );
-        lineDashPattern.add( COSInteger.ZERO );
+        array = new float[] { };
+        phase = 0;
     }
 
     /**
-     * Constructs a line dash pattern from an existing array.
-     *
-     * @param ldp The existing line dash pattern.
+     * Creates a new line dash pattern from a COS array.
+     * @param dashPattern the COS line dash pattern
      */
-    public PDLineDashPattern( COSArray ldp )
+    // todo: get rid of this constructor?
+    public PDLineDashPattern(COSArray dashPattern)
     {
-        lineDashPattern = ldp;
+        array = dashPattern.toFloatArray();
+        phase = 0;
     }
 
     /**
-     * Constructs a line dash pattern from an existing array.
-     *
-     * @param ldp The existing line dash pattern.
-     * @param phase The phase for the line dash pattern.
+     * Creates a new line dash pattern from a dash array and phase.
+     * @param array the dash array
+     * @param phase the phase
      */
-    public PDLineDashPattern( COSArray ldp, int phase )
+    public PDLineDashPattern(COSArray array, int phase)
     {
-        lineDashPattern = new COSArray();
-        lineDashPattern.add( ldp );
-        lineDashPattern.add( COSInteger.get( phase ) );
+        this.array = array.toFloatArray();
+        this.phase = phase;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object clone()
-    {
-        PDLineDashPattern pattern = null;
-        try
-        {
-            pattern = (PDLineDashPattern)super.clone();
-            pattern.setDashPattern(getDashPattern());
-            pattern.setPhaseStart(getPhaseStart());
-        }
-        catch(CloneNotSupportedException exception)
-        {
-            exception.printStackTrace();
-        }
-        return pattern;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public COSBase getCOSObject()
     {
-        return lineDashPattern;
+        COSArray cos = new COSArray();
+        cos.add(COSArrayList.converterToCOSArray(Arrays.asList(array)));
+        cos.add(COSInteger.get(phase));
+        return cos;
     }
 
     /**
-     * This will get the line dash pattern phase.  The dash phase specifies the
-     * distance into the dash pattern at which to start the dash.
-     *
-     * @return The line dash pattern phase.
+     * Returns the dash phase.
+     * This specifies the distance into the dash pattern at which to start the dash.
+     * @return the dash phase
      */
-    public int getPhaseStart()
+    public int getPhase()
     {
-        COSNumber phase = (COSNumber)lineDashPattern.get( 1 );
-        return phase.intValue();
+        return phase;
     }
 
     /**
@@ -114,41 +94,19 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
      *
      * @param phase The new line dash patter phase.
      */
-    public void setPhaseStart( int phase )
+    // todo: make immutable?
+    /*public void setPhase(int phase)
     {
-        lineDashPattern.set( 1, phase );
-    }
+        this.phase = phase;
+    }*/
 
     /**
-     * This will return a list of java.lang.Integer objects that represent the line
-     * dash pattern appearance.
-     *
-     * @return The line dash pattern.
+     * Returns the dash array.
+     * @return the dash array
      */
-    public List getDashPattern()
+    public float[] getDashArray()
     {
-        COSArray dashPatterns = (COSArray)lineDashPattern.get( 0 );
-        return COSArrayList.convertIntegerCOSArrayToList( dashPatterns );
-    }
-
-    /**
-     * Get the line dash pattern as a COS object.
-     *
-     * @return The cos array line dash pattern.
-     */
-    public COSArray getCOSDashPattern()
-    {
-        return (COSArray)lineDashPattern.get( 0 );
-    }
-
-    /**
-     * This will replace the existing line dash pattern.
-     *
-     * @param dashPattern A list of java.lang.Integer objects.
-     */
-    public void setDashPattern( List dashPattern )
-    {
-        lineDashPattern.set( 0, COSArrayList.converterToCOSArray( dashPattern ) );
+        return array.clone();
     }
     
     /**
@@ -156,23 +114,22 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
      * 
      * @return true if the dashPattern is empty or all values equals 0  
      */
-    public boolean isDashPatternEmpty() 
+    public boolean isDashPatternEmpty()
     {
-        float[] dashPattern = getCOSDashPattern().toFloatArray();
+        /*float[] dashPattern = getCOSDashArray().toFloatArray();
         boolean dashPatternEmpty = true;
         if (dashPattern != null) 
         {
-            int arraySize = dashPattern.length;
-            for(int i=0;i<arraySize;i++) 
+            for (float x : dashPattern)
             {
-                if (dashPattern[i] > 0) 
+                if (x > 0)
                 {
                     dashPatternEmpty = false;
                     break;
                 }
             }
         }
-        return dashPatternEmpty;
+        return dashPatternEmpty;*/
+        throw new UnsupportedOperationException(); // todo???
     }
-
 }

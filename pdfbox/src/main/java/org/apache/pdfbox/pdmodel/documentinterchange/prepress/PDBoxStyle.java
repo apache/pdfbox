@@ -191,14 +191,14 @@ public class PDBoxStyle implements COSObjectable
     /**
      * Set the line dash pattern associated with this box style.
      *
-     * @param pattern The patter for this box style.
+     * @param dashArray The patter for this box style.
      */
-    public void setLineDashPattern( PDLineDashPattern pattern )
+    public void setLineDashPattern( COSArray dashArray )
     {
         COSArray array = null;
-        if( pattern != null )
+        if( dashArray != null )
         {
-            array = pattern.getCOSDashPattern();
+            array = dashArray;
         }
         dictionary.setItem( "D", array );
     }
