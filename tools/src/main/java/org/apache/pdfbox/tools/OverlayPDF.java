@@ -42,7 +42,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.MapUtil;
 
 /**
  * Adds an overlay to an existing PDF document.
@@ -98,7 +97,6 @@ public class OverlayPDF
      *
      * @param args command line arguments
      * @throws Exception if something went wrong
-     * @see #USAGE
      */
     public static void main(final String[] args) throws Exception 
     {
@@ -537,7 +535,7 @@ public class OverlayPDF
             dict = new COSDictionary();
             resources.getCOSDictionary().setItem(COSName.XOBJECT, dict);
         }
-        String xObjectId = MapUtil.getNextUniqueKey( resources.getXObjects(), XOBJECT_PREFIX );
+        String xObjectId = getNextUniqueKey( resources.getXObjects(), XOBJECT_PREFIX );
 
         // wrap the layout content in a BBox and add it to page
         COSStream xobj = contentStream;
@@ -560,8 +558,19 @@ public class OverlayPDF
         bbox.add(COSInteger.get((int) layoutPage.overlayMediaBox.getHeight()));
         xobj.setItem(COSName.BBOX, bbox);
         dict.setItem(xObjectId, xobj);
-        
+
         return xObjectId;
+    }
+
+    // TODO this is obsolete, should be using PDResources#addXObject instead
+    private static String getNextUniqueKey( Map<String,?> map, String prefix )
+    {
+        int counter = 0;
+        while( map != null && map.get( prefix+counter ) != null )
+        {
+            counter++;
+        }
+        return prefix+counter;
     }
 
     private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, String xObjectId) throws IOException 
