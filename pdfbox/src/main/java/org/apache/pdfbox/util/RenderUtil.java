@@ -31,82 +31,18 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
  * RenderUtil provides some convenience methods to print or draw a single page of a document.
- * 
+ * @author Andreas Lehmkühler
  */
-public class RenderUtil
+public final class RenderUtil
 {
     private RenderUtil()
     {
-        // Utility class. Don't instantiate.
-    }
-
-    private static void print(PDDocument document, PrinterJob job, boolean silent) throws PrinterException
-    {
-        if (job == null)
-        {
-            throw new PrinterException("The given printer job is null.");
-        }
-        else
-        {
-            job.setPageable(new PDPageable(document, job));
-            if (silent || job.printDialog())
-            {
-                job.print();
-            }
-        }
     }
 
     /**
-     * This will send the PDF to the default printer without prompting the user for any printer settings.
-     * 
+     * Prints the given document using the default printer without prompting the user.
      * @param document the document to be printed
-     * @param printJob A printer job definition.
-     * @see RenderUtil#print(PDDocument)
-     * 
-     * @throws PrinterException If there is an error while printing.
-     */
-    public static void silentPrint(PDDocument document, PrinterJob printJob) throws PrinterException
-    {
-        print(document, printJob, true);
-    }
-
-    /**
-     * @see RenderUtil#print(PDDocument)
-     * 
-     * @param document the document to be printed
-     * @param printJob The printer job.
-     * 
-     * @throws PrinterException If there is an error while sending the PDF to the printer, or you do not have
-     *             permissions to print this document.
-     */
-    public static void print(PDDocument document, PrinterJob printJob) throws PrinterException
-    {
-        print(document, printJob, false);
-    }
-
-    /**
-     * This will send the PDF document to a printer. The printing functionality depends on the
-     * org.apache.pdfbox.pdfviewer.PageDrawer functionality. The PageDrawer is a work in progress and some PDFs will
-     * print correctly and some will not. This is a convenience method to create the java.awt.print.PrinterJob. The
-     * PDPageable implements the java.awt.print.Pageable interface and the java.awt.print.Printable interface, so
-     * advanced printing capabilities can be done by using those interfaces instead of this method.
-     * 
-     * @param document the document to be printed
-     * @throws PrinterException If there is an error while sending the PDF to the printer, or you do not have
-     *             permissions to print the document.
-     */
-    public static void print(PDDocument document) throws PrinterException
-    {
-        print(document, PrinterJob.getPrinterJob());
-    }
-
-    /**
-     * This will send the given PDF to the default printer without prompting the user for any printer settings.
-     * 
-     * @param document the document to be printed
-     * @see RenderUtil#print(PDDocument)
-     * 
-     * @throws PrinterException If there is an error while printing.
+     * @throws PrinterException if the document cannot be printed
      */
     public static void silentPrint(PDDocument document) throws PrinterException
     {
@@ -114,11 +50,65 @@ public class RenderUtil
     }
 
     /**
+     * Prints the given document using the default printer without prompting the user.
+     * @param document the document to be printed
+     * @param printerJob a printer job definition
+     * @throws PrinterException if the document cannot be printed
+     */
+    public static void silentPrint(PDDocument document, PrinterJob printerJob) throws PrinterException
+    {
+        print(document, printerJob, true);
+    }
+
+    /**
+     * Prints the given document using the default printer without prompting the user.
+     * The image is generated using {@link org.apache.pdfbox.pdfviewer.PageDrawer}.
+     * This is a convenience method to create the java.awt.print.PrinterJob.
+     * Advanced printing tasks can be performed using {@link PDPageable} instead.
+     * @param document the document to be printed
+     * @throws PrinterException if the document cannot be printed
+     */
+    public static void print(PDDocument document) throws PrinterException
+    {
+        print(document, PrinterJob.getPrinterJob());
+    }
+
+    /**
+     * Prints the given document using the default printer without prompting the user.
+     * @param document the document to be printed
+     * @param printerJob The printer job.
+     * @throws PrinterException if the document cannot be printed
+     */
+    public static void print(PDDocument document, PrinterJob printerJob) throws PrinterException
+    {
+        print(document, printerJob, false);
+    }
+
+    // prints a document
+    private static void print(PDDocument document, PrinterJob job, boolean isSilent)
+            throws PrinterException
+    {
+        if (job == null)
+        {
+            throw new IllegalArgumentException("job cannot be null");
+        }
+        else
+        {
+            job.setPageable(new PDPageable(document, job));
+            if (isSilent || job.printDialog())
+            {
+                job.print();
+            }
+        }
+    }
+
+    // =============================================================================================
+
+    /**
      * Convert the given page to an output image with 8 bits per pixel and the double default screen resolution.
-     * 
+     *
      * @param page the page to be converted.
      * @return A graphical representation of this page.
-     * 
      * @throws IOException If there is an error drawing to the image.
      */
     public static BufferedImage convertToImage(PDPage page) throws IOException
@@ -132,12 +122,11 @@ public class RenderUtil
 
     /**
      * Convert the given page to an output image.
-     * 
+     *
      * @param page the page to be converted.
      * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
      * @param resolution the resolution in dpi (dots per inch)
      * @return A graphical representation of this page.
-     * 
      * @throws IOException If there is an error drawing to the image.
      */
     public static BufferedImage convertToImage(PDPage page, int imageType, int resolution) throws IOException
@@ -184,6 +173,7 @@ public class RenderUtil
         return image;
     }
 
+    // renders a page to the given graphics
     private static void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX, float scaleY)
             throws IOException
     {

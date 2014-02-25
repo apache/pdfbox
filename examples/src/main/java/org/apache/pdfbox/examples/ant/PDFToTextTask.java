@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.pdfbox.tools.ExtractText;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 
@@ -72,7 +73,7 @@ public class PDFToTextTask extends Task
                     textFile = textFile + "txt";
                     try
                     {
-                        org.apache.pdfbox.ExtractText.main( new String[] { pdfFile, textFile } );
+                        ExtractText.main(new String[]{pdfFile, textFile});
                     }
                     catch( Exception e )
                     {

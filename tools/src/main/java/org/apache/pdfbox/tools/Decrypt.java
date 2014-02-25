@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox;
+package org.apache.pdfbox.tools;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  * This will read a document from the filesystem, decrypt it and and then write
  * the results to the filesystem. <br/><br/>
  *
- * usage: java org.apache.pdfbox.Decrypt &lt;password&gt; &lt;inputfile&gt; &lt;outputfile&gt;
+ * usage: java org.apache.pdfbox.tools.Decrypt &lt;password&gt; &lt;inputfile&gt; &lt;outputfile&gt;
  *
  * @author  <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $

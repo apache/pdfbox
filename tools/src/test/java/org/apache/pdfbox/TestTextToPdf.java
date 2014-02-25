@@ -26,7 +26,7 @@ import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.TextToPDF;
+import org.apache.pdfbox.tools.TextToPDF;
 
 /**
  * Test suite for TextToPDF.
