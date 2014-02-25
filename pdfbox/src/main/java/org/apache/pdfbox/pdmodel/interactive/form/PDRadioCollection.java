@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.util.BitFlagHelper;
 
 /**
  * A class for handling the PDF field as a Radio Collection.
@@ -65,7 +64,7 @@ public class PDRadioCollection extends PDChoiceButton
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        BitFlagHelper.setFlag( getDictionary(), COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison );
+        getDictionary().setFlag( COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison );
     }
 
     /**
@@ -74,7 +73,7 @@ public class PDRadioCollection extends PDChoiceButton
      */
     public boolean isRadiosInUnison()
     {
-        return BitFlagHelper.getFlag( getDictionary(), COSName.FF, FLAG_RADIOS_IN_UNISON );
+        return getDictionary().getFlag( COSName.FF, FLAG_RADIOS_IN_UNISON );
     }
 
     /**

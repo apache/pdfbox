@@ -31,7 +31,6 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.apache.pdfbox.util.BitFlagHelper;
 
 /**
  * This is the superclass for a Field element in a PDF. Based on the COS object model from PDFBox.
@@ -212,7 +211,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setReadonly(boolean readonly)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_READ_ONLY, readonly);
+        getDictionary().setFlag( COSName.FF, FLAG_READ_ONLY, readonly);
     }
 
     /**
@@ -221,7 +220,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isReadonly()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_READ_ONLY);
+        return getDictionary().getFlag( COSName.FF, FLAG_READ_ONLY);
     }
 
     /**
@@ -231,7 +230,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setRequired(boolean required)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_REQUIRED, required);
+        getDictionary().setFlag( COSName.FF, FLAG_REQUIRED, required);
     }
 
     /**
@@ -240,7 +239,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_REQUIRED);
+        return getDictionary().getFlag( COSName.FF, FLAG_REQUIRED);
     }
 
     /**
@@ -250,7 +249,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setNoExport(boolean noExport)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_NO_EXPORT, noExport);
+        getDictionary().setFlag( COSName.FF, FLAG_NO_EXPORT, noExport);
     }
 
     /**
@@ -259,7 +258,7 @@ public abstract class PDField implements COSObjectable
      */
     public boolean isNoExport()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_NO_EXPORT);
+        return getDictionary().getFlag( COSName.FF, FLAG_NO_EXPORT);
     }
 
     /**

@@ -28,7 +28,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
-import org.apache.pdfbox.util.BitFlagHelper;
 
 /**
  * This class represents a PDF annotation.
@@ -323,7 +322,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isInvisible()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_INVISIBLE);
+        return getDictionary().getFlag( COSName.F, FLAG_INVISIBLE);
     }
 
     /**
@@ -333,7 +332,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setInvisible(boolean invisible)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_INVISIBLE, invisible);
+        getDictionary().setFlag( COSName.F, FLAG_INVISIBLE, invisible);
     }
 
     /**
@@ -343,7 +342,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isHidden()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_HIDDEN);
+        return getDictionary().getFlag( COSName.F, FLAG_HIDDEN);
     }
 
     /**
@@ -353,7 +352,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setHidden(boolean hidden)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_HIDDEN, hidden);
+        getDictionary().setFlag( COSName.F, FLAG_HIDDEN, hidden);
     }
 
     /**
@@ -363,7 +362,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isPrinted()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_PRINTED);
+        return getDictionary().getFlag( COSName.F, FLAG_PRINTED);
     }
 
     /**
@@ -373,7 +372,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setPrinted(boolean printed)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_PRINTED, printed);
+        getDictionary().setFlag( COSName.F, FLAG_PRINTED, printed);
     }
 
     /**
@@ -383,7 +382,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoZoom()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_NO_ZOOM);
+        return getDictionary().getFlag( COSName.F, FLAG_NO_ZOOM);
     }
 
     /**
@@ -393,7 +392,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoZoom(boolean noZoom)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_NO_ZOOM, noZoom);
+        getDictionary().setFlag( COSName.F, FLAG_NO_ZOOM, noZoom);
     }
 
     /**
@@ -403,7 +402,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoRotate()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_NO_ROTATE);
+        return getDictionary().getFlag( COSName.F, FLAG_NO_ROTATE);
     }
 
     /**
@@ -413,7 +412,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoRotate(boolean noRotate)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_NO_ROTATE, noRotate);
+        getDictionary().setFlag( COSName.F, FLAG_NO_ROTATE, noRotate);
     }
 
     /**
@@ -423,7 +422,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoView()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_NO_VIEW);
+        return getDictionary().getFlag( COSName.F, FLAG_NO_VIEW);
     }
 
     /**
@@ -433,7 +432,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoView(boolean noView)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_NO_VIEW, noView);
+        getDictionary().setFlag( COSName.F, FLAG_NO_VIEW, noView);
     }
 
     /**
@@ -443,7 +442,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isReadOnly()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_READ_ONLY);
+        return getDictionary().getFlag( COSName.F, FLAG_READ_ONLY);
     }
 
     /**
@@ -453,7 +452,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setReadOnly(boolean readOnly)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_READ_ONLY, readOnly);
+        getDictionary().setFlag( COSName.F, FLAG_READ_ONLY, readOnly);
     }
 
     /**
@@ -463,7 +462,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isLocked()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_LOCKED);
+        return getDictionary().getFlag( COSName.F, FLAG_LOCKED);
     }
 
     /**
@@ -473,7 +472,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setLocked(boolean locked)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_LOCKED, locked);
+        getDictionary().setFlag( COSName.F, FLAG_LOCKED, locked);
     }
 
     /**
@@ -483,7 +482,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isToggleNoView()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.F, FLAG_TOGGLE_NO_VIEW);
+        return getDictionary().getFlag( COSName.F, FLAG_TOGGLE_NO_VIEW);
     }
 
     /**
@@ -493,7 +492,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setToggleNoView(boolean toggleNoView)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
+        getDictionary().setFlag( COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
     }
 
     /**

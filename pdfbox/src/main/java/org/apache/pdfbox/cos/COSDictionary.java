@@ -565,6 +565,27 @@ public class COSDictionary extends COSBase
 		setItem( key, fltVal );
 	}
 
+    /**
+     * Sets the given boolean value at bitPos in the flags.
+     *
+     * @param field The COSName of the field to set the value into.
+     * @param bitFlag the bit position to set the value in.
+     * @param value the value the bit position should have.
+     */
+    public void setFlag(COSName field, int bitFlag, boolean value)
+    {
+        int currentFlags = getInt(field, 0);
+        if (value)
+        {
+            currentFlags = currentFlags | bitFlag;
+        }
+        else
+        {
+            currentFlags &= ~bitFlag;
+        }
+        setInt(field, currentFlags);
+    }
+
 	/**
 	 * This is a convenience method that will get the dictionary object that
 	 * is expected to be a name and convert it to a string.  Null is returned
@@ -1248,6 +1269,20 @@ public class COSDictionary extends COSBase
 		}
 		return retval;
 	}
+
+    /**
+     * Gets the boolean value from the flags at the given bit position.
+     *
+     * @param field The COSName of the field to get the flag from.
+     * @param bitFlag the bitPosition to get the value from.
+     *
+     * @return true if the number at bitPos is '1'
+     */
+    public boolean getFlag(COSName field, int bitFlag)
+    {
+        int ff = getInt(field, 0);
+        return (ff & bitFlag) == bitFlag;
+    }
 
 	/**
 	 * This will remove an item for the dictionary.  This
