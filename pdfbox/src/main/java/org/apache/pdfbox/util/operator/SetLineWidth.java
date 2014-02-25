@@ -44,6 +44,6 @@ public class SetLineWidth extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSNumber width = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().setLineWidth( width.doubleValue() );
+        context.getGraphicsState().setLineWidth( width.floatValue() );
     }
 }

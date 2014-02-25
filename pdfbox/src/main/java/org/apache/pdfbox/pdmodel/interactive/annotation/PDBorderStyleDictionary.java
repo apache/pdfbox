@@ -150,15 +150,15 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * This will set the dash style used for drawing the border.
      *
-     * @param d
+     * @param dashArray
      *            the dash style to use
      */
-    public void setDashStyle( PDLineDashPattern d )
+    public void setDashStyle( COSArray dashArray )
     {
         COSArray array = null;
-        if( d != null )
+        if( dashArray != null )
         {
-            array = d.getCOSDashPattern();
+            array = dashArray;
         }
         getDictionary().setItem( "D", array );
     }

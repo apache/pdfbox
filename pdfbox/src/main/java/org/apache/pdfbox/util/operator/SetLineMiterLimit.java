@@ -44,6 +44,6 @@ public class SetLineMiterLimit extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSNumber miterLimit = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().setMiterLimit( miterLimit.doubleValue() );
+        context.getGraphicsState().setMiterLimit( miterLimit.floatValue() );
     }
 }

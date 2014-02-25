@@ -46,11 +46,11 @@ public class PDGraphicsState implements Cloneable
     private PDColorSpace strokingColorSpace = PDDeviceGray.INSTANCE;
     private PDColorSpace nonStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDTextState textState = new PDTextState();
-    private double lineWidth = 0.0;
-    private int lineCap = 0;
-    private int lineJoin = 0;
-    private double miterLimit = 0;
-    private PDLineDashPattern lineDashPattern;
+    private float lineWidth = 1;
+    private int lineCap = BasicStroke.CAP_SQUARE;
+    private int lineJoin = BasicStroke.JOIN_MITER;
+    private float miterLimit = 10;
+    private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
     private String renderingIntent;
     private boolean strokeAdjustment = false;
     //blend mode
@@ -118,7 +118,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The current line width.
      */
-    public double getLineWidth()
+    public float getLineWidth()
     {
         return lineWidth;
     }
@@ -128,7 +128,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The current line width.
      */
-    public void setLineWidth(double value)
+    public void setLineWidth(float value)
     {
         lineWidth = value;
     }
@@ -178,7 +178,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The current miter limit.
      */
-    public double getMiterLimit()
+    public float getMiterLimit()
     {
         return miterLimit;
     }
@@ -188,7 +188,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The current miter limit.
      */
-    public void setMiterLimit(double value)
+    public void setMiterLimit(float value)
     {
         miterLimit = value;
     }
@@ -430,7 +430,7 @@ public class PDGraphicsState implements Cloneable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             if( lineDashPattern != null )
             {
-                clone.setLineDashPattern( (PDLineDashPattern)lineDashPattern.clone() );
+                clone.setLineDashPattern( lineDashPattern ); // immutable
             }
             if (currentClippingPath != null)
             {
