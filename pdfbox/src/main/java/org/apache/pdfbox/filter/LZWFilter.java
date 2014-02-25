@@ -88,7 +88,9 @@ public class LZWFilter implements Filter
                         if (prevCommand != -1)
                         {
                             data = codeTable.get((int) prevCommand);
-                            byte[] newData = Arrays.copyOf(data, data.length + 1);
+                            byte[] newData = new byte[data.length + 1];
+                            for (int i = 0; i < data.length; ++i)
+                                newData[i] = data[i];
                             newData[data.length] = firstByte;
                             codeTable.add(newData);
                         }
@@ -96,7 +98,9 @@ public class LZWFilter implements Filter
                     else
                     {
                         byte[] data = codeTable.get((int) prevCommand);
-                        byte[] newData = Arrays.copyOf(data, data.length + 1);
+                        byte[] newData = new byte[data.length + 1];
+                        for (int i = 0; i < data.length; ++i)
+                            newData[i] = data[i];
                         newData[data.length] = data[0];
                         result.write(newData);
                         codeTable.add(newData);
@@ -155,7 +159,10 @@ public class LZWFilter implements Filter
             }
             else
             {
-                inputPattern = Arrays.copyOf(inputPattern, inputPattern.length + 1);
+                byte[] inputPatternCopy = new byte[inputPattern.length + 1];
+                for (int i = 0; i < inputPattern.length; ++i)
+                    inputPatternCopy[i] = inputPattern[i];
+                inputPattern = inputPatternCopy;
                 inputPattern[inputPattern.length - 1] = by;
                 int newFoundCode = findPatternCode(codeTable, inputPattern);
                 if (newFoundCode == -1)
