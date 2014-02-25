@@ -17,8 +17,6 @@
 package org.apache.pdfbox.tools;
 
 
-import org.apache.pdfbox.Version;
-
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
