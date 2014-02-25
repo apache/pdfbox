@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import junit.framework.TestCase;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 public class TestPDFText2HTML extends TestCase {
 
