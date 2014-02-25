@@ -17,7 +17,7 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.io.ccitt;
+package org.apache.pdfbox.filter.ccitt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,9 +26,8 @@ import java.io.InputStream;
  * This is a CCITT Group 3 1D decoder (ITU T.4).
  * @version $Revision$
  */
-public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTFaxConstants
+public final class CCITTFaxG31DDecodeInputStream extends InputStream
 {
-
     private static final int CODE_WORD = 0;
     private static final int SIGNAL_EOD = -1;
     private static final int SIGNAL_EOL = -2;
@@ -221,12 +220,12 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
 
     private static void buildLookupTree()
     {
-        buildUpTerminating(WHITE_TERMINATING, WHITE_LOOKUP_TREE_ROOT, true);
-        buildUpTerminating(BLACK_TERMINATING, BLACK_LOOKUP_TREE_ROOT, false);
-        buildUpMakeUp(WHITE_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
-        buildUpMakeUp(BLACK_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
-        buildUpMakeUpLong(LONG_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
-        buildUpMakeUpLong(LONG_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
+        buildUpTerminating(CCITTFaxConstants.WHITE_TERMINATING, WHITE_LOOKUP_TREE_ROOT, true);
+        buildUpTerminating(CCITTFaxConstants.BLACK_TERMINATING, BLACK_LOOKUP_TREE_ROOT, false);
+        buildUpMakeUp(CCITTFaxConstants.WHITE_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
+        buildUpMakeUp(CCITTFaxConstants.BLACK_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
+        buildUpMakeUpLong(CCITTFaxConstants.LONG_MAKE_UP, WHITE_LOOKUP_TREE_ROOT);
+        buildUpMakeUpLong(CCITTFaxConstants.LONG_MAKE_UP, BLACK_LOOKUP_TREE_ROOT);
         LookupTreeNode eolNode = new EndOfLineTreeNode();
         addLookupTreeNode(EOL_STARTER, WHITE_LOOKUP_TREE_ROOT, eolNode);
         addLookupTreeNode(EOL_STARTER, BLACK_LOOKUP_TREE_ROOT, eolNode);

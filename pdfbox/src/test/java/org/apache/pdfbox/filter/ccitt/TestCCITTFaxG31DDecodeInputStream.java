@@ -17,7 +17,7 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.io.ccitt;
+package org.apache.pdfbox.filter.ccitt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

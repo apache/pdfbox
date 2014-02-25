@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.io;
+package org.apache.pdfbox.filter;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.io.OutputStream;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  *
  */
-public class ASCII85OutputStream extends FilterOutputStream
+final class ASCII85OutputStream extends FilterOutputStream
 {
 
     private int lineBreak;

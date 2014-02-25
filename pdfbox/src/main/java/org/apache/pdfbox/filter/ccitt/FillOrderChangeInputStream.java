@@ -17,7 +17,7 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.io.ccitt;
+package org.apache.pdfbox.filter.ccitt;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -27,9 +27,8 @@ import java.io.InputStream;
  * This filtering input stream does a fill order change required for certain TIFF images.
  * @version $Revision$
  */
-public class FillOrderChangeInputStream extends FilterInputStream
+public final class FillOrderChangeInputStream extends FilterInputStream
 {
-
     /**
      * Main constructor.
      * @param in the underlying input stream

@@ -17,21 +17,22 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.io.ccitt;
+package org.apache.pdfbox.filter.ccitt;
 
 /**
  * Constants for CCITT Fax Filter.
  * @version $Revision$
  */
-public interface CCITTFaxConstants
+final class CCITTFaxConstants
 {
-
     /** A constant for group 3 1D encoding (ITU T.4). */
-    int COMPRESSION_GROUP3_1D = 0;
+    final int COMPRESSION_GROUP3_1D = 0;
+
     /** A constant for group 3 2D encoding (ITU T.4). */
-    int COMPRESSION_GROUP3_2D = 1;
+    final int COMPRESSION_GROUP3_2D = 1;
+
     /** A constant for group 4 2D encoding (ITU T.6). */
-    int COMPRESSION_GROUP4_2D = 2;
+    final int COMPRESSION_GROUP4_2D = 2;
 
     //Format: First 8 bits: length of pattern, Second 8 bits: pattern
 
@@ -78,5 +79,4 @@ public interface CCITTFaxConstants
 
     /** The EOL code word. */
     public static final short EOL_CODE = 0x0C01;
-
 }

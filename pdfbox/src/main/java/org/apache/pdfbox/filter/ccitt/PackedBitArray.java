@@ -17,15 +17,14 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.io.ccitt;
+package org.apache.pdfbox.filter.ccitt;
 
 /**
  * Represents an array of bits packed in a byte array of fixed size.
  * @version $Revision$
  */
-public class PackedBitArray
+final class PackedBitArray
 {
-
     private int bitCount;
     private byte[] data;
 
