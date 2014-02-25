@@ -1,10 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2014 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,183 +15,259 @@
  */
 package org.apache.pdfbox.filter;
 
-import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.io.StreamCorruptedException;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 
-import org.apache.pdfbox.io.NBitInputStream;
-import org.apache.pdfbox.io.NBitOutputStream;
-
 /**
- * This is the used for the LZWDecode filter.
  *
- * @author Ben Litchfield
+ * This is the filter used for the LZWDecode filter.
+ *
+ * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Tilman Hausherr
  */
-final class LZWFilter extends Filter
+public class LZWFilter extends Filter
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(LZWFilter.class);
+
+    /**
+     * The LZW clear table code.
+     */
     public static final long CLEAR_TABLE = 256;
+
+    /**
+     * The LZW end of data code.
+     */
     public static final long EOD = 257;
 
+    /**
+     * The LZW code table.
+     */
+    private ArrayList<byte[]> codeTable = null;
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+            COSDictionary parameters) throws IOException
     {
-        //log.debug("decode()");
-        NBitInputStream in = new NBitInputStream(encoded);
-        in.setBitsInChunk(9);
-        LZWDictionary dic = new LZWDictionary();
-        byte firstByte = 0;
-        long nextCommand;
-        while ((nextCommand = in.read()) != EOD)
+        codeTable = null;
+        int chunk = 9;
+        MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
+        long nextCommand = 0;
+        long prevCommand = -1;
+
+        try
         {
-            // log.debug("decode - nextCommand=" + nextCommand + ", bitsInChunk: " + in.getBitsInChunk());
-
-            if (nextCommand == CLEAR_TABLE)
+            while ((nextCommand = in.readBits(chunk)) != EOD)
             {
-                in.setBitsInChunk(9);
-                dic = new LZWDictionary();
-            }
-            else
-            {
-                byte[] data = dic.getData(nextCommand);
-                if (data == null)
+                if (nextCommand == CLEAR_TABLE)
                 {
-                    dic.visit(firstByte);
-                    data = dic.getData(nextCommand);
-                    dic.clear();
-                }
-                if (data == null)
-                {
-                    throw new StreamCorruptedException("Error: data is null");
-                }
-                dic.visit(data);
-
-                //log.debug("decode - dic.getNextCode(): " + dic.getNextCode());
-
-                if (dic.getNextCode() >= 2047)
-                {
-                    in.setBitsInChunk(12);
-                }
-                else if (dic.getNextCode() >= 1023)
-                {
-                    in.setBitsInChunk(11);
-                }
-                else if (dic.getNextCode() >= 511)
-                {
-                    in.setBitsInChunk(10);
+                    chunk = 9;
+                    initCodeTable();
+                    prevCommand = -1;
                 }
                 else
                 {
-                    in.setBitsInChunk(9);
+                    if (nextCommand < codeTable.size())
+                    {
+                        byte[] data = codeTable.get((int) nextCommand);
+                        byte firstByte = data[0];
+                        decoded.write(data);
+                        if (prevCommand != -1)
+                        {
+                            data = codeTable.get((int) prevCommand);
+                            byte[] newData = Arrays.copyOf(data, data.length + 1);
+                            newData[data.length] = firstByte;
+                            codeTable.add(newData);
+                        }
+                    }
+                    else
+                    {
+                        byte[] data = codeTable.get((int) prevCommand);
+                        byte[] newData = Arrays.copyOf(data, data.length + 1);
+                        newData[data.length] = data[0];
+                        decoded.write(newData);
+                        codeTable.add(newData);
+                    }
+                    if (codeTable.size() >= 2047)
+                    {
+                        chunk = 12;
+                    }
+                    else if (codeTable.size() >= 1023)
+                    {
+                        chunk = 11;
+                    }
+                    else if (codeTable.size() >= 511)
+                    {
+                        chunk = 10;
+                    }
+                    else
+                    {
+                        chunk = 9;
+                    }
+                    prevCommand = nextCommand;
                 }
-                /**
-                if (in.getBitsInChunk() != dic.getCodeSize())
-                {
-                    in.unread(nextCommand);
-                    in.setBitsInChunk(dic.getCodeSize());
-                    System.out.print("Switching " + nextCommand + " to ");
-                    nextCommand = in.read();
-                    System.out.println("" +  nextCommand);
-                    data = dic.getData(nextCommand);
-                }**/
-                firstByte = data[0];
-                decoded.write(data);
             }
+        }
+        catch (EOFException ex)
+        {
+            LOG.warn("Premature EOF in LZW stream, EOD code missing");
         }
         decoded.flush();
         return new DecodeResult(parameters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected final void encode(InputStream rawData, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        //log.debug("encode()");
-        PushbackInputStream input = new PushbackInputStream(rawData, 4096);
-        LZWDictionary dic = new LZWDictionary();
-        NBitOutputStream out = new NBitOutputStream(encoded);
-        out.setBitsInChunk(9); //initially nine
-        out.write(CLEAR_TABLE);
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int byteRead = 0;
-        for (int i = 0; (byteRead = input.read()) != -1; i++)
+        initCodeTable();
+        int chunk = 9;
+
+        byte[] inputPattern = null;
+        MemoryCacheImageOutputStream out = new MemoryCacheImageOutputStream(encoded);
+        out.writeBits(CLEAR_TABLE, chunk);
+        int foundCode = -1;
+        int r;
+        while ((r = rawData.read()) != -1)
         {
-            //log.debug("byteRead = '" + (char)byteRead + "' (0x" + Integer.toHexString(byteRead) + "), i=" + i);
-            buffer.write(byteRead);
-            dic.visit((byte)byteRead);
-            out.setBitsInChunk(dic.getCodeSize());
-
-            //log.debug("Getting node '" + new String(buffer.toByteArray()) + "', buffer.size = " + buffer.size());
-            LZWNode node = dic.getNode(buffer.toByteArray());
-            int nextByte = input.read();
-            if (nextByte != -1)
+            byte by = (byte) r;
+            if (inputPattern == null)
             {
-                //log.debug("nextByte = '" + (char)nextByte + "' (0x" + Integer.toHexString(nextByte) + ")");
-                LZWNode next = node.getNode((byte)nextByte);
-                if (next == null)
+                inputPattern = new byte[]
                 {
-                    //log.debug("encode - No next node, writing node and resetting buffer (" +
-                    //          " node.getCode: " + node.getCode() + ")" +
-                    //          " bitsInChunk: " + out.getBitsInChunk() +
-                    //          ")");
-                    out.write(node.getCode());
-                    buffer.reset();
-                }
-
-                input.unread(nextByte);
+                    by
+                };
+                foundCode = by & 0xff;
             }
             else
             {
-                //log.debug("encode - EOF on lookahead: writing node, resetting buffer, and terminating read loop (" +
-                //          " node.getCode: " + node.getCode() + ")" +
-                //          " bitsInChunk: " + out.getBitsInChunk() +
-                //          ")");
-                out.write(node.getCode());
-                buffer.reset();
-                break;
-            }
+                inputPattern = Arrays.copyOf(inputPattern, inputPattern.length + 1);
+                inputPattern[inputPattern.length - 1] = by;
+                int newFoundCode = findPatternCode(codeTable, inputPattern);
+                if (newFoundCode == -1)
+                {
+                    // use previous
+                    out.writeBits(foundCode, chunk);
+                    // create new table entry
+                    codeTable.add(inputPattern);
 
-            if (dic.getNextCode() == 4096)
+                    if (codeTable.size() == 4096)
+                    {
+                        // code table is full
+                        out.writeBits(CLEAR_TABLE, chunk);
+                        chunk = 9;
+                        initCodeTable();
+                    }
+
+                    inputPattern = new byte[]
+                    {
+                        by
+                    };
+                    foundCode = by & 0xff;
+                }
+                else
+                {
+                    foundCode = newFoundCode;
+                }
+            }
+            if (codeTable.size() - 1 >= 2047)
             {
-                //log.debug("encode - Clearing dictionary and unreading pending buffer data (" +
-                //          " bitsInChunk: " + out.getBitsInChunk() +
-                //          ")");
-                out.write(CLEAR_TABLE);
-                dic = new LZWDictionary();
-                input.unread(buffer.toByteArray());
-                buffer.reset();
+                chunk = 12;
+            }
+            else if (codeTable.size() - 1 >= 1023)
+            {
+                chunk = 11;
+            }
+            else if (codeTable.size() - 1 >= 511)
+            {
+                chunk = 10;
+            }
+            else
+            {
+                chunk = 9;
             }
         }
+        if (foundCode != -1)
+        {
+            out.writeBits(foundCode, chunk);
+        }
+        out.writeBits(EOD, chunk);
+        out.writeBits(0, 7);
+        out.flush(); // must do or file will be empty :-(
+        codeTable.clear();
+    }
 
-        // Fix the code size based on the fact that we are writing the EOD
-        //
-        if (dic.getNextCode() >= 2047)
+    /**
+     * Find the longest matching pattern in the code table.
+     *
+     * @param codeTable The LZW code table.
+     * @param pattern The pattern to be searched for.
+     * @return The index of the longest matching pattern or -1 if nothing is
+     * found.
+     */
+    private int findPatternCode(ArrayList<byte[]> codeTable, byte[] pattern)
+    {
+        int foundCode = -1;
+        int foundLen = 0;
+        for (int i = codeTable.size() - 1; i >= 0; --i)
         {
-            out.setBitsInChunk(12);
+            if (i <= EOD)
+            {
+                // we're in the single byte area
+                if (foundCode != -1)
+                {
+                    return foundCode; // we already found pattern with size > 1
+                }
+                else if (pattern.length > 1)
+                {
+                    return -1; // we won't find anything here anyway
+                }
+            }
+            byte[] tryPattern = codeTable.get(i);
+            if (foundCode != -1 || tryPattern.length > foundLen)
+            {
+                if (Arrays.equals(tryPattern, pattern))
+                {
+                    foundCode = i;
+                    foundLen = tryPattern.length;
+                }
+            }
         }
-        else if (dic.getNextCode() >= 1023)
-        {
-            out.setBitsInChunk(11);
-        }
-        else if (dic.getNextCode() >= 511)
-        {
-            out.setBitsInChunk(10);
-        }
-        else
-        {
-            out.setBitsInChunk(9);
-        }
+        return foundCode;
+    }
 
-        //log.debug("encode - Writing EOD (" +
-        //          " bitsInChunk: " + out.getBitsInChunk() +
-        //          ")");
-        out.write(EOD);
-        out.close();
-        encoded.flush();
+    /**
+     * Init the code table with 1 byte entries and the EOD and CLEAR_TABLE
+     * markers.
+     */
+    private void initCodeTable()
+    {
+        codeTable = new ArrayList<byte[]>(4096);
+        for (int i = 0; i < 256; ++i)
+        {
+            codeTable.add(new byte[]
+            {
+                (byte) (i & 0xFF)
+            });
+        }
+        codeTable.add(null); // 256 EOD
+        codeTable.add(null); // 257 CLEAR_TABLE
     }
 }
