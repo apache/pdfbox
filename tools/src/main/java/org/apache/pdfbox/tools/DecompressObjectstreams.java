@@ -15,7 +15,7 @@
  *  under the License.
  */
 
-package org.apache.pdfbox;
+package org.apache.pdfbox.tools;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -82,7 +82,7 @@ public class DecompressObjectstreams {
      */
     private static void usage() {
         System.err.println( "Usage: java -cp pdfbox-app-x.y.z.jar "
-                + "org.apache.pdfbox.DecompressObjectstreams <input PDF File> [<Output PDF File>]\n"
+                + "org.apache.pdfbox.tools.DecompressObjectstreams <input PDF File> [<Output PDF File>]\n"
                 + "  <input PDF File>       The PDF document to decompress\n"
                 + "  <output PDF File>      The output filename (default is to replace .pdf with .unc.pdf)");
         System.exit(1);

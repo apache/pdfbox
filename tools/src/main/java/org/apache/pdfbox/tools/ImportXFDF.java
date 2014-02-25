@@ -14,30 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox;
-
-import java.io.IOException;
+package org.apache.pdfbox.tools;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+
+import java.io.IOException;
+
+
 /**
  * This example will take a PDF document and fill the fields with data from the
- * FDF fields.
+ * XFDF fields.
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.2 $
  */
-public class ExportXFDF
+public class ImportXFDF
 {
     /**
      * Creates a new instance of ImportFDF.
      */
-    public ExportXFDF()
+    public ImportXFDF()
     {
+    }
+
+    /**
+     * This will takes the values from the fdf document and import them into the
+     * PDF document.
+     *
+     * @param pdfDocument The document to put the fdf data into.
+     * @param fdfDocument The FDF document to get the data from.
+     *
+     * @throws IOException If there is an error setting the data in the field.
+     */
+    public void importFDF( PDDocument pdfDocument, FDFDocument fdfDocument ) throws IOException
+    {
+        PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
+        PDAcroForm acroForm = docCatalog.getAcroForm();
+        acroForm.setCacheFields( true );
+        acroForm.importFDF( fdfDocument );
     }
 
     /**
@@ -51,46 +70,30 @@ public class ExportXFDF
      */
     public static void main(String[] args) throws Exception
     {
-        ExportXFDF exporter = new ExportXFDF();
-        exporter.exportXFDF( args );
+        ImportXFDF importer = new ImportXFDF();
+        importer.importXFDF( args );
     }
 
-    private void exportXFDF( String[] args ) throws Exception
+    private void importXFDF( String[] args ) throws Exception
     {
         PDDocument pdf = null;
         FDFDocument fdf = null;
 
         try
         {
-            if( args.length != 1 && args.length != 2 )
+            if( args.length != 3 )
             {
                 usage();
             }
             else
             {
+                ImportFDF importer = new ImportFDF();
                 pdf = PDDocument.load( args[0] );
-                PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
-                if( form == null )
-                {
-                    System.err.println( "Error: This PDF does not contain a form." );
-                }
-                else
-                {
-                    String fdfName = null;
-                    if( args.length == 2 )
-                    {
-                        fdfName = args[1];
-                    }
-                    else
-                    {
-                        if( args[0].length() > 4 )
-                        {
-                            fdfName = args[0].substring( 0, args[0].length() -4 ) + ".xfdf";
-                        }
-                    }
-                    fdf = form.exportFDF();
-                    fdf.saveXFDF( fdfName );
-                }
+                fdf = FDFDocument.loadXFDF( args[1] );
+
+                importer.importFDF( pdf, fdf );
+                pdf.save( args[2] );
+                fdf.save( "tmp/outputXFDFtoPDF.fdf");
             }
         }
         finally
@@ -105,8 +108,7 @@ public class ExportXFDF
      */
     private static void usage()
     {
-        System.err.println( "usage: org.apache.pdfbox.ExortXFDF <pdf-file> [output-xfdf-file]" );
-        System.err.println( "    [output-xfdf-file] - Default is pdf name, test.pdf->test.xfdf" );
+        System.err.println( "usage: org.apache.pdfbox.tools.ImportXFDF <pdf-file> <fdf-file> <output-file>" );
     }
 
     /**

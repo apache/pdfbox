@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox;
+package org.apache.pdfbox.tools;
+
+import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -23,22 +25,19 @@ import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
-import java.io.IOException;
-
-
 /**
  * This example will take a PDF document and fill the fields with data from the
- * XFDF fields.
+ * FDF fields.
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class ImportXFDF
+public class ImportFDF
 {
     /**
      * Creates a new instance of ImportFDF.
      */
-    public ImportXFDF()
+    public ImportFDF()
     {
     }
 
@@ -70,11 +69,11 @@ public class ImportXFDF
      */
     public static void main(String[] args) throws Exception
     {
-        ImportXFDF importer = new ImportXFDF();
-        importer.importXFDF( args );
+        ImportFDF importer = new ImportFDF();
+        importer.importFDF( args );
     }
 
-    private void importXFDF( String[] args ) throws Exception
+    private void importFDF( String[] args ) throws Exception
     {
         PDDocument pdf = null;
         FDFDocument fdf = null;
@@ -88,12 +87,12 @@ public class ImportXFDF
             else
             {
                 ImportFDF importer = new ImportFDF();
-                pdf = PDDocument.load( args[0] );
-                fdf = FDFDocument.loadXFDF( args[1] );
 
+                pdf = PDDocument.load( args[0] );
+                fdf = FDFDocument.load( args[1] );
                 importer.importFDF( pdf, fdf );
+
                 pdf.save( args[2] );
-                fdf.save( "tmp/outputXFDFtoPDF.fdf");
             }
         }
         finally
@@ -108,7 +107,7 @@ public class ImportXFDF
      */
     private static void usage()
     {
-        System.err.println( "usage: org.apache.pdfbox.ImportXFDF <pdf-file> <fdf-file> <output-file>" );
+        System.err.println( "usage: org.apache.pdfbox.tools.ImportFDF <pdf-file> <fdf-file> <output-file>" );
     }
 
     /**

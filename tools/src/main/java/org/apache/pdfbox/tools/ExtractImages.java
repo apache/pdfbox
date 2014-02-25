@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox;
+package org.apache.pdfbox.tools;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -38,7 +38,7 @@ import org.apache.pdfbox.util.ImageIOUtil;
 /**
  * This will read a read pdf and extract images. <br/><br/>
  *
- * usage: java org.apache.pdfbox.ExtractImages &lt;pdffile&gt; &lt;password&gt; [imageprefix]
+ * usage: java org.apache.pdfbox.tools.ExtractImages &lt;pdffile&gt; &lt;password&gt; [imageprefix]
  *
  * @author  <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.7 $
@@ -269,7 +269,7 @@ public class ExtractImages
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.ExtractImages [OPTIONS] <PDF file>\n" +
+        System.err.println( "Usage: java org.apache.pdfbox.tools.ExtractImages [OPTIONS] <PDF file>\n" +
             "  -password  <password>        Password to decrypt document\n" +
             "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
             "  -addkey                      add the internal image key to the file name\n" +
