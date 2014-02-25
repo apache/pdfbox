@@ -46,6 +46,7 @@ public final class PDLineDashPattern implements COSObjectable
     {
         array = new float[] { };
         phase = 0;
+        throw new UnsupportedOperationException("this is a fail");
     }
 
     /**

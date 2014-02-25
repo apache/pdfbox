@@ -20,10 +20,12 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -64,7 +66,7 @@ public class PDFToImage
      *
      * @throws Exception If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args ) throws IOException, CryptographyException
     {
         boolean useNonSeqParser = false; 
         String password = "";
@@ -249,10 +251,6 @@ public class PDFToImage
                             + imageFormat + "'" );
                     System.exit(1);
                 }
-            }
-            catch (Exception e)
-            {
-                System.err.println(e);
             }
             finally
             {
