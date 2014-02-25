@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.util.TextPosition;
 
 /**
  * Wrap stripped text in simple HTML, trying to form HTML paragraphs. Paragraphs
