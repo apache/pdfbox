@@ -35,11 +35,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class RenderUtil
 {
-    /**
-     * Fully transparent that can fall back to white when image type has no alpha.
-     */
-    private static final Color TRANSPARENT_WHITE = new Color(255, 255, 255, 0);
-
     private RenderUtil()
     {
         // Utility class. Don't instantiate.
@@ -178,11 +173,7 @@ public class RenderUtil
 
         // use a transparent background if the imageType supports alpha
         Graphics2D g = image.createGraphics();
-        if (image.getColorModel().hasAlpha())
-        {
-            g.setBackground(TRANSPARENT_WHITE);
-        }
-        else
+        if (!image.getColorModel().hasAlpha())
         {
             g.setBackground(Color.WHITE);
         }
