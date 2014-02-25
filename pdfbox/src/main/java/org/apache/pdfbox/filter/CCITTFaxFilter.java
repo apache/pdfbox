@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.filter.ccitt.TIFFFaxDecoder;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.filter.ccitt.CCITTFaxG31DDecodeInputStream;
 import org.apache.pdfbox.filter.ccitt.FillOrderChangeInputStream;
