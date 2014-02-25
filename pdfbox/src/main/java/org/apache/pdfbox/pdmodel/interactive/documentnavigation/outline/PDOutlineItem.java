@@ -38,7 +38,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
-import org.apache.pdfbox.util.BitFlagHelper;
 
 /**
  * This represents an outline in a pdf document.
@@ -380,7 +379,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public boolean isItalic()
     {
-        return BitFlagHelper.getFlag( node, COSName.F, ITALIC_FLAG );
+        return node.getFlag( COSName.F, ITALIC_FLAG );
     }
 
     /**
@@ -390,7 +389,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setItalic( boolean italic )
     {
-        BitFlagHelper.setFlag( node, COSName.F, ITALIC_FLAG, italic );
+        node.setFlag( COSName.F, ITALIC_FLAG, italic );
     }
 
     /**
@@ -400,7 +399,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public boolean isBold()
     {
-        return BitFlagHelper.getFlag( node, COSName.F, BOLD_FLAG );
+        return node.getFlag( COSName.F, BOLD_FLAG );
     }
 
     /**
@@ -410,7 +409,7 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public void setBold( boolean bold )
     {
-        BitFlagHelper.setFlag( node, COSName.F, BOLD_FLAG, bold );
+        node.setFlag( COSName.F, BOLD_FLAG, bold );
     }
 
 }

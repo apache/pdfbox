@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.util.BitFlagHelper;
 
 /**
  * This represents a pdf signature seed value dictionary.
@@ -121,7 +120,7 @@ public class PDSeedValue implements COSObjectable
      */
     public boolean isFilterRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_FILTER);
+        return getDictionary().getFlag( COSName.FF, FLAG_FILTER);
     }
 
     /**
@@ -131,7 +130,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setFilterRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_FILTER, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_FILTER, flag);
     }
 
     /**
@@ -140,7 +139,7 @@ public class PDSeedValue implements COSObjectable
      */
     public boolean isSubFilterRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_SUBFILTER);
+        return getDictionary().getFlag( COSName.FF, FLAG_SUBFILTER);
     }
 
     /**
@@ -150,7 +149,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setSubFilterRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_SUBFILTER, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_SUBFILTER, flag);
     }
 
     /**
@@ -159,7 +158,7 @@ public class PDSeedValue implements COSObjectable
     */
     public boolean isDigestMethodRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_DIGEST_METHOD);
+        return getDictionary().getFlag( COSName.FF, FLAG_DIGEST_METHOD);
     }
 
     /**
@@ -169,7 +168,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setDigestMethodRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_DIGEST_METHOD, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_DIGEST_METHOD, flag);
     }
 
     /**
@@ -178,7 +177,7 @@ public class PDSeedValue implements COSObjectable
     */
     public boolean isVRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_V);
+        return getDictionary().getFlag( COSName.FF, FLAG_V);
     }
 
     /**
@@ -188,7 +187,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setVRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_V, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_V, flag);
     }
 
     /**
@@ -197,7 +196,7 @@ public class PDSeedValue implements COSObjectable
     */
     public boolean isReasonRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_REASON);
+        return getDictionary().getFlag( COSName.FF, FLAG_REASON);
     }
 
     /**
@@ -207,7 +206,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setReasonRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_REASON, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_REASON, flag);
     }
 
     /**
@@ -216,7 +215,7 @@ public class PDSeedValue implements COSObjectable
     */
     public boolean isLegalAttestationRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_LEGAL_ATTESTATION);
+        return getDictionary().getFlag( COSName.FF, FLAG_LEGAL_ATTESTATION);
     }
 
     /**
@@ -226,7 +225,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setLegalAttestationRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_LEGAL_ATTESTATION, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_LEGAL_ATTESTATION, flag);
     }
 
     /**
@@ -235,7 +234,7 @@ public class PDSeedValue implements COSObjectable
     */
     public boolean isAddRevInfoRequired()
     {
-        return BitFlagHelper.getFlag(getDictionary(), COSName.FF, FLAG_ADD_REV_INFO);
+        return getDictionary().getFlag( COSName.FF, FLAG_ADD_REV_INFO);
     }
 
     /**
@@ -245,7 +244,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setAddRevInfoRequired(boolean flag)
     {
-        BitFlagHelper.setFlag(getDictionary(), COSName.FF, FLAG_ADD_REV_INFO, flag);
+        getDictionary().setFlag( COSName.FF, FLAG_ADD_REV_INFO, flag);
     }
 
     /**
