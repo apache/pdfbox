@@ -29,7 +29,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.util.MapUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -143,8 +142,7 @@ public class RubberStampWithImage
     {
         // This is similar to PDPageContentStream.drawXObject()
         String xObjectPrefix = "Im";
-        String objMapping = MapUtil.getNextUniqueKey( resources.getImages(), xObjectPrefix );
-        resources.getXObjects().put( objMapping, xobject );
+        String xObjectId = resources.addXObject(xobject, xObjectPrefix);
 
         appendRawCommands( os, SAVE_GRAPHICS_STATE );
         appendRawCommands( os, formatDecimal.format( width ) );
@@ -162,7 +160,7 @@ public class RubberStampWithImage
         appendRawCommands( os, CONCATENATE_MATRIX );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, "/" );
-        appendRawCommands( os, objMapping );
+        appendRawCommands( os, xObjectId );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, XOBJECT_DO );
         appendRawCommands( os, SPACE );

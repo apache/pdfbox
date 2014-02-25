@@ -37,7 +37,6 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
-import org.apache.pdfbox.util.MapUtil;
 
 /**
  * This represents a set of resources available at the page/pages/stream level.
@@ -262,33 +261,6 @@ public class PDResources implements COSObjectable
             xobjectMappings = reverseMap(xobjects, PDXObject.class);
         }
         return xobjects;
-    }
-
-    /**
-     * This will get the map of images. An empty map will be returned if there are no underlying images. So far the keys
-     * are COSName of the image and the value is the corresponding PDXObjectImage.
-     *
-     * @return The map of images.
-     * @throws IOException If there is an error writing the picture.
-     * 
-     * @deprecated use {@link #getXObjects()} instead, as the images map isn't synchronized with the XObjects map.
-     */
-    public Map<String, PDImageXObject> getImages() throws IOException
-    {
-        if (images == null)
-        {
-            Map<String, PDXObject> allXObjects = getXObjects();
-            images = new HashMap<String, PDImageXObject>();
-            for (Map.Entry<String, PDXObject> entry : allXObjects.entrySet())
-            {
-                PDXObject xobject = entry.getValue();
-                if (xobject instanceof PDImageXObject)
-                {
-                    images.put(entry.getKey(), (PDImageXObject) xobject);
-                }
-            }
-        }
-        return images;
     }
 
     /**
@@ -576,7 +548,7 @@ public class PDResources implements COSObjectable
     public String addFont(PDFont font)
     {
         // use the getter to initialize a possible empty fonts map
-        return addFont(font, MapUtil.getNextUniqueKey(getFonts(), "F"));
+        return addFont(font, getNextUniqueKey(getFonts(), "F"));
     }
 
     /**
@@ -629,12 +601,23 @@ public class PDResources implements COSObjectable
         String objMapping = xobjectMappings.get(xobject);
         if (objMapping == null)
         {
-            objMapping = MapUtil.getNextUniqueKey(xobjects, prefix);
+            objMapping = getNextUniqueKey(xobjects, prefix);
             xobjectMappings.put(xobject, objMapping);
             xobjects.put(objMapping, xobject);
             addXObjectToDictionary(xobject, objMapping);
         }
         return objMapping;
+    }
+
+    // generates unique IDs for new resource entries
+    private final String getNextUniqueKey( Map<String,?> map, String prefix )
+    {
+        int counter = 0;
+        while( map != null && map.get( prefix+counter ) != null )
+        {
+            counter++;
+        }
+        return prefix+counter;
     }
 
     /**
