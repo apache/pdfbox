@@ -17,48 +17,22 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.awt.geom.GeneralPath;
-import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:Daniel.Wilson@BlackLocustSoftware.com">Daniel Wilson</a>
- * @version $Revision: 1.1 $
+ * W Set the clipping path using non zero winding rule.
+ * @author Daniel Wilson
  */
 public class ClipNonZeroRule extends OperatorProcessor
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(ClipNonZeroRule.class);
-
-    /**
-     * process : W : Set the clipping path using non zero winding rule.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException If there is an error during the processing.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
-
-        try 
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            drawer.setClippingWindingRule(GeneralPath.WIND_NON_ZERO);
-        } 
-        catch (Exception e) 
-        {
-            LOG.warn(e, e);
-        }
+        ((PageDrawer)context).setClippingWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 }

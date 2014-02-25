@@ -20,29 +20,20 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.OperatorProcessor;
+
 import java.io.IOException;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:andreas@lehmi.de">Andreas Lehmkühler</a>
- * @version $Revision: 1.0 $
+ * F Close, fill and stroke the path with even-odd winding rule.
+ * @author Andreas Lehmkühler
  */
-public class CloseFillEvenOddAndStrokePath extends org.apache.pdfbox.util.operator.OperatorProcessor
+public final class CloseFillEvenOddAndStrokePath extends OperatorProcessor
 {
-
-    /**
-     * fill and stroke the path.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException If an error occurs while processing the font.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
-        // execute ClosePath
-        context.processOperator( "h", arguments );
-        // execute FillEvenOddAndStroke
-        context.processOperator( "B*", arguments );
+        context.processOperator("h", operands);  // ClosePath
+        context.processOperator("B*", operands); // FillEvenOddAndStroke
     }
 }

@@ -23,29 +23,24 @@ import java.util.List;
 import java.io.IOException;
 
 /**
- * @author Huault : huault@free.fr
- * @version $Revision: 1.3 $
+ * Processes a PDF operator.
+ * @author Laurent Huault
  */
 public abstract class OperatorProcessor
 {
-
-    /**
-     * The stream engine processing context.
-     */
+    /** The processing context. */
     protected PDFStreamEngine context = null;
 
     /**
-     * Constructor.
-     *
+     * Creates a new OperatorProcessor.
      */
     protected OperatorProcessor()
     {
     }
 
     /**
-     * Get the context for processing.
-     *
-     * @return The processing context.
+     * Returns the processing context.
+     * @return the processing context
      */
     protected PDFStreamEngine getContext()
     {
@@ -53,21 +48,19 @@ public abstract class OperatorProcessor
     }
 
     /**
-     * Set the processing context.
-     *
-     * @param ctx The context for processing.
+     * Sets the processing context.
+     * @param context the processing context.
      */
-    public void setContext(PDFStreamEngine ctx)
+    public void setContext(PDFStreamEngine context)
     {
-        context = ctx;
+        this.context = context;
     }
 
     /**
-     * process the operator.
-     * @param operator The operator that is being processed.
-     * @param arguments arguments needed by this operator.
-     *
-     * @throws IOException If there is an error processing the operator.
+     * Process the operator.
+     * @param operator the operator to process
+     * @param operands the operands to use when processing
+     * @throws IOException if the operator cannot be processed
      */
-    public abstract void process(PDFOperator operator, List<COSBase> arguments) throws IOException;
+    public abstract void process(PDFOperator operator, List<COSBase> operands) throws IOException;
 }

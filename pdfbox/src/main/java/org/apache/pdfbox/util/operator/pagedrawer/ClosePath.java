@@ -17,46 +17,21 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.util.List;
-import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * h Close the path.
+ * @author Ben Litchfield
  */
-public class ClosePath extends OperatorProcessor
+public final class ClosePath extends OperatorProcessor
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(ClosePath.class);
-
-    /**
-     * process : h : Close path.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     * 
-     * @throws IOException if something went wrong during logging
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
-        PageDrawer drawer = (PageDrawer)context;
-        try
-        {
-            drawer.getLinePath().closePath();
-        }
-        catch( Throwable t )
-        {
-            log.warn(t, t);
-        }
+        ((PageDrawer)context).getLinePath().closePath();
     }
 }

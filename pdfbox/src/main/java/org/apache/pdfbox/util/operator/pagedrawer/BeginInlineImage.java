@@ -20,8 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
@@ -30,19 +28,15 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Begins an inline image.
- *
+ * BI Begins an inline image.
  * @author Ben Litchfield
  */
-public class BeginInlineImage extends OperatorProcessor
+public final class BeginInlineImage extends OperatorProcessor
 {
     /**
-     * BI begin inline image.
-     * @param operator The operator that is being executed.
-     * @param arguments List
      * @throws IOException If there is an error displaying the inline image.
      */
-    public void process(PDFOperator operator, List<COSBase> arguments)  throws IOException
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
 

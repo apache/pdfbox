@@ -26,27 +26,19 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * l Append straight line segment to path.
+ * @author Ben Litchfield
  */
 public class LineTo extends OperatorProcessor
 {
-
-
-    /**
-     * process : l : Append straight line segment to path.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments)
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
         PageDrawer drawer = (PageDrawer)context;
 
-        //append straight line segment from the current point to the point.
-        COSNumber x = (COSNumber)arguments.get( 0 );
-        COSNumber y = (COSNumber)arguments.get( 1 );
+        // append straight line segment from the current point to the point
+        COSNumber x = (COSNumber)operands.get(0);
+        COSNumber y = (COSNumber)operands.get(1);
 
         Point2D pos = drawer.transformedPoint(x.doubleValue(), y.doubleValue());
         drawer.getLinePath().lineTo((float)pos.getX(), (float)pos.getY());

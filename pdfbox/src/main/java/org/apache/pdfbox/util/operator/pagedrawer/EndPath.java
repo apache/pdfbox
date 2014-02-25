@@ -24,23 +24,14 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * n End the path.
+ * @author Ben Litchfield
  */
-public class EndPath extends OperatorProcessor
+public final class EndPath extends OperatorProcessor
 {
-
-
-    /**
-     * process : n : End path.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments)
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
-        PageDrawer drawer = (PageDrawer)context;
-        drawer.endPath();
+        ((PageDrawer)context).endPath();
     }
 }

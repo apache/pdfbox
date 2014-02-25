@@ -18,10 +18,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.awt.geom.Point2D;
 import java.util.List;
-import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -29,38 +26,18 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * m Begins a new subpath.
+ * @author Ben Litchfield
  */
-public class MoveTo extends OperatorProcessor
+public final class MoveTo extends OperatorProcessor
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log log = LogFactory.getLog(MoveTo.class);
-
-    /**
-     * process : m : Begin new subpath.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     * @throws IOException If there is an error processing the operator.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
-        try
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            COSNumber x = (COSNumber)arguments.get( 0 );
-            COSNumber y = (COSNumber)arguments.get( 1 );
-            Point2D pos = drawer.transformedPoint(x.doubleValue(), y.doubleValue());
-            drawer.getLinePath().moveTo((float)pos.getX(), (float)pos.getY());
-        }
-        catch (Exception exception)
-        {
-            log.warn( exception, exception);
-        }
+        PageDrawer drawer = (PageDrawer)context;
+        COSNumber x = (COSNumber)operands.get(0);
+        COSNumber y = (COSNumber)operands.get(1);
+        Point2D pos = drawer.transformedPoint(x.doubleValue(), y.doubleValue());
+        drawer.getLinePath().moveTo((float)pos.getX(), (float)pos.getY());
     }
 }

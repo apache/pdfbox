@@ -27,28 +27,20 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * v Append curved segment to path with the initial point replicated.
+ * @author Ben Litchfield
  */
 public class CurveToReplicateInitialPoint extends OperatorProcessor
 {
-
-
-    /**
-     * process : v : Append curved segment to path (initial point replicated).
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments)
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands)
     {
         PageDrawer drawer = (PageDrawer)context;
 
-        COSNumber x2 = (COSNumber)arguments.get( 0 );
-        COSNumber y2 = (COSNumber)arguments.get( 1 );
-        COSNumber x3 = (COSNumber)arguments.get( 2 );
-        COSNumber y3 = (COSNumber)arguments.get( 3 );
+        COSNumber x2 = (COSNumber)operands.get(0 );
+        COSNumber y2 = (COSNumber)operands.get(1);
+        COSNumber x3 = (COSNumber)operands.get(2);
+        COSNumber y3 = (COSNumber)operands.get(3);
         GeneralPath path = drawer.getLinePath();
         Point2D currentPoint = path.getCurrentPoint();
 
@@ -56,6 +48,7 @@ public class CurveToReplicateInitialPoint extends OperatorProcessor
         Point2D point3 = drawer.transformedPoint(x3.doubleValue(), y3.doubleValue());
 
         drawer.getLinePath().curveTo((float)currentPoint.getX(), (float)currentPoint.getY(),
-                (float)point2.getX(), (float)point2.getY(), (float)point3.getX(), (float)point3.getY());
+                                     (float)point2.getX(),       (float)point2.getY(),
+                                     (float)point3.getX(),       (float)point3.getY());
     }
 }
