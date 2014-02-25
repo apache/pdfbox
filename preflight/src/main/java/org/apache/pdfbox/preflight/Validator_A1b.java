@@ -27,8 +27,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -40,11 +40,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.Version;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.parser.XmlResultParser;
+import org.apache.pdfbox.util.ResourceLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -140,14 +140,17 @@ public class Validator_A1b
 
     }
 
-    private static void usage () {
+    private static void usage () throws IOException {
+        Properties props = ResourceLoader.loadProperties("org/apache/pdfbox/resources/pdfbox.properties", false);
+        String version = props.getProperty( "pdfbox.version", "unknown" );
+
         System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [mode] <file path>");
         System.out.println();
         System.out.println(" * xml : if set, generate xml output");
         System.out.println(" * mode : if set, <file path> must be a file containing PDF to parse, can have 2 values");
         System.out.println("       batch : for each file of the list and xml file is generated");
         System.out.println("       group : generate an xml result for all the file of the list.");
-        System.out.println("Version : " + Version.getVersion());
+        System.out.println("Version : " + version);
     }
 
     private static int runSimple (DataSource fd) throws Exception {
