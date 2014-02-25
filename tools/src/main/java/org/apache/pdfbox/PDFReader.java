@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox;
 
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -24,12 +27,17 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.pdfviewer.PageWrapper;
+import org.apache.pdfbox.pdfviewer.PDFPagePanel;
 import org.apache.pdfbox.pdfviewer.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -39,23 +47,21 @@ import org.apache.pdfbox.util.ImageIOUtil;
 import org.apache.pdfbox.util.RenderUtil;
 
 /**
- * An application to read PDF documents. This will provide Acrobat Reader like funtionality.
- * 
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * An proof-of-concept application to read PDF documents, with very basic functionality.
+ * @author Ben Litchfield
  */
-public class PDFReader extends javax.swing.JFrame
+public class PDFReader extends JFrame
 {
     private File currentDir = new File(".");
-    private javax.swing.JMenuItem saveAsImageMenuItem;
-    private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openMenuItem;
-    private javax.swing.JMenuItem printMenuItem;
-    private javax.swing.JMenu viewMenu;
-    private javax.swing.JMenuItem nextPageItem;
-    private javax.swing.JMenuItem previousPageItem;
+    private JMenuItem saveAsImageMenuItem;
+    private JMenuItem exitMenuItem;
+    private JMenu fileMenu;
+    private JMenuBar menuBar;
+    private JMenuItem openMenuItem;
+    private JMenuItem printMenuItem;
+    private JMenu viewMenu;
+    private JMenuItem nextPageItem;
+    private JMenuItem previousPageItem;
     private JPanel documentPanel = new JPanel();
     private ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
 
@@ -78,21 +84,18 @@ public class PDFReader extends javax.swing.JFrame
         initComponents();
     }
 
-    /**
-     * This method is called from within the consructor to initialize the form.
-     * 
-     */
+    // This method is called from within the consructor to initialize the form.
     private void initComponents()
     {
-        menuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
-        saveAsImageMenuItem = new javax.swing.JMenuItem();
-        exitMenuItem = new javax.swing.JMenuItem();
-        printMenuItem = new javax.swing.JMenuItem();
-        viewMenu = new javax.swing.JMenu();
-        nextPageItem = new javax.swing.JMenuItem();
-        previousPageItem = new javax.swing.JMenuItem();
+        menuBar = new JMenuBar();
+        fileMenu = new JMenu();
+        openMenuItem = new JMenuItem();
+        saveAsImageMenuItem = new JMenuItem();
+        exitMenuItem = new JMenuItem();
+        printMenuItem = new JMenuItem();
+        viewMenu = new JMenu();
+        nextPageItem = new JMenuItem();
+        previousPageItem = new JMenuItem();
 
         setTitle("PDFBox - PDF Reader");
         addWindowListener(new java.awt.event.WindowAdapter()
@@ -271,8 +274,8 @@ public class PDFReader extends javax.swing.JFrame
     }
 
     /**
+     * Entry point.
      * @param args the command line arguments
-     * 
      * @throws Exception If anything goes wrong.
      */
     public static void main(String[] args) throws Exception
@@ -356,7 +359,8 @@ public class PDFReader extends javax.swing.JFrame
                 imageFilename = imageFilename.substring(0, imageFilename.length() - 4);
             }
             imageFilename += "_" + (currentPage + 1);
-            ImageIOUtil.writeImage(pageAsImage, "png", imageFilename, BufferedImage.TYPE_USHORT_565_RGB, 300);
+            ImageIOUtil.writeImage(pageAsImage, "png", imageFilename,
+                                   BufferedImage.TYPE_USHORT_565_RGB, 300);
         }
         catch (IOException exception)
         {
@@ -364,13 +368,6 @@ public class PDFReader extends javax.swing.JFrame
         }
     }
 
-    /**
-     * This will parse a document.
-     * 
-     * @param input The input stream for the document.
-     * 
-     * @throws IOException If there is an error parsing the document.
-     */
     private void parseDocument(File file, String password) throws IOException
     {
         document = null;
@@ -401,7 +398,6 @@ public class PDFReader extends javax.swing.JFrame
 
     /**
      * Get the bottom status panel.
-     * 
      * @return The bottom status panel.
      */
     public ReaderBottomPanel getBottomStatusPanel()
@@ -409,9 +405,6 @@ public class PDFReader extends javax.swing.JFrame
         return bottomStatusPanel;
     }
 
-    /**
-     * This will print out a message telling how to use this utility.
-     */
     private static void usage()
     {
         System.err.println("usage: java -jar pdfbox-app-x.y.z.jar PDFReader [OPTIONS] <input-file>\n"
@@ -420,4 +413,69 @@ public class PDFReader extends javax.swing.JFrame
                 + "  <input-file>              The PDF document to be loaded\n");
     }
 
+    /**
+     * A class to handle some prettyness around a single PDF page.
+     * @author Ben Litchfield
+     */
+    private static class PageWrapper implements MouseMotionListener
+    {
+        private JPanel pageWrapper = new JPanel();
+        private PDFPagePanel pagePanel = null;
+        private PDFReader reader = null;
+
+        private static final int SPACE_AROUND_DOCUMENT = 20;
+
+        /**
+         * Constructor.
+         * @param aReader The reader application that holds this page.
+         * @throws IOException If there is an error creating the page drawing objects.
+         */
+        public PageWrapper(PDFReader aReader) throws IOException
+        {
+            reader = aReader;
+            pagePanel = new PDFPagePanel();
+            pageWrapper.setLayout(null);
+            pageWrapper.add(pagePanel);
+            pagePanel.setLocation(SPACE_AROUND_DOCUMENT, SPACE_AROUND_DOCUMENT);
+            pageWrapper.setBorder(LineBorder.createBlackLineBorder());
+            pagePanel.addMouseMotionListener(this);
+        }
+
+        /**
+         * This will display the PDF page in this component.
+         * @param page The PDF page to display.
+         */
+        public void displayPage(PDPage page)
+        {
+            pagePanel.setPage(page);
+            pagePanel.setPreferredSize(pagePanel.getSize());
+            Dimension d = pagePanel.getSize();
+            d.width+=(SPACE_AROUND_DOCUMENT*2);
+            d.height+=(SPACE_AROUND_DOCUMENT*2);
+
+            pageWrapper.setPreferredSize(d);
+            pageWrapper.validate();
+        }
+
+        /**
+         * This will get the JPanel that can be displayed.
+         * @return The panel with the displayed PDF page.
+         */
+        public JPanel getPanel()
+        {
+            return pageWrapper;
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e)
+        {
+            //do nothing when mouse moves.
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e)
+        {
+            reader.getBottomStatusPanel().getStatusLabel().setText(e.getX() + "," + e.getY());
+        }
+    }
 }
