@@ -615,31 +615,6 @@ public class PageDrawer extends PDFStreamEngine
         }
     }
 
-    /**
-     * Fill the path.
-     * 
-     * @param windingRule The winding rule this path will use.
-     * 
-     * @throws IOException If there is an IO error while filling the path.
-     */
-    public void fillPath(int windingRule) throws IOException
-    {
-        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
-        Paint nonStrokingPaint = getNonStrokingPaint();
-        if (nonStrokingPaint == null)
-        {
-            LOG.info("ColorSpace " + getGraphicsState().getNonStrokingColorSpace().getName() +
-                     " doesn't provide a non-stroking color, using white instead!");
-            nonStrokingPaint = Color.WHITE;
-        }
-        graphics.setPaint(nonStrokingPaint);
-        getLinePath().setWindingRule(windingRule);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        graphics.setClip(getGraphicsState().getCurrentClippingPath());
-        graphics.fill(getLinePath());
-        getLinePath().reset();
-    }
-
     // returns the stroking AWT Paint
     private Paint getStrokingPaint() throws IOException
     {
@@ -658,14 +633,9 @@ public class PageDrawer extends PDFStreamEngine
     private BasicStroke getStroke()
     {
         PDGraphicsState state = getGraphicsState();
-        float lineWidth = state.getLineWidth();
 
         // apply the CTM
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        if (ctm != null && ctm.getXScale() > 0)
-        {
-            lineWidth = lineWidth * ctm.getXScale();
-        }
+        float lineWidth = transformWidth(state.getLineWidth());
 
         // minimum line width as used by Adobe Reader
         if (lineWidth < 0.25)
@@ -678,19 +648,17 @@ public class PageDrawer extends PDFStreamEngine
         float[] dashArray = dashPattern.getDashArray();
         if (dashArray != null)
         {
-            if (ctm != null && ctm.getXScale() > 0)
+            // apply the CTM
+            for (int i = 0; i < dashArray.length; ++i)
             {
-                for (int i = 0; i < dashArray.length; ++i)
-                {
-                    dashArray[i] *= ctm.getXScale();
-                }
-                phaseStart *= ctm.getXScale();
+                dashArray[i] = transformWidth(dashArray[i]);
+            }
+            phaseStart = (int)transformWidth(phaseStart);
 
-                // empty dash array is illegal
-                if (dashArray.length == 0)
-                {
-                    dashArray = null;
-                }
+            // empty dash array is illegal
+            if (dashArray.length == 0)
+            {
+                dashArray = null;
             }
         }
         return new BasicStroke(lineWidth, state.getLineCap(), state.getLineJoin(),
@@ -716,9 +684,33 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setStroke(getStroke());
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
-        GeneralPath path = getLinePath();
-        graphics.draw(path);
-        path.reset();
+        graphics.draw(linePath);
+        linePath.reset();
+    }
+
+    /**
+     * Fill the path.
+     *
+     * @param windingRule The winding rule this path will use.
+     *
+     * @throws IOException If there is an IO error while filling the path.
+     */
+    public void fillPath(int windingRule) throws IOException
+    {
+        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        Paint nonStrokingPaint = getNonStrokingPaint();
+        if (nonStrokingPaint == null)
+        {
+            LOG.info("ColorSpace " + getGraphicsState().getNonStrokingColorSpace().getName() +
+                    " doesn't provide a non-stroking color, using white instead!");
+            nonStrokingPaint = Color.WHITE;
+        }
+        graphics.setPaint(nonStrokingPaint);
+        linePath.setWindingRule(windingRule);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        graphics.fill(linePath);
+        linePath.reset();
     }
 
     // This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
@@ -729,12 +721,28 @@ public class PageDrawer extends PDFStreamEngine
      * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
      */
-    public java.awt.geom.Point2D.Double transformedPoint(double x, double y)
+    public Point2D.Double transformedPoint(double x, double y)
     {
         double[] position = { x, y };
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform()
                 .transform(position, 0, position, 0, 1);
         return new Point2D.Double(position[0], position[1]);
+    }
+
+    // transforms a width using the CTM
+    private float transformWidth(float width)
+    {
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+
+        if (ctm == null)
+        {
+            // TODO does the CTM really need to use null?
+            return width;
+        }
+
+        float x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
+        float y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
+        return width * (float)Math.sqrt((x * x + y * y) * 0.5);
     }
 
     /**
@@ -770,7 +778,7 @@ public class PageDrawer extends PDFStreamEngine
         if (clippingWindingRule > -1)
         {
             PDGraphicsState graphicsState = getGraphicsState();
-            GeneralPath clippingPath = (GeneralPath) getLinePath().clone();
+            GeneralPath clippingPath = (GeneralPath) linePath.clone();  // TODO do we really need to clone this? isn't the line path reset anyway?
             clippingPath.setWindingRule(clippingWindingRule);
             // If there is already set a clipping path, we have to intersect the new with the existing one
             if (graphicsState.getCurrentClippingPath() != null)
@@ -786,7 +794,7 @@ public class PageDrawer extends PDFStreamEngine
             }
             clippingWindingRule = -1;
         }
-        getLinePath().reset();
+        linePath.reset();
     }
 
     /**
