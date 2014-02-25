@@ -17,12 +17,12 @@
 
 /* $Id$ */
 
-package org.apache.pdfbox.filter;
+package org.apache.pdfbox.filter.ccitt;
 
 /**
  * CCITT Fax decoder
  */
-final class TIFFFaxDecoder {
+public final class TIFFFaxDecoder {
 
     private int bitPointer, bytePointer;
     private byte[] data;
