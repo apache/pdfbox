@@ -28,9 +28,9 @@ public class Matrix implements Cloneable
 {
     static final float[] DEFAULT_SINGLE =
     {
-        1,0,0,
-        0,1,0,
-        0,0,1
+        1,0,0,  //  a  b  0
+        0,1,0,  //  c  d  0
+        0,0,1   //  tx ty 1
     };
 
     private float[] single;
