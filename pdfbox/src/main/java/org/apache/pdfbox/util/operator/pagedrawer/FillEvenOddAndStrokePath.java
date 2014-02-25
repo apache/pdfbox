@@ -21,34 +21,20 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:andreas@lehmi.de">Andreas Lehmkühler</a>
- * @version $Revision: 101 $
+ * B* Fill and stroke the path.
+ * @author Andreas Lehmkühler
  */
-public class FillEvenOddAndStrokePath extends org.apache.pdfbox.util.operator.OperatorProcessor
+public final class FillEvenOddAndStrokePath extends OperatorProcessor
 {
-
-    /**
-     * fill and stroke the path.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException If an error occurs while processing the font.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
-        PageDrawer drawer = (PageDrawer)context;
-        GeneralPath currentPath = (GeneralPath)drawer.getLinePath().clone();
-
-        context.processOperator( "f*", arguments );
-        drawer.setLinePath( currentPath );
-
-        context.processOperator( "S", arguments );
+        ((PageDrawer)context).strokeAndFillPath(GeneralPath.WIND_EVEN_ODD);
     }
 }

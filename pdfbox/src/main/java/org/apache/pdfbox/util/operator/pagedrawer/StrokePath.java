@@ -26,23 +26,13 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 import java.io.IOException;
 
 /**
- * Implementation of content stream operator for page drawer.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * S Stroke the path.
+ * @author Ben Litchfield
  */
-public class StrokePath extends OperatorProcessor
+public final class StrokePath extends OperatorProcessor
 {
-
-    /**
-     * S stroke the path.
-     *
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException If an error occurs while processing the font.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
         ((PageDrawer)context).strokePath();
     }

@@ -19,8 +19,6 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfviewer.PageDrawer;
@@ -28,37 +26,14 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of sh operator for page drawer.
- *  See section 4.6.3 of the PDF 1.7 specification.
- *
- * @author <a href="mailto:Daniel.Wilson@BlackLocustSoftware.com">Daniel Wilson</a>
- * @version $Revision: 1.0 $
+ * sh Fills the clipping area with the given shading pattern.
+ * @author Daniel Wilson
  */
-public class SHFill extends OperatorProcessor
+public final class SHFill extends OperatorProcessor
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(SHFill.class);
-
-    /**
-     * process : sh : shade fill the clipping area.
-     * @param operator The operator that is being executed.
-     * @param arguments List
-     *
-     * @throws IOException if there is an error during execution.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
-        try 
-        {
-            PageDrawer drawer = (PageDrawer)context;
-            drawer.shFill((COSName)(arguments.get(0)));
-        } 
-        catch (Exception e) 
-        {
-            LOG.warn(e, e);
-        }
+        ((PageDrawer)context).shFill((COSName)(operands.get(0)));
     }
 }

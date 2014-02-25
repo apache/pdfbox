@@ -41,25 +41,19 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Implementation of content stream operator for page drawer.
- * 
+ * Do Draws an XObject.
  * @author Ben Litchfield
  * @author John Hewson
  */
-public class Invoke extends OperatorProcessor
+public final class Invoke extends OperatorProcessor
 {
     private static final Log LOG = LogFactory.getLog(Invoke.class);
 
-    /**
-     * Do: Paint the specified XObject.
-     * @param operator the operator that is being executed.
-     * @param arguments list
-     * @throws IOException if there is an error invoking the sub object.
-     */
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    @Override
+    public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
         PageDrawer drawer = (PageDrawer)context;
-        COSName objectName = (COSName)arguments.get(0);
+        COSName objectName = (COSName)operands.get(0);
         Map<String, PDXObject> xobjects = drawer.getResources().getXObjects();
         PDXObject xobject = xobjects.get(objectName.getName());
 

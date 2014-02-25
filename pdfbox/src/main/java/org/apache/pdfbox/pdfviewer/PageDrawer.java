@@ -598,23 +598,6 @@ public class PageDrawer extends PDFStreamEngine
         return linePath;
     }
 
-    /**
-     * Set the line path to draw.
-     * 
-     * @param newLinePath Set the line path to draw.
-     */
-    public void setLinePath(GeneralPath newLinePath)
-    {
-        if (linePath == null || linePath.getCurrentPoint() == null)
-        {
-            linePath = newLinePath;
-        }
-        else
-        {
-            linePath.append(newLinePath, false);
-        }
-    }
-
     // returns the stroking AWT Paint
     private Paint getStrokingPaint() throws IOException
     {
@@ -678,7 +661,7 @@ public class PageDrawer extends PDFStreamEngine
         {
             LOG.info("ColorSpace " + getGraphicsState().getStrokingColorSpace().getName() +
                      " doesn't provide a stroking color, using white instead!");
-            strokingPaint = Color.WHITE;
+            strokingPaint = Color.WHITE;// ((PageDrawer)context).strokePath();
         }
         graphics.setPaint(strokingPaint);
         graphics.setStroke(getStroke());
@@ -711,6 +694,22 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
         graphics.fill(linePath);
         linePath.reset();
+    }
+
+    /**
+     * Strokes and fills the path.
+     *
+     * @param windingRule The winding rule this path will use.
+     *
+     * @throws IOException If there is an IO error while filling the path.
+     */
+    public void strokeAndFillPath(int windingRule) throws IOException
+    {
+        // TODO can we avoid cloning the path?
+        GeneralPath path = (GeneralPath)linePath.clone();
+        strokePath();
+        linePath = path;
+        fillPath(windingRule);
     }
 
     // This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
