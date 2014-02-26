@@ -29,7 +29,7 @@ import org.apache.pdfbox.util.Matrix;
  * This represents resources for a function based shading.
  *
  */
-public class PDShadingType1 extends PDShadingResources
+public class PDShadingType1 extends PDShading
 {
 
     private COSArray domain = null;
@@ -49,7 +49,7 @@ public class PDShadingType1 extends PDShadingResources
      */
     public int getShadingType()
     {
-        return PDShadingResources.SHADING_TYPE1;
+        return PDShading.SHADING_TYPE1;
     }
 
     /**

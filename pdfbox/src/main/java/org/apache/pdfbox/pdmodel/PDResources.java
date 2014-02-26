@@ -32,8 +32,8 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
@@ -54,8 +54,8 @@ public class PDResources implements COSObjectable
     private Map<PDXObject, String> xobjectMappings = null;
     private HashMap<String, PDImageXObject> images = null;
     private Map<String, PDExtendedGraphicsState> graphicsStates = null;
-    private Map<String, PDPatternDictionary> patterns = null;
-    private Map<String, PDShadingResources> shadings = null;
+    private Map<String, PDAbstractPattern> patterns = null;
+    private Map<String, PDShading> shadings = null;
 
     /**
      * Log instance.
@@ -437,24 +437,24 @@ public class PDResources implements COSObjectable
 
     /**
      * This will get the map of patterns. This will return null if the underlying resources dictionary does not have a
-     * patterns dictionary. The keys are the pattern name as a String and the values are PDPatternDictionary objects.
+     * patterns dictionary. The keys are the pattern name as a String and the values are PDAbstractPattern objects.
      * 
      * @return The map of pattern resources objects.
      * 
      * @throws IOException If there is an error getting the pattern resources.
      */
-    public Map<String, PDPatternDictionary> getPatterns() throws IOException
+    public Map<String, PDAbstractPattern> getPatterns() throws IOException
     {
         if (patterns == null)
         {
             COSDictionary patternsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.PATTERN);
             if (patternsDictionary != null)
             {
-                patterns = new HashMap<String, PDPatternDictionary>();
+                patterns = new HashMap<String, PDAbstractPattern>();
                 for (COSName name : patternsDictionary.keySet())
                 {
                     COSDictionary dictionary = (COSDictionary) patternsDictionary.getDictionaryObject(name);
-                    patterns.put(name.getName(), PDPatternDictionary.create(dictionary));
+                    patterns.put(name.getName(), PDAbstractPattern.create(dictionary));
                 }
             }
         }
@@ -466,7 +466,7 @@ public class PDResources implements COSObjectable
      * 
      * @param patternsValue The new map of patterns.
      */
-    public void setPatterns(Map<String, PDPatternDictionary> patternsValue)
+    public void setPatterns(Map<String, PDAbstractPattern> patternsValue)
     {
         patterns = patternsValue;
         if (patternsValue != null)
@@ -476,7 +476,7 @@ public class PDResources implements COSObjectable
             while (iter.hasNext())
             {
                 String name = iter.next();
-                PDPatternDictionary pattern = patternsValue.get(name);
+                PDAbstractPattern pattern = patternsValue.get(name);
                 dic.setItem(COSName.getPDFName(name), pattern.getCOSObject());
             }
             resources.setItem(COSName.PATTERN, dic);
@@ -489,24 +489,24 @@ public class PDResources implements COSObjectable
 
     /**
      * This will get the map of shadings. This will return null if the underlying resources dictionary does not have a
-     * shading dictionary. The keys are the shading name as a String and the values are PDShadingResources objects.
+     * shading dictionary. The keys are the shading name as a String and the values are PDShading objects.
      * 
      * @return The map of shading resources objects.
      * 
      * @throws IOException If there is an error getting the shading resources.
      */
-    public Map<String, PDShadingResources> getShadings() throws IOException
+    public Map<String, PDShading> getShadings() throws IOException
     {
         if (shadings == null)
         {
             COSDictionary shadingsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.SHADING);
             if (shadingsDictionary != null)
             {
-                shadings = new HashMap<String, PDShadingResources>();
+                shadings = new HashMap<String, PDShading>();
                 for (COSName name : shadingsDictionary.keySet())
                 {
                     COSDictionary dictionary = (COSDictionary) shadingsDictionary.getDictionaryObject(name);
-                    shadings.put(name.getName(), PDShadingResources.create(dictionary));
+                    shadings.put(name.getName(), PDShading.create(dictionary));
                 }
             }
         }
@@ -518,7 +518,7 @@ public class PDResources implements COSObjectable
      * 
      * @param shadingsValue The new map of shadings.
      */
-    public void setShadings(Map<String, PDShadingResources> shadingsValue)
+    public void setShadings(Map<String, PDShading> shadingsValue)
     {
         shadings = shadingsValue;
         if (shadingsValue != null)
@@ -528,7 +528,7 @@ public class PDResources implements COSObjectable
             while (iter.hasNext())
             {
                 String name = iter.next();
-                PDShadingResources shading = shadingsValue.get(name);
+                PDShading shading = shadingsValue.get(name);
                 dic.setItem(COSName.getPDFName(name), shading.getCOSObject());
             }
             resources.setItem(COSName.SHADING, dic);

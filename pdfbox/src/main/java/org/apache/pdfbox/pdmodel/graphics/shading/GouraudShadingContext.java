@@ -34,11 +34,7 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRange;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -77,7 +73,7 @@ public abstract class GouraudShadingContext implements PaintContext
      */
     protected float[] background;
     private final boolean hasFunction;
-    private final PDShadingResources gouraudShadingType;
+    private final PDShading gouraudShadingType;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -90,7 +86,7 @@ public abstract class GouraudShadingContext implements PaintContext
      * @throws IOException if something went wrong
      *
      */
-    protected GouraudShadingContext(PDShadingResources shadingType, ColorModel colorModelValue,
+    protected GouraudShadingContext(PDShading shadingType, ColorModel colorModelValue,
             AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
         gouraudShadingType = shadingType;

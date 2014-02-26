@@ -70,7 +70,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
 import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
@@ -825,7 +825,7 @@ public class PageDrawer extends PDFStreamEngine
     // TODO would this now be better off using PDPattern?
     public void shFill(COSName shadingName) throws IOException
     {
-        PDShadingResources shading = getResources().getShadings().get(shadingName.getName());
+        PDShading shading = getResources().getShadings().get(shadingName.getName());
         LOG.debug("Shading = " + shading.toString());
         int shadingType = shading.getShadingType();
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();

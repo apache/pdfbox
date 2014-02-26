@@ -31,7 +31,7 @@ import org.apache.pdfbox.util.Matrix;
  * A tiling pattern dictionary.
  * @author Andreas Lehmkühler
  */
-public class PDTilingPattern extends PDPatternDictionary
+public class PDTilingPattern extends PDAbstractPattern
 {
     /** paint type 1 = colored tiling pattern. */
     public static final int PAINT_COLORED = 1;
@@ -54,7 +54,7 @@ public class PDTilingPattern extends PDPatternDictionary
     public PDTilingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternDictionary.TYPE_TILING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_TILING_PATTERN);
     }
 
     /**
@@ -69,7 +69,7 @@ public class PDTilingPattern extends PDPatternDictionary
     @Override
     public int getPatternType()
     {
-        return PDPatternDictionary.TYPE_TILING_PATTERN;
+        return PDAbstractPattern.TYPE_TILING_PATTERN;
     }
 
     /**

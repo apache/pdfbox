@@ -19,12 +19,12 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.tiling.TilingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
@@ -53,13 +53,13 @@ public final class PDPattern extends PDSpecialColorSpace
 {
     private static final Log LOG = LogFactory.getLog(PDPattern.class);
 
-    private Map<String, PDPatternDictionary> patterns;
+    private Map<String, PDAbstractPattern> patterns;
     private PDColorSpace underlyingColorSpace;
 
     /**
      * Creates a new pattern color space.
      */
-    public PDPattern(Map<String, PDPatternDictionary> patterns)
+    public PDPattern(Map<String, PDAbstractPattern> patterns)
     {
         this.patterns = patterns;
     }
@@ -67,7 +67,7 @@ public final class PDPattern extends PDSpecialColorSpace
     /**
      * Creates a new uncolored tiling pattern color space.
      */
-    public PDPattern(Map<String, PDPatternDictionary> patterns, PDColorSpace colorSpace)
+    public PDPattern(Map<String, PDAbstractPattern> patterns, PDColorSpace colorSpace)
     {
         this.patterns = patterns;
         this.underlyingColorSpace = colorSpace;
@@ -123,7 +123,7 @@ public final class PDPattern extends PDSpecialColorSpace
             throw new IOException("pattern " + color.getPatternName() + " was not found");
         }
 
-        PDPatternDictionary pattern = patterns.get(color.getPatternName());
+        PDAbstractPattern pattern = patterns.get(color.getPatternName());
         if (pattern instanceof PDTilingPattern)
         {
             return toTilingPaint((PDTilingPattern)pattern, color);
@@ -151,27 +151,27 @@ public final class PDPattern extends PDSpecialColorSpace
     public Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight)
             throws IOException
     {
-        PDShadingResources shadingResources = shadingPattern.getShading();
+        PDShading shadingResources = shadingPattern.getShading();
         int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
         switch (shadingType)
         {
-            case PDShadingResources.SHADING_TYPE1:
+            case PDShading.SHADING_TYPE1:
                 return new Type1ShadingPaint((PDShadingType1)shadingResources,
                                              shadingPattern.getMatrix(), pageHeight);
-            case PDShadingResources.SHADING_TYPE2:
+            case PDShading.SHADING_TYPE2:
                 return new AxialShadingPaint((PDShadingType2)shadingResources,
                                              shadingPattern.getMatrix(), pageHeight);
-            case PDShadingResources.SHADING_TYPE3:
+            case PDShading.SHADING_TYPE3:
                 return new RadialShadingPaint((PDShadingType3)shadingResources,
                                               shadingPattern.getMatrix(), pageHeight);
-            case PDShadingResources.SHADING_TYPE4:
+            case PDShading.SHADING_TYPE4:
                 return new Type4ShadingPaint((PDShadingType4)shadingResources,
                                              shadingPattern.getMatrix(), pageHeight);
-            case PDShadingResources.SHADING_TYPE5:
+            case PDShading.SHADING_TYPE5:
                 return new Type5ShadingPaint((PDShadingType5)shadingResources,
                                              shadingPattern.getMatrix(), pageHeight);
-            case PDShadingResources.SHADING_TYPE6:
-            case PDShadingResources.SHADING_TYPE7:
+            case PDShading.SHADING_TYPE6:
+            case PDShading.SHADING_TYPE7:
                 // TODO ...
                 LOG.debug("Not implemented, shading type: " + shadingType);
                 return new Color(0, 0, 0, 0); // transparent

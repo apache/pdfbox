@@ -30,7 +30,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -52,13 +52,13 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
         if (vPath.isEmpty()) {
             return;
         }
-        else if (!vPath.isExpectedType(PDShadingResources.class))
+        else if (!vPath.isExpectedType(PDShading.class))
         {
             context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT, "ShadingPattern validation required at least a PDResources"));
         } 
         else 
         {
-            PDShadingResources shaddingResource = (PDShadingResources) vPath.peek();
+            PDShading shaddingResource = (PDShading) vPath.peek();
             PDPage page = vPath.getClosestPathElement(PDPage.class);
             checkColorSpace(context, page, shaddingResource);
             checkGraphicState(context, page, shaddingResource);
@@ -76,7 +76,7 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      * @return true if the Shading pattern is valid, false otherwise.
      * @throws ValidationException
      */
-    protected void checkColorSpace(PreflightContext context, PDPage page, PDShadingResources shadingRes)
+    protected void checkColorSpace(PreflightContext context, PDPage page, PDShading shadingRes)
             throws ValidationException
             {
         try
@@ -100,7 +100,7 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      * @return true is the ExtGState is missing or valid, false otherwise.
      * @throws ValidationException
      */
-    protected void checkGraphicState(PreflightContext context, PDPage page, PDShadingResources shadingRes)
+    protected void checkGraphicState(PreflightContext context, PDPage page, PDShading shadingRes)
             throws ValidationException
             {
         COSDictionary resources = (COSDictionary) shadingRes.getCOSDictionary().getDictionaryObject(
