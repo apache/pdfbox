@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer;
+package org.apache.pdfbox.tools.gui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
+import org.apache.pdfbox.pdfviewer.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;

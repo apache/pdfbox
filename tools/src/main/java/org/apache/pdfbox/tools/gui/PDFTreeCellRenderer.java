@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer;
+package org.apache.pdfbox.tools.gui;
 
 import java.awt.Component;
 
@@ -59,7 +59,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 
     private Object convertToTreeObject( Object nodeValue )
     {
-        if( nodeValue instanceof MapEntry )
+        if( nodeValue instanceof MapEntry)
         {
             MapEntry entry = (MapEntry)nodeValue;
             COSName key = (COSName)entry.getKey();
@@ -82,7 +82,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             nodeValue = ((COSName)nodeValue).getName();
         }
-        else if( nodeValue instanceof ArrayEntry )
+        else if( nodeValue instanceof ArrayEntry)
         {
             ArrayEntry entry = (ArrayEntry)nodeValue;
             nodeValue = "[" + entry.getIndex() + "]" + convertToTreeObject( entry.getValue() );

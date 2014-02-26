@@ -37,8 +37,9 @@ import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.pdfviewer.PDFPagePanel;
-import org.apache.pdfbox.pdfviewer.ReaderBottomPanel;
+import org.apache.pdfbox.tools.gui.PDFPagePanel;
+import org.apache.pdfbox.tools.gui.PageWrapper;
+import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageable;
@@ -411,71 +412,5 @@ public class PDFReader extends JFrame
                 + "  -password <password>      Password to decrypt the document\n"
                 + "  -nonSeq                   Enables the new non-sequential parser\n"
                 + "  <input-file>              The PDF document to be loaded\n");
-    }
-
-    /**
-     * A class to handle some prettyness around a single PDF page.
-     * @author Ben Litchfield
-     */
-    private static class PageWrapper implements MouseMotionListener
-    {
-        private JPanel pageWrapper = new JPanel();
-        private PDFPagePanel pagePanel = null;
-        private PDFReader reader = null;
-
-        private static final int SPACE_AROUND_DOCUMENT = 20;
-
-        /**
-         * Constructor.
-         * @param aReader The reader application that holds this page.
-         * @throws IOException If there is an error creating the page drawing objects.
-         */
-        public PageWrapper(PDFReader aReader) throws IOException
-        {
-            reader = aReader;
-            pagePanel = new PDFPagePanel();
-            pageWrapper.setLayout(null);
-            pageWrapper.add(pagePanel);
-            pagePanel.setLocation(SPACE_AROUND_DOCUMENT, SPACE_AROUND_DOCUMENT);
-            pageWrapper.setBorder(LineBorder.createBlackLineBorder());
-            pagePanel.addMouseMotionListener(this);
-        }
-
-        /**
-         * This will display the PDF page in this component.
-         * @param page The PDF page to display.
-         */
-        public void displayPage(PDPage page)
-        {
-            pagePanel.setPage(page);
-            pagePanel.setPreferredSize(pagePanel.getSize());
-            Dimension d = pagePanel.getSize();
-            d.width+=(SPACE_AROUND_DOCUMENT*2);
-            d.height+=(SPACE_AROUND_DOCUMENT*2);
-
-            pageWrapper.setPreferredSize(d);
-            pageWrapper.validate();
-        }
-
-        /**
-         * This will get the JPanel that can be displayed.
-         * @return The panel with the displayed PDF page.
-         */
-        public JPanel getPanel()
-        {
-            return pageWrapper;
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e)
-        {
-            //do nothing when mouse moves.
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e)
-        {
-            reader.getBottomStatusPanel().getStatusLabel().setText(e.getX() + "," + e.getY());
-        }
     }
 }

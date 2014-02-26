@@ -14,41 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer;
-
-import org.apache.pdfbox.cos.COSName;
-
+package org.apache.pdfbox.tools.gui;
 
 /**
- * This is a simple class that will contain a key and a value.
+ * This is a simple class that will contain an index and a value.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class MapEntry
+public class ArrayEntry
 {
-    private Object key;
+    private int index;
     private Object value;
-
-    /**
-     * Get the key for this entry.
-     *
-     * @return The entry's key.
-     */
-    public Object getKey()
-    {
-        return key;
-    }
-
-    /**
-     * This will set the key for this entry.
-     *
-     * @param k the new key for this entry.
-     */
-    public void setKey(Object k)
-    {
-        key = k;
-    }
 
     /**
      * This will get the value for this entry.
@@ -71,21 +48,22 @@ public class MapEntry
     }
 
     /**
-     * This will output a string representation of this class.
+     * This will get the index of the array entry.
      *
-     * @return A string representation of this class.
+     * @return The 0-based index into the array
      */
-    public String toString()
+    public int getIndex()
     {
-        String retval = null;
-        if( key instanceof COSName )
-        {
-            retval = ((COSName)key).getName();
-        }
-        else
-        {
-            retval = "" +key;
-        }
-        return retval;
+        return index;
+    }
+
+    /**
+     * This will set the index value.
+     *
+     * @param i The new index value.
+     */
+    public void setIndex(int i)
+    {
+        index = i;
     }
 }
