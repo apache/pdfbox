@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.pdmodel.fdf;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -34,7 +34,7 @@ import org.w3c.dom.Text;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class XMLUtil
+final class XMLUtil
 {
     /**
      * Utility class, should not be instantiated.

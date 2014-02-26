@@ -41,8 +41,6 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 
-import org.apache.pdfbox.util.XMLUtil;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
