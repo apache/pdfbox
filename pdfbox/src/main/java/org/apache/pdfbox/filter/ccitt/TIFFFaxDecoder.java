@@ -1077,6 +1077,13 @@ public final class TIFFFaxDecoder {
                 }
             }
 
+            // workaround for PDFBOX-1916, it is not clear whether the
+            // code in the class is to blame or if the PDF is corrupt
+            if (cce.length == currIndex)
+            {
+                break;
+            }
+
             // Add the changing element beyond the current scanline for the
             // other color too
             cce[currIndex++] = bitOffset;
