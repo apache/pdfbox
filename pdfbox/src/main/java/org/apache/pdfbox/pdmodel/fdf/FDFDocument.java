@@ -37,8 +37,6 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
 
-import org.apache.pdfbox.util.XMLUtil;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
