@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics;
+package org.apache.pdfbox.pdmodel.graphics.state;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -24,6 +24,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.graphics.PDFontSetting;
+import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 
 import java.io.IOException;
 

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
