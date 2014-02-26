@@ -37,7 +37,6 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.ConformingPDDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.XrefEntry;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
