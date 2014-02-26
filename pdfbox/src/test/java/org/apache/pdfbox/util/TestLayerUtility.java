@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optional_content.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optional_content.PDOptionalContentProperties;
-import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
+import org.apache.pdfbox.pdmodel.PDPropertyList;
 
 /**
  * Tests the {@link LayerUtility} class.
