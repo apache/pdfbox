@@ -231,7 +231,7 @@ public class COSStream extends COSDictionary
             doDecode();
         }
 
-        if (unFilteredStream == null)
+        if (unFilteredStream == null || decodeResult == null)
         {
             throw new IOException("Stream was not read");
         }
@@ -267,6 +267,7 @@ public class COSStream extends COSDictionary
         if( filters == null )
         {
             //then do nothing
+            decodeResult = DecodeResult.DEFAULT;
         }
         else if( filters instanceof COSName )
         {
