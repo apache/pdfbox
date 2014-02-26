@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-
-
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -32,9 +30,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 /**
  * This represents resources for a shading.
  *
- * @version $Revision: 1.0 $
+ * @author Andreas Lehmkühler
  */
-public abstract class PDShadingResources implements COSObjectable
+public abstract class PDShading implements COSObjectable
 {
     private COSDictionary dictionary;
     private COSArray background = null;
@@ -75,7 +73,7 @@ public abstract class PDShadingResources implements COSObjectable
     /**
      * Default constructor.
      */
-    public PDShadingResources()
+    public PDShading()
     {
         dictionary = new COSDictionary();
     }
@@ -85,7 +83,7 @@ public abstract class PDShadingResources implements COSObjectable
      *
      * @param shadingDictionary The dictionary for this shading.
      */
-    public PDShadingResources( COSDictionary shadingDictionary )
+    public PDShading(COSDictionary shadingDictionary)
     {
         dictionary = shadingDictionary;
     }
@@ -264,9 +262,9 @@ public abstract class PDShadingResources implements COSObjectable
      * 
      * @throws IOException If we are unable to create the PDShading object.
      */
-    public static PDShadingResources create(COSDictionary resourceDictionary) throws IOException
+    public static PDShading create(COSDictionary resourceDictionary) throws IOException
     {
-        PDShadingResources shading = null;
+        PDShading shading = null;
         int shadingType = resourceDictionary.getInt( COSName.SHADING_TYPE, 0 );
         switch (shadingType) 
         {

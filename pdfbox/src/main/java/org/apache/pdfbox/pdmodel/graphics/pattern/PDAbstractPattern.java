@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * A Pattern dictionary from a page's resources.
  * @author Andreas Lehmkühler
  */
-public abstract class PDPatternDictionary implements COSObjectable
+public abstract class PDAbstractPattern implements COSObjectable
 {
     /** Tiling pattern type. */
     public static final int TYPE_TILING_PATTERN = 1;
@@ -41,9 +41,9 @@ public abstract class PDPatternDictionary implements COSObjectable
      * @return the newly created pattern resources object
      * @throws IOException If we are unable to create the PDPattern object.
      */
-    public static PDPatternDictionary create(COSDictionary resourceDictionary) throws IOException
+    public static PDAbstractPattern create(COSDictionary resourceDictionary) throws IOException
     {
-        PDPatternDictionary pattern;
+        PDAbstractPattern pattern;
         int patternType = resourceDictionary.getInt(COSName.PATTERN_TYPE, 0);
         switch (patternType)
         {
@@ -64,7 +64,7 @@ public abstract class PDPatternDictionary implements COSObjectable
     /**
      * Creates a new Pattern dictionary.
      */
-    public PDPatternDictionary()
+    public PDAbstractPattern()
     {
         patternDictionary = new COSDictionary();
         patternDictionary.setName(COSName.TYPE, COSName.PATTERN.getName());
@@ -74,7 +74,7 @@ public abstract class PDPatternDictionary implements COSObjectable
      * Creates a new Pattern dictionary from the given COS dictionary.
      * @param resourceDictionary The COSDictionary for this pattern resource.
      */
-    public PDPatternDictionary(COSDictionary resourceDictionary)
+    public PDAbstractPattern(COSDictionary resourceDictionary)
     {
         patternDictionary = resourceDictionary;
     }

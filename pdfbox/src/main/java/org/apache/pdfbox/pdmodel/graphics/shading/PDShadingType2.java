@@ -25,7 +25,7 @@ import org.apache.pdfbox.cos.COSName;
  *
  * @version $Revision: 1.0 $
  */
-public class PDShadingType2 extends PDShadingResources
+public class PDShadingType2 extends PDShading
 {
     private COSArray coords = null;
     private COSArray domain = null;
@@ -46,7 +46,7 @@ public class PDShadingType2 extends PDShadingResources
      */
     public int getShadingType()
     {
-        return PDShadingResources.SHADING_TYPE2;
+        return PDShading.SHADING_TYPE2;
     }
 
     /**

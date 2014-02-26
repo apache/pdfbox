@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
  * Triangle Meshes).
  *
  */
-public class PDShadingType5 extends PDShadingResources
+public class PDShadingType5 extends PDShading
 {
 
     /**
@@ -51,7 +51,7 @@ public class PDShadingType5 extends PDShadingResources
      */
     public int getShadingType()
     {
-        return PDShadingResources.SHADING_TYPE5;
+        return PDShading.SHADING_TYPE5;
     }
 
     /**

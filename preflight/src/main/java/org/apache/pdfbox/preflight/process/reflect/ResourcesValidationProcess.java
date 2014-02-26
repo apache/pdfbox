@@ -40,9 +40,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternDictionary;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -126,10 +126,10 @@ public class ResourcesValidationProcess extends AbstractProcess
     {
         try
         {
-            Map<String, PDShadingResources> shadingResources = resources.getShadings();
+            Map<String, PDShading> shadingResources = resources.getShadings();
             if (shadingResources != null)
             {
-                for (Entry<String, PDShadingResources> entry : shadingResources.entrySet())
+                for (Entry<String, PDShading> entry : shadingResources.entrySet())
                 {
                     ContextHelper.validateElement(context, entry.getValue(), SHADDING_PATTERN_PROCESS);
                 }
@@ -152,10 +152,10 @@ public class ResourcesValidationProcess extends AbstractProcess
     {
         try
         {
-            Map<String, PDPatternDictionary> patternResources = resources.getPatterns();
+            Map<String, PDAbstractPattern> patternResources = resources.getPatterns();
             if (patternResources != null)
             {
-                for (Entry<String, PDPatternDictionary> entry : patternResources.entrySet())
+                for (Entry<String, PDAbstractPattern> entry : patternResources.entrySet())
                 {
                     if (entry.getValue() instanceof PDTilingPattern)
                     {

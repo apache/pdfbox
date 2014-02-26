@@ -25,17 +25,17 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * A shading pattern dictionary.
  * @author Andreas Lehmkühler
  */
-public class PDShadingPattern extends PDPatternDictionary
+public class PDShadingPattern extends PDAbstractPattern
 {
     private PDExtendedGraphicsState extendedGraphicsState;
-    private PDShadingResources shading;
+    private PDShading shading;
     private COSArray matrix = null;
 
     /**
@@ -44,7 +44,7 @@ public class PDShadingPattern extends PDPatternDictionary
     public PDShadingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDPatternDictionary.TYPE_SHADING_PATTERN);
+        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_SHADING_PATTERN);
     }
 
     /**
@@ -59,7 +59,7 @@ public class PDShadingPattern extends PDPatternDictionary
     @Override
     public int getPatternType()
     {
-        return PDPatternDictionary.TYPE_SHADING_PATTERN;
+        return PDAbstractPattern.TYPE_SHADING_PATTERN;
     }
 
     /**
@@ -142,14 +142,14 @@ public class PDShadingPattern extends PDPatternDictionary
      * @return The shading resources for this pattern.
      * @throws IOException if something went wrong
      */
-    public PDShadingResources getShading() throws IOException
+    public PDShading getShading() throws IOException
     {
         if (shading == null) 
         {
             COSDictionary dictionary = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.SHADING );
             if( dictionary != null )
             {
-                shading = PDShadingResources.create(dictionary);
+                shading = PDShading.create(dictionary);
             }
         }
         return shading;
@@ -159,7 +159,7 @@ public class PDShadingPattern extends PDPatternDictionary
      * This will set the shading resources for this pattern.
      * @param shadingResources The new shading resources for this pattern.
      */
-    public void setShading( PDShadingResources shadingResources )
+    public void setShading( PDShading shadingResources )
     {
         shading = shadingResources;
         if (shadingResources != null)

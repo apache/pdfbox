@@ -40,6 +40,6 @@ public class PDShadingType3 extends PDShadingType2
      */
     public int getShadingType()
     {
-        return PDShadingResources.SHADING_TYPE3;
+        return PDShading.SHADING_TYPE3;
     }
 }
