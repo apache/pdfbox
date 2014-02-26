@@ -66,7 +66,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.pdmodel.graphics.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
@@ -857,96 +856,5 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(paint);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.fill(getGraphicsState().getCurrentClippingPath());
-    }
-
-    /**
-     * Fill with a Function-based gradient / shading. If extending the class, override this and its siblings, not the
-     * public SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_Function(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-    }
-
-    /**
-     * Fill with an Axial Shading. If extending the class, override this and its siblings, not the public SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_Axial(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-
-    }
-
-    /**
-     * Fill with a Radial gradient / shading. If extending the class, override this and its siblings, not the public
-     * SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_Radial(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-    }
-
-    /**
-     * Fill with a Free-form Gourad-shaded triangle mesh. If extending the class, override this and its siblings, not
-     * the public SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_FreeGourad(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-    }
-
-    /**
-     * Fill with a Lattice-form Gourad-shaded triangle mesh. If extending the class, override this and its siblings, not
-     * the public SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_LatticeGourad(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-    }
-
-    /**
-     * Fill with a Coons patch mesh If extending the class, override this and its siblings, not the public SHFill
-     * method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_CoonsPatch(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
-    }
-
-    /**
-     * Fill with a Tensor-product patch mesh. If extending the class, override this and its siblings, not the public
-     * SHFill method.
-     * 
-     * @param Shading The Shading Dictionary to use for this fill instruction.
-     * 
-     * @throws IOException If there is an IO error while shade-filling the path/clipping area.
-     */
-    protected void SHFill_TensorPatch(PDShading Shading) throws IOException
-    {
-        throw new IOException("Not Implemented");
     }
 }
