@@ -137,7 +137,14 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.PATTERN)
             {
-                return new PDPattern(patterns, PDColorSpace.create(array.get(1)));
+                if (array.size() == 1)
+                {
+                    return new PDPattern(patterns);
+                }
+                else
+                {
+                    return new PDPattern(patterns, PDColorSpace.create(array.get(1)));
+                }
             }
             else
             {
