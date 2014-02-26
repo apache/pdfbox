@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
+package org.apache.pdfbox.pdmodel.graphics.optional_content;
 
 import java.awt.Color;
 import java.io.File;
@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
+import org.apache.pdfbox.pdmodel.graphics.optional_content.PDOptionalContentProperties.BaseState;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 
 /**
