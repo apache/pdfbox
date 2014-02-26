@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.pdmodel.common;
+package org.apache.pdfbox.pdfparser;
 
 /**
- *
- * @author adam
+ * XRef Entry.
+ * @author Adam Nichols
  */
-public class XrefEntry {
+class XrefEntry
+{
     private int objectNumber = 0;
     private int byteOffset = 0;
     private int generation = 0;
     private boolean inUse = true;
 
-    public XrefEntry() {
-    }
-
-    public XrefEntry(int objectNumber, int byteOffset, int generation, String inUse) {
+    public XrefEntry(int objectNumber, int byteOffset, int generation, String inUse)
+    {
         this.objectNumber = objectNumber;
         this.byteOffset = byteOffset;
         this.generation = generation;
         this.inUse = "n".equals(inUse);
     }
 
-    public int getByteOffset() {
+    public int getByteOffset()
+    {
         return byteOffset;
     }
 }
