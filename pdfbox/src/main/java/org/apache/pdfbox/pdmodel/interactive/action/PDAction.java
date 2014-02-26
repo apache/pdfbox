@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.action.type;
+package org.apache.pdfbox.pdmodel.interactive.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,6 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
-import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 
 /**
  * This represents an action that can be executed in a PDF document.

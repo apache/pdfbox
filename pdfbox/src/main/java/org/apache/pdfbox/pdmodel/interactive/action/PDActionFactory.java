@@ -18,13 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSDictionary;
 
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionJavaScript;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionLaunch;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionRemoteGoTo;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
-
 /**
  * This class will take a dictionary and determine which type of action to create.
  *

@@ -17,7 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionJavaScript;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 
 import java.io.IOException;
 

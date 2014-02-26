@@ -31,7 +31,7 @@ import javax.activation.FileDataSource;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.preflight.Format;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightDocument;

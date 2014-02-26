@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAdditionalActions;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 

@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
