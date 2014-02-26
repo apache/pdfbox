@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer;
+package org.apache.pdfbox.tools.gui;
 
 /**
  * A tree model that uses a cos document.

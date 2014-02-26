@@ -18,10 +18,10 @@ package org.apache.pdfbox.tools;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
-import org.apache.pdfbox.pdfviewer.PDFTreeModel;
-import org.apache.pdfbox.pdfviewer.PDFTreeCellRenderer;
-import org.apache.pdfbox.pdfviewer.ArrayEntry;
-import org.apache.pdfbox.pdfviewer.MapEntry;
+import org.apache.pdfbox.tools.gui.PDFTreeModel;
+import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
+import org.apache.pdfbox.tools.gui.ArrayEntry;
+import org.apache.pdfbox.tools.gui.MapEntry;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
