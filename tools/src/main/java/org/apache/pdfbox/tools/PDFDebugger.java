@@ -25,8 +25,6 @@ import org.apache.pdfbox.tools.gui.MapEntry;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import org.apache.pdfbox.util.ExtensionFileFilter;
-
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;

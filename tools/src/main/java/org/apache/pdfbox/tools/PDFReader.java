@@ -16,9 +16,6 @@
  */
 package org.apache.pdfbox.tools;
 
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -34,16 +31,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.border.LineBorder;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.tools.gui.PDFPagePanel;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageable;
-import org.apache.pdfbox.util.ExtensionFileFilter;
 import org.apache.pdfbox.util.ImageIOUtil;
 import org.apache.pdfbox.util.RenderUtil;
 
