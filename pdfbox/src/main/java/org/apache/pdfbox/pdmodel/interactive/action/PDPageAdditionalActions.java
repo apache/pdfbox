@@ -20,7 +20,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 
 /**
  * This class represents a page object's dictionary of actions
