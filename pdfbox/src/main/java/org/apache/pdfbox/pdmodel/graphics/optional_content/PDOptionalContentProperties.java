@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
+package org.apache.pdfbox.pdmodel.graphics.optional_content;
 
 import java.util.Collection;
 

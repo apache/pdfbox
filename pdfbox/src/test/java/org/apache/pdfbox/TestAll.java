@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.optional_content.TestOptionalContentGroups;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestImageIOUtils;
@@ -90,7 +91,7 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPDDocument.class );
         suite.addTestSuite( TestPDDocumentCatalog.class );
         suite.addTestSuite( TestPDDocumentInformation.class );
-        suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
+        suite.addTestSuite( TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
         suite.addTest( org.apache.pdfbox.pdmodel.common.function.TestFunctions.suite() );
 

@@ -37,8 +37,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
-import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
+import org.apache.pdfbox.pdmodel.graphics.optional_content.PDOptionalContentGroup;
+import org.apache.pdfbox.pdmodel.graphics.optional_content.PDOptionalContentProperties;
 import org.apache.pdfbox.pdmodel.markedcontent.PDPropertyList;
 
 /**
