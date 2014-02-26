@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics;
+package org.apache.pdfbox.pdmodel.graphics.state;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
-import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -396,7 +396,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * This will get the rendering intent.
      *
-     * @see PDExtendedGraphicsState
+     * @see org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
      *
      * @return The rendering intent
      */

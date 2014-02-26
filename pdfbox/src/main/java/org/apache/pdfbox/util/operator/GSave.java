@@ -19,7 +19,7 @@ package org.apache.pdfbox.util.operator;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.util.PDFOperator;
 
 /**
