@@ -67,9 +67,16 @@ public class TilingPaint extends TexturePaint
     //  gets rect in parent content stream coordinates
     private static Rectangle getTransformedRect(PDTilingPattern pattern)
     {
-        AffineTransform at = pattern.getMatrix().createAffineTransform();
-        Rectangle rect = new Rectangle(pattern.getBBox().createDimension());
-        return at.createTransformedShape(rect).getBounds();
+        if (pattern.getMatrix() == null)
+        {
+            return new Rectangle(pattern.getBBox().createDimension());
+        }
+        else
+        {
+            AffineTransform at = pattern.getMatrix().createAffineTransform();
+            Rectangle rect = new Rectangle(pattern.getBBox().createDimension());
+            return at.createTransformedShape(rect).getBounds();
+        }
     }
 
     // gets image in parent stream coordinates
@@ -90,10 +97,20 @@ public class TilingPaint extends TexturePaint
 
         // TODO xStep and yStep
 
-        // undo translation
-        Matrix matrix = (Matrix)pattern.getMatrix().clone();
-        matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
-        matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
+        // matrix
+        Matrix matrix;
+        if (pattern.getMatrix() == null)
+        {
+            // identity
+            matrix = new Matrix();
+        }
+        else
+        {
+            // undo translation
+            matrix = (Matrix)pattern.getMatrix().clone();
+            matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
+            matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
+        }
 
         PageDrawer drawer = new PageDrawer();
         PDRectangle pdRect = new PDRectangle(0, 0, width, height);

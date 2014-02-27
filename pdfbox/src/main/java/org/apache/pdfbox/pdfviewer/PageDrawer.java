@@ -211,6 +211,8 @@ public class PageDrawer extends PDFStreamEngine
         {
             getGraphicsState().setNonStrokingColorSpace(colorSpace);
             getGraphicsState().setNonStrokingColor(color);
+            getGraphicsState().setStrokingColorSpace(colorSpace);
+            getGraphicsState().setStrokingColor(color);
         }
 
         processSubStream(pattern.getResources(), (COSStream)pattern.getCOSObject());
