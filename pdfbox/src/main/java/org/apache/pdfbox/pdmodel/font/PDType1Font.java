@@ -237,7 +237,10 @@ public class PDType1Font extends PDSimpleFont
                     if (awtFont == null)
                     {
                         // check if the font is part of our environment
-                        awtFont = FontManager.getAwtFont(fd.getFontName());
+                        if (fd.getFontName() != null)
+                        {
+                            awtFont = FontManager.getAwtFont(fd.getFontName());
+                        }
                         if (awtFont == null)
                         {
                             log.info("Can't find the specified font " + fd.getFontName() );

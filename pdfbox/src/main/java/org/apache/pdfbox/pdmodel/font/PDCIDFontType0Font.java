@@ -64,8 +64,11 @@ public class PDCIDFontType0Font extends PDCIDFont
     public Font getawtFont() throws IOException
     {
         PDFontDescriptor fd = getFontDescriptor();
-        Font awtFont = FontManager.getAwtFont(fd.getFontName());
-
+        Font awtFont = null;
+        if (fd.getFontName() != null)
+        {
+            awtFont = FontManager.getAwtFont(fd.getFontName());
+        }
         if (awtFont == null && fd instanceof PDFontDescriptorDictionary) {
             PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary) fd;
             if (fdd.getFontFile3() != null) {

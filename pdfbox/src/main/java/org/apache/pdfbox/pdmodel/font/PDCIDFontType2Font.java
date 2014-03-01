@@ -87,7 +87,10 @@ public class PDCIDFontType2Font extends PDCIDFont
             }
             if (awtFont == null)
             {
-                awtFont = FontManager.getAwtFont(fd.getFontName());
+                if (fd.getFontName() != null)
+                {
+                    awtFont = FontManager.getAwtFont(fd.getFontName());
+                }
                 if (awtFont != null)
                 {
                     LOG.info("Using font "+awtFont.getName()+ " instead");
