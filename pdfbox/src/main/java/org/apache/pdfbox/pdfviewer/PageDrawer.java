@@ -461,7 +461,10 @@ public class PageDrawer extends PDFStreamEngine
                     if (fdDictionary.getFontFile() == null)
                     {
                         // check if the font is part of our environment
-                        awtFont = FontManager.getAwtFont(fd.getFontName());
+                        if (fd.getFontName() != null)
+                        {
+                            awtFont = FontManager.getAwtFont(fd.getFontName());
+                        }
                         if (awtFont != null)
                         {
                             type1Font.setIsFontSubstituted(true);
