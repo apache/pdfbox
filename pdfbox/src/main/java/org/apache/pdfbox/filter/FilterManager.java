@@ -32,7 +32,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class FilterManager
 {
-    private Map<COSName, Filter> filters = new HashMap<COSName, Filter>();
+    private final Map<COSName, Filter> filters = new HashMap<COSName, Filter>();
 
     /**
      * Constructor.
@@ -40,7 +40,6 @@ public class FilterManager
     public FilterManager()
     {
         Filter flateFilter = new FlateFilter();
-        Filter dctFilter = new DCTFilter();
         Filter ccittFaxFilter = new CCITTFaxDecodeFilter();
         Filter lzwFilter = new LZWFilter();
         Filter asciiHexFilter = new ASCIIHexFilter();
@@ -52,8 +51,8 @@ public class FilterManager
         
         addFilter( COSName.FLATE_DECODE, flateFilter );
         addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
-        addFilter( COSName.DCT_DECODE, dctFilter );
-        addFilter( COSName.DCT_DECODE_ABBREVIATION, dctFilter );
+        addFilter( COSName.DCT_DECODE, jpxFilter);
+        addFilter( COSName.DCT_DECODE_ABBREVIATION, jpxFilter);
         addFilter( COSName.CCITTFAX_DECODE, ccittFaxFilter );
         addFilter( COSName.CCITTFAX_DECODE_ABBREVIATION, ccittFaxFilter );
         addFilter( COSName.LZW_DECODE, lzwFilter );
@@ -66,8 +65,7 @@ public class FilterManager
         addFilter( COSName.RUN_LENGTH_DECODE_ABBREVIATION, runLengthFilter );
         addFilter( COSName.CRYPT, cryptFilter );
         addFilter( COSName.JPX_DECODE, jpxFilter );
-        addFilter( COSName.JBIG2_DECODE, jbig2Filter );
-        
+        addFilter( COSName.JBIG2_DECODE, jbig2Filter );        
     }
 
     /**
