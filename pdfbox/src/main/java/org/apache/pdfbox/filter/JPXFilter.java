@@ -69,7 +69,26 @@ public class JPXFilter implements Filter
                 options.setInt(COSName.BITS_PER_COMPONENT, colorModel.getPixelSize() / colorModel.getNumComponents());
                 options.setInt(COSName.HEIGHT, bi.getHeight());
                 options.setInt(COSName.WIDTH, bi.getWidth());
-                result.write(((DataBufferByte) dBuf).getData());
+                
+                if (bi.getType() == BufferedImage.TYPE_3BYTE_BGR)
+                {
+                    // PDFBOX-52
+                    byte[] byteBuffer = ((DataBufferByte) dBuf).getData();
+                    for (int i = 0; i < byteBuffer.length; i += 3)
+                    {
+                        //BGR
+                        //to
+                        //RGB
+                        byte tmp0 = byteBuffer[i];
+                        byteBuffer[i] = byteBuffer[i + 2];
+                        byteBuffer[i + 2] = tmp0;
+                    }
+                    result.write(byteBuffer);
+                }
+                else
+                {
+                    result.write(((DataBufferByte) dBuf).getData());
+                }
             }
             else
             {
