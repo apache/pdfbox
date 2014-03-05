@@ -16,12 +16,17 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.PaintContext;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -41,15 +46,23 @@ import org.apache.pdfbox.util.Matrix;
  * @author Andreas Lehmkühler
  * @author John Hewson
  */
-public class TilingPaint extends TexturePaint
+public class TilingPaint implements Paint
 {
+    private static Color TRANSPARENT = new Color(0, 0, 0, 0);
+
+    private final PDTilingPattern pattern;
+    private final PDColorSpace colorSpace;
+    private final PDColor color;
+
     /**
      * Creates a new colored tiling Paint.
      * @param pattern tiling pattern dictionary
      */
     public TilingPaint(PDTilingPattern pattern) throws IOException
     {
-        super(getTilingImage(pattern, null ,null), getTransformedRect(pattern));
+        this.pattern = pattern;
+        this.colorSpace = null;
+        this.color = null;
     }
 
     /**
@@ -61,61 +74,143 @@ public class TilingPaint extends TexturePaint
     public TilingPaint(PDTilingPattern pattern, PDColorSpace colorSpace, PDColor color)
             throws IOException
     {
-        super(getTilingImage(pattern, colorSpace, color), getTransformedRect(pattern));
+        this.pattern = pattern;
+        this.colorSpace = colorSpace;
+        this.color = color;
+    }
+
+    @Override
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
+                                      Rectangle2D userBounds, AffineTransform xform,
+                                      RenderingHints hints)
+    {
+        System.out.println("TilingPaint#createContext" +
+                " rectangle: " + deviceBounds +
+                " affineTransform: " + xform);
+        try
+        {
+            ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            ColorModel cm2 = new ComponentColorModel(outputCS, true, false,
+                    Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+
+            // DISABLED
+            //return new TilingPaintContext(cm2 /*HACK*/, deviceBounds, xform, getTilingImage(cm, xform));
+
+            hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            // EXPERIMENT
+            // ... CRAZY HACK:
+            TexturePaint paint = new TexturePaint(getTilingImage(cm, xform), getTransformedRect(xform, false));
+            return paint.createContext(cm, deviceBounds, userBounds, xform, hints); // ^^^^^ USE SPACE RECT, NO XFORM.
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace(); // TODO !!!!!!
+            // TODO: log
+            return TRANSPARENT.createContext(cm, deviceBounds, userBounds,
+                    xform, hints);
+        }
     }
 
     //  gets rect in parent content stream coordinates
-    private static Rectangle getTransformedRect(PDTilingPattern pattern)
+    private Rectangle getTransformedRect(AffineTransform transform, boolean applyCTM)
     {
+        // pattern matrix
+        Rectangle rect;
         if (pattern.getMatrix() == null)
         {
-            return new Rectangle(pattern.getBBox().createDimension());
+            rect = new Rectangle(pattern.getBBox().createDimension());
         }
         else
         {
             AffineTransform at = pattern.getMatrix().createAffineTransform();
-            Rectangle rect = new Rectangle(pattern.getBBox().createDimension());
-            return at.createTransformedShape(rect).getBounds();
+            rect = new Rectangle(pattern.getBBox().createDimension());
+            rect = at.createTransformedShape(rect).getBounds();
         }
+
+        // x/y step
+        if (pattern.getMatrix() != null)
+        {
+            // TODO can be -ve
+            rect.width = Math.round(pattern.getXStep() * Math.abs(pattern.getMatrix().getXScale()));
+            rect.height = Math.round(pattern.getYStep() * Math.abs(pattern.getMatrix().getYScale()));
+        }
+        else
+        {
+            rect.width = pattern.getXStep();
+            rect.height = pattern.getYStep();
+        }
+
+        // ctm
+        if (applyCTM)
+        {
+            rect = transform.createTransformedShape(rect).getBounds();
+        }
+
+        return rect;
     }
 
     // gets image in parent stream coordinates
-    private static BufferedImage getTilingImage(PDTilingPattern pattern, PDColorSpace colorSpace,
-                                                PDColor color) throws IOException
+    private BufferedImage getTilingImage(ColorModel colorModel, AffineTransform transform)
+            throws IOException
     {
+        // TODO use colorModel parameter
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle rect = getTransformedRect(pattern);
-        int width = Math.round((float)rect.getWidth());
-        int height = Math.round((float)rect.getHeight());
+        Rectangle rect = getTransformedRect(transform, true);
+        int width = 1000;
+        int height = 1000;
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
         BufferedImage image = new BufferedImage(cm, raster, false, null);
 
-        // TODO xStep and yStep
-
         // matrix
-        Matrix matrix;
+        AffineTransform patternMatrix;
         if (pattern.getMatrix() == null)
         {
             // identity
-            matrix = new Matrix();
+            patternMatrix = new AffineTransform();
         }
         else
         {
-            // undo translation
-            matrix = (Matrix)pattern.getMatrix().clone();
-            matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
-            matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
+            // pattern matrix
+            patternMatrix = pattern.getMatrix().createAffineTransform();
+
+            // flip -ve x-scale
+            if (patternMatrix.getScaleX() < -0)
+            {
+                patternMatrix.scale(-1, 1);
+            }
         }
 
+        // ************************************************************************************************************
+        // I've figured this out: the pattern is drawn only once over the page background and then sampled. PDFBOX-1094
+        // ************************************************************************************************************
+
+        // ****TODO****  This code works for tiling_pattern1 but not for PDFBOX-1094 (instrument the fill commands to find out why)
+
+        // NEW HACK: ASSUME STREAM TRANSFORM IS IDENTITY
+        transform = AffineTransform.getScaleInstance(transform.getScaleX(), -transform.getScaleY()); // <--- HACK SCALING TAKEN FROM CTM (but should be from stream start)
+
+
+        // TODO supposed to be relative to the parent stream's initial CTM, not its current CTM
+        //patternMatrix.scale(transform.getScaleX(), -transform.getScaleY());
+        transform.preConcatenate(patternMatrix);
+
+        Matrix matrix = new Matrix();
+        matrix.setFromAffineTransform(transform); // !!
+
+        Graphics2D graphics = image.createGraphics();
         PageDrawer drawer = new PageDrawer();
         PDRectangle pdRect = new PDRectangle(0, 0, width, height);
 
-        Graphics2D graphics = image.createGraphics();
+        // NEW HACK: this is usually done in drawPage
+        graphics.scale(1, -1);
+        graphics.translate(0, -height);
+
         drawer.drawTilingPattern(graphics, pattern, pdRect, matrix, colorSpace, color);
         drawer.dispose();
         graphics.dispose();
