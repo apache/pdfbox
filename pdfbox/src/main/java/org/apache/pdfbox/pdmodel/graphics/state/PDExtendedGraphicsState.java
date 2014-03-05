@@ -266,7 +266,12 @@ public class PDExtendedGraphicsState implements COSObjectable
         COSArray dp = (COSArray)graphicsState.getDictionaryObject( COSName.D );
         if( dp != null )
         {
-            retval = new PDLineDashPattern( dp );
+            COSArray array = new COSArray();
+            dp.addAll(dp);
+            dp.remove(dp.size() - 1);
+            int phase = dp.getInt(dp.size() - 1);
+
+            retval = new PDLineDashPattern( array, phase );
         }
         return retval;
     }
