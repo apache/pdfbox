@@ -49,17 +49,6 @@ public final class PDLineDashPattern implements COSObjectable
     }
 
     /**
-     * Creates a new line dash pattern from a COS array.
-     * @param dashPattern the COS line dash pattern
-     */
-    // todo: get rid of this constructor?
-    public PDLineDashPattern(COSArray dashPattern)
-    {
-        array = dashPattern.toFloatArray();
-        phase = 0;
-    }
-
-    /**
      * Creates a new line dash pattern from a dash array and phase.
      * @param array the dash array
      * @param phase the phase
@@ -90,46 +79,11 @@ public final class PDLineDashPattern implements COSObjectable
     }
 
     /**
-     * This will set the line dash pattern phase.
-     *
-     * @param phase The new line dash patter phase.
-     */
-    // todo: make immutable?
-    /*public void setPhase(int phase)
-    {
-        this.phase = phase;
-    }*/
-
-    /**
      * Returns the dash array.
      * @return the dash array
      */
     public float[] getDashArray()
     {
         return array.clone();
-    }
-    
-    /**
-     * Checks if the dashPattern is empty or all values equals 0.
-     * 
-     * @return true if the dashPattern is empty or all values equals 0  
-     */
-    public boolean isDashPatternEmpty()
-    {
-        /*float[] dashPattern = getCOSDashArray().toFloatArray();
-        boolean dashPatternEmpty = true;
-        if (dashPattern != null) 
-        {
-            for (float x : dashPattern)
-            {
-                if (x > 0)
-                {
-                    dashPatternEmpty = false;
-                    break;
-                }
-            }
-        }
-        return dashPatternEmpty;*/
-        throw new UnsupportedOperationException(); // todo???
     }
 }

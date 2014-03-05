@@ -183,8 +183,7 @@ public class PDBoxStyle implements COSObjectable
         COSArray lineArray = new COSArray();
         lineArray.add( d );
         //dash phase is not specified and assumed to be zero.
-        lineArray.add( COSInteger.ZERO );
-        pattern = new PDLineDashPattern( lineArray );
+        pattern = new PDLineDashPattern( lineArray, 0 );
         return pattern;
     }
 
