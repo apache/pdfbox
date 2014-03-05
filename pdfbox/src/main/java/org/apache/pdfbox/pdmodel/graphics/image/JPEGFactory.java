@@ -26,7 +26,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.ImageIOUtil;
 import org.w3c.dom.Element;
 
 import javax.imageio.IIOImage;
@@ -95,6 +94,7 @@ public final class JPEGFactory extends ImageFactory
 
     /**
      * Creates a new JPEG Image XObject from a Buffered Image and a given quality.
+     * The image will be created at 72 DPI.
      * @param document the document where the image will be created
      * @param image the buffered image to embed
      * @param quality the desired JPEG compression quality
@@ -104,7 +104,7 @@ public final class JPEGFactory extends ImageFactory
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image,
                                                  float quality) throws IOException
     {
-        return createFromImage(document, image, quality, ImageIOUtil.DEFAULT_SCREEN_RESOLUTION);
+        return createFromImage(document, image, quality, 72);
     }
 
     /**
