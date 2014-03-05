@@ -98,19 +98,16 @@ public class TestPDFunctionType4 extends TestCase
     public void testFunctionArgumentOrder() throws Exception
     {
         String functionText = "{ pop }";
-        //pops the top-most argument and returns the second as is.
+        // pops an argument (2nd) and returns the next argument (1st)
 
         PDFunctionType4 function = createFunction(functionText,
                 new float[] {-1.0f, 1.0f, -1.0f, 1.0f},
                 new float[] {-1.0f, 1.0f});
 
-        COSArray input = new COSArray();
-        input.setFloatArray(new float[] {-0.7f, 0.0f});
-        COSArray output = function.eval(input);
+        float[] input = new float[] {-0.7f, 0.0f };
+        float[] output = function.eval(input);
 
-        assertEquals(1, output.size());
-        assertEquals(0.0f, ((COSFloat)output.get(0)).floatValue(), 0.0001f);
-        //TODO not sure if this is really correct
+        assertEquals(1, output.length);
+        assertEquals(-0.7f, output[0], 0.0001f);
     }
-
 }
