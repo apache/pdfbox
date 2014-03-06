@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -110,13 +111,13 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public Paint toPaint(PDColor color) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color) throws IOException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Paint toPaint(PDColor color, int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, int pageHeight) throws IOException
     {
         if (!patterns.containsKey(color.getPatternName()))
         {
@@ -126,7 +127,7 @@ public final class PDPattern extends PDSpecialColorSpace
         PDAbstractPattern pattern = patterns.get(color.getPatternName());
         if (pattern instanceof PDTilingPattern)
         {
-            return toTilingPaint((PDTilingPattern)pattern, color);
+            return toTilingPaint(renderer, (PDTilingPattern)pattern, color);
         }
         else
         {
@@ -134,22 +135,22 @@ public final class PDPattern extends PDSpecialColorSpace
         }
     }
 
-    public Paint toTilingPaint(PDTilingPattern tilingPattern, PDColor color)
+    public Paint toTilingPaint(PDFRenderer renderer, PDTilingPattern tilingPattern, PDColor color)
             throws IOException
     {
         if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
         {
             // colored tiling pattern
-            return new TilingPaint(tilingPattern);
+            return new TilingPaint(renderer, tilingPattern);
         }
         else
         {
             // uncolored tiling pattern
-            return new TilingPaint(tilingPattern, underlyingColorSpace, color);
+            return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color);
         }
     }
-    public Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight)
-            throws IOException
+
+    public Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight) throws IOException
     {
         PDShading shadingResources = shadingPattern.getShading();
         int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;

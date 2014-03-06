@@ -80,15 +80,13 @@ public class ImageIOUtil
      * @param image the image to be written
      * @param imageFormat the target format (ex. "png")
      * @param filename used to construct the filename for the individual images
-     * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
      * @param resolution the resolution in dpi (dots per inch)
      * 
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, String filename, 
-            int imageType, int resolution)
-    throws IOException
+    public static boolean writeImage(BufferedImage image, String imageFormat, String filename,
+                                     int resolution) throws IOException
     {
         String fileName = filename + "." + imageFormat;
         File file = new File(fileName);
@@ -105,8 +103,8 @@ public class ImageIOUtil
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, OutputStream outputStream) 
-    throws IOException
+    public static boolean writeImage(BufferedImage image, String imageFormat,
+                                     OutputStream outputStream) throws IOException
     {
         return writeImage(image, imageFormat, outputStream, DEFAULT_SCREEN_RESOLUTION);
     }
@@ -122,8 +120,8 @@ public class ImageIOUtil
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream, int resolution)
-    throws IOException
+    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream,
+                                     int resolution) throws IOException
     {
         return writeImage(image, imageFormat, outputStream, resolution, DEFAULT_COMPRESSION_QUALITY);
     }
@@ -141,9 +139,8 @@ public class ImageIOUtil
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream, int resolution, 
-            float quality)
-    throws IOException
+    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream,
+                                     int resolution, float quality) throws IOException
     {
         boolean bSuccess = true;
         ImageOutputStream output = null;

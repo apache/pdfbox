@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.MissingImageReaderException;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -71,7 +71,7 @@ public final class Invoke extends OperatorProcessor
                 {
                     PDColorSpace colorSpace = drawer.getGraphicsState().getNonStrokingColorSpace();
                     PDColor color = drawer.getGraphicsState().getNonStrokingColor();
-                    awtImage = image.getStencilImage(colorSpace.toPaint(color)); // <--- TODO: pass page height?
+                    awtImage = image.getStencilImage(colorSpace.toPaint(drawer.getRenderer(), color)); // <--- TODO: pass page height?
                 }
                 else
                 {

@@ -19,7 +19,7 @@ package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -74,8 +74,8 @@ public class TestRendering
     {
         File file = new File(INPUT_DIR, fileName);
         PDDocument document = PDDocument.load(file);
-        List<PDPage> pages = document.getDocumentCatalog().getAllPages();
-        BufferedImage image = RenderUtil.convertToImage(pages.get(0), BufferedImage.TYPE_INT_RGB, 72);
+        PDFRenderer renderer = new PDFRenderer(document);
+        BufferedImage image = renderer.renderImage(0);
 
         // We don't actually do anything with the image for the same reason that
         // TestPDFToImage is disabled - different JVMs produce different results

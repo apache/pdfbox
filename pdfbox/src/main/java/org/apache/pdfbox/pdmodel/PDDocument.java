@@ -1288,6 +1288,16 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Returns the page at the given index.
+     * @param pageIndex the page index
+     * @return the page at the given index.
+     */
+    public PDPage getPage(int pageIndex)
+    {
+        return (PDPage) getDocumentCatalog().getAllPages().get(pageIndex);
+    }
+
+    /**
      * This will return the total page count of the PDF document.
      * 
      * @return The total number of pages in the PDF document.

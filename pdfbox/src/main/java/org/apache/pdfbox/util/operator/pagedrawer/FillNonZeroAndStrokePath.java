@@ -19,7 +19,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 

@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -28,6 +29,9 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+
+import javax.imageio.ImageIO;
 
 /**
  * Test suite for PDFTextStripper.
@@ -63,7 +67,7 @@ public class TestPDFToImage extends TestCase
     private static final Log log = LogFactory.getLog(TestPDFToImage.class);
 
     private boolean bFail = false;
-    private PDFImageWriter writer = null;
+    private PDFRenderer renderer = null;
     private File mcurFile = null;
 
     /**
@@ -76,7 +80,6 @@ public class TestPDFToImage extends TestCase
     public TestPDFToImage( String name ) throws IOException
     {
         super( name );
-        writer = new PDFImageWriter();
     }
 
     /**
@@ -108,7 +111,18 @@ public class TestPDFToImage extends TestCase
         try
         {
             document =  PDDocument.load(file);
-            writer.writeImage(document, "png", "", 1, Integer.MAX_VALUE, outDir + file.getName() + "-");
+            renderer = new PDFRenderer(document);
+
+            String outputPrefix = outDir + file.getName() + "-";
+            int numPages = document.getNumberOfPages();
+            PDFRenderer renderer = new PDFRenderer(document);
+            for (int i = 0; i < numPages; i++)
+            {
+                BufferedImage image = renderer.renderImage(i);
+                String fileName = outputPrefix + (i + 1);
+                log.info("Writing: " + fileName + ".pbg");
+                ImageIO.write(image, "PNG", new File(fileName));
+            }
         }
         catch(Exception e)
         { 

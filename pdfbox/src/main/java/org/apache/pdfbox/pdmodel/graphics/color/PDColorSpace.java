@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.Color;
 import java.awt.Paint;
@@ -231,9 +232,9 @@ public abstract class PDColorSpace implements COSObjectable
      * @return an AWT paint
      * @throws IOException if the color conversion fails
      */
-    public Paint toPaint(PDColor color) throws IOException
+    public Paint toPaint(PDFRenderer renderer,  PDColor color) throws IOException
     {
-        return toPaint(color, 0);
+        return toPaint(renderer, color, 0);
     }
 
     /**
@@ -245,7 +246,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @return an AWT paint
      * @throws IOException if the color conversion fails
      */
-    public Paint toPaint(PDColor color, int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, int pageHeight) throws IOException
     {
         float[] rgb = toRGB(color.getComponents());
         return new Color(rgb[0], rgb[1], rgb[2]);
