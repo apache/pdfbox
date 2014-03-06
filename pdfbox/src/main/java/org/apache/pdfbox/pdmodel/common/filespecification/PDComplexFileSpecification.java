@@ -41,13 +41,21 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * Constructor.
+     * Constructor. Creates empty COSDictionary if dict is null.
      *
      * @param dict The dictionary that fulfils this file specification.
      */
     public PDComplexFileSpecification( COSDictionary dict )
     {
-        fs = dict;
+        if (dict == null)
+        {
+            fs = new COSDictionary();
+            fs.setItem( COSName.TYPE, COSName.FILESPEC );
+        }
+        else
+        {
+            fs = dict;
+        }
     }
 
     /**
