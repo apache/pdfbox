@@ -19,11 +19,8 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.util.RenderUtil;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -71,9 +68,9 @@ public class PDSimpleFontTest
         try
         {
             doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
-            List<PDPage> pages = doc.getDocumentCatalog().getAllPages();
-            RenderUtil.convertToImage(pages.get(0));
-            // The alligation is that convertToImage() will crash the JVM or hang
+            PDFRenderer renderer = new PDFRenderer(doc);
+            renderer.renderImage(0);
+            // the allegation is that renderImage() will crash the JVM or hang
         }
         finally
         {
@@ -94,9 +91,9 @@ public class PDSimpleFontTest
         try
         {
             doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("256.pdf"));
-            List<PDPage> pages = doc.getDocumentCatalog().getAllPages();
-            RenderUtil.convertToImage(pages.get(0));
-            // The alligation is that convertToImage() will crash the JVM or hang
+            PDFRenderer renderer = new PDFRenderer(doc);
+            renderer.renderImage(0);
+            // the allegation is that renderImage() will crash the JVM or hang
         }
         finally
         {

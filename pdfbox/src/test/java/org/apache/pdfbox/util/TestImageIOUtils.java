@@ -20,82 +20,70 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * Test suite for ImageIOUtil.
- * 
  */
 public class TestImageIOUtils extends TestCase
 {
-
-    /**
-     * Logger instance.
-     */
     private static final Log LOG = LogFactory.getLog(TestImageIOUtils.class);
-
-    private boolean testFailed = false;
 
     /**
      * Validate page rendering for all supported image formats (JDK5).
      * 
      * @param file The file to validate
-     * @param inDir Name of the input directory
      * @param outDir Name of the output directory
      * @throws Exception when there is an exception
      */
-    private void doTestFile(File file, String inDir, String outDir) throws Exception
+    private void doTestFile(File file, String outDir) throws Exception
     {
         PDDocument document = null;
         String imageType = "png";
         LOG.info("Preparing to convert " + file.getName());
         try
         {
-            int resolution = 120;
+            float dpi = 120;
             document = PDDocument.load(file);
             // testing PNG
-            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
             // testing JPG/JPEG
             imageType = "jpg";
-            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
             // testing BMP
             imageType = "bmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
             // testing WBMP
             imageType = "wbmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_BYTE_BINARY, resolution);
+            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
             // testing TIFF
             imageType = "tif";
-            writeImage(document, imageType, outDir + file.getName() + "-bw-", BufferedImage.TYPE_BYTE_BINARY, resolution);
-            writeImage(document, imageType, outDir + file.getName() + "-co-", BufferedImage.TYPE_INT_RGB, resolution);
-        }
-        catch (Exception e)
-        {
-            testFailed = true;
-            LOG.error("Error converting file " + file.getName() + " using image type " + imageType, e);
+            writeImage(document, imageType, outDir + file.getName() + "-bw-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-co-", dpi);
         }
         finally
         {
-            document.close();
+            if (document!= null)
+            {
+                document.close();
+            }
         }
-
     }
 
-    private void writeImage(PDDocument document, String imageFormat, String outputPrefix, int imageType, int resolution)
+    private void writeImage(PDDocument document, String imageFormat, String outputPrefix, float dpi)
             throws IOException
     {
-        List<PDPage> pages = document.getDocumentCatalog().getAllPages();
-        BufferedImage image = RenderUtil.convertToImage(pages.get(0), imageType, resolution);
+        PDFRenderer renderer = new PDFRenderer(document);
+        BufferedImage image = renderer.renderImage(0, dpi / 72f);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
-        ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
+        ImageIOUtil.writeImage(image, imageFormat, fileName,  Math.round(dpi));
     }
 
     /**
@@ -103,7 +91,6 @@ public class TestImageIOUtils extends TestCase
      * 
      * @throws Exception when there is an exception
      */
-     
     public void testRenderImage() throws Exception
     {
         String inDir = "src/test/resources/input/ImageIOUtil";
@@ -118,15 +105,9 @@ public class TestImageIOUtils extends TestCase
             }
         });
 
-        for (int n = 0; n < testFiles.length; n++)
+        for (File file : testFiles)
         {
-            doTestFile(testFiles[n], inDir, outDir);
-        }
-
-        if (testFailed)
-        {
-            fail("One or more failures, see test log for details");
+            doTestFile(file, outDir);
         }
     }
-
 }

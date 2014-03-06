@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.gui;
 
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.PDFReader;
 
 import javax.swing.JPanel;
@@ -60,9 +61,9 @@ public class PageWrapper implements MouseMotionListener
      * This will display the PDF page in this component.
      * @param page The PDF page to display.
      */
-    public void displayPage(PDPage page)
+    public void displayPage(PDFRenderer renderer,  PDPage page) throws IOException
     {
-        pagePanel.setPage(page);
+        pagePanel.setPage(renderer, page);
         pagePanel.setPreferredSize(pagePanel.getSize());
         Dimension d = pagePanel.getSize();
         d.width+=(SPACE_AROUND_DOCUMENT*2);

@@ -22,7 +22,8 @@ import java.io.File;
 import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.RenderUtil;
+import org.apache.pdfbox.rendering.PDFPrinter;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * This is a command line program that will print a PDF document.
@@ -120,13 +121,14 @@ public class PrintPDF
                 }
             }
 
+            PDFPrinter printer = new PDFPrinter(document);
             if (silentPrint)
             {
-                RenderUtil.silentPrint(document, printJob);
+                printer.silentPrint(printJob);
             }
             else if (printJob.printDialog())
             {
-                RenderUtil.print(document, printJob);
+                printer.print(printJob);
             }
         }
         finally

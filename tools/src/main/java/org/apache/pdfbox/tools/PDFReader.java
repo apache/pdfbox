@@ -33,13 +33,13 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
+import org.apache.pdfbox.rendering.PDFPrinter;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageable;
 import org.apache.pdfbox.util.ImageIOUtil;
-import org.apache.pdfbox.util.RenderUtil;
 
 /**
  * An proof-of-concept application to read PDF documents, with very basic functionality.
@@ -60,6 +60,7 @@ public class PDFReader extends JFrame
     private JPanel documentPanel = new JPanel();
     private ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
 
+    private PDFRenderer renderer;
     private PDDocument document = null;
     private List<PDPage> pages = null;
 
@@ -129,9 +130,9 @@ public class PDFReader extends JFrame
                 {
                     if (document != null)
                     {
-                        PDPageable pageable = new PDPageable(document);
-                        PrinterJob job = pageable.getPrinterJob();
-                        job.setPageable(pageable);
+                        PDFPrinter printer = new PDFPrinter(document);
+                        PrinterJob job = PrinterJob.getPrinterJob();
+                        job.setPageable(printer.getPageable());
                         if (job.printDialog())
                         {
                             job.print();
@@ -329,7 +330,7 @@ public class PDFReader extends JFrame
         try
         {
             PageWrapper wrapper = new PageWrapper(this);
-            wrapper.displayPage((PDPage) pages.get(pageNumber));
+            wrapper.displayPage(renderer, pages.get(pageNumber));
             if (documentPanel.getComponentCount() > 0)
             {
                 documentPanel.remove(0);
@@ -347,7 +348,8 @@ public class PDFReader extends JFrame
     {
         try
         {
-            BufferedImage pageAsImage = RenderUtil.convertToImage(pages.get(currentPage));
+            PDFRenderer renderer = new PDFRenderer(document);
+            BufferedImage pageAsImage = renderer.renderImage(currentPage);
             String imageFilename = currentFilename;
             if (imageFilename.toLowerCase().endsWith(".pdf"))
             {
@@ -373,6 +375,7 @@ public class PDFReader extends JFrame
         else
         {
             document = PDDocument.load(file);
+            renderer = new PDFRenderer(document);
             if (document.isEncrypted())
             {
                 try

@@ -24,7 +24,8 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -37,32 +38,23 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class PDFPagePanel extends JPanel
 {
-
     private static final long serialVersionUID = -4629033339560890669L;
-    
+
+    private PDFRenderer renderer;
     private PDPage page;
-    private PageDrawer drawer = null;
     private Dimension pageDimension = null;
     private Dimension drawDimension = null;
 
     /**
-     * Constructor.
-     *
-     * @throws IOException If there is an error creating the Page drawing objects.
-     */
-    public PDFPagePanel() throws IOException
-    {
-        drawer = new PageDrawer();
-    }
-
-    /**
      * This will set the page that should be displayed in this panel.
      *
-     * @param pdfPage The page to draw.
+     * @param page The page to draw.
      */
-    public void setPage( PDPage pdfPage )
+    public void setPage( PDFRenderer renderer, PDPage page ) throws IOException
     {
-        page = pdfPage;
+        this.renderer = renderer;
+        this.page = page;
+
         PDRectangle cropBox = page.findCropBox();
         drawDimension = cropBox.createDimension();
         int rotation = page.findRotation();
@@ -85,6 +77,8 @@ public class PDFPagePanel extends JPanel
     {
         try
         {
+            PageDrawer drawer = new PageDrawer(renderer);
+
             g.setColor( getBackground() );
             g.fillRect( 0, 0, getWidth(), getHeight() );
 

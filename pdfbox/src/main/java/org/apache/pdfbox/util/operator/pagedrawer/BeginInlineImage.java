@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdfviewer.PageDrawer;
+import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
@@ -50,7 +50,7 @@ public final class BeginInlineImage extends OperatorProcessor
         {
             PDColorSpace colorSpace = drawer.getGraphicsState().getNonStrokingColorSpace();
             PDColor color = drawer.getGraphicsState().getNonStrokingColor();
-            awtImage = image.getStencilImage(colorSpace.toPaint(color)); // <--- TODO: pass page height?
+            awtImage = image.getStencilImage(colorSpace.toPaint(drawer.getRenderer(), color)); // <--- TODO: pass page height?
         }
         else
         {

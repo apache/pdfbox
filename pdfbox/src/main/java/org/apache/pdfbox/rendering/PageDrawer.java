@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer;
+package org.apache.pdfbox.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -94,11 +94,12 @@ public class PageDrawer extends PDFStreamEngine
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
     private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
 
+    // parent document renderer
+    private final PDFRenderer renderer;
+
     private Graphics2D graphics;
 
-    /**
-     * clipping winding rule used for the clipping path.
-     */
+    // clipping winding rule used for the clipping path.
     private int clippingWindingRule = -1;
 
     private GeneralPath linePath = new GeneralPath();
@@ -113,9 +114,19 @@ public class PageDrawer extends PDFStreamEngine
      * 
      * @throws IOException If there is an error loading properties from the file.
      */
-    public PageDrawer() throws IOException
+    public PageDrawer(PDFRenderer renderer) throws IOException
     {
         super(ResourceLoader.loadProperties("org/apache/pdfbox/resources/PageDrawer.properties", true));
+        this.renderer = renderer;
+    }
+
+    /**
+     * Returns the parent renderer.
+     * @return the parent renderer.
+     */
+    public PDFRenderer getRenderer()
+    {
+        return renderer;
     }
 
     /**
@@ -606,14 +617,14 @@ public class PageDrawer extends PDFStreamEngine
     private Paint getStrokingPaint() throws IOException
     {
         return getGraphicsState().getStrokingColorSpace()
-                .toPaint(getGraphicsState().getStrokingColor(), pageHeight);
+                .toPaint(renderer, getGraphicsState().getStrokingColor(), pageHeight);
     }
 
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
         return getGraphicsState().getNonStrokingColorSpace()
-                .toPaint(getGraphicsState().getNonStrokingColor(), pageHeight);
+                .toPaint(renderer, getGraphicsState().getNonStrokingColor(), pageHeight);
     }
 
     // create a new stroke based on the current CTM and the current stroke
