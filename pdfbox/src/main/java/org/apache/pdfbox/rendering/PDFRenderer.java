@@ -71,6 +71,31 @@ public class PDFRenderer
     }
 
     /**
+     * Returns the given page as an RGB image at the given DPI.
+     * @param pageIndex the zero-based index of the page to be converted
+     * @param dpi the DPI (dots per inch) to render at
+     * @return the rendered page image
+     * @throws IOException if the PDF cannot be read
+     */
+    public BufferedImage renderImageWithDPI(int pageIndex, int dpi) throws IOException
+    {
+        return renderImage(pageIndex, dpi / 72f, false);
+    }
+
+    /**
+     * Returns the given page as an RGB image at the given DPI.
+     * @param pageIndex the zero-based index of the page to be converted
+     * @param dpi the DPI (dots per inch) to render at
+     * @return the rendered page image
+     * @throws IOException if the PDF cannot be read
+     */
+    public BufferedImage renderImageWithDPI(int pageIndex, int dpi, boolean useAlpha)
+            throws IOException
+    {
+        return renderImage(pageIndex, dpi / 72f, useAlpha);
+    }
+
+    /**
      * Returns the given page as an RGB or ARGB image at the given scale.
      * @param pageIndex the zero-based index of the page to be converted
      * @param scale the scaling factor, where 1 = 72 DPI
