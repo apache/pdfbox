@@ -31,6 +31,7 @@ import org.apache.pdfbox.io.ccitt.TestPackedBitArray;
 import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocument;
 import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.common.TestEmbeddedFiles;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
@@ -89,6 +90,7 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPDDocument.class );
         suite.addTestSuite( TestPDDocumentCatalog.class );
         suite.addTestSuite( TestPDDocumentInformation.class );
+        suite.addTestSuite( TestEmbeddedFiles.class );
         suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
         suite.addTestSuite( org.apache.pdfbox.TestTextToPdf.class );

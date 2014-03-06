@@ -292,7 +292,7 @@ public class ExtractText
                                 }
                                 PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
                                 PDEmbeddedFile file = spec.getEmbeddedFile();
-                                if (file.getSubtype().equals("application/pdf")) 
+                                if (file != null && file.getSubtype().equals("application/pdf")) 
                                 {
                                     if (debug)
                                     {
