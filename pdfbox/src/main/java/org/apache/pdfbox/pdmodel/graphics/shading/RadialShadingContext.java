@@ -85,8 +85,8 @@ public class RadialShadingContext implements PaintContext
             AffineTransform at = ctm.createAffineTransform();
             at.transform(coords, 0, coords, 0, 1);
             at.transform(coords, 3, coords, 3, 1);
-            coords[2] *= at.getScaleX();
-            coords[5] *= at.getScaleX();
+            coords[2] *= ctm.getXScale();
+            coords[5] *= ctm.getXScale();
         }
         // transform coords to device space
         xform.transform(coords, 0, coords, 0, 1);
