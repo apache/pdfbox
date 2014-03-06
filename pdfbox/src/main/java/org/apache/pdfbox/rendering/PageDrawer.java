@@ -214,7 +214,7 @@ public class PageDrawer extends PDFStreamEngine
         initStream(pageDimension, 0);
 
         // transform ctm
-        Matrix concat = getGraphicsState().getCurrentTransformationMatrix().multiply(matrix);
+        Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
         getGraphicsState().setCurrentTransformationMatrix(concat);
 
         // color
