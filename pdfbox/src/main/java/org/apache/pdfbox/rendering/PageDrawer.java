@@ -760,19 +760,6 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Set the clipping Path.
-     * 
-     * @param windingRule The winding rule this path will use.
-     * 
-     * @deprecated use {@link #setClippingWindingRule(int)} instead
-     * 
-     */
-    public void setClippingPath(int windingRule)
-    {
-        setClippingWindingRule(windingRule);
-    }
-
-    /**
      * Set the clipping winding rule.
      * 
      * @param windingRule The winding rule which will be used for clipping.
