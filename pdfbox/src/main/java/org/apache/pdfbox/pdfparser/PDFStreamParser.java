@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,8 @@ public class PDFStreamParser extends BaseParser
 {
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
     private RandomAccess file;
+    private final int    maxBinCharTestLength = 5;
+    private final byte[] binCharTestArr = new byte[maxBinCharTestLength];
 
     /**
      * Constructor that takes a stream to parse.
@@ -393,7 +396,8 @@ public class PDFStreamParser extends BaseParser
                 // Be aware not all kind of whitespaces are allowed here. see PDFBOX1561
                 while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
-                         isSpaceOrReturn()) &&
+                         isSpaceOrReturn() &&
+                         hasNoFollowingBinData( pdfSource )) &&
                        !pdfSource.isEOF() )
                 {
                     imageData.write( lastByte );
@@ -432,6 +436,37 @@ public class PDFStreamParser extends BaseParser
         }
 
         return retval;
+    }
+
+    /**
+     * Looks up next 5 bytes if they contain only ASCII characters (no control
+     * sequences etc.).
+     *
+     * @return <code>true</code> if next 5 bytes are printable ASCII characters,
+     * otherwise <code>false</code>
+     */
+    private boolean hasNoFollowingBinData(final PushbackInputStream pdfSource) 
+            throws IOException
+    {
+        // as suggested in PDFBOX-1164
+        final int readBytes = pdfSource.read(binCharTestArr, 0, maxBinCharTestLength);
+        boolean noBinData = true;
+        
+        if (readBytes > 0)
+        {
+            for (int bIdx = 0; bIdx < readBytes; bIdx++)
+            {
+                final byte b = binCharTestArr[bIdx];
+                if ((b < 0x09) || ((b > 0x0a) && (b < 0x20) && (b != 0x0d)))
+                {
+                    // control character or > 0x7f -> we have binary data
+                    noBinData = false;
+                    break;
+                }
+            }
+            pdfSource.unread(binCharTestArr, 0, readBytes);
+        }
+        return noBinData;
     }
 
     /**
