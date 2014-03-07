@@ -118,7 +118,7 @@ public class TestPDFToImage extends TestCase
             PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
-                BufferedImage image = renderer.renderImage(i);
+                BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
                 String fileName = outputPrefix + (i + 1);
                 log.info("Writing: " + fileName + ".pbg");
                 ImageIO.write(image, "PNG", new File(fileName));
