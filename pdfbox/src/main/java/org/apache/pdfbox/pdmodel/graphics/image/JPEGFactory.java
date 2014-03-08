@@ -17,12 +17,16 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -30,10 +34,12 @@ import org.w3c.dom.Element;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 /**
@@ -57,15 +63,18 @@ public final class JPEGFactory extends ImageFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
+        // copy stream
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(IOUtils.toByteArray(stream));
+
+        // read image
+        BufferedImage awtImage = readJPEG(byteStream);
+        byteStream.reset();
+
         // create Image XObject from stream
-        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, stream, true), null);
+        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
 
         // add DCT filter
         pdImage.getCOSStream().setItem(COSName.FILTER, COSName.DCT_DECODE);
-
-        // read image
-        ImageIO.setUseCache(false);
-        BufferedImage awtImage = ImageIO.read(stream);
 
         // no alpha
         if (awtImage.getColorModel().hasAlpha())
@@ -77,6 +86,43 @@ public final class JPEGFactory extends ImageFactory
         setPropertiesFromAWT(awtImage, pdImage);
 
         return pdImage;
+    }
+
+    private static BufferedImage readJPEG(InputStream stream) throws IOException
+    {
+        // find suitable image reader
+        Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
+        ImageReader reader = null;
+        while(readers.hasNext()) {
+            reader = (ImageReader)readers.next();
+            if(reader.canReadRaster()) {
+                break;
+            }
+        }
+
+        if (reader == null)
+        {
+            throw new MissingImageReaderException("Cannot read JPEG image: " +
+                    "a suitable JAI I/O image filter is not installed");
+        }
+
+        ImageInputStream iis = null;
+        try
+        {
+            iis = ImageIO.createImageInputStream(stream);
+            reader.setInput(iis);
+
+            ImageIO.setUseCache(false);
+            return reader.read(0);
+        }
+        finally
+        {
+            if (iis != null)
+            {
+                iis.close();
+            }
+            reader.dispose();
+        }
     }
 
     /**
