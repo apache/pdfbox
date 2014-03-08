@@ -135,7 +135,7 @@ public final class PDPattern extends PDSpecialColorSpace
         }
     }
 
-    public Paint toTilingPaint(PDFRenderer renderer, PDTilingPattern tilingPattern, PDColor color)
+    private Paint toTilingPaint(PDFRenderer renderer, PDTilingPattern tilingPattern, PDColor color)
             throws IOException
     {
         if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
@@ -150,7 +150,7 @@ public final class PDPattern extends PDSpecialColorSpace
         }
     }
 
-    public Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight) throws IOException
+    private Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight) throws IOException
     {
         PDShading shadingResources = shadingPattern.getShading();
         int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
