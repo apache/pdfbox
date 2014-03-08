@@ -71,9 +71,15 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
 import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -836,8 +842,7 @@ public class PageDrawer extends PDFStreamEngine
         switch (shadingType)
         {
         case 1:
-            // TODO
-            LOG.debug("Function based shading not yet supported");
+            paint = new Type1ShadingPaint((PDShadingType1) shading, ctm, pageHeight);
             break;
         case 2:
             paint = new AxialShadingPaint((PDShadingType2) shading, ctm, pageHeight);
@@ -846,11 +851,16 @@ public class PageDrawer extends PDFStreamEngine
             paint = new RadialShadingPaint((PDShadingType3) shading, ctm, pageHeight);
             break;
         case 4:
+            paint = new Type4ShadingPaint((PDShadingType4) shading, ctm, pageHeight);
+            break;
         case 5:
+            paint = new Type5ShadingPaint((PDShadingType5) shading, ctm, pageHeight);
+            break;
         case 6:
         case 7:
             // TODO
             LOG.debug("Shading type " + shadingType + " not yet supported");
+            paint = new Color(0, 0, 0, 0); // transparent
             break;
         default:
             throw new IOException("Invalid ShadingType " + shadingType + " for Shading " + shadingName);
