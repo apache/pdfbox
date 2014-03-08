@@ -69,8 +69,8 @@ public class PDRectangle implements COSObjectable
         rectArray = new COSArray();
         rectArray.add( new COSFloat( x ) );
         rectArray.add( new COSFloat( y ) );
-        rectArray.add( new COSFloat( width ) );
-        rectArray.add( new COSFloat( height ) );
+        rectArray.add( new COSFloat( x + width ) );
+        rectArray.add( new COSFloat( y + height ) );
     }
 
     /**

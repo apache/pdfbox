@@ -40,12 +40,10 @@ import java.util.Locale;
 
 /**
  * This is an example on how to add a rubber stamp with an image to pages of a PDF document.
- *
- * @version $Revision: 1.0 $
+ * @author Andreas Lehmkühler
  */
 public class RubberStampWithImage
 {
-
     private static final String SAVE_GRAPHICS_STATE = "q\n";
     private static final String RESTORE_GRAPHICS_STATE = "Q\n";
     private static final String CONCATENATE_MATRIX = "cm\n";
@@ -75,48 +73,46 @@ public class RubberStampWithImage
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
-                List allpages = new ArrayList();
-                document.getDocumentCatalog().getPages().getAllKids(allpages);
-                int numberOfPages = allpages.size();
     
-                for (int i=0; i < numberOfPages; i++)
+                for (int i = 0; i < document.getNumberOfPages(); i++)
                 {
-                    PDPage apage = (PDPage) allpages.get(i);
-                    List annotations = apage.getAnnotations();
+                    PDPage page = document.getPage(i);
+                    List annotations = page.getAnnotations();
                     PDAnnotationRubberStamp rubberStamp = new PDAnnotationRubberStamp();
                     rubberStamp.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
-                    rubberStamp.setRectangle(new PDRectangle(100,100));
+                    rubberStamp.setRectangle(new PDRectangle(200,100));
                     rubberStamp.setContents("A top secret note");
 
-                    // Create a PDXObjectImage with the given jpg
+                    // create a PDXObjectImage with the given jpg
                     FileInputStream fin = new FileInputStream( args[2] );
-                    PDImageXObject mypic = JPEGFactory.createFromStream(document, fin);
-                    
-                    //Define and set the target rectangle
-                    PDRectangle myrect = new PDRectangle();
-                    myrect.setUpperRightX(275);
-                    myrect.setUpperRightY(575);
-                    myrect.setLowerLeftX(250);
-                    myrect.setLowerLeftY(550);
+                    PDImageXObject image = JPEGFactory.createFromStream(document, fin);
+
+                    // define and set the target rectangle
+                    PDRectangle rect = new PDRectangle();
+                    rect.setUpperRightX(400);
+                    rect.setUpperRightY(575);
+                    rect.setLowerLeftX(250);
+                    rect.setLowerLeftY(550);
 
                     // Create a PDFormXObject
-                    PDStream formstream = new PDStream(document);
-                    OutputStream os = formstream.createOutputStream();
-                    PDFormXObject form = new PDFormXObject(formstream);
+                    PDStream stream = new PDStream(document);
+                    OutputStream os = stream.createOutputStream();
+                    PDFormXObject form = new PDFormXObject(stream);
                     form.setResources(new PDResources());
-                    form.setBBox(myrect);
+                    form.setBBox(rect);
                     form.setFormType(1);
+
                     // adjust the image to the target rectangle and add it to the stream
-                    drawXObject(mypic, form.getResources(), os, 250, 550, 25, 25);
+                    drawXObject(image, form.getResources(), os, 250, 550, 50, 25);
                     os.close();
 
                     PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSStream());
                     PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
                     appearance.setNormalAppearance(myDic);
                     rubberStamp.setAppearance(appearance);
-                    rubberStamp.setRectangle(myrect);
+                    rubberStamp.setRectangle(rect);
 
-                    //Add the new RubberStamp to the document
+                    // add the new RubberStamp to the document
                     annotations.add(rubberStamp);
                 
                 }
