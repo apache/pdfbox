@@ -34,9 +34,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of a type 4 (Gouraud triangle mesh) shading
- * context.
- *
+ * AWT PaintContext for Gouraud Triangle Mesh (Type 4) shading.
  * @author Tilman Hausherr
  */
 class Type4ShadingContext extends GouraudShadingContext
@@ -47,33 +45,31 @@ class Type4ShadingContext extends GouraudShadingContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     *
-     * @param shadingType4 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     *
      */
-    public Type4ShadingContext(PDShadingType4 shadingType4, ColorModel colorModelValue,
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    public Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
+                               Matrix ctm, int pageHeight) throws IOException
     {
-        super(shadingType4, colorModelValue, xform, ctm, pageHeight);
+        super(shading, cm, xform, ctm, pageHeight);
 
         ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 
         LOG.debug("Type4ShadingContext");
 
-        bitsPerColorComponent = shadingType4.getBitsPerComponent();
+        bitsPerColorComponent = shading.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shadingType4.getBitsPerCoordinate();
+        bitsPerCoordinate = shading.getBitsPerCoordinate();
         LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         long maxSrcCoord = (int) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (int) Math.pow(2, bitsPerColorComponent) - 1;
         LOG.debug("maxSrcCoord: " + maxSrcCoord);
         LOG.debug("maxSrcColor: " + maxSrcColor);
 
-        COSDictionary cosDictionary = shadingType4.getCOSDictionary();
+        COSDictionary cosDictionary = shading.getCOSDictionary();
         COSStream cosStream = (COSStream) cosDictionary;
 
         //The Decode key specifies how
@@ -84,24 +80,24 @@ class Type4ShadingContext extends GouraudShadingContext
         // see p344
         COSArray decode = (COSArray) cosDictionary.getDictionaryObject(COSName.DECODE);
         LOG.debug("decode: " + decode);
-        PDRange rangeX = shadingType4.getDecodeForParameter(0);
-        PDRange rangeY = shadingType4.getDecodeForParameter(1);
+        PDRange rangeX = shading.getDecodeForParameter(0);
+        PDRange rangeY = shading.getDecodeForParameter(1);
         LOG.debug("rangeX: " + rangeX.getMin() + ", " + rangeX.getMax());
         LOG.debug("rangeY: " + rangeY.getMin() + ", " + rangeY.getMax());
 
         PDRange[] colRangeTab = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRangeTab[i] = shadingType4.getDecodeForParameter(2 + i);
+            colRangeTab[i] = shading.getDecodeForParameter(2 + i);
         }
 
         LOG.debug("bitsPerCoordinate: " + bitsPerCoordinate);
-        bitsPerFlag = shadingType4.getBitsPerFlag();
+        bitsPerFlag = shading.getBitsPerFlag();
         LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
         LOG.debug("Stream size: " + cosStream.getInt(COSName.LENGTH));
 
         // get background values if available
-        COSArray bg = shadingType4.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
@@ -184,11 +180,7 @@ class Type4ShadingContext extends GouraudShadingContext
         createTriangleList(vertexList);
     }
 
-    /**
-     * Create GouraudTriangle list from vertices, see p.316 of pdf spec 1.7.
-     *
-     * @param vertexList list of vertices
-     */
+    // create GouraudTriangle list from vertices, see p.316 of pdf spec 1.7.
     private void createTriangleList(ArrayList<Vertex> vertexList)
     {
         Point2D a = null, b = null, c = null;
@@ -251,9 +243,6 @@ class Type4ShadingContext extends GouraudShadingContext
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {

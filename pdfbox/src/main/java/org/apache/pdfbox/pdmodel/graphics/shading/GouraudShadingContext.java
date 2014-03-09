@@ -38,67 +38,57 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- *
- * Helper class that Type4ShadingContext and Type5ShadingContext must extend;
- * does the shading of Gouraud triangles.
- *
- * @author lehmi
+ * Shades Gouraud triangles for  Type4ShadingContext and Type5ShadingContext.
+ * @author Andreas Lehmkühler
  * @author Tilman Hausherr
- *
  */
-public abstract class GouraudShadingContext implements PaintContext
+abstract class GouraudShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
-    /**
-     * number of color components.
-     */
+
+    /** number of color components. */
     protected int numberOfColorComponents;
-    /**
-     * triangle list.
-     */
+
+    /** triangle list. */
     protected ArrayList<GouraudTriangle> triangleList;
-    /**
-     * bits per coordinate.
-     */
+
+    /** bits per coordinate. */
     protected int bitsPerCoordinate;
-    /**
-     * bits per color component.
-     */
+
+    /** bits per color component. */
     protected int bitsPerColorComponent;
-    /**
-     * background values.
-     */
+
+    /** background values.*/
     protected float[] background;
+
     private final boolean hasFunction;
     private final PDShading gouraudShadingType;
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     *
-     * @param shadingType the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
      * @throws IOException if something went wrong
-     *
      */
-    protected GouraudShadingContext(PDShading shadingType, ColorModel colorModelValue,
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
+                                    Matrix ctm, int pageHeight) throws IOException
     {
-        gouraudShadingType = shadingType;
+        gouraudShadingType = shading;
         triangleList = new ArrayList<GouraudTriangle>();
-        hasFunction = shadingType.getFunction() != null;
+        hasFunction = shading.getFunction() != null;
 
-        shadingColorSpace = shadingType.getColorSpace();
+        shadingColorSpace = shading.getColorSpace();
         LOG.debug("colorSpace: " + shadingColorSpace);
         numberOfColorComponents = shadingColorSpace.getNumberOfComponents();
 
-        LOG.debug("BBox: " + shadingType.getBBox());
-        LOG.debug("Background: " + shadingType.getBackground());
+        LOG.debug("BBox: " + shading.getBBox());
+        LOG.debug("Background: " + shading.getBackground());
 
         // create the output color model using RGB+alpha as color space
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
@@ -107,9 +97,7 @@ public abstract class GouraudShadingContext implements PaintContext
     }
 
     /**
-     * Read a vertex from the bit input stream and do the interpolations
-     * described in the PDF specification.
-     *
+     * Read a vertex from the bit input stream performs interpolations.
      * @param input bit input stream
      * @param flag the flag or any value if not relevant
      * @param maxSrcCoord max value for source coordinate (2^bits-1)
@@ -117,13 +105,11 @@ public abstract class GouraudShadingContext implements PaintContext
      * @param rangeX dest range for X
      * @param rangeY dest range for Y
      * @param colRangeTab dest range array for colors
-     *
      * @return a new vertex with the flag and the interpolated values
-     *
      * @throws IOException if something went wrong
      */
     protected Vertex readVertex(ImageInputStream input, byte flag, long maxSrcCoord, long maxSrcColor,
-            PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab) throws IOException
+                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab) throws IOException
     {
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
@@ -142,9 +128,7 @@ public abstract class GouraudShadingContext implements PaintContext
     }
 
     /**
-     * transform a list of vertices from shading to user space (if applicable)
-     * and from user to device space.
-     *
+     * Transforms vertices from shading to user space (if applicable) and from user to device space.
      * @param vertexList list of vertices
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
@@ -176,9 +160,7 @@ public abstract class GouraudShadingContext implements PaintContext
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void dispose()
     {
         triangleList = null;
@@ -186,9 +168,7 @@ public abstract class GouraudShadingContext implements PaintContext
         shadingColorSpace = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final ColorModel getColorModel()
     {
         return outputColorModel;
@@ -196,7 +176,6 @@ public abstract class GouraudShadingContext implements PaintContext
 
     /**
      * Calculate the interpolation, see p.345 pdf spec 1.7.
-     *
      * @param src src value
      * @param srcMax max src value (2^bits-1)
      * @param dstMin min dst value
@@ -208,9 +187,7 @@ public abstract class GouraudShadingContext implements PaintContext
         return dstMin + (src * (dstMax - dstMin) / srcMax);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);

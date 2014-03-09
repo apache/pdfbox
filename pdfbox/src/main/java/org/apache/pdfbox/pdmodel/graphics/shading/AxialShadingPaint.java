@@ -30,11 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an axial shading.
- * 
- * @author lehmi
+ * AWT Paint for axial shading.
+ * @author Andreas Lehmkühler
  */
-public class AxialShadingPaint implements Paint
+class AxialShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingPaint.class);
 
@@ -44,7 +43,6 @@ public class AxialShadingPaint implements Paint
     
     /**
      * Constructor.
-     * 
      * @param shadingType2 the shading resources
      * @param ctm current transformation matrix
      * @param pageHeight size of the current page
@@ -55,19 +53,17 @@ public class AxialShadingPaint implements Paint
         this.ctm = ctm;
         this.pageHeight = pageHeight;
     }
-    /**
-     * {@inheritDoc}
-     */
+
+    @Override
     public int getTransparency() 
     {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
+                                      Rectangle2D userBounds, AffineTransform xform,
+                                      RenderingHints hints)
     {
         try
         {

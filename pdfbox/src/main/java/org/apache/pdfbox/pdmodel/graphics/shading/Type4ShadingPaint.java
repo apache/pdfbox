@@ -24,57 +24,48 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an Type 4 shading.
+ * AWT PaintContext for Gouraud Triangle Mesh (Type 4) shading.
  */
-public class Type4ShadingPaint implements Paint
+class Type4ShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(Type4ShadingPaint.class);
 
     private PDShadingType4 shading;
-    private Matrix currentTransformationMatrix;
+    private Matrix ctm;
     private int pageHeight;
 
     /**
      * Constructor.
-     *
-     * @param shadingType4 the shading resources
+     * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue the height of the page
+     * @param pageHeight the height of the page
      */
-    public Type4ShadingPaint(PDShadingType4 shadingType4, Matrix ctm, int pageHeightValue)
+    public Type4ShadingPaint(PDShadingType4 shading, Matrix ctm, int pageHeight)
     {
-        shading = shadingType4;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
+        this.shading = shading;
+        this.ctm = ctm;
+        this.pageHeight = pageHeight;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getTransparency()
     {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new Type4ShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+            return new Type4ShadingContext(shading, cm, xform, ctm, pageHeight);
         }
         catch (IOException ex)
         {

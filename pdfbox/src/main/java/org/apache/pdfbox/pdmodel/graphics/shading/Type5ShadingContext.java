@@ -33,44 +33,39 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- *
- * This represents the Paint of a type 5 (Gouraud triangle lattice) shading
- * context.
- *
+ * AWT PaintContext for Gouraud Triangle Lattice (Type 5) shading.
  * @author Tilman Hausherr
  */
-public class Type5ShadingContext extends GouraudShadingContext
+class Type5ShadingContext extends GouraudShadingContext
 {
     private static final Log LOG = LogFactory.getLog(Type5ShadingContext.class);
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     *
-     * @param shadingType5 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     *
      * @throws IOException if something went wrong
      */
-    public Type5ShadingContext(PDShadingType5 shadingType5, ColorModel colorModelValue,
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
+                               Matrix ctm, int pageHeight) throws IOException
     {
-        super(shadingType5, colorModelValue, xform, ctm, pageHeight);
+        super(shading, cm, xform, ctm, pageHeight);
 
         LOG.debug("Type5ShadingContext");
 
-        bitsPerColorComponent = shadingType5.getBitsPerComponent();
+        bitsPerColorComponent = shading.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shadingType5.getBitsPerCoordinate();
+        bitsPerCoordinate = shading.getBitsPerCoordinate();
         LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         long maxSrcCoord = (int) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (int) Math.pow(2, bitsPerColorComponent) - 1;
         LOG.debug("maxSrcCoord: " + maxSrcCoord);
         LOG.debug("maxSrcColor: " + maxSrcColor);
 
-        COSDictionary cosDictionary = shadingType5.getCOSDictionary();
+        COSDictionary cosDictionary = shading.getCOSDictionary();
         COSStream cosStream = (COSStream) cosDictionary;
 
         //The Decode key specifies how
@@ -81,21 +76,21 @@ public class Type5ShadingContext extends GouraudShadingContext
         // see p344
         COSArray decode = (COSArray) cosDictionary.getDictionaryObject(COSName.DECODE);
         LOG.debug("decode: " + decode);
-        PDRange rangeX = shadingType5.getDecodeForParameter(0);
-        PDRange rangeY = shadingType5.getDecodeForParameter(1);
+        PDRange rangeX = shading.getDecodeForParameter(0);
+        PDRange rangeY = shading.getDecodeForParameter(1);
         LOG.debug("rangeX: " + rangeX.getMin() + ", " + rangeX.getMax());
         LOG.debug("rangeY: " + rangeY.getMin() + ", " + rangeY.getMax());
 
         PDRange[] colRangeTab = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRangeTab[i] = shadingType5.getDecodeForParameter(2 + i);
+            colRangeTab[i] = shading.getDecodeForParameter(2 + i);
         }
 
         LOG.debug("bitsPerCoordinate: " + bitsPerCoordinate);
 
         // get background values if available
-        COSArray bg = shadingType5.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
@@ -107,7 +102,7 @@ public class Type5ShadingContext extends GouraudShadingContext
         //  reading in sequence from higher-order to lower-order bit positions
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getFilteredStream());
 
-        int verticesPerRow = shadingType5.getVerticesPerRow(); //TODO check >=2
+        int verticesPerRow = shading.getVerticesPerRow(); //TODO check >=2
         LOG.debug("verticesPerRow" + verticesPerRow);
 
         try
@@ -168,13 +163,9 @@ public class Type5ShadingContext extends GouraudShadingContext
         mciis.close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {
         super.dispose();
     }
-
 }

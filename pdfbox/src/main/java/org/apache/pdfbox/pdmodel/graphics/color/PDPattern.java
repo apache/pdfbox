@@ -23,20 +23,9 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.TilingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
-import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
-import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
-import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
 
@@ -46,7 +35,6 @@ import java.util.Map;
 
 /**
  * A Pattern color space is either a Tiling pattern or a Shading pattern.
- *
  * @author John Hewson
  * @author Ben Litchfield
  */
@@ -127,57 +115,23 @@ public final class PDPattern extends PDSpecialColorSpace
         PDAbstractPattern pattern = patterns.get(color.getPatternName());
         if (pattern instanceof PDTilingPattern)
         {
-            return toTilingPaint(renderer, (PDTilingPattern)pattern, color);
+            PDTilingPattern tilingPattern = (PDTilingPattern)pattern;
+            if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
+            {
+                // colored tiling pattern
+                return new TilingPaint(renderer, tilingPattern);
+            }
+            else
+            {
+                // uncolored tiling pattern
+                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color);
+            }
         }
         else
         {
-            return toShadingPaint((PDShadingPattern)pattern, pageHeight);
-        }
-    }
-
-    private Paint toTilingPaint(PDFRenderer renderer, PDTilingPattern tilingPattern, PDColor color)
-            throws IOException
-    {
-        if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
-        {
-            // colored tiling pattern
-            return new TilingPaint(renderer, tilingPattern);
-        }
-        else
-        {
-            // uncolored tiling pattern
-            return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color);
-        }
-    }
-
-    private Paint toShadingPaint(PDShadingPattern shadingPattern, int pageHeight) throws IOException
-    {
-        PDShading shadingResources = shadingPattern.getShading();
-        int shadingType = shadingResources != null ? shadingResources.getShadingType() : 0;
-        switch (shadingType)
-        {
-            case PDShading.SHADING_TYPE1:
-                return new Type1ShadingPaint((PDShadingType1)shadingResources,
-                                             shadingPattern.getMatrix(), pageHeight);
-            case PDShading.SHADING_TYPE2:
-                return new AxialShadingPaint((PDShadingType2)shadingResources,
-                                             shadingPattern.getMatrix(), pageHeight);
-            case PDShading.SHADING_TYPE3:
-                return new RadialShadingPaint((PDShadingType3)shadingResources,
-                                              shadingPattern.getMatrix(), pageHeight);
-            case PDShading.SHADING_TYPE4:
-                return new Type4ShadingPaint((PDShadingType4)shadingResources,
-                                             shadingPattern.getMatrix(), pageHeight);
-            case PDShading.SHADING_TYPE5:
-                return new Type5ShadingPaint((PDShadingType5)shadingResources,
-                                             shadingPattern.getMatrix(), pageHeight);
-            case PDShading.SHADING_TYPE6:
-            case PDShading.SHADING_TYPE7:
-                // TODO ...
-                LOG.debug("Not implemented, shading type: " + shadingType);
-                return new Color(0, 0, 0, 0); // transparent
-            default:
-                throw new IOException("Invalid shading type: " + shadingType);
+            PDShadingPattern shadingPattern = (PDShadingPattern)pattern;
+            PDShading shading = shadingPattern.getShading();
+            return shading.toPaint(shadingPattern.getMatrix(), pageHeight);
         }
     }
 

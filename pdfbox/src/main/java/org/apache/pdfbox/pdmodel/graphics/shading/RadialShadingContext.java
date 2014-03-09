@@ -35,14 +35,15 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This class represents the PaintContext of an radial shading.
- * 
+ * AWT PaintContext for radial shading.
  */
-public class RadialShadingContext implements PaintContext 
+class RadialShadingContext implements PaintContext
 {
+    private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
+
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
-    private PDShadingType3 shadingType;
+    private PDShadingType3 shading;
 
     private float[] coords;
     private float[] domain;
@@ -57,27 +58,20 @@ public class RadialShadingContext implements PaintContext
 
     private float d1d0;
     private double denom;
-    
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     * 
-     * @param shadingType3 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
-     * 
      */
-    public RadialShadingContext(PDShadingType3 shadingType3, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    public RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
+                                Matrix ctm, int pageHeight) throws IOException
     {
-        shadingType = shadingType3;
-        coords = shadingType.getCoords().toFloatArray();
+        this.shading = shading;
+        coords = this.shading.getCoords().toFloatArray();
 
         if (ctm != null)
         {
@@ -96,15 +90,15 @@ public class RadialShadingContext implements PaintContext
         coords[5] *= xform.getScaleX();
 
         // get the shading colorSpace
-        shadingColorSpace = shadingType.getColorSpace();
+        shadingColorSpace = this.shading.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
                 DataBuffer.TYPE_BYTE);
         // domain values
-        if (shadingType.getDomain() != null)
+        if (this.shading.getDomain() != null)
         {
-            domain = shadingType.getDomain().toFloatArray();
+            domain = this.shading.getDomain().toFloatArray();
         }
         else
         {
@@ -112,8 +106,8 @@ public class RadialShadingContext implements PaintContext
             domain = new float[] { 0, 1 };
         }
         // extend values
-        COSArray extendValues = shadingType.getExtend();
-        if (shadingType.getExtend() != null)
+        COSArray extendValues = this.shading.getExtend();
+        if (this.shading.getExtend() != null)
         {
             extend = new boolean[2];
             extend[0] = ((COSBoolean) extendValues.get(0)).getValue();
@@ -135,33 +129,28 @@ public class RadialShadingContext implements PaintContext
         d1d0 = domain[1] - domain[0];
 
         // get background values if available
-        COSArray bg = shadingType3.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+
+    @Override
     public void dispose() 
     {
         outputColorModel = null;
-        shadingType = null;
+        shading = null;
         shadingColorSpace = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ColorModel getColorModel() 
     {
         return outputColorModel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Raster getRaster(int x, int y, int w, int h) 
     {
         // create writable raster
@@ -287,7 +276,7 @@ public class RadialShadingContext implements PaintContext
                     try
                     {
                         float input = (float) (domain[0] + (d1d0 * inputValue));
-                        values = shadingType.evalFunction(input);
+                        values = shading.evalFunction(input);
                     }
                     catch (IOException exception)
                     {
@@ -315,24 +304,22 @@ public class RadialShadingContext implements PaintContext
 
     private float[] calculateInputValues(int x, int y)
     {
-
-        /**
-         * According to Adobes Technical Note #5600 we have to do the following
-         * 
-         * x0, y0, r0 defines the start circle x1, y1, r1 defines the end circle
-         * 
-         * The parametric equations for the center and radius of the gradient fill circle moving between the start
-         * circle and the end circle as a function of s are as follows:
-         * 
-         * xc(s) = x0 + s * (x1 - x0) yc(s) = y0 + s * (y1 - y0) r(s) = r0 + s * (r1 - r0)
-         * 
-         * Given a geometric coordinate position (x, y) in or along the gradient fill, the corresponding value of s can
-         * be determined by solving the quadratic constraint equation:
-         * 
-         * [x - xc(s)]2 + [y - yc(s)]2 = [r(s)]2
-         * 
-         * The following code calculates the 2 possible values of s
-         */
+        // According to Adobes Technical Note #5600 we have to do the following
+        //
+        // x0, y0, r0 defines the start circle x1, y1, r1 defines the end circle
+        //
+        // The parametric equations for the center and radius of the gradient fill circle moving
+        // between the start circle and the end circle as a function of s are as follows:
+        //
+        // xc(s) = x0 + s * (x1 - x0) yc(s) = y0 + s * (y1 - y0) r(s) = r0 + s * (r1 - r0)
+        //
+        // Given a geometric coordinate position (x, y) in or along the gradient fill, the
+        // corresponding value of s can be determined by solving the quadratic constraint equation:
+        //
+        // [x - xc(s)]2 + [y - yc(s)]2 = [r(s)]2
+        //
+        // The following code calculates the 2 possible values of s
+        //
         double p = -(x - coords[0]) * x1x0 - (y - coords[1]) * y1y0 - coords[2] * r1r0;
         double q = (Math.pow(x - coords[0], 2) + Math.pow(y - coords[1], 2) - r0pow2);
         double root = Math.sqrt(p * p - denom * q);
@@ -350,7 +337,6 @@ public class RadialShadingContext implements PaintContext
 
     /**
      * Returns the coords values.
-     * 
      * @return the coords values as array
      */
     public float[] getCoords() 
@@ -360,7 +346,6 @@ public class RadialShadingContext implements PaintContext
         
     /**
      * Returns the domain values.
-     * 
      * @return the domain values as array
      */
     public float[] getDomain() 
@@ -370,7 +355,6 @@ public class RadialShadingContext implements PaintContext
         
     /**
      * Returns the extend values.
-     * 
      * @return the extend values as array
      */
     public boolean[] getExtend() 

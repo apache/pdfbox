@@ -20,7 +20,6 @@ import java.awt.PaintContext;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
@@ -32,22 +31,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This class represents the PaintContext of an axial shading.
- * 
+ * AWT PaintContext for axial shading.
  */
-public class AxialShadingContext implements PaintContext 
+class AxialShadingContext implements PaintContext
 {
+    private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
+
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
-    private PDShadingType2 shadingType;
+    private PDShadingType2 shading;
 
     private float[] coords;
     private float[] domain;
@@ -57,27 +53,20 @@ public class AxialShadingContext implements PaintContext
     private double y1y0;
     private float d1d0;
     private double denom;
-    
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     * 
-     * @param shadingType2 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
-     * 
      */
-    public AxialShadingContext(PDShadingType2 shadingType2, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    public AxialShadingContext(PDShadingType2 shading, ColorModel cm, AffineTransform xform,
+                               Matrix ctm, int pageHeight) throws IOException
     {
-        shadingType = shadingType2;
-        coords = shadingType.getCoords().toFloatArray();
+        this.shading = shading;
+        coords = this.shading.getCoords().toFloatArray();
 
         if (ctm != null)
         {
@@ -86,15 +75,15 @@ public class AxialShadingContext implements PaintContext
         }
         xform.transform(coords, 0, coords, 0, 2);
         // get the shading colorSpace
-        shadingColorSpace = shadingType.getColorSpace();
+        shadingColorSpace = this.shading.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
                 DataBuffer.TYPE_BYTE);
         // domain values
-        if (shadingType.getDomain() != null)
+        if (this.shading.getDomain() != null)
         {
-            domain = shadingType.getDomain().toFloatArray();
+            domain = this.shading.getDomain().toFloatArray();
         }
         else
         {
@@ -102,8 +91,8 @@ public class AxialShadingContext implements PaintContext
             domain = new float[] { 0, 1 };
         }
         // extend values
-        COSArray extendValues = shadingType.getExtend();
-        if (shadingType.getExtend() != null)
+        COSArray extendValues = this.shading.getExtend();
+        if (this.shading.getExtend() != null)
         {
             extend = new boolean[2];
             extend[0] = ((COSBoolean) extendValues.get(0)).getValue();
@@ -121,38 +110,33 @@ public class AxialShadingContext implements PaintContext
         denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
 
         // get background values if available
-        COSArray bg = shadingType2.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
         }
     }
-    /**
-     * {@inheritDoc}
-     */
+
+    @Override
     public void dispose() 
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shadingType = null;
+        shading = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public ColorModel getColorModel() 
     {
         return outputColorModel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public Raster getRaster(int x, int y, int w, int h) 
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        boolean useBackground = false;
+        boolean useBackground;
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
@@ -229,7 +213,7 @@ public class AxialShadingContext implements PaintContext
                     try
                     {
                         float input = (float) (domain[0] + (d1d0 * inputValue));
-                        values = shadingType.evalFunction(input);
+                        values = shading.evalFunction(input);
                     }
                     catch (IOException exception)
                     {
@@ -257,7 +241,6 @@ public class AxialShadingContext implements PaintContext
 
     /**
      * Returns the coords values.
-     * 
      * @return the coords values as array
      */
     public float[] getCoords() 
@@ -267,7 +250,6 @@ public class AxialShadingContext implements PaintContext
         
     /**
      * Returns the domain values.
-     * 
      * @return the domain values as array
      */
     public float[] getDomain() 
@@ -277,7 +259,6 @@ public class AxialShadingContext implements PaintContext
         
     /**
      * Returns the extend values.
-     * 
      * @return the extend values as array
      */
     public boolean[] getExtend() 
