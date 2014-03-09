@@ -29,18 +29,13 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of a type 1 (Function based) shading context.
- *
- * @author lehmi
- * @author Tilman Hausherr <tilman@snafu.de>
+ * AWT PaintContext for function-based (Type 1) shading.
+ * @author Andreas Lehmkühler
+ * @author Tilman Hausherr
  */
 class Type1ShadingContext implements PaintContext
 {
@@ -48,7 +43,7 @@ class Type1ShadingContext implements PaintContext
 
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
-    private PDShadingType1 shadingType;
+    private PDShadingType1 shading;
     private AffineTransform rat;
     private float[] domain;
     private Matrix matrix;
@@ -56,21 +51,19 @@ class Type1ShadingContext implements PaintContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     *
-     * @param shadingType1 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     *
      */
-    public Type1ShadingContext(PDShadingType1 shadingType1, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
+    public Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
+                               Matrix ctm, int pageHeight) throws IOException
     {
-        shadingType = shadingType1;
+        this.shading = shading;
 
         // color space
-        shadingColorSpace = shadingType.getColorSpace();
+        shadingColorSpace = this.shading.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
@@ -80,9 +73,9 @@ class Type1ShadingContext implements PaintContext
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
         // specifying the rectangular domain of coordinates over which the 
         // color function(s) are defined. Default value: [ 0.0 1.0 0.0 1.0 ].
-        if (shadingType.getDomain() != null)
+        if (this.shading.getDomain() != null)
         {
-            domain = shadingType.getDomain().toFloatArray();
+            domain = this.shading.getDomain().toFloatArray();
         }
         else
         {
@@ -92,7 +85,7 @@ class Type1ShadingContext implements PaintContext
             };
         }
 
-        matrix = shadingType.getMatrix();
+        matrix = this.shading.getMatrix();
         if (matrix == null)
         {
             matrix = new Matrix();
@@ -113,41 +106,30 @@ class Type1ShadingContext implements PaintContext
         }
 
         // get background values if available
-        COSArray bg = shadingType1.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shadingType = null;
+        shading = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Raster getRaster(int x, int y, int w, int h)
     {
-        // create writable raster
-        
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
@@ -181,7 +163,7 @@ class Type1ShadingContext implements PaintContext
                 {
                     try
                     {
-                        values = shadingType.evalFunction(values);
+                        values = shading.evalFunction(values);
                     }
                     catch (IOException exception)
                     {

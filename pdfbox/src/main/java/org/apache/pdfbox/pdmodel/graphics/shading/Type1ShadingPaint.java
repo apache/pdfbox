@@ -30,9 +30,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an type1 shading.
+ * AWT PaintContext for function-based (Type 1) shading.
  */
-public class Type1ShadingPaint implements Paint
+class Type1ShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(Type1ShadingPaint.class);
 
@@ -42,33 +42,26 @@ public class Type1ShadingPaint implements Paint
 
     /**
      * Constructor.
-     *
-     * @param shadingType1 the shading resources
+     * @param shading the shading resources
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
      */
-    public Type1ShadingPaint(PDShadingType1 shadingType1, Matrix ctm, int pageHeight)
+    public Type1ShadingPaint(PDShadingType1 shading, Matrix ctm, int pageHeight)
     {
-        shading = shadingType1;
+        this.shading = shading;
         this.ctm = ctm;
         this.pageHeight = pageHeight;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getTransparency()
     {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {

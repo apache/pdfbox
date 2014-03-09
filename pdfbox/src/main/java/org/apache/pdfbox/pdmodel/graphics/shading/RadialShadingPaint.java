@@ -30,11 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an radial shading.
- * 
- * @author lehmi
+ * AWT Paint for radial shading.
+ * @author Andreas Lehmkühler
  */
-public class RadialShadingPaint implements Paint 
+class RadialShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(RadialShadingPaint.class);
 
@@ -44,30 +43,26 @@ public class RadialShadingPaint implements Paint
     
     /**
      * Constructor.
-     * 
-     * @param shadingType3 the shading resources
+     * @param shading the shading resources
      * @param ctm current transformation matrix
      * @param pageHeight size of the current page
      */
-    public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeight)
+    public RadialShadingPaint(PDShadingType3 shading, Matrix ctm, int pageHeight)
     {
-        shading = shadingType3;
+        this.shading = shading;
         this.ctm = ctm;
         this.pageHeight = pageHeight;
     }
-    /**
-     * {@inheritDoc}
-     */
+
+    @Override
     public int getTransparency() 
     {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
+    @Override
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {

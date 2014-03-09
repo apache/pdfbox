@@ -16,30 +16,41 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.util.Matrix;
+
+import java.awt.Color;
+import java.awt.Paint;
 
 /**
- * This represents resources for a shading type 7 (Tensor-Product Patch Meshes).
- *
- * @version $Revision: 1.0 $
+ * Resources for a shading type 7 (Tensor-Product Patch Mesh).
  */
 public class PDShadingType7 extends PDShadingType4
 {
+    private static final Log LOG = LogFactory.getLog(PDShadingType7.class);
+
     /**
      * Constructor using the given shading dictionary.
-     *
-     * @param shadingDictionary The dictionary for this shading.
+     * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType7(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getShadingType()
     {
         return PDShading.SHADING_TYPE6;
+    }
+
+    @Override
+    public Paint toPaint(Matrix matrix, int pageHeight)
+    {
+        // TODO ...
+        LOG.debug("Type 7 Shading not implemented");
+        return new Color(0, 0, 0, 0); // transparent
     }
 }

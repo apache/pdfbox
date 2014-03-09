@@ -19,11 +19,12 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.util.Matrix;
+
+import java.awt.Paint;
 
 /**
- * This represents resources for an axial shading.
- *
- * @version $Revision: 1.0 $
+ * Resources for an axial shading.
  */
 public class PDShadingType2 extends PDShading
 {
@@ -33,17 +34,14 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Constructor using the given shading dictionary.
-     *
-     * @param shadingDictionary The dictionary for this shading.
+     * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType2(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getShadingType()
     {
         return PDShading.SHADING_TYPE2;
@@ -51,7 +49,6 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the optional Extend values for this shading.
-     *
      * @return the extend values
      */
     public COSArray getExtend()
@@ -65,7 +62,6 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the optional Extend entry for this shading.
-     *
      * @param newExtend the extend array
      */
     public void setExtend(COSArray newExtend)
@@ -83,7 +79,6 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the optional Domain values for this shading.
-     *
      * @return the domain values
      */
     public COSArray getDomain()
@@ -97,7 +92,6 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the optional Domain entry for this shading.
-     *
      * @param newDomain the domain array
      */
     public void setDomain(COSArray newDomain)
@@ -115,8 +109,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the Coords values for this shading.
-     *
-     * @return the coords values
+     * @return the coordinate values
      */
     public COSArray getCoords()
     {
@@ -129,8 +122,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the Coords entry for this shading.
-     *
-     * @param newCoords the coords array
+     * @param newCoords the coordinates array
      */
     public void setCoords(COSArray newCoords)
     {
@@ -143,5 +135,11 @@ public class PDShadingType2 extends PDShading
         {
             getCOSDictionary().setItem(COSName.COORDS, newCoords);
         }
+    }
+
+    @Override
+    public Paint toPaint(Matrix matrix, int pageHeight)
+    {
+        return new AxialShadingPaint(this, matrix, pageHeight);
     }
 }

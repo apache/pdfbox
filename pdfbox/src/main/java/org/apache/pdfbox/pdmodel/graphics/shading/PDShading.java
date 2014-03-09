@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Paint;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -26,10 +27,10 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents resources for a shading.
- *
+ * A Shading Resource.
  * @author Andreas Lehmkühler
  */
 public abstract class PDShading implements COSObjectable
@@ -41,33 +42,25 @@ public abstract class PDShading implements COSObjectable
     private PDFunction function = null;
     private PDFunction[] functionArray = null;
     
-    /**
-     * shading type 1 = function based shading.
-     */
+    /** shading type 1 = function based shading. */
     public static final int SHADING_TYPE1 = 1;
-    /**
-     * shading type 2 = axial shading.
-     */
+
+    /** shading type 2 = axial shading. */
     public static final int SHADING_TYPE2 = 2;
-    /**
-     * shading type 3 = radial shading.
-     */
+
+    /** shading type 3 = radial shading. */
     public static final int SHADING_TYPE3 = 3;
-    /**
-     * shading type 4 = Free-Form Gouraud-Shaded Triangle Meshes.
-     */
+
+    /** shading type 4 = Free-Form Gouraud-Shaded Triangle Meshes. */
     public static final int SHADING_TYPE4 = 4;
-    /**
-     * shading type 5 = Lattice-Form Gouraud-Shaded Triangle Meshes.
-     */
+
+    /** shading type 5 = Lattice-Form Gouraud-Shaded Triangle Meshes. */
     public static final int SHADING_TYPE5 = 5;
-    /**
-     * shading type 6 = Coons Patch Meshes.
-     */
+
+    /** shading type 6 = Coons Patch Meshes. */
     public static final int SHADING_TYPE6 = 6;
-    /**
-     * shading type 7 = Tensor-Product Patch Meshes.
-     */
+
+    /** shading type 7 = Tensor-Product Patch Meshes. */
     public static final int SHADING_TYPE7 = 7;
     
     /**
@@ -80,8 +73,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * Constructor using the given shading dictionary.
-     *
-     * @param shadingDictionary The dictionary for this shading.
+     * @param shadingDictionary the dictionary for this shading
      */
     public PDShading(COSDictionary shadingDictionary)
     {
@@ -90,8 +82,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will get the underlying dictionary.
-     *
-     * @return The dictionary for this shading.
+     * @return the dictionary for this shading
      */
     public COSDictionary getCOSDictionary()
     {
@@ -100,8 +91,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
+     * @return the cos object that matches this Java object
      */
     public COSBase getCOSObject()
     {
@@ -110,8 +100,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will return the type.
-     *
-     * @return The type of object that this is.
+     * @return the type of object that this is
      */
     public String getType()
     {
@@ -120,8 +109,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the shading type.
-     *
-     * @param shadingType The new shading type.
+     * @param shadingType the new shading type
      */
     public void setShadingType(int shadingType)
     {
@@ -130,15 +118,13 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will return the shading type.
-     *
-     * @return The shading type
+     * @return the shading typ
      */
     public abstract int getShadingType();
 
     /**
      * This will set the background.
-     *
-     * @param newBackground The new background.
+     * @param newBackground the new background
      */
     public void setBackground(COSArray newBackground)
     {
@@ -148,8 +134,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will return the background.
-     *
-     * @return The background
+     * @return the background
      */
     public COSArray getBackground()
     {
@@ -161,11 +146,10 @@ public abstract class PDShading implements COSObjectable
     }
 
     /**
-     * An array of four numbers in the form coordinate system (see
-     * below), giving the coordinates of the left, bottom, right, and top edges,
-     * respectively, of the shadings's bounding box.
-     *
-     * @return The BBox of the form.
+     * An array of four numbers in the form coordinate system (see below),
+     * giving the coordinates of the left, bottom, right, and top edges, respectively,
+     * of the shading's bounding box.
+     * @return the BBox of the form
      */
     public PDRectangle getBBox()
     {
@@ -182,8 +166,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the BBox (bounding box) for this Shading.
-     *
-     * @param newBBox The new BBox.
+     * @param newBBox the new BBox
      */
     public void setBBox(PDRectangle newBBox)
     {
@@ -200,8 +183,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the AntiAlias value.
-     *
-     * @param antiAlias The new AntiAlias value.
+     * @param antiAlias the new AntiAlias value
      */
     public void setAntiAlias(boolean antiAlias)
     {
@@ -210,8 +192,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will return the AntiAlias value.
-     *
-     * @return The AntiAlias value
+     * @return the AntiAlias value
      */
     public boolean getAntiAlias()
     {
@@ -220,10 +201,8 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will get the color space or null if none exists.
-     *
-     * @return The color space for the shading.
-     *
-     * @throws IOException If there is an error getting the color space.
+     * @return the color space for the shading
+     * @throws IOException if there is an error getting the color space
      */
     public PDColorSpace getColorSpace() throws IOException
     {
@@ -237,8 +216,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the color space for the shading.
-     *
-     * @param colorSpace The color space
+     * @param colorSpace the color space
      */
     public void setColorSpace( PDColorSpace colorSpace )
     {
@@ -255,12 +233,9 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * Create the correct PD Model shading based on the COS base shading.
-     * 
      * @param resourceDictionary the COS shading dictionary
-     * 
      * @return the newly created shading resources object
-     * 
-     * @throws IOException If we are unable to create the PDShading object.
+     * @throws IOException if we are unable to create the PDShading object
      */
     public static PDShading create(COSDictionary resourceDictionary) throws IOException
     {
@@ -297,8 +272,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the function for the color conversion.
-     *
-     * @param newFunction The new function.
+     * @param newFunction the new function
      */
     public void setFunction(PDFunction newFunction)
     {
@@ -316,8 +290,7 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will set the functions COSArray for the color conversion.
-     *
-     * @param newFunctions The new COSArray containing all functions.
+     * @param newFunctions the new COSArray containing all functions
      */
     public void setFunction(COSArray newFunctions)
     {
@@ -335,9 +308,8 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * This will return the function used to convert the color values.
-     *
-     * @return The function
-     * @exception IOException If we are unable to create the PDFunction object.
+     * @return the function
+     * @exception IOException if we are unable to create the PDFunction object
      */
     public PDFunction getFunction() throws IOException
     {
@@ -352,9 +324,8 @@ public abstract class PDShading implements COSObjectable
 
     /**
      * Provide the function(s) of the shading dictionary as array.
-     * 
      * @return an array containing the function(s) 
-     * @throws IOException throw if something went wrong
+     * @throws IOException if something went wrong
      */
     private PDFunction[] getFunctionsArray() throws IOException
     {
@@ -382,7 +353,6 @@ public abstract class PDShading implements COSObjectable
     
     /**
      * Convert the input value using the functions of the shading dictionary.
-     *
      * @param inputValue the input value
      * @return the output values
      * @throws IOException thrown if something went wrong
@@ -394,7 +364,6 @@ public abstract class PDShading implements COSObjectable
     
     /**
      * Convert the input values using the functions of the shading dictionary.
-     * 
      * @param input the input values
      * @return the output values
      * @throws IOException thrown if something went wrong
@@ -419,4 +388,12 @@ public abstract class PDShading implements COSObjectable
         }
         return returnValues;
     }
+
+    /**
+     * Returns an AWT paint which corresponds to this shading
+     * @param matrix the pattern matrix
+     * @param pageHeight the height of the current page
+     * @return an AWT Paint instance
+     */
+    public abstract Paint toPaint(Matrix matrix, int pageHeight);
 }

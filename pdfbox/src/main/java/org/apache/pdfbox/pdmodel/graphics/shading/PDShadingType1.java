@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -26,27 +27,22 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents resources for a function based shading.
- *
+ * Resources for a function based shading.
  */
 public class PDShadingType1 extends PDShading
 {
-
     private COSArray domain = null;
 
     /**
      * Constructor using the given shading dictionary.
-     *
-     * @param shadingDictionary The dictionary for this shading.
+     * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType1(COSDictionary shadingDictionary)
     {
         super(shadingDictionary);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getShadingType()
     {
         return PDShading.SHADING_TYPE1;
@@ -54,29 +50,27 @@ public class PDShadingType1 extends PDShading
 
     /**
      * This will get the optional Matrix of a function based shading.
-     *
      * @return the matrix
      */
     public Matrix getMatrix()
     {
-        Matrix retval = null;
+        Matrix matrix = null;
         COSArray array = (COSArray) getCOSDictionary().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
-            retval = new Matrix();
-            retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            retval.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            retval.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            matrix = new Matrix();
+            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
+            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
+            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
+            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
+            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
+            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
         }
-        return retval;
+        return matrix;
     }
 
     /**
      * Sets the optional Matrix entry for the function based shading.
-     *
      * @param transform the transformation matrix
      */
     public void setMatrix(AffineTransform transform)
@@ -93,7 +87,6 @@ public class PDShadingType1 extends PDShading
 
     /**
      * This will get the optional Domain values of a function based shading.
-     *
      * @return the domain values
      */
     public COSArray getDomain()
@@ -107,12 +100,17 @@ public class PDShadingType1 extends PDShading
 
     /**
      * Sets the optional Domain entry for the function based shading.
-     *
      * @param newDomain the domain array
      */
     public void setDomain(COSArray newDomain)
     {
         domain = newDomain;
         getCOSDictionary().setItem(COSName.DOMAIN, newDomain);
+    }
+
+    @Override
+    public Paint toPaint(Matrix matrix, int pageHeight)
+    {
+        return new Type1ShadingPaint(this, matrix, pageHeight);
     }
 }

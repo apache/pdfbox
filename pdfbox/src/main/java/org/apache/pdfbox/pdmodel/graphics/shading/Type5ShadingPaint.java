@@ -24,57 +24,48 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of a Type 5 shading.
+ * AWT Paint for Gouraud Triangle Lattice (Type 5) shading.
  */
-public class Type5ShadingPaint implements Paint
+class Type5ShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(Type5ShadingPaint.class);
 
     private PDShadingType5 shading;
-    private Matrix currentTransformationMatrix;
+    private Matrix ctm;
     private int pageHeight;
 
     /**
      * Constructor.
-     *
-     * @param shadingType5 the shading resources
+     * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue
+     * @param pageHeight the height of the page
      */
-    public Type5ShadingPaint(PDShadingType5 shadingType5, Matrix ctm, int pageHeightValue)
+    public Type5ShadingPaint(PDShadingType5 shading, Matrix ctm, int pageHeight)
     {
-        shading = shadingType5;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
+        this.shading = shading;
+        this.ctm = ctm;
+        this.pageHeight = pageHeight;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getTransparency()
     {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new Type5ShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+            return new Type5ShadingContext(shading, cm, xform, ctm, pageHeight);
         }
         catch (IOException ex)
         {

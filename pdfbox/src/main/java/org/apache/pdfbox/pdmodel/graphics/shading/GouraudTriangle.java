@@ -20,40 +20,30 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.geom.Point2D;
 
 /**
- * Helper class to deal with Gouraud triangles for type 4 and 5 shading.
- *
+ * A Gouraud triangle, used in Type 4 and Type 5 shadings.
  * @author Tilman Hausherr
  */
-public class GouraudTriangle
+class GouraudTriangle
 {
-    /**
-     * point A of the triangle.
-     */
+    /** point A of the triangle. */
     protected final Point2D pointA;
-    /**
-     * point B of the triangle.
-     */
+
+    /** point B of the triangle. */
     protected final Point2D pointB;
-    /**
-     * point C of the triangle.
-     */
+
+    /** point C of the triangle. */
     protected final Point2D pointC;
-    /**
-     * the color of point A.
-     */
+
+    /** the color of point A. */
     protected final float[] colorA;
-    /**
-     * the color of point B.
-     */
+
+    /** the color of point B. */
     protected final float[] colorB;
-    /**
-     * the color of point C.
-     */
+
+    /** the color of point C. */
     protected final float[] colorC;
 
-    /*
-     * intermediate constants
-     */
+    // intermediate constants
     private final double xBminusA;
     private final double yBminusA;
     private final double xCminusA;
@@ -64,7 +54,6 @@ public class GouraudTriangle
 
     /**
      * Constructor for using 3 points and their colors.
-     *
      * @param a point A of the triangle
      * @param aColor color of point A
      * @param b point B of the triangle
@@ -93,9 +82,7 @@ public class GouraudTriangle
 
     /**
      * Check whether the point is within the triangle.
-     *
      * @param p Point
-     *
      * @return true if yes, false if no
      */
     public boolean contains(Point2D p)
@@ -125,10 +112,7 @@ public class GouraudTriangle
         return true;
     }
 
-    /**
-     * Get the area of a triangle.
-     *
-     */
+    // returns the area of a triangle
     private double getArea(Point2D a, Point2D b, Point2D c)
     {
         // inspiration: http://stackoverflow.com/a/2145584/535646
@@ -139,19 +123,16 @@ public class GouraudTriangle
 
     /**
      * Tell whether a triangle is empty.
-     * 
-     * @return true if the area is empty, false if not.
+     * @return true if the area is empty, false if not
      */
-    boolean isEmpty()
+    public boolean isEmpty()
     {
         return area == 0;
     }
 
     /**
      * calculate color weights with barycentric interpolation.
-     *
-     * @param p Point within triangle
-     *
+     * @param p point within triangle
      * @return array of weights (between 0 and 1) for a b c
      */
     public double[] getWeights(Point2D p)
@@ -159,9 +140,9 @@ public class GouraudTriangle
         // http://classes.soe.ucsc.edu/cmps160/Fall10/resources/barycentricInterpolation.pdf
         return new double[]
         {
-            getArea(pointB, pointC, p) / area, getArea(pointA, pointC, p)
-            / area, getArea(pointA, pointB, p) / area
+            getArea(pointB, pointC, p) / area,
+            getArea(pointA, pointC, p) / area,
+            getArea(pointA, pointB, p) / area
         };
     }
-
 }
