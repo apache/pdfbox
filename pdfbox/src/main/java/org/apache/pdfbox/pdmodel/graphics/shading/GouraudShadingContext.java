@@ -95,6 +95,11 @@ public abstract class GouraudShadingContext implements PaintContext
     protected GouraudShadingContext(PDShadingResources shadingType, ColorModel colorModelValue,
             AffineTransform xform, Matrix ctm, int pageHeight) throws IOException
     {
+        // PDFBOX-1966 flip the AffineTransform in 1.8 branch
+        //TODO find out why AffineTransform passed in 1.8 branch is flipped         
+        xform.scale(1,-1);
+        xform.translate(0, -pageHeight);
+        
         gouraudShadingType = shadingType;
         triangleList = new ArrayList<GouraudTriangle>();
         colorSpace = shadingType.getColorSpace();

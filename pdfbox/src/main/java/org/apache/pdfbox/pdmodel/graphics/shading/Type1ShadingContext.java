@@ -69,6 +69,11 @@ class Type1ShadingContext implements PaintContext
             AffineTransform xform, Matrix currentTransformationMatrix, int pageHeight)
     {
         shadingType = shadingType1;
+        
+        // PDFBOX-1966 flip the AffineTransform in 1.8 branch
+        //TODO find out why AffineTransform passed in 1.8 branch is flipped         
+        xform.scale(1,-1);
+        xform.translate(0, -pageHeight);
 
         // colorSpace 
         try
