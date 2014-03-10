@@ -28,6 +28,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.text.TextNormalize;
+import org.apache.pdfbox.text.TextPosition;
 
 /**
  * This is an stream engine to extract the marked content of a pdf.

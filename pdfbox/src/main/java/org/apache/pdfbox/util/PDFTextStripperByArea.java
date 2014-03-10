@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.text.TextPosition;
 
 /**
  * This will extract text from a specified region in the PDF.
@@ -41,7 +42,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
 {
     private List<String> regions = new ArrayList<String>();
     private Map<String,Rectangle2D> regionArea = new HashMap<String,Rectangle2D>();
-    private Map<String,Vector<ArrayList<TextPosition>>> regionCharacterList = 
+    private Map<String,Vector<ArrayList<TextPosition>>> regionCharacterList =
         new HashMap<String,Vector<ArrayList<TextPosition>>>();
     private Map<String,StringWriter> regionText = new HashMap<String,StringWriter>();
 

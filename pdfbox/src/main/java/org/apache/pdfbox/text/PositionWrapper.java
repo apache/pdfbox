@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
-
+package org.apache.pdfbox.text;
 
 /**
  * wrapper of TextPosition that adds flags to track
@@ -28,7 +27,6 @@ package org.apache.pdfbox.util;
  * it makes sense to put these flags in this separate class.
  * </p>
  * @author m.martinez@ll.mit.edu
- *
  */
 public class PositionWrapper
 {

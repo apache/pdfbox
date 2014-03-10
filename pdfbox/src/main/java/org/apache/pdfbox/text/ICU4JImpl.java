@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.text;
 
 import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.Normalizer;
@@ -49,7 +49,7 @@ public class ICU4JImpl
 
     /**
      * Takes a line of text in presentation order and converts it to logical order.
-     * @see TextNormalize#makeLineLogicalOrder(String, boolean)     
+     * @see org.apache.pdfbox.text.TextNormalize#makeLineLogicalOrder(String, boolean)
      *  
      * @param str String to convert
      * @param isRtlDominant RTL (right-to-left) will be the dominant text direction
@@ -69,7 +69,7 @@ public class ICU4JImpl
 
     /**
      * Normalize presentation forms of characters to the separate parts. 
-     * @see TextNormalize#normalizePres(String)
+     * @see org.apache.pdfbox.text.TextNormalize#normalizePres(String)
      * 
      * @param str String to normalize
      * @return Normalized form
