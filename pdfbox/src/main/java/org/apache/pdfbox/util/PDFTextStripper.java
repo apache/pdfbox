@@ -46,6 +46,10 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+import org.apache.pdfbox.text.PositionWrapper;
+import org.apache.pdfbox.text.TextNormalize;
+import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.text.TextPositionComparator;
 
 
 /**
