@@ -312,7 +312,7 @@ public class COSStream extends COSDictionary
             //if the length is zero then don't bother trying to decode
             //some filters don't work when attempting to decode
             //with a zero length stream.  See zlib_error_01.pdf
-        	IOUtils.closeQuietly(unFilteredStream);
+            IOUtils.closeQuietly(unFilteredStream);
             unFilteredStream = new RandomAccessFileOutputStream( file );
             done = true;
         }
@@ -328,7 +328,7 @@ public class COSStream extends COSDictionary
                 {
                     input = new BufferedInputStream(
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
-                	IOUtils.closeQuietly(unFilteredStream);
+                    IOUtils.closeQuietly(unFilteredStream);
                     unFilteredStream = new RandomAccessFileOutputStream( file );
                     decodeResult = filter.decode( input, unFilteredStream, this, filterIndex );
                     done = true;
@@ -340,7 +340,7 @@ public class COSStream extends COSDictionary
                 }
                 finally
                 {
-                	IOUtils.closeQuietly(input);
+                    IOUtils.closeQuietly(input);
                 }
             }
             if( !done )
@@ -356,7 +356,7 @@ public class COSStream extends COSDictionary
                     {
                         input = new BufferedInputStream(
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
-                    	IOUtils.closeQuietly(unFilteredStream);
+                        IOUtils.closeQuietly(unFilteredStream);
                         unFilteredStream = new RandomAccessFileOutputStream( file );
                         decodeResult = filter.decode( input, unFilteredStream, this, filterIndex);
                         done = true;
@@ -368,7 +368,7 @@ public class COSStream extends COSDictionary
                     }
                     finally
                     {
-                    	IOUtils.closeQuietly(input);
+                        IOUtils.closeQuietly(input);
                     }
                 }
             }
@@ -455,9 +455,9 @@ public class COSStream extends COSDictionary
      */
     public OutputStream createFilteredStream() throws IOException
     {
-    	IOUtils.closeQuietly(unFilteredStream);
-    	unFilteredStream = null;
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
+        unFilteredStream = null;
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
     }
@@ -475,9 +475,9 @@ public class COSStream extends COSDictionary
      */
     public OutputStream createFilteredStream( COSBase expectedLength ) throws IOException
     {
-      	IOUtils.closeQuietly(unFilteredStream);
-       	unFilteredStream = null;
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
+        unFilteredStream = null;
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         filteredStream.setExpectedLength( expectedLength );
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
@@ -494,7 +494,7 @@ public class COSStream extends COSDictionary
     {
         setItem(COSName.FILTER, filters);
         // kill cached filtered streams
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
     }
 
@@ -509,33 +509,33 @@ public class COSStream extends COSDictionary
     {
         IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
-    	IOUtils.closeQuietly(unFilteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
         unFilteredStream = new RandomAccessFileOutputStream( file );
         return new BufferedOutputStream( unFilteredStream, BUFFER_SIZE );
     }
     
     public void close()
     {
-    	try
-    	{
-    		if (file != null)
-    		{
-    			file.close();
-    			file = null;
-    		}
-    	}
-    	catch (IOException exception)
-    	{
-    		LOG.error("Exception occured when closing the file.", exception);
-    	}
-    	if (filteredStream != null)
-    	{
-    		IOUtils.closeQuietly(filteredStream);
-    	}
-    	if (unFilteredStream != null)
-    	{
-    		IOUtils.closeQuietly(unFilteredStream);
-    	}
-    	clear();
+        try
+        {
+            if (file != null)
+            {
+                file.close();
+                file = null;
+            }
+        }
+        catch (IOException exception)
+        {
+            LOG.error("Exception occured when closing the file.", exception);
+        }
+        if (filteredStream != null)
+        {
+            IOUtils.closeQuietly(filteredStream);
+        }
+        if (unFilteredStream != null)
+        {
+            IOUtils.closeQuietly(unFilteredStream);
+        }
+        clear();
     }
 }
