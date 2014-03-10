@@ -25,9 +25,7 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.image.BufferedImage;
@@ -87,14 +85,14 @@ class TIFFUtil
         IIOMetadataNode ifd;
         if (root.getElementsByTagName("TIFFIFD").getLength() == 0)
         {
-            ifd = (IIOMetadataNode)root.getElementsByTagName("TIFFIFD").item(0);
-        }
-        else
-        {
             ifd = new IIOMetadataNode("TIFFIFD");
             ifd.setAttribute("tagSets",
                              "com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet");
             root.appendChild(ifd);
+        }
+        else
+        {
+            ifd = (IIOMetadataNode)root.getElementsByTagName("TIFFIFD").item(0);
         }
 
         // standard metadata does not work, so we set the DPI manually
