@@ -31,8 +31,6 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-
-import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.w3c.dom.Element;
 
 /**
@@ -177,7 +175,7 @@ public class ImageIOUtil
         }
         return true;
     }
-
+    
     // sets the DPI metadata
     private static void setDPI(IIOMetadata metadata, int dpi)
     {
@@ -191,6 +189,8 @@ public class ImageIOUtil
         Element v = new IIOMetadataNode("VerticalPixelSize");
         v.setAttribute("value", Double.toString(dpi / 25.4));
         dimension.appendChild(v);
+        
+        root.appendChild(dimension);
 
         try
         {
