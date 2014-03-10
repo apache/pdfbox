@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.util.PDFOperator;
 
 /**
  *

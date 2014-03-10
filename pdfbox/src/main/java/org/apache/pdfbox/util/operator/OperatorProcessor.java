@@ -17,7 +17,6 @@
 package org.apache.pdfbox.util.operator;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import java.util.List;
 import java.io.IOException;

@@ -46,6 +46,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
+import org.apache.pdfbox.util.operator.PDFOperator;
 
 /**
  * This class will run through a PDF content stream and execute certain operations and provide a callback interface for

@@ -23,11 +23,8 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 
-import java.awt.Color;
-import java.awt.color.ColorSpace;
 import java.io.IOException;
 
 /**

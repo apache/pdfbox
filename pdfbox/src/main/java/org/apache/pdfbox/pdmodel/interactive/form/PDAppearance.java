@@ -52,7 +52,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 
 /**
  * This one took me a while, but i'm proud to say that it handles

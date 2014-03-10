@@ -19,7 +19,6 @@ package org.apache.pdfbox.util.operator;
 import java.util.List;
 
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;

@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**

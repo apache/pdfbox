@@ -55,7 +55,7 @@ import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.FilterHelper;
 import org.apache.pdfbox.preflight.utils.RenderingIntents;
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.operator.BeginText;
 import org.apache.pdfbox.util.operator.Concatenate;
