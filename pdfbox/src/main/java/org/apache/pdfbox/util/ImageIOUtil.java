@@ -136,6 +136,7 @@ public class ImageIOUtil
             // compression
             if (param.canWriteCompressed())
             {
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 if (formatName.toLowerCase().startsWith("tif"))
                 {
                     // TIFF compression
@@ -144,7 +145,6 @@ public class ImageIOUtil
                 else
                 {
                     // JPEG, PNG compression
-                    param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                     param.setCompressionType(param.getCompressionTypes()[0]);
                     param.setCompressionQuality(quality);
                 }
