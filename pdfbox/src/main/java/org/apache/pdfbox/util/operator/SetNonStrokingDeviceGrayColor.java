@@ -18,7 +18,6 @@ package org.apache.pdfbox.util.operator;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
 import java.util.List;

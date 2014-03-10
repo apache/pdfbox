@@ -19,7 +19,7 @@ package org.apache.pdfbox.util.operator.pagedrawer;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 import java.io.IOException;
 

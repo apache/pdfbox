@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.util.PDFMarkedContentExtractor;
-import org.apache.pdfbox.util.PDFOperator;
+
 /**
  * BMC : Begins a marked-content sequence.
  * @author koch

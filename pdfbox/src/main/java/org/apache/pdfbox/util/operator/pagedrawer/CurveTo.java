@@ -22,7 +22,7 @@ import java.awt.geom.Point2D;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.rendering.PageDrawer;
-import org.apache.pdfbox.util.PDFOperator;
+import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**

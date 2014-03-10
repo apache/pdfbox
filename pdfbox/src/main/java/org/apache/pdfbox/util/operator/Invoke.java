@@ -24,7 +24,6 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFMarkedContentExtractor;
-import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
 import java.util.List;

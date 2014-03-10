@@ -22,9 +22,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.util.PDFOperator;
-
-import java.io.IOException;
 
 /**
  * Implementation of content stream operator for page drawer.
