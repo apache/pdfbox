@@ -124,22 +124,22 @@ public final class PDFormXObject extends PDXObject
             // check for a recursion, see PDFBOX-1813
             if (name != null)
             {
-            	Map<String, PDXObject> xobjects = retval.getXObjects();
-            	if (xobjects != null && xobjects.containsKey(name))
-            	{
-            	    PDXObject xobject = xobjects.get(name);
-            	    if (xobject instanceof PDFormXObject)
-            	    {
-            	        int length1 = getCOSStream().getInt(COSName.LENGTH);
+                Map<String, PDXObject> xobjects = retval.getXObjects();
+                if (xobjects != null && xobjects.containsKey(name))
+                {
+                    PDXObject xobject = xobjects.get(name);
+                    if (xobject instanceof PDFormXObject)
+                    {
+                        int length1 = getCOSStream().getInt(COSName.LENGTH);
                         int length2 = xobject.getCOSStream().getInt(COSName.LENGTH);
                         // seems to be the same object
-            	        if (length1 == length2)
-            	        {
-            	            retval.removeXObject(name);
+                        if (length1 == length2)
+                        {
+                            retval.removeXObject(name);
                             LOG.debug("Removed XObjectForm "+name+" to avoid a recursion");
-            	        }
-            	    }
-            	}
+                        }
+                    }
+                }
             }
         }
         return retval;
