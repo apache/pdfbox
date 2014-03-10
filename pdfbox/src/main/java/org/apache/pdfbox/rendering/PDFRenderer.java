@@ -67,7 +67,7 @@ public class PDFRenderer
      */
     public BufferedImage renderImage(int pageIndex, float scale) throws IOException
     {
-        return renderImage(pageIndex, scale, false);
+        return renderImage(pageIndex, scale, ImageType.RGB);
     }
 
     /**
@@ -77,33 +77,34 @@ public class PDFRenderer
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImageWithDPI(int pageIndex, int dpi) throws IOException
+    public BufferedImage renderImageWithDPI(int pageIndex, float dpi) throws IOException
     {
-        return renderImage(pageIndex, dpi / 72f, false);
+        return renderImage(pageIndex, dpi / 72f, ImageType.RGB);
     }
 
     /**
      * Returns the given page as an RGB image at the given DPI.
      * @param pageIndex the zero-based index of the page to be converted
      * @param dpi the DPI (dots per inch) to render at
+     * @param imageType the type of image to return
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImageWithDPI(int pageIndex, int dpi, boolean useAlpha)
+    public BufferedImage renderImageWithDPI(int pageIndex, float dpi, ImageType imageType)
             throws IOException
     {
-        return renderImage(pageIndex, dpi / 72f, useAlpha);
+        return renderImage(pageIndex, dpi / 72f, imageType);
     }
 
     /**
      * Returns the given page as an RGB or ARGB image at the given scale.
      * @param pageIndex the zero-based index of the page to be converted
      * @param scale the scaling factor, where 1 = 72 DPI
-     * @param useAlpha true if an ARGB image is to be returned
+     * @param imageType the type of image to return
      * @return the rendered page image
      * @throws IOException if the PDF cannot be read
      */
-    public BufferedImage renderImage(int pageIndex, float scale, boolean useAlpha)
+    public BufferedImage renderImage(int pageIndex, float scale, ImageType imageType)
             throws IOException
     {
         PDPage page = document.getPage(pageIndex);
@@ -125,24 +126,20 @@ public class PDFRenderer
             rotationAngle -= 360;
         }
 
-        int imageType = useAlpha ?
-                BufferedImage.TYPE_INT_ARGB :
-                BufferedImage.TYPE_INT_RGB;
-
         // swap width and height
         BufferedImage image;
         if (rotationAngle == 90 || rotationAngle == 270)
         {
-            image = new BufferedImage(heightPx, widthPx, imageType);
+            image = new BufferedImage(heightPx, widthPx, imageType.toBufferedImageType());
         }
         else
         {
-            image = new BufferedImage(widthPx, heightPx, imageType);
+            image = new BufferedImage(widthPx, heightPx, imageType.toBufferedImageType());
         }
 
         // use a transparent background if the imageType supports alpha
         Graphics2D g = image.createGraphics();
-        if (!useAlpha)
+        if (imageType != ImageType.ARGB)
         {
             g.setBackground(Color.WHITE);
         }
