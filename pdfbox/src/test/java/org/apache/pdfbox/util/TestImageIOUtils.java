@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -52,20 +53,20 @@ public class TestImageIOUtils extends TestCase
             float dpi = 120;
             document = PDDocument.load(file);
             // testing PNG
-            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             // testing JPG/JPEG
             imageType = "jpg";
-            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             // testing BMP
             imageType = "bmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             // testing WBMP
             imageType = "wbmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             // testing TIFF
             imageType = "tif";
-            writeImage(document, imageType, outDir + file.getName() + "-bw-", dpi);
-            writeImage(document, imageType, outDir + file.getName() + "-co-", dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-bw-", ImageType.BINARY, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-co-", ImageType.RGB, dpi);
         }
         finally
         {
@@ -76,11 +77,12 @@ public class TestImageIOUtils extends TestCase
         }
     }
 
-    private void writeImage(PDDocument document, String imageFormat, String outputPrefix, float dpi)
+    private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
+                            ImageType imageType, float dpi)
             throws IOException
     {
         PDFRenderer renderer = new PDFRenderer(document);
-        BufferedImage image = renderer.renderImage(0, dpi / 72f);
+        BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
         ImageIOUtil.writeImage(image, imageFormat, fileName,  Math.round(dpi));
