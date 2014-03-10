@@ -30,6 +30,7 @@ import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.ImageIOUtil;
 
@@ -205,30 +206,27 @@ public class PDFToImage
                         }
                     }
                 }
-                int imageType = 24;
+
+                ImageType imageType = ImageType.RGB;
                 if ("bilevel".equalsIgnoreCase(color))
                 {
-                    imageType = BufferedImage.TYPE_BYTE_BINARY;
-                }
-                else if ("indexed".equalsIgnoreCase(color))
-                {
-                    imageType = BufferedImage.TYPE_BYTE_INDEXED;
+                    imageType = ImageType.BINARY;
                 }
                 else if ("gray".equalsIgnoreCase(color))
                 {
-                    imageType = BufferedImage.TYPE_BYTE_GRAY;
+                    imageType = ImageType.GRAY;
                 }
                 else if ("rgb".equalsIgnoreCase(color))
                 {
-                    imageType = BufferedImage.TYPE_INT_RGB;
+                    imageType = ImageType.RGB;
                 }
                 else if ("rgba".equalsIgnoreCase(color))
                 {
-                    imageType = BufferedImage.TYPE_INT_ARGB;
+                    imageType = ImageType.ARGB;
                 }
                 else
                 {
-                    System.err.println( "Error: the number of bits per pixel must be 1, 8 or 24." );
+                    System.err.println( "Error: Invalid color." );
                     System.exit( 2 );
                 }
 
@@ -248,9 +246,9 @@ public class PDFToImage
                 PDFRenderer renderer = new PDFRenderer(document);
                 for (int i = startPage - 1; i < endPage && i < numPages; i++)
                 {
-                    BufferedImage image = renderer.renderImageWithDPI(i, dpi);
+                    BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
                     String fileName = outputPrefix + (i + 1);
-                    success &= ImageIOUtil.writeImage(image, imageFormat, fileName, imageType);
+                    success &= ImageIOUtil.writeImage(image, imageFormat, fileName, dpi);
                 }
 
                 if (!success)
