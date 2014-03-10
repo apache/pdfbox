@@ -188,7 +188,7 @@ public class ImageIOUtil
         h.setAttribute("value", Double.toString(dpi / 25.4));
         dimension.appendChild(h);
 
-        Element v = new IIOMetadataNode("HorizontalPixelSize");
+        Element v = new IIOMetadataNode("VerticalPixelSize");
         v.setAttribute("value", Double.toString(dpi / 25.4));
         dimension.appendChild(v);
 
