@@ -362,16 +362,17 @@ public class PDFStreamEngine
             }
         }
         
-        if( spaceWidthText == 0 )
+        if (spaceWidthText == 0)
         {
-            spaceWidthText = (font.getAverageFontWidth()*glyphSpaceToTextSpaceFactor);
+            spaceWidthText = (font.getAverageFontWidth() * glyphSpaceToTextSpaceFactor);
             // The average space width appears to be higher than necessary
             // so lets make it a little bit smaller.
             spaceWidthText *= .80f;
         }
-        else 
-            spaceWidthText=1.0f; // if could not find font, use a generic value
-        
+        else
+        {
+            spaceWidthText = 1.0f; // if could not find font, use a generic value
+        }        
         float maxVerticalDisplacementText = 0;
 
         Matrix textStateParameters = new Matrix();
