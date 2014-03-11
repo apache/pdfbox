@@ -70,14 +70,21 @@ public abstract class Encoding implements COSObjectable
         loadGlyphProperties("org/apache/pdfbox/resources/additional_glyphlist.properties");
 
         // Load an external glyph list file that user can give as JVM property
-        String location = System.getProperty("glyphlist_ext");
-        if (location != null)
+        try
         {
-            File external = new File(location);
-            if (external.exists())
+            String location = System.getProperty("glyphlist_ext");
+            if (location != null)
             {
-                loadGlyphProperties(location);
+                File external = new File(location);
+                if (external.exists())
+                {
+                    loadGlyphProperties(location);
+                }
             }
+        }
+        catch (SecurityException e)  // can occur on Sytem.getProperty
+        {
+            // PDFBOX-1946 ignore and continue
         }
 
         NAME_TO_CHARACTER.put(NOTDEF, "");
