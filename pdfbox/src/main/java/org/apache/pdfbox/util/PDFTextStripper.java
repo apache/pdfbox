@@ -75,30 +75,39 @@ public class PDFTextStripper extends PDFStreamEngine
     //    pdftextstripper.drop
     static
     {
-        String prop = thisClassName+".indent";
-        String s = System.getProperty(prop);
-        if(s!=null && s.length()>0)
+        String sdrop = null, sindent = null;
+        try
+        {
+            String prop = thisClassName + ".indent";
+            sindent = System.getProperty(prop);
+            prop = thisClassName + ".drop";
+            sdrop = System.getProperty(prop);
+        }
+        catch (SecurityException e)
+        {
+            // PDFBOX-1946 when run in an applet
+            // ignore and use default
+        }
+        if (sindent != null && sindent.length() > 0)
         {
             try
             {
-                float f = Float.parseFloat(s);
+                float f = Float.parseFloat(sindent);
                 DEFAULT_INDENT_THRESHOLD = f;
             }
-            catch(NumberFormatException nfe)
+            catch (NumberFormatException nfe)
             {
-                        //ignore and use default
+                //ignore and use default
             }
         }
-        prop = thisClassName+".drop";
-        s = System.getProperty(prop);
-        if(s!=null && s.length()>0)
+        if (sdrop != null && sdrop.length() > 0)
         {
             try
             {
-                float f = Float.parseFloat(s);
+                float f = Float.parseFloat(sdrop);
                 DEFAULT_DROP_THRESHOLD = f;
             }
-            catch(NumberFormatException nfe)
+            catch (NumberFormatException nfe)
             {
                 //ignore and use default
             }
