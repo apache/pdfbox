@@ -51,8 +51,16 @@ public class ResourceLoader
      */
     public static InputStream loadResource( String resourceName ) throws IOException
     {
-        ClassLoader loader = ResourceLoader.class.getClassLoader();
-
+        ClassLoader loader = null;
+        try
+        {
+            loader = ResourceLoader.class.getClassLoader();
+        }
+        catch (SecurityException ex)
+        {
+            // PDFBOX-1946 ignore and try other alternatives
+        }
+   
         InputStream is = null;
 
         if( loader != null )
@@ -62,24 +70,31 @@ public class ResourceLoader
 
         //see sourceforge bug 863053, this is a fix for a user that
         //needed to have PDFBox loaded by the bootstrap classloader
-        if( is == null )
+        try
         {
-            loader = ClassLoader.getSystemClassLoader();
-            if( loader != null )
+            if (is == null)
             {
-                is = loader.getResourceAsStream( resourceName );
+                loader = ClassLoader.getSystemClassLoader();
+                if( loader != null )
+                {
+                    is = loader.getResourceAsStream( resourceName );
+                }
+            }
+
+            if( is == null )
+            {
+                File f = new File( resourceName );
+                if( f.exists() )
+                {
+                  is = new FileInputStream( f );
+                }
             }
         }
-
-        if( is == null )
+        catch (SecurityException ex)
         {
-            File f = new File( resourceName );
-            if( f.exists() )
-            {
-                is = new FileInputStream( f );
-            }
+            // PDFBOX-1946 ignore and continue
         }
-
+ 
         return is;
     }
 

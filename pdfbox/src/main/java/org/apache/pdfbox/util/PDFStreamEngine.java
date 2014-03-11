@@ -348,24 +348,29 @@ public class PDFStreamEngine
             glyphSpaceToTextSpaceFactor = 1f/fontMatrix.getValue( 0, 0 );
         }
         float spaceWidthText=0;
-        try
-        {   
-            // to avoid crash as described in PDFBOX-614
-            // lets see what the space displacement should be
-            spaceWidthText = (font.getSpaceWidth()*glyphSpaceToTextSpaceFactor);
-        }
-        catch (Throwable exception)
+        if (font != null) // PDFBOX-1946 font might still be null if in applet
         {
-            LOG.warn( exception, exception);
+            try
+            {
+                // to avoid crash as described in PDFBOX-614
+                // lets see what the space displacement should be
+                spaceWidthText = (font.getSpaceWidth() * glyphSpaceToTextSpaceFactor);
+            }
+            catch (Throwable exception)
+            {
+                LOG.warn(exception, exception);
+            }
         }
         
         if( spaceWidthText == 0 )
         {
             spaceWidthText = (font.getAverageFontWidth()*glyphSpaceToTextSpaceFactor);
-            //The average space width appears to be higher than necessary
-            //so lets make it a little bit smaller.
+            // The average space width appears to be higher than necessary
+            // so lets make it a little bit smaller.
             spaceWidthText *= .80f;
         }
+        else 
+            spaceWidthText=1.0f; // if could not find font, use a generic value
         
         float maxVerticalDisplacementText = 0;
 

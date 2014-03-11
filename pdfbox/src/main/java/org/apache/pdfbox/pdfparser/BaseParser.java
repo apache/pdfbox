@@ -128,9 +128,22 @@ public abstract class BaseParser
     /**
      * Default value of the {@link #forceParsing} flag.
      */
-    protected static final boolean FORCE_PARSING =
-        Boolean.getBoolean("org.apache.pdfbox.forceParsing");
+    static boolean FORCE_PARSING = true;
 
+    static
+    {
+        // get preferences value for force parsing
+        try
+        {
+            FORCE_PARSING = Boolean.getBoolean("org.apache.pdfbox.forceParsing");
+        }
+        catch (SecurityException e)  
+        {
+            // PDFBOX-1946 since Boolean.getBoolean calls System.getProperty, this can occur
+            /* ignore and use default */
+        }
+    }
+    
     /**
      * This is the stream that will be read from.
      */
@@ -166,8 +179,17 @@ public abstract class BaseParser
     public BaseParser(InputStream input, boolean forceParsingValue)
             throws IOException
     {
+    	int pushbacksize = 65536;
+    	try
+		{
+			pushbacksize = Integer.getInteger( PROP_PUSHBACK_SIZE, 65536 );
+		}
+		catch (SecurityException e)  // getInteger calls System.getProperties, which can get exception
+		{
+			// ignore and use default
+		}
         this.pdfSource = new PushBackInputStream(
-                new BufferedInputStream(input, 16384),  Integer.getInteger( PROP_PUSHBACK_SIZE, 65536 ) );
+        		new BufferedInputStream(input, 16384), pushbacksize );
         this.forceParsing = forceParsingValue;
     }
 
