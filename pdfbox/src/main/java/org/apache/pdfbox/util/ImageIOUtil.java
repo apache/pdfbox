@@ -32,13 +32,15 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Handles some ImageIO operations.
  */
 public class ImageIOUtil
 {
+    private static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
+    
     private ImageIOUtil()
     {
     }
@@ -151,7 +153,7 @@ public class ImageIOUtil
             }
 
             // metadata
-            setDPI(metadata, dpi);
+            setDPI(metadata, dpi, formatName);
 
             // TIFF metadata
             if (formatName.toLowerCase().startsWith("tif"))
@@ -177,25 +179,52 @@ public class ImageIOUtil
         }
         return true;
     }
+
+    /**
+     * Gets the named child node, or creates and attaches it.
+     * 
+     * @param parentNode the parent node
+     * @param name name of the child node
+     * 
+     * @return the existing or just created child node
+     */
+    private static IIOMetadataNode getOrCreateChildNode(IIOMetadataNode parentNode, String name)
+    {
+        NodeList nodeList = parentNode.getElementsByTagName(name);
+        if (nodeList != null && nodeList.getLength() > 0)
+        {
+            return (IIOMetadataNode) nodeList.item(0);
+        }
+        IIOMetadataNode childNode = new IIOMetadataNode(name);
+        parentNode.appendChild(childNode);
+        return childNode;
+    }
     
     // sets the DPI metadata
-    private static void setDPI(IIOMetadata metadata, int dpi)
+    private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
     {
-        IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
-        Element dimension = new IIOMetadataNode("Dimension");
-        root.appendChild(dimension);
+        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(STANDARD_METADATA_FORMAT);
 
-        Element h = new IIOMetadataNode("HorizontalPixelSize");
-        h.setAttribute("value", Double.toString(dpi / 25.4));
-        dimension.appendChild(h);
+        IIOMetadataNode dimension = getOrCreateChildNode(root, "Dimension");
 
-        Element v = new IIOMetadataNode("VerticalPixelSize");
-        v.setAttribute("value", Double.toString(dpi / 25.4));
-        dimension.appendChild(v);
+        // PNG writer doesn't conform to the spec which is
+        // "The width of a pixel, in millimeters"
+        // but instead counts the pixels per millimeter
+        float res = "PNG".equals(formatName.toUpperCase())
+                    ? dpi / 25.4f
+                    : 25.4f / dpi;
+
+        IIOMetadataNode child;
+
+        child = getOrCreateChildNode(dimension, "HorizontalPixelSize");
+        child.setAttribute("value", Double.toString(res));
+
+        child = getOrCreateChildNode(dimension, "VerticalPixelSize");
+        child.setAttribute("value", Double.toString(res));
 
         try
         {
-            metadata.mergeTree("javax_imageio_1.0", root);
+            metadata.mergeTree(STANDARD_METADATA_FORMAT, root);
         }
         catch (IIOInvalidTreeException e)
         {
