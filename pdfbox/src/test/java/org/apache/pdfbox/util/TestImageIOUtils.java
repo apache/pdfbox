@@ -68,6 +68,7 @@ public class TestImageIOUtils extends TestCase
             document = PDDocument.load(file);
             // testing PNG
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             // testing JPG/JPEG
             imageType = "jpg";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
