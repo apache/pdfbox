@@ -18,8 +18,10 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -44,10 +46,9 @@ public class HelloWorldType1AfmPfb
      * @param fontfile  The ttf-font file.
      *
      * @throws IOException If there is an error writing the data.
-     * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void doIt(final String file, final String message,
-            final String fontfile) throws IOException, COSVisitorException
+    public void doIt(String file, String message, String fontfile)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
 
         // the document

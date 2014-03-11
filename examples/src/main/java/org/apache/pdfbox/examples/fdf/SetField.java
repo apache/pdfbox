@@ -17,8 +17,10 @@
 package org.apache.pdfbox.examples.fdf;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -65,15 +67,16 @@ public class SetField
      * @param args command line arguments
      * 
      * @throws IOException If there is an error importing the FDF document.
-     * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public static void main(String[] args) throws IOException, COSVisitorException
+    public static void main(String[] args)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         SetField setter = new SetField();
         setter.setField(args);
     }
 
-    private void setField(String[] args) throws IOException, COSVisitorException
+    private void setField(String[] args)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         PDDocument pdf = null;
         try

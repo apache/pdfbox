@@ -18,13 +18,14 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -36,7 +37,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
 
 /**
  * This is an example that creates a simple document and embeds a file into it..
@@ -60,9 +60,9 @@ public class EmbeddedFiles
      * @param file The file to write the PDF to.
      *
      * @throws IOException If there is an error writing the data.
-     * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void doIt( String file) throws IOException, COSVisitorException
+    public void doIt( String file)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // the document
         PDDocument doc = null;

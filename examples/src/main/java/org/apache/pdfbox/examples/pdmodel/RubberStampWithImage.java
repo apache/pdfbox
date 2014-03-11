@@ -17,7 +17,8 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -33,8 +34,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,7 +58,8 @@ public class RubberStampWithImage
      * @param args the command line arguments
      * @throws IOException an exception is thrown if something went wrong
      */
-    public void doIt( String[] args ) throws IOException 
+    public void doIt( String[] args )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         if( args.length != 3 )
         {
@@ -118,11 +120,6 @@ public class RubberStampWithImage
                 }
                 document.save( args[1] );
             }
-            catch(COSVisitorException exception) 
-            {
-                System.err.println("An error occured during saving the document.");
-                System.err.println("Exception:"+exception);
-            }
             finally
             {
                 if( document != null )
@@ -130,7 +127,7 @@ public class RubberStampWithImage
                     document.close();
                 }
             }
-        }        
+        }
     }
     
     private void drawXObject( PDImageXObject xobject, PDResources resources, OutputStream os,
