@@ -165,8 +165,19 @@ public abstract class BaseParser
     public BaseParser(InputStream input, boolean forceParsingValue)
             throws IOException
     {
+        int pushbacksize = 65536;
+        try
+        {
+            pushbacksize = Integer.getInteger(PROP_PUSHBACK_SIZE, 65536);
+        }
+        catch (SecurityException e) 
+        {
+            // PDFBOX-1946 getInteger calls System.getProperties, 
+            // which can get exception in an applet
+            // ignore and use default
+        }
         this.pdfSource = new PushBackInputStream(
-                new BufferedInputStream(input, 16384),  Integer.getInteger( PROP_PUSHBACK_SIZE, 65536 ) );
+                new BufferedInputStream(input, 16384), pushbacksize);
         this.forceParsing = forceParsingValue;
     }
 

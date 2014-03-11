@@ -334,15 +334,18 @@ public class PDFStreamEngine
             glyphSpaceToTextSpaceFactor = 1f / fontMatrix.getValue(0, 0);
         }
         float spaceWidthText = 0;
-        try
+        if (font != null) // PDFBOX-1946 font might still be null if in applet
         {
-            // to avoid crash as described in PDFBOX-614
-            // lets see what the space displacement should be
-            spaceWidthText = (font.getSpaceWidth() * glyphSpaceToTextSpaceFactor);
-        }
-        catch (Throwable exception)
-        {
-            LOG.warn(exception, exception);
+            try
+            {
+                // to avoid crash as described in PDFBOX-614
+                // lets see what the space displacement should be
+                spaceWidthText = (font.getSpaceWidth() * glyphSpaceToTextSpaceFactor);
+            }
+            catch (Throwable exception)
+            {
+                LOG.warn(exception, exception);
+            }
         }
 
         if (spaceWidthText == 0)
