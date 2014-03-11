@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -247,23 +246,15 @@ public class PDFParser extends BaseParser
             }
             ConflictObj.resolveConflicts(document, conflictList);
         }
-        catch( Throwable t )
+        catch( IOException e )
         {
-            //so if the PDF is corrupt then close the document and clear
-            //all resources to it
+            // if the PDF is corrupt then close the document and clear all resources to it
             if( document != null )
             {
                 document.close();
                 document = null;
             }
-            if( t instanceof IOException )
-            {
-                throw (IOException)t;
-            }
-            else
-            {
-                throw new WrappedIOException( t );
-            }
+            throw e;
         }
         finally
         {
