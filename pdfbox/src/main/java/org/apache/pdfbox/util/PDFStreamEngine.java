@@ -355,6 +355,8 @@ public class PDFStreamEngine
             // so lets make it a little bit smaller.
             spaceWidthText *= .80f;
         }
+        else 
+            spaceWidthText = 1.0f; // if could not find font, use a generic value
 
         float maxVerticalDisplacementText = 0;
 
