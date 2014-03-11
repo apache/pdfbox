@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 
@@ -47,10 +49,9 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/load using a stream.
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException  if something went wrong
      */
-    public void testSaveLoadStream() throws IOException, COSVisitorException
+    public void testSaveLoadStream()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -75,10 +76,9 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/load using a file.
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException  if something went wrong
      */
-    public void testSaveLoadFile() throws IOException, COSVisitorException
+    public void testSaveLoadFile()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -106,10 +106,9 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/loadNonSeq using a stream.
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException  if something went wrong
      */
-public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
+    public void testSaveLoadNonSeqStream()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -134,10 +133,9 @@ public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
 
     /**
      * Test document save/loadNonSeq using a file.
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException  if something went wrong
      */
-    public void testSaveLoadNonSeqFile() throws IOException, COSVisitorException
+    public void testSaveLoadNonSeqFile()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();

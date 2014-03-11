@@ -16,8 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * This builder class is in order to create visible signature properties.
@@ -39,10 +43,14 @@ public class PDVisibleSigProperties
 
     /**
      * start building of visible signature
-     * 
-     * @throws IOException
+     *
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void buildSignature() throws IOException
+    public void buildSignature()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         PDFTemplateBuilder builder = new PDVisibleSigBuilder();
         PDFTemplateCreator creator = new PDFTemplateCreator(builder);

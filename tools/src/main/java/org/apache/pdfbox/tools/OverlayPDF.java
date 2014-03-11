@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,8 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -210,10 +212,9 @@ public class OverlayPDF
      * This will add overlays to a documents.
      *
      * @param specificPageOverlayFile map of overlay files for specific pages
-     * @throws IOException exception
-     * @throws COSVisitorException exception
      */
-    public void overlay(Map<Integer, String> specificPageOverlayFile) throws IOException, COSVisitorException 
+    public void overlay(Map<Integer, String> specificPageOverlayFile)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         PDDocument sourcePDFDocument = null;
         PDDocument defaultOverlay = null;

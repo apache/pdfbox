@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
 
@@ -1371,9 +1372,11 @@ public class COSDictionary extends COSBase
 	 * @param visitor The object to notify when visiting this object.
 	 * @return The object that the visitor returns.
 	 *
-	 * @throws COSVisitorException If there is an error visiting this object.
+	 * @throws IOException If there is an error visiting this object.
+     * @throws CryptographyException If there is an error visiting this object.
 	 */
-	public Object accept(ICOSVisitor  visitor) throws COSVisitorException
+	public Object accept(ICOSVisitor  visitor)
+            throws IOException, CryptographyException, SignatureException
 	{
 		return visitor.visitFromDictionary(this);
 	}

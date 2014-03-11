@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -219,7 +221,8 @@ public class PDFSplit
         }
     }
 
-    private static final void writeDocument( PDDocument doc, String fileName ) throws IOException, COSVisitorException
+    private static final void writeDocument( PDDocument doc, String fileName )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         FileOutputStream output = null;
         COSWriter writer = null;

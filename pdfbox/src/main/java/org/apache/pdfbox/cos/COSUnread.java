@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.ConformingPDFParser;
 
 /**
@@ -45,7 +44,7 @@ public class COSUnread extends COSBase {
     }
 
     @Override
-    public Object accept(ICOSVisitor visitor) throws COSVisitorException {
+    public Object accept(ICOSVisitor visitor) {
         // TODO: read the object using the parser (if available) and visit that object
         throw new UnsupportedOperationException("COSUnread can not be written/visited.");
     }

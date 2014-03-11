@@ -21,14 +21,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
@@ -241,22 +242,12 @@ public class TestPublicKeyEncryption extends TestCase
      * @return reloaded document
      * @throws Exception if 
      */
-    private PDDocument reload(PDDocument doc) 
+    private PDDocument reload(PDDocument doc)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
-        try 
-        {
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            doc.save(buffer);
-            return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()));
-        } 
-        catch (IOException e) 
-        {
-            throw new IllegalStateException("Unexpected failure");
-        } 
-        catch (COSVisitorException e) 
-        {
-            throw new IllegalStateException("Unexpected failure");
-        }
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        doc.save(buffer);
+        return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()));
     }
 
     /**

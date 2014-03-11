@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
@@ -1734,9 +1733,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * 
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
-     * @throws COSVisitorException If an error occurs while visiting this object.
+     * @throws IOException If an error occurs while visiting this object.
      */
-    public Object accept(ICOSVisitor visitor) throws COSVisitorException
+    public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromName(this);
     }

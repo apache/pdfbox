@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -52,7 +51,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.ICOSVisitor;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
@@ -411,9 +409,8 @@ public class COSWriter implements ICOSVisitor
      * @param doc The document to write the body for.
      *
      * @throws IOException If there is an error writing the data.
-     * @throws COSVisitorException If there is an error generating the data.
      */
-    protected void doWriteBody(COSDocument doc) throws IOException, COSVisitorException
+    protected void doWriteBody(COSDocument doc) throws IOException, CryptographyException, SignatureException
     {
         COSDictionary trailer = doc.getTrailer();
         COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
@@ -494,43 +491,37 @@ public class COSWriter implements ICOSVisitor
      *
      * @param obj The object to write.
      *
-     * @throws COSVisitorException If there is an error visiting objects.
+     * @throws IOException if the output cannot be written
      */
-    public void doWriteObject( COSBase obj ) throws COSVisitorException
+    public void doWriteObject( COSBase obj )
+            throws IOException, CryptographyException, SignatureException
     {
-        try
+        writtenObjects.add( obj );
+        if(obj instanceof COSDictionary)
         {
-            writtenObjects.add( obj );
-            if(obj instanceof COSDictionary) 
+            COSDictionary dict = (COSDictionary)obj;
+            COSName item = (COSName)dict.getItem(COSName.TYPE);
+            if (COSName.SIG.equals(item) || COSName.DOC_TIME_STAMP.equals(item))
             {
-                COSDictionary dict = (COSDictionary)obj;
-                COSName item = (COSName)dict.getItem(COSName.TYPE);
-                if (COSName.SIG.equals(item) || COSName.DOC_TIME_STAMP.equals(item))
-                {
-                    reachedSignature = true;
-                }
+                reachedSignature = true;
             }
-            
-            // find the physical reference
-            currentObjectKey = getObjectKey( obj );
-            // add a x ref entry
-            addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
-            // write the object
-            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes("ISO-8859-1"));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes("ISO-8859-1"));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(OBJ);
-            getStandardOutput().writeEOL();
-            obj.accept( this );
-            getStandardOutput().writeEOL();
-            getStandardOutput().write(ENDOBJ);
-            getStandardOutput().writeEOL();
         }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
+
+        // find the physical reference
+        currentObjectKey = getObjectKey( obj );
+        // add a x ref entry
+        addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
+        // write the object
+        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(OBJ);
+        getStandardOutput().writeEOL();
+        obj.accept( this );
+        getStandardOutput().writeEOL();
+        getStandardOutput().write(ENDOBJ);
+        getStandardOutput().writeEOL();
     }
 
     /**
@@ -556,9 +547,9 @@ public class COSWriter implements ICOSVisitor
      * @param doc The document to create the trailer for.
      *
      * @throws IOException If there is an IOError while writing the document.
-     * @throws COSVisitorException If there is an error while generating the data.
      */
-    protected void doWriteTrailer(COSDocument doc) throws IOException, COSVisitorException
+    protected void doWriteTrailer(COSDocument doc)
+            throws IOException, CryptographyException, SignatureException
     {
         getStandardOutput().write(TRAILER);
         getStandardOutput().writeEOL();
@@ -656,7 +647,8 @@ public class COSWriter implements ICOSVisitor
         }
     }
 
-    private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException, COSVisitorException
+    private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException,
+            CryptographyException, SignatureException
     {
         if (doc.isXRefStream() || hybridPrev != -1)
         {
@@ -898,372 +890,249 @@ public class COSWriter implements ICOSVisitor
         return key;
     }
 
-    /**
-     * visitFromArray method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromArray( COSArray obj ) throws COSVisitorException
+    @Override
+    public Object visitFromArray( COSArray obj )
+            throws IOException, CryptographyException, SignatureException
     {
-        try
+        int count = 0;
+        getStandardOutput().write(ARRAY_OPEN);
+        for (Iterator<COSBase> i = obj.iterator(); i.hasNext();)
         {
-            int count = 0;
-            getStandardOutput().write(ARRAY_OPEN);
-            for (Iterator<COSBase> i = obj.iterator(); i.hasNext();)
+            COSBase current = i.next();
+            if( current instanceof COSDictionary )
             {
-                COSBase current = i.next();
-                if( current instanceof COSDictionary )
+                if (current.isDirect())
                 {
-                	if (current.isDirect())
-                	{
-                		visitFromDictionary((COSDictionary)current);
-                	}
-                	else
-                	{
-                		addObjectToWrite( current );
-                		writeReference( current );
-                	}
+                    visitFromDictionary((COSDictionary)current);
                 }
-                else if( current instanceof COSObject )
+                else
                 {
-                    COSBase subValue = ((COSObject)current).getObject();
+                    addObjectToWrite( current );
+                    writeReference( current );
+                }
+            }
+            else if( current instanceof COSObject )
+            {
+                COSBase subValue = ((COSObject)current).getObject();
+                if( subValue instanceof COSDictionary || subValue == null )
+                {
+                    addObjectToWrite( current );
+                    writeReference( current );
+                }
+                else
+                {
+                    subValue.accept( this );
+                }
+            }
+            else if( current == null )
+            {
+                COSNull.NULL.accept( this );
+            }
+            else if( current instanceof COSString )
+            {
+                COSString copy = new COSString(true);
+                copy.append(((COSString)current).getBytes());
+                copy.accept(this);
+            }
+            else
+            {
+                current.accept(this);
+            }
+            count++;
+            if (i.hasNext())
+            {
+                if (count % 10 == 0)
+                {
+                    getStandardOutput().writeEOL();
+                }
+                else
+                {
+                    getStandardOutput().write(SPACE);
+                }
+            }
+        }
+        getStandardOutput().write(ARRAY_CLOSE);
+        getStandardOutput().writeEOL();
+        return null;
+    }
+
+    @Override
+    public Object visitFromBoolean(COSBoolean obj) throws IOException
+    {
+        obj.writePDF( getStandardOutput() );
+        return null;
+    }
+
+    @Override
+    public Object visitFromDictionary(COSDictionary obj)
+            throws IOException, CryptographyException, SignatureException
+    {
+        getStandardOutput().write(DICT_OPEN);
+        getStandardOutput().writeEOL();
+        for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
+        {
+            COSBase value = entry.getValue();
+            if (value != null)
+            {
+                entry.getKey().accept(this);
+                getStandardOutput().write(SPACE);
+                if( value instanceof COSDictionary )
+                {
+                    COSDictionary dict = (COSDictionary)value;
+
+                    // write all XObjects as direct objects, this will save some size
+                    COSBase item = dict.getItem(COSName.XOBJECT);
+                    if(item!=null)
+                    {
+                        item.setDirect(true);
+                    }
+                    item = dict.getItem(COSName.RESOURCES);
+                    if(item!=null)
+                    {
+                        item.setDirect(true);
+                    }
+
+                    if(dict.isDirect())
+                    {
+                        // If the object should be written direct, we need
+                        // to pass the dictionary to the visitor again.
+                        visitFromDictionary(dict);
+                    }
+                    else
+                    {
+                        addObjectToWrite( dict );
+                        writeReference( dict );
+                    }
+                }
+                else if( value instanceof COSObject )
+                {
+                    COSBase subValue = ((COSObject)value).getObject();
                     if( subValue instanceof COSDictionary || subValue == null )
                     {
-                        addObjectToWrite( current );
-                        writeReference( current );
+                        addObjectToWrite( value );
+                        writeReference( value );
                     }
                     else
                     {
                         subValue.accept( this );
                     }
                 }
-                else if( current == null )
-                {
-                    COSNull.NULL.accept( this );
-                }
-                else if( current instanceof COSString )
-                {
-                    COSString copy = new COSString(true);
-                    copy.append(((COSString)current).getBytes());
-                    copy.accept(this);
-                }
                 else
                 {
-                    current.accept(this);
-                }
-                count++;
-                if (i.hasNext())
-                {
-                    if (count % 10 == 0)
+                    // If we reach the pdf signature, we need to determinate the position of the
+                    // content and byterange
+                    if(reachedSignature && COSName.CONTENTS.equals(entry.getKey()))
                     {
-                        getStandardOutput().writeEOL();
+                        signaturePosition = new int[2];
+                        signaturePosition[0] = (int)getStandardOutput().getPos();
+                        value.accept(this);
+                        signaturePosition[1] = (int)getStandardOutput().getPos();
+                    }
+                    else if(reachedSignature && COSName.BYTERANGE.equals(entry.getKey()))
+                    {
+                        byterangePosition = new int[2];
+                        byterangePosition[0] = (int)getStandardOutput().getPos()+1;
+                        value.accept(this);
+                        byterangePosition[1] = (int)getStandardOutput().getPos()-1;
+                        reachedSignature = false;
                     }
                     else
                     {
-                        getStandardOutput().write(SPACE);
+                        value.accept(this);
                     }
                 }
-            }
-            getStandardOutput().write(ARRAY_CLOSE);
-            getStandardOutput().writeEOL();
-            return null;
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
-    }
+                getStandardOutput().writeEOL();
 
-    /**
-     * visitFromBoolean method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromBoolean(COSBoolean obj) throws COSVisitorException
-    {
-
-        try
-        {
-            obj.writePDF( getStandardOutput() );
-            return null;
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
-    }
-
-    /**
-     * visitFromDictionary method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromDictionary(COSDictionary obj) throws COSVisitorException
-    {
-        try
-        {
-            getStandardOutput().write(DICT_OPEN);
-            getStandardOutput().writeEOL();
-            for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
-            {
-                COSBase value = entry.getValue();
-                if (value != null)
-                {
-                    entry.getKey().accept(this);
-                    getStandardOutput().write(SPACE);
-                    if( value instanceof COSDictionary )
-                    {
-                        COSDictionary dict = (COSDictionary)value;
-                        
-                        // write all XObjects as direct objects, this will save some size
-                        COSBase item = dict.getItem(COSName.XOBJECT);
-                        if(item!=null)
-                        {
-                            item.setDirect(true);
-                        }
-                        item = dict.getItem(COSName.RESOURCES);
-                        if(item!=null)
-                        {
-                            item.setDirect(true);
-                        }
-
-                        if(dict.isDirect()) 
-                        {
-                            // If the object should be written direct, we need
-                            // to pass the dictionary to the visitor again.
-                            visitFromDictionary(dict);
-                        }
-                        else 
-                        {
-                            addObjectToWrite( dict );
-                            writeReference( dict );
-                        }
-                    }
-                    else if( value instanceof COSObject )
-                    {
-                        COSBase subValue = ((COSObject)value).getObject();
-                        if( subValue instanceof COSDictionary || subValue == null )
-                        {
-                            addObjectToWrite( value );
-                            writeReference( value );
-                        }
-                        else
-                        {
-                            subValue.accept( this );                                
-                        }
-                    }
-                    else
-                    {
-                        // If we reach the pdf signature, we need to determinate the position of the
-                        // content and byterange
-                        if(reachedSignature && COSName.CONTENTS.equals(entry.getKey()))
-                        {
-                            signaturePosition = new int[2];
-                            signaturePosition[0] = (int)getStandardOutput().getPos();
-                            value.accept(this);
-                            signaturePosition[1] = (int)getStandardOutput().getPos();
-                        }
-                        else if(reachedSignature && COSName.BYTERANGE.equals(entry.getKey()))
-                        {
-                            byterangePosition = new int[2];
-                            byterangePosition[0] = (int)getStandardOutput().getPos()+1;
-                            value.accept(this);
-                            byterangePosition[1] = (int)getStandardOutput().getPos()-1;
-                            reachedSignature = false;
-                        }
-                        else
-                        {
-                            value.accept(this);
-                        }
-                    }
-                    getStandardOutput().writeEOL();
-
-                }
-                else
-                {
-                    //then we won't write anything, there are a couple cases
-                    //were the value of an entry in the COSDictionary will
-                    //be a dangling reference that points to nothing
-                    //so we will just not write out the entry if that is the case
-                }
-            }
-            getStandardOutput().write(DICT_CLOSE);
-            getStandardOutput().writeEOL();
-            return null;
-        }
-        catch( IOException e )
-        {
-            throw new COSVisitorException(e);
-        }
-    }
-
-    /**
-     * The visit from document method.
-     *
-     * @param doc The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromDocument(COSDocument doc) throws COSVisitorException
-    {
-        try
-        {
-            if(!incrementalUpdate)
-            {
-                doWriteHeader(doc);
-            }
-            doWriteBody(doc);
-            
-            // get the previous trailer
-            COSDictionary trailer = doc.getTrailer();
-            long hybridPrev = -1;
-
-            if (trailer != null)
-            {
-                hybridPrev = trailer.getLong(COSName.XREF_STM);
-            }
-            
-            if(incrementalUpdate)
-            {
-                doWriteXRefInc(doc, hybridPrev);
             }
             else
             {
-                doWriteXRef(doc);
+                //then we won't write anything, there are a couple cases
+                //were the value of an entry in the COSDictionary will
+                //be a dangling reference that points to nothing
+                //so we will just not write out the entry if that is the case
             }
-            
-            // the trailer section should only be used for xref tables not for xref streams
-            if (!incrementalUpdate || !doc.isXRefStream() || hybridPrev != -1)
-            {
-                doWriteTrailer(doc);
-            }
-            
-            // write endof
-            getStandardOutput().write(STARTXREF);
-            getStandardOutput().writeEOL();
-            getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
-            getStandardOutput().writeEOL();
-            getStandardOutput().write(EOF);
-            getStandardOutput().writeEOL();
-            
-            if(incrementalUpdate)
-            {
-                doWriteSignature(doc);
-            }
-            
-            return null;
         }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
-        catch (SignatureException e)
-        {
-            throw new COSVisitorException(e);
-        }
+        getStandardOutput().write(DICT_CLOSE);
+        getStandardOutput().writeEOL();
+        return null;
     }
 
-    /**
-     * visitFromFloat method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromFloat(COSFloat obj) throws COSVisitorException
+    @Override
+    public Object visitFromDocument(COSDocument doc)
+            throws IOException, CryptographyException, SignatureException
     {
+        if(!incrementalUpdate)
+        {
+            doWriteHeader(doc);
+        }
+        doWriteBody(doc);
 
-        try
+        // get the previous trailer
+        COSDictionary trailer = doc.getTrailer();
+        long hybridPrev = -1;
+
+        if (trailer != null)
         {
-            obj.writePDF( getStandardOutput() );
-            return null;
+            hybridPrev = trailer.getLong(COSName.XREF_STM);
         }
-        catch (IOException e)
+
+        if(incrementalUpdate)
         {
-            throw new COSVisitorException(e);
+            doWriteXRefInc(doc, hybridPrev);
         }
+        else
+        {
+            doWriteXRef(doc);
+        }
+
+        // the trailer section should only be used for xref tables not for xref streams
+        if (!incrementalUpdate || !doc.isXRefStream() || hybridPrev != -1)
+        {
+            doWriteTrailer(doc);
+        }
+
+        // write endof
+        getStandardOutput().write(STARTXREF);
+        getStandardOutput().writeEOL();
+        getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
+        getStandardOutput().writeEOL();
+        getStandardOutput().write(EOF);
+        getStandardOutput().writeEOL();
+
+        if(incrementalUpdate)
+        {
+            doWriteSignature(doc);
+        }
+
+        return null;
     }
 
-    /**
-     * visitFromFloat method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromInt(COSInteger obj) throws COSVisitorException
+    @Override
+    public Object visitFromFloat(COSFloat obj) throws IOException
     {
-        try
-        {
-            obj.writePDF( getStandardOutput() );
-            return null;
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
+        obj.writePDF( getStandardOutput() );
+        return null;
     }
 
-    /**
-     * visitFromName method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromName(COSName obj) throws COSVisitorException
+    @Override
+    public Object visitFromInt(COSInteger obj) throws IOException
     {
-        try
-        {
-            obj.writePDF( getStandardOutput() );
-            return null;
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
+        obj.writePDF( getStandardOutput() );
+        return null;
     }
 
-    /**
-     * visitFromNull method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromNull(COSNull obj) throws COSVisitorException
+    @Override
+    public Object visitFromName(COSName obj) throws IOException
     {
-        try
-        {
-            obj.writePDF( getStandardOutput() );
-            return null;
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
+        obj.writePDF( getStandardOutput() );
+        return null;
+    }
+
+    @Override
+    public Object visitFromNull(COSNull obj) throws IOException
+    {
+        obj.writePDF( getStandardOutput() );
+        return null;
     }
 
     /**
@@ -1271,67 +1140,52 @@ public class COSWriter implements ICOSVisitor
      *
      * @param obj The object that is being visited.
      *
-     * @throws COSVisitorException If there is an exception while visiting this object.
+     * @throws IOException If there is an exception while visiting this object.
      */
-    public void writeReference(COSBase obj) throws COSVisitorException
+    public void writeReference(COSBase obj) throws IOException
     {
-        try
-        {
-            COSObjectKey  key = getObjectKey(obj);
-            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes("ISO-8859-1"));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes("ISO-8859-1"));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(REFERENCE);
-        }
-        catch (IOException e)
-        {
-            throw new COSVisitorException(e);
-        }
+        COSObjectKey key = getObjectKey(obj);
+        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(REFERENCE);
     }
 
-    /**
-     * visitFromStream method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     *
-     * @return null
-     */
-    public Object visitFromStream(COSStream obj) throws COSVisitorException
+    @Override
+    public Object visitFromStream(COSStream obj)
+            throws IOException, CryptographyException, SignatureException
     {
+        if (willEncrypt)
+        {
+            document.getSecurityHandler().encryptStream(obj, currentObjectKey.getNumber(),
+                                                        currentObjectKey.getGeneration());
+        }
+
+        COSObject lengthObject = null;
+        // check if the length object is required to be direct, like in
+        // a cross reference stream dictionary
+        COSBase lengthEntry = obj.getDictionaryObject(COSName.LENGTH);
+        String type = obj.getNameAsString(COSName.TYPE);
+        if (lengthEntry != null && lengthEntry.isDirect() || "XRef".equals(type))
+        {
+            // the length might be the non encoded length,
+            // set the real one as direct object
+            COSInteger cosInteger = COSInteger.get(obj.getFilteredLength());
+            cosInteger.setDirect(true);
+            obj.setItem(COSName.LENGTH, cosInteger);
+        }
+        else
+        {
+            // make the length an implicit indirect object
+            // set the length of the stream and write stream dictionary
+            lengthObject = new COSObject(null);
+            obj.setItem(COSName.LENGTH, lengthObject);
+        }
+
         InputStream input = null;
         try
         {
-            if (willEncrypt)
-            {
-                document.getSecurityHandler().encryptStream(obj, currentObjectKey.getNumber()
-                        , currentObjectKey.getGeneration());
-            }
-
-            COSObject lengthObject = null;
-            // check if the length object is required to be direct, like in
-            // a cross reference stream dictionary
-            COSBase lengthEntry = obj.getDictionaryObject(COSName.LENGTH);
-            String type = obj.getNameAsString(COSName.TYPE);
-            if (lengthEntry != null && lengthEntry.isDirect() || "XRef".equals(type))
-            {
-                // the length might be the non encoded length,
-                // set the real one as direct object
-                COSInteger cosInteger = COSInteger.get(obj.getFilteredLength());
-                cosInteger.setDirect(true);
-                obj.setItem(COSName.LENGTH, cosInteger);
-
-            }
-            else
-            {
-                // make the length an implicit indirect object
-                // set the length of the stream and write stream dictionary
-                lengthObject = new COSObject(null);
-
-                obj.setItem(COSName.LENGTH, lengthObject);
-            }
             input = obj.getFilteredStream();
             //obj.accept(this);
             // write the stream content
@@ -1356,64 +1210,38 @@ public class COSWriter implements ICOSVisitor
             getStandardOutput().writeEOL();
             return null;
         }
-        catch (Exception e)
-        {
-            throw new COSVisitorException(e);
-        }
         finally
         {
             if (input != null)
             {
-                try
-                {
-                    input.close();
-                }
-                catch (IOException e)
-                {
-                    throw new COSVisitorException(e);
-                }
+                input.close();
             }
         }
     }
 
-    /**
-     * visitFromString method comment.
-     *
-     * @param obj The object that is being visited.
-     *
-     * @return null
-     *
-     * @throws COSVisitorException If there is an exception while visiting this object.
-     */
-    public Object visitFromString(COSString obj) throws COSVisitorException
+    @Override
+    public Object visitFromString(COSString obj) throws IOException, CryptographyException
     {
-        try
+        if(willEncrypt)
         {
-            if(willEncrypt)
-            {
-                document.getSecurityHandler().decryptString(
+            document.getSecurityHandler().decryptString(
                     obj,
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
-            }
+        }
 
-            obj.writePDF( getStandardOutput() );
-        }
-        catch (Exception e)
-        {
-            throw new COSVisitorException(e);
-        }
+        obj.writePDF( getStandardOutput() );
         return null;
     }
 
     /**
      * This will write the pdf document.
      *
+     * @throws IOException If an error occurs while generating the data.
      * @param doc The document to write.
-     *
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void write(COSDocument doc) throws COSVisitorException
+    public void write(COSDocument doc)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         PDDocument pdDoc = new PDDocument( doc );
         write( pdDoc );
@@ -1424,13 +1252,15 @@ public class COSWriter implements ICOSVisitor
      *
      * @param doc The document to write.
      *
-     * @throws COSVisitorException If an error occurs while generating the data.
+     * @throws IOException If an error occurs while generating the data.
+     * @throws CryptographyException If an error occurs while generating the data.
      */
-    public void write(PDDocument doc) throws COSVisitorException
+    public void write(PDDocument doc)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
 	{
         Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
                                                     doc.getDocumentId();
-        
+
         document = doc;
         if(incrementalUpdate)
         {
@@ -1440,7 +1270,7 @@ public class COSWriter implements ICOSVisitor
         // if the document says we should remove encryption, then we shouldn't encrypt
         if(doc.isAllSecurityToBeRemoved())
         {
-            this.willEncrypt = false;
+            willEncrypt = false;
             // also need to get rid of the "Encrypt" in the trailer so readers 
             // don't try to decrypt a document which is not encrypted
             COSDocument cosDoc = doc.getDocument();
@@ -1452,23 +1282,12 @@ public class COSWriter implements ICOSVisitor
             SecurityHandler securityHandler = document.getSecurityHandler();
             if(securityHandler != null)
             {
-                try
-                {
-                    securityHandler.prepareDocumentForEncryption(document);
-                    this.willEncrypt = true;
-                }
-                catch(IOException e)
-                {
-                    throw new COSVisitorException( e );
-                }
-                catch(CryptographyException e)
-                {
-                    throw new COSVisitorException( e );
-                }
+                securityHandler.prepareDocumentForEncryption(document);
+                willEncrypt = true;
             }
             else
             {
-                    this.willEncrypt = false;
+                willEncrypt = false;
             }        
         }
 
@@ -1477,38 +1296,25 @@ public class COSWriter implements ICOSVisitor
         COSArray idArray = (COSArray)trailer.getDictionaryObject( COSName.ID );
         if( idArray == null || incrementalUpdate)
         {
-            try
+            //algorithm says to use time/path/size/values in doc to generate
+            //the id.  We don't have path or size, so do the best we can
+            MessageDigest md = MessageDigest.getInstance( "MD5" );
+            md.update( Long.toString(idTime).getBytes("ISO-8859-1") );
+            COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
+            if( info != null )
             {
-
-                //algorithm says to use time/path/size/values in doc to generate
-                //the id.  We don't have path or size, so do the best we can
-                MessageDigest md = MessageDigest.getInstance( "MD5" );
-                md.update( Long.toString(idTime).getBytes("ISO-8859-1") );
-                COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
-                if( info != null )
+                Iterator<COSBase> values = info.getValues().iterator();
+                while( values.hasNext() )
                 {
-                    Iterator<COSBase> values = info.getValues().iterator();
-                    while( values.hasNext() )
-                    {
-                        md.update( values.next().toString().getBytes("ISO-8859-1") );
-                    }
+                    md.update( values.next().toString().getBytes("ISO-8859-1") );
                 }
-                idArray = new COSArray();
-                COSString id = new COSString( md.digest() );
-                idArray.add( id );
-                idArray.add( id );
-                trailer.setItem( COSName.ID, idArray );
             }
-            catch( NoSuchAlgorithmException e )
-            {
-                throw new COSVisitorException( e );
-            }
-            catch( UnsupportedEncodingException e )
-            {
-                throw new COSVisitorException( e );
-            }
+            idArray = new COSArray();
+            COSString id = new COSString( md.digest() );
+            idArray.add( id );
+            idArray.add( id );
+            trailer.setItem( COSName.ID, idArray );
         }
         cosDoc.accept(this);
     }
 }
-
