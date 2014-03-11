@@ -17,7 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
@@ -43,7 +42,7 @@ public class CreateBlankPDF
      * @throws IOException If there is an error writing the data.
      */
     public void create( String file )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         PDDocument document = null;
         try
@@ -72,7 +71,7 @@ public class CreateBlankPDF
      * @throws IOException If there is an error writing the document data.
      */
     public static void main( String[] args )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         if( args.length != 1 )
         {

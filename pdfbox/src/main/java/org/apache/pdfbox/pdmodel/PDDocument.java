@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -1196,10 +1195,9 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void save(String fileName)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         save(new File(fileName));
     }
@@ -1212,10 +1210,9 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void save(File file)
-        throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+        throws IOException, CryptographyException, SignatureException
     {
         save(new FileOutputStream(file));
     }
@@ -1228,10 +1225,9 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void save(OutputStream output)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1258,10 +1254,9 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void saveIncremental(String fileName)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
     }
@@ -1274,10 +1269,9 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void saveIncremental(FileInputStream input, OutputStream output)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();

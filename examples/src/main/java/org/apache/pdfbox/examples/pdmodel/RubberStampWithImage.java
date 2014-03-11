@@ -34,7 +34,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +58,7 @@ public class RubberStampWithImage
      * @throws IOException an exception is thrown if something went wrong
      */
     public void doIt( String[] args )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         if( args.length != 3 )
         {

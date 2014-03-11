@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -62,7 +61,7 @@ public class EmbeddedFiles
      * @throws IOException If there is an error writing the data.
      */
     public void doIt( String file)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         // the document
         PDDocument doc = null;

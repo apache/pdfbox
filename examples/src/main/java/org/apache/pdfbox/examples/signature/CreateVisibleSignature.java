@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.signature;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,7 +116,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * @throws SignatureException
      */
     public File signPDF(File document, PDVisibleSigProperties signatureProperties)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         byte[] buffer = new byte[8 * 1024];
         if (document == null || !document.exists())

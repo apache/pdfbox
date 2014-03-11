@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -257,7 +256,7 @@ public class FDFDocument
      * @throws IOException If there is an error saving the document.
      */
     public void save( File fileName )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         save( new FileOutputStream( fileName ) );
     }
@@ -270,7 +269,7 @@ public class FDFDocument
      * @throws IOException If there is an error saving the document.
      */
     public void save( String fileName )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         save( new FileOutputStream( fileName ) );
     }
@@ -285,7 +284,7 @@ public class FDFDocument
      * @throws SignatureException If there is an error writing the document.
      */
     public void save( OutputStream output )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         COSWriter writer = null;
         try

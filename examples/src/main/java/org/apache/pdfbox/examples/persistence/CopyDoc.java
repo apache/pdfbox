@@ -16,8 +16,11 @@
  */
 package org.apache.pdfbox.examples.persistence;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -51,20 +54,20 @@ public class CopyDoc
      * @throws IOException If there is an error parsing the document.
      */
     public void doIt(String in, String out)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
-        java.io.InputStream is = null;
-        java.io.OutputStream os = null;
+        InputStream is = null;
+        OutputStream os = null;
         COSWriter writer = null;
         try
         {
-            is = new java.io.FileInputStream(in);
+            is = new FileInputStream(in);
             PDFParser parser = new PDFParser(is);
             parser.parse();
 
             COSDocument doc = parser.getDocument();
 
-            os = new java.io.FileOutputStream(out);
+            os = new FileOutputStream(out);
             writer = new COSWriter(os);
 
             writer.write(doc);
