@@ -26,13 +26,14 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfparser.PDFParser;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -254,9 +255,9 @@ public class FDFDocument
      * @param fileName The file to save as.
      *
      * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void save( File fileName ) throws IOException, COSVisitorException
+    public void save( File fileName )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         save( new FileOutputStream( fileName ) );
     }
@@ -267,9 +268,9 @@ public class FDFDocument
      * @param fileName The file to save as.
      *
      * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void save( String fileName ) throws IOException, COSVisitorException
+    public void save( String fileName )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         save( new FileOutputStream( fileName ) );
     }
@@ -280,9 +281,11 @@ public class FDFDocument
      * @param output The stream to write to.
      *
      * @throws IOException If there is an error writing the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
+     * @throws CryptographyException If there is an error writing the document.
+     * @throws SignatureException If there is an error writing the document.
      */
-    public void save( OutputStream output ) throws IOException, COSVisitorException
+    public void save( OutputStream output )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         COSWriter writer = null;
         try
@@ -306,9 +309,8 @@ public class FDFDocument
      * @param fileName The file to save as.
      *
      * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void saveXFDF( File fileName ) throws IOException, COSVisitorException
+    public void saveXFDF( File fileName ) throws IOException
     {
         saveXFDF( new BufferedWriter( new FileWriter( fileName ) ) );
     }
@@ -319,9 +321,8 @@ public class FDFDocument
      * @param fileName The file to save as.
      *
      * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void saveXFDF( String fileName ) throws IOException, COSVisitorException
+    public void saveXFDF( String fileName ) throws IOException
     {
         saveXFDF( new BufferedWriter( new FileWriter( fileName ) ) );
     }
@@ -332,9 +333,8 @@ public class FDFDocument
      * @param output The stream to write to.
      *
      * @throws IOException If there is an error writing the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
      */
-    public void saveXFDF( Writer output ) throws IOException, COSVisitorException
+    public void saveXFDF( Writer output ) throws IOException
     {
         try
         {

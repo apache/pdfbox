@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.edit;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -30,9 +29,10 @@ import java.io.IOException;
 /**
  * @author Yegor Kozlov
  */
-public class TestPDPageContentStream extends TestCase {
-
-    public void testSetCmykColors() throws IOException, COSVisitorException {
+public class TestPDPageContentStream extends TestCase
+{
+    public void testSetCmykColors() throws IOException
+    {
         PDDocument doc = new PDDocument();
 
         PDPage page = new PDPage();

@@ -20,10 +20,12 @@ import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -68,10 +70,9 @@ public class PDFTemplateCreator
      * @param properties
      * @return InputStream
      * @throws IOException
-     * @throws COSVisitorException
      */
-
-    public InputStream buildPDF(PDVisibleSignDesigner properties) throws IOException
+    public InputStream buildPDF(PDVisibleSignDesigner properties)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         logger.info("pdf building has been started");
         PDFTemplateStructure pdfStructure = pdfBuilder.getStructure();
@@ -153,15 +154,7 @@ public class PDFTemplateCreator
         this.pdfBuilder.createVisualSignature(template);
         this.pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
         
-        ByteArrayInputStream in = null;
-        try
-        {
-            in = pdfStructure.getTemplateAppearanceStream();
-        }
-        catch (COSVisitorException e)
-        {
-            logger.error("COSVisitorException: can't get apereance stream ", e);
-        }
+        ByteArrayInputStream in = pdfStructure.getTemplateAppearanceStream();
         logger.info("stream returning started, size= " + in.available());
         
         // we must close the document

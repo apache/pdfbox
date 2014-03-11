@@ -19,8 +19,10 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 
 import junit.framework.Test;
@@ -320,23 +322,17 @@ public class TestCOSString extends TestCOSBase
 
     @Override
     public void testAccept()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ICOSVisitor visitor = new COSWriter(outStream);
         COSString testSubj = new COSString(ESC_CHAR_STRING);
-        try
-        {
-            testSubj.accept(visitor);
-            assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
-            outStream.reset();
-            testSubj.setForceHexForm(true);
-            testSubj.accept(visitor);
-            assertEquals("<" + createHex(ESC_CHAR_STRING) + ">", outStream.toString());
-        }
-        catch (COSVisitorException e)
-        {
-            fail(e.getMessage());
-        }
+        testSubj.accept(visitor);
+        assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
+        outStream.reset();
+        testSubj.setForceHexForm(true);
+        testSubj.accept(visitor);
+        assertEquals("<" + createHex(ESC_CHAR_STRING) + ">", outStream.toString());
     }
 
     /**

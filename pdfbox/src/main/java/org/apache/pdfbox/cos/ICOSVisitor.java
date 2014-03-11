@@ -16,7 +16,10 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
+
+import java.io.IOException;
 
 /**
  * An interface for visiting a PDF document at the type (COS) level.
@@ -31,88 +34,95 @@ public interface ICOSVisitor
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromArray( COSArray obj ) throws COSVisitorException;
+    public Object visitFromArray( COSArray obj ) throws IOException, CryptographyException,
+                                                        SignatureException;
 
     /**
      * Notification of visit to boolean object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromBoolean( COSBoolean obj ) throws COSVisitorException;
+    public Object visitFromBoolean( COSBoolean obj ) throws IOException;
 
     /**
      * Notification of visit to dictionary object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromDictionary( COSDictionary obj ) throws COSVisitorException;
+    public Object visitFromDictionary( COSDictionary obj )
+            throws IOException, CryptographyException, SignatureException;
 
     /**
      * Notification of visit to document object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
+     * @throws SignatureException If there is an error while visiting this object.
      */
-    public Object visitFromDocument( COSDocument obj ) throws COSVisitorException;
+    public Object visitFromDocument( COSDocument obj )
+            throws IOException, CryptographyException, SignatureException;
 
     /**
      * Notification of visit to float object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromFloat( COSFloat obj ) throws COSVisitorException;
+    public Object visitFromFloat( COSFloat obj ) throws IOException;
 
     /**
      * Notification of visit to integer object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromInt( COSInteger obj ) throws COSVisitorException;
+    public Object visitFromInt( COSInteger obj ) throws IOException;
 
     /**
      * Notification of visit to name object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromName( COSName obj ) throws COSVisitorException;
+    public Object visitFromName( COSName obj ) throws IOException;
 
     /**
      * Notification of visit to null object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromNull( COSNull obj ) throws COSVisitorException;
+    public Object visitFromNull( COSNull obj ) throws IOException;
 
     /**
      * Notification of visit to stream object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
+     * @throws CryptographyException If there is an error while visiting this object.
      */
-    public Object visitFromStream( COSStream obj ) throws COSVisitorException;
+    public Object visitFromStream( COSStream obj )
+            throws IOException, CryptographyException, SignatureException;
 
     /**
      * Notification of visit to string object.
      *
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
-     * @throws COSVisitorException If there is an error while visiting this object.
+     * @throws IOException If there is an error while visiting this object.
+     * @throws CryptographyException If there is an error while visiting this object.
      */
-    public Object visitFromString( COSString obj ) throws COSVisitorException;
+    public Object visitFromString( COSString obj ) throws IOException, CryptographyException;
 }

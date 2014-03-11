@@ -19,7 +19,12 @@ package org.apache.pdfbox.cos;
 
 import junit.framework.TestCase;
 
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.filter.FilterFactory;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Test class for {@link COSBase}.
@@ -40,7 +45,8 @@ public abstract class TestCOSBase extends TestCase
     /**
      * Test accept() - tests the interface for visiting a document at the COS level.
      */
-    public abstract void testAccept();
+    public abstract void testAccept()
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException;
 
     /**
      * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.

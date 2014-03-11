@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,7 +40,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.SignatureException;
@@ -1192,11 +1192,14 @@ public class PDDocument implements Closeable
      * Save the document to a file.
      * 
      * @param fileName The file to save as.
-     * 
-     * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
+     *
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void save(String fileName) throws IOException, COSVisitorException
+    public void save(String fileName)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         save(new File(fileName));
     }
@@ -1205,11 +1208,14 @@ public class PDDocument implements Closeable
      * Save the document to a file.
      * 
      * @param file The file to save as.
-     * 
-     * @throws IOException If there is an error saving the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
+     *
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void save(File file) throws IOException, COSVisitorException
+    public void save(File file)
+        throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         save(new FileOutputStream(file));
     }
@@ -1218,11 +1224,14 @@ public class PDDocument implements Closeable
      * This will save the document to an output stream.
      * 
      * @param output The stream to write to.
-     * 
-     * @throws IOException If there is an error writing the document.
-     * @throws COSVisitorException If an error occurs while generating the data.
+     *
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void save(OutputStream output) throws IOException, COSVisitorException
+    public void save(OutputStream output)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1246,10 +1255,13 @@ public class PDDocument implements Closeable
      * Save the pdf as incremental.
      * 
      * @param fileName the filename to be used
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException if something went wrong
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void saveIncremental(String fileName) throws IOException, COSVisitorException
+    public void saveIncremental(String fileName)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
     }
@@ -1257,12 +1269,15 @@ public class PDDocument implements Closeable
     /**
      * Save the pdf as incremental.
      * 
-     * @param input
-     * @param output
-     * @throws IOException if something went wrong
-     * @throws COSVisitorException if something went wrong
+     * @param input stream to read
+     * @param output stream to write
+     * @throws IOException if the output could not be written
+     * @throws CryptographyException if something went wrong during a cryptography operation
+     * @throws SignatureException if signing failed
+     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
-    public void saveIncremental(FileInputStream input, OutputStream output) throws IOException, COSVisitorException
+    public void saveIncremental(FileInputStream input, OutputStream output)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();

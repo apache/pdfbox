@@ -16,12 +16,14 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -509,10 +511,11 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      *
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
-     * @throws COSVisitorException If an error occurs while visiting this object.
+     * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws COSVisitorException
+    public Object accept(ICOSVisitor visitor)
+            throws IOException, CryptographyException, SignatureException
     {
         return visitor.visitFromArray(this);
     }
