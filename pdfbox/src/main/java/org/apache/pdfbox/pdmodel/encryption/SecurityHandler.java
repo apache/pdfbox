@@ -49,7 +49,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
 import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -321,19 +320,19 @@ public abstract class SecurityHandler
             }
             catch (InvalidKeyException e)
             {
-                throw new WrappedIOException(e);
+                throw new IOException(e);
             }
             catch (InvalidAlgorithmParameterException e)
             {
-                throw new WrappedIOException(e);
+                throw new IOException(e);
             }
             catch (NoSuchAlgorithmException e)
             {
-                throw new WrappedIOException(e);
+                throw new IOException(e);
             }
             catch (NoSuchPaddingException e)
             {
-                throw new WrappedIOException(e);
+                throw new IOException(e);
             }
         }
         else
