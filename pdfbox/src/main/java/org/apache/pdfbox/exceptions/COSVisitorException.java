@@ -22,9 +22,8 @@ package org.apache.pdfbox.exceptions;
  * @author Michael Traut
  * @version $Revision: 1.6 $
  */
-public class COSVisitorException extends WrappedException
+public class COSVisitorException extends Exception
 {
-
     /**
      * COSVisitorException constructor comment.
      *
@@ -34,6 +33,4 @@ public class COSVisitorException extends WrappedException
     {
         super( e );
     }
-
-
 }
