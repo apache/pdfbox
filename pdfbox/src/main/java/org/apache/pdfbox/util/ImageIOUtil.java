@@ -181,7 +181,7 @@ public class ImageIOUtil
     {
         IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
         Element dimension = new IIOMetadataNode("Dimension");
-        root.appendChild(dimension);
+
 
         Element h = new IIOMetadataNode("HorizontalPixelSize");
         h.setAttribute("value", Double.toString(dpi / 25.4));
@@ -190,6 +190,8 @@ public class ImageIOUtil
         Element v = new IIOMetadataNode("VerticalPixelSize");
         v.setAttribute("value", Double.toString(dpi / 25.4));
         dimension.appendChild(v);
+
+        root.appendChild(dimension);
 
         try
         {
