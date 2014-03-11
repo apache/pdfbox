@@ -19,8 +19,10 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccessFile;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -50,10 +52,9 @@ public class AddImageToPDF
      * @param outputFile The file to write to the pdf to.
      *
      * @throws IOException If there is an error writing the data.
-     * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void createPDFFromImage( String inputFile, String image, String outputFile ) 
-        throws IOException, COSVisitorException
+    public void createPDFFromImage( String inputFile, String image, String outputFile )
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // the document
         PDDocument doc = null;

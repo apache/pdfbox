@@ -17,15 +17,13 @@
 package org.apache.pdfbox.examples.persistence;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.cos.COSDocument;
-
-
-
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfparser.PDFParser;
-
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 
 /**
  * This is an example used to copy a documents contents from a source doc to destination doc
@@ -51,9 +49,9 @@ public class CopyDoc
      * @param out The filename used for output.
      *
      * @throws IOException If there is an error parsing the document.
-     * @throws COSVisitorException If there is an error while copying the document.
      */
-    public void doIt(String in, String out) throws IOException, COSVisitorException
+    public void doIt(String in, String out)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         java.io.InputStream is = null;
         java.io.OutputStream os = null;

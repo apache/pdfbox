@@ -18,9 +18,10 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -50,9 +51,9 @@ public class ShowColorBoxes
      * @param file The file to write the PDF to.
      *
      * @throws IOException If there is an error writing the data.
-     * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public void doIt( String file) throws IOException, COSVisitorException
+    public void doIt( String file)
+            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
     {
         // the document
         PDDocument doc = null;
