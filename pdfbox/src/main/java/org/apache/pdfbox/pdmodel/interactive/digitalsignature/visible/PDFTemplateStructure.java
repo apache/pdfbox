@@ -20,7 +20,6 @@ import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -578,7 +577,7 @@ public class PDFTemplateStructure
     * @throws IOException
     */
     public ByteArrayInputStream getTemplateAppearanceStream()
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         COSDocument visualSignature = getVisualSignature();
         ByteArrayOutputStream memoryOut = new ByteArrayOutputStream();

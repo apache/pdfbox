@@ -17,7 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -58,7 +57,7 @@ public class AddMessageToEachPage
      * @throws IOException If there is an error writing the data.
      */
     public void doIt( String file, String message, String  outfile )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         // the document
         PDDocument doc = null;

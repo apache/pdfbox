@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
@@ -53,7 +52,7 @@ public class ImageToPDF
      * @throws IOException If there is an error writing the data.
      */
     public void createPDFFromImage( String file, String image)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         // the document
         PDDocument doc = null;

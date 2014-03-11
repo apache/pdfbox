@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -222,7 +221,7 @@ public class PDFSplit
     }
 
     private static final void writeDocument( PDDocument doc, String fileName )
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         FileOutputStream output = null;
         COSWriter writer = null;

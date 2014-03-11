@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +213,7 @@ public class OverlayPDF
      * @param specificPageOverlayFile map of overlay files for specific pages
      */
     public void overlay(Map<Integer, String> specificPageOverlayFile)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         PDDocument sourcePDFDocument = null;
         PDDocument defaultOverlay = null;

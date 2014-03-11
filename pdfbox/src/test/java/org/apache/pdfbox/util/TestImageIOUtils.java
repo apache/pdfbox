@@ -38,12 +38,11 @@ public class TestImageIOUtils extends TestCase
 
     /**
      * Validate page rendering for all supported image formats (JDK5).
-     * 
      * @param file The file to validate
      * @param outDir Name of the output directory
-     * @throws Exception when there is an exception
+     * @throws IOException when there is an exception
      */
-    private void doTestFile(File file, String outDir) throws Exception
+    private void doTestFile(File file, String outDir) throws IOException
     {
         PDDocument document = null;
         String imageType = "png";
@@ -78,8 +77,7 @@ public class TestImageIOUtils extends TestCase
     }
 
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
-                            ImageType imageType, float dpi)
-            throws IOException
+                            ImageType imageType, float dpi) throws IOException
     {
         PDFRenderer renderer = new PDFRenderer(document);
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
@@ -90,7 +88,6 @@ public class TestImageIOUtils extends TestCase
 
     /**
      * Test to validate image rendering of file set.
-     * 
      * @throws Exception when there is an exception
      */
     public void testRenderImage() throws Exception

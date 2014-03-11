@@ -121,26 +121,30 @@ public class DocumentEncryption
         if( idArray == null || idArray.size() < 2 )
         {
             idArray = new COSArray();
+
+            MessageDigest md5;
             try
             {
-                MessageDigest md = MessageDigest.getInstance( "MD5" );
-                BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
-                md.update( time.toByteArray() );
-                md.update( ownerPassword.getBytes("ISO-8859-1") );
-                md.update( userPassword.getBytes("ISO-8859-1") );
-                md.update( document.toString().getBytes() );
-                byte[] id = md.digest( this.toString().getBytes("ISO-8859-1") );
-                COSString idString = new COSString();
-                idString.append( id );
-                idArray.add( idString );
-                idArray.add( idString );
-                document.setDocumentID( idArray );
+                md5 = MessageDigest.getInstance("MD5");
             }
-            catch( NoSuchAlgorithmException e )
+            catch (NoSuchAlgorithmException e)
             {
-                throw new CryptographyException( e );
+                // should never happen
+                throw new RuntimeException(e);
             }
 
+            BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
+            md5.update(time.toByteArray());
+            md5.update(ownerPassword.getBytes("ISO-8859-1"));
+            md5.update(userPassword.getBytes("ISO-8859-1"));
+            md5.update(document.toString().getBytes());
+
+            byte[] id = md5.digest( this.toString().getBytes("ISO-8859-1") );
+            COSString idString = new COSString();
+            idString.append( id );
+            idArray.add( idString );
+            idArray.add( idString );
+            document.setDocumentID( idArray );
         }
         COSString id = (COSString)idArray.getObject( 0 );
         encryption = new PDFEncryption();

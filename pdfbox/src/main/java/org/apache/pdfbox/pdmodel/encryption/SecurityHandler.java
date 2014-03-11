@@ -266,21 +266,13 @@ public abstract class SecurityHandler
         newKey[newKey.length - 1] = (byte) ((genNumber >> 8) & 0xff);
 
         // step 3
-        byte[] digestedKey = null;
-        try
+        MessageDigest md = MessageDigests.getMD5();
+        md.update(newKey);
+        if (aes)
         {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(newKey);
-            if (aes)
-            {
-                md.update(AES_SALT);
-            }
-            digestedKey = md.digest();
+            md.update(AES_SALT);
         }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new CryptographyException(e);
-        }
+        byte[] digestedKey = md.digest();
 
         // step 4
         int length = Math.min(newKey.length, 16);
@@ -295,7 +287,16 @@ public abstract class SecurityHandler
 
             try
             {
-                Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                Cipher decryptCipher;
+                try
+                {
+                    decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                }
+                catch (NoSuchAlgorithmException e)
+                {
+                    // should never happen
+                    throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
+                }
 
                 SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
 
@@ -323,10 +324,6 @@ public abstract class SecurityHandler
                 throw new IOException(e);
             }
             catch (InvalidAlgorithmParameterException e)
-            {
-                throw new IOException(e);
-            }
-            catch (NoSuchAlgorithmException e)
             {
                 throw new IOException(e);
             }

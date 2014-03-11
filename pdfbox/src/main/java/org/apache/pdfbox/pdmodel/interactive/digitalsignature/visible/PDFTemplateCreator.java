@@ -20,7 +20,6 @@ import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,7 +71,7 @@ public class PDFTemplateCreator
      * @throws IOException
      */
     public InputStream buildPDF(PDVisibleSignDesigner properties)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         logger.info("pdf building has been started");
         PDFTemplateStructure pdfStructure = pdfBuilder.getStructure();

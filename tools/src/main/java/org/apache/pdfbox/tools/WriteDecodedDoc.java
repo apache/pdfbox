@@ -19,7 +19,6 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -61,12 +60,11 @@ public class WriteDecodedDoc
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      * 
      * @deprecated use {@link WriteDecodedDoc#doIt(String, String, String, boolean)} instead.
      */
     public void doIt(String in, String out)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         doIt(in, out, "", false);
     }
@@ -82,10 +80,9 @@ public class WriteDecodedDoc
      * @throws IOException if the output could not be written
      * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
-     * @throws NoSuchAlgorithmException if the cryptographic algorithm is not available
      */
     public void doIt(String in, String out, String password, boolean useNonSeqParser)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         PDDocument doc = null;
         try

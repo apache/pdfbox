@@ -22,7 +22,6 @@ import org.apache.pdfbox.exceptions.SignatureException;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Test for RubberStampWithImage
@@ -30,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 public class TestRubberStampWithImage extends TestCase
 {
     public void test()
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         String documentFile = "src/test/resources/org.apache.pdfbox.examples.pdmodel/document.pdf";
         String stampFile = "src/test/resources/org.apache.pdfbox.examples.pdmodel/stamp.jpg";

@@ -90,15 +90,8 @@ public final class PDFEncryption
 
         //step 3
         byte[] digestedKey = null;
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            digestedKey = md.digest( newKey );
-        }
-        catch( NoSuchAlgorithmException e )
-        {
-            throw new CryptographyException( e );
-        }
+        MessageDigest md = getMD5();
+        digestedKey = md.digest( newKey );
 
         //step 4
         int length = Math.min( newKey.length, 16 );
@@ -130,92 +123,83 @@ public final class PDFEncryption
         long length )
         throws CryptographyException, IOException
     {
-        try
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+
+        //3.3 STEP 1
+        byte[] ownerPadded = truncateOrPad( ownerPassword );
+
+        //3.3 STEP 2
+        MessageDigest md = getMD5();
+        md.update( ownerPadded );
+        byte[] digest = md.digest();
+
+        //3.3 STEP 3
+        if( revision == 3 || revision == 4 )
         {
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-
-            //3.3 STEP 1
-            byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-            //3.3 STEP 2
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            md.update( ownerPadded );
-            byte[] digest = md.digest();
-
-            //3.3 STEP 3
-            if( revision == 3 || revision == 4 )
+            for( int i=0; i<50; i++ )
             {
-                for( int i=0; i<50; i++ )
-                {
-                    md.reset();
-                    md.update( digest );
-                    digest = md.digest();
-                }
+                md.reset();
+                md.update( digest );
+                digest = md.digest();
             }
-            if( revision == 2 && length != 5 )
-            {
-                throw new CryptographyException(
-                    "Error: Expected length=5 actual=" + length );
-            }
-
-            //3.3 STEP 4
-            byte[] rc4Key = new byte[ (int)length ];
-            System.arraycopy( digest, 0, rc4Key, 0, (int)length );
-
-            //3.7 step 2
-            if( revision == 2 )
-            {
-                rc4.setKey( rc4Key );
-                rc4.write( o, result );
-            }
-            else if( revision == 3 || revision == 4)
-            {
-                /**
-                byte[] iterationKey = new byte[ rc4Key.length ];
-                byte[] dataToEncrypt = o;
-                for( int i=19; i>=0; i-- )
-                {
-                    System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
-                    for( int j=0; j< iterationKey.length; j++ )
-                    {
-                        iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
-                    }
-                    rc4.setKey( iterationKey );
-                    rc4.write( dataToEncrypt, result );
-                    dataToEncrypt = result.toByteArray();
-                    result.reset();
-                }
-                result.write( dataToEncrypt, 0, dataToEncrypt.length );
-                */
-                byte[] iterationKey = new byte[ rc4Key.length ];
-
-
-                byte[] otemp = new byte[ o.length ]; //sm
-                System.arraycopy( o, 0, otemp, 0, o.length ); //sm
-                rc4.write( o, result);//sm
-
-                for( int i=19; i>=0; i-- )
-                {
-                    System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
-                    for( int j=0; j< iterationKey.length; j++ )
-                    {
-                        iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
-                    }
-                    rc4.setKey( iterationKey );
-                    result.reset();  //sm
-                    rc4.write( otemp, result ); //sm
-                    otemp = result.toByteArray(); //sm
-                }
-            }
-
-
-            return result.toByteArray();
-
         }
-        catch( NoSuchAlgorithmException e )
+        if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException( e );
+            throw new CryptographyException(
+                "Error: Expected length=5 actual=" + length );
         }
+
+        //3.3 STEP 4
+        byte[] rc4Key = new byte[ (int)length ];
+        System.arraycopy( digest, 0, rc4Key, 0, (int)length );
+
+        //3.7 step 2
+        if( revision == 2 )
+        {
+            rc4.setKey( rc4Key );
+            rc4.write( o, result );
+        }
+        else if( revision == 3 || revision == 4)
+        {
+            /**
+            byte[] iterationKey = new byte[ rc4Key.length ];
+            byte[] dataToEncrypt = o;
+            for( int i=19; i>=0; i-- )
+            {
+                System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
+                for( int j=0; j< iterationKey.length; j++ )
+                {
+                    iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
+                }
+                rc4.setKey( iterationKey );
+                rc4.write( dataToEncrypt, result );
+                dataToEncrypt = result.toByteArray();
+                result.reset();
+            }
+            result.write( dataToEncrypt, 0, dataToEncrypt.length );
+            */
+            byte[] iterationKey = new byte[ rc4Key.length ];
+
+
+            byte[] otemp = new byte[ o.length ]; //sm
+            System.arraycopy( o, 0, otemp, 0, o.length ); //sm
+            rc4.write( o, result);//sm
+
+            for( int i=19; i>=0; i-- )
+            {
+                System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
+                for( int j=0; j< iterationKey.length; j++ )
+                {
+                    iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
+                }
+                rc4.setKey( iterationKey );
+                result.reset();  //sm
+                rc4.write( otemp, result ); //sm
+                otemp = result.toByteArray(); //sm
+            }
+        }
+
+        return result.toByteArray();
     }
 
     /**
@@ -365,43 +349,36 @@ public final class PDFEncryption
         }
         else if( revision == 3 || revision == 4 )
         {
-            try
+            //STEP 2
+            MessageDigest md = getMD5();
+            //md.update( truncateOrPad( password ) );
+            md.update( ENCRYPT_PADDING );
+
+            //STEP 3
+            md.update( id );
+            result.write( md.digest() );
+
+            //STEP 4 and 5
+            byte[] iterationKey = new byte[ encryptionKey.length ];
+            for( int i=0; i<20; i++ )
             {
-                //STEP 2
-                MessageDigest md = MessageDigest.getInstance("MD5");
-                //md.update( truncateOrPad( password ) );
-                md.update( ENCRYPT_PADDING );
-
-                //STEP 3
-                md.update( id );
-                result.write( md.digest() );
-
-                //STEP 4 and 5
-                byte[] iterationKey = new byte[ encryptionKey.length ];
-                for( int i=0; i<20; i++ )
+                System.arraycopy( encryptionKey, 0, iterationKey, 0, iterationKey.length );
+                for( int j=0; j< iterationKey.length; j++ )
                 {
-                    System.arraycopy( encryptionKey, 0, iterationKey, 0, iterationKey.length );
-                    for( int j=0; j< iterationKey.length; j++ )
-                    {
-                        iterationKey[j] = (byte)(iterationKey[j] ^ i);
-                    }
-                    rc4.setKey( iterationKey );
-                    ByteArrayInputStream input = new ByteArrayInputStream( result.toByteArray() );
-                    result.reset();
-                    rc4.write( input, result );
+                    iterationKey[j] = (byte)(iterationKey[j] ^ i);
                 }
-
-                //step 6
-                byte[] finalResult = new byte[32];
-                System.arraycopy( result.toByteArray(), 0, finalResult, 0, 16 );
-                System.arraycopy( ENCRYPT_PADDING, 0, finalResult, 16, 16 );
+                rc4.setKey( iterationKey );
+                ByteArrayInputStream input = new ByteArrayInputStream( result.toByteArray() );
                 result.reset();
-                result.write( finalResult );
+                rc4.write( input, result );
             }
-            catch( NoSuchAlgorithmException e )
-            {
-                throw new CryptographyException( e );
-            }
+
+            //step 6
+            byte[] finalResult = new byte[32];
+            System.arraycopy( result.toByteArray(), 0, finalResult, 0, 16 );
+            System.arraycopy( ENCRYPT_PADDING, 0, finalResult, 16, 16 );
+            result.reset();
+            result.write( finalResult );
         }
         return result.toByteArray();
     }
@@ -430,57 +407,51 @@ public final class PDFEncryption
         throws CryptographyException
     {
         byte[] result = new byte[ length ];
-        try
+
+        //PDFReference 1.4 pg 78
+        //step1
+        byte[] padded = truncateOrPad( password );
+
+        //step 2
+        MessageDigest md = getMD5();
+        md.update( padded );
+
+        //step 3
+        md.update( o );
+
+        //step 4
+        byte zero = (byte)(permissions >>> 0);
+        byte one = (byte)(permissions >>> 8);
+        byte two = (byte)(permissions >>> 16);
+        byte three = (byte)(permissions >>> 24);
+
+        md.update( zero );
+        md.update( one );
+        md.update( two );
+        md.update( three );
+
+        //step 5
+        md.update( id );
+        byte[] digest = md.digest();
+
+        //step 6
+        if( revision == 3 || revision == 4)
         {
-            //PDFReference 1.4 pg 78
-            //step1
-            byte[] padded = truncateOrPad( password );
-
-            //step 2
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update( padded );
-
-            //step 3
-            md.update( o );
-
-            //step 4
-            byte zero = (byte)(permissions >>> 0);
-            byte one = (byte)(permissions >>> 8);
-            byte two = (byte)(permissions >>> 16);
-            byte three = (byte)(permissions >>> 24);
-
-            md.update( zero );
-            md.update( one );
-            md.update( two );
-            md.update( three );
-
-            //step 5
-            md.update( id );
-            byte[] digest = md.digest();
-
-            //step 6
-            if( revision == 3 || revision == 4)
+            for( int i=0; i<50; i++ )
             {
-                for( int i=0; i<50; i++ )
-                {
-                    md.reset();
-                    md.update( digest, 0, length );
-                    digest = md.digest();
-                }
+                md.reset();
+                md.update( digest, 0, length );
+                digest = md.digest();
             }
-
-            //step 7
-            if( revision == 2 && length != 5 )
-            {
-                throw new CryptographyException(
-                    "Error: length should be 5 when revision is two actual=" + length );
-            }
-            System.arraycopy( digest, 0, result, 0, length );
         }
-        catch( NoSuchAlgorithmException e )
+
+        //step 7
+        if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException( e );
+            throw new CryptographyException(
+                "Error: length should be 5 when revision is two actual=" + length );
         }
+        System.arraycopy( digest, 0, result, 0, length );
         return result;
     }
 
@@ -504,71 +475,64 @@ public final class PDFEncryption
         int length )
         throws CryptographyException, IOException
     {
-        try
+        //STEP 1
+        byte[] ownerPadded = truncateOrPad( ownerPassword );
+
+        //STEP 2
+        MessageDigest md = getMD5();
+        md.update( ownerPadded );
+        byte[] digest = md.digest();
+
+        //STEP 3
+        if( revision == 3 || revision == 4)
         {
-            //STEP 1
-            byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-            //STEP 2
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            md.update( ownerPadded );
-            byte[] digest = md.digest();
-
-            //STEP 3
-            if( revision == 3 || revision == 4)
+            for( int i=0; i<50; i++ )
             {
-                for( int i=0; i<50; i++ )
-                {
-                    md.reset();
-                    md.update( digest, 0, length );
-                    digest = md.digest();
-                }
+                md.reset();
+                md.update( digest, 0, length );
+                digest = md.digest();
             }
-            if( revision == 2 && length != 5 )
-            {
-                throw new CryptographyException(
-                    "Error: Expected length=5 actual=" + length );
-            }
-
-            //STEP 4
-            byte[] rc4Key = new byte[ length ];
-            System.arraycopy( digest, 0, rc4Key, 0, length );
-
-            //STEP 5
-            byte[] paddedUser = truncateOrPad( userPassword );
-
-
-            //STEP 6
-            rc4.setKey( rc4Key );
-            ByteArrayOutputStream crypted = new ByteArrayOutputStream();
-            rc4.write( new ByteArrayInputStream( paddedUser ), crypted );
-
-
-            //STEP 7
-            if( revision == 3 || revision == 4 )
-            {
-                byte[] iterationKey = new byte[ rc4Key.length ];
-                for( int i=1; i<20; i++ )
-                {
-                    System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
-                    for( int j=0; j< iterationKey.length; j++ )
-                    {
-                        iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
-                    }
-                    rc4.setKey( iterationKey );
-                    ByteArrayInputStream input = new ByteArrayInputStream( crypted.toByteArray() );
-                    crypted.reset();
-                    rc4.write( input, crypted );
-                }
-            }
-
-            //STEP 8
-            return crypted.toByteArray();
         }
-        catch( NoSuchAlgorithmException e )
+        if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException( e.getMessage() );
+            throw new CryptographyException(
+                "Error: Expected length=5 actual=" + length );
         }
+
+        //STEP 4
+        byte[] rc4Key = new byte[ length ];
+        System.arraycopy( digest, 0, rc4Key, 0, length );
+
+        //STEP 5
+        byte[] paddedUser = truncateOrPad( userPassword );
+
+
+        //STEP 6
+        rc4.setKey( rc4Key );
+        ByteArrayOutputStream crypted = new ByteArrayOutputStream();
+        rc4.write( new ByteArrayInputStream( paddedUser ), crypted );
+
+
+        //STEP 7
+        if( revision == 3 || revision == 4 )
+        {
+            byte[] iterationKey = new byte[ rc4Key.length ];
+            for( int i=1; i<20; i++ )
+            {
+                System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
+                for( int j=0; j< iterationKey.length; j++ )
+                {
+                    iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
+                }
+                rc4.setKey( iterationKey );
+                ByteArrayInputStream input = new ByteArrayInputStream( crypted.toByteArray() );
+                crypted.reset();
+                rc4.write( input, crypted );
+            }
+        }
+
+        //STEP 8
+        return crypted.toByteArray();
     }
 
     /**
@@ -585,5 +549,19 @@ public final class PDFEncryption
         System.arraycopy( password, 0, padded, 0, bytesBeforePad );
         System.arraycopy( ENCRYPT_PADDING, 0, padded, bytesBeforePad, ENCRYPT_PADDING.length-bytesBeforePad );
         return padded;
+    }
+
+    // helper to create MD5 hash
+    private MessageDigest getMD5()
+    {
+        try
+        {
+            return MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            // should never happen
+            throw new RuntimeException(e);
+        }
     }
 }

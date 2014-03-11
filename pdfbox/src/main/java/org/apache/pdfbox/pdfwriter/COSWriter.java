@@ -1241,7 +1241,7 @@ public class COSWriter implements ICOSVisitor
      * @param doc The document to write.
      */
     public void write(COSDocument doc)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         PDDocument pdDoc = new PDDocument( doc );
         write( pdDoc );
@@ -1255,8 +1255,7 @@ public class COSWriter implements ICOSVisitor
      * @throws IOException If an error occurs while generating the data.
      * @throws CryptographyException If an error occurs while generating the data.
      */
-    public void write(PDDocument doc)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+    public void write(PDDocument doc) throws IOException, CryptographyException, SignatureException
 	{
         Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
                                                     doc.getDocumentId();
@@ -1288,7 +1287,7 @@ public class COSWriter implements ICOSVisitor
             else
             {
                 willEncrypt = false;
-            }        
+            }
         }
 
         COSDocument cosDoc = document.getDocument();
@@ -1296,21 +1295,32 @@ public class COSWriter implements ICOSVisitor
         COSArray idArray = (COSArray)trailer.getDictionaryObject( COSName.ID );
         if( idArray == null || incrementalUpdate)
         {
-            //algorithm says to use time/path/size/values in doc to generate
-            //the id.  We don't have path or size, so do the best we can
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            md.update( Long.toString(idTime).getBytes("ISO-8859-1") );
+            MessageDigest md5;
+            try
+            {
+                md5 = MessageDigest.getInstance("MD5");
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                // should never happen
+                throw new RuntimeException(e);
+            }
+
+            // algorithm says to use time/path/size/values in doc to generate the id.
+            // we don't have path or size, so do the best we can
+            md5.update( Long.toString(idTime).getBytes("ISO-8859-1") );
+
             COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
             if( info != null )
             {
                 Iterator<COSBase> values = info.getValues().iterator();
                 while( values.hasNext() )
                 {
-                    md.update( values.next().toString().getBytes("ISO-8859-1") );
+                    md5.update( values.next().toString().getBytes("ISO-8859-1") );
                 }
             }
             idArray = new COSArray();
-            COSString id = new COSString( md.digest() );
+            COSString id = new COSString( md5.digest() );
             idArray.add( id );
             idArray.add( id );
             trailer.setItem( COSName.ID, idArray );

@@ -69,14 +69,14 @@ public class SetField
      * @throws IOException If there is an error importing the FDF document.
      */
     public static void main(String[] args)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         SetField setter = new SetField();
         setter.setField(args);
     }
 
     private void setField(String[] args)
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         PDDocument pdf = null;
         try

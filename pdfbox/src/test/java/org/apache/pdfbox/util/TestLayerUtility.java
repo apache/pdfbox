@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import junit.framework.TestCase;
 
@@ -120,7 +119,7 @@ public class TestLayerUtility extends TestCase
     }
 
     private File createMainPDF()
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         File targetFile = new File(testResultsDir, "text-doc.pdf");
         PDDocument doc = new PDDocument();
@@ -176,7 +175,7 @@ public class TestLayerUtility extends TestCase
     }
 
     private File createOverlay1()
-            throws IOException, CryptographyException, SignatureException, NoSuchAlgorithmException
+            throws IOException, CryptographyException, SignatureException
     {
         File targetFile = new File(testResultsDir, "overlay1.pdf");
         PDDocument doc = new PDDocument();
