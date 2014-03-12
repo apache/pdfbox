@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -59,7 +58,7 @@ public class EmbeddedFiles
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String file) throws IOException, SignatureException
+    public void doIt( String file) throws IOException
     {
         // the document
         PDDocument doc = null;

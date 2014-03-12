@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
 
@@ -1373,7 +1372,7 @@ public class COSDictionary extends COSBase
 	 *
 	 * @throws IOException If there is an error visiting this object.
 	 */
-	public Object accept(ICOSVisitor  visitor) throws IOException, SignatureException
+	public Object accept(ICOSVisitor  visitor) throws IOException
 	{
 		return visitor.visitFromDictionary(this);
 	}

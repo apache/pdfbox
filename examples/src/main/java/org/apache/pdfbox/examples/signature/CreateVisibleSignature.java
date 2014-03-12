@@ -36,7 +36,6 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -112,10 +111,8 @@ public class CreateVisibleSignature implements SignatureInterface
      * @param signatureProperties
      * @return the signed pdf document
      * @throws IOException
-     * @throws SignatureException
      */
-    public File signPDF(File document, PDVisibleSigProperties signatureProperties)
-            throws IOException, SignatureException
+    public File signPDF(File document, PDVisibleSigProperties signatureProperties) throws IOException
     {
         byte[] buffer = new byte[8 * 1024];
         if (document == null || !document.exists())
@@ -186,7 +183,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * Use your favorite cryptographic library to implement pkcs7 signature creation.
      */
     @Override
-    public byte[] sign(InputStream content) throws SignatureException, IOException
+    public byte[] sign(InputStream content) throws IOException
     {
         CMSProcessableInputStream input = new CMSProcessableInputStream(content);
         CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
@@ -219,7 +216,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * [3] image of visible signature
      */
     public static void main(String[] args) throws KeyStoreException, CertificateException,
-            IOException, SignatureException, NoSuchAlgorithmException
+            IOException, NoSuchAlgorithmException
     {
 
         if (args.length != 4)

@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.SignatureException;
-
 import java.io.IOException;
 
 /**
@@ -35,7 +33,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromArray( COSArray obj ) throws IOException, SignatureException;
+    public Object visitFromArray( COSArray obj ) throws IOException;
 
     /**
      * Notification of visit to boolean object.
@@ -53,7 +51,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromDictionary( COSDictionary obj ) throws IOException, SignatureException;
+    public Object visitFromDictionary( COSDictionary obj ) throws IOException;
 
     /**
      * Notification of visit to document object.
@@ -61,9 +59,8 @@ public interface ICOSVisitor
      * @param obj The Object that is being visited.
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
-     * @throws SignatureException If there is an error while visiting this object.
      */
-    public Object visitFromDocument( COSDocument obj ) throws IOException, SignatureException;
+    public Object visitFromDocument( COSDocument obj ) throws IOException;
 
     /**
      * Notification of visit to float object.
@@ -108,7 +105,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromStream( COSStream obj ) throws IOException, SignatureException;
+    public Object visitFromStream( COSStream obj ) throws IOException;
 
     /**
      * Notification of visit to string object.

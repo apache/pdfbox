@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
@@ -56,7 +55,7 @@ public abstract class COSBase implements COSObjectable
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
-    public abstract Object accept(ICOSVisitor visitor) throws IOException, SignatureException;
+    public abstract Object accept(ICOSVisitor visitor) throws IOException;
     
     public void setNeedToBeUpdate(boolean flag) 
     {

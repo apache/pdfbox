@@ -24,7 +24,6 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -117,7 +116,7 @@ public class TestLayerUtility extends TestCase
         }
     }
 
-    private File createMainPDF() throws IOException, SignatureException
+    private File createMainPDF() throws IOException
     {
         File targetFile = new File(testResultsDir, "text-doc.pdf");
         PDDocument doc = new PDDocument();
@@ -172,7 +171,7 @@ public class TestLayerUtility extends TestCase
         return targetFile;
     }
 
-    private File createOverlay1() throws IOException, SignatureException
+    private File createOverlay1() throws IOException
     {
         File targetFile = new File(testResultsDir, "overlay1.pdf");
         PDDocument doc = new PDDocument();

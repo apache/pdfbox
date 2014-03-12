@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -40,8 +39,7 @@ public class CreateBlankPDF
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void create( String file )
-            throws IOException, SignatureException
+    public void create( String file ) throws IOException
     {
         PDDocument document = null;
         try
@@ -69,8 +67,7 @@ public class CreateBlankPDF
      *
      * @throws IOException If there is an error writing the document data.
      */
-    public static void main( String[] args )
-            throws IOException, SignatureException
+    public static void main( String[] args ) throws IOException
     {
         if( args.length != 1 )
         {
