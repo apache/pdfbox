@@ -29,6 +29,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -110,7 +111,11 @@ public class TestImageIOUtils extends TestCase
     {
         String inDir = "src/test/resources/input/ImageIOUtil";
         String outDir = "target/test-output/ImageIOUtil/";
-        new File(outDir).mkdir();
+
+        if (!new File(outDir).mkdirs())
+        {
+            throw new IOException("could not create output directory");
+        }
 
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
