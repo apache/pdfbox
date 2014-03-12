@@ -234,7 +234,7 @@ public class TestImageIOUtils extends TestCase
      * checks whether the compression of a TIFF file is as expected.
      *
      * @param filename Filename
-     * @param the expected TIFF compression
+     * @param expectedCompression expected TIFF compression
      *
      * @throws IOException if something goes wrong
      */
