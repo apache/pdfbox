@@ -67,22 +67,14 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
- * This class implements the public key security handler
- * described in the PDF specification.
- *
- * [PDF 1.6: p 104]
+ * This class implements the public key security handler described in the PDF specification.
  *
  * @see PublicKeyProtectionPolicy to see how to protect document with this security handler.
- *
- * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- * @version $Revision: 1.3 $
+ * @author Benoit Guillon
  */
 public class PublicKeySecurityHandler extends SecurityHandler
 {
-
-    /**
-     * The filter name.
-     */
+    /** The filter name. */
     public static final String FILTER = "Adobe.PubSec";
 
     private static final String SUBFILTER = "adbe.pkcs7.s4";
@@ -274,7 +266,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
             dictionary.setVersion(2);
             dictionary.setSubFilter(SUBFILTER);
 
-            byte[][] recipientsField = new byte[policy.getRecipientsNumber()][];
+            byte[][] recipientsField = new byte[policy.getNumberOfRecipients()][];
 
             // create the 20 bytes seed
 
@@ -288,7 +280,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
             catch (NoSuchAlgorithmException e)
             {
                 // should never happen
-                throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
+                throw new RuntimeException(e);
             }
 
             key.init(192, new SecureRandom());
@@ -394,12 +386,12 @@ public class PublicKeySecurityHandler extends SecurityHandler
         }
         catch (NoSuchAlgorithmException e)
         {
-            // should never happen
+            // should never happen, if this happens throw IOException instead
             throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
         }
         catch (NoSuchPaddingException e)
         {
-            // should never happen
+            // should never happen, if this happens throw IOException instead
             throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
         }
 
@@ -445,12 +437,12 @@ public class PublicKeySecurityHandler extends SecurityHandler
         }
         catch (NoSuchAlgorithmException e)
         {
-            // should never happen
+            // should never happen, if this happens throw IOException instead
             throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
         }
         catch (NoSuchPaddingException e)
         {
-            // should never happen
+            // should never happen, if this happens throw IOException instead
             throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
         }
 

@@ -17,8 +17,7 @@
 package org.apache.pdfbox.pdmodel.encryption;
 
 /**
- * This class represents the protection policy to add to a document
- * for password-based protection.
+ * The protection policy to add to a document for password-based protection.
  *
  * The following example shows how to protect a PDF document with password.
  * In this example, the document will be protected so that someone opening
@@ -32,38 +31,33 @@ package org.apache.pdfbox.pdmodel.encryption;
  * doc.protect(policy);
  * </pre>
  *
- * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- * @version $Revision: 1.3 $
+ * @author Benoit Guillon
  */
-public class StandardProtectionPolicy extends ProtectionPolicy
+public final class StandardProtectionPolicy extends ProtectionPolicy
 {
-
     private AccessPermission permissions;
-
     private String ownerPassword = "";
-
     private String userPassword = "";
-
 
     /**
      * Creates an new instance of the standard protection policy
      * in order to protect a PDF document with passwords.
      *
-     * @param ownerPass The owner's password.
-     * @param userPass The users's password.
-     * @param perms The access permissions given to the user.
+     * @param ownerPassword The owner's password.
+     * @param userPassword The users's password.
+     * @param permissions The access permissions given to the user.
      */
-    public StandardProtectionPolicy(String ownerPass, String userPass, AccessPermission perms)
+    public StandardProtectionPolicy(String ownerPassword, String userPassword,
+                                    AccessPermission permissions)
     {
-        this.permissions = perms;
-        this.userPassword = userPass;
-        this.ownerPassword = ownerPass;
+        this.ownerPassword = ownerPassword;
+        this.userPassword = userPassword;
+        this.permissions = permissions;
     }
 
     /**
-     * Getter of the property <tt>permissions</tt>.
-     *
-     * @return Returns the permissions.
+     * Returns the access permissions
+     * @return the access permissions
      */
     public AccessPermission getPermissions()
     {
@@ -71,19 +65,17 @@ public class StandardProtectionPolicy extends ProtectionPolicy
     }
 
     /**
-     * Setter of the property <tt>permissions</tt>.
-     *
-     * @param perms The permissions to set.
+     * Sets the access permissions
+     * @param permissions the new access permissions
      */
-    public void setPermissions(AccessPermission perms)
+    public void setPermissions(AccessPermission permissions)
     {
-        this.permissions = perms;
+        this.permissions = permissions;
     }
 
     /**
-     * Getter of the property <tt>ownerPassword</tt>.
-     *
-     * @return Returns the ownerPassword.
+     * Returns the owner password.
+     * @return the owner password
      */
     public String getOwnerPassword()
     {
@@ -91,19 +83,17 @@ public class StandardProtectionPolicy extends ProtectionPolicy
     }
 
     /**
-     * Setter of the property <tt>ownerPassword</tt>.
-     *
-     * @param ownerPass The ownerPassword to set.
+     * Sets the owner password
+     * @param ownerPassword the new owner password
      */
-    public void setOwnerPassword(String ownerPass)
+    public void setOwnerPassword(String ownerPassword)
     {
-        this.ownerPassword = ownerPass;
+        this.ownerPassword = ownerPassword;
     }
 
     /**
-     * Getter of the property <tt>userPassword</tt>.
-     *
-     * @return Returns the userPassword.
+     * Returns the user password.
+     * @return the user password
      */
     public String getUserPassword()
     {
@@ -111,12 +101,11 @@ public class StandardProtectionPolicy extends ProtectionPolicy
     }
 
     /**
-     * Setter of the property <tt>userPassword</tt>.
-     *
-     * @param userPass The userPassword to set.
+     * Sets the user password.
+     * @param userPassword the new user password
      */
-    public void setUserPassword(String userPass)
+    public void setUserPassword(String userPassword)
     {
-        this.userPassword = userPass;
+        this.userPassword = userPassword;
     }
 }

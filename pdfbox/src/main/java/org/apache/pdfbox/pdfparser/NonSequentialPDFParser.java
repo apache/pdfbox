@@ -64,7 +64,7 @@ import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
-import org.apache.pdfbox.pdmodel.encryption.SecurityHandlersManager;
+import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
@@ -416,7 +416,7 @@ public class NonSequentialPDFParser extends PDFParser
             {
                 PDEncryptionDictionary encParameters = new PDEncryptionDictionary(document.getEncryptionDictionary());
 
-                DecryptionMaterial decryptionMaterial = null;
+                DecryptionMaterial decryptionMaterial;
                 if (keyStoreFilename != null)
                 {
                     KeyStore ks = KeyStore.getInstance("PKCS12");
@@ -429,7 +429,11 @@ public class NonSequentialPDFParser extends PDFParser
                     decryptionMaterial = new StandardDecryptionMaterial(password);
                 }
 
-                securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler(encParameters.getFilter());
+                securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandler(encParameters.getFilter());
+                if (securityHandler == null)
+                {
+                    throw new IOException("No security handler for filter " + encParameters.getFilter());
+                }
                 securityHandler.prepareForDecryption(encParameters, document.getDocumentID(), decryptionMaterial);
 
                 AccessPermission permission = securityHandler.getCurrentAccessPermission();
