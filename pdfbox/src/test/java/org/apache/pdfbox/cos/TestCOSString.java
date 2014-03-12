@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 
 import junit.framework.Test;
@@ -319,7 +318,7 @@ public class TestCOSString extends TestCOSBase
     }
 
     @Override
-    public void testAccept() throws IOException, SignatureException
+    public void testAccept() throws IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         ICOSVisitor visitor = new COSWriter(outStream);

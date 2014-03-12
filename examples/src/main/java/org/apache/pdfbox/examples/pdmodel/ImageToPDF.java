@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccessFile;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -50,8 +49,7 @@ public class ImageToPDF
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void createPDFFromImage( String file, String image)
-            throws IOException, SignatureException
+    public void createPDFFromImage( String file, String image) throws IOException
     {
         // the document
         PDDocument doc = null;

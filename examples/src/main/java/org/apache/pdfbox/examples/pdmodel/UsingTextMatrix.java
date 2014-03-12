@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -48,8 +47,7 @@ public class UsingTextMatrix
      *
      * @throws IOException If there is an error writing the data.
      */
-    public void doIt( String message, String  outfile )
-            throws IOException, SignatureException
+    public void doIt( String message, String  outfile ) throws IOException
     {
         // the document
         PDDocument doc = null;

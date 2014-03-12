@@ -40,7 +40,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
@@ -264,10 +263,8 @@ public class PDDocument implements Closeable
      * @param sigObject is the PDSignature model
      * @param signatureInterface is a interface which provides signing capabilities
      * @throws IOException if there is an error creating required fields
-     * @throws SignatureException if something went wrong
      */
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException,
-            SignatureException
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
     {
         SignatureOptions defaultOptions = new SignatureOptions();
         defaultOptions.setPage(1);
@@ -281,10 +278,9 @@ public class PDDocument implements Closeable
      * @param signatureInterface is a interface which provides signing capabilities
      * @param options signature options
      * @throws IOException if there is an error creating required fields
-     * @throws SignatureException if something went wrong
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options)
-            throws IOException, SignatureException
+            throws IOException
     {
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
@@ -319,7 +315,7 @@ public class PDDocument implements Closeable
         PDPage page = null;
         if (size == 0)
         {
-            throw new SignatureException(SignatureException.INVALID_PAGE_FOR_SIGNATURE, "The PDF file has no pages");
+            throw new IllegalStateException("Cannot sign an empty document");
         }
         if (options.getPage() > size)
         {
@@ -488,8 +484,7 @@ public class PDDocument implements Closeable
 
             if (annotNotFound || sigFieldNotFound)
             {
-                throw new SignatureException(SignatureException.VISUAL_SIGNATURE_INVALID,
-                        "Could not read all needed objects from template");
+                throw new IllegalArgumentException("Template is missing required objects");
             }
         }
 
@@ -515,10 +510,9 @@ public class PDDocument implements Closeable
      * @param signatureInterface is a interface which provides signing capabilities
      * @param options signature options
      * @throws IOException if there is an error creating required fields
-     * @throws SignatureException
      */
     public void addSignatureField(List<PDSignatureField> sigFields, SignatureInterface signatureInterface,
-            SignatureOptions options) throws IOException, SignatureException
+            SignatureOptions options) throws IOException
     {
         PDDocumentCatalog catalog = getDocumentCatalog();
         catalog.getCOSObject().setNeedToBeUpdate(true);
@@ -1179,9 +1173,8 @@ public class PDDocument implements Closeable
      * @param fileName The file to save as.
      *
      * @throws IOException if the output could not be written
-     * @throws SignatureException if signing failed
      */
-    public void save(String fileName) throws IOException, SignatureException
+    public void save(String fileName) throws IOException
     {
         save(new File(fileName));
     }
@@ -1192,9 +1185,8 @@ public class PDDocument implements Closeable
      * @param file The file to save as.
      *
      * @throws IOException if the output could not be written
-     * @throws SignatureException if signing failed
      */
-    public void save(File file) throws IOException, SignatureException
+    public void save(File file) throws IOException
     {
         save(new FileOutputStream(file));
     }
@@ -1205,9 +1197,8 @@ public class PDDocument implements Closeable
      * @param output The stream to write to.
      *
      * @throws IOException if the output could not be written
-     * @throws SignatureException if signing failed
      */
-    public void save(OutputStream output) throws IOException, SignatureException
+    public void save(OutputStream output) throws IOException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1232,9 +1223,8 @@ public class PDDocument implements Closeable
      * 
      * @param fileName the filename to be used
      * @throws IOException if the output could not be written
-     * @throws SignatureException if signing failed
      */
-    public void saveIncremental(String fileName) throws IOException, SignatureException
+    public void saveIncremental(String fileName) throws IOException
     {
         saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
     }
@@ -1245,10 +1235,9 @@ public class PDDocument implements Closeable
      * @param input stream to read
      * @param output stream to write
      * @throws IOException if the output could not be written
-     * @throws SignatureException if signing failed
      */
     public void saveIncremental(FileInputStream input, OutputStream output)
-            throws IOException, SignatureException
+            throws IOException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();

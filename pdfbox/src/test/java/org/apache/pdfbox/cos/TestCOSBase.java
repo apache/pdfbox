@@ -19,8 +19,6 @@ package org.apache.pdfbox.cos;
 
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.exceptions.SignatureException;
-
 import java.io.IOException;
 
 /**
@@ -42,7 +40,7 @@ public abstract class TestCOSBase extends TestCase
     /**
      * Test accept() - tests the interface for visiting a document at the COS level.
      */
-    public abstract void testAccept() throws IOException, SignatureException;
+    public abstract void testAccept() throws IOException;
 
     /**
      * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.

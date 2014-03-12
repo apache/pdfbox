@@ -18,7 +18,6 @@ package org.apache.pdfbox.examples.fdf;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -66,15 +65,13 @@ public class SetField
      * 
      * @throws IOException If there is an error importing the FDF document.
      */
-    public static void main(String[] args)
-            throws IOException, SignatureException
+    public static void main(String[] args) throws IOException
     {
         SetField setter = new SetField();
         setter.setField(args);
     }
 
-    private void setField(String[] args)
-            throws IOException, SignatureException
+    private void setField(String[] args) throws IOException
     {
         PDDocument pdf = null;
         try

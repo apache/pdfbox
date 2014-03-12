@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -575,7 +574,7 @@ public class PDFTemplateStructure
     * @return
     * @throws IOException
     */
-    public ByteArrayInputStream getTemplateAppearanceStream() throws IOException, SignatureException
+    public ByteArrayInputStream getTemplateAppearanceStream() throws IOException
     {
         COSDocument visualSignature = getVisualSignature();
         ByteArrayOutputStream memoryOut = new ByteArrayOutputStream();

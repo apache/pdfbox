@@ -26,18 +26,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.*;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.io.IOUtils;
+
 /**
  * This class represents a stream object in a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
  */
 public class COSStream extends COSDictionary
 {
@@ -247,7 +246,7 @@ public class COSStream extends COSDictionary
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
      */
-    public Object accept(ICOSVisitor visitor) throws IOException, SignatureException
+    public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromStream(this);
     }

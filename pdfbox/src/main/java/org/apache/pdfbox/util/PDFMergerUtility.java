@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -174,7 +173,7 @@ public class PDFMergerUtility
      * 
      * @throws IOException If there is an error saving the document.
      */
-    public void mergeDocuments() throws IOException, SignatureException
+    public void mergeDocuments() throws IOException
     {
         PDDocument destination = null;
         InputStream sourceFile;
