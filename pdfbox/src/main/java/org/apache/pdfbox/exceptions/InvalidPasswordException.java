@@ -19,12 +19,14 @@ package org.apache.pdfbox.exceptions;
 /**
  * An exception that indicates an invalid password was supplied.
  *
+ * @deprecated Only used by deprecated DocumentEncryption class.
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
  */
+@Deprecated
 public class InvalidPasswordException extends Exception
 {
-
     /**
      * Constructor.
      *
