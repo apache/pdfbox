@@ -34,7 +34,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * @author Benoit Guillon
  * @author John Hewson
  */
-public class SecurityHandlerFactory
+public final class SecurityHandlerFactory
 {
     /** Singleton instance */
     public static SecurityHandlerFactory INSTANCE = new SecurityHandlerFactory();
