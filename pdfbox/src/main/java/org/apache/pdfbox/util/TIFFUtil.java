@@ -103,6 +103,14 @@ class TIFFUtil
         ifd.appendChild(createLongField(278, "RowsPerStrip", image.getHeight()));
         ifd.appendChild(createAsciiField(305, "Software", "PDFBOX"));
 
+        if (image.getType() == BufferedImage.TYPE_BYTE_BINARY && 
+                image.getColorModel().getPixelSize() == 1)
+        {
+            // set PhotometricInterpretation WhiteIsZero
+            // because of bug in Windows XP preview
+            ifd.appendChild(createShortField(262, "PhotometricInterpretation", 0));
+        }
+        
         try
         {
             metadata.mergeTree(SUN_TIFF_FORMAT, root);
