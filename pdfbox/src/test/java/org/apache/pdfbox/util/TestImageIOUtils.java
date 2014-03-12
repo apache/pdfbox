@@ -67,22 +67,35 @@ public class TestImageIOUtils extends TestCase
         {
             float dpi = 120;
             document = PDDocument.load(file);
+
             // testing PNG
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            
             // testing JPG/JPEG
             imageType = "jpg";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            //TODO this one doesn't save the meta data
+
             // testing BMP
             imageType = "bmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            //TODO sometimes empty, sometimes correct?????
+            //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+
             // testing WBMP
+            //TODO this doesn't work at all, am empty image is always created
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+
             // testing TIFF
             imageType = "tif";
             writeImage(document, imageType, outDir + file.getName() + "-bw-", ImageType.BINARY, dpi);
+            checkResolution(outDir + file.getName() + "-bw-1." + imageType, (int) dpi);
+            checkTiffCompression(outDir + file.getName() + "-bw-1." + imageType, "CCITT T.6");
             writeImage(document, imageType, outDir + file.getName() + "-co-", ImageType.RGB, dpi);
+            checkResolution(outDir + file.getName() + "-co-1." + imageType, (int) dpi);
+            checkTiffCompression(outDir + file.getName() + "-co-1." + imageType, "LZW");
         }
         finally
         {
@@ -144,6 +157,7 @@ public class TestImageIOUtils extends TestCase
     private void checkResolution(String filename, int expectedResolution)
             throws IOException
     {
+        assertFalse("Empty file " + filename, new File(filename).length() == 0);
         String suffix = filename.substring(filename.lastIndexOf('.') + 1);
         if ("BMP".equals(suffix.toUpperCase()))
         {
@@ -210,14 +224,14 @@ public class TestImageIOUtils extends TestCase
     }
 
     /**
-     * Get the compression of a TIFF file
+     * checks whether the compression of a TIFF file is as expected.
      *
      * @param filename Filename
-     * @return the TIFF compression
+     * @param the expected TIFF compression
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
-    String getTiffCompression(String filename) throws IOException
+    void checkTiffCompression(String filename, String expectedCompression) throws IOException
     {
         Iterator readers = ImageIO.getImageReadersBySuffix("tiff");
         ImageReader reader = (ImageReader) readers.next();
@@ -227,10 +241,10 @@ public class TestImageIOUtils extends TestCase
         Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
         Element comprElement = (Element) root.getElementsByTagName("Compression").item(0);
         Node comprTypeNode = comprElement.getElementsByTagName("CompressionTypeName").item(0);
-        String compression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
+        String actualCompression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
+        assertEquals("Incorrect TIFF compression in file " + filename, expectedCompression, actualCompression);
         iis.close();
         reader.dispose();
-        return compression;
     }
     
 }
