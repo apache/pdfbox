@@ -24,7 +24,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.exceptions.OutlineNotLocalException;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -43,11 +42,9 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  * This represents an outline in a pdf document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
  */
 public class PDOutlineItem extends PDOutlineNode
 {
-
     private static final int ITALIC_FLAG = 1;
     private static final int BOLD_FLAG = 2;
 
@@ -217,65 +214,64 @@ public class PDOutlineItem extends PDOutlineNode
      */
     public PDPage findDestinationPage( PDDocument doc ) throws IOException
     {
-        PDPage page = null;
-        PDDestination rawDest = getDestination();
-        if( rawDest == null )
+        PDDestination dest = getDestination();
+        if( dest == null )
         {
             PDAction outlineAction = getAction();
             if( outlineAction instanceof PDActionGoTo )
             {
-                rawDest = ((PDActionGoTo)outlineAction).getDestination();
-            }
-            else if( outlineAction == null )
-            {
-                //if the outline action is null then this outline does not refer
-                //to anything and we will just return null.
+                dest = ((PDActionGoTo)outlineAction).getDestination();
             }
             else
             {
-                throw new OutlineNotLocalException( "Error: Outline does not reference a local page." );
+                return null;
             }
         }
 
-        PDPageDestination pageDest = null;
-        if( rawDest instanceof PDNamedDestination )
+        PDPageDestination pageDestination;
+        if( dest instanceof PDNamedDestination )
         {
             //if we have a named destination we need to lookup the PDPageDestination
-            PDNamedDestination namedDest = (PDNamedDestination)rawDest;
+            PDNamedDestination namedDest = (PDNamedDestination)dest;
             PDDocumentNameDictionary namesDict = doc.getDocumentCatalog().getNames();
             if( namesDict != null )
             {
                 PDDestinationNameTreeNode destsTree = namesDict.getDests();
                 if( destsTree != null )
                 {
-                    pageDest = (PDPageDestination)destsTree.getValue( namedDest.getNamedDestination() );
+                    pageDestination = (PDPageDestination)destsTree.getValue( namedDest.getNamedDestination() );
+                }
+                else
+                {
+                    return null;
                 }
             }
+            else
+            {
+                return null;
+            }
         }
-        else if( rawDest instanceof PDPageDestination)
+        else if( dest instanceof PDPageDestination)
         {
-            pageDest = (PDPageDestination) rawDest;
+            pageDestination = (PDPageDestination) dest;
         }
-        else if( rawDest == null )
+        else if( dest == null )
         {
-            //if the destination is null then we will simply return a null page.
+            return null;
         }
         else
         {
-            throw new IOException( "Error: Unknown destination type " + rawDest );
+            throw new IOException( "Error: Unknown destination type " + dest );
         }
 
-        if( pageDest != null )
+        PDPage page = pageDestination.getPage();
+        if( page == null )
         {
-            page = pageDest.getPage();
-            if( page == null )
+            int pageNumber = pageDestination.getPageNumber();
+            if( pageNumber != -1 )
             {
-                int pageNumber = pageDest.getPageNumber();
-                if( pageNumber != -1 )
-                {
-                    List allPages = doc.getDocumentCatalog().getAllPages();
-                    page = (PDPage)allPages.get( pageNumber );
-                }
+                List allPages = doc.getDocumentCatalog().getAllPages();
+                page = (PDPage)allPages.get( pageNumber );
             }
         }
 
