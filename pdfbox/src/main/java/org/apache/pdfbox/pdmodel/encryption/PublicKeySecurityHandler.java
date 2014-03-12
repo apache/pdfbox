@@ -72,7 +72,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @see PublicKeyProtectionPolicy to see how to protect document with this security handler.
  * @author Benoit Guillon
  */
-public class PublicKeySecurityHandler extends SecurityHandler
+public final class PublicKeySecurityHandler extends SecurityHandler
 {
     /** The filter name. */
     public static final String FILTER = "Adobe.PubSec";
