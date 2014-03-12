@@ -152,13 +152,24 @@ public class ImageIOUtil
                 }
             }
 
-            // metadata
-            setDPI(metadata, dpi, formatName);
-
-            // TIFF metadata
             if (formatName.toLowerCase().startsWith("tif"))
             {
+                // TIFF metadata
                 TIFFUtil.updateMetadata(metadata, image, dpi);
+            }
+            else if ("jpeg".equals(formatName.toLowerCase())
+                    || "jpg".equals(formatName.toLowerCase()))
+            {
+                // This segment must be run before other meta operations,
+                // or else "IIOInvalidTreeException: Invalid node: app0JFIF"
+                // The other (general) "meta" methods may not be used, because
+                // this will break the reading of the meta data in tests
+                JPEGUtil.updateMetadata(metadata, dpi);
+            }
+            else
+            {
+                // metadata
+                setDPI(metadata, dpi, formatName);
             }
 
             // write
