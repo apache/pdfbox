@@ -20,11 +20,10 @@ package org.apache.pdfbox.pdmodel.encryption;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
- * This class represents the protection policy to use to protect
- * a document with the public key security handler as described
- * in the PDF specification 1.6 p104.
+ * The protection policy to use to protect a document with the public key security handler.
  *
  * PDF documents are encrypted so that they can be decrypted by
  * one or more recipients. Each recipient have its own access permission.
@@ -53,73 +52,55 @@ import java.util.Iterator;
  * doc.save(out);
  * </pre>
  *
- *
  * @see org.apache.pdfbox.pdmodel.PDDocument#protect(ProtectionPolicy)
  * @see AccessPermission
  * @see PublicKeyRecipient
- *
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- *
- * @version $Revision: 1.2 $
  */
-public class PublicKeyProtectionPolicy extends ProtectionPolicy
+public final class PublicKeyProtectionPolicy extends ProtectionPolicy
 {
-
-    /**
-     * The list of recipients.
-     */
-    private ArrayList recipients = null;
-
-    /**
-     * The X509 certificate used to decrypt the current document.
-     */
+    public final List<PublicKeyRecipient> recipients = new ArrayList<PublicKeyRecipient>();
     private X509Certificate decryptionCertificate;
 
     /**
-     * Constructor for encryption. Just creates an empty recipients list.
+     * Creates a new PublicKeyProtectionPolicy with an empty recipients list.
      */
     public PublicKeyProtectionPolicy()
     {
-        recipients = new ArrayList();
     }
 
     /**
      * Adds a new recipient to the recipients list.
-     *
-     * @param r A new recipient.
+     * @param recipient A new recipient.
      */
-    public void addRecipient(PublicKeyRecipient r)
+    public void addRecipient(PublicKeyRecipient recipient)
     {
-        recipients.add(r);
+        recipients.add(recipient);
     }
 
     /**
      * Removes a recipient from the recipients list.
-     *
-     * @param r The recipient to remove.
-     *
+     * @param recipient The recipient to remove.
      * @return true If a recipient was found and removed.
      */
-    public boolean removeRecipient(PublicKeyRecipient r)
+    public boolean removeRecipient(PublicKeyRecipient recipient)
     {
-        return recipients.remove(r);
+        return recipients.remove(recipient);
     }
 
     /**
-     * Returns an iterator to browse the list of recipients. Object
-     * found in this iterator are <code>PublicKeyRecipient</code>.
-     *
+     * Returns an iterator to browse the list of recipients.
+     * Object found in this iterator are <code>PublicKeyRecipient</code>.
      * @return The recipients list iterator.
      */
-    public Iterator getRecipientsIterator()
+    public Iterator<PublicKeyRecipient> getRecipientsIterator()
     {
         return recipients.iterator();
     }
 
     /**
-     * Getter of the property <tt>decryptionCertificate</tt>.
-     *
-     * @return  Returns the decryptionCertificate.
+     * Returns the decryption certificate.
+     * @return the decryption certificate
      */
     public X509Certificate getDecryptionCertificate()
     {
@@ -127,21 +108,19 @@ public class PublicKeyProtectionPolicy extends ProtectionPolicy
     }
 
     /**
-     * Setter of the property <tt>decryptionCertificate</tt>.
-     *
-     * @param aDecryptionCertificate The decryption certificate to set.
+     * Sets the the decryption certificate
+     * @param decryptionCertificate the new decryption certificate.
      */
-    public void setDecryptionCertificate(X509Certificate aDecryptionCertificate)
+    public void setDecryptionCertificate(X509Certificate decryptionCertificate)
     {
-        this.decryptionCertificate = aDecryptionCertificate;
+        this.decryptionCertificate = decryptionCertificate;
     }
 
     /**
-     * Returns the number of recipients.
-     *
-     * @return The number of recipients.
+     * Returns the number of recipients
+     * @return the number of recipients
      */
-    public int getRecipientsNumber()
+    public int getNumberOfRecipients()
     {
         return recipients.size();
     }

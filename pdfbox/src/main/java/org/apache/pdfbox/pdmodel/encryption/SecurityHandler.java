@@ -52,68 +52,43 @@ import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
- * This class represents a security handler as described in the PDF specifications.
+ * A security handler as described in the PDF specifications.
  * A security handler is responsible of documents protection.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- *
+ * @author Ben Litchfield
+ * @author Benoit Guillon
  */
-
 public abstract class SecurityHandler
 {
-
-    /**
-     * CONSTANTS.
-     */
-
     private static final int DEFAULT_KEY_LENGTH = 40;
 
-    /*
-     * See 7.6.2, page 58, PDF 32000-1:2008
-     */
+    // see 7.6.2, page 58, PDF 32000-1:2008
     private static final byte[] AES_SALT = { (byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54 };
 
-    /**
-     * The value of V field of the Encryption dictionary.
-     */
+    /** The value of V field of the Encryption dictionary. */
     protected int version;
 
-    /**
-     * The length of the secret key used to encrypt the document.
-     */
+    /** The length of the secret key used to encrypt the document. */
     protected int keyLength = DEFAULT_KEY_LENGTH;
 
-    /**
-     * The encryption key that will used to encrypt / decrypt.
-     */
+    /** The encryption key that will used to encrypt / decrypt.*/
     protected byte[] encryptionKey;
 
-    /**
-     * The document whose security is handled by this security handler.
-     */
-
+    /** The document whose security is handled by this security handler.*/
     protected PDDocument document;
 
-    /**
-     * The RC4 implementation used for cryptographic functions.
-     */
+    /** The RC4 implementation used for cryptographic functions. */
     protected ARCFour rc4 = new ARCFour();
 
-    private Set<COSBase> objects = new HashSet<COSBase>();
+    private final Set<COSBase> objects = new HashSet<COSBase>();
+    private final Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
 
-    private Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
-
-    /**
-     * If true, AES will be used.
-     */
-    private boolean aes;
+    private boolean useAES;
 
     /**
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
      */
-
     protected AccessPermission currentAccessPermission = null;
 
     /**
@@ -247,7 +222,7 @@ public abstract class SecurityHandler
     public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output, boolean decrypt)
             throws CryptographyException, IOException
     {
-        if (aes && !decrypt)
+        if (useAES && !decrypt)
         {
             throw new IllegalArgumentException("AES encryption is not yet implemented.");
         }
@@ -268,7 +243,7 @@ public abstract class SecurityHandler
         // step 3
         MessageDigest md = MessageDigests.getMD5();
         md.update(newKey);
-        if (aes)
+        if (useAES)
         {
             md.update(AES_SALT);
         }
@@ -279,7 +254,7 @@ public abstract class SecurityHandler
         byte[] finalKey = new byte[length];
         System.arraycopy(digestedKey, 0, finalKey, 0, length);
 
-        if (aes)
+        if (useAES)
         {
             byte[] iv = new byte[16];
 
@@ -295,7 +270,7 @@ public abstract class SecurityHandler
                 catch (NoSuchAlgorithmException e)
                 {
                     // should never happen
-                    throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
+                    throw new RuntimeException(e);
                 }
 
                 SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
@@ -531,7 +506,7 @@ public abstract class SecurityHandler
      */
     public boolean isAES()
     {
-        return aes;
+        return useAES;
     }
 
     /**
@@ -542,6 +517,6 @@ public abstract class SecurityHandler
      */
     public void setAES(boolean aesValue)
     {
-        aes = aesValue;
+        useAES = aesValue;
     }
 }
