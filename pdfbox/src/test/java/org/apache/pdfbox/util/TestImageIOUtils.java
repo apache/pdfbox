@@ -83,6 +83,12 @@ public class TestImageIOUtils extends TestCase
             //TODO sometimes empty, sometimes correct?????
             //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
 
+            // testing GIF
+            imageType = "gif";
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            //TODO 
+            //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            
             // testing WBMP
             //TODO this doesn't work at all, am empty image is always created
             imageType = "wbmp";
