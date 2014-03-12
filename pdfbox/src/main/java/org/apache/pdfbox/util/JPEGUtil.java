@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.util;
 
-import java.awt.image.BufferedImage;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import org.w3c.dom.Element;
@@ -28,11 +27,18 @@ class JPEGUtil
 {
     static final String JPEG_NATIVE_FORMAT = "javax_imageio_jpeg_image_1.0";
 
+    /**
+     * Set dpi ina JPEG file
+     * 
+     * @param metadata the meta data
+     * @param dpi the dpi
+     * 
+     * @throws IIOInvalidTreeException if something goes wrong
+     */
     static void updateMetadata(IIOMetadata metadata, int dpi) throws IIOInvalidTreeException
     {
         // https://svn.apache.org/repos/asf/xmlgraphics/commons/trunk/src/java/org/apache/xmlgraphics/image/writer/imageio/ImageIOJPEGImageWriter.java
         // http://docs.oracle.com/javase/6/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
-
         Element root = (Element) metadata.getAsTree(JPEG_NATIVE_FORMAT);
         Element child = (Element) root.getElementsByTagName("app0JFIF").item(0);
         child.setAttribute("resUnits", "1"); // inch
