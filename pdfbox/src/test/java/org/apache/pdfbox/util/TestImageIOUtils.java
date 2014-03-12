@@ -125,11 +125,12 @@ public class TestImageIOUtils extends TestCase
         String inDir = "src/test/resources/input/ImageIOUtil";
         String outDir = "target/test-output/ImageIOUtil/";
 
-        if (!new File(outDir).mkdirs())
+        new File(outDir).mkdirs();
+        if (!new File(outDir).exists())
         {
             throw new IOException("could not create output directory");
         }
-
+        
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
             public boolean accept(File dir, String name)
