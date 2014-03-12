@@ -102,22 +102,8 @@ public class LZWFilter extends Filter
                         decoded.write(newData);
                         codeTable.add(newData);
                     }
-                    if (codeTable.size() >= 2047)
-                    {
-                        chunk = 12;
-                    }
-                    else if (codeTable.size() >= 1023)
-                    {
-                        chunk = 11;
-                    }
-                    else if (codeTable.size() >= 511)
-                    {
-                        chunk = 10;
-                    }
-                    else
-                    {
-                        chunk = 9;
-                    }
+                    
+                    chunk = calculateChunk(codeTable.size());
                     prevCommand = nextCommand;
                 }
             }
@@ -164,6 +150,7 @@ public class LZWFilter extends Filter
                 if (newFoundCode == -1)
                 {
                     // use previous
+                    chunk = calculateChunk(codeTable.size() - 1);
                     out.writeBits(foundCode, chunk);
                     // create new table entry
                     codeTable.add(inputPattern);
@@ -187,29 +174,22 @@ public class LZWFilter extends Filter
                     foundCode = newFoundCode;
                 }
             }
-            if (codeTable.size() - 1 >= 2047)
-            {
-                chunk = 12;
-            }
-            else if (codeTable.size() - 1 >= 1023)
-            {
-                chunk = 11;
-            }
-            else if (codeTable.size() - 1 >= 511)
-            {
-                chunk = 10;
-            }
-            else
-            {
-                chunk = 9;
-            }
         }
         if (foundCode != -1)
         {
+            chunk = calculateChunk(codeTable.size() - 1);
             out.writeBits(foundCode, chunk);
         }
+
+        // PPDFBOX-1977: the decoder wouldn't know that the encoder would output 
+        // an EOD as code, so he would have increased his own code table and 
+        // possibly adjusted the chunk. Therefore, the encoder must behave as 
+        // if the code table had just grown and thus it must be checked it is
+        // needed to adjust the chunk, based on an increased table size parameter
+        chunk = calculateChunk(codeTable.size());
+
         out.writeBits(EOD, chunk);
-        out.writeBits(0, 7);
+        out.writeBits(0, 7); // pad with 0
         out.flush(); // must do or file will be empty :-(
         codeTable.clear();
     }
@@ -269,5 +249,29 @@ public class LZWFilter extends Filter
         }
         codeTable.add(null); // 256 EOD
         codeTable.add(null); // 257 CLEAR_TABLE
+    }
+
+    /**
+     * Calculate the appropriate chunk size
+     *
+     * @param tabSize the size of the code table
+     *
+     * @return a value between 9 and 12
+     */
+    private int calculateChunk(int tabSize)
+    {
+        if (tabSize >= 2047)
+        {
+            return 12;
+        }
+        if (tabSize >= 1023)
+        {
+            return 11;
+        }
+        if (tabSize >= 511)
+        {
+            return 10;
+        }
+        return 9;
     }
 }
