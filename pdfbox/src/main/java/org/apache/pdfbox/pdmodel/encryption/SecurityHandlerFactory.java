@@ -32,6 +32,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * Security managers are retrieved by the application when necessary.
  *
  * @author Benoit Guillon
+ * @author John Hewson
  */
 public class SecurityHandlerFactory
 {
