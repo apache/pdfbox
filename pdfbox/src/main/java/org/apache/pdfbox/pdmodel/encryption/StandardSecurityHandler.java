@@ -652,14 +652,15 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else if( encRevision == 3 || encRevision == 4 )
         {
-            return Arrays.equals( user, passwordBytes ) && user.length >= 16;
+            // compare first 16 bytes only
+            return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
         }
         else
         {
             throw new IOException( "Unknown Encryption Revision " + encRevision );
         }
     }
-    
+
     /**
      * Check if a plaintext password is the user password.
      *
