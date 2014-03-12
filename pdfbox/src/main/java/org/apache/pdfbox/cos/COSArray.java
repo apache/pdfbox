@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -514,8 +513,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      * @throws IOException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor)
-            throws IOException, CryptographyException, SignatureException
+    public Object accept(ICOSVisitor visitor) throws IOException, SignatureException
     {
         return visitor.visitFromArray(this);
     }

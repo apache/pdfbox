@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -56,10 +55,8 @@ public abstract class COSBase implements COSObjectable
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
-     * @throws CryptographyException If an error occurs while visiting this object.
      */
-    public abstract Object accept(ICOSVisitor visitor)
-            throws IOException, CryptographyException, SignatureException;
+    public abstract Object accept(ICOSVisitor visitor) throws IOException, SignatureException;
     
     public void setNeedToBeUpdate(boolean flag) 
     {

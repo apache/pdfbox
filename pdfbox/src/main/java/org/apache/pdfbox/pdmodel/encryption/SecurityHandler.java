@@ -48,7 +48,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -96,10 +95,9 @@ public abstract class SecurityHandler
      *
      * @param doc The document that will be encrypted.
      *
-     * @throws CryptographyException If there is an error while preparing.
      * @throws IOException If there is an error with the document.
      */
-    public abstract void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException;
+    public abstract void prepareDocumentForEncryption(PDDocument doc) throws IOException;
 
     /**
      * Prepares everything to decrypt the document.
@@ -112,30 +110,26 @@ public abstract class SecurityHandler
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
      */
     public abstract void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
-            DecryptionMaterial decryptionMaterial) throws CryptographyException, IOException;
+            DecryptionMaterial decryptionMaterial) throws IOException;
 
     /**
      * Prepare the document for decryption.
      *
      * @param doc The document to decrypt.
      * @param mat Information required to decrypt the document.
-     * @throws CryptographyException If there is an error while preparing.
      * @throws IOException If there is an error with the document.
      */
-    public abstract void decryptDocument(PDDocument doc, DecryptionMaterial mat) throws CryptographyException,
-            IOException;
+    public abstract void decryptDocument(PDDocument doc, DecryptionMaterial mat) throws IOException;
 
     /**
      * This method must be called by an implementation of this class to really proceed
      * to decryption.
      *
      * @throws IOException If there is an error in the decryption.
-     * @throws CryptographyException If there is an error in the decryption.
      */
-    protected void proceedDecryption() throws IOException, CryptographyException
+    protected void proceedDecryption() throws IOException
     {
 
         COSDictionary trailer = document.getDocument().getTrailer();
@@ -193,15 +187,14 @@ public abstract class SecurityHandler
      * @param genNumber The data generation number.
      * @param data The data to encrypt.
      * @param output The output to write the encrypted data to.
-     * @throws CryptographyException If there is an error during the encryption.
      * @throws IOException If there is an error reading the data.
      * @deprecated While this works fine for RC4 encryption, it will never decrypt AES data
      *             You should use encryptData(objectNumber, genNumber, data, output, decrypt)
      *             which can do everything.  This function is just here for compatibility
      *             reasons and will be removed in the future.
      */
-    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output)
-            throws CryptographyException, IOException
+    public void encryptData(long objectNumber, long genNumber, InputStream data,
+                            OutputStream output) throws IOException
     {
         // default to encrypting since the function is named "encryptData"
         encryptData(objectNumber, genNumber, data, output, false);
@@ -216,11 +209,10 @@ public abstract class SecurityHandler
      * @param output The output to write the encrypted data to.
      * @param decrypt true to decrypt the data, false to encrypt it
      *
-     * @throws CryptographyException If there is an error during the encryption.
      * @throws IOException If there is an error reading the data.
      */
-    public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output, boolean decrypt)
-            throws CryptographyException, IOException
+    public void encryptData(long objectNumber, long genNumber, InputStream data,
+                            OutputStream output, boolean decrypt) throws IOException
     {
         if (useAES && !decrypt)
         {
@@ -321,10 +313,9 @@ public abstract class SecurityHandler
      *
      * @param object The object to decrypt.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decryptObject(COSObject object) throws CryptographyException, IOException
+    private void decryptObject(COSObject object) throws IOException
     {
         long objNum = object.getObjectNumber().intValue();
         long genNum = object.getGenerationNumber().intValue();
@@ -339,10 +330,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation Number.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decrypt(COSBase obj, long objNum, long genNum) throws CryptographyException, IOException
+    private void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
         if (!objects.contains(obj))
         {
@@ -374,10 +364,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If there is an error getting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    public void decryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
+    public void decryptStream(COSStream stream, long objNum, long genNum) throws IOException
     {
         decryptDictionary(stream, objNum, genNum);
         InputStream encryptedStream = stream.getFilteredStream();
@@ -393,10 +382,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If there is an error getting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    public void encryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
+    public void encryptStream(COSStream stream, long objNum, long genNum) throws IOException
     {
         InputStream encryptedStream = stream.getFilteredStream();
         encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), false /* encrypt */);
@@ -409,11 +397,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If there is an error decrypting the document.
      * @throws IOException If there is an error creating a new string.
      */
-    private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws CryptographyException,
-            IOException
+    private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
         for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
@@ -439,10 +425,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
      * @throws IOException If an error occurs writing the new string.
      */
-    public void decryptString(COSString string, long objNum, long genNum) throws CryptographyException, IOException
+    public void decryptString(COSString string, long objNum, long genNum) throws IOException
     {
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -458,10 +443,9 @@ public abstract class SecurityHandler
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
      * @throws IOException If there is an error accessing the data.
      */
-    private void decryptArray(COSArray array, long objNum, long genNum) throws CryptographyException, IOException
+    private void decryptArray(COSArray array, long objNum, long genNum) throws IOException
     {
         for (int i = 0; i < array.size(); i++)
         {

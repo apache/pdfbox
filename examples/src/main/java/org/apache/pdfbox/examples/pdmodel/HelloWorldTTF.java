@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -46,7 +45,7 @@ public class HelloWorldTTF
      * @throws IOException If there is an error writing the data.
      */
     public void doIt(final String file, final String message, final String fontfile)
-        throws IOException, CryptographyException, SignatureException
+        throws IOException, SignatureException
     {
 
         // the document

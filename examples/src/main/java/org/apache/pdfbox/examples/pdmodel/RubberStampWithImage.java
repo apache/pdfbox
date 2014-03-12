@@ -17,7 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -58,7 +57,7 @@ public class RubberStampWithImage
      * @throws IOException an exception is thrown if something went wrong
      */
     public void doIt( String[] args )
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         if( args.length != 3 )
         {

@@ -50,7 +50,6 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccess;
@@ -1272,16 +1271,7 @@ public class NonSequentialPDFParser extends PDFParser
 
                         if (securityHandler != null)
                         {
-                            try
-                            {
-                                securityHandler.decryptStream(stream, objNr, objGenNr);
-                            }
-                            catch (CryptographyException ce)
-                            {
-                                throw new IOException("Error decrypting stream object " + objNr + ": "
-                                        + ce.getMessage()
-                                /* , ce // TODO: remove remark with Java 1.6 */);
-                            }
+                            securityHandler.decryptStream(stream, objNr, objGenNr);
                         }
                         pb = stream;
                     }
@@ -1408,15 +1398,7 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected final void decrypt(COSString str, long objNr, long objGenNr) throws IOException
     {
-        try
-        {
-            securityHandler.decryptString(str, objNr, objGenNr);
-        }
-        catch (CryptographyException ce)
-        {
-            throw new IOException("Error decrypting string: " + ce.getMessage()
-            /* , ce // TODO: remove remark with Java 1.6 */);
-        }
+        securityHandler.decryptString(str, objNr, objGenNr);
     }
 
     // ------------------------------------------------------------------------

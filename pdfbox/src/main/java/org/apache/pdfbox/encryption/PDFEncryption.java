@@ -25,8 +25,6 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
-
 /**
  * This class will deal with PDF encryption algorithms.
  *
@@ -63,7 +61,6 @@ public final class PDFEncryption
      * @param data The data to encrypt/decrypt.
      * @param output The stream to write to.
      *
-     * @throws CryptographyException If there is an error encrypting the data.
      * @throws IOException If there is an io error.
      */
     public final void encryptData(
@@ -72,7 +69,7 @@ public final class PDFEncryption
         byte[] key,
         InputStream data,
         OutputStream output )
-        throws CryptographyException, IOException
+        throws IOException
     {
         byte[] newKey = new byte[ key.length + 5 ];
         System.arraycopy( key, 0, newKey, 0, key.length );
@@ -113,7 +110,6 @@ public final class PDFEncryption
      *
      * @return The plaintext padded user password.
      *
-     * @throws CryptographyException If there is an error getting the user password.
      * @throws IOException If there is an error reading data.
      */
     public final byte[] getUserPassword(
@@ -121,7 +117,7 @@ public final class PDFEncryption
         byte[] o,
         int revision,
         long length )
-        throws CryptographyException, IOException
+        throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
@@ -145,7 +141,7 @@ public final class PDFEncryption
         }
         if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException(
+            throw new IOException(
                 "Error: Expected length=5 actual=" + length );
         }
 
@@ -215,7 +211,6 @@ public final class PDFEncryption
      *
      * @return true if the owner password matches the one from the document.
      *
-     * @throws CryptographyException If there is an error while executing crypt functions.
      * @throws IOException If there is an error while checking owner password.
      */
     public final boolean isOwnerPassword(
@@ -226,7 +221,7 @@ public final class PDFEncryption
         byte[] id,
         int revision,
         int length)
-        throws CryptographyException, IOException
+        throws IOException
     {
         byte[] userPassword = getUserPassword( ownerPassword, o, revision, length );
         return isUserPassword( userPassword, u, o, permissions, id, revision, length );
@@ -247,7 +242,6 @@ public final class PDFEncryption
      *
      * @return true If this is the correct user password.
      *
-     * @throws CryptographyException If there is an error computing the value.
      * @throws IOException If there is an IO error while computing the owners password.
      */
     public final boolean isUserPassword(
@@ -258,7 +252,7 @@ public final class PDFEncryption
         byte[] id,
         int revision,
         int length)
-        throws CryptographyException, IOException
+        throws IOException
     {
         boolean matches = false;
         //STEP 1
@@ -325,7 +319,6 @@ public final class PDFEncryption
      *
      * @return The user password.
      *
-     * @throws CryptographyException If there is an error computing the user password.
      * @throws IOException If there is an IO error.
      */
     public final byte[] computeUserPassword(
@@ -335,7 +328,7 @@ public final class PDFEncryption
         byte[] id,
         int revision,
         int length )
-        throws CryptographyException, IOException
+        throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         //STEP 1
@@ -395,7 +388,7 @@ public final class PDFEncryption
      *
      * @return The encryption key.
      *
-     * @throws CryptographyException If there is an error computing the key.
+     * @throws IOException If there is an error computing the key.
      */
     public final byte[] computeEncryptedKey(
         byte[] password,
@@ -404,7 +397,7 @@ public final class PDFEncryption
         byte[] id,
         int revision,
         int length )
-        throws CryptographyException
+        throws IOException
     {
         byte[] result = new byte[ length ];
 
@@ -448,7 +441,7 @@ public final class PDFEncryption
         //step 7
         if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException(
+            throw new IOException(
                 "Error: length should be 5 when revision is two actual=" + length );
         }
         System.arraycopy( digest, 0, result, 0, length );
@@ -465,7 +458,6 @@ public final class PDFEncryption
      *
      * @return The computed owner password.
      *
-     * @throws CryptographyException If there is an error computing O.
      * @throws IOException If there is an error computing O.
      */
     public final byte[] computeOwnerPassword(
@@ -473,7 +465,7 @@ public final class PDFEncryption
         byte[] userPassword,
         int revision,
         int length )
-        throws CryptographyException, IOException
+        throws IOException
     {
         //STEP 1
         byte[] ownerPadded = truncateOrPad( ownerPassword );
@@ -495,7 +487,7 @@ public final class PDFEncryption
         }
         if( revision == 2 && length != 5 )
         {
-            throw new CryptographyException(
+            throw new IOException(
                 "Error: Expected length=5 actual=" + length );
         }
 

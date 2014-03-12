@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.BaseParser;
@@ -213,7 +212,7 @@ public class OverlayPDF
      * @param specificPageOverlayFile map of overlay files for specific pages
      */
     public void overlay(Map<Integer, String> specificPageOverlayFile)
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         PDDocument sourcePDFDocument = null;
         PDDocument defaultOverlay = null;

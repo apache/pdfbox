@@ -39,7 +39,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccess;
@@ -863,13 +862,12 @@ public class PDDocument implements Closeable
      * security layer instead and the openProtection method especially.
      * 
      * @param password Either the user or owner password.
-     * 
-     * @throws CryptographyException If there is an error decrypting the document.
+     *
      * @throws IOException If there is an error getting the stream data.
      * @throws InvalidPasswordException If the password is not a user or owner password.
      */
     @Deprecated
-    public void decrypt(String password) throws CryptographyException, IOException, InvalidPasswordException
+    public void decrypt(String password) throws IOException, InvalidPasswordException
     {
         StandardDecryptionMaterial m = new StandardDecryptionMaterial(password);
         openProtection(m);
@@ -1181,11 +1179,9 @@ public class PDDocument implements Closeable
      * @param fileName The file to save as.
      *
      * @throws IOException if the output could not be written
-     * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
      */
-    public void save(String fileName)
-            throws IOException, CryptographyException, SignatureException
+    public void save(String fileName) throws IOException, SignatureException
     {
         save(new File(fileName));
     }
@@ -1196,11 +1192,9 @@ public class PDDocument implements Closeable
      * @param file The file to save as.
      *
      * @throws IOException if the output could not be written
-     * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
      */
-    public void save(File file)
-        throws IOException, CryptographyException, SignatureException
+    public void save(File file) throws IOException, SignatureException
     {
         save(new FileOutputStream(file));
     }
@@ -1211,11 +1205,9 @@ public class PDDocument implements Closeable
      * @param output The stream to write to.
      *
      * @throws IOException if the output could not be written
-     * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
      */
-    public void save(OutputStream output)
-            throws IOException, CryptographyException, SignatureException
+    public void save(OutputStream output) throws IOException, SignatureException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1240,11 +1232,9 @@ public class PDDocument implements Closeable
      * 
      * @param fileName the filename to be used
      * @throws IOException if the output could not be written
-     * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
      */
-    public void saveIncremental(String fileName)
-            throws IOException, CryptographyException, SignatureException
+    public void saveIncremental(String fileName) throws IOException, SignatureException
     {
         saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
     }
@@ -1255,11 +1245,10 @@ public class PDDocument implements Closeable
      * @param input stream to read
      * @param output stream to write
      * @throws IOException if the output could not be written
-     * @throws CryptographyException if something went wrong during a cryptography operation
      * @throws SignatureException if signing failed
      */
     public void saveIncremental(FileInputStream input, OutputStream output)
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1360,10 +1349,8 @@ public class PDDocument implements Closeable
      * @param decryptionMaterial The decryption material (password or certificate).
      *
      * @throws IOException If there is an error reading cryptographic information.
-     * @throws CryptographyException If there is an error during decryption.
      */
-    public void openProtection(DecryptionMaterial decryptionMaterial)
-            throws IOException, CryptographyException
+    public void openProtection(DecryptionMaterial decryptionMaterial) throws IOException
     {
         PDEncryptionDictionary encryption = getEncryptionDictionary();
         if (encryption.getFilter() != null)

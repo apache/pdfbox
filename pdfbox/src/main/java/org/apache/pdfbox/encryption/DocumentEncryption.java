@@ -37,7 +37,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.PDStandardEncryption;
@@ -94,11 +93,9 @@ public class DocumentEncryption
      * This will encrypt the given document, given the owner password and user password.
      * The encryption method used is the standard filter.
      *
-     * @throws CryptographyException If an error occurs during encryption.
      * @throws IOException If there is an error accessing the data.
      */
-    public void initForEncryption()
-        throws CryptographyException, IOException
+    public void initForEncryption() throws IOException
     {
         String ownerPassword = pdDocument.getOwnerPasswordForEncryption();
         String userPassword = pdDocument.getUserPasswordForEncryption();
@@ -173,12 +170,10 @@ public class DocumentEncryption
      *
      * @param password The password for the document.
      *
-     * @throws CryptographyException If there is an error decrypting the document.
      * @throws IOException If there is an error getting the stream data.
      * @throws InvalidPasswordException If the password is not a user or owner password.
      */
-    public void decryptDocument( String password )
-        throws CryptographyException, IOException, InvalidPasswordException
+    public void decryptDocument( String password ) throws IOException, InvalidPasswordException
     {
         if( password == null )
         {
@@ -272,11 +267,9 @@ public class DocumentEncryption
      *
      * @param object The object to decrypt.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decryptObject( COSObject object )
-        throws CryptographyException, IOException
+    private void decryptObject( COSObject object ) throws IOException
     {
         long objNum = object.getObjectNumber().intValue();
         long genNum = object.getGenerationNumber().intValue();
@@ -291,11 +284,9 @@ public class DocumentEncryption
      * @param objNum The object number.
      * @param genNum The object generation Number.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    public void decrypt( Object obj, long objNum, long genNum )
-        throws CryptographyException, IOException
+    public void decrypt( Object obj, long objNum, long genNum ) throws IOException
     {
         if( !objects.contains( obj ) )
         {
@@ -327,11 +318,9 @@ public class DocumentEncryption
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If there is an error getting the stream.
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decryptStream( COSStream stream, long objNum, long genNum )
-        throws CryptographyException, IOException
+    private void decryptStream( COSStream stream, long objNum, long genNum ) throws IOException
     {
         decryptDictionary( stream, objNum, genNum );
         InputStream encryptedStream = stream.getFilteredStream();
@@ -349,11 +338,10 @@ public class DocumentEncryption
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If there is an error decrypting the document.
      * @throws IOException If there is an error creating a new string.
      */
     private void decryptDictionary( COSDictionary dictionary, long objNum, long genNum )
-        throws CryptographyException, IOException
+        throws IOException
     {
         for( Map.Entry<COSName, COSBase> entry : dictionary.entrySet() )
         {
@@ -375,11 +363,9 @@ public class DocumentEncryption
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
      * @throws IOException If an error occurs writing the new string.
      */
-    private void decryptString( COSString string, long objNum, long genNum )
-        throws CryptographyException, IOException
+    private void decryptString( COSString string, long objNum, long genNum ) throws IOException
     {
         ByteArrayInputStream data = new ByteArrayInputStream( string.getBytes() );
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -399,11 +385,9 @@ public class DocumentEncryption
      * @param objNum The object number.
      * @param genNum The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
      * @throws IOException If there is an error accessing the data.
      */
-    private void decryptArray( COSArray array, long objNum, long genNum )
-        throws CryptographyException, IOException
+    private void decryptArray( COSArray array, long objNum, long genNum ) throws IOException
     {
         for( int i=0; i<array.size(); i++ )
         {

@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -54,7 +53,7 @@ public class CopyDoc
      * @throws IOException If there is an error parsing the document.
      */
     public void doIt(String in, String out)
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         InputStream is = null;
         OutputStream os = null;

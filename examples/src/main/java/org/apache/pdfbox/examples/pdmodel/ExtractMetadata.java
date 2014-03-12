@@ -77,10 +77,6 @@ public class ExtractMetadata
                     {
                         System.err.println( "Error: The document is encrypted." );
                     }
-                    catch( org.apache.pdfbox.exceptions.CryptographyException e )
-                    {
-                        e.printStackTrace();
-                    }
                 }
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDMetadata meta = catalog.getMetadata();

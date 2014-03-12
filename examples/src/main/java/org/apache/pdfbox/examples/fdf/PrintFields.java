@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -108,9 +107,8 @@ public class PrintFields
      * @param args command line arguments
      * 
      * @throws IOException If there is an error importing the FDF document.
-     * @throws CryptographyException If there is an error decrypting the document.
      */
-    public static void main(String[] args) throws IOException, CryptographyException
+    public static void main(String[] args) throws IOException
     {
         PDDocument pdf = null;
         try

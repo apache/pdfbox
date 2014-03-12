@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -49,7 +48,6 @@ import org.apache.pdfbox.text.PositionWrapper;
 import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.text.TextPositionComparator;
-
 
 /**
  * This class will take a pdf document and strip out all of the text and ignore the
@@ -339,10 +337,6 @@ public class PDFTextStripper extends PDFStreamEngine
             try
             {
                 document.decrypt("");
-            }
-            catch (CryptographyException e)
-            {
-                throw new IOException("Could not decrypt document", e);
             }
             catch (InvalidPasswordException e)
             {

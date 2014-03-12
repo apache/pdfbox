@@ -69,7 +69,6 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.BaseParser;
@@ -727,16 +726,7 @@ public class PreflightParser extends NonSequentialPDFParser
                         COSStream stream = parseCOSStream((COSDictionary) pb, getDocument().getScratchFile());
                         if (securityHandler != null)
                         {
-                            try
-                            {
-                                securityHandler.decryptStream(stream, objNr, objGenNr);
-                            }
-                            catch (CryptographyException ce)
-                            {
-                                throw new IOException("Error decrypting stream object " + objNr + ": "
-                                        + ce.getMessage()
-                                /* , ce // TODO: remove remark with Java 1.6 */);
-                            }
+                            securityHandler.decryptStream(stream, objNr, objGenNr);
                         }
                         pb = stream;
                     }

@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -71,7 +70,7 @@ public class PDFTemplateCreator
      * @throws IOException
      */
     public InputStream buildPDF(PDVisibleSignDesigner properties)
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         logger.info("pdf building has been started");
         PDFTemplateStructure pdfStructure = pdfBuilder.getStructure();

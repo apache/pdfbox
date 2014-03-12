@@ -414,10 +414,6 @@ public class PDFDebugger extends javax.swing.JFrame
                 {
                     System.err.println( "Error: The document is encrypted." );
                 }
-                catch( org.apache.pdfbox.exceptions.CryptographyException e )
-                {
-                    e.printStackTrace();
-                }
             }
         }
     }

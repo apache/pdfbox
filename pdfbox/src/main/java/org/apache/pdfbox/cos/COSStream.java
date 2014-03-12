@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
@@ -247,10 +246,8 @@ public class COSStream extends COSDictionary
      *
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
-     * @throws CryptographyException If an error occurs while visiting this object.
      */
-    public Object accept(ICOSVisitor visitor)
-            throws IOException, CryptographyException, SignatureException
+    public Object accept(ICOSVisitor visitor) throws IOException, SignatureException
     {
         return visitor.visitFromStream(this);
     }

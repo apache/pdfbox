@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.awt.Color;
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -52,7 +51,7 @@ public class ShowColorBoxes
      * @throws IOException If there is an error writing the data.
      */
     public void doIt( String file)
-            throws IOException, CryptographyException, SignatureException
+            throws IOException, SignatureException
     {
         // the document
         PDDocument doc = null;
