@@ -63,7 +63,6 @@ import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -105,11 +104,9 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      * @param doc The document to decrypt.
      * @param decryptionMaterial The data used to decrypt the document.
      *
-     * @throws CryptographyException If there is an error during decryption.
      * @throws IOException If there is an error accessing data.
      */
-    public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial)
-        throws CryptographyException, IOException
+    public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial) throws IOException
     {
         this.document = doc;
 
@@ -132,11 +129,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
      */
     public void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
                                      DecryptionMaterial decryptionMaterial)
-                                     throws IOException, CryptographyException
+                                     throws IOException
     {
 	      if(encDictionary.getLength() != 0)
 	      {
@@ -145,7 +141,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 	
 	      if(!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
 	      {
-	          throw new CryptographyException(
+	          throw new IOException(
 	              "Provided decryption material is not compatible with the document");
 	      }
 	
@@ -188,11 +184,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 	          }
 	          if(!foundRecipient || envelopedData == null)
 	          {
-	              throw new CryptographyException("The certificate matches no recipient entry");
+	              throw new IOException("The certificate matches no recipient entry");
 	          }
 	          if(envelopedData.length != 24)
 	          {
-	              throw new CryptographyException("The enveloped data does not contain 24 bytes");
+	              throw new IOException("The enveloped data does not contain 24 bytes");
 	          }
 	          // now envelopedData contains:
 	          // - the 20 bytes seed
@@ -229,15 +225,15 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 	      }
 	      catch(CMSException e)
 	      {
-	          throw new CryptographyException(e);
+	          throw new IOException(e);
 	      }
 	      catch(KeyStoreException e)
 	      {
-	          throw new CryptographyException(e);
+	          throw new IOException(e);
 	      }
 	      catch(NoSuchProviderException e)
 	      {
-	          throw new CryptographyException(e);
+	          throw new IOException(e);
 	      }
     }
     
@@ -246,11 +242,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      *
      * @param doc The document that will be encrypted.
      *
-     * @throws CryptographyException If there is an error while encrypting.
+     * @throws IOException If there is an error while encrypting.
      */
-    public void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException
+    public void prepareDocumentForEncryption(PDDocument doc) throws IOException
     {
-
         try
         {
             Security.addProvider(new BouncyCastleProvider());
@@ -363,11 +358,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         }
         catch(GeneralSecurityException e)
         {
-            throw new CryptographyException(e);
-        }
-        catch(IOException e)
-        {
-            throw new CryptographyException(e);
+            throw new IOException(e);
         }
     }
 

@@ -27,7 +27,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encryption.ARCFour;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -124,10 +123,9 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
      */
     public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial)
-        throws CryptographyException, IOException
+        throws IOException
     {
         document = doc;
 
@@ -136,7 +134,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         
         prepareForDecryption(dictionary, documentIDArray, decryptionMaterial);
         
-        this.proceedDecryption();
+        proceedDecryption();
     }
 
     /**
@@ -150,16 +148,14 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
      */
     public void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
                                      DecryptionMaterial decryptionMaterial)
-                                     throws CryptographyException, IOException
+                                     throws IOException
     {
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
         {
-            throw new CryptographyException("Provided decryption material is not compatible " +
-                                            "with the document");
+            throw new IOException("Decryption material is not compatible with the document");
         }
 
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;
@@ -227,8 +223,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            throw new CryptographyException("The supplied password does not match either the " +
-                                            "owner or user password in the document" );
+            // TODO perhaps we could return a boolean to indicate if the password was correct
+            throw new IOException("Cannot decrypt PDF, the password is incorrect");
         }
 
         // detect whether AES encryption is used. This assumes that the encryption algo is 
@@ -251,10 +247,8 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param doc The documeent to encrypt.
      *
      * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
      */
-    public void prepareDocumentForEncryption(PDDocument doc)
-            throws CryptographyException, IOException
+    public void prepareDocumentForEncryption(PDDocument doc) throws IOException
     {
         document = doc;
         PDEncryptionDictionary encryptionDictionary = document.getEncryptionDictionary();
@@ -343,13 +337,12 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return True If the ownerPassword param is the owner password.
      *
-     * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
     public final boolean isOwnerPassword(byte[] ownerPassword, byte[] user, byte[] owner,
                                          int permissions, byte[] id, int encRevision, int length,
                                          boolean encryptMetadata)
-                                         throws CryptographyException, IOException
+                                         throws IOException
     {
         byte[] userPassword = getUserPassword( ownerPassword, owner, encRevision, length );
         return isUserPassword( userPassword, user, owner, permissions, id, encRevision, length,
@@ -366,11 +359,10 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return The u entry of the encryption dictionary.
      *
-     * @throws CryptographyException If there is an error generating the user password.
      * @throws IOException If there is an error accessing data while generating the user password.
      */
     public final byte[] getUserPassword( byte[] ownerPassword,  byte[] owner, int encRevision,
-                                         long length ) throws CryptographyException, IOException
+                                         long length ) throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 
@@ -391,8 +383,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         if( encRevision == 2 && length != 5 )
         {
-            throw new CryptographyException(
-                "Error: Expected length=5 actual=" + length );
+            throw new IOException("Error: Expected length=5 actual=" + length );
         }
 
         byte[] rc4Key = new byte[ (int)length ];
@@ -439,11 +430,11 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return The encrypted key bytes.
      *
-     * @throws CryptographyException If there is an error with encryption.
+     * @throws IOException If there is an error with encryption.
      */
     public final byte[] computeEncryptedKey(byte[] password, byte[] o, int permissions, byte[] id,
                                             int encRevision, int length, boolean encryptMetadata)
-                                            throws CryptographyException
+                                            throws IOException
     {
         byte[] result = new byte[ length ];
 
@@ -483,7 +474,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         if( encRevision == 2 && length != 5 )
         {
-            throw new CryptographyException(
+            throw new IOException(
                 "Error: length should be 5 when revision is two actual=" + length );
         }
         System.arraycopy( digest, 0, result, 0, length );
@@ -504,13 +495,12 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return The user password.
      *
-     * @throws CryptographyException If there is an error computing the user password.
-     * @throws IOException If there is an IO error.
+     * @throws IOException if the password could not be computed
      */
     public final byte[] computeUserPassword(byte[] password, byte[] owner, int permissions,
                                             byte[] id, int encRevision, int length,
                                             boolean encryptMetadata)
-                                            throws CryptographyException, IOException
+                                            throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] encryptionKey = computeEncryptedKey( password, owner, permissions, id, encRevision,
@@ -562,12 +552,11 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return The o entry of the encryption dictionary.
      *
-     * @throws CryptographyException If there is an error with encryption.
-     * @throws IOException If there is an error accessing data.
+     * @throws IOException if the owner password could not be computed
      */
     public final byte[] computeOwnerPassword(byte[] ownerPassword, byte[] userPassword,
                                              int encRevision,  int length )
-                                             throws CryptographyException, IOException
+                                             throws IOException
     {
         byte[] ownerPadded = truncateOrPad( ownerPassword );
 
@@ -586,7 +575,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         if( encRevision == 2 && length != 5 )
         {
-            throw new CryptographyException("Expected length=5 actual=" + length );
+            throw new IOException("Expected length=5 actual=" + length );
         }
 
         byte[] rc4Key = new byte[ length ];
@@ -648,13 +637,12 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return true If the plaintext password is the user password.
      *
-     * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
     public final boolean isUserPassword(byte[] password, byte[] user, byte[] owner, int permissions,
                                         byte[] id, int encRevision, int length,
                                         boolean encryptMetadata)
-                                        throws CryptographyException, IOException
+                                        throws IOException
     {
         byte[] passwordBytes = computeUserPassword( password, owner, permissions, id, encRevision,
                                                     length, encryptMetadata );
@@ -686,13 +674,11 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return true If the plaintext password is the user password.
      *
-     * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
     public final boolean isUserPassword(String password, byte[] user, byte[] owner, int permissions,
                                         byte[] id, int encRevision,  int length,
-                                        boolean encryptMetadata)
-                                        throws CryptographyException, IOException
+                                        boolean encryptMetadata) throws IOException
     {
         return isUserPassword(password.getBytes("ISO-8859-1"), user, owner, permissions, id,
                               encRevision, length, encryptMetadata);
@@ -712,13 +698,11 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @return True If the ownerPassword param is the owner password.
      *
-     * @throws CryptographyException If there is an error during encryption.
      * @throws IOException If there is an error accessing data.
      */
     public final boolean isOwnerPassword(String password, byte[] user, byte[] owner, int permissions,
                                          byte[] id, int encRevision, int length,
-                                         boolean encryptMetadata)
-                                         throws CryptographyException, IOException
+                                         boolean encryptMetadata) throws  IOException
     {
         return isOwnerPassword(password.getBytes("ISO-8859-1"), user,owner,permissions, id,
                                encRevision, length, encryptMetadata);

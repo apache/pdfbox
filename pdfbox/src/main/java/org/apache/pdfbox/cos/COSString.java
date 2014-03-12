@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.pdfbox.encoding.PdfDocEncoding;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
@@ -472,10 +471,9 @@ public class COSString extends COSBase
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
-     * @throws CryptographyException If an error occurs while visiting this object.
      */
     @Override
-    public Object accept(ICOSVisitor visitor) throws IOException, CryptographyException
+    public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromString(this);
     }

@@ -76,10 +76,6 @@ public class ExtractEmbeddedFiles
                     {
                         System.err.println( "Error: The document is encrypted." );
                     }
-                    catch( org.apache.pdfbox.exceptions.CryptographyException e )
-                    {
-                        e.printStackTrace();
-                    }
                 }
                 PDDocumentNameDictionary namesDictionary = 
                         new PDDocumentNameDictionary( document.getDocumentCatalog() );

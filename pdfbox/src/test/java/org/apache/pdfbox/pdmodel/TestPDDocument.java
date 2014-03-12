@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBuffer;
@@ -49,8 +48,7 @@ public class TestPDDocument extends TestCase
     /**
      * Test document save/load using a stream.
      */
-    public void testSaveLoadStream()
-            throws IOException, CryptographyException, SignatureException
+    public void testSaveLoadStream() throws IOException, SignatureException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -76,8 +74,7 @@ public class TestPDDocument extends TestCase
     /**
      * Test document save/load using a file.
      */
-    public void testSaveLoadFile()
-            throws IOException, CryptographyException, SignatureException
+    public void testSaveLoadFile() throws IOException, SignatureException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -106,8 +103,7 @@ public class TestPDDocument extends TestCase
     /**
      * Test document save/loadNonSeq using a stream.
      */
-    public void testSaveLoadNonSeqStream()
-            throws IOException, CryptographyException, SignatureException
+    public void testSaveLoadNonSeqStream() throws IOException, SignatureException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -133,8 +129,7 @@ public class TestPDDocument extends TestCase
     /**
      * Test document save/loadNonSeq using a file.
      */
-    public void testSaveLoadNonSeqFile()
-            throws IOException, CryptographyException, SignatureException
+    public void testSaveLoadNonSeqFile() throws IOException, SignatureException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();

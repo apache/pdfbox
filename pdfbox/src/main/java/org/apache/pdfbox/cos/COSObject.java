@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.SignatureException;
 
 import java.io.IOException;
@@ -202,7 +201,7 @@ public class COSObject extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
-    public Object accept( ICOSVisitor visitor ) throws IOException, CryptographyException, SignatureException
+    public Object accept( ICOSVisitor visitor ) throws IOException, SignatureException
     {
         return getObject() != null ? getObject().accept( visitor ) : COSNull.NULL.accept( visitor );
     }

@@ -34,7 +34,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -502,10 +501,6 @@ public class LucenePDFDocument
             // Add the summary as an UnIndexed field, so that it is stored and returned
             // with hit documents for display.
             addUnindexedField(document, "summary", summary);
-        }
-        catch (CryptographyException e)
-        {
-            throw new IOException("Error decrypting document(" + documentLocation + "): " + e);
         }
         catch (InvalidPasswordException e)
         {

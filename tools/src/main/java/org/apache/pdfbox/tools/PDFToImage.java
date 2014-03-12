@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -68,7 +67,7 @@ public class PDFToImage
      *
      * @throws Exception If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException, CryptographyException
+    public static void main( String[] args ) throws IOException
     {
         boolean useNonSeqParser = false; 
         String password = "";
