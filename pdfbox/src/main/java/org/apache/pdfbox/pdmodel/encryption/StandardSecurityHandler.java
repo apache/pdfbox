@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author Ben Litchfield
  * @author Benoit Guillon
  */
-public class StandardSecurityHandler extends SecurityHandler
+public final class StandardSecurityHandler extends SecurityHandler
 {
     /** Type of security handler. */
     public static final String FILTER = "Standard";
