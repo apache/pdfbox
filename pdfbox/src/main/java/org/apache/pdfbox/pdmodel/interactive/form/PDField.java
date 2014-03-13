@@ -33,10 +33,10 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
- * This is the superclass for a Field element in a PDF. Based on the COS object model from PDFBox.
- * 
+ * A field in an interactive form.
+ * Fields may be one of four types: button, text, choice, or signature.
+ *
  * @author sug
- * 
  */
 public abstract class PDField implements COSObjectable
 {
@@ -62,7 +62,7 @@ public abstract class PDField implements COSObjectable
      * 
      * @param theAcroForm The form that this field is part of.
      */
-    public PDField(PDAcroForm theAcroForm)
+    PDField(PDAcroForm theAcroForm)
     {
         acroForm = theAcroForm;
         dictionary = new COSDictionary();
@@ -75,7 +75,7 @@ public abstract class PDField implements COSObjectable
      * @param theAcroForm The form that this field is part of.
      * @param field the PDF objet to represent as a field.
      */
-    public PDField(PDAcroForm theAcroForm, COSDictionary field)
+    protected PDField(PDAcroForm theAcroForm, COSDictionary field)
     {
         acroForm = theAcroForm;
         dictionary = field;
@@ -171,7 +171,8 @@ public abstract class PDField implements COSObjectable
         return findFieldType(getDictionary());
     }
 
-    private String findFieldType(COSDictionary dic)
+    // used by factory class
+    static String findFieldType(COSDictionary dic)
     {
         String retval = dic.getNameAsString(COSName.FT);
         if (retval == null)
@@ -183,7 +184,6 @@ public abstract class PDField implements COSObjectable
             }
         }
         return retval;
-
     }
 
     /**
@@ -505,14 +505,21 @@ public abstract class PDField implements COSObjectable
     /**
      * This will get all the kids of this field. The values in the list will either be PDWidget or PDField. Normally
      * they will be PDWidget objects unless this is a non-terminal field and they will be child PDField objects.
-     * 
+     *
      * @return A list of either PDWidget or PDField objects.
      * @throws IOException If there is an error retrieving the kids.
      */
     public List<COSObjectable> getKids() throws IOException
     {
+        return getKids(acroForm, getDictionary());
+    }
+
+    // used by factory class
+    static List<COSObjectable> getKids(PDAcroForm form, COSDictionary dictionary)
+            throws IOException
+    {
         List<COSObjectable> retval = null;
-        COSArray kids = (COSArray) getDictionary().getDictionaryObject(COSName.KIDS);
+        COSArray kids = (COSArray) dictionary.getDictionaryObject(COSName.KIDS);
         if (kids != null)
         {
             List<COSObjectable> kidsList = new ArrayList<COSObjectable>();
@@ -527,7 +534,7 @@ public abstract class PDField implements COSObjectable
                 if (kidDictionary.getDictionaryObject(COSName.FT) != null
                         || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
                 {
-                    kidsList.add(PDFieldFactory.createField(acroForm, kidDictionary));
+                    kidsList.add(PDFieldFactory.createField(form, kidDictionary));
                 }
                 else if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
                 {
@@ -536,7 +543,7 @@ public abstract class PDField implements COSObjectable
                 else
                 {
                     //
-                    kidsList.add(PDFieldFactory.createField(acroForm, kidDictionary));
+                    kidsList.add(PDFieldFactory.createField(form, kidDictionary));
                 }
             }
             retval = new COSArrayList<COSObjectable>(kidsList, kids);

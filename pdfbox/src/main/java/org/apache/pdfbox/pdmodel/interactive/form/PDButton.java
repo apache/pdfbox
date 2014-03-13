@@ -27,23 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This holds common functionality for check boxes and radio buttons.
+ * A button field represents an interactive control on the screen
+ * that the user can manipulate with the mouse.
  *
  * @author sug
- * @version $Revision: 1.4 $
  */
-public abstract class PDChoiceButton extends PDField
+public abstract class PDButton extends PDField
 {
-
-    /**
-     * @see PDField#PDField(PDAcroForm,org.apache.pdfbox.cos.COSDictionary)
-     *
-     * @param theAcroForm The acroForm for this field.
-     * @param field The field for this button.
-     */
-    public PDChoiceButton( PDAcroForm theAcroForm, COSDictionary field)
+    PDButton(PDAcroForm acroForm, COSDictionary field)
     {
-        super(theAcroForm, field);
+        super(acroForm, field);
     }
 
     /**

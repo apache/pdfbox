@@ -23,13 +23,12 @@ import org.apache.pdfbox.cos.COSName;
 import java.io.IOException;
 
 /**
- * A class for handling the PDF field as a checkbox.
+ * A check box toggles between two states, on and off.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @author sug
- * @version $Revision: 1.11 $
  */
-public class PDCheckbox extends PDChoiceButton
+public final class PDCheckbox extends PDButton
 {
     private static final COSName KEY = COSName.getPDFName("AS");
     private static final COSName OFF_VALUE = COSName.getPDFName("Off");

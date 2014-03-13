@@ -34,10 +34,9 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
 
 /**
  * Structure of PDF document with visible signature
@@ -50,8 +49,8 @@ public class PDFTemplateStructure
     private PDPage page;
     private PDDocument template;
     private PDAcroForm acroForm;
-    private PDSignatureField signatureField;
-    private PDSignature pdSignature;
+    private PDSignature signatureField;
+    private org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature;
     private COSDictionary acroFormDictionary;
     private PDRectangle singatureRectangle;
     private AffineTransform affineTransform;
@@ -137,7 +136,7 @@ public class PDFTemplateStructure
      * Gets Signature field
      * @return
      */
-    public PDSignatureField getSignatureField()
+    public PDSignature getSignatureField()
     {
         return signatureField;
     }
@@ -146,7 +145,7 @@ public class PDFTemplateStructure
      * Sets signature field
      * @param signatureField
      */
-    public void setSignatureField(PDSignatureField signatureField)
+    public void setSignatureField(PDSignature signatureField)
     {
         this.signatureField = signatureField;
     }
@@ -155,7 +154,7 @@ public class PDFTemplateStructure
      * Gets PDSignature
      * @return
      */
-    public PDSignature getPdSignature()
+    public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getPdSignature()
     {
         return pdSignature;
     }
@@ -164,7 +163,7 @@ public class PDFTemplateStructure
      * Sets PDSignature
      * @param pdSignature
      */
-    public void setPdSignature(PDSignature pdSignature)
+    public void setPdSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature)
     {
         this.pdSignature = pdSignature;
     }

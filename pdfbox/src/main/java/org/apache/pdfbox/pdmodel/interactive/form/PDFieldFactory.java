@@ -16,189 +16,101 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.io.IOException;
-
 import java.util.List;
 
 /**
- * This is the Factory for creating and returning the correct
- * field elements.
- *
+ * Factory for creating instances of PDField.
  * @author sug
- * @version $Revision: 1.8 $
+ * @author John Hewson
  */
-public class PDFieldFactory
+public final class PDFieldFactory
 {
-    private static final int RADIO_BITMASK = 32768;
-    private static final int PUSHBUTTON_BITMASK = 65536;
-    private static final int RADIOS_IN_UNISON_BITMASK = 33554432;
+    // button flags
+    private static final int FLAG_RADIO = 0x8000,
+                             FLAG_PUSHBUTTON = 0x10000,
+                             FLAG_RADIOS_IN_UNISON = 0x2000000;
 
-    private static final String FIELD_TYPE_BTN = "Btn";
-    private static final String FIELD_TYPE_TX = "Tx";
-    private static final String FIELD_TYPE_CH = "Ch";
-    private static final String FIELD_TYPE_SIG = "Sig";
+    // choice flags
+    private static final int FLAG_COMBO = 0x20000;
 
-    /**
-     * Utility class so no constructor.
-     */
     private PDFieldFactory()
     {
-        //do nothing.
     }
 
     /**
-     * This method creates a COSField subclass from the given field.
-     * The field is a PDF Dictionary object that must represent a
-     * field element. - othewise null is returned
-     *
-     * @param acroForm The form that the field will be part of.
-     * @param field The dictionary representing a field element
-     *
-     * @return a subclass to COSField according to the kind of field passed to createField
-     * @throws IOException If there is an error determining the field type.
+     * Creates a COSField subclass from the given field.
+     * @param form the form that the field is part of
+     * @param field the dictionary representing a field element
+     * @return the corresponding PDField instance
+     * @throws IOException if the field cannot be read
      */
-    public static PDField createField( PDAcroForm acroForm, COSDictionary field) throws IOException
+    public static PDField createField(PDAcroForm form, COSDictionary field) throws IOException
     {
-        PDField pdField = new PDUnknownField( acroForm, field );
-        if( isButton(pdField) )
+        String fieldType = PDField.findFieldType(field);
+        if (isButton(form, field))
         {
-            int flags = pdField.getFieldFlags();
-            //BJL, I have found that the radio flag bit is not always set
-            //and that sometimes there is just a kids dictionary.
-            //so, if there is a kids dictionary then it must be a radio button
-            //group.
-            COSArray kids = (COSArray)field.getDictionaryObject( COSName.getPDFName( "Kids" ) );
-            if( kids != null || isRadio(flags) )
+            int flags = field.getInt(COSName.FF, 0);
+            // BJL: I have found that the radio flag bit is not always set
+            // and that sometimes there is just a kids dictionary.
+            // so, if there is a kids dictionary then it must be a radio button group.
+            // TODO JH: this is due to inheritance, we need proper support for "non-terminal fields"
+
+            if ((flags & FLAG_RADIO) != 0 || field.getDictionaryObject(COSName.KIDS) != null)
             {
-                pdField = new PDRadioCollection( acroForm, field );
+                return new PDRadioButton(form, field);
             }
-            else if( isPushButton( flags ) )
+            else if ((flags & FLAG_PUSHBUTTON) != 0)
             {
-                pdField = new PDPushButton( acroForm, field );
+                return new PDPushButton(form, field);
             }
             else
             {
-                pdField = new PDCheckbox( acroForm, field );
+                return new PDCheckbox(form, field);
             }
-
         }
-        else if (isChoiceField(pdField))
+        else if ("Ch".equals(fieldType))
         {
-            pdField = new PDChoiceField( acroForm, field );
+            int flags = field.getInt(COSName.FF, 0);
+            if ((flags & FLAG_COMBO) != 0)
+            {
+                return new PDComboBox(form, field);
+            }
+            else
+            {
+                return new PDListBox(form, field);
+            }
         }
-        else if (isTextbox(pdField))
+        else if ("Tx".equals(fieldType))
         {
-            pdField = new PDTextbox( acroForm, field );
+            return new PDText(form, field);
         }
-        else if( isSignature( pdField ) )
+        else if ("Sig".equals(fieldType))
         {
-            pdField = new PDSignatureField( acroForm, field );
+            return new PDSignature(form, field);
         }
         else
         {
-            //do nothing and return an unknown field type.
+            throw new IOException("Invalid field type: " + fieldType);
         }
-        return pdField;
     }
 
-    /**
-     * This method determines if the given
-     * field is a radiobutton collection.
-     *
-     * @param flags The field flags.
-     *
-     * @return the result of the determination
-     */
-    private static boolean isRadio( int flags )
+    private static boolean isButton(PDAcroForm form, COSDictionary field) throws IOException
     {
-        return (flags & RADIO_BITMASK) > 0;
-    }
-
-    /**
-     * This method determines if the given
-     * field is a pushbutton.
-     *
-     * @param flags The field flags.
-     *
-     * @return the result of the determination
-     */
-    private static boolean isPushButton( int flags )
-    {
-        return (flags & PUSHBUTTON_BITMASK) > 0;
-    }
-
-    /**
-     * This method determines if the given field is a choicefield
-     * Choicefields are either listboxes or comboboxes.
-     *
-     * @param field the field to determine
-     * @return the result of the determination
-     */
-    private static boolean isChoiceField(PDField field) throws IOException
-    {
-        return FIELD_TYPE_CH.equals(field.findFieldType());
-    }
-
-    /**
-     * This method determines if the given field is a button.
-     *
-     * @param field the field to determine
-     * @return the result of the determination
-     *
-     * @throws IOException If there is an error determining the field type.
-     */
-    private static boolean isButton(PDField field) throws IOException
-    {
-        String ft = field.findFieldType();
-        boolean retval = FIELD_TYPE_BTN.equals( ft );
-        List kids = field.getKids();
-        if( ft == null && kids != null && kids.size() > 0)
+        String fieldType = PDField.findFieldType(field);
+        List<COSObjectable> kids = PDField.getKids(form, field);
+        if (fieldType == null && kids != null && !kids.isEmpty())
         {
-            //sometimes if it is a button the type is only defined by one
-            //of the kids entries
-            Object obj = kids.get( 0 );
-            COSDictionary kidDict = null;
-            if( obj instanceof PDField )
-            {
-                kidDict = ((PDField)obj).getDictionary();
-            }
-            else if( obj instanceof PDAnnotationWidget )
-            {
-                kidDict = ((PDAnnotationWidget)obj).getDictionary();
-            }
-            else
-            {
-                throw new IOException( "Error:Unexpected type of kids field:" + obj );
-            }
-            retval = isButton( new PDUnknownField( field.getAcroForm(), kidDict ) );
+            // sometimes if it is a button the type is only defined by one of the kids entries
+            // TODO JH: this is due to inheritance, we need proper support for "non-terminal fields"
+
+            COSDictionary kid = (COSDictionary)kids.get(0).getCOSObject();
+            return isButton(form, kid);
         }
-        return retval;
-    }
-
-   /**
-     * This method determines if the given field is a signature.
-     *
-     * @param field the field to determine
-     * @return the result of the determination
-     */
-    private static boolean isSignature(PDField field) throws IOException
-    {
-        return FIELD_TYPE_SIG.equals(field.findFieldType());
-    }
-
-    /**
-     * This method determines if the given field is a Textbox.
-     *
-     * @param field the field to determine
-     * @return the result of the determination
-     */
-    private static boolean isTextbox(PDField field) throws IOException
-    {
-        return FIELD_TYPE_TX.equals(field.findFieldType());
+        return "Btn".equals(fieldType);
     }
 }

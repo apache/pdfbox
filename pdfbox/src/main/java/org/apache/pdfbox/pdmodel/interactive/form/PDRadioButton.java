@@ -27,15 +27,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 /**
- * A class for handling the PDF field as a Radio Collection.
- * This class automatically keeps track of the child radio buttons
- * in the collection.
+ * Radio button fields contain a set of related buttons that can each be on or off.
  *
- * @see PDCheckbox
  * @author sug
- * @version $Revision: 1.13 $
  */
-public class PDRadioCollection extends PDChoiceButton
+public final class PDRadioButton extends PDButton
 {
     /**
      * A Ff flag.
@@ -48,7 +44,7 @@ public class PDRadioCollection extends PDChoiceButton
      *
      * {@inheritDoc}
      */
-    public PDRadioCollection( PDAcroForm theAcroForm, COSDictionary field)
+    public PDRadioButton(PDAcroForm theAcroForm, COSDictionary field)
     {
         super(theAcroForm,field);
     }
@@ -114,7 +110,7 @@ public class PDRadioCollection extends PDChoiceButton
      *
      * @throws IOException If there is an error getting the value.
      */
-    public String getValue()throws IOException
+    public String getValue() throws IOException
     {
         String retval = null;
         List kids = getKids();
