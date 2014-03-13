@@ -34,29 +34,27 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This represents a page node in a pdf document.
+ * A page tree node. This is an intermediate node in the page tree, and may have page objects or
+ * other page tree nodes as children, but does not itself represent a page.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.8 $
+ * @author Ben Litchfield
  */
 public class PDPageNode implements COSObjectable
 {
-    private COSDictionary page;
-
-    /**
-     * Log instance.
-     */
     private static final Log log = LogFactory.getLog(PDPageNode.class);
 
+    private COSDictionary node;
+
     /**
+     * Creates a new instance of PDPage.
      * Creates a new instance of PDPage.
      */
     public PDPageNode()
     {
-        page = new COSDictionary();
-        page.setItem( COSName.TYPE, COSName.PAGES );
-        page.setItem( COSName.KIDS, new COSArray() );
-        page.setItem( COSName.COUNT, COSInteger.ZERO );
+        node = new COSDictionary();
+        node.setItem(COSName.TYPE, COSName.PAGES);
+        node.setItem(COSName.KIDS, new COSArray());
+        node.setItem(COSName.COUNT, COSInteger.ZERO);
     }
 
     /**
@@ -66,7 +64,7 @@ public class PDPageNode implements COSObjectable
      */
     public PDPageNode( COSDictionary pages )
     {
-        page = pages;
+        node = pages;
     }
 
     /**
@@ -95,22 +93,22 @@ public class PDPageNode implements COSObjectable
                 totalCount += node.updateCount();
             }
         }
-        page.setLong( COSName.COUNT, totalCount );
+        node.setLong(COSName.COUNT, totalCount);
         return totalCount;
     }
 
     /**
-     * This will get the count of descendent page objects.
+     * This will get the count of descendant page objects.
      *
-     * @return The total number of descendent page objects.
+     * @return The total number of descendant page objects.
      */
     public long getCount()
     {
-        if(page == null)
+        if(node == null)
         {
             return 0L;
         }
-        COSBase num = page.getDictionaryObject(COSName.COUNT);
+        COSBase num = node.getDictionaryObject(COSName.COUNT);
         if(num == null)
         {
             return 0L;
@@ -125,7 +123,7 @@ public class PDPageNode implements COSObjectable
      */
     public COSDictionary getDictionary()
     {
-        return page;
+        return node;
     }
 
     /**
@@ -136,7 +134,7 @@ public class PDPageNode implements COSObjectable
     public PDPageNode getParent()
     {
         PDPageNode parent = null;
-        COSDictionary parentDic = (COSDictionary)page.getDictionaryObject(COSName.PARENT, COSName.P);
+        COSDictionary parentDic = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
         if( parentDic != null )
         {
             parent = new PDPageNode( parentDic );
@@ -151,52 +149,52 @@ public class PDPageNode implements COSObjectable
      */
     public void setParent( PDPageNode parent )
     {
-        page.setItem( COSName.PARENT, parent.getDictionary() );
+        node.setItem(COSName.PARENT, parent.getDictionary());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public COSBase getCOSObject()
     {
-        return page;
+        return node;
     }
 
     /**
      * This will return all kids of this node, either PDPageNode or PDPage.
      *
-     * @return All direct descendents of this node.
+     * @return All direct descendants of this node.
      */
     public List getKids()
     {
         List actuals = new ArrayList();
-        COSArray kids = getAllKids(actuals, page, false);
+        COSArray kids = getAllKids(actuals, node, false);
         return new COSArrayList( actuals, kids );
     }
 
     /**
      * This will return all kids of this node as PDPage.
      *
-     * @param result All direct and indirect descendents of this node are added to this list.
+     * @param result All direct and indirect descendants of this node are added to this list.
      */
     public void getAllKids(List result)
     {
-        getAllKids(result, page, true);
+        getAllKids(result, node, true);
     }
 
     /**
      * This will return all kids of the given page node as PDPage.
      *
-     * @param result All direct and optionally indirect descendents of this node are added to this list.
+     * @param result All direct and optionally indirect descendants of this node are added to this list.
      * @param page Page dictionary of a page node.
-     * @param recurse if true indirect descendents are processed recursively
+     * @param recurse if true indirect descendants are processed recursively
      */
     private static COSArray getAllKids(List result, COSDictionary page, boolean recurse)
     {
-        if(page == null)
+        if( page == null )
+        {
             return null;
+        }
         COSArray kids = (COSArray)page.getDictionaryObject( COSName.KIDS );
-        if ( kids == null)
+        if( kids == null)
         {
             log.error("No Kids found in getAllKids(). Probably a malformed pdf.");
             return null;
@@ -237,7 +235,7 @@ public class PDPageNode implements COSObjectable
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary)page.getDictionaryObject( COSName.RESOURCES );
+        COSDictionary resources = (COSDictionary) node.getDictionaryObject( COSName.RESOURCES );
         if( resources != null )
         {
             retval = new PDResources( resources );
@@ -271,11 +269,11 @@ public class PDPageNode implements COSObjectable
     {
         if( resources == null )
         {
-            page.removeItem( COSName.RESOURCES );
+            node.removeItem(COSName.RESOURCES);
         }
         else
         {
-            page.setItem( COSName.RESOURCES, resources.getCOSDictionary() );
+            node.setItem(COSName.RESOURCES, resources.getCOSDictionary());
         }
     }
 
@@ -289,7 +287,7 @@ public class PDPageNode implements COSObjectable
     public PDRectangle getMediaBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray)page.getDictionaryObject( COSName.MEDIA_BOX );
+        COSArray array = (COSArray) node.getDictionaryObject( COSName.MEDIA_BOX );
         if( array != null )
         {
             retval = new PDRectangle( array );
@@ -323,11 +321,11 @@ public class PDPageNode implements COSObjectable
     {
         if( mediaBox == null )
         {
-            page.removeItem( COSName.MEDIA_BOX  );
+            node.removeItem(COSName.MEDIA_BOX);
         }
         else
         {
-            page.setItem( COSName.MEDIA_BOX , mediaBox.getCOSArray() );
+            node.setItem(COSName.MEDIA_BOX, mediaBox.getCOSArray());
         }
     }
 
@@ -341,7 +339,7 @@ public class PDPageNode implements COSObjectable
     public PDRectangle getCropBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray)page.getDictionaryObject( COSName.CROP_BOX );
+        COSArray array = (COSArray) node.getDictionaryObject( COSName.CROP_BOX );
         if( array != null )
         {
             retval = new PDRectangle( array );
@@ -398,11 +396,11 @@ public class PDPageNode implements COSObjectable
     {
         if( cropBox == null )
         {
-            page.removeItem( COSName.CROP_BOX );
+            node.removeItem(COSName.CROP_BOX);
         }
         else
         {
-            page.setItem( COSName.CROP_BOX, cropBox.getCOSArray() );
+            node.setItem(COSName.CROP_BOX, cropBox.getCOSArray());
         }
     }
 
@@ -421,10 +419,10 @@ public class PDPageNode implements COSObjectable
     public Integer getRotation()
     {
         Integer retval = null;
-        COSNumber value = (COSNumber)page.getDictionaryObject( COSName.ROTATE );
+        COSNumber value = (COSNumber) node.getDictionaryObject( COSName.ROTATE );
         if( value != null )
         {
-            retval = new Integer( value.intValue() );
+            retval = value.intValue();
         }
         return retval;
     }
@@ -441,7 +439,7 @@ public class PDPageNode implements COSObjectable
         Integer rotation = getRotation();
         if( rotation != null )
         {
-            retval = rotation.intValue();
+            retval = rotation;
         }
         else
         {
@@ -462,6 +460,6 @@ public class PDPageNode implements COSObjectable
      */
     public void setRotation( int rotation )
     {
-        page.setInt( COSName.ROTATE, rotation );
+        node.setInt(COSName.ROTATE, rotation);
     }
 }

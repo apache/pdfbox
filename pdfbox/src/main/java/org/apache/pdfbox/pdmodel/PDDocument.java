@@ -68,52 +68,42 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * This is the in-memory representation of the PDF document. You need to call close() on this object when you are done
- * using it!!
+ * This is the in-memory representation of the PDF document.
+ * The #close() method must be called once the document is no longer needed.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PDDocument implements Closeable
 {
-
     private COSDocument document;
 
     // cached values
     private PDDocumentInformation documentInformation;
     private PDDocumentCatalog documentCatalog;
 
-    // The encParameters will be cached here. When the document is decrypted then
-    // the COSDocument will not have an "Encrypt" dictionary anymore and this object
-    // must be used.
-    private PDEncryptionDictionary encParameters = null;
+    // the encParameters will be cached here. When the document is decrypted then
+    // the COSDocument will not have an "Encrypt" dictionary anymore and this object must be used
+    private PDEncryptionDictionary encParameters;
 
-    /**
-     * The security handler used to decrypt / encrypt the document.
-     */
-    private SecurityHandler securityHandler = null;
+    // the security handler used to decrypt / encrypt the document
+    private SecurityHandler securityHandler;
 
-    /**
-     * This assocates object ids with a page number. It's used to determine the page number for bookmarks (or page
-     * numbers for anything else for which you have an object id for that matter).
-     */
-    private Map<String, Integer> pageMap = null;
+    // associates object ids with a page number. Used to determine the page number for bookmarks
+    // (or page numbers for anything else for which you have an object id for that matter)
+    private Map<String, Integer> pageMap;
 
-    /**
-     * This will hold a flag which tells us if we should remove all security from this documents.
-     */
-    private boolean allSecurityToBeRemoved = false;
+    // holds a flag which tells us if we should remove all security from this documents.
+    private boolean allSecurityToBeRemoved;
 
-    /**
-     * Keep tracking customized documentId for the trailer. If null, a new id will be generated for the document. This
-     * ID doesn't represent the actual documentId from the trailer.
-     */
+    // keep tracking customized documentId for the trailer. If null, a new id will be generated
+    // this ID doesn't represent the actual documentId from the trailer
     private Long documentId;
 
     private BaseParser parser; 
+
     /**
-     * Constructor, creates a new PDF Document with no pages. You need to add at least one page for the document to be
-     * valid.
+     * Creates an empty PDF document.
+     * You need to add at least one page for the document to be valid.
      * 
      * @throws IOException If there is an error creating this document.
      */
@@ -168,10 +158,8 @@ public class PDDocument implements Closeable
         }
     }
 
-    /**
-     * This will either add the page passed in, or, if it's a pointer to an array of pages, it'll recursivly call itself
-     * and process everything in the list.
-     */
+    // either adds the page passed in, or, if it's a pointer to an array of pages,
+    // it will recursively call itself and process everything in the list
     private void parseCatalogObject(COSObject thePageOrArrayObject)
     {
         COSBase arrayCountBase = thePageOrArrayObject.getItem(COSName.COUNT);
@@ -193,7 +181,7 @@ public class PDDocument implements Closeable
             // these cases occur when we have a page, not an array of pages
             String objStr = String.valueOf(thePageOrArrayObject.getObjectNumber().intValue());
             String genStr = String.valueOf(thePageOrArrayObject.getGenerationNumber().intValue());
-            getPageMap().put(objStr + "," + genStr, new Integer(getPageMap().size() + 1));
+            getPageMap().put(objStr + "," + genStr, getPageMap().size() + 1);
         }
         else
         {
@@ -201,29 +189,22 @@ public class PDDocument implements Closeable
             if (arrayCount == kidsCount)
             {
                 // process the kids... they're all references to pages
-                COSArray kidsArray = ((COSArray) kidsBase);
+                COSArray kidsArray = (COSArray) kidsBase;
                 for (int i = 0; i < kidsArray.size(); ++i)
                 {
                     COSObject thisObject = (COSObject) kidsArray.get(i);
                     String objStr = String.valueOf(thisObject.getObjectNumber().intValue());
                     String genStr = String.valueOf(thisObject.getGenerationNumber().intValue());
-                    getPageMap().put(objStr + "," + genStr, new Integer(getPageMap().size() + 1));
+                    getPageMap().put(objStr + "," + genStr, getPageMap().size() + 1);
                 }
             }
             else
             {
                 // this object is an array of references to other arrays
-                COSArray list = null;
-                if (kidsBase instanceof COSArray)
+                COSArray list = (COSArray) kidsBase;
+                for (int arrayCounter = 0; arrayCounter < list.size(); ++arrayCounter)
                 {
-                    list = ((COSArray) kidsBase);
-                }
-                if (list != null)
-                {
-                    for (int arrayCounter = 0; arrayCounter < list.size(); ++arrayCounter)
-                    {
-                        parseCatalogObject((COSObject) list.get(arrayCounter));
-                    }
+                    parseCatalogObject((COSObject) list.get(arrayCounter));
                 }
             }
         }
@@ -494,9 +475,12 @@ public class PDDocument implements Closeable
             annotations = new COSArrayList();
             page.setAnnotations(annotations);
         }
+
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
-        if (!((annotations instanceof COSArrayList) && (acroFormFields instanceof COSArrayList) && (((COSArrayList) annotations)
-                .toList().equals(((COSArrayList) acroFormFields).toList()))) && !checkFields)
+        if (!(annotations instanceof COSArrayList &&
+              acroFormFields instanceof COSArrayList &&
+              ((COSArrayList) annotations).toList().equals(((COSArrayList) acroFormFields).toList()) &&
+              checkFields))
         {
             annotations.add(signatureField.getWidget());
         }
@@ -1236,8 +1220,7 @@ public class PDDocument implements Closeable
      * @param output stream to write
      * @throws IOException if the output could not be written
      */
-    public void saveIncremental(FileInputStream input, OutputStream output)
-            throws IOException
+    public void saveIncremental(FileInputStream input, OutputStream output) throws IOException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
@@ -1288,26 +1271,27 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException If there is an error releasing resources.
      */
+    @Override
     public void close() throws IOException
     {
-    	documentCatalog = null;
-    	documentInformation = null;
-    	encParameters = null;
-    	if (pageMap != null)
-    	{
-    		pageMap.clear();
-    		pageMap = null;
-    	}
-    	securityHandler = null;
-    	if (document != null)
-    	{
-	        document.close();
-	        document = null;
-    	}
+        documentCatalog = null;
+        documentInformation = null;
+        encParameters = null;
+        if (pageMap != null)
+        {
+            pageMap.clear();
+            pageMap = null;
+        }
+        securityHandler = null;
+        if (document != null)
+        {
+            document.close();
+            document = null;
+        }
         if (parser != null)
         {
-        	parser.clearResources();
-        	parser = null;
+            parser.clearResources();
+            parser = null;
         }
     }
 
@@ -1371,7 +1355,7 @@ public class PDDocument implements Closeable
 
     public AccessPermission getCurrentAccessPermission()
     {
-        if (this.securityHandler == null)
+        if (securityHandler == null)
         {
             return AccessPermission.getOwnerAccessPermission();
         }

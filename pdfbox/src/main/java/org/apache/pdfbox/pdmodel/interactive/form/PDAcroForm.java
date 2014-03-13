@@ -184,31 +184,29 @@ public final class PDAcroForm implements COSObjectable
      * @return A list of all the fields.
      * @throws IOException If there is an error while getting the list of fields.
      */
-    public List getFields() throws IOException
+    public List<PDField> getFields() throws IOException
     {
-        List retval = null;
-        COSArray fields =
-            (COSArray) acroForm.getDictionaryObject(
-                COSName.getPDFName("Fields"));
+        COSArray cosFields = (COSArray) acroForm.getDictionaryObject(COSName.getPDFName("Fields"));
 
-        if( fields != null )
+        if( cosFields == null )
         {
-            List actuals = new ArrayList();
-            for (int i = 0; i < fields.size(); i++)
+            return null;
+        }
+
+        List<PDField> pdFields = new ArrayList<PDField>();
+        for (int i = 0; i < cosFields.size(); i++)
+        {
+            COSDictionary element = (COSDictionary) cosFields.getObject(i);
+            if (element != null)
             {
-                COSDictionary element = (COSDictionary) fields.getObject(i);
-                if (element != null)
+                PDField field = PDFieldFactory.createField( this, element );
+                if( field != null )
                 {
-                    PDField field = PDFieldFactory.createField( this, element );
-                    if( field != null )
-                    {
-                        actuals.add(field);
-                    }
+                    pdFields.add(field);
                 }
             }
-            retval = new COSArrayList( actuals, fields );
         }
-        return retval;
+        return new COSArrayList<PDField>( pdFields, cosFields );
     }
 
     /**
@@ -348,9 +346,7 @@ public final class PDAcroForm implements COSObjectable
         acroForm.setItem( COSName.getPDFName( "DR" ), drDict );
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public COSBase getCOSObject()
     {
         return acroForm;
