@@ -16,8 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -40,18 +41,22 @@ public final class CCITTFactory
 
     /**
      * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     * 
      * @param document the document to create the image as part of.
      * @param reader the random access TIFF file which contains a suitable CCITT compressed image
+     * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
     public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader)
             throws IOException
     {
-        PDImageXObject pdImage = new PDImageXObject(document);
-
         COSDictionary decodeParms = new COSDictionary();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        extractFromTiff(reader, bos, decodeParms);
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
+        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
+
         COSDictionary dict = pdImage.getCOSStream();
-        extractFromTiff(reader, pdImage.getCOSStream().createFilteredStream(), decodeParms);
 
         dict.setItem(COSName.FILTER, COSName.CCITTFAX_DECODE);
         dict.setItem(COSName.SUBTYPE, COSName.IMAGE);
@@ -106,7 +111,6 @@ public final class CCITTFactory
             // Other point us to where to find the data stream
             // The only parm which might change as a result of other options is K, so
             // We'll deal with that as a special;
-
             int k = -1000; // Default Non CCITT compression
             int dataoffset = 0;
             int datalength = 0;
@@ -126,102 +130,102 @@ public final class CCITTFactory
                 {
                     switch (type)
                     {
-                    case 1:
-                    {
-                        val = val >> 24;
-                        break; // byte value
+                        case 1:
+                        {
+                            val = val >> 24;
+                            break; // byte value
+                        }
+                        case 3:
+                        {
+                            val = val >> 16;
+                            break; // short value
+                        }
+                        case 4:
+                        {
+                            break; // long value
+                        }
+                        default:
+                        {
+                            // do nothing
+                        }
                     }
-                    case 3:
+                }
+                switch (tag)
+                {
+                    case 256:
                     {
-                        val = val >> 16;
-                        break; // short value
+                        params.setInt(COSName.COLUMNS, val);
+                        break;
                     }
-                    case 4:
+                    case 257:
                     {
-                        break; // long value
+                        params.setInt(COSName.ROWS, val);
+                        break;
+                    }
+                    case 259:
+                    {
+                        if (val == 4)
+                        {
+                            k = -1;
+                        }
+                        if (val == 3)
+                        {
+                            k = 0;
+                        }
+                        break; // T6/T4 Compression
+                    }
+                    case 262:
+                    {
+                        if (val == 1)
+                        {
+                            params.setBoolean(COSName.BLACK_IS_1, true);
+                        }
+                        break;
+                    }
+                    case 273:
+                    {
+                        if (count == 1)
+                        {
+                            dataoffset = val;
+                        }
+                        break;
+                    }
+                    case 279:
+                    {
+                        if (count == 1)
+                        {
+                            datalength = val;
+                        }
+                        break;
+                    }
+                    case 292:
+                    {
+                        if (val == 1)
+                        {
+                            k = 50; // T4 2D - arbitary K value
+                        }
+                        break;
+                    }
+                    case 324:
+                    {
+                        if (count == 1)
+                        {
+                            dataoffset = val;
+                        }
+                        break;
+                    }
+                    case 325:
+                    {
+                        if (count == 1)
+                        {
+                            datalength = val;
+                        }
+                        break;
                     }
                     default:
                     {
                         // do nothing
                     }
-                    }
-                }
-                switch (tag)
-                {
-                case 256:
-                {
-                    params.setInt(COSName.COLUMNS, val);
-                    break;
-                }
-                case 257:
-                {
-                    params.setInt(COSName.ROWS, val);
-                    break;
-                }
-                case 259:
-                {
-                    if (val == 4)
-                    {
-                        k = -1;
-                    }
-                    if (val == 3)
-                    {
-                        k = 0;
-                    }
-                    break; // T6/T4 Compression
-                }
-                case 262:
-                {
-                    if (val == 1)
-                    {
-                        params.setBoolean(COSName.BLACK_IS_1, true);
-                    }
-                    break;
-                }
-                case 273:
-                {
-                    if (count == 1)
-                    {
-                        dataoffset = val;
-                    }
-                    break;
-                }
-                case 279:
-                {
-                    if (count == 1)
-                    {
-                        datalength = val;
-                    }
-                    break;
-                }
-                case 292:
-                {
-                    if (val == 1)
-                    {
-                        k = 50; // T4 2D - arbitary K value
-                    }
-                    break;
-                }
-                case 324:
-                {
-                    if (count == 1)
-                    {
-                        dataoffset = val;
-                    }
-                    break;
-                }
-                case 325:
-                {
-                    if (count == 1)
-                    {
-                        datalength = val;
-                    }
-                    break;
-                }
-                default:
-                {
-                    // do nothing
-                }
                 }
             }
 
