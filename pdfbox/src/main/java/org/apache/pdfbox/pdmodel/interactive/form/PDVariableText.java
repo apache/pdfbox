@@ -24,12 +24,12 @@ import org.apache.pdfbox.cos.COSString;
 import java.io.IOException;
 
 /**
- * A class for handling PDF fields that display text.
+ * Base class for fields which use "Variable Text".
+ * These fields construct an appearance stream dynamically at viewing time.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
  */
-public abstract class PDVariableText extends PDField
+public abstract class PDVariableText extends PDField    // TODO mixin, not really a field
 {
     /**
      * A Ff flag.
@@ -66,7 +66,7 @@ public abstract class PDVariableText extends PDField
      */
     private COSString da;
 
-    private PDAppearance appearance;
+    private PDAppearanceString appearance;
 
 
     /**
@@ -89,7 +89,7 @@ public abstract class PDVariableText extends PDField
      *
      * @param theAcroForm The acroform.
      */
-    public PDVariableText( PDAcroForm theAcroForm )
+    PDVariableText(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
     }
@@ -100,7 +100,7 @@ public abstract class PDVariableText extends PDField
      * @param theAcroForm The acroForm for this field.
      * @param field The field's dictionary.
      */
-    public PDVariableText( PDAcroForm theAcroForm, COSDictionary field)
+    PDVariableText(PDAcroForm theAcroForm, COSDictionary field)
     {
         super( theAcroForm, field);
         da = (COSString) field.getDictionaryObject(COSName.DA);
@@ -124,7 +124,7 @@ public abstract class PDVariableText extends PDField
         //getDictionary().setItem( COSName.getPDFName( "DV" ), fieldValue );
         if(appearance == null)
         {
-            this.appearance = new PDAppearance( getAcroForm(), this );
+            this.appearance = new PDAppearanceString( getAcroForm(), this );
         }
         appearance.setAppearanceValue(value);
     }
@@ -304,5 +304,4 @@ public abstract class PDVariableText extends PDField
     {
         getDictionary().setInt( COSName.Q, q );
     }
-
 }

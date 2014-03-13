@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
 
 /**
  * That class builds visible signature template
@@ -78,7 +78,7 @@ public interface PDFTemplateBuilder {
 	 * @param signatureName
 	 * @throws IOException
 	 */
-	public void createSignature(PDSignatureField pdSignatureField, PDPage page, String signatureName) throws IOException;
+	public void createSignature(PDSignature pdSignatureField, PDPage page, String signatureName) throws IOException;
 	
 	/**
 	 * Create AcroForm Dictionary
@@ -86,7 +86,7 @@ public interface PDFTemplateBuilder {
 	 * @param signatureField
 	 * @throws IOException
 	 */
-	public void createAcroFormDictionary(PDAcroForm acroForm, PDSignatureField signatureField) throws IOException;
+	public void createAcroFormDictionary(PDAcroForm acroForm, PDSignature signatureField) throws IOException;
 	
 	/**
 	 * Creates SingatureRectangle
@@ -94,7 +94,7 @@ public interface PDFTemplateBuilder {
 	 * @param properties
 	 * @throws IOException
 	 */
-	public void createSignatureRectangle(PDSignatureField signatureField, PDVisibleSignDesigner properties) throws IOException;
+	public void createSignatureRectangle(PDSignature signatureField, PDVisibleSignDesigner properties) throws IOException;
 	
 	/**
 	 * Creates procSetArray of PDF,Text,ImageB,ImageC,ImageI    
@@ -140,7 +140,7 @@ public interface PDFTemplateBuilder {
 	 * @param signatureField
 	 * @throws IOException
 	 */
-	public void createAppearanceDictionary(PDFormXObject holderForml, PDSignatureField signatureField) throws IOException;
+	public void createAppearanceDictionary(PDFormXObject holderForml, PDSignature signatureField) throws IOException;
 	
 	/**
 	 * 
@@ -232,7 +232,7 @@ public interface PDFTemplateBuilder {
 	 * @param holderFormResources
 	 * @throws IOException
 	 */
-	public void createWidgetDictionary(PDSignatureField signatureField, PDResources holderFormResources) throws IOException;
+	public void createWidgetDictionary(PDSignature signatureField, PDResources holderFormResources) throws IOException;
 	
 	/**
 	 * 

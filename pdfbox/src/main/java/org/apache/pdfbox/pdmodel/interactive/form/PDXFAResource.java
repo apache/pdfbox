@@ -33,12 +33,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * This class represents an XML Forms Architecture Data packet.
+ * An XML Forms Architecture (XFA) resource.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
-public class PDXFA implements COSObjectable
+public final class PDXFAResource implements COSObjectable
 {
     private COSBase xfa;
 
@@ -47,7 +46,7 @@ public class PDXFA implements COSObjectable
      *
      * @param xfaBase The xfa resource.
      */
-    public PDXFA( COSBase xfaBase )
+    public PDXFAResource(COSBase xfaBase)
     {
         xfa = xfaBase;
     }

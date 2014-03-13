@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
 
 /**
  * This example will take a PDF document and print all the fields from the file.
@@ -85,10 +85,10 @@ public class PrintFields
         else
         {
             String fieldValue = null;
-            if (field instanceof PDSignatureField)
+            if (field instanceof PDSignature)
             {
                 // PDSignature doesn't have a value
-                fieldValue = "PDSignatureField";
+                fieldValue = "PDSignature";
             }
             else
             {

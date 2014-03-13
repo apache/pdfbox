@@ -77,7 +77,7 @@ public class TestFields extends TestCase
         {
             doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
-            PDTextbox textBox = new PDTextbox(form);
+            PDText textBox = new PDText(form);
 
             //assert that default is false.
             assertFalse( textBox.shouldComb() );

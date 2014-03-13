@@ -34,8 +34,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDRadioCollection;
-import org.apache.pdfbox.pdmodel.interactive.form.PDTextbox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
+import org.apache.pdfbox.pdmodel.interactive.form.PDText;
 
 /**
  * This will test the FDF algorithms in PDFBox.
@@ -98,7 +98,7 @@ public class TestFDF extends TestCase
             {
                 fdeb = PDDocument.load( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-                PDTextbox field = (PDTextbox)form.getField( "f67_1" );
+                PDText field = (PDText)form.getField( "f67_1" );
                 field.setValue( "2" );
     
                 String expected =
@@ -139,7 +139,7 @@ public class TestFDF extends TestCase
             {
                 fdeb = PDDocument.load( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-                PDTextbox feld2 = (PDTextbox)form.getField( "Feld.2" );
+                PDText feld2 = (PDText)form.getField( "Feld.2" );
                 feld2.setValue( "Benjamin" );
     
                 String expected =
@@ -179,7 +179,7 @@ public class TestFDF extends TestCase
     
                 testContentStreams( fdeb, feld2, expected );
     
-                PDRadioCollection feld3 = (PDRadioCollection)form.getField( "Feld.3" );
+                PDRadioButton feld3 = (PDRadioButton)form.getField( "Feld.3" );
                 feld3.setValue("RB1");
                 assertEquals( "RB1", feld3.getValue() );
                 //assertEquals( ((PDCheckbox)feld3.getKids().get( 0 )).getValue(), "RB1" );
@@ -214,7 +214,7 @@ public class TestFDF extends TestCase
                 fdf = FDFDocument.load( fileFDF );
                 PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
                 form.importFDF( fdf );
-                PDTextbox feld2 = (PDTextbox)form.getField( "eeFirstName" );
+                PDText feld2 = (PDText)form.getField( "eeFirstName" );
                 List kids = feld2.getKids();
                 PDField firstKid = (PDField)kids.get( 0 );
                 PDField secondKid = (PDField)kids.get( 1 );

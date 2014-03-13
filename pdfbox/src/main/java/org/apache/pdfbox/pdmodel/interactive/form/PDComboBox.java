@@ -16,43 +16,41 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSDictionary;
 
+import java.io.IOException;
+
 /**
- * This class represents a form field with an unknown type.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * A combo box consisting of a drop-down list.
+ * May be accompanied by an editable text box in which non-predefined values may be entered.
+ * @author John Hewson
  */
-public class PDUnknownField extends PDField
+public final class PDComboBox extends PDChoice
 {
-    /**
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#PDField(PDAcroForm, COSDictionary)
-     *
-     * @param theAcroForm The acroForm for this field.
-     * @param field The field's dictionary.
-     */
-    public PDUnknownField( PDAcroForm theAcroForm, COSDictionary field)
-    {
-        super( theAcroForm, field);
-    }
+    private static final int FLAG_EDIT = 0x40000;
 
     /**
-     * {@inheritDoc}
+     * Creates a new combo box field
+     * @param acroForm the parent form
+     * @param field the COS field
      */
-    public void setValue(String value) throws IOException
+    public PDComboBox(PDAcroForm acroForm, COSDictionary field)
     {
-        //do nothing
+        super(acroForm, field);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getValue() throws IOException
+    @Override
+    public void setValue(String optionValue) throws IOException
     {
-        return null;
-    }
+        boolean isEditable = (getFieldFlags() & FLAG_EDIT) != 0;
+        int index = getSelectedIndex(optionValue);
 
+        if (index == -1 && !isEditable)
+        {
+            throw new IllegalArgumentException("Combo box does not contain the given value");
+        }
+
+        super.setValue(optionValue);
+        selectMultiple(index);
+    }
 }

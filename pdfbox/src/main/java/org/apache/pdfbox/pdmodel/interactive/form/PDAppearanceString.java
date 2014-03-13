@@ -55,19 +55,14 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.util.operator.PDFOperator;
 
 /**
- * This one took me a while, but i'm proud to say that it handles
- * the appearance of a textbox. This allows you to apply a value to
- * a field in the document and handle the appearance so that the
- * value is actually visible too.
- * The problem was described by Ben Litchfield, the author of the
- * example: org.apache.pdfbox.examlpes.fdf.ImportFDF. So Ben, here is the
- * solution.
+ * A default appearance string contains any graphics state or text state operators needed to
+ * establish the graphics state parameters, such as text size and colour, for displaying the field?s
+ * variable text. Only operators that are allowed within text objects shall occur in this string.
  *
- * @author sug
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.20 $
+ * @author Stephan Gerhard
+ * @author Ben Litchfield
  */
-public class PDAppearance
+public final class PDAppearanceString
 {
     private PDVariableText parent;
 
@@ -85,7 +80,7 @@ public class PDAppearance
      * @param field the field which you wish to control the appearance of
      * @throws IOException If there is an error creating the appearance.
      */
-    public PDAppearance( PDAcroForm theAcroForm, PDVariableText field ) throws IOException
+    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field) throws IOException
     {
         acroForm = theAcroForm;
         parent = field;
@@ -379,18 +374,18 @@ public class PDAppearance
         }
         printWriter.println( getTextPosition( boundingBox, pdFont, fontSize, tokens ) );
         int q = getQ();
-        if( q == PDTextbox.QUADDING_LEFT )
+        if( q == PDText.QUADDING_LEFT )
         {
             //do nothing because left is default
         }
-        else if( q == PDTextbox.QUADDING_CENTERED ||
-                 q == PDTextbox.QUADDING_RIGHT )
+        else if( q == PDText.QUADDING_CENTERED ||
+                 q == PDText.QUADDING_RIGHT )
         {
             float fieldWidth = boundingBox.getWidth();
             float stringWidth = (pdFont.getStringWidth( value )/1000)*fontSize;
             float adjustAmount = fieldWidth - stringWidth - 4;
 
-            if( q == PDTextbox.QUADDING_CENTERED )
+            if( q == PDText.QUADDING_CENTERED )
             {
                 adjustAmount = adjustAmount/2.0f;
             }

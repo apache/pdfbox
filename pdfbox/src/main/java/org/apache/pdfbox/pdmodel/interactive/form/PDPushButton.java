@@ -23,12 +23,12 @@ import org.apache.pdfbox.cos.COSString;
 import java.io.IOException;
 
 /**
- * A class for handling the PDF field as a PDPushButton.
+ * A pushbutton is a purely interactive control that responds immediately to user
+ * input without retaining a permanent value.
  *
  * @author sug
- * @version $Revision: 1.3 $
  */
-public class PDPushButton extends PDField
+public class PDPushButton extends PDButton
 {
 
     /**

@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
 
 /**
  * Using that class, we  build pdf template
@@ -90,7 +90,7 @@ public class PDFTemplateCreator
 
         // AcroForm contains singature fields
         this.pdfBuilder.createSignatureField(acroForm);
-        PDSignatureField pdSignatureField = pdfStructure.getSignatureField();
+        PDSignature pdSignatureField = pdfStructure.getSignatureField();
         
         // create signature
         this.pdfBuilder.createSignature(pdSignatureField, page, properties.getSignatureFieldName());

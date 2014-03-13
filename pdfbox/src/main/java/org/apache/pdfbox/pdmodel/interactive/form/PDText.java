@@ -20,20 +20,19 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * A class for handling the PDF field as a textbox.
+ * A text field is a box or space for text fill-in data typically entered from a keyboard.
+ * The text may be restricted to a single line or may be permitted to span multiple lines
  *
  * @author sug
- * 
  */
-public class PDTextbox extends PDVariableText
+public final class PDText extends PDVariableText
 {
-
     /**
      * @see PDField#PDField(PDAcroForm,COSDictionary)
      *
      * @param theAcroForm The acroform.
      */
-    public PDTextbox( PDAcroForm theAcroForm )
+    public PDText(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
     }
@@ -44,7 +43,7 @@ public class PDTextbox extends PDVariableText
      * @param theAcroForm The acroForm for this field.
      * @param field The field's dictionary.
      */
-    public PDTextbox( PDAcroForm theAcroForm, COSDictionary field)
+    public PDText(PDAcroForm theAcroForm, COSDictionary field)
     {
         super( theAcroForm, field);
     }

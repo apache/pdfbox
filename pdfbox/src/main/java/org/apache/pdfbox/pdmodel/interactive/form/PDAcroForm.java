@@ -41,12 +41,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents the acroform of a PDF document.
+ * An interactive form, also known as an AcroForm.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.14 $
+ * @author Ben Litchfield
  */
-public class PDAcroForm implements COSObjectable
+public final class PDAcroForm implements COSObjectable
 {
     private COSDictionary acroForm;
     private PDDocument document;
@@ -58,7 +57,7 @@ public class PDAcroForm implements COSObjectable
      *
      * @param doc The document that this form is part of.
      */
-    public PDAcroForm( PDDocument doc )
+    public PDAcroForm(PDDocument doc)
     {
         document = doc;
         acroForm = new COSDictionary();
@@ -72,7 +71,7 @@ public class PDAcroForm implements COSObjectable
      * @param doc The document that this form is part of.
      * @param form The existing acroForm.
      */
-    public PDAcroForm( PDDocument doc, COSDictionary form )
+    public PDAcroForm(PDDocument doc, COSDictionary form)
     {
         document = doc;
         acroForm = form;
@@ -362,13 +361,13 @@ public class PDAcroForm implements COSObjectable
      *
      * @return The xfa resource or null if it does not exist.
      */
-    public PDXFA getXFA()
+    public PDXFAResource getXFA()
     {
-        PDXFA xfa = null;
+        PDXFAResource xfa = null;
         COSBase base = acroForm.getDictionaryObject( "XFA" );
         if( base != null )
         {
-            xfa = new PDXFA( base );
+            xfa = new PDXFAResource( base );
         }
         return xfa;
     }
@@ -378,7 +377,7 @@ public class PDAcroForm implements COSObjectable
      *
      * @param xfa The xfa resource.
      */
-    public void setXFA( PDXFA xfa )
+    public void setXFA( PDXFAResource xfa )
     {
         acroForm.setItem( "XFA", xfa );
     }
