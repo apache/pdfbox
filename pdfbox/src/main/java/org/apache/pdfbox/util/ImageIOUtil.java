@@ -119,24 +119,32 @@ public class ImageIOUtil
             Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(formatName);
             ImageWriteParam param = null;
             IIOMetadata metadata = null;
+            // Loop until we get the best driver, i.e. one that supports
+            // setting dpi in the standard metadata format; however we'd also 
+            // accept a driver that can't if a better one can't be found
             while (writers.hasNext())
             {
+                if (writer != null)
+                {
+                    writer.dispose();
+                }
                 writer = writers.next();
                 param = writer.getDefaultWriteParam();
                 metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image), param);
-                if (metadata.isReadOnly() || !metadata.isStandardMetadataFormatSupported())
+                if (metadata != null && 
+                        !metadata.isReadOnly() && 
+                        metadata.isStandardMetadataFormatSupported())
                 {
-                    writer = null;
+                    break;
                 }
             }
-
             if (writer == null)
             {
                 return false;
             }
 
             // compression
-            if (param.canWriteCompressed())
+            if (param != null && param.canWriteCompressed())
             {
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 if (formatName.toLowerCase().startsWith("tif"))
@@ -146,7 +154,6 @@ public class ImageIOUtil
                 }
                 else
                 {
-                    // JPEG, PNG compression
                     param.setCompressionType(param.getCompressionTypes()[0]);
                     param.setCompressionQuality(quality);
                 }
@@ -168,8 +175,13 @@ public class ImageIOUtil
             }
             else
             {
-                // metadata
-                setDPI(metadata, dpi, formatName);
+                // write metadata is possible
+                if (metadata != null && 
+                        !metadata.isReadOnly() && 
+                        metadata.isStandardMetadataFormatSupported())
+                {
+                    setDPI(metadata, dpi, formatName);
+                }
             }
 
             // write
