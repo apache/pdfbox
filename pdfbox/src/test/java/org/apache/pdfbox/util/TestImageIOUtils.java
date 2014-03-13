@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.File;
@@ -29,12 +30,10 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,13 +84,12 @@ public class TestImageIOUtils extends TestCase
             // testing GIF
             imageType = "gif";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
-            //TODO 
-            //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            // no META data posible for GIF, thus no test
             
             // testing WBMP
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi);
-            //TODO check that it isn't empty, i.e. that a real image is created
+            // no META data posible for WBMP, thus no test
 
             // testing TIFF
             imageType = "tif";
@@ -111,6 +109,52 @@ public class TestImageIOUtils extends TestCase
         }
     }
 
+    
+    /**
+     * Checks whether file image size and content are identical
+     * @param filename the filename where we just wrote to
+     * @param image the image that is to be checked
+     * @throws IOException if something goes wrong
+     */
+    private void checkImageFileSizeAndContent(String filename, BufferedImage image) 
+            throws IOException
+    {
+        BufferedImage newImage = ImageIO.read(new File(filename));
+        assertNotNull("File '" + filename + "' could not be read", newImage);
+        checkBufferedImageSize(filename, image, newImage);
+        for (int x = 0; x < image.getWidth(); ++x)
+        {
+            for (int y = 0; y < image.getHeight(); ++y)
+            {
+                if (image.getRGB(x, y) != newImage.getRGB(x, y))
+                {
+                    assertEquals("\"File '" + filename + "' has different pixel at (" + x + "," + y + ")", new Color(image.getRGB(x, y)), new Color(newImage.getRGB(x, y)));
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether file image size is identical
+     * @param filename the filename where we just wrote to
+     * @param image the image that is to be checked
+     * @throws IOException if something goes wrong
+     */
+    private void checkImageFileSize(String filename, BufferedImage image) 
+            throws IOException
+    {
+        BufferedImage newImage = ImageIO.read(new File(filename));
+        assertNotNull("File '" + filename + "' could not be read", newImage);
+        checkBufferedImageSize(filename, image, newImage);
+    }
+
+    private void checkBufferedImageSize(String filename, 
+            BufferedImage image, BufferedImage newImage) throws IOException
+    {
+        assertEquals("File '" + filename + "' has different height after read", image.getHeight(), newImage.getHeight());
+        assertEquals("File '" + filename + "' has different width after read", image.getWidth(), newImage.getWidth());
+    }
+
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
                             ImageType imageType, float dpi) throws IOException
     {
@@ -118,7 +162,18 @@ public class TestImageIOUtils extends TestCase
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
-        ImageIOUtil.writeImage(image, imageFormat, fileName,  Math.round(dpi));
+        ImageIOUtil.writeImage(image, imageFormat, fileName, Math.round(dpi));
+        if (true) return;
+        if ("jpg".equals(imageFormat) || "gif".equals(imageFormat))
+        {
+            // jpeg is lossy, gif has 256 colors, 
+            // so we can't check for content identity
+            checkImageFileSize(fileName + "." + imageFormat, image);
+        }
+        else
+        {
+            checkImageFileSizeAndContent(fileName + "." + imageFormat, image);
+        }
     }
 
     /**
