@@ -21,15 +21,13 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * If exist, it describe where the signature handler can request a rfc3161
+ * If exist, it describe where the signature handler can request a RFC3161
  * timestamp and if it is a must have for the signature.
  *
  * @author Thomas Chojecki
- * @version $Revision: 1.1 $
  */
 public class PDSeedValueTimeStamp
 {
-
     private COSDictionary dictionary;
 
     /**

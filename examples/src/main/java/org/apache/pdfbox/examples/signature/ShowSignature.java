@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.signature;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
 import java.util.Collection;
@@ -29,22 +30,20 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
- *
  * usage: java org.apache.pdfbox.examples.signature.ShowSignature &lt;password&gt; &lt;inputfile&gt;
  *
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.9 $
+ * @author Ben Litchfield
  */
 public class ShowSignature
 {
-
     private ShowSignature()
     {
     }
+
     /**
      * This is the entry point for the application.
      *
@@ -52,13 +51,13 @@ public class ShowSignature
      *
      * @throws Exception If there is an error reading the file.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args ) throws IOException, CertificateException
     {
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
 
-    private void showSignature( String[] args ) throws Exception
+    private void showSignature( String[] args ) throws IOException, CertificateException
     {
         if( args.length != 2 )
         {
@@ -156,5 +155,4 @@ public class ShowSignature
         System.err.println( "usage: java org.apache.pdfbox.examples.signature.ShowSignature " +
                             "<password> <inputfile>" );
     }
-
 }

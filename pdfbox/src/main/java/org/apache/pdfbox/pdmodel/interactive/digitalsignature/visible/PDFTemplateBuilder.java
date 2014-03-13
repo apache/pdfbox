@@ -32,15 +32,13 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * That class builds visible signature template
- * which will be added in our pdf document
- * @author Vakhtang koroghlishvili (Gogebashvili)
- *
+ * That class builds visible signature template which will be added in our PDF document.
+ * @author Vakhtang Koroghlishvili
  */
-public interface PDFTemplateBuilder {
-
+public interface PDFTemplateBuilder
+{
     /**
-     * In order to create  Affine Transform, using parameters
+     * In order to create Affine Transform, using parameters
      * @param params
      */
 	public void createAffineTransform(byte [] params);
@@ -78,7 +76,8 @@ public interface PDFTemplateBuilder {
 	 * @param signatureName
 	 * @throws IOException
 	 */
-	public void createSignature(PDSignatureField pdSignatureField, PDPage page, String signatureName) throws IOException;
+	public void createSignature(PDSignatureField pdSignatureField, PDPage page,
+                                String signatureName) throws IOException;
 	
 	/**
 	 * Create AcroForm Dictionary
@@ -86,7 +85,8 @@ public interface PDFTemplateBuilder {
 	 * @param signatureField
 	 * @throws IOException
 	 */
-	public void createAcroFormDictionary(PDAcroForm acroForm, PDSignatureField signatureField) throws IOException;
+	public void createAcroFormDictionary(PDAcroForm acroForm,
+                                         PDSignatureField signatureField) throws IOException;
 	
 	/**
 	 * Creates SingatureRectangle
@@ -94,7 +94,8 @@ public interface PDFTemplateBuilder {
 	 * @param properties
 	 * @throws IOException
 	 */
-	public void createSignatureRectangle(PDSignatureField signatureField, PDVisibleSignDesigner properties) throws IOException;
+	public void createSignatureRectangle(PDSignatureField signatureField,
+                                         PDVisibleSignDesigner properties) throws IOException;
 	
 	/**
 	 * Creates procSetArray of PDF,Text,ImageB,ImageC,ImageI    
@@ -132,7 +133,8 @@ public interface PDFTemplateBuilder {
 	 * @param holderFormStream
 	 * @param formrect
 	 */
-	public void createHolderForm(PDResources holderFormResources, PDStream holderFormStream, PDRectangle formrect);
+	public void createHolderForm(PDResources holderFormResources, PDStream holderFormStream,
+                                 PDRectangle formrect);
 	
 	/**
 	 * Creates appearance dictionary
@@ -140,7 +142,8 @@ public interface PDFTemplateBuilder {
 	 * @param signatureField
 	 * @throws IOException
 	 */
-	public void createAppearanceDictionary(PDFormXObject holderForml, PDSignatureField signatureField) throws IOException;
+	public void createAppearanceDictionary(PDFormXObject holderForml,
+                                           PDSignatureField signatureField) throws IOException;
 	
 	/**
 	 * 
@@ -160,15 +163,16 @@ public interface PDFTemplateBuilder {
 	 * @param innerFormStream
 	 * @param formrect
 	 */
-	public void createInnerForm(PDResources innerFormResources, PDStream innerFormStream, PDRectangle formrect);
-	
+	public void createInnerForm(PDResources innerFormResources, PDStream innerFormStream,
+                                PDRectangle formrect);
 	
 	/**
 	 * 
 	 * @param innerForm
 	 * @param holderFormResources
 	 */
-	public void insertInnerFormToHolerResources(PDFormXObject innerForm, PDResources holderFormResources);
+	public void insertInnerFormToHolerResources(PDFormXObject innerForm,
+                                                PDResources holderFormResources);
 	
 	/**
 	 * 
@@ -191,8 +195,10 @@ public interface PDFTemplateBuilder {
 	 * @param img
 	 * @throws IOException
 	 */
-	public void createImageForm(PDResources imageFormResources, PDResources innerFormResource, PDStream imageFormStream, PDRectangle formrect,
-			AffineTransform affineTransform, PDImageXObject img) throws IOException;
+	public void createImageForm(PDResources imageFormResources, PDResources innerFormResource,
+                                PDStream imageFormStream, PDRectangle formrect,
+                                AffineTransform affineTransform, PDImageXObject img)
+                                throws IOException;
 	
 	/**
 	 * Inject procSetArray 
@@ -203,8 +209,9 @@ public interface PDFTemplateBuilder {
 	 * @param holderFormResources
 	 * @param procSet
 	 */
-	public void injectProcSetArray(PDFormXObject innerForm, PDPage page, PDResources innerFormResources, PDResources imageFormResources,
-			PDResources holderFormResources, COSArray procSet);
+	public void injectProcSetArray(PDFormXObject innerForm, PDPage page,
+                                   PDResources innerFormResources, PDResources imageFormResources,
+                                   PDResources holderFormResources, COSArray procSet);
 	
 	/**
 	 * injects appearance streams
@@ -217,8 +224,10 @@ public interface PDFTemplateBuilder {
 	 * @param properties
 	 * @throws IOException
 	 */
-	public void injectAppearanceStreams(PDStream holderFormStream, PDStream innterFormStream, PDStream imageFormStream, String imageObjectName,
-			String imageName, String innerFormName, PDVisibleSignDesigner properties) throws IOException;
+	public void injectAppearanceStreams(PDStream holderFormStream, PDStream innterFormStream,
+                                        PDStream imageFormStream, String imageObjectName,
+                                        String imageName, String innerFormName,
+                                        PDVisibleSignDesigner properties) throws IOException;
 	
 	/**
 	 * just to create visible signature
@@ -232,7 +241,8 @@ public interface PDFTemplateBuilder {
 	 * @param holderFormResources
 	 * @throws IOException
 	 */
-	public void createWidgetDictionary(PDSignatureField signatureField, PDResources holderFormResources) throws IOException;
+	public void createWidgetDictionary(PDSignatureField signatureField,
+                                       PDResources holderFormResources) throws IOException;
 	
 	/**
 	 * 
