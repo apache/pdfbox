@@ -178,7 +178,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * This method will be called from inside of the pdfbox and create the pkcs7 signature.
      * The given InputStream contains the bytes that are given by the byte range.
      *
-     * This method is for internal use only.  <-- TODO this method should be private
+     * This method is for internal use only. <-- TODO this method should be private
      *
      * Use your favorite cryptographic library to implement pkcs7 signature creation.
      */

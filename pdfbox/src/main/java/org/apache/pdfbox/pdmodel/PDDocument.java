@@ -60,6 +60,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -263,7 +264,7 @@ public class PDDocument implements Closeable
      * @param signatureInterface is a interface which provides signing capabilities
      * @throws IOException if there is an error creating required fields
      */
-    public void addSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
     {
         SignatureOptions defaultOptions = new SignatureOptions();
         defaultOptions.setPage(1);
@@ -278,7 +279,7 @@ public class PDDocument implements Closeable
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
-    public void addSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options)
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options)
             throws IOException
     {
         // Reserve content
@@ -364,7 +365,7 @@ public class PDDocument implements Closeable
         {
             if (pdField instanceof PDSignatureField)
             {
-                org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature signature = ((PDSignatureField) pdField).getSignature();
+                PDSignature signature = ((PDSignatureField) pdField).getSignature();
                 if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
                 {
                     signatureField = (PDSignatureField) pdField;
@@ -539,7 +540,7 @@ public class PDDocument implements Closeable
 
         for (PDSignatureField sigField : sigFields)
         {
-            org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature sigObject = sigField.getSignature();
+            PDSignature sigObject = sigField.getSignature();
             sigField.getCOSObject().setNeedToBeUpdate(true);
 
             // Check if the field already exist
@@ -799,9 +800,9 @@ public class PDDocument implements Closeable
      * @return the last signature as <code>PDSignatureField</code>.
      * @throws IOException if no document catalog can be found.
      */
-    public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getLastSignatureDictionary() throws IOException
+    public PDSignature getLastSignatureDictionary() throws IOException
     {
-        List<org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature> signatureDictionaries = getSignatureDictionaries();
+        List<PDSignature> signatureDictionaries = getSignatureDictionaries();
         int size = signatureDictionaries.size();
         if (size > 0)
         {
@@ -837,13 +838,13 @@ public class PDDocument implements Closeable
      * @return a <code>List</code> of <code>PDSignatureField</code>s
      * @throws IOException if no document catalog can be found.
      */
-    public List<org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature> getSignatureDictionaries() throws IOException
+    public List<PDSignature> getSignatureDictionaries() throws IOException
     {
         List<COSDictionary> signatureDictionary = document.getSignatureDictionaries();
-        List<org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature> signatures = new LinkedList<org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature>();
+        List<PDSignature> signatures = new LinkedList<PDSignature>();
         for (COSDictionary dict : signatureDictionary)
         {
-            signatures.add(new org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature(dict));
+            signatures.add(new PDSignature(dict));
         }
         return signatures;
     }
