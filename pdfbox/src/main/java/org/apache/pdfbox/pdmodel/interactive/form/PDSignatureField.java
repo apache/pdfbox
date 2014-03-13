@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSeedValue;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -144,7 +145,7 @@ public class PDSignatureField extends PDField
      * 
      * @param value is the PDSignatureField
      */
-    public void setSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature value)
+    public void setSignature(PDSignature value)
     {
       getDictionary().setItem(COSName.V, value);
     }
@@ -155,14 +156,14 @@ public class PDSignatureField extends PDField
      * @return the signature dictionary
      * 
      */
-    public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getSignature()
+    public PDSignature getSignature()
     {
       COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
       if (dictionary == null)
       {
           return null;
       }
-      return new org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature((COSDictionary)dictionary);
+      return new PDSignature((COSDictionary)dictionary);
     }
 
     /**

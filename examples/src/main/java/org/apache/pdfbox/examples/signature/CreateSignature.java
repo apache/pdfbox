@@ -177,6 +177,7 @@ public class CreateSignature implements SignatureInterface
      *
      * Use your favorite cryptographic library to implement pkcs7 signature creation.
      */
+    @Override
     public byte[] sign(InputStream content) throws IOException
     {
         CMSProcessableInputStream input = new CMSProcessableInputStream(content);
@@ -187,10 +188,8 @@ public class CreateSignature implements SignatureInterface
         CertStore certStore = null;
         try
         {
-            certStore = CertStore.getInstance("Collection",
-                    new CollectionCertStoreParameters(certList), provider);
-            gen.addSigner(privKey, (X509Certificate) certList.get(0),
-                    CMSSignedGenerator.DIGEST_SHA256);
+            certStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), provider);
+            gen.addSigner(privKey, (X509Certificate) certList.get(0), CMSSignedGenerator.DIGEST_SHA256);
             gen.addCertificatesAndCRLs(certStore);
             CMSSignedData signedData = gen.generate(input, false, provider);
             return signedData.getEncoded();
