@@ -104,13 +104,13 @@ public abstract class SecurityHandler
      * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
      * called from there. Only if decryption of single objects is needed this should be called instead.
      *
-     * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
+     * @param encryption  encryption dictionary, can be retrieved via {@link PDDocument#getEncryption()}
      * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()}
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
      */
-    public abstract void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
+    public abstract void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
             DecryptionMaterial decryptionMaterial) throws IOException;
 
     /**

@@ -1149,8 +1149,9 @@ public class COSWriter implements ICOSVisitor
     {
         if (willEncrypt)
         {
-            document.getSecurityHandler().encryptStream(obj, currentObjectKey.getNumber(),
-                                                        currentObjectKey.getGeneration());
+            document.getEncryption().getSecurityHandler()
+                    .encryptStream(obj, currentObjectKey.getNumber(),
+                            currentObjectKey.getGeneration());
         }
 
         COSObject lengthObject = null;
@@ -1215,7 +1216,7 @@ public class COSWriter implements ICOSVisitor
     {
         if(willEncrypt)
         {
-            document.getSecurityHandler().decryptString(
+            document.getEncryption().getSecurityHandler().decryptString(
                     obj,
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
@@ -1267,11 +1268,18 @@ public class COSWriter implements ICOSVisitor
         }
         else
         {
-            SecurityHandler securityHandler = document.getSecurityHandler();
-            if(securityHandler != null)
+            if (document.isEncrypted())
             {
-                securityHandler.prepareDocumentForEncryption(document);
-                willEncrypt = true;
+                SecurityHandler securityHandler = document.getEncryption().getSecurityHandler();
+                if(securityHandler != null)
+                {
+                    securityHandler.prepareDocumentForEncryption(document);
+                    willEncrypt = true;
+                }
+                else
+                {
+                    willEncrypt = false;
+                }
             }
             else
             {

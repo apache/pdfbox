@@ -110,7 +110,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     {
         this.document = doc;
 
-        PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
+        PDEncryption dictionary = doc.getEncryption();
 
         prepareForDecryption( dictionary, doc.getDocument().getDocumentID(),
         											decryptionMaterial );
@@ -124,19 +124,19 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
      * called from there. Only if decryption of single objects is needed this should be called instead.
      *
-     * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
+     * @param encryption  encryption dictionary, can be retrieved via {@link PDDocument#getEncryption()}
      * @param documentIDArray  document id which is returned via {@link org.apache.pdfbox.cos.COSDocument#getDocumentID()} (not used by this handler)
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data.
      */
-    public void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
+    public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
                                      DecryptionMaterial decryptionMaterial)
                                      throws IOException
     {
-	      if(encDictionary.getLength() != 0)
+	      if(encryption.getLength() != 0)
 	      {
-	          this.keyLength = encDictionary.getLength();
+	          this.keyLength = encryption.getLength();
 	      }
 	
 	      if(!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
@@ -156,13 +156,13 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 	          byte[] envelopedData = null;
 	
 	          // the bytes of each recipient in the recipients array
-	          byte[][] recipientFieldsBytes = new byte[encDictionary.getRecipientsLength()][];
+	          byte[][] recipientFieldsBytes = new byte[encryption.getRecipientsLength()][];
 	
 	          int recipientFieldsLength = 0;
 	
-	          for(int i=0; i<encDictionary.getRecipientsLength(); i++)
+	          for(int i=0; i< encryption.getRecipientsLength(); i++)
 	          {
-	              COSString recipientFieldString = encDictionary.getRecipientStringAt(i);
+	              COSString recipientFieldString = encryption.getRecipientStringAt(i);
 	              byte[] recipientBytes = recipientFieldString.getBytes();
 	              CMSEnvelopedData data = new CMSEnvelopedData(recipientBytes);
 	              Iterator recipCertificatesIt = data.getRecipientInfos().getRecipients().iterator();
@@ -250,10 +250,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         {
             Security.addProvider(new BouncyCastleProvider());
 
-            PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
+            PDEncryption dictionary = doc.getEncryption();
             if (dictionary == null) 
             {
-                dictionary = new PDEncryptionDictionary();
+                dictionary = new PDEncryption();
             }
 
             dictionary.setFilter(FILTER);
@@ -353,8 +353,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             System.arraycopy(mdResult, 0, this.encryptionKey, 0, this.keyLength/8);
 
             doc.setEncryptionDictionary(dictionary);
-            doc.getDocument().setEncryptionDictionary(dictionary.encryptionDictionary);
-
+            doc.getDocument().setEncryptionDictionary(dictionary.getCOSDictionary());
         }
         catch(GeneralSecurityException e)
         {
