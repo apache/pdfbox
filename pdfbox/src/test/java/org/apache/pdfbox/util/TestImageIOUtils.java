@@ -24,7 +24,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
@@ -121,6 +123,7 @@ public class TestImageIOUtils extends TestCase
     {
         BufferedImage newImage = ImageIO.read(new File(filename));
         assertNotNull("File '" + filename + "' could not be read", newImage);
+        checkNotBlank(filename, newImage);
         checkBufferedImageSize(filename, image, newImage);
         for (int x = 0; x < image.getWidth(); ++x)
         {
@@ -145,6 +148,7 @@ public class TestImageIOUtils extends TestCase
     {
         BufferedImage newImage = ImageIO.read(new File(filename));
         assertNotNull("File '" + filename + "' could not be read", newImage);
+        checkNotBlank(filename, newImage);
         checkBufferedImageSize(filename, image, newImage);
     }
 
@@ -153,6 +157,22 @@ public class TestImageIOUtils extends TestCase
     {
         assertEquals("File '" + filename + "' has different height after read", image.getHeight(), newImage.getHeight());
         assertEquals("File '" + filename + "' has different width after read", image.getWidth(), newImage.getWidth());
+    }
+    
+    private void checkNotBlank (String filename, BufferedImage newImage)
+    {
+        // http://stackoverflow.com/a/5253698/535646
+        Set<Integer> colors = new HashSet<Integer>();
+        int w = newImage.getWidth();
+        int h = newImage.getHeight();
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                colors.add(newImage.getRGB(x, y));
+            }
+        }        
+        assertFalse("File '" + filename + "' has less than two colors", colors.size() < 2);
     }
 
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
@@ -163,7 +183,6 @@ public class TestImageIOUtils extends TestCase
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
         ImageIOUtil.writeImage(image, imageFormat, fileName, Math.round(dpi));
-        if (true) return;
         if ("jpg".equals(imageFormat) || "gif".equals(imageFormat))
         {
             // jpeg is lossy, gif has 256 colors, 
@@ -175,7 +194,7 @@ public class TestImageIOUtils extends TestCase
             checkImageFileSizeAndContent(fileName + "." + imageFormat, image);
         }
     }
-
+    
     /**
      * Test to validate image rendering of file set.
      * @throws Exception when there is an exception
