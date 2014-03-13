@@ -75,13 +75,12 @@ public class TestImageIOUtils extends TestCase
             // testing JPG/JPEG
             imageType = "jpg";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
-            //TODO this one doesn't save the meta data
+            checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
 
             // testing BMP
             imageType = "bmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
-            //TODO sometimes empty, sometimes correct?????
-            //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
 
             // testing GIF
             imageType = "gif";
@@ -90,9 +89,9 @@ public class TestImageIOUtils extends TestCase
             //checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             
             // testing WBMP
-            //TODO this doesn't work at all, am empty image is always created
             imageType = "wbmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi);
+            //TODO check that it isn't empty, i.e. that a real image is created
 
             // testing TIFF
             imageType = "tif";
