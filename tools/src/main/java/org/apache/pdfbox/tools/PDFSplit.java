@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.util.Splitter;

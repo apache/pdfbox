@@ -14,26 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.exceptions;
+package org.apache.pdfbox.pdmodel.encryption;
+
+import java.io.IOException;
 
 /**
- * An exception that indicates an invalid password was supplied.
- *
- * @deprecated Only used by deprecated DocumentEncryption class.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * Indicates that an invalid password was supplied.
+ * @author Ben Litchfield
  */
-@Deprecated
-public class InvalidPasswordException extends Exception
+public class InvalidPasswordException extends IOException
 {
     /**
-     * Constructor.
-     *
-     * @param msg A msg to go with this exception.
+     * Creates a new InvalidPasswordException.
+     * @param message A msg to go with this exception.
      */
-    public InvalidPasswordException( String msg )
+    InvalidPasswordException( String message )
     {
-        super( msg );
+        super( message );
     }
 }

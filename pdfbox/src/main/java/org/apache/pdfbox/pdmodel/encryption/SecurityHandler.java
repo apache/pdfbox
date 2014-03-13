@@ -47,7 +47,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.encryption.ARCFour;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -77,7 +76,7 @@ public abstract class SecurityHandler
     protected PDDocument document;
 
     /** The RC4 implementation used for cryptographic functions. */
-    protected ARCFour rc4 = new ARCFour();
+    protected RC4Cipher rc4 = new RC4Cipher();
 
     private final Set<COSBase> objects = new HashSet<COSBase>();
     private final Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();

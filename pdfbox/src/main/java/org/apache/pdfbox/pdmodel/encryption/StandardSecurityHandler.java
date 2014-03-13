@@ -26,7 +26,6 @@ import java.util.Arrays;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.encryption.ARCFour;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -60,7 +59,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
     private int revision = DEFAULT_REVISION;
     private StandardProtectionPolicy policy;
-    private ARCFour rc4 = new ARCFour();
+    private RC4Cipher rc4 = new RC4Cipher();
 
     /**
      * Constructor.
@@ -223,7 +222,6 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            // TODO perhaps we could return a boolean to indicate if the password was correct
             throw new IOException("Cannot decrypt PDF, the password is incorrect");
         }
 
