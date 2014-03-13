@@ -35,7 +35,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
-import org.apache.pdfbox.pdmodel.interactive.form.PDText;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
  * This will test the FDF algorithms in PDFBox.
@@ -98,7 +98,7 @@ public class TestFDF extends TestCase
             {
                 fdeb = PDDocument.load( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-                PDText field = (PDText)form.getField( "f67_1" );
+                PDTextField field = (PDTextField)form.getField( "f67_1" );
                 field.setValue( "2" );
     
                 String expected =
@@ -139,7 +139,7 @@ public class TestFDF extends TestCase
             {
                 fdeb = PDDocument.load( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
-                PDText feld2 = (PDText)form.getField( "Feld.2" );
+                PDTextField feld2 = (PDTextField)form.getField( "Feld.2" );
                 feld2.setValue( "Benjamin" );
     
                 String expected =
@@ -214,7 +214,7 @@ public class TestFDF extends TestCase
                 fdf = FDFDocument.load( fileFDF );
                 PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
                 form.importFDF( fdf );
-                PDText feld2 = (PDText)form.getField( "eeFirstName" );
+                PDTextField feld2 = (PDTextField)form.getField( "eeFirstName" );
                 List kids = feld2.getKids();
                 PDField firstKid = (PDField)kids.get( 0 );
                 PDField secondKid = (PDField)kids.get( 1 );

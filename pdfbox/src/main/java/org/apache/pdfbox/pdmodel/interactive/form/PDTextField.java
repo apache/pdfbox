@@ -25,14 +25,14 @@ import org.apache.pdfbox.cos.COSName;
  *
  * @author sug
  */
-public final class PDText extends PDVariableText
+public final class PDTextField extends PDVariableText
 {
     /**
      * @see PDField#PDField(PDAcroForm,COSDictionary)
      *
      * @param theAcroForm The acroform.
      */
-    public PDText(PDAcroForm theAcroForm)
+    public PDTextField(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
     }
@@ -43,7 +43,7 @@ public final class PDText extends PDVariableText
      * @param theAcroForm The acroForm for this field.
      * @param field The field's dictionary.
      */
-    public PDText(PDAcroForm theAcroForm, COSDictionary field)
+    public PDTextField(PDAcroForm theAcroForm, COSDictionary field)
     {
         super( theAcroForm, field);
     }

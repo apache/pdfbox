@@ -64,7 +64,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
  * This is the in-memory representation of the PDF document. You need to call close() on this object when you are done
@@ -259,7 +259,7 @@ public class PDDocument implements Closeable
     /**
      * Add a signature.
      * 
-     * @param sigObject is the PDSignature model
+     * @param sigObject is the PDSignatureField model
      * @param signatureInterface is a interface which provides signing capabilities
      * @throws IOException if there is an error creating required fields
      */
@@ -273,7 +273,7 @@ public class PDDocument implements Closeable
     /**
      * This will add a signature to the document.
      * 
-     * @param sigObject is the PDSignature model
+     * @param sigObject is the PDSignatureField model
      * @param signatureInterface is a interface which provides signing capabilities
      * @param options signature options
      * @throws IOException if there is an error creating required fields
@@ -354,7 +354,7 @@ public class PDDocument implements Closeable
         List<PDAnnotation> annotations = page.getAnnotations();
 
         List<PDField> fields = acroForm.getFields();
-        PDSignature signatureField = null;
+        PDSignatureField signatureField = null;
         if(fields == null) 
         {
             fields = new ArrayList();
@@ -362,18 +362,18 @@ public class PDDocument implements Closeable
         }
         for (PDField pdField : fields)
         {
-            if (pdField instanceof PDSignature)
+            if (pdField instanceof PDSignatureField)
             {
-                org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature signature = ((PDSignature) pdField).getSignature();
+                org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature signature = ((PDSignatureField) pdField).getSignature();
                 if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
                 {
-                    signatureField = (PDSignature) pdField;
+                    signatureField = (PDSignatureField) pdField;
                 }
             }
         }
         if (signatureField == null)
         {
-            signatureField = new PDSignature(acroForm);
+            signatureField = new PDSignatureField(acroForm);
             signatureField.setSignature(sigObject); // append the signature object
             signatureField.getWidget().setPage(page); // backward linking
         }
@@ -387,9 +387,9 @@ public class PDDocument implements Closeable
         boolean checkFields = false;
         for (PDField field : acroFormFields)
         {
-            if (field instanceof PDSignature)
+            if (field instanceof PDSignatureField)
             {
-                if (((PDSignature) field).getCOSObject().equals(signatureField.getCOSObject()))
+                if (((PDSignatureField) field).getCOSObject().equals(signatureField.getCOSObject()))
                 {
                     checkFields = true;
                     signatureField.getCOSObject().setNeedToBeUpdate(true);
@@ -510,7 +510,7 @@ public class PDDocument implements Closeable
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
-    public void addSignatureField(List<PDSignature> sigFields, SignatureInterface signatureInterface,
+    public void addSignatureField(List<PDSignatureField> sigFields, SignatureInterface signatureInterface,
             SignatureOptions options) throws IOException
     {
         PDDocumentCatalog catalog = getDocumentCatalog();
@@ -537,7 +537,7 @@ public class PDDocument implements Closeable
 
         List<PDField> field = acroForm.getFields();
 
-        for (PDSignature sigField : sigFields)
+        for (PDSignatureField sigField : sigFields)
         {
             org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature sigObject = sigField.getSignature();
             sigField.getCOSObject().setNeedToBeUpdate(true);
@@ -546,9 +546,9 @@ public class PDDocument implements Closeable
             boolean checkFields = false;
             for (Object obj : field)
             {
-                if (obj instanceof PDSignature)
+                if (obj instanceof PDSignatureField)
                 {
-                    if (((PDSignature) obj).getCOSObject().equals(sigField.getCOSObject()))
+                    if (((PDSignatureField) obj).getCOSObject().equals(sigField.getCOSObject()))
                     {
                         checkFields = true;
                         sigField.getCOSObject().setNeedToBeUpdate(true);
@@ -796,7 +796,7 @@ public class PDDocument implements Closeable
     /**
      * This will return the last signature.
      * 
-     * @return the last signature as <code>PDSignature</code>.
+     * @return the last signature as <code>PDSignatureField</code>.
      * @throws IOException if no document catalog can be found.
      */
     public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getLastSignatureDictionary() throws IOException
@@ -813,19 +813,19 @@ public class PDDocument implements Closeable
     /**
      * Retrieve all signature fields from the document.
      * 
-     * @return a <code>List</code> of <code>PDSignature</code>s
+     * @return a <code>List</code> of <code>PDSignatureField</code>s
      * @throws IOException if no document catalog can be found.
      */
-    public List<PDSignature> getSignatureFields() throws IOException
+    public List<PDSignatureField> getSignatureFields() throws IOException
     {
-        List<PDSignature> fields = new LinkedList<PDSignature>();
+        List<PDSignatureField> fields = new LinkedList<PDSignatureField>();
         PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
         if (acroForm != null)
         {
             List<COSDictionary> signatureDictionary = document.getSignatureFields(false);
             for (COSDictionary dict : signatureDictionary)
             {
-                fields.add(new PDSignature(acroForm, dict));
+                fields.add(new PDSignatureField(acroForm, dict));
             }
         }
         return fields;
@@ -834,7 +834,7 @@ public class PDDocument implements Closeable
     /**
      * Retrieve all signature dictionaries from the document.
      * 
-     * @return a <code>List</code> of <code>PDSignature</code>s
+     * @return a <code>List</code> of <code>PDSignatureField</code>s
      * @throws IOException if no document catalog can be found.
      */
     public List<org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature> getSignatureDictionaries() throws IOException

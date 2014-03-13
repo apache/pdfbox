@@ -33,7 +33,7 @@ import java.util.Set;
  * @author Ben Litchfield
  * @author Thomas Chojecki
  */
-public class PDSignature extends PDField
+public class PDSignatureField extends PDField
 {
     /**
      * @see PDField#PDField(PDAcroForm,COSDictionary)
@@ -42,7 +42,7 @@ public class PDSignature extends PDField
      * @param field The dictionary for the signature.
      * @throws IOException If there is an error while resolving partital name for the signature field
      */
-    public PDSignature(PDAcroForm theAcroForm, COSDictionary field) throws IOException
+    public PDSignatureField(PDAcroForm theAcroForm, COSDictionary field) throws IOException
     {
         super(theAcroForm,field);
         // dirty hack to avoid npe caused through getWidget() method
@@ -57,7 +57,7 @@ public class PDSignature extends PDField
      * @throws IOException If there is an error while resolving partial name for the signature field
      *         or getting the widget object.
      */
-    public PDSignature(PDAcroForm theAcroForm) throws IOException
+    public PDSignatureField(PDAcroForm theAcroForm) throws IOException
     {
         super( theAcroForm );
         getDictionary().setItem(COSName.FT, COSName.SIG);
@@ -85,9 +85,9 @@ public class PDSignature extends PDField
       
       for ( Object object : fields )
       {
-        if(object instanceof PDSignature)
+        if(object instanceof PDSignatureField)
         {
-          sigNames.add(((PDSignature) object).getPartialName());
+          sigNames.add(((PDSignatureField) object).getPartialName());
         }
       }
 
@@ -104,13 +104,13 @@ public class PDSignature extends PDField
      * @param value The new value for the field.
      *
      * @throws IOException If there is an error creating the appearance stream.
-     * @deprecated use setSignature(PDSignature) instead
+     * @deprecated use setSignature(PDSignatureField) instead
      */
     @Override
     @Deprecated
     public void setValue(String value) throws IOException
     {
-        throw new RuntimeException( "Can't set signature as String, use setSignature(PDSignature) instead" );
+        throw new RuntimeException( "Can't set signature as String, use setSignature(PDSignatureField) instead" );
     }
 
     /**
@@ -136,13 +136,13 @@ public class PDSignature extends PDField
     @Override
     public String toString()
     {
-        return "PDSignature";
+        return "PDSignatureField";
     }
     
     /**
      * Add a signature dictionary to the signature field.
      * 
-     * @param value is the PDSignature 
+     * @param value is the PDSignatureField
      */
     public void setSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature value)
     {
