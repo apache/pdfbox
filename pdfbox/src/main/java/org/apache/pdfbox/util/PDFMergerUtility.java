@@ -190,7 +190,7 @@ public class PDFMergerUtility
      * the result in the destination file.
      *
      * @param scratchFile location to store temp PDFBox data for this output
-     * document
+     * document, can be null if temp data is to be stored in memory
      * @throws IOException If there is an error saving the document.
      * @throws COSVisitorException If an error occurs while saving the
      * destination file.
