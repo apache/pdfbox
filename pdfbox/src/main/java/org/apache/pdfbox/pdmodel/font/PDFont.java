@@ -194,13 +194,13 @@ public abstract class PDFont implements COSObjectable
     public abstract float getFontWidth(byte[] c, int offset, int length) throws IOException;
 
     /**
-     * This will get the font width for a character.
+     * This will get the font height for a character.
      * 
-     * @param c The character code to get the width for.
+     * @param c The character code to get the height for.
      * @param offset The offset into the array.
      * @param length The length of the data.
      * 
-     * @return The width is in 1000 unit of text space, ie 333 or 777
+     * @return The height is in 1000 unit of text space, ie 333 or 777
      * 
      * @throws IOException If an error occurs while parsing.
      */
