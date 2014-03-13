@@ -34,15 +34,15 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * Structure of PDF document with visible signature
+ * Structure of PDF document with visible signature.
  * 
- * @author <a href="mailto:vakhtang.koroghlishvili@gmail.com"> vakhtang koroghlishvili (gogebashvili) </a>
- * 
+ * @author Vakhtang Koroghlishvili
  */
 public class PDFTemplateStructure
 {
@@ -50,7 +50,7 @@ public class PDFTemplateStructure
     private PDDocument template;
     private PDAcroForm acroForm;
     private PDSignatureField signatureField;
-    private org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature;
+    private PDSignature pdSignature;
     private COSDictionary acroFormDictionary;
     private PDRectangle singatureRectangle;
     private AffineTransform affineTransform;
@@ -115,7 +115,7 @@ public class PDFTemplateStructure
     }
 
     /**
-     * Gets Acroform
+     * Gets AcroForm
      * @return
      */
     public PDAcroForm getAcroForm()
@@ -124,7 +124,7 @@ public class PDFTemplateStructure
     }
 
     /**
-     * Sets Acroform
+     * Sets AcroForm
      * @param acroForm
      */
     public void setAcroForm(PDAcroForm acroForm)
@@ -154,7 +154,7 @@ public class PDFTemplateStructure
      * Gets PDSignatureField
      * @return
      */
-    public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getPdSignature()
+    public PDSignature getPdSignature()
     {
         return pdSignature;
     }
@@ -163,7 +163,7 @@ public class PDFTemplateStructure
      * Sets PDSignatureField
      * @param pdSignature
      */
-    public void setPdSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature)
+    public void setPdSignature(PDSignature pdSignature)
     {
         this.pdSignature = pdSignature;
     }
@@ -608,5 +608,4 @@ public class PDFTemplateStructure
     {
         this.widgetDictionary = widgetDictionary;
     }
-
 }

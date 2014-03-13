@@ -49,8 +49,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * This is an example for visual signing a pdf with bouncy castle.
- *
- * {@see org.apache.pdfbox.examples.signature.CreateSignature}
+
+ * {@see CreateSignature}
  * @author Vakhtang Koroghlishvili
  */
 public class CreateVisibleSignature implements SignatureInterface

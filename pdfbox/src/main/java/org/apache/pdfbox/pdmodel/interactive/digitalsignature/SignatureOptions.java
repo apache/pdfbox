@@ -23,20 +23,19 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.VisualSignatureParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
-
+/**
+ * TODO description needed
+ */
 public class SignatureOptions
 {
     private COSDocument visualSignature;
-
     private int preferedSignatureSize;
-    
     private int pageNo;
   
     /**
      * Set the page number.
      * 
      * @param pageNo the page number
-     * 
      */
     public void setPage(int pageNo)
     {
@@ -73,8 +72,6 @@ public class SignatureOptions
      * @param visSignatureProperties the <code>PDVisibleSigProperties</code> object containing the visual signature
      * 
      * @throws IOException when something went wrong during parsing
-     * 
-     * @since 1.8.3
      */
     public void setVisualSignature(PDVisibleSigProperties visSignatureProperties) throws IOException
     { 

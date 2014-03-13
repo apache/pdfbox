@@ -22,19 +22,16 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * <p>This represents a pdf signature build dictionary as specified in
- * <a href="http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuildDict.pdf">
- * http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuildDict.pdf</a></p>
+ * A signature build dictionary as specified in the PDF Signature Build Dictionary Specification.
+ * {@see http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuiladDict.pdf}
  *
- * <p>The signature build properties dictionary provides signature properties for the software
- * application that was used to create the signature.</p>
+ * The signature build properties dictionary provides signature properties for the software
+ * application that was used to create the signature.
  *
  * @author Thomas Chojecki
- * @version $Revision: 1.1 $
  */
 public class PDPropBuild implements COSObjectable
 {
-
     private COSDictionary dictionary;
 
     /**

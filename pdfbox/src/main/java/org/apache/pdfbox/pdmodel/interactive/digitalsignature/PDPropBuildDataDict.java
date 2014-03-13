@@ -22,15 +22,13 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * <p>This represents the general property dictionaries from the build property dictionary.</p>
+ * The general property dictionaries from the build property dictionary.
  *
  * @see PDPropBuild
  * @author Thomas Chojecki
- * @version $Revision: 1.1 $
  */
 public class PDPropBuildDataDict implements COSObjectable
 {
-
     private COSDictionary dictionary;
 
     /**

@@ -21,18 +21,13 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * <p>This MDP dictionary is a part of the seed value dictionary and define
- * if a author signature or a certification signature should be use.</p>
- *
- * <p>For more informations, consider the spare documented chapter in the seed
- * value dictionary in the ISO 32000 specification.</p>
+ * This MDP dictionary is a part of the seed value dictionary and define
+ * if a author signature or a certification signature should be use.
  *
  * @author Thomas Chojecki
- * @version $Revision: 1.1 $
  */
 public class PDSeedValueMDP
 {
-
     private COSDictionary dictionary;
 
     /**

@@ -30,11 +30,9 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * This represents a pdf signature seed value dictionary.
  *
  * @author Thomas Chojecki
- * @version $Revision: 1.1 $
  */
 public class PDSeedValue implements COSObjectable
 {
-
     /**
      * A Ff flag.
      */
