@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -52,10 +53,11 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
 
 /**
- * This class will take a list of pdf documents and merge them, saving the result in a new document.
- * 
+ * This class will take a list of pdf documents and merge them, saving the
+ * result in a new document.
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ *
  */
 public class PDFMergerUtility
 {
@@ -76,7 +78,7 @@ public class PDFMergerUtility
 
     /**
      * Get the name of the destination file.
-     * 
+     *
      * @return Returns the destination.
      */
     public String getDestinationFileName()
@@ -86,7 +88,7 @@ public class PDFMergerUtility
 
     /**
      * Set the name of the destination file.
-     * 
+     *
      * @param destination The destination to set.
      */
     public void setDestinationFileName(String destination)
@@ -96,7 +98,7 @@ public class PDFMergerUtility
 
     /**
      * Get the destination OutputStream.
-     * 
+     *
      * @return Returns the destination OutputStream.
      */
     public OutputStream getDestinationStream()
@@ -106,7 +108,7 @@ public class PDFMergerUtility
 
     /**
      * Set the destination OutputStream.
-     * 
+     *
      * @param destStream The destination to set.
      */
     public void setDestinationStream(OutputStream destStream)
@@ -116,7 +118,7 @@ public class PDFMergerUtility
 
     /**
      * Add a source file to the list of files to merge.
-     * 
+     *
      * @param source Full path and file name of source document.
      */
     public void addSource(String source)
@@ -133,7 +135,7 @@ public class PDFMergerUtility
 
     /**
      * Add a source file to the list of files to merge.
-     * 
+     *
      * @param source File representing source document
      */
     public void addSource(File source)
@@ -150,7 +152,7 @@ public class PDFMergerUtility
 
     /**
      * Add a source to the list of documents to merge.
-     * 
+     *
      * @param source InputStream representing source document
      */
     public void addSource(InputStream source)
@@ -160,8 +162,9 @@ public class PDFMergerUtility
 
     /**
      * Add a list of sources to the list of documents to merge.
-     * 
-     * @param sourcesList List of InputStream objects representing source documents
+     *
+     * @param sourcesList List of InputStream objects representing source
+     * documents
      */
     public void addSources(List<InputStream> sourcesList)
     {
@@ -169,11 +172,30 @@ public class PDFMergerUtility
     }
 
     /**
-     * Merge the list of source documents, saving the result in the destination file.
-     * 
+     * Merge the list of source documents, saving the result in the destination
+     * file.
+     *
      * @throws IOException If there is an error saving the document.
      */
     public void mergeDocuments() throws IOException
+    {
+        mergeDocuments(false, null);
+    }
+
+    /**
+     * Merge the list of source documents with the non sequential parser, saving
+     * the result in the destination file.
+     *
+     * @param scratchFile location to store temp PDFBox data for this output
+     * document
+     * @throws IOException If there is an error saving the document.
+     */
+    public void mergeDocumentsNonSeq(RandomAccess scratchFile) throws IOException
+    {
+        mergeDocuments(true, scratchFile);
+    }
+
+    private void mergeDocuments(boolean isNonSeq, RandomAccess scratchFile) throws IOException
     {
         PDDocument destination = null;
         InputStream sourceFile;
@@ -186,12 +208,27 @@ public class PDFMergerUtility
             {
                 Iterator<InputStream> sit = sources.iterator();
                 sourceFile = sit.next();
-                destination = PDDocument.load(sourceFile);
+                if (isNonSeq)
+                {
+                    destination = PDDocument.loadNonSeq(sourceFile, scratchFile);
+                }
+                else
+                {
+                    destination = PDDocument.load(sourceFile);
+                }
 
                 while (sit.hasNext())
                 {
                     sourceFile = sit.next();
-                    source = PDDocument.load(sourceFile);
+                    if (isNonSeq)
+                    {
+                        source = PDDocument.loadNonSeq(sourceFile, null);
+                    }
+                    else
+                    {
+                        source = PDDocument.load(sourceFile);
+                    }
+
                     tobeclosed.add(source);
                     appendDocument(destination, source);
                 }
@@ -220,11 +257,12 @@ public class PDFMergerUtility
 
     /**
      * append all pages from source to destination.
-     * 
+     *
      * @param destination the document to receive the pages
      * @param source the document originating the new pages
-     * 
-     * @throws IOException If there is an error accessing data from either document.
+     *
+     * @throws IOException If there is an error accessing data from either
+     * document.
      */
     public void appendDocument(PDDocument destination, PDDocument source) throws IOException
     {
@@ -515,8 +553,9 @@ public class PDFMergerUtility
     private int nextFieldNum = 1;
 
     /**
-     * Merge the contents of the source form into the destination form for the destination file.
-     * 
+     * Merge the contents of the source form into the destination form for the
+     * destination file.
+     *
      * @param cloner the object cloner for the destination document
      * @param destAcroForm the destination form
      * @param srcAcroForm the source form
@@ -553,7 +592,7 @@ public class PDFMergerUtility
 
     /**
      * Indicates if acroform errors are ignored or not.
-     * 
+     *
      * @return true if acroform errors are ignored
      */
     public boolean isIgnoreAcroFormErrors()
@@ -563,8 +602,9 @@ public class PDFMergerUtility
 
     /**
      * Set to true to ignore acroform errors.
-     * 
-     * @param ignoreAcroFormErrorsValue true if acroform errors should be ignored
+     *
+     * @param ignoreAcroFormErrorsValue true if acroform errors should be
+     * ignored
      */
     public void setIgnoreAcroFormErrors(boolean ignoreAcroFormErrorsValue)
     {
@@ -573,7 +613,7 @@ public class PDFMergerUtility
 
     /**
      * Update the Pg and Obj references to the new (merged) page.
-     * 
+     *
      * @param parentTreeEntry
      * @param objMapping mapping between old and new references
      */
@@ -624,7 +664,7 @@ public class PDFMergerUtility
 
     /**
      * Update the P reference to the new parent dictionary.
-     * 
+     *
      * @param kArray the kids array
      * @param newParent the new parent
      */
@@ -646,7 +686,7 @@ public class PDFMergerUtility
 
     /**
      * Update the StructParents and StructParent values in a PDPage.
-     * 
+     *
      * @param page the new page
      * @param structParentOffset the offset which should be applied
      */
