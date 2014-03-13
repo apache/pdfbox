@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
  * Structure of PDF document with visible signature
@@ -49,7 +49,7 @@ public class PDFTemplateStructure
     private PDPage page;
     private PDDocument template;
     private PDAcroForm acroForm;
-    private PDSignature signatureField;
+    private PDSignatureField signatureField;
     private org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature;
     private COSDictionary acroFormDictionary;
     private PDRectangle singatureRectangle;
@@ -136,7 +136,7 @@ public class PDFTemplateStructure
      * Gets Signature field
      * @return
      */
-    public PDSignature getSignatureField()
+    public PDSignatureField getSignatureField()
     {
         return signatureField;
     }
@@ -145,13 +145,13 @@ public class PDFTemplateStructure
      * Sets signature field
      * @param signatureField
      */
-    public void setSignatureField(PDSignature signatureField)
+    public void setSignatureField(PDSignatureField signatureField)
     {
         this.signatureField = signatureField;
     }
 
     /**
-     * Gets PDSignature
+     * Gets PDSignatureField
      * @return
      */
     public org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature getPdSignature()
@@ -160,7 +160,7 @@ public class PDFTemplateStructure
     }
 
     /**
-     * Sets PDSignature
+     * Sets PDSignatureField
      * @param pdSignature
      */
     public void setPdSignature(org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature)

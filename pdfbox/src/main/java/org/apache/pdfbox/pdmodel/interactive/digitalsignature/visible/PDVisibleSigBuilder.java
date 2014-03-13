@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
  * That's implementation of <b>PDFTemplateBuilder </b>
@@ -95,13 +95,13 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void createSignatureField(PDAcroForm acroForm) throws IOException
     {
-        PDSignature sf = new PDSignature(acroForm);
+        PDSignatureField sf = new PDSignatureField(acroForm);
         pdfStructure.setSignatureField(sf);
         logger.info("Signature field has been created");
     }
 
     @Override
-    public void createSignature(PDSignature pdSignatureField, PDPage page, String signatureName)
+    public void createSignature(PDSignatureField pdSignatureField, PDPage page, String signatureName)
             throws IOException
     {
         org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature pdSignature = new org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature();
@@ -116,7 +116,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createAcroFormDictionary(PDAcroForm acroForm, PDSignature signatureField) throws IOException
+    public void createAcroFormDictionary(PDAcroForm acroForm, PDSignatureField signatureField) throws IOException
     {
         @SuppressWarnings("unchecked")
         List<PDField> acroFormFields = acroForm.getFields();
@@ -131,7 +131,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createSignatureRectangle(PDSignature signatureField, PDVisibleSignDesigner properties)
+    public void createSignatureRectangle(PDSignatureField signatureField, PDVisibleSignDesigner properties)
             throws IOException
     {
 
@@ -220,7 +220,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createAppearanceDictionary(PDFormXObject holderForml, PDSignature signatureField)
+    public void createAppearanceDictionary(PDFormXObject holderForml, PDSignatureField signatureField)
             throws IOException
     {
 
@@ -371,7 +371,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createWidgetDictionary(PDSignature signatureField, PDResources holderFormResources)
+    public void createWidgetDictionary(PDSignatureField signatureField, PDResources holderFormResources)
             throws IOException
     {
 

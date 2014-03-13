@@ -374,18 +374,18 @@ public final class PDAppearanceString
         }
         printWriter.println( getTextPosition( boundingBox, pdFont, fontSize, tokens ) );
         int q = getQ();
-        if( q == PDText.QUADDING_LEFT )
+        if( q == PDTextField.QUADDING_LEFT )
         {
             //do nothing because left is default
         }
-        else if( q == PDText.QUADDING_CENTERED ||
-                 q == PDText.QUADDING_RIGHT )
+        else if( q == PDTextField.QUADDING_CENTERED ||
+                 q == PDTextField.QUADDING_RIGHT )
         {
             float fieldWidth = boundingBox.getWidth();
             float stringWidth = (pdFont.getStringWidth( value )/1000)*fontSize;
             float adjustAmount = fieldWidth - stringWidth - 4;
 
-            if( q == PDText.QUADDING_CENTERED )
+            if( q == PDTextField.QUADDING_CENTERED )
             {
                 adjustAmount = adjustAmount/2.0f;
             }

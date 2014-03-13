@@ -87,11 +87,11 @@ public final class PDFieldFactory
         }
         else if ("Tx".equals(fieldType))
         {
-            return new PDText(form, field);
+            return new PDTextField(form, field);
         }
         else if ("Sig".equals(fieldType))
         {
-            return new PDSignature(form, field);
+            return new PDSignatureField(form, field);
         }
         else
         {
