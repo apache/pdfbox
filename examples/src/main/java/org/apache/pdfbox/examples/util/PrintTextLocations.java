@@ -16,12 +16,10 @@
  */
 package org.apache.pdfbox.examples.util;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
-
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 

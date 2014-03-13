@@ -34,9 +34,9 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
@@ -519,7 +519,7 @@ public class LucenePDFDocument
     /**
      * Create an UID for the given file using the given time.
      * 
-     * @param file the file we have to create an UID for
+     * @param url the file we have to create an UID for
      * @param time the time to used to the UID
      * 
      * @return the created UID

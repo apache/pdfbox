@@ -16,8 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
-
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
@@ -388,10 +387,10 @@ public class PDFDebugger extends javax.swing.JFrame
         jTree1.setModel(model);
         setTitle( "PDFBox - " + f.getAbsolutePath() );
     }
-        /**
+    /**
      * This will parse a document.
      *
-     * @param input The file addressing the document.
+     * @param file The file addressing the document.
      *
      * @throws IOException If there is an error parsing the document.
      */

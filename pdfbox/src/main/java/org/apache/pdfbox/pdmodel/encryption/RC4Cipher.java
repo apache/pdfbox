@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.encryption;
+package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * This class is an implementation of the alleged RC4 algorithm.
+ * An implementation of the RC4 stream cipher.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.8 $
+ * @author Ben Litchfield
  */
-public class ARCFour
+class RC4Cipher
 {
     private int[] salt;
     private int b;
@@ -34,9 +33,8 @@ public class ARCFour
 
     /**
      * Constructor.
-     *
      */
-    public ARCFour()
+    public RC4Cipher()
     {
         salt = new int[256];
     }
@@ -45,7 +43,7 @@ public class ARCFour
      * This will reset the key to be used.
      *
      * @param key The RC4 key used during encryption.
-    */
+     */
     public void setKey( byte[] key )
     {
         b = 0;
