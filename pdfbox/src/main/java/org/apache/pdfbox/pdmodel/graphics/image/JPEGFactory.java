@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
@@ -54,10 +53,12 @@ public final class JPEGFactory extends ImageFactory
 
     /**
      * Creates a new JPEG Image XObject from an input stream containing JPEG data.
+     * 
      * The input stream data will be preserved and embedded in the PDF file without modification.
      * @param document the document where the image will be created
      * @param stream a stream of JPEG data
      * @return a new Image XObject
+     * 
      * @throws IOException if the input stream cannot be read
      */
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
@@ -93,9 +94,11 @@ public final class JPEGFactory extends ImageFactory
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
         ImageReader reader = null;
-        while(readers.hasNext()) {
-            reader = (ImageReader)readers.next();
-            if(reader.canReadRaster()) {
+        while (readers.hasNext())
+        {
+            reader = (ImageReader) readers.next();
+            if (reader.canReadRaster())
+            {
                 break;
             }
         }
