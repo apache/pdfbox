@@ -50,7 +50,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
+import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
@@ -81,12 +81,9 @@ public class PDDocument implements Closeable
     private PDDocumentInformation documentInformation;
     private PDDocumentCatalog documentCatalog;
 
-    // the encParameters will be cached here. When the document is decrypted then
+    // the encryption will be cached here. When the document is decrypted then
     // the COSDocument will not have an "Encrypt" dictionary anymore and this object must be used
-    private PDEncryptionDictionary encParameters;
-
-    // the security handler used to decrypt / encrypt the document
-    private SecurityHandler securityHandler;
+    private PDEncryption encryption;
 
     // associates object ids with a page number. Used to determine the page number for bookmarks
     // (or page numbers for anything else for which you have an object id for that matter)
@@ -745,37 +742,46 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will get the encryption dictionary for this document. This will still return the parameters if the document
-     * was decrypted. If the document was never encrypted then this will return null. As the encryption architecture in
-     * PDF documents is plugable this returns an abstract class, but the only supported subclass at this time is a
-     * PDStandardEncryption object.
-     * 
+     * @deprecated Use {@link #getEncryption()} instead.
+     *
      * @return The encryption dictionary(most likely a PDStandardEncryption object)
-     * 
-     * @throws IOException If there is an error determining which security handler to use.
      */
-    public PDEncryptionDictionary getEncryptionDictionary() throws IOException
+    @Deprecated
+    public PDEncryption getEncryptionDictionary()
     {
-        if (encParameters == null)
+        return getEncryption();
+    }
+
+    /**
+     * This will get the encryption dictionary for this document. This will still return the parameters if the document
+     * was decrypted. As the encryption architecture in PDF documents is plugable this returns an abstract class,
+     * but the only supported subclass at this time is a
+     * PDStandardEncryption object.
+     *
+     * @return The encryption dictionary(most likely a PDStandardEncryption object)
+     */
+    public PDEncryption getEncryption()
+    {
+        if (encryption == null)
         {
             if (isEncrypted())
             {
-                encParameters = new PDEncryptionDictionary(document.getEncryptionDictionary());
+                encryption = new PDEncryption(document.getEncryptionDictionary());
             }
         }
-        return encParameters;
+        return encryption;
     }
 
     /**
      * This will set the encryption dictionary for this document.
      * 
-     * @param encDictionary The encryption dictionary(most likely a PDStandardEncryption object)
+     * @param encryption The encryption dictionary(most likely a PDStandardEncryption object)
      * 
      * @throws IOException If there is an error determining which security handler to use.
      */
-    public void setEncryptionDictionary(PDEncryptionDictionary encDictionary) throws IOException
+    public void setEncryptionDictionary(PDEncryption encryption) throws IOException
     {
-        encParameters = encDictionary;
+        this.encryption = encryption;
     }
 
     /**
@@ -864,11 +870,15 @@ public class PDDocument implements Closeable
      * @throws IOException If there is an error accessing the data.
      */
     @Deprecated
-    public void encrypt(String ownerPassword, String userPassword)
-            throws IOException
+    public void encrypt(String ownerPassword, String userPassword) throws IOException
     {
-        securityHandler = new StandardSecurityHandler(
-                new StandardProtectionPolicy(ownerPassword, userPassword, new AccessPermission()));
+        if (!isEncrypted())
+        {
+            encryption = new PDEncryption();
+        }
+
+        getEncryption().setSecurityHandler(new StandardSecurityHandler(
+                new StandardProtectionPolicy(ownerPassword, userPassword, new AccessPermission())));
     }
 
     /**
@@ -1276,13 +1286,12 @@ public class PDDocument implements Closeable
     {
         documentCatalog = null;
         documentInformation = null;
-        encParameters = null;
+        encryption = null;
         if (pageMap != null)
         {
             pageMap.clear();
             pageMap = null;
         }
-        securityHandler = null;
         if (document != null)
         {
             document.close();
@@ -1306,11 +1315,18 @@ public class PDDocument implements Closeable
      */
     public void protect(ProtectionPolicy policy) throws IOException
     {
-        securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandlerForPolicy(policy);
+        if (!isEncrypted())
+        {
+            encryption = new PDEncryption();
+        }
+
+        SecurityHandler securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandlerForPolicy(policy);
         if (securityHandler == null)
         {
             throw new IOException("No security handler for policy " + policy);
         }
+
+        getEncryption().setSecurityHandler(securityHandler);
     }
 
     /**
@@ -1325,22 +1341,15 @@ public class PDDocument implements Closeable
      */
     public void openProtection(DecryptionMaterial decryptionMaterial) throws IOException
     {
-        PDEncryptionDictionary encryption = getEncryptionDictionary();
-        if (encryption.getFilter() != null)
+        if (isEncrypted())
         {
-            securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandler(encryption.getFilter());
-            if (securityHandler == null)
-            {
-                throw new IOException("No security handler for filter " + encryption.getFilter());
-            }
-
-            securityHandler.decryptDocument(this, decryptionMaterial);
+            getEncryption().getSecurityHandler().decryptDocument(this, decryptionMaterial);
             document.dereferenceObjectStreams();
             document.setEncryptionDictionary(null);
         }
         else
         {
-            throw new IOException("The document is not encrypted");
+            throw new IOException("Document is not encrypted");
         }
     }
 
@@ -1352,41 +1361,71 @@ public class PDDocument implements Closeable
      * 
      * @return the access permissions for the current user on the document.
      */
-
     public AccessPermission getCurrentAccessPermission()
     {
-        if (securityHandler == null)
+        if (isEncrypted() && getEncryption().hasSecurityHandler())
+        {
+            try
+            {
+                return getEncryption().getSecurityHandler().getCurrentAccessPermission();
+            }
+            catch (IOException e)
+            {
+                // will never happen because we checked hasSecurityHandler() first
+                throw new RuntimeException(e);
+            }
+        }
+        else
         {
             return AccessPermission.getOwnerAccessPermission();
         }
-        return securityHandler.getCurrentAccessPermission();
     }
 
     /**
      * Get the security handler that is used for document encryption.
-     * 
+     *
+     * @deprecated Use {@link #getEncryption()}.
+     * {@link org.apache.pdfbox.pdmodel.encryption.PDEncryption#getSecurityHandler()}
+     *
      * @return The handler used to encrypt/decrypt the document.
      */
+    @Deprecated
     public SecurityHandler getSecurityHandler()
     {
-        return securityHandler;
+        if (isEncrypted() && getEncryption().hasSecurityHandler())
+        {
+            try
+            {
+                return getEncryption().getSecurityHandler();
+            }
+            catch (IOException e)
+            {
+                // will never happen because we checked hasSecurityHandler() first
+                throw new RuntimeException(e);
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
-     * Sets security handler if none is set already.
-     * 
-     * @param secHandler security handler to be assigned to document
-     * @return <code>true</code> if security handler was set, <code>false</code> otherwise (a security handler was
-     *         already set)
+     * @deprecated Use protection policies instead.
+     *
+     * @param securityHandler security handler to be assigned to document
+     * @return true if security handler was set
      */
-    public boolean setSecurityHandler(SecurityHandler secHandler)
+    @Deprecated
+    public boolean setSecurityHandler(SecurityHandler securityHandler)
     {
-        if (securityHandler == null)
+        if (isEncrypted())
         {
-            securityHandler = secHandler;
-            return true;
+            return false;
         }
-        return false;
+        encryption = new PDEncryption();
+        getEncryption().setSecurityHandler(securityHandler);
+        return true;
     }
 
     /**
