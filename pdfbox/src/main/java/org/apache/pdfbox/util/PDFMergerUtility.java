@@ -187,7 +187,7 @@ public class PDFMergerUtility
      * the result in the destination file.
      *
      * @param scratchFile location to store temp PDFBox data for this output
-     * document
+     * document, can be null if temp data is to be stored in memory
      * @throws IOException If there is an error saving the document.
      */
     public void mergeDocumentsNonSeq(RandomAccess scratchFile) throws IOException
