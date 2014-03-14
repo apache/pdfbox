@@ -117,8 +117,10 @@ public class PDFontFactory
         }
         else
         {
-            LOG.warn("Substituting TrueType for unknown font subtype=" + subType.getName());
-            retval = new PDTrueTypeFont( dic );
+            // assuming Type 1 font (see PDFBOX-1988) because it seems that Adobe Reader does this
+            // however, we may need more sophisticated logic perhaps looking at the FontFile
+            LOG.warn( "Invalid font subtype '" + subType.getName() + "'" );
+            return new PDType1Font( dic );
         }
         return retval;
     }
