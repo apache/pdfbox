@@ -75,16 +75,16 @@ public class JPEGFactoryTest extends TestCase
     {
         
         //TODO enable this test when JPEGFactory.createFromImage() works
-//        PDDocument document = new PDDocument();
-//        BufferedImage bim = ImageIO.read(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
-//        PDImageXObject ximage = JPEGFactory.createFromImage(document, bim);
-//        assertNotNull(ximage);
-//        assertNotNull(ximage.getCOSStream());
-//        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
-//        assertEquals(8, ximage.getBitsPerComponent());
-//        assertEquals(344, ximage.getWidth());
-//        assertEquals(287, ximage.getHeight());
-//        assertEquals("jpg", ximage.getSuffix());
+        PDDocument document = new PDDocument();
+        BufferedImage bim = ImageIO.read(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, bim);
+        assertNotNull(ximage);
+        assertNotNull(ximage.getCOSStream());
+        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
+        assertEquals(8, ximage.getBitsPerComponent());
+        assertEquals(344, ximage.getWidth());
+        assertEquals(287, ximage.getHeight());
+        assertEquals("jpg", ximage.getSuffix());
         
         //TODO shouldn't ximage.getImage() return a real image?
 //        assertNotNull(ximage.getImage());
