@@ -585,6 +585,47 @@ public class COSDictionary extends COSBase
         setInt(field, currentFlags);
     }
 
+    /**
+     * This is a convenience method that will get the dictionary object that
+     * is expected to be a name. Null is returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COS name.
+     */
+    public COSName getName( COSName key )
+    {
+        COSBase name = getDictionaryObject( key );
+        if( name != null )
+        {
+            if ( name instanceof COSName )
+            {
+                return (COSName) name;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that
+     * is expected to be a name. Default is returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @param defaultValue The value to return if the dictionary item is null.
+     * @return The COS name.
+     */
+    public COSName getName( COSName key, COSName defaultValue )
+    {
+        COSBase name = getDictionaryObject( key );
+        if( name != null )
+        {
+            if ( name instanceof COSName )
+            {
+                return (COSName) name;
+            }
+        }
+        return defaultValue;
+    }
+
 	/**
 	 * This is a convenience method that will get the dictionary object that
 	 * is expected to be a name and convert it to a string.  Null is returned
