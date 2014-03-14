@@ -592,7 +592,7 @@ public class COSDictionary extends COSBase
      * @param key The key to the item in the dictionary.
      * @return The COS name.
      */
-    public COSName getName( COSName key )
+    public COSName getCOSName(COSName key)
     {
         COSBase name = getDictionaryObject( key );
         if( name != null )
@@ -613,7 +613,7 @@ public class COSDictionary extends COSBase
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The COS name.
      */
-    public COSName getName( COSName key, COSName defaultValue )
+    public COSName getCOSName(COSName key, COSName defaultValue)
     {
         COSBase name = getDictionaryObject( key );
         if( name != null )
