@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -25,101 +24,67 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This will create the correct type of font based on information in the dictionary.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * Creates the appropriate font subtype based on information in the dictionary.
+ * @author Ben Litchfield
  */
 public class PDFontFactory
 {
-    /**
-     * private constructor, should only use static methods in this class.
-     */
+    private static final Log LOG = LogFactory.getLog(PDFontFactory.class);
+
     private PDFontFactory()
     {
     }
 
     /**
-     * Logger instance.
+     * Creates a new PDFont instance with the appropriate subclass.
+     *
+     * @param dictionary a font dictionary
+     * @return a PDFont instance, based on the SubType entry of the dictionary
+     * @throws IOException
      */
-    private static final Log LOG = LogFactory.getLog(PDFontFactory.class);
-    
-    /**
-     * This will create the correct font based on information in the dictionary.
-     *
-     * @param dic The populated dictionary.
-     *
-     * @param fontCache A Map to cache already created fonts
-     *
-     * @return The corrent implementation for the font.
-     *
-     * @throws IOException If the dictionary is not valid.
-     * 
-     * @deprecated due to some side effects font caching is no longer supported, 
-     * use {@link #createFont(COSDictionary)} instead
-     */
-    public static PDFont createFont(COSDictionary dic, Map fontCache) throws IOException
+    public static PDFont createFont(COSDictionary dictionary) throws IOException
     {
-        return createFont(dic);
-    }
-
-    /**
-     * This will create the correct font based on information in the dictionary.
-     *
-     * @param dic The populated dictionary.
-     *
-     * @return The corrent implementation for the font.
-     *
-     * @throws IOException If the dictionary is not valid.
-     */
-    public static PDFont createFont( COSDictionary dic ) throws IOException
-    {
-        PDFont retval = null;
-
-        COSName type = (COSName)dic.getDictionaryObject( COSName.TYPE );
-        if( type != null && !COSName.FONT.equals( type ) )
+        COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
+        if (!COSName.FONT.equals(type))
         {
-            throw new IOException( "Cannot create font if /Type is not /Font.  Actual=" +type );
+            throw new IOException("Expected 'Font' dictionary but found '" + type.getName() + "'");
         }
 
-        COSName subType = (COSName)dic.getDictionaryObject( COSName.SUBTYPE );
-        if (subType == null) 
+        COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
+        if (COSName.TYPE1.equals(subType))
         {
-            throw new IOException( "Cannot create font as /SubType is not set." );
+            return new PDType1Font(dictionary);
         }
-        if( subType.equals( COSName.TYPE1) )
+        else if (COSName.MM_TYPE1.equals(subType))
         {
-            retval = new PDType1Font( dic );
+            return new PDMMType1Font(dictionary);
         }
-        else if( subType.equals( COSName.MM_TYPE1 ) )
+        else if (COSName.TRUE_TYPE.equals(subType))
         {
-            retval = new PDMMType1Font( dic );
+            return new PDTrueTypeFont(dictionary);
         }
-        else if( subType.equals( COSName.TRUE_TYPE ) )
+        else if (COSName.TYPE3.equals(subType))
         {
-            retval = new PDTrueTypeFont( dic );
+            return new PDType3Font(dictionary);
         }
-        else if( subType.equals( COSName.TYPE3 ) )
+        else if (COSName.TYPE0.equals(subType))
         {
-            retval = new PDType3Font( dic );
+            return new PDType0Font(dictionary);
         }
-        else if( subType.equals( COSName.TYPE0 ) )
+        else if (COSName.CID_FONT_TYPE0.equals(subType))
         {
-            retval = new PDType0Font( dic );
+            return new PDCIDFontType0Font(dictionary);
         }
-        else if( subType.equals( COSName.CID_FONT_TYPE0 ) )
+        else if (COSName.CID_FONT_TYPE2.equals(subType))
         {
-            retval = new PDCIDFontType0Font( dic );
-        }
-        else if( subType.equals( COSName.CID_FONT_TYPE2 ) )
-        {
-            retval = new PDCIDFontType2Font( dic );
+            return new PDCIDFontType2Font(dictionary);
         }
         else
         {
-            LOG.warn("Substituting TrueType for unknown font subtype=" + subType.getName());
-            retval = new PDTrueTypeFont( dic );
+            // assuming Type 1 font (see PDFBOX-1988) because it seems that Adobe Reader does this
+            // however, we may need more sophisticated logic perhaps looking at the FontFile
+            LOG.warn("Invalid font subtype '" + subType.getName() + "'");
+            return new PDType1Font(dictionary);
         }
-        return retval;
     }
 }

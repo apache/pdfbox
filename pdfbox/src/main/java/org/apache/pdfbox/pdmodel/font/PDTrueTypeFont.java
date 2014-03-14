@@ -94,10 +94,8 @@ public class PDTrueTypeFont extends PDSimpleFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
-     * 
-     * @throws IOException exception if something went wrong when loading the font.
      */
-    public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
+    public PDTrueTypeFont(COSDictionary fontDictionary)
     {
         super(fontDictionary);
     }
