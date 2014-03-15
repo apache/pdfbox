@@ -32,6 +32,7 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+import static org.apache.pdfbox.util.MetaUtil.STANDARD_METADATA_FORMAT;
 import org.w3c.dom.NodeList;
 
 /**
@@ -39,8 +40,6 @@ import org.w3c.dom.NodeList;
  */
 public class ImageIOUtil
 {
-    private static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
-    
     private ImageIOUtil()
     {
     }

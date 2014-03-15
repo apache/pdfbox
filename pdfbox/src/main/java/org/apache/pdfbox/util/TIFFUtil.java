@@ -23,13 +23,9 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.awt.image.BufferedImage;
-import java.io.StringWriter;
+import static org.apache.pdfbox.util.MetaUtil.SUN_TIFF_FORMAT;
+import static org.apache.pdfbox.util.MetaUtil.debugLogMetadata;
 
 /**
  * Used by ImageIOUtil to write TIFF files.
@@ -38,7 +34,6 @@ import java.io.StringWriter;
 class TIFFUtil
 {
     private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
-    private static final String SUN_TIFF_FORMAT = "com_sun_media_imageio_plugins_tiff_image_1.0";
 
     /**
      * Sets the ImageIO parameter compression type based on the given image.
@@ -73,7 +68,7 @@ class TIFFUtil
      */
     public static void updateMetadata(IIOMetadata metadata, BufferedImage image, int dpi)
     {
-        debugLogMetadata(metadata);
+        debugLogMetadata(metadata, SUN_TIFF_FORMAT);
 
         if (!SUN_TIFF_FORMAT.equals(metadata.getNativeMetadataFormatName()))
         {
@@ -121,7 +116,7 @@ class TIFFUtil
             throw new RuntimeException(e);
         }
 
-        debugLogMetadata(metadata);
+        debugLogMetadata(metadata, SUN_TIFF_FORMAT);
     }
 
     private static IIOMetadataNode createShortField(int tiffTagNumber, String name, int val)
@@ -181,33 +176,4 @@ class TIFFUtil
         return field;
     }
 
-    // logs metadata as an XML tree if debug is enabled
-
-    private static void debugLogMetadata(IIOMetadata metadata)
-    {
-        if (LOG.isDebugEnabled())
-        {
-            return;
-        }
-
-        // see http://docs.oracle.com/javase/7/docs/api/javax/imageio/
-        //     metadata/doc-files/standard_metadata.html
-        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree("javax_imageio_1.0");
-        try
-        {
-            StringWriter xmlStringWriter = new StringWriter();
-            StreamResult streamResult = new StreamResult(xmlStringWriter);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            // see http://stackoverflow.com/a/1264872/535646
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            DOMSource domSource = new DOMSource(root);
-            transformer.transform(domSource, streamResult);
-            LOG.debug("\n" + xmlStringWriter);
-        }
-        catch (Exception ex)
-        {
-            LOG.error(ex, ex);
-        }
-    }
 }
