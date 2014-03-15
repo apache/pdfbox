@@ -65,7 +65,7 @@ public final class JPEGFactory extends ImageFactory
         byteStream.reset();
 
         // create Image XObject from stream
-        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
 
         // add DCT filter
         pdImage.getCOSStream().setItem(COSName.FILTER, COSName.DCT_DECODE);
@@ -176,7 +176,7 @@ public final class JPEGFactory extends ImageFactory
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ImageIOUtil.writeImage(image, "jpeg", bos, dpi, quality);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
         
         // add DCT filter
         COSStream dict = pdImage.getCOSStream();

@@ -107,7 +107,7 @@ final class SampledImageReader
      */
     public static BufferedImage getRGBImage(PDImage pdImage, COSArray colorKey) throws IOException
     {
-        if (pdImage.getStream().getLength() == 0)
+        if (pdImage.getStream().getStream().getFilteredLength() == 0)
         {
             throw new IOException("Image stream is empty");
         }

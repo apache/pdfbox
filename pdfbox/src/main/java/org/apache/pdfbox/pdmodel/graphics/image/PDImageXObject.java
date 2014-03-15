@@ -33,6 +33,7 @@ import java.awt.Paint;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,19 @@ public final class PDImageXObject extends PDXObject implements PDImage
     public PDImageXObject(PDDocument document) throws IOException
     {
         this(new PDStream(document), null);
+    }
+
+    /**
+     * Creates an Image XObject in the given document using the given filtered stream.
+     * @param document the current document
+     * @param filteredStream a filtered stream of image data
+     * @throws IOException
+     */
+    public PDImageXObject(PDDocument document, InputStream filteredStream) throws IOException
+    {
+        super(new PDStream(document, filteredStream, true), COSName.IMAGE);
+        colorSpaces = null;
+        colorSpace = null;
     }
 
     /**

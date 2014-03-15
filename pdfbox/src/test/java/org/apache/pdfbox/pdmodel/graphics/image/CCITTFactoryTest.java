@@ -16,38 +16,30 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.io.File;
+import java.io.IOException;
+
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
+ * Unit tests for CCITTFactory
  * @author Tilman Hausherr
  */
 public class CCITTFactoryTest extends TestCase
 {
     /**
-     * {@inheritDoc}
+     * Tests CCITTFactory#createFromRandomAccess(PDDocument document, RandomAccess reader)
      */
-    @Override
-    public void setUp() throws Exception
+    public void testCreateFromRandomAccess() throws IOException
     {
-        super.setUp();
-    }
-
-    /**
-     * Test of createFromRandomAccess method, of class CCITTFactory.
-     */
-    @Test
-    public void testCreateFromRandomAccess() throws Exception
-    {
+        String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
         PDDocument document = new PDDocument();
-        RandomAccess reader = new RandomAccessFile(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif"), "r");
+        RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
         PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader);
+
+        // check the dictionary
         assertNotNull(ximage);
         assertNotNull(ximage.getCOSStream());
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
@@ -56,11 +48,11 @@ public class CCITTFactoryTest extends TestCase
         assertEquals(287, ximage.getHeight());
         assertEquals("tiff", ximage.getSuffix());
 
-        //TODO shouldn't ximage.getImage() return a real image?
-//        assertNotNull(ximage.getImage());
-//        assertEquals(344, ximage.getImage().getWidth());
-//        assertEquals(287, ximage.getImage().getHeight());
+        // check the image
+        assertNotNull(ximage.getImage());
+        assertEquals(344, ximage.getImage().getWidth());
+        assertEquals(287, ximage.getImage().getHeight());
+
         document.close();
     }
-
 }
