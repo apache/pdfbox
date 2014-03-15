@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,14 +34,15 @@ import static org.junit.Assert.*;
  */
 public class JPEGFactoryTest extends TestCase
 {
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setUp() throws Exception
     {
         super.setUp();
     }
-
 
     /**
      * Test of createFromStream method, of class JPEGFactory.
@@ -58,12 +60,11 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(344, ximage.getWidth());
         assertEquals(287, ximage.getHeight());
         assertEquals("jpg", ximage.getSuffix());
-        
+
         //TODO shouldn't ximage.getImage() return a real image?
 //        assertNotNull(ximage.getImage());
 //        assertEquals(344, ximage.getImage().getWidth());
 //        assertEquals(287, ximage.getImage().getHeight());
-        
         document.close();
     }
 
@@ -73,11 +74,27 @@ public class JPEGFactoryTest extends TestCase
     @Test
     public void testCreateFromImage() throws Exception
     {
-        
-        //TODO enable this test when JPEGFactory.createFromImage() works
+
         PDDocument document = new PDDocument();
-        BufferedImage bim = ImageIO.read(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, bim);
+        BufferedImage rgbImage = ImageIO.read(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
+
+        // Create an ARGB image
+        int w = rgbImage.getWidth();
+        int h = rgbImage.getHeight();
+        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics ag = argbImage.getGraphics();
+        ag.drawImage(rgbImage, 0, 0, null);
+        ag.dispose();
+        // left half of image with 1/2 transparency
+        for (int x = 0; x < w / 2; ++x)
+        {
+            for (int y = 0; y < h; ++y)
+            {
+                argbImage.setRGB(x, y, rgbImage.getRGB(x, y) & 0x7FFFFFFF);
+            }
+        }
+
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
         assertNotNull(ximage);
         assertNotNull(ximage.getCOSStream());
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
@@ -85,14 +102,20 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(344, ximage.getWidth());
         assertEquals(287, ximage.getHeight());
         assertEquals("jpg", ximage.getSuffix());
+        assertNull(ximage.getSoftMask());
+        
+//TODO when ARGB works        
+//        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
+//        assertNotNull(ximage.getSoftMask());
+// etc...        
+
+
         
         //TODO shouldn't ximage.getImage() return a real image?
 //        assertNotNull(ximage.getImage());
 //        assertEquals(344, ximage.getImage().getWidth());
 //        assertEquals(287, ximage.getImage().getHeight());
-        
 //        document.close();
     }
 
-    
 }

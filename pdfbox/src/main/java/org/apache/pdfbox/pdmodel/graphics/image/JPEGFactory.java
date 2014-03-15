@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSName;
@@ -29,18 +28,11 @@ import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.w3c.dom.Element;
-
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriter;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * Factory for creating a PDImageXObject containing a JPEG compressed image.
@@ -172,51 +164,6 @@ public final class JPEGFactory extends ImageFactory
         return createJPEG(document, image, quality, dpi);
     }
     
-    private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi, OutputStream out) 
-            throws IOException
-    {
-        // encode to JPEG
-        ImageOutputStream ios = null;
-        ImageWriter imageWriter = null;
-        try
-        {
-            // find JAI writer
-            imageWriter = ImageIO.getImageWritersBySuffix("jpeg").next();
-            ios = ImageIO.createImageOutputStream(out);
-            imageWriter.setOutput(ios);
-
-            // add compression
-            JPEGImageWriteParam jpegParam = (JPEGImageWriteParam)imageWriter.getDefaultWriteParam();
-            jpegParam.setCompressionMode(JPEGImageWriteParam.MODE_EXPLICIT);
-            jpegParam.setCompressionQuality(quality);
-
-            // add metadata
-            ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
-            IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
-            Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
-            Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
-            jfif.setAttribute("Xdensity", Integer.toString(dpi));
-            jfif.setAttribute("Ydensity", Integer.toString(dpi));
-            jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
-
-            // write
-            imageWriter.write(data, new IIOImage(image, null, null), jpegParam);
-        }
-        finally
-        {
-            // clean up
-            IOUtils.closeQuietly(out);
-            if (ios != null)
-            {
-                ios.close();
-            }
-            if (imageWriter != null)
-            {
-                imageWriter.dispose();
-            }
-        }
-    }
-
     // Creates an Image XObject from a Buffered Image using JAI Image I/O
     private static PDImageXObject createJPEG(PDDocument document, BufferedImage image,
                                              float quality, int dpi) throws IOException
@@ -227,7 +174,7 @@ public final class JPEGFactory extends ImageFactory
 
         // create XObject
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        encodeImageToJPEGStream(image, quality, dpi, bos);
+        ImageIOUtil.writeImage(image, "jpeg", bos, dpi, quality);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
         PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
         
@@ -238,7 +185,6 @@ public final class JPEGFactory extends ImageFactory
         // alpha -> soft mask
         if (awtAlphaImage != null)
         {
-            encodeImageToJPEGStream(awtAlphaImage, quality, dpi, dict.createFilteredStream());
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             dict.setItem(COSName.SMASK, xAlpha);
         }

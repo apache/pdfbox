@@ -108,6 +108,7 @@ class ImageFactory
         Graphics2D g = rgbImage.createGraphics();
         g.setComposite(AlphaComposite.Src);
         g.drawImage(image, 0, 0, null);
+        g.dispose();
 
         return rgbImage;
     }
