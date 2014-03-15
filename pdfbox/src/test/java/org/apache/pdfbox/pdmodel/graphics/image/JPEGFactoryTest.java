@@ -15,86 +15,79 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
+ * Unit tests for JPEGFactory
  * @author Tilman Hausherr
  */
 public class JPEGFactoryTest extends TestCase
 {
-
     /**
-     * {@inheritDoc}
+     * Tests JPEGFactory#createFromStream(PDDocument document, InputStream stream)
      */
-    @Override
-    public void setUp() throws Exception
-    {
-        super.setUp();
-    }
-
-    /**
-     * Test of createFromStream method, of class JPEGFactory.
-     */
-    @Test
-    public void testCreateFromStream() throws Exception
+    public void testCreateFromStream() throws IOException
     {
         PDDocument document = new PDDocument();
-        InputStream stream = new FileInputStream(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
+        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
-        assertNotNull(ximage);
-        assertNotNull(ximage.getCOSStream());
-        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
-        assertEquals(8, ximage.getBitsPerComponent());
-        assertEquals(344, ximage.getWidth());
-        assertEquals(287, ximage.getHeight());
-        assertEquals("jpg", ximage.getSuffix());
-
-        //TODO shouldn't ximage.getImage() return a real image?
-//        assertNotNull(ximage.getImage());
-//        assertEquals(344, ximage.getImage().getWidth());
-//        assertEquals(287, ximage.getImage().getHeight());
+        validate(ximage);
         document.close();
     }
 
     /**
-     * Test of createFromImage method, of class JPEGFactory.
+     * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage image)
      */
-    @Test
-    public void testCreateFromImage() throws Exception
+    public void testCreateFromImageRGB() throws IOException
     {
-
         PDDocument document = new PDDocument();
-        BufferedImage rgbImage = ImageIO.read(new File("src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/jpeg.jpg"));
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        validate(ximage);
+        document.close();
+    }
 
-        // Create an ARGB image
-        int w = rgbImage.getWidth();
-        int h = rgbImage.getHeight();
+    /**
+     * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage image)
+     */
+    public void testCreateFromImageARGB() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+
+        // create an ARGB image
+        int w = image.getWidth();
+        int h = image.getHeight();
         BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics ag = argbImage.getGraphics();
-        ag.drawImage(rgbImage, 0, 0, null);
+        ag.drawImage(image, 0, 0, null);
         ag.dispose();
-        // left half of image with 1/2 transparency
+
+        // left half of image with 50% alpha
         for (int x = 0; x < w / 2; ++x)
         {
             for (int y = 0; y < h; ++y)
             {
-                argbImage.setRGB(x, y, rgbImage.getRGB(x, y) & 0x7FFFFFFF);
+                argbImage.setRGB(x, y, image.getRGB(x, y) & 0x7FFFFFFF);
             }
         }
 
-        PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        validate(ximage);
+        assertNull(ximage.getSoftMask());
+
+        document.close();
+    }
+
+    private void validate(PDImageXObject ximage) throws IOException
+    {
+        // check the dictionary
         assertNotNull(ximage);
         assertNotNull(ximage.getCOSStream());
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
@@ -102,20 +95,10 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(344, ximage.getWidth());
         assertEquals(287, ximage.getHeight());
         assertEquals("jpg", ximage.getSuffix());
-        assertNull(ximage.getSoftMask());
-        
-//TODO when ARGB works        
-//        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
-//        assertNotNull(ximage.getSoftMask());
-// etc...        
 
-
-        
-        //TODO shouldn't ximage.getImage() return a real image?
-//        assertNotNull(ximage.getImage());
-//        assertEquals(344, ximage.getImage().getWidth());
-//        assertEquals(287, ximage.getImage().getHeight());
-//        document.close();
+        // check the image
+        assertNotNull(ximage.getImage());
+        assertEquals(344, ximage.getImage().getWidth());
+        assertEquals(287, ximage.getImage().getHeight());
     }
-
 }

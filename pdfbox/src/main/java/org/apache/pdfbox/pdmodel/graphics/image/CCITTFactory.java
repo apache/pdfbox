@@ -54,7 +54,7 @@ public final class CCITTFactory
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         extractFromTiff(reader, bos, decodeParms);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(new PDStream(document, byteStream, true), null);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
 
         COSDictionary dict = pdImage.getCOSStream();
 
