@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 
 /**
  * Reads a sampled image from a PDF file.
@@ -107,7 +108,15 @@ final class SampledImageReader
      */
     public static BufferedImage getRGBImage(PDImage pdImage, COSArray colorKey) throws IOException
     {
-        if (pdImage.getStream().getStream().getFilteredLength() == 0)
+        if (pdImage.getStream() instanceof PDMemoryStream)
+        {
+            // for inline images
+            if (pdImage.getStream().getLength() == 0)
+            {
+                throw new IOException("Image stream is empty");
+            }
+        }
+        else if (pdImage.getStream().getStream().getFilteredLength() == 0)
         {
             throw new IOException("Image stream is empty");
         }
