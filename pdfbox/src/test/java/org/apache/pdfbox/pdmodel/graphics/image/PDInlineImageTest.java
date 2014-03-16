@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -46,7 +47,15 @@ public class PDInlineImageTest extends TestCase
         assertEquals(30, inlineImage.getWidth());
         assertEquals(28, inlineImage.getHeight());
         assertEquals(1, inlineImage.getBitsPerComponent());
-        Paint paint = new Color(0,0,0);
-        inlineImage.getStencilImage(paint);
+        assertEquals(data.length, inlineImage.getStream().getLength());
+
+        Paint paint = new Color(0, 0, 0);
+        BufferedImage stencilImage = inlineImage.getStencilImage(paint);
+        assertEquals(30, stencilImage.getWidth());
+        assertEquals(28, stencilImage.getHeight());
+
+        BufferedImage image = inlineImage.getImage();
+        assertEquals(30, image.getWidth());
+        assertEquals(28, image.getHeight());
     }
 }
