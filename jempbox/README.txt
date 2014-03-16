@@ -5,7 +5,7 @@ Apache JempBox <http://pdfbox.apache.org/>
 The Apache JempBox library is an open source Java tool for working with
 XMP metadata.
 
-You need Java 1.5 (or higher) and Maven 2 <http://maven.apache.org/> to
+You need Java 6 (or higher) and Maven 2 <http://maven.apache.org/> to
 build JempBox. The recommended build command is:
 
     mvn clean install
@@ -25,7 +25,7 @@ Apache Software Foundation.
 License (see also LICENSE.txt)
 ==============================
 
-Collective work: Copyright 2013 The Apache Software Foundation.
+Collective work: Copyright 2014 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
