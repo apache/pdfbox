@@ -5,7 +5,7 @@ Apache Preflight <http://pdfbox.apache.org/>
 The Apache Preflight library is an open source Java tool that implements 
 a parser compliant with the ISO-19005 specification.
 
-You need Java 5 (or higher) and Maven 2 <http://maven.apache.org/> to
+You need Java 6 (or higher) and Maven 2 <http://maven.apache.org/> to
 build Preflight. The recommended build command is:
 
     mvn clean install
@@ -24,7 +24,7 @@ Apache Software Foundation <http://www.apache.org/>.
 License (see also LICENSE.txt)
 ==============================
 
-Collective work: Copyright 2013 The Apache Software Foundation.
+Collective work: Copyright 2014 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
