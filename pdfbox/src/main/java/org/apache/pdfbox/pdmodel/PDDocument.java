@@ -96,7 +96,11 @@ public class PDDocument implements Closeable
     // this ID doesn't represent the actual documentId from the trailer
     private Long documentId;
 
-    private BaseParser parser; 
+    // the PDF parser
+    private BaseParser parser;
+
+    // the File to read incremental data from
+    private File incrementalFile;
 
     /**
      * Creates an empty PDF document.
@@ -244,9 +248,7 @@ public class PDDocument implements Closeable
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
     {
-        SignatureOptions defaultOptions = new SignatureOptions();
-        defaultOptions.setPage(1);
-        addSignature(sigObject, signatureInterface, defaultOptions);
+        addSignature(sigObject, signatureInterface, new SignatureOptions());
     }
 
     /**
@@ -257,8 +259,8 @@ public class PDDocument implements Closeable
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
-    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface, SignatureOptions options)
-            throws IOException
+    public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface,
+                             SignatureOptions options) throws IOException
     {
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
@@ -278,10 +280,10 @@ public class PDDocument implements Closeable
 
         getDocument().setSignatureInterface(signatureInterface);
 
-        // #########################################
-        // # Create SignatureForm for signature #
-        // # and appending it to the document #
-        // #########################################
+        //
+        // Create SignatureForm for signature
+        // and appending it to the document
+        //
 
         // Get the first page
         PDDocumentCatalog root = getDocumentCatalog();
@@ -322,12 +324,10 @@ public class PDDocument implements Closeable
             acroForm.getCOSObject().setNeedToBeUpdate(true);
         }
 
-        /*
-         * For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. This annotation is
-         * usually attached to the viewed page when the signature is created. Despite not having an appearance, the
-         * annotation AP and N dictionaries may be present in some versions of Acrobat. If present, N references the
-         * DSBlankXObj (blank) XObject.
-         */
+        // For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. This annotation is
+        // usually attached to the viewed page when the signature is created. Despite not having an appearance, the
+        // annotation AP and N dictionaries may be present in some versions of Acrobat. If present, N references the
+        // DSBlankXObj (blank) XObject.
 
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
@@ -965,7 +965,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(String filename) throws IOException
     {
-        return load(new FileInputStream(filename));
+        return load(new File(filename));
     }
 
     /**
@@ -981,7 +981,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(String filename, boolean force) throws IOException
     {
-        return load(new FileInputStream(filename), force);
+        return load(new File(filename), force);
     }
 
     /**
@@ -996,7 +996,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(String filename, RandomAccess scratchFile) throws IOException
     {
-        return load(new FileInputStream(filename), scratchFile);
+        return load(new File(filename), scratchFile, false);
     }
 
     /**
@@ -1010,22 +1010,23 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(File file) throws IOException
     {
-        return load(new FileInputStream(file));
+        return load(file, false);
     }
 
     /**
-     * This will load a document from a file.
-     * 
+     * This will load a document from a file. Allows for skipping corrupt pdf objects
+     *
      * @param file The name of the file to load.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * 
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     *
      * @return The document that was loaded.
-     * 
+     *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument load(File file, RandomAccess scratchFile) throws IOException
+    public static PDDocument load(File file, boolean force) throws IOException
     {
-        return load(new FileInputStream(file), scratchFile);
+        return load(file, null, force);
     }
 
     /**
@@ -1056,6 +1057,40 @@ public class PDDocument implements Closeable
     public static PDDocument load(InputStream input, boolean force) throws IOException
     {
         return load(input, null, force);
+    }
+
+    /**
+     * This will load a document from an input stream.
+     *
+     * @param file The name of the file to load.
+     * @param scratchFile A location to store temp PDFBox data for this document.
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(File file, RandomAccess scratchFile) throws IOException
+    {
+        return load(file, scratchFile, false);
+    }
+
+    /**
+     * This will load a document from an input stream.
+     *
+     * @param file The name of the file to load.
+     * @param scratchFile A location to store temp PDFBox data for this document.
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(File file, RandomAccess scratchFile, boolean force) throws IOException
+    {
+        PDFParser parser = new PDFParser(new BufferedInputStream(new FileInputStream(file)), scratchFile, force);
+        parser.parse();
+        PDDocument doc = parser.getPDDocument();
+        doc.incrementalFile = file;
+        return doc;
     }
 
     /**
@@ -1214,34 +1249,34 @@ public class PDDocument implements Closeable
 
     /**
      * Save the pdf as incremental.
-     * 
+     *
+     * @deprecated Use {@link #saveIncremental(OutputStream output)} instead.
+     *
      * @param fileName the filename to be used
      * @throws IOException if the output could not be written
      */
+    @Deprecated
     public void saveIncremental(String fileName) throws IOException
     {
         saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
     }
 
     /**
-     * Save the pdf as incremental.
-     * 
-     * @param input stream to read
+     * Save the PDF as an incremental update, explicitly providing the original input stream again.
+     *
+     * Use of this method is discouraged, use {@link #saveIncremental(OutputStream)} instead.
+     *
+     * @param input stream to read, must contain the same data used in the call to load().
      * @param output stream to write
      * @throws IOException if the output could not be written
      */
-    public void saveIncremental(FileInputStream input, OutputStream output) throws IOException
+    public void saveIncremental(InputStream input, OutputStream output) throws IOException
     {
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
         COSWriter writer = null;
         try
         {
-            // Sometimes the original file will be missing a newline at the end
-            // In order to avoid having %%EOF the first object on the same line
-            // as the %%EOF, we put a newline here. If there's already one at
-            // the end of the file, an extra one won't hurt. PDFBOX-1051
-            output.write("\r\n".getBytes());
             writer = new COSWriter(output, input);
             writer.write(this);
             writer.close();
@@ -1253,6 +1288,23 @@ public class PDDocument implements Closeable
                 writer.close();
             }
         }
+    }
+
+    /**
+     * Save the PDF as an incremental update, if it was loaded from a File.
+     * This method can only be used when the PDDocument was created by passing a File or filename
+     * to one of the load() constructors.
+     *
+     * @param output stream to write
+     * @throws IOException if the output could not be written
+     */
+    public void saveIncremental(OutputStream output) throws IOException
+    {
+        if (incrementalFile == null)
+        {
+            throw new IOException("PDDocument.load must be called with a File or String");
+        }
+        saveIncremental(new FileInputStream(incrementalFile), output);
     }
 
     /**

@@ -72,6 +72,12 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.wink</groupId>
+      <artifactId>wink-component-test-support</artifactId>
+      <version>1.3.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

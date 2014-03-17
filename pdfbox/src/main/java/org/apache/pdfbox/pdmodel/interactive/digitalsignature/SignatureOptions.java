@@ -31,7 +31,15 @@ public class SignatureOptions
     private COSDocument visualSignature;
     private int preferedSignatureSize;
     private int pageNo;
-  
+
+    /**
+     * Creates the default signature options.
+     */
+    public SignatureOptions()
+    {
+        pageNo = 1;
+    }
+
     /**
      * Set the page number.
      * 
