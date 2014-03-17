@@ -408,13 +408,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * This will get the suffix for this image type, e.g. jpg/png.
-     * @return The image suffix.
+     * @return The image suffix or null if not available.
      */
     public String getSuffix()
     {
         List<COSName> filters = getPDStream().getFilters();
 
-        if (filters.contains(COSName.DCT_DECODE))
+        if (filters == null)
+        {
+            return "png";
+        }
+        else if (filters.contains(COSName.DCT_DECODE))
         {
             return "jpg";
         }
@@ -426,7 +430,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
         {
             return "tiff";
         }
-        else if (filters.contains(COSName.FLATE_DECODE))
+        else if (filters.contains(COSName.FLATE_DECODE)
+                || filters.contains(COSName.LZW_DECODE))
         {
             return "png";
         }
