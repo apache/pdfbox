@@ -16,9 +16,11 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.io.RandomAccessFile;
 
@@ -30,6 +32,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 
 /**
  * This is an example that creates a simple document.
@@ -65,9 +68,17 @@ public class ImageToPDF
             {
                 pdImage = JPEGFactory.createFromStream(doc, new FileInputStream(image));
             }
-            else if (image.toLowerCase().endsWith(".tif") || image.toLowerCase().endsWith(".tiff"))
+            else if (image.toLowerCase().endsWith(".tif") || 
+                    image.toLowerCase().endsWith(".tiff"))
             {
                 pdImage = CCITTFactory.createFromRandomAccess(doc, new RandomAccessFile(new File(image),"r"));
+            }
+            else if (image.toLowerCase().endsWith(".gif") || 
+                    image.toLowerCase().endsWith(".bmp") || 
+                    image.toLowerCase().endsWith(".png"))
+            {
+                BufferedImage bim = ImageIO.read(new File(image));
+                pdImage = LosslessFactory.createLosslessFromImage(doc, bim);
             }
             else
             {
