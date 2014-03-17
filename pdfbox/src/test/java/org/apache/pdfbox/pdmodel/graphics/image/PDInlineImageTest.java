@@ -22,6 +22,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * Unit tests for PDInlineImage
