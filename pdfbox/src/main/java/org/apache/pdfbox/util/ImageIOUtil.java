@@ -32,6 +32,8 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import static org.apache.pdfbox.util.MetaUtil.STANDARD_METADATA_FORMAT;
 import org.w3c.dom.NodeList;
 
@@ -40,6 +42,11 @@ import org.w3c.dom.NodeList;
  */
 public class ImageIOUtil
 {
+    /**
+     * Log instance
+     */
+    private static final Log LOG = LogFactory.getLog(ImageIOUtil.class);
+    
     private ImageIOUtil()
     {
     }
@@ -120,7 +127,7 @@ public class ImageIOUtil
             IIOMetadata metadata = null;
             // Loop until we get the best driver, i.e. one that supports
             // setting dpi in the standard metadata format; however we'd also 
-            // accept a driver that can't if a better one can't be found
+            // accept a driver that can't, if a better one can't be found
             while (writers.hasNext())
             {
                 if (writer != null)
@@ -139,6 +146,15 @@ public class ImageIOUtil
             }
             if (writer == null)
             {
+                LOG.error("No ImageWriter found for '" + formatName + "' format");
+                StringBuilder sb = new StringBuilder();
+                String[] writerFormatNames = ImageIO.getWriterFormatNames();
+                for (String fmt : writerFormatNames)
+                {
+                    sb.append(fmt);
+                    sb.append(' ');
+                }
+                LOG.error("Supported formats: " + sb);
                 return false;
             }
 
