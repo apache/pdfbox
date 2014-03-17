@@ -42,7 +42,7 @@ public class LosslessFactory
      * @return a new Image XObject
      * @throws IOException if something goes wrong
      */
-    static PDImageXObject createLosslessFromImage(PDDocument document, BufferedImage bim)
+    public static PDImageXObject createLosslessFromImage(PDDocument document, BufferedImage bim)
             throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
