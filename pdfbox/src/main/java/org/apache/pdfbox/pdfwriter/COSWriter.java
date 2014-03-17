@@ -18,10 +18,10 @@ package org.apache.pdfbox.pdfwriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.SequenceInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -51,6 +51,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.ICOSVisitor;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -152,9 +153,8 @@ public class COSWriter implements ICOSVisitor
     public static final byte[] ENDSTREAM = StringUtil.getBytes("endstream");
 
     private NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
-    /**
-     * The decimal format for the xref object generation number data.
-     */
+
+    // the decimal format for the xref object generation number data
     private NumberFormat formatXrefGeneration = new DecimalFormat("00000");
 
     private NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
@@ -187,6 +187,7 @@ public class COSWriter implements ICOSVisitor
 
     //a list of objects already written
     private Set<COSBase> writtenObjects = new HashSet<COSBase>();
+
     //An 'actual' is any COSBase that is not a COSObject.
     //need to keep a list of the actuals that are added
     //as well as the objects because there is a problem
@@ -196,20 +197,16 @@ public class COSWriter implements ICOSVisitor
     private Set<COSBase> actualsAdded = new HashSet<COSBase>();
 
     private COSObjectKey currentObjectKey = null;
-
     private PDDocument document = null;
-
     private boolean willEncrypt = false;
-    
+
+    // signing
     private boolean incrementalUpdate = false;
-    
     private boolean reachedSignature = false;
-    
-    private int[] signaturePosition = new int[2];
-    
-    private int[] byterangePosition = new int[2];
-    
-    private FileInputStream in;
+    private long signatureOffset, signatureLength;
+    private long byteRangeOffset, byteRangeLength;
+    private InputStream incrementalInput;
+    private OutputStream incrementalOutput;
 
     /**
      * COSWriter constructor comment.
@@ -228,14 +225,23 @@ public class COSWriter implements ICOSVisitor
     /**
      * COSWriter constructor for incremental updates. 
      *
-     * @param os The wrapped output stream.
-     * @param is input stream
+     * @param output output stream where the new PDF data will be written
+     * @param input input stream containing source PDF data
      */
-    public COSWriter(OutputStream os, FileInputStream is)
+    public COSWriter(OutputStream output, InputStream input) throws IOException
     {
-      this(os);
-      in = is;
-      incrementalUpdate = true;
+        super();
+
+        // write to buffer instead of output
+        setOutput(new ByteArrayOutputStream());
+        setStandardOutput(new COSStandardOutputStream(this.output, input.available()));
+
+        incrementalInput = input;
+        incrementalOutput = output;
+        incrementalUpdate = true;
+
+        formatDecimal.setMaximumFractionDigits( 10 );
+        formatDecimal.setGroupingUsed( false );
     }
 
     private void prepareIncrement(PDDocument doc)
@@ -299,6 +305,10 @@ public class COSWriter implements ICOSVisitor
         if (getOutput() != null)
         {
             getOutput().close();
+        }
+        if (incrementalOutput != null)
+        {
+            incrementalOutput.close();
         }
     }
 
@@ -720,59 +730,72 @@ public class COSWriter implements ICOSVisitor
 
     private void doWriteSignature(COSDocument doc) throws IOException
     {
-        // need to calculate the ByteRange
-        if (signaturePosition[0]>0 && byterangePosition[1] > 0)
+        if (signatureOffset == 0 || byteRangeOffset == 0)
         {
-            int left = (int)getStandardOutput().getPos()-signaturePosition[1];
-            String newByteRange = "0 "+signaturePosition[0]+" "+signaturePosition[1]+" "+left+"]";
-            int leftByterange = byterangePosition[1]-byterangePosition[0]-newByteRange.length();
-            if(leftByterange<0)
-            {
-                throw new IOException("Can't write new ByteRange, not enough space");
-            }
-            getStandardOutput().setPos(byterangePosition[0]);
-            getStandardOutput().write(newByteRange.getBytes());
-            for(int i=0;i<leftByterange;++i)
-            {
-                getStandardOutput().write(0x20);
-            }
-        
-            getStandardOutput().setPos(0);
-            // Begin - extracting document
-            InputStream filterInputStream = new COSFilterInputStream(in, 
-                    new int[] {0,signaturePosition[0],signaturePosition[1],left});
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            try 
-            {
-                byte[] buffer = new byte[1024];
-                int c;
-                while((c = filterInputStream.read(buffer)) != -1)
-                {
-                    bytes.write(buffer, 0, c);
-                }
-            } 
-            finally 
-            {
-                if(filterInputStream !=null)
-                {
-                    filterInputStream.close();
-                }
-            }
-
-            byte[] pdfContent = bytes.toByteArray();
-            // End - extracting document
-        
-            SignatureInterface signatureInterface = doc.getSignatureInterface();
-            byte[] sign = signatureInterface.sign(new ByteArrayInputStream(pdfContent));
-            String signature = new COSString(sign).getHexString();
-            int leftSignaturerange = signaturePosition[1]-signaturePosition[0]-signature.length();
-            if(leftSignaturerange<0)
-            {
-                throw new IOException("Can't write signature, not enough space");
-            }
-            getStandardOutput().setPos(signaturePosition[0]+1);
-            getStandardOutput().write(signature.getBytes());
+            return;
         }
+
+        // calculate the ByteRange values
+        long inLength = incrementalInput.available();
+        long beforeLength = signatureOffset;
+        long afterOffset = signatureOffset + signatureLength;
+        long afterLength = getStandardOutput().getPos() - (inLength + signatureLength) - (signatureOffset - inLength);
+
+        String byteRange = "0 " + beforeLength + " " + afterOffset + " " + afterLength + "]";
+        if (byteRangeLength - byteRange.length() < 0)
+        {
+            throw new IOException("Can't write new ByteRange, not enough space");
+        }
+
+        // copy the new incremental data into a buffer (e.g. signature dict, trailer)
+        ByteArrayOutputStream byteOut = (ByteArrayOutputStream) output;
+        byteOut.flush();
+        byte[] buffer = byteOut.toByteArray();
+
+        // overwrite the ByteRange in the buffer
+        byte[] byteRangeBytes = byteRange.getBytes();
+        for (int i = 0; i < byteRangeLength; i++)
+        {
+            if (i >= byteRangeBytes.length)
+            {
+                buffer[(int)(byteRangeOffset + i - inLength)] = 0x20; // SPACE
+            }
+            else
+            {
+                buffer[(int)(byteRangeOffset + i - inLength)] = byteRangeBytes[i];
+            }
+        }
+
+        // get the input PDF bytes
+        byte[] inputBytes = IOUtils.toByteArray(incrementalInput);
+
+        // get only the incremental bytes to be signed (includes /ByteRange but not /Contents)
+        byte[] signBuffer = new byte[buffer.length - (int)signatureLength];
+        int bufSignatureOffset = (int)(signatureOffset - inLength);
+        System.arraycopy(buffer, 0, signBuffer, 0, bufSignatureOffset);
+        System.arraycopy(buffer, bufSignatureOffset + (int)signatureLength,
+                         signBuffer, bufSignatureOffset, buffer.length - bufSignatureOffset - (int)signatureLength);
+
+        SequenceInputStream signStream = new SequenceInputStream(new ByteArrayInputStream(inputBytes),
+                new ByteArrayInputStream(signBuffer));
+
+        // sign the bytes
+        SignatureInterface signatureInterface = doc.getSignatureInterface();
+        byte[] sign = signatureInterface.sign(signStream);
+        String signature = new COSString(sign).getHexString();
+
+        if (signature.length() > signatureLength)
+        {
+            throw new IOException("Can't write signature, not enough space");
+        }
+
+        // overwrite the signature Contents in the buffer
+        byte[] signatureBytes = signature.getBytes();
+        System.arraycopy(signatureBytes, 0, buffer, bufSignatureOffset + 1, signatureBytes.length);
+
+        // write the data to the incremental output stream
+        incrementalOutput.write(inputBytes);
+        incrementalOutput.write(buffer);
     }
     
     private void writeXrefRange(long x, long y) throws IOException
@@ -1016,17 +1039,15 @@ public class COSWriter implements ICOSVisitor
                     // content and byterange
                     if(reachedSignature && COSName.CONTENTS.equals(entry.getKey()))
                     {
-                        signaturePosition = new int[2];
-                        signaturePosition[0] = (int)getStandardOutput().getPos();
+                        signatureOffset = getStandardOutput().getPos();
                         value.accept(this);
-                        signaturePosition[1] = (int)getStandardOutput().getPos();
+                        signatureLength = getStandardOutput().getPos()- signatureOffset;
                     }
                     else if(reachedSignature && COSName.BYTERANGE.equals(entry.getKey()))
                     {
-                        byterangePosition = new int[2];
-                        byterangePosition[0] = (int)getStandardOutput().getPos()+1;
+                        byteRangeOffset = getStandardOutput().getPos() + 1;
                         value.accept(this);
-                        byterangePosition[1] = (int)getStandardOutput().getPos()-1;
+                        byteRangeLength = getStandardOutput().getPos() - 1 - byteRangeOffset;
                         reachedSignature = false;
                     }
                     else
@@ -1057,6 +1078,15 @@ public class COSWriter implements ICOSVisitor
         {
             doWriteHeader(doc);
         }
+        else
+        {
+            // Sometimes the original file will be missing a newline at the end
+            // In order to avoid having %%EOF the first object on the same line
+            // as the %%EOF, we put a newline here. If there's already one at
+            // the end of the file, an extra one won't hurt. PDFBOX-1051
+            getStandardOutput().writeCRLF();
+        }
+
         doWriteBody(doc);
 
         // get the previous trailer

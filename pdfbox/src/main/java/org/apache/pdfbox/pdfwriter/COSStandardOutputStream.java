@@ -16,29 +16,19 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-
-
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 
 import org.apache.pdfbox.util.StringUtil;
 
 /**
- * simple output stream with some minor features for generating "pretty"
- * pdf files.
+ * simple output stream with some minor features for generating "pretty" PDF files.
  *
  * @author Michael Traut
- * @version $Revision: 1.5 $
  */
 public class COSStandardOutputStream extends FilterOutputStream
 {
-
     /**
      * To be used when 2 byte sequence is enforced.
      */
@@ -54,13 +44,11 @@ public class COSStandardOutputStream extends FilterOutputStream
      */
     public static final byte[] EOL = StringUtil.getBytes("\n");
 
-    // current byte pos in the output stream
-    private long pos = 0;
+    // current byte position in the output stream
+    private long position = 0;
+
     // flag to prevent generating two newlines in sequence
     private boolean onNewLine = false;
-    private FileChannel fileChannel = null;
-    private FileDescriptor fileDescriptor = null;
-    private long mark = -1;
     
     /**
      * COSOutputStream constructor comment.
@@ -70,15 +58,18 @@ public class COSStandardOutputStream extends FilterOutputStream
     public COSStandardOutputStream(OutputStream out)
     {
         super(out);
-        if(out instanceof FileOutputStream) {
-            try {
-                fileChannel = ((FileOutputStream)out).getChannel();
-                fileDescriptor = ((FileOutputStream)out).getFD();
-                pos = fileChannel.position();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    }
+
+    /**
+     * COSOutputStream constructor comment.
+     *
+     * @param out The underlying stream to write to.
+     * @param position The current position of output stream.
+     */
+    public COSStandardOutputStream(OutputStream out, int position)
+    {
+        super(out);
+        this.position = position;
     }
     
     /**
@@ -88,21 +79,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      */
     public long getPos()
     {
-        return pos;
-    }
-    
-    /**
-     * This will set the current position in the stream.
-     *
-     * @throws IOException 
-     */
-    public void setPos(long pos) throws IOException
-    {
-        if(fileChannel!=null) {
-            checkPos();
-            this.pos=pos;
-            fileChannel.position(pos);
-        }
+        return position;
     }
     
     /**
@@ -136,10 +113,9 @@ public class COSStandardOutputStream extends FilterOutputStream
     @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
-        checkPos();
         setOnNewLine(false);
         out.write(b, off, len);
-        pos += len;
+        position += len;
     }
 
     /**
@@ -152,10 +128,9 @@ public class COSStandardOutputStream extends FilterOutputStream
     @Override
     public void write(int b) throws IOException
     {
-        checkPos();
         setOnNewLine(false);
         out.write(b);
-        pos++;
+        position++;
     }
     
     /**
@@ -190,34 +165,5 @@ public class COSStandardOutputStream extends FilterOutputStream
     public void writeLF() throws IOException
     {
         write(LF);
-    }
-    
-    public void mark() throws IOException 
-    {
-        checkPos();
-        mark = getPos();
-    }
-    
-    public void reset() throws IOException 
-    {
-        if(mark<0)
-            return;
-        setPos(mark);
-    }
-    
-    private void checkPos() throws IOException 
-    {
-        if(fileChannel!=null && fileChannel.position() != getPos())
-            throw new IOException("OutputStream has an invalid position");
-    }
-
-    public byte[] getFileInBytes(int[] byteRange) throws IOException 
-    {
-        return null;
-    }
-    
-    public InputStream getFilterInputStream(int[] byteRange) 
-    {
-        return new COSFilterInputStream(new FileInputStream(fileDescriptor), byteRange);
     }
 }
