@@ -22,6 +22,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * Unit tests for JPEGFactory
@@ -100,5 +101,9 @@ public class JPEGFactoryTest extends TestCase
         assertNotNull(ximage.getImage());
         assertEquals(344, ximage.getImage().getWidth());
         assertEquals(287, ximage.getImage().getHeight());
+        
+        // dummy write the image
+        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), "png", new NullOutputStream());
+        assertTrue(writeOk);
     }
 }
