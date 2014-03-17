@@ -15,50 +15,45 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
-import java.io.File;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-
+import javax.imageio.ImageIO;
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertTrue;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
- * Unit tests for CCITTFactory
+ * Unit tests for JPEGFactory
+ *
  * @author Tilman Hausherr
  */
-public class CCITTFactoryTest extends TestCase
+public class LosslessFactoryTest extends TestCase
 {
     /**
-     * Tests CCITTFactory#createFromRandomAccess(PDDocument document, RandomAccess reader)
+     * Tests LosslessFactoryTest#createLosslessFromImage(PDDocument document,
+     * BufferedImage image)
      */
-    public void testCreateFromRandomAccess() throws IOException
+    public void testCreateLosslessFromImage() throws IOException
     {
-        String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
         PDDocument document = new PDDocument();
-        RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
-        PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader);
-
-        // check the dictionary
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("png.png"));
+        PDImageXObject ximage = LosslessFactory.createLosslessFromImage(document, image);
         assertNotNull(ximage);
         assertNotNull(ximage.getCOSStream());
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
-        assertEquals(1, ximage.getBitsPerComponent());
+        assertEquals(8, ximage.getBitsPerComponent());
         assertEquals(344, ximage.getWidth());
         assertEquals(287, ximage.getHeight());
-        assertEquals("tiff", ximage.getSuffix());
+        assertEquals("png", ximage.getSuffix());
 
         // check the image
         assertNotNull(ximage.getImage());
-        assertEquals(344, ximage.getImage().getWidth());
-        assertEquals(287, ximage.getImage().getHeight());
+        assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
+        assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
 
-        // dummy write the image
         boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), "png", new NullOutputStream());
         assertTrue(writeOk);
-        
+
         document.close();
     }
 }

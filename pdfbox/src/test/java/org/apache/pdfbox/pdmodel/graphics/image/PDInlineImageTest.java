@@ -57,5 +57,8 @@ public class PDInlineImageTest extends TestCase
         BufferedImage image = inlineImage.getImage();
         assertEquals(30, image.getWidth());
         assertEquals(28, image.getHeight());
+        
+        boolean writeOk = ImageIOUtil.writeImage(image, "png", new NullOutputStream());
+        assertTrue(writeOk);
     }
 }
