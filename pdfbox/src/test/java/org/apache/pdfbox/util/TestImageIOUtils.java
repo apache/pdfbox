@@ -26,6 +26,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -40,6 +42,12 @@ import static junit.framework.TestCase.assertTrue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.NullOutputStream;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.w3c.dom.Element;
@@ -53,8 +61,50 @@ public class TestImageIOUtils extends TestCase
 {
     private static final Log LOG = LogFactory.getLog(TestImageIOUtils.class);
 
+    
+    /**
+     * Check whether the resource images can be saved.
+     * 
+     * @param resources
+     * @throws IOException 
+     */
+    void checkSaveResources(PDResources resources) throws IOException
+    {
+        if (resources == null)
+        {
+            return;
+        }
+        Map<String, PDXObject> xobjects = resources.getXObjects();
+        if (xobjects != null)
+        {
+            for (String key : xobjects.keySet())
+            {
+                PDXObject xobject = xobjects.get(key);
+                if (xobject instanceof PDImageXObject)
+                {
+                    PDImageXObject imageObject = (PDImageXObject) xobject;
+                    String suffix = imageObject.getSuffix();
+                    if (suffix != null)
+                    {
+                        if ("jpx".equals(suffix))
+                        {
+                            suffix = "JPEG2000";
+                        }
+                        boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix, new NullOutputStream());
+                        assertTrue(writeOK);
+                    }
+                }
+                else if (xobject instanceof PDFormXObject)
+                {
+                    checkSaveResources(((PDFormXObject) xobject).getResources());
+                }
+            }
+        }
+    }
+
     /**
      * Validate page rendering for all supported image formats (JDK5).
+     *
      * @param file The file to validate
      * @param outDir Name of the output directory
      * @throws IOException when there is an exception
@@ -69,10 +119,14 @@ public class TestImageIOUtils extends TestCase
             float dpi = 120;
             document = PDDocument.load(file);
 
+            // Save image resources of first page
+            List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+            checkSaveResources(pdPages.get(0).getResources());
+
             // testing PNG
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
-            
+
             // testing JPG/JPEG
             imageType = "jpg";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
@@ -87,7 +141,7 @@ public class TestImageIOUtils extends TestCase
             imageType = "gif";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             // no META data posible for GIF, thus no test
-            
+
             // testing WBMP
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi);
@@ -104,21 +158,21 @@ public class TestImageIOUtils extends TestCase
         }
         finally
         {
-            if (document!= null)
+            if (document != null)
             {
                 document.close();
             }
         }
     }
 
-    
     /**
      * Checks whether file image size and content are identical
+     *
      * @param filename the filename where we just wrote to
      * @param image the image that is to be checked
      * @throws IOException if something goes wrong
      */
-    private void checkImageFileSizeAndContent(String filename, BufferedImage image) 
+    private void checkImageFileSizeAndContent(String filename, BufferedImage image)
             throws IOException
     {
         BufferedImage newImage = ImageIO.read(new File(filename));
@@ -139,11 +193,12 @@ public class TestImageIOUtils extends TestCase
 
     /**
      * Checks whether file image size is identical
+     *
      * @param filename the filename where we just wrote to
      * @param image the image that is to be checked
      * @throws IOException if something goes wrong
      */
-    private void checkImageFileSize(String filename, BufferedImage image) 
+    private void checkImageFileSize(String filename, BufferedImage image)
             throws IOException
     {
         BufferedImage newImage = ImageIO.read(new File(filename));
@@ -152,14 +207,14 @@ public class TestImageIOUtils extends TestCase
         checkBufferedImageSize(filename, image, newImage);
     }
 
-    private void checkBufferedImageSize(String filename, 
+    private void checkBufferedImageSize(String filename,
             BufferedImage image, BufferedImage newImage) throws IOException
     {
         assertEquals("File '" + filename + "' has different height after read", image.getHeight(), newImage.getHeight());
         assertEquals("File '" + filename + "' has different width after read", image.getWidth(), newImage.getWidth());
     }
-    
-    private void checkNotBlank (String filename, BufferedImage newImage)
+
+    private void checkNotBlank(String filename, BufferedImage newImage)
     {
         // http://stackoverflow.com/a/5253698/535646
         Set<Integer> colors = new HashSet<Integer>();
@@ -171,12 +226,12 @@ public class TestImageIOUtils extends TestCase
             {
                 colors.add(newImage.getRGB(x, y));
             }
-        }        
+        }
         assertFalse("File '" + filename + "' has less than two colors", colors.size() < 2);
     }
 
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
-                            ImageType imageType, float dpi) throws IOException
+            ImageType imageType, float dpi) throws IOException
     {
         PDFRenderer renderer = new PDFRenderer(document);
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
@@ -194,9 +249,10 @@ public class TestImageIOUtils extends TestCase
             checkImageFileSizeAndContent(fileName + "." + imageFormat, image);
         }
     }
-    
+
     /**
      * Test to validate image rendering of file set.
+     *
      * @throws Exception when there is an exception
      */
     public void testRenderImage() throws Exception
@@ -209,7 +265,7 @@ public class TestImageIOUtils extends TestCase
         {
             throw new IOException("could not create output directory");
         }
-        
+
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
             public boolean accept(File dir, String name)
@@ -225,7 +281,7 @@ public class TestImageIOUtils extends TestCase
     }
 
     private static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
-    
+
     /**
      * checks whether the resolution of an image file is as expected.
      *
@@ -326,5 +382,5 @@ public class TestImageIOUtils extends TestCase
         iis.close();
         reader.dispose();
     }
-    
+
 }
