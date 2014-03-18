@@ -29,4 +29,14 @@ public class NullOutputStream extends OutputStream
     public void write(int b) throws IOException
     {
     }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException
+    {
+    }
+
+    @Override
+    public void write(byte[] b) throws IOException
+    {
+    }
 }
