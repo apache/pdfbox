@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * Factory for creating a PDImageXObject containing a lossless compressed image.
- * 
+ *
  * @author Tilman Hausherr
  */
 public class LosslessFactory
@@ -42,22 +42,22 @@ public class LosslessFactory
      * @return a new Image XObject
      * @throws IOException if something goes wrong
      */
-    public static PDImageXObject createLosslessFromImage(PDDocument document, BufferedImage bim)
+    public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
             throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         //TODO use bit writing, indexed, etc
-        int h = bim.getHeight();
-        int w = bim.getWidth();
+        int h = image.getHeight();
+        int w = image.getWidth();
         for (int y = 0; y < h; ++y)
         {
             for (int x = 0; x < w; ++x)
             {
-                Color co = new Color(bim.getRGB(x, y));
-                bos.write(co.getRed());
-                bos.write(co.getGreen());
-                bos.write(co.getBlue());
+                Color color = new Color(image.getRGB(x, y));
+                bos.write(color.getRed());
+                bos.write(color.getGreen());
+                bos.write(color.getBlue());
             }
         }
 
@@ -74,8 +74,8 @@ public class LosslessFactory
         dict.setItem(COSName.FILTER, COSName.FLATE_DECODE);
         pdImage.setColorSpace(PDDeviceRGB.INSTANCE);  //TODO from image
         pdImage.setBitsPerComponent(8); //TODO other sizes
-        pdImage.setHeight(bim.getHeight());
-        pdImage.setWidth(bim.getWidth());
+        pdImage.setHeight(image.getHeight());
+        pdImage.setWidth(image.getWidth());
         return pdImage;
     }
 
