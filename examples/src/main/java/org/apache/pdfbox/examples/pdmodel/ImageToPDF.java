@@ -78,7 +78,7 @@ public class ImageToPDF
                     image.toLowerCase().endsWith(".png"))
             {
                 BufferedImage bim = ImageIO.read(new File(image));
-                pdImage = LosslessFactory.createLosslessFromImage(doc, bim);
+                pdImage = LosslessFactory.createFromImage(doc, bim);
             }
             else
             {
