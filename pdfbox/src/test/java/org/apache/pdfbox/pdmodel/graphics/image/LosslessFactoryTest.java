@@ -30,14 +30,14 @@ import org.apache.pdfbox.util.ImageIOUtil;
 public class LosslessFactoryTest extends TestCase
 {
     /**
-     * Tests LosslessFactoryTest#createLosslessFromImage(PDDocument document,
+     * Tests LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
      */
     public void testCreateLosslessFromImage() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("png.png"));
-        PDImageXObject ximage = LosslessFactory.createLosslessFromImage(document, image);
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
         assertNotNull(ximage);
         assertNotNull(ximage.getCOSStream());
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
