@@ -116,7 +116,7 @@ class Type5ShadingContext extends GouraudShadingContext
                 {
                     vertexList.add(readVertex(mciis, (byte) 0, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRangeTab));
                 }
-                transformVertices(vertexList, ctm, xform, pageHeight);
+                transformVertices(vertexList, ctm, xform);
 
                 // create the triangles from two rows
                 if (!prevVertexRow.isEmpty())
