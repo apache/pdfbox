@@ -97,6 +97,7 @@ public class ImageIOUtil
      * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
      * uses the full filename instead of just the prefix.
      */
+    @Deprecated
     public static boolean writeImage(BufferedImage image, String formatName, String filename,
             int dpi) throws IOException
     {
