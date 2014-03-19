@@ -54,10 +54,10 @@ public class ImageIOUtil
     /**
      * Writes a buffered image to a file using the given image format.
      * @param image the image to be written
-     * @param formatName the target format (ex. "png")
-     * @param filename used to construct the filename for the individual images
+     * @param formatName the target format (ex. "png") which is also the suffix
+     * @param filename used to construct the filename for the individual images, without the suffix
      * @param dpi the resolution in dpi (dots per inch)
-     * @return true if the images were produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, String filename,
@@ -80,7 +80,7 @@ public class ImageIOUtil
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
-     * @return true if the images were produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output)
@@ -95,7 +95,7 @@ public class ImageIOUtil
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi resolution to be used when writing the image
-     * @return true if the images were produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
@@ -111,7 +111,7 @@ public class ImageIOUtil
      * @param output the output stream to be used for writing
      * @param dpi resolution to be used when writing the image
      * @param quality quality to be used when compressing the image (0 &lt; quality &lt; 1.0f)
-     * @return true if the images were produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
