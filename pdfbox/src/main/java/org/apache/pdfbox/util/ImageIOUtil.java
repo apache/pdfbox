@@ -57,7 +57,6 @@ public class ImageIOUtil
      * OutputStream output, int dpi, float quality)} for more details.
      *
      * @param image the image to be written
-     * @param formatName the target format (ex. "png") which is also the suffix
      * @param filename used to construct the filename for the individual image.
      * Its suffix will be used as the image format.
      * @param dpi the resolution in dpi (dots per inch)
