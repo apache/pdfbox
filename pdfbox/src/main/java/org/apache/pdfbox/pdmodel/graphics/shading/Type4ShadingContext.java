@@ -176,7 +176,7 @@ class Type4ShadingContext extends GouraudShadingContext
             }
         }
         mciis.close();
-        transformVertices(vertexList, ctm, xform, pageHeight);
+        transformVertices(vertexList, ctm, xform);
         createTriangleList(vertexList);
     }
 
