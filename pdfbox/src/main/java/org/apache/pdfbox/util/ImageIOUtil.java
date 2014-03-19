@@ -46,22 +46,59 @@ public class ImageIOUtil
      * Log instance
      */
     private static final Log LOG = LogFactory.getLog(ImageIOUtil.class);
-    
+
     private ImageIOUtil()
     {
     }
 
     /**
-     * Writes a buffered image to a file using the given image format.
+     * Writes a buffered image to a file using the given image format. See     
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
      * @param image the image to be written
      * @param formatName the target format (ex. "png") which is also the suffix
-     * @param filename used to construct the filename for the individual images, without the suffix
+     * @param filename used to construct the filename for the individual image.
+     * Its suffix will be used as the image format.
      * @param dpi the resolution in dpi (dots per inch)
-     * @return true if the image file was produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
+    public static boolean writeImage(BufferedImage image, String filename,
+            int dpi) throws IOException
+    {
+        File file = new File(filename);
+        FileOutputStream output = new FileOutputStream(file);
+        try
+        {
+            String formatName = filename.substring(filename.lastIndexOf('.') + 1);
+            return writeImage(image, formatName, output, dpi);
+        }
+        finally
+        {
+            output.close();
+        }
+    }
+
+    /**
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
+     * @param image the image to be written
+     * @param formatName the target format (ex. "png") which is also the suffix
+     * for the filename
+     * @param filename used to construct the filename for the individual image.
+     * The formatName parameter will be used as the suffix.
+     * @param dpi the resolution in dpi (dots per inch)
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     * @deprecated use
+     * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
+     * uses the full filename instead of just the prefix.
+     */
     public static boolean writeImage(BufferedImage image, String formatName, String filename,
-                                     int dpi) throws IOException
+            int dpi) throws IOException
     {
         File file = new File(filename + "." + formatName);
         FileOutputStream output = new FileOutputStream(file);
@@ -76,11 +113,14 @@ public class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format.
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
-     * @return true if the image file was produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output)
@@ -90,32 +130,42 @@ public class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format.
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi resolution to be used when writing the image
-     * @return true if the image file was produced, false if there was an error
+     * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-                                     int dpi) throws IOException
+            int dpi) throws IOException
     {
         return writeImage(image, formatName, output, dpi, 1.0f);
     }
-    
+
     /**
      * Writes a buffered image to a file using the given image format.
+     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
+     * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
+     * will be compressed with CCITT G4, a color image with LZW). Creating a
+     * TIFF image is only supported if the jai_imageio library is in the class
+     * path.
+     *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi resolution to be used when writing the image
-     * @param quality quality to be used when compressing the image (0 &lt; quality &lt; 1.0f)
-     * @return true if the image file was produced, false if there was an error
+     * @param quality quality to be used when compressing the image (0 &lt;
+     * quality &lt; 1.0f)
+     * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-                                     int dpi, float quality) throws IOException
+            int dpi, float quality) throws IOException
     {
         ImageOutputStream imageOutput = null;
         ImageWriter writer = null;
@@ -137,9 +187,9 @@ public class ImageIOUtil
                 writer = writers.next();
                 param = writer.getDefaultWriteParam();
                 metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image), param);
-                if (metadata != null && 
-                        !metadata.isReadOnly() && 
-                        metadata.isStandardMetadataFormatSupported())
+                if (metadata != null
+                        && !metadata.isReadOnly()
+                        && metadata.isStandardMetadataFormatSupported())
                 {
                     break;
                 }
@@ -191,9 +241,9 @@ public class ImageIOUtil
             else
             {
                 // write metadata is possible
-                if (metadata != null && 
-                        !metadata.isReadOnly() && 
-                        metadata.isStandardMetadataFormatSupported())
+                if (metadata != null
+                        && !metadata.isReadOnly()
+                        && metadata.isStandardMetadataFormatSupported())
                 {
                     setDPI(metadata, dpi, formatName);
                 }
@@ -220,10 +270,10 @@ public class ImageIOUtil
 
     /**
      * Gets the named child node, or creates and attaches it.
-     * 
+     *
      * @param parentNode the parent node
      * @param name name of the child node
-     * 
+     *
      * @return the existing or just created child node
      */
     private static IIOMetadataNode getOrCreateChildNode(IIOMetadataNode parentNode, String name)
@@ -237,7 +287,7 @@ public class ImageIOUtil
         parentNode.appendChild(childNode);
         return childNode;
     }
-    
+
     // sets the DPI metadata
     private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
     {
