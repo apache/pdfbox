@@ -19,20 +19,21 @@ import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.ImageIOUtil;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
  * Unit tests for CCITTFactory
+ *
  * @author Tilman Hausherr
  */
 public class CCITTFactoryTest extends TestCase
 {
     /**
-     * Tests CCITTFactory#createFromRandomAccess(PDDocument document, RandomAccess reader)
+     * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
+     * RandomAccess reader)
      */
     public void testCreateFromRandomAccess() throws IOException
     {
@@ -40,25 +41,7 @@ public class CCITTFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
         PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader);
-
-        // check the dictionary
-        assertNotNull(ximage);
-        assertNotNull(ximage.getCOSStream());
-        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
-        assertEquals(1, ximage.getBitsPerComponent());
-        assertEquals(344, ximage.getWidth());
-        assertEquals(287, ximage.getHeight());
-        assertEquals("tiff", ximage.getSuffix());
-
-        // check the image
-        assertNotNull(ximage.getImage());
-        assertEquals(344, ximage.getImage().getWidth());
-        assertEquals(287, ximage.getImage().getHeight());
-
-        // dummy write the image
-        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), "png", new NullOutputStream());
-        assertTrue(writeOk);
-        
+        validate(ximage, 1, 344, 287, "tiff");
         document.close();
     }
 }

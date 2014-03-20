@@ -76,6 +76,10 @@ class ImageFactory
     // returns the alpha channel of an image
     protected static BufferedImage getAlphaImage(BufferedImage image)
     {
+        //FIXME This doesn't work. The raster returned has a
+        // SinglePixelPackedSampleModel, and ComponentColorModel created is not
+        // compatible with it, because the BufferedImage constructor expects a
+        // ComponentSampleModel, and with the same number of bands.
         if (!image.getColorModel().hasAlpha())
         {
             return null;

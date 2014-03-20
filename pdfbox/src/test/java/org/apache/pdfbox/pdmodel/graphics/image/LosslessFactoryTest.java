@@ -15,45 +15,71 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.ImageIOUtil;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
- * Unit tests for JPEGFactory
+ * Unit tests for LosslessFactory
  *
  * @author Tilman Hausherr
  */
 public class LosslessFactoryTest extends TestCase
 {
     /**
-     * Tests LosslessFactoryTest#createFromImage(PDDocument document,
+     * Tests RGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
+     *
+     * @throws java.io.IOException
      */
-    public void testCreateLosslessFromImage() throws IOException
+    public void testCreateLosslessFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
-        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("png.png"));
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
         PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
-        assertNotNull(ximage);
-        assertNotNull(ximage.getCOSStream());
-        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
-        assertEquals(8, ximage.getBitsPerComponent());
-        assertEquals(344, ximage.getWidth());
-        assertEquals(287, ximage.getHeight());
-        assertEquals("png", ximage.getSuffix());
+        validate(ximage, 8, 344, 287, "png");
+        document.close();
+    }
 
-        // check the image
-        assertNotNull(ximage.getImage());
-        assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
-        assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
+    /**
+     * Tests ARGB LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image)
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromImageARGB() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
-        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), "png", new NullOutputStream());
-        assertTrue(writeOk);
+        // create an ARGB image
+        int w = image.getWidth();
+        int h = image.getHeight();
+        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics ag = argbImage.getGraphics();
+        ag.drawImage(image, 0, 0, null);
+        ag.dispose();
+
+        // create a weird transparency triangle
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < Math.min(y, w); ++x)
+            {
+                argbImage.setRGB(x, y, image.getRGB(x, y) & 0xFFFFFF | ((x * 255 / w) << 24));
+            }
+        }
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+        validate(ximage, 8, 344, 287, "png");
+
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 8, 344, 287, "png");
 
         document.close();
     }
+
 }
