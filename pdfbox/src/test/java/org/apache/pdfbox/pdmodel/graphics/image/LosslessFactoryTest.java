@@ -40,9 +40,31 @@ public class LosslessFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
         PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "png");
+        checkIdent(image, ximage.getImage());
+
+        // Create a grayscale image
+        BufferedImage grayImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g = grayImage.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        ximage = LosslessFactory.createFromImage(document, grayImage);
+        validate(ximage, 8, 344, 287, "png");
+        checkIdent(grayImage, ximage.getImage());
+
+        // Create a bitonal image
+        BufferedImage bitonalImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+        g = bitonalImage.getGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        ximage = LosslessFactory.createFromImage(document, bitonalImage);
+        validate(ximage, 1, 344, 287, "png");
+        checkIdent(bitonalImage, ximage.getImage());
+
         document.close();
+
     }
 
     /**
@@ -80,6 +102,31 @@ public class LosslessFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, 344, 287, "png");
 
         document.close();
+    }
+
+    /**
+     * Check whether images are identical.
+     *
+     * @param expectedImage
+     * @param actualImage
+     */
+    private void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
+    {
+        String errMsg = "";
+
+        int w = expectedImage.getWidth();
+        int h = expectedImage.getHeight();
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < w; ++x)
+            {
+                if (expectedImage.getRGB(x, y) != actualImage.getRGB(x, y))
+                {
+                    errMsg = String.format("(%d,%d) %X != %X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                }
+                assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+            }
+        }
     }
 
 }
