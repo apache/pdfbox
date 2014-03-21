@@ -21,11 +21,13 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ImageFactory.getColorImage;
@@ -48,22 +50,54 @@ public class LosslessFactory
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
             throws IOException
     {
+        int bpc;
+        PDDeviceColorSpace deviceColorSpace;
+
         // extract color channel
         BufferedImage awtColorImage = getColorImage(image);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        //TODO use bit writing, indexed, etc
-        int h = awtColorImage.getHeight();
-        int w = awtColorImage.getWidth();
-        for (int y = 0; y < h; ++y)
+        //TODO: using the grayscale branch for BufferedImage.TYPE_BYTE_GRAY
+        // fails the test. We use the RGB branch instead until this is fixed.
+        if ((//image.getType() == BufferedImage.TYPE_BYTE_GRAY || 
+                image.getType() == BufferedImage.TYPE_BYTE_BINARY)
+                && image.getColorModel().getPixelSize() <= 8)
         {
-            for (int x = 0; x < w; ++x)
+            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
+
+            // grayscale images need one color per sample
+            bpc = image.getColorModel().getPixelSize();
+            deviceColorSpace = PDDeviceGray.INSTANCE;
+            int h = awtColorImage.getHeight();
+            int w = awtColorImage.getWidth();
+            for (int y = 0; y < h; ++y)
             {
-                Color color = new Color(awtColorImage.getRGB(x, y));
-                bos.write(color.getRed());
-                bos.write(color.getGreen());
-                bos.write(color.getBlue());
+                for (int x = 0; x < w; ++x)
+                {
+                    mcios.writeBits(awtColorImage.getRGB(x, y), bpc);
+                }
+            }
+            mcios.writeBits(0, 7); // padding
+            mcios.flush();
+            mcios.close();
+        }
+        else
+        {
+            // RGB
+            bpc = 8;
+            deviceColorSpace = PDDeviceRGB.INSTANCE;
+            int h = awtColorImage.getHeight();
+            int w = awtColorImage.getWidth();
+            for (int y = 0; y < h; ++y)
+            {
+                for (int x = 0; x < w; ++x)
+                {
+                    Color color = new Color(awtColorImage.getRGB(x, y));
+                    bos.write(color.getRed());
+                    bos.write(color.getGreen());
+                    bos.write(color.getBlue());
+                }
             }
         }
 
@@ -79,8 +113,8 @@ public class LosslessFactory
         COSDictionary dict = pdImage.getCOSStream();
         dict.setItem(COSName.FILTER, COSName.FLATE_DECODE);
 
-        pdImage.setColorSpace(PDDeviceRGB.INSTANCE); //TODO from awtColorImage
-        pdImage.setBitsPerComponent(8); //TODO other sizes
+        pdImage.setColorSpace(deviceColorSpace);
+        pdImage.setBitsPerComponent(bpc);
         pdImage.setHeight(awtColorImage.getHeight());
         pdImage.setWidth(awtColorImage.getWidth());
 
