@@ -26,7 +26,8 @@ import java.io.IOException;
 
 /**
  * F Close, fill and stroke the path with even-odd winding rule.
- * @author Andreas LehmkÃ¼hler
+ *
+ * @author Andreas Lehmkühler
  */
 public final class CloseFillEvenOddAndStrokePath extends OperatorProcessor
 {
