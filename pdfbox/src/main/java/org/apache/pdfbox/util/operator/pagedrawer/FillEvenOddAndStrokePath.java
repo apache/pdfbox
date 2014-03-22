@@ -27,14 +27,16 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 
 /**
- * B* Fill and stroke the path.
- * @author Andreas LehmkÃ¼hler
+ * B* Fill and then stroke the path, using the even-odd rule to determine the
+ * region to fill.
+ *
+ * @author Andreas Lehmkühler
  */
 public final class FillEvenOddAndStrokePath extends OperatorProcessor
 {
     @Override
     public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
-        ((PageDrawer)context).strokeAndFillPath(GeneralPath.WIND_EVEN_ODD);
+        ((PageDrawer) context).fillAndStrokePath(GeneralPath.WIND_EVEN_ODD);
     }
 }

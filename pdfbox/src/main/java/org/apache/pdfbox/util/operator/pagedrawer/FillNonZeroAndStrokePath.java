@@ -27,7 +27,9 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 
 /**
- * B Fill and stroke the path using the non-zero winding rule.
+ * B Fill and then stroke the path, using the nonzero winding number rule to
+ * determine the region to fill.
+ *
  * @author Ben Litchfield
  */
 public class FillNonZeroAndStrokePath extends OperatorProcessor
@@ -35,6 +37,6 @@ public class FillNonZeroAndStrokePath extends OperatorProcessor
     @Override
     public void process(PDFOperator operator, List<COSBase> operands) throws IOException
     {
-        ((PageDrawer)context).strokeAndFillPath(GeneralPath.WIND_NON_ZERO);
+        ((PageDrawer) context).fillAndStrokePath(GeneralPath.WIND_NON_ZERO);
     }
 }

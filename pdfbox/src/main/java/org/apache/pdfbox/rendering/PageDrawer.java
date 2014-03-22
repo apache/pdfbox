@@ -714,9 +714,8 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @throws IOException If there is an IO error while filling the path.
      */
-    public void strokeAndFillPath(int windingRule) throws IOException
+    public void fillAndStrokePath(int windingRule) throws IOException
     {
-        //TODO rename this method
         // TODO can we avoid cloning the path?
         GeneralPath path = (GeneralPath)linePath.clone();
         fillPath(windingRule);

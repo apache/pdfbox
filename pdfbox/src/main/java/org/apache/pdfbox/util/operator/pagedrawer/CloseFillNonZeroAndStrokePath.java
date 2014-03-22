@@ -25,6 +25,7 @@ import java.io.IOException;
 
 /**
  * b Close, fill and stroke the path with non-zero winding rule.
+ *
  * @author Ben Litchfield
  */
 public final class CloseFillNonZeroAndStrokePath extends OperatorProcessor
