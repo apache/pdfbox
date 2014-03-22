@@ -67,14 +67,29 @@ public class TilingPaint extends TexturePaint
     //  gets rect in parent content stream coordinates
     private static Rectangle getTransformedRect(PDTilingPattern pattern)
     {
+        int x = (int)pattern.getBBox().getLowerLeftX();
+        int y = (int)pattern.getBBox().getLowerLeftY();
+        int width = (int)pattern.getBBox().getWidth();
+        int height = (int)pattern.getBBox().getHeight();
+
+        // xStep and yStep
+        if (pattern.getXStep() != 0)
+        {
+            width = pattern.getXStep();
+        }
+        if (pattern.getYStep() != 0)
+        {
+            height = pattern.getXStep();
+        }
+
         if (pattern.getMatrix() == null)
         {
-            return new Rectangle(pattern.getBBox().createDimension());
+            return new Rectangle(x, y, width, height);
         }
         else
         {
             AffineTransform at = pattern.getMatrix().createAffineTransform();
-            Rectangle rect = new Rectangle(pattern.getBBox().createDimension());
+            Rectangle rect = new Rectangle(x, y, width, height);
             return at.createTransformedShape(rect).getBounds();
         }
     }
@@ -95,7 +110,9 @@ public class TilingPaint extends TexturePaint
         WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
         BufferedImage image = new BufferedImage(cm, raster, false, null);
 
-        // TODO xStep and yStep
+        // TODO the pattern matrix needs to map onto the parent stream's initial space, not the CTM
+        //      so the transformation below is not correct, because TilingPaint needs more
+        //      information to perform the transformation correctly, see PDF 32000, p174.
 
         // matrix
         Matrix matrix;
@@ -111,9 +128,6 @@ public class TilingPaint extends TexturePaint
             matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
             matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
         }
-
-        // TODO shouldn't create PageDrawer here, the class needs to be overridable
-        // can we re-use the existing PageDrawer somehow and just push/pop its graphics state?
 
         PageDrawer drawer = new PageDrawer(renderer);
         PDRectangle pdRect = new PDRectangle(0, 0, width, height);
