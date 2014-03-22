@@ -708,7 +708,7 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Strokes and fills the path.
+     * Fills and then strokes the path.
      *
      * @param windingRule The winding rule this path will use.
      *
@@ -716,11 +716,12 @@ public class PageDrawer extends PDFStreamEngine
      */
     public void strokeAndFillPath(int windingRule) throws IOException
     {
+        //TODO rename this method
         // TODO can we avoid cloning the path?
         GeneralPath path = (GeneralPath)linePath.clone();
-        strokePath();
-        linePath = path;
         fillPath(windingRule);
+        linePath = path;
+        strokePath();
     }
 
     // This code generalizes the code Jim Lynch wrote for AppendRectangleToPath
