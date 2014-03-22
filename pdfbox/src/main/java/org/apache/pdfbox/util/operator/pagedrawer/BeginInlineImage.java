@@ -50,7 +50,7 @@ public final class BeginInlineImage extends OperatorProcessor
         {
             PDColorSpace colorSpace = drawer.getGraphicsState().getNonStrokingColorSpace();
             PDColor color = drawer.getGraphicsState().getNonStrokingColor();
-            awtImage = image.getStencilImage(colorSpace.toPaint(drawer.getRenderer(), color)); // <--- TODO: pass page height?
+            awtImage = image.getStencilImage(colorSpace.toPaint(drawer.getRenderer(), color, drawer.getPageHeight()));
         }
         else
         {

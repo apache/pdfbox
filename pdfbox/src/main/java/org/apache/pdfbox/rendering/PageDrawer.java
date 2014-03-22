@@ -126,6 +126,15 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
+     * Returns the page height.
+     * @return the page height
+     */
+    public int getPageHeight()
+    {
+        return pageHeight;
+    }
+
+    /**
      * This will draw the page to the requested context.
      * 
      * @param g The graphics context to draw onto.
