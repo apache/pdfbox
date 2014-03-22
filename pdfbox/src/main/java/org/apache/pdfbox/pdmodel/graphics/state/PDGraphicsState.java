@@ -46,7 +46,7 @@ public class PDGraphicsState implements Cloneable
     private PDColorSpace nonStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDTextState textState = new PDTextState();
     private float lineWidth = 1;
-    private int lineCap = BasicStroke.CAP_SQUARE;
+    private int lineCap = BasicStroke.CAP_BUTT;
     private int lineJoin = BasicStroke.JOIN_MITER;
     private float miterLimit = 10;
     private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
