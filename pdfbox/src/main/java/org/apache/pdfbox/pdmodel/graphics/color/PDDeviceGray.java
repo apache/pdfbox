@@ -41,8 +41,6 @@ public final class PDDeviceGray extends PDDeviceColorSpace
 {
     /** The single instance of this class. */
     public static final PDDeviceGray INSTANCE = new PDDeviceGray();
-
-    private static final ColorSpace COLOR_SPACE_GRAY = ColorSpace.getInstance(ColorSpace.CS_GRAY);
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
 
     private PDDeviceGray()
