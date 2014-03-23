@@ -1298,7 +1298,7 @@ public class COSWriter implements ICOSVisitor
         }
         else
         {
-            if (document.isEncrypted())
+            if (document.getEncryption() != null)
             {
                 SecurityHandler securityHandler = document.getEncryption().getSecurityHandler();
                 if(securityHandler != null)
