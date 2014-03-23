@@ -58,10 +58,8 @@ public class LosslessFactory
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        //TODO: using the grayscale branch for BufferedImage.TYPE_BYTE_GRAY
-        // fails the test. We use the RGB branch instead until this is fixed.
-        if ((//image.getType() == BufferedImage.TYPE_BYTE_GRAY || 
-                image.getType() == BufferedImage.TYPE_BYTE_BINARY)
+        if ((image.getType() == BufferedImage.TYPE_BYTE_GRAY
+                || image.getType() == BufferedImage.TYPE_BYTE_BINARY)
                 && image.getColorModel().getPixelSize() <= 8)
         {
             MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);

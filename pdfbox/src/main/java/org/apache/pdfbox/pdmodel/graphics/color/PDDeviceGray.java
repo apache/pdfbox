@@ -18,16 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSName;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
-import java.awt.Transparency;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
