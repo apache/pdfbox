@@ -320,7 +320,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     public int getBitsPerComponent()
     {
-        return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
+        if (isStencil())
+        {
+            return 1;
+        }
+        else
+        {
+            return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
+        }
     }
 
     public void setBitsPerComponent(int bpc)
