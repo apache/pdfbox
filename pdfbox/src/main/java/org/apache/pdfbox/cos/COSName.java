@@ -56,6 +56,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ADBE_PKCS7_SHA1 = new COSName("adbe.pkcs7.sha1");
     public static final COSName ADBE_X509_RSA_SHA1 = new COSName("adbe.x509.rsa_sha1");
     public static final COSName ADOBE_PPKLITE = new COSName("Adobe.PPKLite");
+    public static final COSName AESV3 = new COSName("AESV3");
     public static final COSName AIS = new COSName("AIS");
     public static final COSName ALT = new COSName("Alt");
     public static final COSName ALTERNATE = new COSName("Alternate");
@@ -306,6 +307,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName OCG = new COSName("OCG");
     public static final COSName OCGS = new COSName("OCGs");
     public static final COSName OCPROPERTIES = new COSName("OCProperties");
+    public static final COSName OE = new COSName("OE");
     public static final COSName OFF = new COSName("OFF");
     public static final COSName ON = new COSName("ON");
     public static final COSName OP = new COSName("OP");
@@ -335,6 +337,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PATTERN = new COSName("Pattern");
     public static final COSName PATTERN_TYPE = new COSName("PatternType");
     public static final COSName PDF_DOC_ENCODING = new COSName("PDFDocEncoding");
+    public static final COSName PERMS = new COSName("Perms");
     public static final COSName PG = new COSName("Pg");
     public static final COSName PRE_RELEASE = new COSName("PreRelease");
     public static final COSName PREDICTOR = new COSName("Predictor");
@@ -421,6 +424,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TYPE3 = new COSName("Type3");
     // U
     public static final COSName U = new COSName("U");
+    public static final COSName UE = new COSName("UE");
     public static final COSName UF = new COSName("UF");
     public static final COSName UNCHANGED = new COSName("Unchanged");
     public static final COSName UNIX = new COSName("Unix");

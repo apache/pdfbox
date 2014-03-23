@@ -246,6 +246,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      */
     public void prepareDocumentForEncryption(PDDocument doc) throws IOException
     {
+        if (keyLength == 256)
+        {
+            throw new IOException("256 bit key length is not supported yet for public key security");
+        }
         try
         {
             Security.addProvider(new BouncyCastleProvider());

@@ -41,13 +41,13 @@ public abstract class ProtectionPolicy
      * The default value is 40 bits, which provides a low security level
      * but is compatible with old versions of Acrobat Reader.
      *
-     * @param l the length in bits (must be 40 or 128)
+     * @param l the length in bits (must be 40, 128 or 256)
      */
     public void setEncryptionKeyLength(int l)
     {
-        if(l!=40 && l!=128)
+        if(l!=40 && l!=128 && l!=256)
         {
-            throw new RuntimeException("Invalid key length '" + l + "' value must be 40 or 128!");
+            throw new IllegalArgumentException("Invalid key length '" + l + "' value must be 40, 128 or 256!");
         }
         encryptionKeyLength = l;
     }
