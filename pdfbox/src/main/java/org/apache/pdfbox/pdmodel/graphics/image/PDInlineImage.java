@@ -103,7 +103,14 @@ public final class PDInlineImage implements PDImage
 
     public int getBitsPerComponent()
     {
-        return parameters.getInt(COSName.BPC, COSName.BITS_PER_COMPONENT, -1);
+        if (isStencil())
+        {
+            return 1;
+        }
+        else
+        {
+            return parameters.getInt(COSName.BPC, COSName.BITS_PER_COMPONENT, -1);
+        }
     }
 
     public void setBitsPerComponent(int bitsPerComponent)
