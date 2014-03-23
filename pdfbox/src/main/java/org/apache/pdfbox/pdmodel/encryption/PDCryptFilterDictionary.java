@@ -88,7 +88,7 @@ public class PDCryptFilterDictionary
 
      /**
      * This will set the crypt filter method. 
-     * Allowed values are: NONE, V2, AESV2
+     * Allowed values are: NONE, V2, AESV2, AESV3
      *
      * @param cfm name of the crypt filter method.
      *
@@ -101,7 +101,7 @@ public class PDCryptFilterDictionary
 
     /**
      * This will return the crypt filter method. 
-     * Allowed values are: NONE, V2, AESV2
+     * Allowed values are: NONE, V2, AESV2, AESV3
      *
      * @return the name of the crypt filter method.
      *

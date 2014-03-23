@@ -22,10 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +49,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -55,6 +58,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * @author Ben Litchfield
  * @author Benoit Guillon
+ * @author Manuel Kasper
  */
 public abstract class SecurityHandler
 {
@@ -213,95 +217,137 @@ public abstract class SecurityHandler
     public void encryptData(long objectNumber, long genNumber, InputStream data,
                             OutputStream output, boolean decrypt) throws IOException
     {
-        if (useAES && !decrypt)
-        {
-            throw new IllegalArgumentException("AES encryption is not yet implemented.");
-        }
-
-        byte[] newKey = new byte[encryptionKey.length + 5];
-        System.arraycopy(encryptionKey, 0, newKey, 0, encryptionKey.length);
-        // PDF 1.4 reference pg 73
-        // step 1
-        // we have the reference
-
-        // step 2
-        newKey[newKey.length - 5] = (byte) (objectNumber & 0xff);
-        newKey[newKey.length - 4] = (byte) ((objectNumber >> 8) & 0xff);
-        newKey[newKey.length - 3] = (byte) ((objectNumber >> 16) & 0xff);
-        newKey[newKey.length - 2] = (byte) (genNumber & 0xff);
-        newKey[newKey.length - 1] = (byte) ((genNumber >> 8) & 0xff);
-
-        // step 3
-        MessageDigest md = MessageDigests.getMD5();
-        md.update(newKey);
-        if (useAES)
-        {
-            md.update(AES_SALT);
-        }
-        byte[] digestedKey = md.digest();
-
-        // step 4
-        int length = Math.min(newKey.length, 16);
-        byte[] finalKey = new byte[length];
-        System.arraycopy(digestedKey, 0, finalKey, 0, length);
-
-        if (useAES)
+        // Determine whether we're using Algorithm 1 (for RC4 and AES-128), or 1.A (for AES-256)
+        if (useAES && encryptionKey.length == 32)
         {
             byte[] iv = new byte[16];
+            
+            if (decrypt)
+            {
+                // read IV from stream
+                data.read(iv);
+            }
+            else
+            {
+                // generate random IV and write to stream
+                SecureRandom rnd = new SecureRandom();
+                rnd.nextBytes(iv);
+                output.write(iv);
+            }
 
-            data.read(iv);
-
+            Cipher cipher;
             try
             {
-                Cipher decryptCipher;
-                try
-                {
-                    decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-                }
-                catch (NoSuchAlgorithmException e)
-                {
-                    // should never happen
-                    throw new RuntimeException(e);
-                }
+                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                SecretKeySpec keySpec = new SecretKeySpec(encryptionKey, "AES");
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                cipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, keySpec, ivSpec);
 
-                SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
-
-                IvParameterSpec ips = new IvParameterSpec(iv);
-
-                decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
-
-                CipherInputStream cipherStream = new CipherInputStream(data, decryptCipher);
-
-                try
-                {
-                    byte[] buffer = new byte[4096];
-                    for (int n = 0; -1 != (n = cipherStream.read(buffer));)
-                    {
-                        output.write(buffer, 0, n);
-                    }
-                }
-                finally
-                {
-                    cipherStream.close();
-                }
             }
-            catch (InvalidKeyException e)
+            catch (GeneralSecurityException e)
             {
                 throw new IOException(e);
             }
-            catch (InvalidAlgorithmParameterException e)
+
+            CipherInputStream cis = new CipherInputStream(data, cipher);
+            try
             {
-                throw new IOException(e);
+                IOUtils.copy(cis, output);
             }
-            catch (NoSuchPaddingException e)
+            finally
             {
-                throw new IOException(e);
+                cis.close();
             }
         }
         else
         {
-            rc4.setKey(finalKey);
-            rc4.write(data, output);
+            if (useAES && !decrypt)
+            {
+                throw new IllegalArgumentException("AES encryption with key length other than 256 bits is not yet implemented.");
+            }
+
+            byte[] newKey = new byte[encryptionKey.length + 5];
+            System.arraycopy(encryptionKey, 0, newKey, 0, encryptionKey.length);
+            // PDF 1.4 reference pg 73
+            // step 1
+            // we have the reference
+
+            // step 2
+            newKey[newKey.length - 5] = (byte) (objectNumber & 0xff);
+            newKey[newKey.length - 4] = (byte) (objectNumber >> 8 & 0xff);
+            newKey[newKey.length - 3] = (byte) (objectNumber >> 16 & 0xff);
+            newKey[newKey.length - 2] = (byte) (genNumber & 0xff);
+            newKey[newKey.length - 1] = (byte) (genNumber >> 8 & 0xff);
+
+            // step 3
+            MessageDigest md = MessageDigests.getMD5();
+            md.update(newKey);
+            if (useAES)
+            {
+                md.update(AES_SALT);
+            }
+            byte[] digestedKey = md.digest();
+
+            // step 4
+            int length = Math.min(newKey.length, 16);
+            byte[] finalKey = new byte[length];
+            System.arraycopy(digestedKey, 0, finalKey, 0, length);
+
+            if (useAES)
+            {
+                byte[] iv = new byte[16];
+
+                data.read(iv);
+
+                try
+                {
+                    Cipher decryptCipher;
+                    try
+                    {
+                        decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                    }
+                    catch (NoSuchAlgorithmException e)
+                    {
+                        // should never happen
+                        throw new RuntimeException(e);
+                    }
+
+                    SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
+                    IvParameterSpec ips = new IvParameterSpec(iv);
+                    decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
+                    CipherInputStream cipherStream = new CipherInputStream(data, decryptCipher);
+
+                    try
+                    {
+                        byte[] buffer = new byte[4096];
+                        for (int n = 0; -1 != (n = cipherStream.read(buffer));)
+                        {
+                            output.write(buffer, 0, n);
+                        }
+                    }
+                    finally
+                    {
+                        cipherStream.close();
+                    }
+                }
+                catch (InvalidKeyException e)
+                {
+                    throw new IOException(e);
+                }
+                catch (InvalidAlgorithmParameterException e)
+                {
+                    throw new IOException(e);
+                }
+                catch (NoSuchPaddingException e)
+                {
+                    throw new IOException(e);
+                }
+            }
+            else
+            {
+                rc4.setKey(finalKey);
+                rc4.write(data, output);
+            }
         }
 
         output.flush();

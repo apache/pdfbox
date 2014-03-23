@@ -314,6 +314,70 @@ public class PDEncryption
     }
 
     /**
+     * This will set the OE entry in the standard encryption dictionary.
+     *
+     * @param oe A 32 byte array or null if there is no owner encryption key.
+     *
+     * @throws IOException If there is an error setting the data.
+     */
+    public void setOwnerEncryptionKey(byte[] oe) throws IOException
+    {
+        COSString ownerEncryptionKey = new COSString();
+        ownerEncryptionKey.append(oe);
+        dictionary.setItem( COSName.OE, ownerEncryptionKey );
+    }
+
+    /**
+     * This will get the OE entry in the standard encryption dictionary.
+     *
+     * @return A 32 byte array or null if there is no owner encryption key.
+     *
+     * @throws IOException If there is an error accessing the data.
+     */
+    public byte[] getOwnerEncryptionKey() throws IOException
+    {
+        byte[] oe = null;
+        COSString ownerEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.OE );
+        if( ownerEncryptionKey != null )
+        {
+            oe = ownerEncryptionKey.getBytes();
+        }
+        return oe;
+    }
+
+    /**
+     * This will set the UE entry in the standard encryption dictionary.
+     *
+     * @param ue A 32 byte array or null if there is no user encryption key.
+     *
+     * @throws IOException If there is an error setting the data.
+     */
+    public void setUserEncryptionKey(byte[] ue) throws IOException
+    {
+        COSString userEncryptionKey = new COSString();
+        userEncryptionKey.append(ue);
+        dictionary.setItem( COSName.UE, userEncryptionKey );
+    }
+
+    /**
+     * This will get the UE entry in the standard encryption dictionary.
+     *
+     * @return A 32 byte array or null if there is no user encryption key.
+     *
+     * @throws IOException If there is an error accessing the data.
+     */
+    public byte[] getUserEncryptionKey() throws IOException
+    {
+        byte[] ue = null;
+        COSString userEncryptionKey = (COSString)dictionary.getDictionaryObject( COSName.UE );
+        if( userEncryptionKey != null )
+        {
+            ue = userEncryptionKey.getBytes();
+        }
+        return ue;
+    }
+
+    /**
      * This will set the permissions bit mask.
      *
      * @param permissions The new permissions bit mask
@@ -425,6 +489,34 @@ public class PDEncryption
         }
         return null;
     }
+
+    /**
+     * Sets the crypt filter with the given name.
+     * 
+     * @param cryptFilterName the name of the crypt filter
+     * @param cryptFilterDictionary the crypt filter to set
+     */
+    public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)
+    {
+        COSDictionary cfDictionary = (COSDictionary)dictionary.getDictionaryObject( COSName.CF );
+        if (cfDictionary == null)
+        {
+            cfDictionary = new COSDictionary();
+            dictionary.setItem(COSName.CF, cfDictionary);
+        }
+        
+        cfDictionary.setItem(cryptFilterName, cryptFilterDictionary.getCOSDictionary());
+    }
+    
+    /**
+     * Sets the standard crypt filter.
+     * 
+     * @param cryptFilterDictionary the standard crypt filter to set
+     */
+    public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)
+    {
+        setCryptFilterDictionary(COSName.STD_CF, cryptFilterDictionary);
+    }
     
     /**
      * Returns the name of the filter which is used for de/encrypting streams.
@@ -443,6 +535,16 @@ public class PDEncryption
     }
 
     /**
+     * Sets the name of the filter which is used for de/encrypting streams.
+     * 
+     * @param streamFilterName the name of the filter
+     */
+    public void setStreamFilterName(COSName streamFilterName)
+    {
+        dictionary.setItem(COSName.STM_F, streamFilterName);
+    }
+
+    /**
      * Returns the name of the filter which is used for de/encrypting strings.
      * Default value is "Identity".
      * 
@@ -456,6 +558,48 @@ public class PDEncryption
             strF = COSName.IDENTITY;
         }
         return strF;
+    }
+
+    /**
+     * Sets the name of the filter which is used for de/encrypting strings.
+     * 
+     * @param stringFilterName the name of the filter
+     */
+    public void setStringFilterName(COSName stringFilterName)
+    {
+        dictionary.setItem(COSName.STR_F, stringFilterName);
+    }
+
+    /**
+     * Set the Perms entry in the encryption dictionary.
+     *
+     * @param perms A 16 byte array.
+     *
+     * @throws IOException If there is an error setting the data.
+     */
+    public void setPerms(byte[] perms) throws IOException
+    {
+        COSString user = new COSString();
+        user.append( perms );
+        dictionary.setItem( COSName.PERMS, user );
+    }
+
+    /**
+     * Get the Perms entry in the encryption dictionary.
+     *
+     * @return A 16 byte array or null if there is no Perms entry.
+     *
+     * @throws IOException If there is an error accessing the data.
+     */
+    public byte[] getPerms() throws IOException
+    {
+        byte[] perms = null;
+        COSString cos_perms = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
+        if( cos_perms != null )
+        {
+            perms = cos_perms.getBytes();
+        }
+        return perms;
     }
 
 }
