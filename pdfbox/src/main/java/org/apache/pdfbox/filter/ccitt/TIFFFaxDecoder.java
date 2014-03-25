@@ -881,7 +881,8 @@ public final class TIFFFaxDecoder {
                                       byte[] compData,
                                       int startX,
                                       int height,
-                                      long tiffT6Options) {
+                                      long tiffT6Options,
+                                      boolean encodedByteAlign) {
         this.data = compData;
         compression = 4;
 
@@ -918,6 +919,11 @@ public final class TIFFFaxDecoder {
         int bitOffset;
 
         for (int lines = 0; lines < height; lines++) {
+            if (encodedByteAlign && bitPointer != 0)
+            {
+                bitPointer = 0;
+                bytePointer++;
+            }
             // a0 has to be set just before the start of the scanline.
             a0 = -1;
             isWhite = true;

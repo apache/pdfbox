@@ -91,6 +91,7 @@ final class CCITTFaxFilter extends Filter
 
         // decompress data
         int k = decodeParms.getInt(COSName.K, 0);
+        boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);
         int arraySize = (cols + 7) / 8 * rows;
         TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
         // TODO possible options??
@@ -112,7 +113,7 @@ final class CCITTFaxFilter extends Filter
         else if (k < 0)
         {
             decompressed = new byte[arraySize];
-            faxDecoder.decodeT6(decompressed, compressed, 0, rows, tiffOptions);
+            faxDecoder.decodeT6(decompressed, compressed, 0, rows, tiffOptions, encodedByteAlign);
         }
 
         // invert bitmap
