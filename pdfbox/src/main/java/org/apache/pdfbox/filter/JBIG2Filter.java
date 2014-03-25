@@ -79,7 +79,7 @@ public class JBIG2Filter implements Filter
         }
         if (st != null)
         {
-            compressedData = new SequenceInputStream(st.getFilteredStream(),
+            compressedData = new SequenceInputStream(st.getUnfilteredStream(),
                     compressedData);
         }
         ImageInputStream iis = ImageIO.createImageInputStream(compressedData);
