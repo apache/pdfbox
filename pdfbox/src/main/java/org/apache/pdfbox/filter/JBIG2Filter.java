@@ -89,7 +89,7 @@ final class JBIG2Filter extends Filter
             if (globals != null)
             {
                 iis = ImageIO.createImageInputStream(
-                        new SequenceInputStream(globals.getFilteredStream(), encoded));
+                        new SequenceInputStream(globals.getUnfilteredStream(), encoded));
                 reader.setInput(iis);
             }
             else
