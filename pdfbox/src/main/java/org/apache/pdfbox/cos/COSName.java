@@ -178,6 +178,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName EMBEDDED_FILES = new COSName("EmbeddedFiles");
     public static final COSName EMPTY = new COSName("");
     public static final COSName ENCODE = new COSName("Encode");
+    public static final COSName ENCODED_BYTE_ALIGN = new COSName("EncodedByteAlign");    
     public static final COSName ENCODING = new COSName("Encoding");
     public static final COSName ENCODING_90MS_RKSJ_H = new COSName("90ms-RKSJ-H");
     public static final COSName ENCODING_90MS_RKSJ_V = new COSName("90ms-RKSJ-V");
@@ -185,6 +186,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ENCODING_ETEN_B5_V = new COSName("ETen?B5?V");
     public static final COSName ENCRYPT = new COSName("Encrypt");
     public static final COSName ENCRYPT_META_DATA = new COSName("EncryptMetadata");
+    public static final COSName END_OF_LINE = new COSName("EndOfLine");
     public static final COSName ENTRUST_PPKEF = new COSName("Entrust.PPKEF");
     public static final COSName EXT_G_STATE = new COSName("ExtGState");
     public static final COSName EXTEND = new COSName("Extend");
