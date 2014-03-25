@@ -187,9 +187,16 @@ public abstract class PDXObjectImage extends PDXObject
         }
         
         graphics.fillRect(0, 0, baseImage.getWidth(), baseImage.getHeight());
-        // assume default values ([0,1]) for the DecodeArray
-        // TODO DecodeArray == [1,0]
-        graphics.setComposite(AlphaComposite.DstIn);
+        COSArray decode = getDecode();
+        if (decode != null && decode.getInt(0) == 1)
+        {
+            // PDFBOX-1998
+            graphics.setComposite(AlphaComposite.DstOut);
+        }
+        else
+        {
+            graphics.setComposite(AlphaComposite.DstIn);
+        }
         graphics.drawImage(baseImage, null, 0, 0);
         graphics.dispose();
         return stencilMask;
