@@ -121,7 +121,7 @@ public class TestCCITTFaxG31DDecodeInputStream extends AbstractCCITTFaxTestCase
         int rows = 2; //We actually have data for three rows. Just checking the restriction.
 
         CCITTFaxG31DDecodeInputStream decoder = new CCITTFaxG31DDecodeInputStream(
-                new ByteArrayInputStream(data), columns, rows);
+                new ByteArrayInputStream(data), columns, rows, false);
         byte[] decoded = IOUtils.toByteArray(decoder);
         decoder.close();
 
@@ -168,7 +168,7 @@ public class TestCCITTFaxG31DDecodeInputStream extends AbstractCCITTFaxTestCase
     public static byte[] decode(byte[] data, int columns) throws IOException
     {
         CCITTFaxG31DDecodeInputStream decoder = new CCITTFaxG31DDecodeInputStream(
-                new ByteArrayInputStream(data), columns);
+                new ByteArrayInputStream(data), columns, false);
         byte[] decoded = IOUtils.toByteArray(decoder);
         decoder.close();
         return decoded;
