@@ -535,6 +535,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
      * A common COSName value.
      */
+    public static final COSName ENCODED_BYTE_ALIGN = new COSName("EncodedByteAlign");
+    /**
+     * A common COSName value.
+     */
     public static final COSName ENCODING = new COSName( "Encoding" );
     /**
      * A common COSName value.
@@ -562,6 +566,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * A common COSName value.
      */
     public static final COSName ENCRYPT_META_DATA = new COSName( "EncryptMetadata" );
+
+    /**
+     * A common COSName value.
+     */
+    public static final COSName END_OF_LINE = new COSName("EndOfLine");
     
     /**
      * A common COSName value.
