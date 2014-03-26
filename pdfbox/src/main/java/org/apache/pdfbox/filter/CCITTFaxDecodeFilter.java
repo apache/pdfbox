@@ -110,7 +110,7 @@ public class CCITTFaxDecodeFilter implements Filter
         if (k == 0)
         {
             InputStream in = new CCITTFaxG31DDecodeInputStream(
-                    new java.io.ByteArrayInputStream(compressed), cols);
+                    new java.io.ByteArrayInputStream(compressed), cols, encodedByteAlign);
             in = new FillOrderChangeInputStream(in); //Decorate to change fill order
             IOUtils.copy(in, result);
             in.close();

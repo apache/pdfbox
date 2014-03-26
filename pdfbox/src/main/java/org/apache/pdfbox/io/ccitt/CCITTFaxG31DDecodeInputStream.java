@@ -36,6 +36,7 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
     private InputStream source;
     private int columns;
     private int rows;
+    private boolean encodedByteAlign;
 
     //for reading compressed bits
     private int bits;
@@ -64,24 +65,29 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
      * @param source the input stream containing the compressed data.
      * @param columns the number of columns
      * @param rows the number of rows (0 if undefined)
+     * @param encodedByteAlign true if each encoded scan line is filled 
+     * to a byte boundary, false if not
      */
-    public CCITTFaxG31DDecodeInputStream(InputStream source, int columns, int rows)
+    public CCITTFaxG31DDecodeInputStream(InputStream source, int columns, int rows, boolean encodedByteAlign)
     {
         this.source = source;
         this.columns = columns;
         this.rows = rows;
         this.decodedLine = new PackedBitArray(columns);
         this.decodedReadPos = this.decodedLine.getByteCount();
+        this.encodedByteAlign = encodedByteAlign;
     }
 
     /**
      * Creates a new decoder.
      * @param source the input stream containing the compressed data.
      * @param columns the number of columns
+     * @param encodedByteAlign true if each encoded scan line is filled 
+     * to a byte boundary, false if not
      */
-    public CCITTFaxG31DDecodeInputStream(InputStream source, int columns)
+    public CCITTFaxG31DDecodeInputStream(InputStream source, int columns, boolean encodedByteAlign)
     {
-        this(source, columns, 0);
+        this(source, columns, 0, encodedByteAlign);
     }
 
     /** {@inheritDoc} */
@@ -111,6 +117,10 @@ public class CCITTFaxG31DDecodeInputStream extends InputStream implements CCITTF
 
     private boolean decodeLine() throws IOException
     {
+        if (encodedByteAlign && this.bitPos != 0)
+        {
+            readByte();
+        }
         if (this.bits < 0)
         {
             return false; //Shortcut after EOD
