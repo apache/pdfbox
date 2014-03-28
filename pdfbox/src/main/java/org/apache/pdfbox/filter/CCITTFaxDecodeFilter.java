@@ -69,25 +69,7 @@ public class CCITTFaxDecodeFilter implements Filter
         {
             decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(filterIndex);
         }
-        int length = options.getInt(COSName.LENGTH, -1);
-        byte[] compressed = null;
-        if (length != -1)
-        {
-            compressed = new byte[length];
-            long written = IOUtils.populateBuffer(compressedData, compressed);
-            if (written != compressed.length)
-            {
-                log.warn("Buffer for compressed data did not match the length"
-                        + " of the actual compressed data");
-            }
-        }
-        else
-        {
-            // inline images don't provide the length of the stream so that
-            // we have to read until the end of the stream to find out the length
-            // the streams inline images are stored in are mostly small ones
-            compressed = IOUtils.toByteArray(compressedData);
-        }
+        byte[] compressed = IOUtils.toByteArray(compressedData);
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
         int height = options.getInt(COSName.HEIGHT, COSName.H, 0);
