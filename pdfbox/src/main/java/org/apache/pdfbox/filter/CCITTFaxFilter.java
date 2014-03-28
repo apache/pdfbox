@@ -53,27 +53,6 @@ final class CCITTFaxFilter extends Filter
         COSDictionary decodeParms = (COSDictionary)
                 parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
 
-        // get compressed data
-        int length = parameters.getInt(COSName.LENGTH, -1);
-        byte[] compressed;
-        if (length != -1)
-        {
-            compressed = new byte[length];
-            long written = IOUtils.populateBuffer(encoded, compressed);
-            if (written != compressed.length)
-            {
-                log.warn("Buffer for compressed data did not match the length"
-                        + " of the actual compressed data");
-            }
-        }
-        else
-        {
-            // inline images don't provide the length of the stream so that
-            // we have to read until the end of the stream to find out the length
-            // the streams inline images are stored in are mostly small ones
-            compressed = IOUtils.toByteArray(encoded);
-        }
-
         // parse dimensions
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
@@ -96,6 +75,7 @@ final class CCITTFaxFilter extends Filter
         TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
         // TODO possible options??
         long tiffOptions = 0;
+        byte[] compressed = IOUtils.toByteArray(encoded);
         byte[] decompressed = null;
         if (k == 0)
         {
