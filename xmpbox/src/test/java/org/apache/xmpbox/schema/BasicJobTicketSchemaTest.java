@@ -23,15 +23,13 @@ package org.apache.xmpbox.schema;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
-import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

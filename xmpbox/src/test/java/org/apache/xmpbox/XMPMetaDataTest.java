@@ -22,11 +22,9 @@
 package org.apache.xmpbox;
 
 import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.xml.XmpSerializationException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;

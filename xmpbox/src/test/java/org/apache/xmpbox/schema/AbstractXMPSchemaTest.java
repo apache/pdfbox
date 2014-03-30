@@ -27,9 +27,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.AgentNameType;
 import org.apache.xmpbox.type.BooleanType;
@@ -43,6 +40,7 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.Types;
 import org.apache.xmpbox.type.URIType;
 import org.apache.xmpbox.type.URLType;
+import org.junit.Assert;
 import org.junit.Test;
 
 public abstract class AbstractXMPSchemaTest

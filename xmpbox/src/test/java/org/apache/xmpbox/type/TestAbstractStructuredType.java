@@ -22,10 +22,8 @@
 package org.apache.xmpbox.type;
 
 import java.util.Calendar;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.XMPMetadata;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

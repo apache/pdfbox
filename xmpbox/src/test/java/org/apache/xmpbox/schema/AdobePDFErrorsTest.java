@@ -21,11 +21,10 @@
 
 package org.apache.xmpbox.schema;
 
-import junit.framework.Assert;
-
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

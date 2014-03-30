@@ -24,9 +24,6 @@ package org.apache.xmpbox.schema;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.DateConverter;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.XmpConstants;
@@ -40,6 +37,7 @@ import org.apache.xmpbox.type.DateType;
 import org.apache.xmpbox.type.IntegerType;
 import org.apache.xmpbox.type.TextType;
 import org.apache.xmpbox.type.TypeMapping;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
