@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.pdfbox.cos.COSInteger;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSInteger;
+import org.junit.Assert;
 
 /**
  * A test case for PDNameTreeNode.
