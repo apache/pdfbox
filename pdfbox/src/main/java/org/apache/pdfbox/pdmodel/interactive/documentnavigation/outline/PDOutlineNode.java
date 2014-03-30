@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -81,16 +82,16 @@ public class PDOutlineNode implements COSObjectable
     protected PDOutlineNode getParent()
     {
         PDOutlineNode retval = null;
-        COSDictionary parent = (COSDictionary)node.getDictionaryObject( "Parent", "P" );
-        if( parent != null )
+        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        if (parent != null)
         {
-            if( parent.getDictionaryObject( "Parent", "P" ) == null )
+            if (parent.getDictionaryObject(COSName.PARENT, COSName.P) == null)
             {
-                retval = new PDDocumentOutline( parent );
+                retval = new PDDocumentOutline(parent);
             }
             else
             {
-                retval = new PDOutlineItem( parent );
+                retval = new PDOutlineItem(parent);
             }
         }
 
