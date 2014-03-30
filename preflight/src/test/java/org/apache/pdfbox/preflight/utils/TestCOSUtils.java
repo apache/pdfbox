@@ -40,7 +40,6 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.junit.Test;
 
 public class TestCOSUtils
@@ -51,9 +50,9 @@ public class TestCOSUtils
     {
         try
         {
-            COSObject co = new COSObject(new COSInteger(10));
+            COSObject co = new COSObject(COSInteger.get(10));
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isInteger(co, new IOCOSDocument()));
 
@@ -75,7 +74,7 @@ public class TestCOSUtils
         {
             COSObject co = new COSObject(new COSFloat(10.0f));
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isFloat(co, new IOCOSDocument()));
 
@@ -97,7 +96,7 @@ public class TestCOSUtils
         {
             COSObject co = new COSObject(new COSString(""));
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isString(co, new IOCOSDocument()));
 
@@ -119,7 +118,7 @@ public class TestCOSUtils
         {
             COSObject co = new COSObject(new COSStream(null));
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isStream(co, new IOCOSDocument()));
 
@@ -141,7 +140,7 @@ public class TestCOSUtils
         {
             COSObject co = new COSObject(new COSDictionary());
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isDictionary(co, new IOCOSDocument()));
 
@@ -163,7 +162,7 @@ public class TestCOSUtils
         {
             COSObject co = new COSObject(new COSArray());
             co.setGenerationNumber(COSInteger.ZERO);
-            co.setObjectNumber(new COSInteger(10));
+            co.setObjectNumber(COSInteger.get(10));
 
             assertFalse(COSUtils.isArray(co, new IOCOSDocument()));
 
