@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -84,7 +85,8 @@ public class PrintImageLocations extends PDFStreamEngine
                 {
                     try
                     {
-                        document.decrypt( "" );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

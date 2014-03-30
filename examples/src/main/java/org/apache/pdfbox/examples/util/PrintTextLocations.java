@@ -26,6 +26,7 @@ import org.apache.pdfbox.text.TextPosition;
 import java.io.IOException;
 
 import java.util.List;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to get some x/y coordinates of text.
@@ -70,7 +71,8 @@ public class PrintTextLocations extends PDFTextStripper
                 {
                     try
                     {
-                        document.decrypt( "" );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

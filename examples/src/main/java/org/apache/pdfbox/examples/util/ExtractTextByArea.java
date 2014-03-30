@@ -24,6 +24,7 @@ import org.apache.pdfbox.util.PDFTextStripperByArea;
 import java.awt.Rectangle;
 
 import java.util.List;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to extract text from a specific area on the PDF document.
@@ -64,7 +65,8 @@ public class ExtractTextByArea
                 {
                     try
                     {
-                        document.decrypt( "" );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

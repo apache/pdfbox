@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to extract metadata from a PDF document.
@@ -71,7 +72,8 @@ public class ExtractMetadata
                 {
                     try
                     {
-                        document.decrypt("");
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

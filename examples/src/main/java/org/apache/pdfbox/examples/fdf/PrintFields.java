@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
@@ -125,7 +126,8 @@ public class PrintFields
                 {
                     try
                     {
-                        pdf.decrypt("");
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        pdf.openProtection(sdm);
                     }
                     catch (InvalidPasswordException e)
                     {

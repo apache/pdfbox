@@ -31,6 +31,7 @@ import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
@@ -74,7 +75,8 @@ public class ShowSignature
 
                 if( document.isEncrypted() )
                 {
-                    document.decrypt( password );
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                    document.openProtection(sdm);
                 }
                 else
                 {
