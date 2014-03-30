@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * load document and write with all streams decoded.
@@ -92,7 +93,8 @@ public class WriteDecodedDoc
                 {
                     try
                     {
-                        doc.decrypt( password );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        doc.openProtection(sdm);
                         doc.setAllSecurityToBeRemoved(true);
                     }
                     catch( InvalidPasswordException e )

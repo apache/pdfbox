@@ -39,6 +39,7 @@ import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
@@ -379,7 +380,8 @@ public class PDFReader extends JFrame
             {
                 try
                 {
-                    document.decrypt(password);
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                    document.openProtection(sdm);
                 }
                 catch (InvalidPasswordException e)
                 {

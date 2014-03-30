@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.text.PositionWrapper;
@@ -336,7 +337,8 @@ public class PDFTextStripper extends PDFStreamEngine
             //
             try
             {
-                document.decrypt("");
+                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                document.openProtection(sdm);
             }
             catch (InvalidPasswordException e)
             {

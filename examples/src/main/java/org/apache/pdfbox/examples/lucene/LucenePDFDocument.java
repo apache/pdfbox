@@ -37,6 +37,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
@@ -441,7 +442,8 @@ public class LucenePDFDocument
                 if (pdfDocument.isEncrypted())
                 {
                     // Just try using the default password and move on
-                    pdfDocument.decrypt("");
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                    pdfDocument.openProtection(sdm);
                 }
             }
 

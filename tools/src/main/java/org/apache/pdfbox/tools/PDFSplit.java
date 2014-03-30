@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.Splitter;
 
 /**
@@ -139,7 +140,8 @@ public class PDFSplit
                     {
                         try
                         {
-                            document.decrypt( password );
+                            StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                            document.openProtection(sdm);
                         }
                         catch( InvalidPasswordException e )
                         {

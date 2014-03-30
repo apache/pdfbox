@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to extract all embedded files from a PDF document.
@@ -70,7 +71,8 @@ public class ExtractEmbeddedFiles
                 {
                     try
                     {
-                        document.decrypt("");
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to get a documents metadata information.
@@ -68,7 +69,8 @@ public class PrintDocumentMetaData
                 {
                     try
                     {
-                        document.decrypt( "" );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

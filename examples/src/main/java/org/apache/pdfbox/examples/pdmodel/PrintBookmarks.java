@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to access the bookmarks that are part of a pdf document.
@@ -64,7 +65,8 @@ public class PrintBookmarks
                 {
                     try
                     {
-                        document.decrypt( "" );
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        document.openProtection(sdm);
                     }
                     catch( InvalidPasswordException e )
                     {

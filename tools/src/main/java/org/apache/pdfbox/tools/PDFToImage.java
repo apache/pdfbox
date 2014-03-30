@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.ImageIOUtil;
@@ -187,7 +188,8 @@ public class PDFToImage
                     {
                         try
                         {
-                            document.decrypt( password );
+                            StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                            document.openProtection(sdm);
                         }
                         catch( InvalidPasswordException e )
                         {

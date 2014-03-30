@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
@@ -127,7 +128,8 @@ public class ExtractTTFFonts
 
                     if (document.isEncrypted())
                     {
-                        document.decrypt(password);
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                        document.openProtection(sdm);
                     }
                     Iterator<PDPage> iter = document.getDocumentCatalog().getAllPages().iterator();
                     while (iter.hasNext())
