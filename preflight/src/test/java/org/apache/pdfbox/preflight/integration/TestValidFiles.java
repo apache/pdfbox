@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.activation.FileDataSource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
