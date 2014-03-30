@@ -28,7 +28,7 @@ import java.util.List;
 
 import javax.activation.FileDataSource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;

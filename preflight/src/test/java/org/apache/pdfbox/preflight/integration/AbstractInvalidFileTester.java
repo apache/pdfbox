@@ -27,7 +27,7 @@ import java.io.OutputStream;
 
 import javax.activation.FileDataSource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
