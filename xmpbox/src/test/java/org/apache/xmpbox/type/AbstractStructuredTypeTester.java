@@ -24,11 +24,9 @@ package org.apache.xmpbox.type;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.junit.Assert;
 import org.junit.Test;
 
 public abstract class AbstractStructuredTypeTester

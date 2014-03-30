@@ -23,12 +23,10 @@ package org.apache.xmpbox;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.type.StructuredType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
