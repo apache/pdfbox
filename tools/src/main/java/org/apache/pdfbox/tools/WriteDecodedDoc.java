@@ -93,7 +93,7 @@ public class WriteDecodedDoc
                 {
                     try
                     {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
                         doc.openProtection(sdm);
                         doc.setAllSecurityToBeRemoved(true);
                     }
