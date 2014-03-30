@@ -21,12 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInteger;
+import org.junit.Assert;
 
 /**
  * A test case for PDNumberTreeNode.
