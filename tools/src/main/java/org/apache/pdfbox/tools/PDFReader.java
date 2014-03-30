@@ -356,7 +356,7 @@ public class PDFReader extends JFrame
                 imageFilename = imageFilename.substring(0, imageFilename.length() - 4);
             }
             imageFilename += "_" + (currentPage + 1);
-            ImageIOUtil.writeImage(pageAsImage, "png", imageFilename, 300);
+            ImageIOUtil.writeImage(pageAsImage, imageFilename, 300);
         }
         catch (IOException exception)
         {
