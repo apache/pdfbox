@@ -248,7 +248,7 @@ public class PDFToImage
                 for (int i = startPage - 1; i < endPage && i < numPages; i++)
                 {
                     BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
-                    String fileName = outputPrefix + (i + 1);
+                    String fileName = outputPrefix + (i + 1) + "." + imageFormat;                    
                     success &= ImageIOUtil.writeImage(image, fileName, dpi);
                 }
 
