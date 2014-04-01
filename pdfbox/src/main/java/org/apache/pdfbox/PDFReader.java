@@ -363,8 +363,8 @@ public class PDFReader extends javax.swing.JFrame
             {
                 imageFilename = imageFilename.substring(0, imageFilename.length()-4);
             }
-            imageFilename += "_" + (currentPage + 1); 
-            ImageIOUtil.writeImage(pageAsImage, "png", imageFilename,  BufferedImage.TYPE_USHORT_565_RGB, 300);
+            imageFilename += "_" + (currentPage + 1 + ".png"); 
+            ImageIOUtil.writeImage(pageAsImage, imageFilename, 300);
         }
         catch (IOException exception)
         {

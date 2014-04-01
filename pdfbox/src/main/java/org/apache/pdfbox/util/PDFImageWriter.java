@@ -128,9 +128,9 @@ public class PDFImageWriter extends PDFStreamEngine
         {
             PDPage page = pages.get(i);
             BufferedImage image = page.convertToImage(imageType, resolution);
-            String fileName = outputPrefix + (i + 1);
-            LOG.info("Writing: " + fileName + "." + imageFormat);
-            bSuccess &= ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
+            String fileName = outputPrefix + (i + 1) + "." + imageFormat;
+            LOG.info("Writing: " + fileName);
+            bSuccess &= ImageIOUtil.writeImage(image, fileName, resolution);
         }
         return bSuccess;
     }
