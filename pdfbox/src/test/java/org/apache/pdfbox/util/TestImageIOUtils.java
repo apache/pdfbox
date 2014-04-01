@@ -100,9 +100,9 @@ public class TestImageIOUtils extends TestCase
         List pages = document.getDocumentCatalog().getAllPages();
         PDPage page = (PDPage)pages.get( 0 );
         BufferedImage image = page.convertToImage(imageType, resolution);
-        String fileName = outputPrefix + 1;
-        System.out.println( "Writing: " + fileName + "." +imageFormat);
-        ImageIOUtil.writeImage(image, imageFormat, fileName, imageType, resolution);
+        String fileName = outputPrefix + "1." +imageFormat;
+        System.out.println( "Writing: " + fileName);
+        ImageIOUtil.writeImage(image, fileName, resolution);
     }
 
     /**

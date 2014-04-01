@@ -161,6 +161,7 @@ public class PDJpeg extends PDXObjectImage
             Graphics2D g = image.createGraphics();
             g.setComposite(AlphaComposite.Src);
             g.drawImage(bi, 0, 0, null);
+            g.dispose();
             bi = image;
         }
 

@@ -18,6 +18,7 @@ package org.apache.pdfbox.util;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -78,70 +79,105 @@ public class ImageIOUtil
      * Writes a buffered image to a file using the given image format.
      * 
      * @param image the image to be written
-     * @param imageFormat the target format (ex. "png")
-     * @param filename used to construct the filename for the individual images
+     * @param formatName the target format (ex. "png")
+     * @param filename used to construct the filename for the individual image.
+     * The formatName parameter will be used as the suffix.
      * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
      * @param resolution the resolution in dpi (dots per inch)
      * 
      * @return true if the images were produced, false if there was an error
+     * 
      * @throws IOException if an I/O error occurs
+     * 
+     * @deprecated use
+     * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
+     * uses the full filename instead of just the prefix.
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, String filename, 
+    @Deprecated
+    public static boolean writeImage(BufferedImage image, String formatName, String filename, 
             int imageType, int resolution)
     throws IOException
     {
-        String fileName = filename + "." + imageFormat;
+        String fileName = filename + "." + formatName;
         File file = new File(fileName);
-        return writeImage(image, imageFormat, file, resolution);
+        return writeImage(image, formatName, file, resolution);
+    }
+    
+    /**
+     * Writes a buffered image to a file using the given image format. See     
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
+     * @param image the image to be written
+     * @param filename used to construct the filename for the individual image.
+     * Its suffix will be used as the image format.
+     * @param dpi the resolution in dpi (dots per inch)
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String filename,
+            int dpi) throws IOException
+    {
+        File file = new File(filename);
+        FileOutputStream output = new FileOutputStream(file);
+        try
+        {
+            String formatName = filename.substring(filename.lastIndexOf('.') + 1);
+            return writeImage(image, formatName, output, dpi);
+        }
+        finally
+        {
+            output.close();
+        }
     }
 
     /**
      * Writes a buffered image to a file using the given image format.
      * 
      * @param image the image to be written
-     * @param imageFormat the target format (ex. "png")
+     * @param formatName the target format (ex. "png")
      * @param outputStream the output stream to be used for writing
      * 
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, OutputStream outputStream) 
+    public static boolean writeImage(BufferedImage image, String formatName, OutputStream outputStream) 
     throws IOException
     {
-        return writeImage(image, imageFormat, outputStream, DEFAULT_SCREEN_RESOLUTION);
+        return writeImage(image, formatName, outputStream, DEFAULT_SCREEN_RESOLUTION);
     }
 
     /**
      * Writes a buffered image to a file using the given image format.
      * 
      * @param image the image to be written
-     * @param imageFormat the target format (ex. "png")
+     * @param formatName the target format (ex. "png")
      * @param outputStream the output stream to be used for writing
-     * @param resolution resolution to be used when writing the image
+     * @param dpi resolution to be used when writing the image
      * 
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream, int resolution)
+    public static boolean writeImage(BufferedImage image, String formatName, Object outputStream, int dpi)
     throws IOException
     {
-        return writeImage(image, imageFormat, outputStream, resolution, DEFAULT_COMPRESSION_QUALITY);
+        return writeImage(image, formatName, outputStream, dpi, DEFAULT_COMPRESSION_QUALITY);
     }
     
     /**
      * Writes a buffered image to a file using the given image format.
      * 
      * @param image the image to be written
-     * @param imageFormat the target format (ex. "png")
+     * @param formatName the target format (ex. "png")
      * @param outputStream the output stream to be used for writing
-     * @param resolution resolution to be used when writing the image
+     * @param dpi resolution to be used when writing the image
      * @param quality quality to be used when compressing the image (0 &lt;
      * quality &lt; 1.0f)
      * 
      * @return true if the images were produced, false if there was an error
      * @throws IOException if an I/O error occurs
      */
-    public static boolean writeImage(BufferedImage image, String imageFormat, Object outputStream, int resolution, 
+    public static boolean writeImage(BufferedImage image, String formatName, Object outputStream, int dpi, 
             float quality)
     throws IOException
     {
@@ -153,7 +189,7 @@ public class ImageIOUtil
             output = ImageIO.createImageOutputStream(outputStream);
     
             boolean foundWriter = false;
-            Iterator<ImageWriter> writerIter = ImageIO.getImageWritersByFormatName(imageFormat);
+            Iterator<ImageWriter> writerIter = ImageIO.getImageWritersByFormatName(formatName);
             while (writerIter.hasNext() && !foundWriter)
             {
                 try
@@ -167,7 +203,7 @@ public class ImageIOUtil
 
                         if (writerParams.getCompressionType() == null)
                         {
-                            if (imageFormat.toLowerCase().startsWith("tif"))
+                            if (formatName.toLowerCase().startsWith("tif"))
                             {
                                 // avoid error: first compression type is RLE, not optimal and incorrect for color images
                                 //TODO? another writeImage() call with extra compression param so user can decide
@@ -187,7 +223,7 @@ public class ImageIOUtil
                         }
                         writerParams.setCompressionQuality(quality);
                     }
-                    IIOMetadata meta = createMetadata(image, imageWriter, writerParams, resolution);
+                    IIOMetadata meta = createMetadata(image, imageWriter, writerParams, dpi);
                     if (meta != null)
                     {
                         imageWriter.setOutput(output);
@@ -210,7 +246,7 @@ public class ImageIOUtil
             }
             if (!foundWriter)
             {
-                LOG.error("No writer found for format '" + imageFormat + "'");
+                LOG.error("No writer found for format '" + formatName + "'");
                 bSuccess = false;
             }
         }
@@ -226,7 +262,7 @@ public class ImageIOUtil
     }
 
     private static IIOMetadata createMetadata(BufferedImage image, ImageWriter imageWriter,
-            ImageWriteParam writerParams, int resolution)
+            ImageWriteParam writerParams, int dpi)
     {
         ImageTypeSpecifier type;
         if (writerParams.getDestinationType() != null)
@@ -241,11 +277,11 @@ public class ImageIOUtil
         logMeta(meta, STANDARD_METADATA_FORMAT);
         if (imageWriter.getClass().getName().toUpperCase().contains("TIFF"))
         {
-            updateMetadata(image, meta, resolution);
+            updateMetadata(image, meta, dpi);
         }
         else
         {
-            if (!addResolution(meta, resolution))
+            if (!addResolution(meta, dpi))
             {
                 meta = null;
             }
