@@ -17,11 +17,9 @@
 package org.apache.pdfbox.cos;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -133,31 +131,6 @@ public class COSDictionary extends COSBase
 	public COSBase getDictionaryObject( String key )
 	{
 		return getDictionaryObject( COSName.getPDFName( key ) );
-	}
-
-	/**
-	 * This is a special case of getDictionaryObject that takes multiple keys, it will handle
-	 * the situation where multiple keys could get the same value, ie if either CS or ColorSpace
-	 * is used to get the colorspace.
-	 * This will get an object from this dictionary.  If the object is a reference then it will
-	 * dereference it and get it from the document.  If the object is COSNull then
-	 * null will be returned.
-	 *
-	 * @param firstKey The first key to try.
-	 * @param secondKey The second key to try.
-	 *
-	 * @return The object that matches the key.
-	 * 
-	 * @deprecated  use {@link #getDictionaryObject(COSName, COSName)} using COSName constants instead
-	 */
-	public COSBase getDictionaryObject( String firstKey, String secondKey )
-	{
-		COSBase retval = getDictionaryObject( COSName.getPDFName( firstKey ) );
-		if( retval == null )
-		{
-			retval = getDictionaryObject( COSName.getPDFName( secondKey ) );
-		}
-		return retval;
 	}
 
 	/**
@@ -1357,18 +1330,6 @@ public class COSDictionary extends COSBase
 	public COSBase getItem( String key )
 	{
 		return getItem( COSName.getPDFName(key) );
-	}
-
-	/**
-	 * This will get the keys for all objects in the dictionary in the sequence that
-	 * they were added.
-	 *
-	 * @deprecated Use the {@link #entrySet()} method instead.
-	 * @return a list of the keys in the sequence of insertion
-	 */
-	public List<COSName> keyList()
-	{
-		return new ArrayList<COSName>(items.keySet());
 	}
 
 	/**
