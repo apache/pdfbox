@@ -27,8 +27,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * This is implementation of the Type0 Font.
- * See <a href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a>
+ * This is implementation of the Type0 Font. See <a
+ * href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a>
  * for the related improvement issue.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
@@ -46,29 +46,31 @@ public class PDType0Font extends PDSimpleFont
     private PDFont descendantFont;
     private COSDictionary descendantFontDictionary;
     private Font awtFont;
+
     /**
      * Constructor.
      */
     public PDType0Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.TYPE0 );
+        font.setItem(COSName.SUBTYPE, COSName.TYPE0);
     }
 
     /**
      * Constructor.
      *
-     * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param fontDictionary The font dictionary according to the PDF
+     * specification.
      */
-    public PDType0Font( COSDictionary fontDictionary )
+    public PDType0Font(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
-        descendantFontDictionary = (COSDictionary)getDescendantFonts().getObject( 0 );
+        super(fontDictionary);
+        descendantFontDictionary = (COSDictionary) getDescendantFonts().getObject(0);
         if (descendantFontDictionary != null)
         {
             try
             {
-                descendantFont = PDFontFactory.createFont( descendantFontDictionary );
+                descendantFont = PDFontFactory.createFont(descendantFontDictionary);
             }
             catch (IOException exception)
             {
@@ -80,16 +82,17 @@ public class PDType0Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
+    @Override
     public Font getawtFont() throws IOException
     {
         if (awtFont == null)
         {
             if (descendantFont != null)
             {
-                awtFont = ((PDSimpleFont)descendantFont).getawtFont();
+                awtFont = ((PDSimpleFont) descendantFont).getawtFont();
                 if (awtFont != null)
                 {
-                    setIsFontSubstituted(((PDSimpleFont)descendantFont).isFontSubstituted());
+                    setIsFontSubstituted(((PDSimpleFont) descendantFont).isFontSubstituted());
                     /*
                      * Fix Oracle JVM Crashes.
                      * Tested with Oracle JRE 6.0_45-b06 and 7.0_21-b11
@@ -100,8 +103,8 @@ public class PDType0Font extends PDSimpleFont
             if (awtFont == null)
             {
                 awtFont = FontManager.getStandardFont();
-                LOG.info("Using font "+awtFont.getName()
-                        + " instead of "+descendantFont.getFontDescriptor().getFontName());
+                LOG.info("Using font " + awtFont.getName()
+                        + " instead of " + descendantFont.getFontDescriptor().getFontName());
                 setIsFontSubstituted(true);
             }
         }
@@ -115,9 +118,10 @@ public class PDType0Font extends PDSimpleFont
      *
      * @throws IOException If there is an error getting the bounding box.
      */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
-        throw new RuntimeException( "Not yet implemented" );
+        throw new RuntimeException("Not yet implemented");
     }
 
     /**
@@ -131,9 +135,9 @@ public class PDType0Font extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
-    public float getFontWidth( byte[] c, int offset, int length ) throws IOException
+    public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
-        return descendantFont.getFontWidth( c, offset, length );
+        return descendantFont.getFontWidth(c, offset, length);
     }
 
     /**
@@ -147,9 +151,10 @@ public class PDType0Font extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
-    public float getFontHeight( byte[] c, int offset, int length ) throws IOException
+    @Override
+    public float getFontHeight(byte[] c, int offset, int length) throws IOException
     {
-        return descendantFont.getFontHeight( c, offset, length );
+        return descendantFont.getFontHeight(c, offset, length);
     }
 
     /**
@@ -159,6 +164,7 @@ public class PDType0Font extends PDSimpleFont
      *
      * @throws IOException If an error occurs while parsing.
      */
+    @Override
     public float getAverageFontWidth() throws IOException
     {
         return descendantFont.getAverageFontWidth();
@@ -168,7 +174,7 @@ public class PDType0Font extends PDSimpleFont
     {
         if (descendantFontArray == null)
         {
-            descendantFontArray = (COSArray)font.getDictionaryObject( COSName.DESCENDANT_FONTS );
+            descendantFontArray = (COSArray) font.getDictionaryObject(COSName.DESCENDANT_FONTS);
         }
         return descendantFontArray;
     }
@@ -176,7 +182,8 @@ public class PDType0Font extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
-    public float getFontWidth( int charCode )
+    @Override
+    public float getFontWidth(int charCode)
     {
         return descendantFont.getFontWidth(charCode);
     }
@@ -184,7 +191,7 @@ public class PDType0Font extends PDSimpleFont
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
-    	String retval = null;
+        String retval = null;
         if (hasToUnicode())
         {
             retval = super.encode(c, offset, length);
@@ -204,10 +211,11 @@ public class PDType0Font extends PDSimpleFont
     /**
      *
      * Provides the descendant font.
+     *
      * @return the descendant font.
      *
      */
-    protected PDFont getDescendantFont()
+    public PDFont getDescendantFont()
     {
         return descendantFont;
     }
