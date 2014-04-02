@@ -405,7 +405,7 @@ public class CMAPEncodingEntry
 		for( int i=0; i<256; i++)
 		{
 			subHeaderKeys[i] = data.readUnsignedShort();
-			maxSubHeaderIndex = Math.max(maxSubHeaderIndex, (int)(subHeaderKeys[i]/8));
+			maxSubHeaderIndex = Math.max(maxSubHeaderIndex, subHeaderKeys[i]/8);
 		}
 
 		// ---- Read all SubHeaders to avoid useless seek on DataSource
@@ -518,16 +518,11 @@ public class CMAPEncodingEntry
 	 * @param characterCode
 	 * @return glyphId
 	 */
-	public int getGlyphId(int characterCode) {
-		if (this.characterCodeToGlyphId.containsKey(characterCode)) 
-		{
-			return this.characterCodeToGlyphId.get(characterCode);
-		} 
-		else 
-		{
-			return 0;
-		}
-	}
+        public int getGlyphId(int characterCode)
+        {
+            Integer glyphId = characterCodeToGlyphId.get(characterCode);
+            return glyphId == null ? 0 : glyphId.intValue();
+        }
 
 	/**
 	 * Class used to manage CMap - Format 2
