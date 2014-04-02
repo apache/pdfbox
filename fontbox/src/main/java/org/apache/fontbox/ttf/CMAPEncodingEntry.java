@@ -436,7 +436,7 @@ public class CMAPEncodingEntry
         for (int i = 0; i < 256; i++)
         {
             subHeaderKeys[i] = data.readUnsignedShort();
-            maxSubHeaderIndex = Math.max(maxSubHeaderIndex, (int) (subHeaderKeys[i] / 8));
+            maxSubHeaderIndex = Math.max(maxSubHeaderIndex, subHeaderKeys[i] / 8);
         }
 
         // ---- Read all SubHeaders to avoid useless seek on DataSource
@@ -550,20 +550,14 @@ public class CMAPEncodingEntry
 
     /**
      * Returns the GlyphId linked with the given character code.
-     * 
+     *
      * @param characterCode the given character code to be mapped
      * @return glyphId the corresponding glyph id for the given character code
      */
     public int getGlyphId(int characterCode)
     {
-        if (characterCodeToGlyphId.containsKey(characterCode))
-        {
-            return characterCodeToGlyphId.get(characterCode);
-        }
-        else
-        {
-            return 0;
-        }
+        Integer glyphId = characterCodeToGlyphId.get(characterCode);
+        return glyphId == null ? 0 : glyphId.intValue();
     }
 
     /**
