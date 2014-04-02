@@ -67,22 +67,22 @@ class JPEGUtil
         {
             jfifChild = (Element) jfifNodeList.item(0);
         }
-        if (jfifChild.getAttribute("majorVersion").isEmpty())
+        if (jfifChild.getAttribute("majorVersion").length() == 0)
         {
             jfifChild.setAttribute("majorVersion", "1");
         }
-        if (jfifChild.getAttribute("minorVersion").isEmpty())
+        if (jfifChild.getAttribute("minorVersion").length() == 0)
         {
             jfifChild.setAttribute("minorVersion", "2");
         }
         jfifChild.setAttribute("resUnits", "1"); // inch
         jfifChild.setAttribute("Xdensity", Integer.toString(dpi));
         jfifChild.setAttribute("Ydensity", Integer.toString(dpi));
-        if (jfifChild.getAttribute("thumbWidth").isEmpty())
+        if (jfifChild.getAttribute("thumbWidth").length() == 0)
         {
             jfifChild.setAttribute("thumbWidth", "0");
         }
-        if (jfifChild.getAttribute("thumbHeight").isEmpty())
+        if (jfifChild.getAttribute("thumbHeight").length() == 0)
         {
             jfifChild.setAttribute("thumbHeight", "0");
         }
