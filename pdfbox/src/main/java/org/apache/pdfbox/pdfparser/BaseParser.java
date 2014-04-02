@@ -1640,7 +1640,7 @@ public abstract class BaseParser
     protected int readGenerationNumber() throws IOException
     {
         int retval = readInt();
-        if(retval < 0 || retval >= GENERATION_NUMBER_THRESHOLD) {
+        if(retval < 0 || retval > GENERATION_NUMBER_THRESHOLD) {
             throw new IOException("Generation Number '" + retval + "' has more than 5 digits");
         }
         return retval;
