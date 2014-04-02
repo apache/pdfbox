@@ -31,12 +31,12 @@ public class COSInteger extends COSNumber
     /**
      * The lowest integer to be kept in the {@link #STATIC} array.
      */
-    private static int LOW = -100;
+    private static final int LOW = -100;
 
     /**
      * The highest integer to be kept in the {@link #STATIC} array.
      */
-    private static int HIGH = 256;
+    private static final int HIGH = 256;
 
     /**
      * Static instances of all COSIntegers in the range from {@link #LOW}
@@ -74,15 +74,20 @@ public class COSInteger extends COSNumber
      * @param val integer value
      * @return COSInteger instance
      */
-    public static COSInteger get(long val) {
-        if (LOW <= val && val <= HIGH) {
+    public static COSInteger get(long val)
+    {
+        if (LOW <= val && val <= HIGH)
+        {
             int index = (int) val - LOW;
             // no synchronization needed
-            if (STATIC[index] == null) {
+            if (STATIC[index] == null)
+            {
                 STATIC[index] = new COSInteger(val);
             }
             return STATIC[index];
-        } else {
+        }
+        else
+        {
             return new COSInteger(val);
         }
     }
@@ -92,47 +97,17 @@ public class COSInteger extends COSNumber
     /**
      * constructor.
      *
-     * @deprecated use the static {@link #get(long)} method instead
      * @param val The integer value of this object.
      */
-    public COSInteger( long val )
+    private COSInteger( long val )
     {
         value = val;
     }
 
     /**
-     * constructor.
-     *
-     * @deprecated use the static {@link #get(long)} method instead
-     * @param val The integer value of this object.
-     */
-    public COSInteger( int val )
-    {
-        this( (long)val );
-    }
-
-    /**
-     * This will create a new PDF Int object using a string.
-     *
-     * @param val The string value of the integer.
-     * @deprecated use the static {@link #get(long)} method instead
-     * @throws IOException If the val is not an integer type.
-     */
-    public COSInteger( String val ) throws IOException
-    {
-        try
-        {
-            value = Long.parseLong( val );
-        }
-        catch( NumberFormatException e )
-        {
-            throw new IOException( "Error: value is not an integer type actual='" + val + "'" );
-        }
-    }
-
-    /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o)
     {
         return o instanceof COSInteger && ((COSInteger)o).intValue() == intValue();
@@ -141,6 +116,7 @@ public class COSInteger extends COSNumber
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode()
     {
         //taken from java.lang.Long
@@ -150,6 +126,7 @@ public class COSInteger extends COSNumber
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "COSInt{" + value + "}";
@@ -170,6 +147,7 @@ public class COSInteger extends COSNumber
      *
      * @return The float value of this object.
      */
+    @Override
     public float floatValue()
     {
         return value;
@@ -180,6 +158,7 @@ public class COSInteger extends COSNumber
      *
      * @return The double value of this object.
      */
+    @Override
     public double doubleValue()
     {
         return value;
@@ -191,6 +170,7 @@ public class COSInteger extends COSNumber
      *
      * @return The int value of this object,
      */
+    @Override
     public int intValue()
     {
         return (int)value;
@@ -202,6 +182,7 @@ public class COSInteger extends COSNumber
      *
      * @return The int value of this object,
      */
+    @Override
     public long longValue()
     {
         return value;
@@ -214,6 +195,7 @@ public class COSInteger extends COSNumber
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromInt(this);
