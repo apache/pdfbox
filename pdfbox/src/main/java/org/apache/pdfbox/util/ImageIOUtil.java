@@ -21,10 +21,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.Iterator;
 
-import javax.imageio.IIOException;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageTypeSpecifier;
@@ -34,33 +32,21 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.w3c.dom.Node;
+import static org.apache.pdfbox.util.MetaUtil.STANDARD_METADATA_FORMAT;
 import org.w3c.dom.NodeList;
 
 /**
- * This class handles some ImageIO operations.
- *
- * @version $Revision$
- * 
+ * Handles some ImageIO operations.
  */
 public class ImageIOUtil
-{   
+{
     /**
-     * Log instance.
+     * Log instance
      */
     private static final Log LOG = LogFactory.getLog(ImageIOUtil.class);
-
+    
     /**
      * Default screen resolution: 72dpi.
      */
@@ -72,37 +58,8 @@ public class ImageIOUtil
     
     private ImageIOUtil()
     {
-        // Default constructor
     }
 
-    /**
-     * Writes a buffered image to a file using the given image format.
-     * 
-     * @param image the image to be written
-     * @param formatName the target format (ex. "png")
-     * @param filename used to construct the filename for the individual image.
-     * The formatName parameter will be used as the suffix.
-     * @param imageType the image type (see {@link BufferedImage}.TYPE_*)
-     * @param resolution the resolution in dpi (dots per inch)
-     * 
-     * @return true if the images were produced, false if there was an error
-     * 
-     * @throws IOException if an I/O error occurs
-     * 
-     * @deprecated use
-     * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
-     * uses the full filename instead of just the prefix.
-     */
-    @Deprecated
-    public static boolean writeImage(BufferedImage image, String formatName, String filename, 
-            int imageType, int resolution)
-    throws IOException
-    {
-        String fileName = filename + "." + formatName;
-        File file = new File(fileName);
-        return writeImage(image, formatName, file, resolution);
-    }
-    
     /**
      * Writes a buffered image to a file using the given image format. See     
      * {@link #writeImage(BufferedImage image, String formatName, 
@@ -132,376 +89,244 @@ public class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format.
-     * 
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
      * @param image the image to be written
-     * @param formatName the target format (ex. "png")
-     * @param outputStream the output stream to be used for writing
-     * 
-     * @return true if the images were produced, false if there was an error
+     * @param formatName the target format (ex. "png") which is also the suffix
+     * for the filename
+     * @param filename used to construct the filename for the individual image.
+     * The formatName parameter will be used as the suffix.
+     * @param dpi the resolution in dpi (dots per inch)
+     * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
+     * @deprecated use
+     * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
+     * uses the full filename instead of just the prefix.
      */
-    public static boolean writeImage(BufferedImage image, String formatName, OutputStream outputStream) 
-    throws IOException
+    @Deprecated
+    public static boolean writeImage(BufferedImage image, String formatName, String filename,
+            int dpi) throws IOException
     {
-        return writeImage(image, formatName, outputStream, DEFAULT_SCREEN_RESOLUTION);
-    }
-
-    /**
-     * Writes a buffered image to a file using the given image format.
-     * 
-     * @param image the image to be written
-     * @param formatName the target format (ex. "png")
-     * @param outputStream the output stream to be used for writing
-     * @param dpi resolution to be used when writing the image
-     * 
-     * @return true if the images were produced, false if there was an error
-     * @throws IOException if an I/O error occurs
-     */
-    public static boolean writeImage(BufferedImage image, String formatName, Object outputStream, int dpi)
-    throws IOException
-    {
-        return writeImage(image, formatName, outputStream, dpi, DEFAULT_COMPRESSION_QUALITY);
-    }
-    
-    /**
-     * Writes a buffered image to a file using the given image format.
-     * 
-     * @param image the image to be written
-     * @param formatName the target format (ex. "png")
-     * @param outputStream the output stream to be used for writing
-     * @param dpi resolution to be used when writing the image
-     * @param quality quality to be used when compressing the image (0 &lt;
-     * quality &lt; 1.0f)
-     * 
-     * @return true if the images were produced, false if there was an error
-     * @throws IOException if an I/O error occurs
-     */
-    public static boolean writeImage(BufferedImage image, String formatName, Object outputStream, int dpi, 
-            float quality)
-    throws IOException
-    {
-        boolean bSuccess = true;
-        ImageOutputStream output = null;
-        ImageWriter imageWriter = null;
+        File file = new File(filename + "." + formatName);
+        FileOutputStream output = new FileOutputStream(file);
         try
         {
-            output = ImageIO.createImageOutputStream(outputStream);
-    
-            boolean foundWriter = false;
-            Iterator<ImageWriter> writerIter = ImageIO.getImageWritersByFormatName(formatName);
-            while (writerIter.hasNext() && !foundWriter)
-            {
-                try
-                {
-                    imageWriter = (ImageWriter) writerIter.next();
-                    ImageWriteParam writerParams = imageWriter.getDefaultWriteParam();
-                    if (writerParams.canWriteCompressed())
-                    {
-                        writerParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                        // reset the compression type if overwritten by setCompressionMode
-
-                        if (writerParams.getCompressionType() == null)
-                        {
-                            if (formatName.toLowerCase().startsWith("tif"))
-                            {
-                                // avoid error: first compression type is RLE, not optimal and incorrect for color images
-                                //TODO? another writeImage() call with extra compression param so user can decide
-                                if (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1)
-                                {
-                                    writerParams.setCompressionType("CCITT T.6");
-                                }
-                                else
-                                {
-                                    writerParams.setCompressionType("LZW");
-                                }
-                            }
-                            else
-                            {
-                                writerParams.setCompressionType(writerParams.getCompressionTypes()[0]);
-                            }
-                        }
-                        writerParams.setCompressionQuality(quality);
-                    }
-                    IIOMetadata meta = createMetadata(image, imageWriter, writerParams, dpi);
-                    if (meta != null)
-                    {
-                        imageWriter.setOutput(output);
-                        imageWriter.write(null, new IIOImage(image, null, meta), writerParams);
-                    	foundWriter = true;
-                    }
-                }
-                catch (IIOException io)
-                {
-                    LOG.error("IIOException in writeImage()", io);
-                    throw new IOException(io.getMessage());
-                }
-                finally
-                {
-                    if (imageWriter != null)
-                    {
-                        imageWriter.dispose();
-                    }
-                }
-            }
-            if (!foundWriter)
-            {
-                LOG.error("No writer found for format '" + formatName + "'");
-                bSuccess = false;
-            }
+            return writeImage(image, formatName, output, dpi);
         }
         finally
         {
-            if (output != null)
-            {
-                output.flush();
-                output.close();
-            }
+            output.close();
         }
-        return bSuccess;
-    }
-
-    private static IIOMetadata createMetadata(BufferedImage image, ImageWriter imageWriter,
-            ImageWriteParam writerParams, int dpi)
-    {
-        ImageTypeSpecifier type;
-        if (writerParams.getDestinationType() != null)
-        {
-            type = writerParams.getDestinationType();
-        }
-        else
-        {
-            type = ImageTypeSpecifier.createFromRenderedImage( image );
-        }
-        IIOMetadata meta = imageWriter.getDefaultImageMetadata(type, writerParams);
-        logMeta(meta, STANDARD_METADATA_FORMAT);
-        if (imageWriter.getClass().getName().toUpperCase().contains("TIFF"))
-        {
-            updateMetadata(image, meta, dpi);
-        }
-        else
-        {
-            if (!addResolution(meta, dpi))
-            {
-                meta = null;
-            }
-        }
-        logMeta(meta, STANDARD_METADATA_FORMAT);
-        return meta;
     }
 
     /**
-     * log the meta data as an XML tree if debug is enabled.
-     * 
-     * @param meta meta data.
-     * @param format the XML format to be used.
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
+     * @param image the image to be written
+     * @param formatName the target format (ex. "png")
+     * @param output the output stream to be used for writing
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
      */
-    private static void logMeta(IIOMetadata meta, String format)
+    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output)
+            throws IOException
     {
-        if (!LOG.isDebugEnabled())
-        {
-            return;
-        }
-        if (meta == null)
-        {
-            LOG.debug("meta is null");
-            return;
-        }
-        IIOMetadataNode root = (IIOMetadataNode) meta.getAsTree(format);
-        // http://download.java.net/jdk8/docs/api/javax/imageio/metadata/doc-files/standard_metadata.html
-        // http://www.java-forum.org/java-basics-anfaenger-themen/96982-aufloesung-dpi-tiff-png-bildern-auslesen.html#post617178
+        return writeImage(image, formatName, output, DEFAULT_SCREEN_RESOLUTION);
+    }
 
+    /**
+     * Writes a buffered image to a file using the given image format. See      
+     * {@link #writeImage(BufferedImage image, String formatName, 
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
+     * @param image the image to be written
+     * @param formatName the target format (ex. "png")
+     * @param output the output stream to be used for writing
+     * @param dpi resolution to be used when writing the image
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
+            int dpi) throws IOException
+    {
+        return writeImage(image, formatName, output, dpi, DEFAULT_COMPRESSION_QUALITY);
+    }
+
+    /**
+     * Writes a buffered image to a file using the given image format.
+     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
+     * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
+     * will be compressed with CCITT G4, a color image with LZW). Creating a
+     * TIFF image is only supported if the jai_imageio library is in the class
+     * path.
+     *
+     * @param image the image to be written
+     * @param formatName the target format (ex. "png")
+     * @param output the output stream to be used for writing
+     * @param dpi resolution to be used when writing the image
+     * @param quality quality to be used when compressing the image (0 &lt;
+     * quality &lt; 1.0f)
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
+            int dpi, float quality) throws IOException
+    {
+        ImageOutputStream imageOutput = null;
+        ImageWriter writer = null;
         try
         {
-            StringWriter xmlStringWriter = new StringWriter();
-            StreamResult streamResult = new StreamResult(xmlStringWriter);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); // http://stackoverflow.com/a/1264872/535646
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            DOMSource domSource = new DOMSource(root);
-            transformer.transform(domSource, streamResult);
-            LOG.debug("\n" + xmlStringWriter);
-        }
-        catch (TransformerFactoryConfigurationError ex)
-        {
-            LOG.error(ex, ex);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            LOG.error(ex, ex);
-        }
-        catch (TransformerException ex)
-        {
-            LOG.error(ex, ex);
-        }
-    }
+            // find suitable image writer
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(formatName);
+            ImageWriteParam param = null;
+            IIOMetadata metadata = null;
+            // Loop until we get the best driver, i.e. one that supports
+            // setting dpi in the standard metadata format; however we'd also 
+            // accept a driver that can't, if a better one can't be found
+            while (writers.hasNext())
+            {
+                if (writer != null)
+                {
+                    writer.dispose();
+                }
+                writer = writers.next();
+                param = writer.getDefaultWriteParam();
+                metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image), param);
+                if (metadata != null
+                        && !metadata.isReadOnly()
+                        && metadata.isStandardMetadataFormatSupported())
+                {
+                    break;
+                }
+            }
+            if (writer == null)
+            {
+                LOG.error("No ImageWriter found for '" + formatName + "' format");
+                StringBuilder sb = new StringBuilder();
+                String[] writerFormatNames = ImageIO.getWriterFormatNames();
+                for (String fmt : writerFormatNames)
+                {
+                    sb.append(fmt);
+                    sb.append(' ');
+                }
+                LOG.error("Supported formats: " + sb);
+                return false;
+            }
 
-    private static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
-    private static final String SUN_TIFF_NATIVE_FORMAT
-            = "com_sun_media_imageio_plugins_tiff_image_1.0";
+            // compression
+            if (param != null && param.canWriteCompressed())
+            {
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                if (formatName.toLowerCase().startsWith("tif"))
+                {
+                    // TIFF compression
+                    TIFFUtil.setCompressionType(param, image);
+                }
+                else
+                {
+                    param.setCompressionType(param.getCompressionTypes()[0]);
+                    param.setCompressionQuality(quality);
+                }
+            }
 
-    private static boolean addResolution(IIOMetadata meta, int resolution)
-    {
-        if (meta != null && !meta.isReadOnly() && meta.isStandardMetadataFormatSupported())
-        {
-            IIOMetadataNode root = (IIOMetadataNode)meta.getAsTree(STANDARD_METADATA_FORMAT);
-            IIOMetadataNode dim = getChildNode(root, "Dimension");
-            if (dim == null)
+            if (formatName.toLowerCase().startsWith("tif"))
             {
-                dim = new IIOMetadataNode("Dimension");
-                root.appendChild(dim);
+                // TIFF metadata
+                TIFFUtil.updateMetadata(metadata, image, dpi);
             }
-            IIOMetadataNode child;
-            child = getChildNode(dim, "HorizontalPixelSize");
-            if (child == null)
+            else if ("jpeg".equals(formatName.toLowerCase())
+                    || "jpg".equals(formatName.toLowerCase()))
             {
-                child = new IIOMetadataNode("HorizontalPixelSize");
-                dim.appendChild(child);
+                // This segment must be run before other meta operations,
+                // or else "IIOInvalidTreeException: Invalid node: app0JFIF"
+                // The other (general) "meta" methods may not be used, because
+                // this will break the reading of the meta data in tests
+                JPEGUtil.updateMetadata(metadata, dpi);
             }
-            child.setAttribute("value",
-                    Double.toString(resolution / 25.4));
-            child = getChildNode(dim, "VerticalPixelSize");
-            if (child == null)
+            else
             {
-                child = new IIOMetadataNode("VerticalPixelSize");
-                dim.appendChild(child);
+                // write metadata is possible
+                if (metadata != null
+                        && !metadata.isReadOnly()
+                        && metadata.isStandardMetadataFormatSupported())
+                {
+                    setDPI(metadata, dpi, formatName);
+                }
             }
-            child.setAttribute("value",
-                    Double.toString(resolution / 25.4));
-            try
-            {
-                meta.mergeTree(STANDARD_METADATA_FORMAT, root);
-            }
-            catch (IIOInvalidTreeException e)
-            {
-                throw new RuntimeException("Cannot update image metadata: "
-                        + e.getMessage());
-            }
-            return true;
-        }
-        return false;
-    }
 
-    private static IIOMetadataNode getChildNode(Node n, String name)
-    {
-        NodeList nodes = n.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++)
+            // write
+            imageOutput = ImageIO.createImageOutputStream(output);
+            writer.setOutput(imageOutput);
+            writer.write(null, new IIOImage(image, null, metadata), param);
+        }
+        finally
         {
-            Node child = nodes.item(i);
-            if (name.equals(child.getNodeName()))
+            if (writer != null)
             {
-                return (IIOMetadataNode)child;
+                writer.dispose();
+            }
+            if (imageOutput != null)
+            {
+                imageOutput.close();
             }
         }
-        return null;
+        return true;
     }
     
     /**
-     * Sets the resolution in a TIFF image, the resolution unit (Inches), rows
-     * per strip to the height to get smaller files, and the name of the
-     * software to "PDFBOX".
+     * Gets the named child node, or creates and attaches it.
      *
-     * @param tiffImage the TIFF Image
-     * @param meta the meta data that is to be set
-     * @param resolution in dots per inch
+     * @param parentNode the parent node
+     * @param name name of the child node
+     *
+     * @return the existing or just created child node
      */
-    protected static void updateMetadata(BufferedImage tiffImage, IIOMetadata meta, int resolution)
+    private static IIOMetadataNode getOrCreateChildNode(IIOMetadataNode parentNode, String name)
     {
-        // Code inspired by Apache XML graphics
-        // https://svn.apache.org/repos/asf/xmlgraphics/commons/tags/commons-1_3_1/src/java/org/apache/xmlgraphics/image/writer/imageio/ImageIOTIFFImageWriter.java
-        // DTD:
-        // http://download.java.net/media/jai-imageio/javadoc/1.0_01/com/sun/media/imageio/plugins/tiff/package-summary.html
-        // TIFF6 Spec:
-        // http://partners.adobe.com/public/developer/tiff/index.html
-        // We set the resolution manually using the native format since it appears that
-        // it doesn't work properly through the standard metadata. Haven't figured out why
-        // that happens.
-        if (SUN_TIFF_NATIVE_FORMAT.equals(meta.getNativeMetadataFormatName()))
+        NodeList nodeList = parentNode.getElementsByTagName(name);
+        if (nodeList != null && nodeList.getLength() > 0)
         {
-            IIOMetadataNode root = new IIOMetadataNode(SUN_TIFF_NATIVE_FORMAT);
-            IIOMetadataNode ifd = getChildNode(root, "TIFFIFD");
-            if (ifd == null)
-            {
-                ifd = new IIOMetadataNode("TIFFIFD");
-                ifd.setAttribute("tagSets",
-                        "com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet");
-                root.appendChild(ifd);
-            }
+            return (IIOMetadataNode) nodeList.item(0);
+        }
+        IIOMetadataNode childNode = new IIOMetadataNode(name);
+        parentNode.appendChild(childNode);
+        return childNode;
+    }
 
-            ifd.appendChild(createRationalField(282, "XResolution", resolution, 1));
-            ifd.appendChild(createRationalField(283, "YResolution", resolution, 1));
-            ifd.appendChild(createShortField(296, "ResolutionUnit", 2)); // Inch
+    // sets the DPI metadata
+    private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
+    {
+        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(STANDARD_METADATA_FORMAT);
 
-            ifd.appendChild(createLongField(278, "RowsPerStrip", tiffImage.getHeight()));
+        IIOMetadataNode dimension = getOrCreateChildNode(root, "Dimension");
 
-            ifd.appendChild(createAsciiField(305, "Software", "PDFBOX"));
+        // PNG writer doesn't conform to the spec which is
+        // "The width of a pixel, in millimeters"
+        // but instead counts the pixels per millimeter
+        float res = "PNG".equals(formatName.toUpperCase())
+                    ? dpi / 25.4f
+                    : 25.4f / dpi;
 
-            try
-            {
-                meta.mergeTree(SUN_TIFF_NATIVE_FORMAT, root);
-            }
-            catch (IIOInvalidTreeException e)
-            {
-                throw new RuntimeException("Cannot update image metadata: "
-                        + e.getMessage(), e);
-            }
+        IIOMetadataNode child;
+
+        child = getOrCreateChildNode(dimension, "HorizontalPixelSize");
+        child.setAttribute("value", Double.toString(res));
+
+        child = getOrCreateChildNode(dimension, "VerticalPixelSize");
+        child.setAttribute("value", Double.toString(res));
+
+        try
+        {
+            metadata.mergeTree(STANDARD_METADATA_FORMAT, root);
+        }
+        catch (IIOInvalidTreeException e)
+        {
+            // should never happen
+            throw new RuntimeException(e);
         }
     }
-
-    private static IIOMetadataNode createShortField(int tiffTagNumber, String name, int val)
-    {
-        IIOMetadataNode field, arrayNode, valueNode;
-        field = new IIOMetadataNode("TIFFField");
-        field.setAttribute("number", Integer.toString(tiffTagNumber));
-        field.setAttribute("name", name);
-        arrayNode = new IIOMetadataNode("TIFFShorts");
-        field.appendChild(arrayNode);
-        valueNode = new IIOMetadataNode("TIFFShort");
-        arrayNode.appendChild(valueNode);
-        valueNode.setAttribute("value", Integer.toString(val));
-        return field;
-    }
-
-    private static IIOMetadataNode createAsciiField(int number, String name, String val)
-    {
-        IIOMetadataNode field, arrayNode, valueNode;
-        field = new IIOMetadataNode("TIFFField");
-        field.setAttribute("number", Integer.toString(number));
-        field.setAttribute("name", name);
-        arrayNode = new IIOMetadataNode("TIFFAsciis");
-        field.appendChild(arrayNode);
-        valueNode = new IIOMetadataNode("TIFFAscii");
-        arrayNode.appendChild(valueNode);
-        valueNode.setAttribute("value", val);
-        return field;
-    }
-
-    private static IIOMetadataNode createLongField(int number, String name, long val)
-    {
-        IIOMetadataNode field, arrayNode, valueNode;
-        field = new IIOMetadataNode("TIFFField");
-        field.setAttribute("number", Integer.toString(number));
-        field.setAttribute("name", name);
-        arrayNode = new IIOMetadataNode("TIFFLongs");
-        field.appendChild(arrayNode);
-        valueNode = new IIOMetadataNode("TIFFLong");
-        arrayNode.appendChild(valueNode);
-        valueNode.setAttribute("value", Long.toString(val));
-        return field;
-    }
-
-    private static IIOMetadataNode createRationalField(int number, String name, int numerator, int denominator)
-    {
-        IIOMetadataNode field, arrayNode, valueNode;
-        field = new IIOMetadataNode("TIFFField");
-        field.setAttribute("number", Integer.toString(number));
-        field.setAttribute("name", name);
-        arrayNode = new IIOMetadataNode("TIFFRationals");
-        field.appendChild(arrayNode);
-        valueNode = new IIOMetadataNode("TIFFRational");
-        arrayNode.appendChild(valueNode);
-        valueNode.setAttribute("value", numerator + "/" + denominator);
-        return field;
-    }
-
 }
