@@ -237,7 +237,8 @@ public class TestImageIOUtils extends TestCase
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
-        ImageIOUtil.writeImage(image, fileName + "." + imageFormat, Math.round(dpi));
+        boolean res = ImageIOUtil.writeImage(image, fileName + "." + imageFormat, Math.round(dpi));
+        assertTrue("ImageIOUtil.writeImage() failed for file " + fileName, res);
         if ("jpg".equals(imageFormat) || "gif".equals(imageFormat))
         {
             // jpeg is lossy, gif has 256 colors, 
