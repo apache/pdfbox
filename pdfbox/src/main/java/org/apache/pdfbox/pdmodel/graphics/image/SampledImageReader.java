@@ -51,7 +51,6 @@ import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 final class SampledImageReader
 {
     private static final Log LOG = LogFactory.getLog(SampledImageReader.class);
-    private static final ColorSpace COLOR_SPACE_RGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
     /**
      * Returns an ARGB image filled with the given paint and using the given image as a mask.
