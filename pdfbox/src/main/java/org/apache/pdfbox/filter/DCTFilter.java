@@ -194,20 +194,22 @@ final class DCTFilter extends Filter
     {
         WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
-        int[] bgr = new int[3];
-        int[] rgb = new int[3];
-        for (int y = 0, height = raster.getHeight(); y < height; y++)
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        int w3 = width * 3;
+        int[] tab = new int[w3];
+        //BEWARE: handling the full image at a time is slower than one line at a time        
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0, width = raster.getWidth(); x < width; x++)
+            raster.getPixels(0, y, width, 1, tab);
+            for (int off = 0; off < w3; off += 3)
             {
-                raster.getPixel(x, y, bgr);
-                rgb[0] = bgr[2];
-                rgb[1] = bgr[1];
-                rgb[2] = bgr[0];
-                writableRaster.setPixel(x, y, rgb);
+                int tmp = tab[off];
+                tab[off] = tab[off + 2];
+                tab[off + 2] = tmp;
             }
+            writableRaster.setPixels(0, y, width, 1, tab);
         }
-
         return writableRaster;
     }
 
