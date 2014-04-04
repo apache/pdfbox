@@ -86,7 +86,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
         ColorModel colorModel = new ComponentColorModel(COLOR_SPACE_RGB,
-                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+                false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
 
         return new BufferedImage(colorModel, raster, false, null);
     }
