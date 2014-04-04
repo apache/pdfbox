@@ -19,15 +19,24 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.PackedColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
@@ -42,6 +51,7 @@ import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 final class SampledImageReader
 {
     private static final Log LOG = LogFactory.getLog(SampledImageReader.class);
+    private static final ColorSpace COLOR_SPACE_RGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 
     /**
      * Returns an ARGB image filled with the given paint and using the given image as a mask.
@@ -137,6 +147,64 @@ final class SampledImageReader
         //
         WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height,
                 numComponents, new Point(0, 0));
+
+        // convert image, faster path for non-decoded, non-colormasked 8-bit images
+        final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
+        if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
+        {
+            return from8bit(pdImage, raster);
+        }
+        else
+        {
+            return fromAny(pdImage, raster, colorKey);
+        }
+    }
+
+    // faster, 8-bit non-decoded, non-colormasked image conversion
+    private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster)
+            throws IOException
+    {
+        InputStream input = pdImage.getStream().createInputStream();
+        try
+        {
+            // get the raster's underlying byte buffer
+            byte[][] banks = ((DataBufferByte) raster.getDataBuffer()).getBankData();
+            byte[] source = IOUtils.toByteArray(input);
+
+            final int width = pdImage.getWidth();
+            final int height = pdImage.getHeight();
+            final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
+
+            for (int c = 0; c < numComponents; c++)
+            {
+                int sourceOffset = c;
+                int max = width * height;
+                for (int i = 0; i < max; i++)
+                {
+                    banks[c][i] = source[sourceOffset];
+                    sourceOffset += numComponents;
+                }
+            }
+
+            // use the color space to convert the image to RGB
+            return pdImage.getColorSpace().toRGBImage(raster);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(input);
+        }
+    }
+
+    // slower, general-purpose image conversion from any image format
+    private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey)
+            throws IOException
+    {
+        final PDColorSpace colorSpace = pdImage.getColorSpace();
+        final int numComponents = colorSpace.getNumberOfComponents();
+        final int width = pdImage.getWidth();
+        final int height = pdImage.getHeight();
+        final int bitsPerComponent = pdImage.getBitsPerComponent();
+        final float[] decode = getDecodeArray(pdImage);
 
         // read bit stream
         ImageInputStream iis = null;

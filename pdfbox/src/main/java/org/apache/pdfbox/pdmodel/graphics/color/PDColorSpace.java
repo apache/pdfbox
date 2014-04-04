@@ -216,7 +216,7 @@ public abstract class PDColorSpace implements COSObjectable
 
         // ICC Profile color transforms are only fast when performed using ColorConvertOp
         ColorModel colorModel = new ComponentColorModel(colorSpace,
-            false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+            false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
 
         BufferedImage src = new BufferedImage(colorModel, raster, false, null);
         BufferedImage dest = new BufferedImage(raster.getWidth(), raster.getHeight(),
