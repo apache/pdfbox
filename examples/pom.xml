@@ -38,7 +38,7 @@
   <inceptionYear>2002</inceptionYear>
 
   <properties>
-    <lucene.version>4.6.0</lucene.version>
+    <lucene.version>4.7.1</lucene.version>
   </properties>
 
   <dependencies>
@@ -75,7 +75,7 @@
     <dependency>
       <groupId>org.apache.wink</groupId>
       <artifactId>wink-component-test-support</artifactId>
-      <version>1.3.0</version>
+      <version>1.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
