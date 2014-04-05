@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>13</version>
+        <version>14</version>
         <relativePath />
     </parent>
 
@@ -80,7 +80,12 @@
             <dependency>
                 <groupId>com.ibm.icu</groupId>
                 <artifactId>icu4j</artifactId>
-                <version>52.1</version>
+                <version>53.1</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.17</version>
             </dependency>
           
             <!-- For legal reasons (incompatible license), these two dependencies 
@@ -95,7 +100,7 @@
             <dependency>
                 <groupId>net.java.dev.jai-imageio</groupId>
                 <artifactId>jai-imageio-core-standalone</artifactId>
-                <version>1.2-pre-dr-b04-2011-07-04</version>
+                <version>1.2-pre-dr-b04-2013-04-23</version>
                 <scope>test</scope>
             </dependency>        
         </dependencies>
@@ -180,7 +185,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.7</version>
+                    <version>2.4.0</version>
                 </plugin>
                 <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
