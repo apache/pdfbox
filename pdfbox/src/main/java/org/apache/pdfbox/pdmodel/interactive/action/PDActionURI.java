@@ -39,7 +39,7 @@ public class PDActionURI extends PDAction
     public PDActionURI()
     {
         action = new COSDictionary();
-        setSubType( SUB_TYPE );
+        setSubType(SUB_TYPE);
     }
 
     /**
@@ -47,9 +47,9 @@ public class PDActionURI extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionURI( COSDictionary a )
+    public PDActionURI(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
@@ -57,6 +57,7 @@ public class PDActionURI extends PDAction
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return action;
@@ -67,6 +68,7 @@ public class PDActionURI extends PDAction
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSDictionary getCOSDictionary()
     {
         return action;
@@ -80,7 +82,7 @@ public class PDActionURI extends PDAction
      */
     public String getS()
     {
-       return action.getNameAsString( "S" );
+        return action.getNameAsString("S");
     }
 
     /**
@@ -89,38 +91,41 @@ public class PDActionURI extends PDAction
      *
      * @param s The URI action.
      */
-    public void setS( String s )
+    public void setS(String s)
     {
-       action.setName( "S", s );
+        action.setName("S", s);
     }
 
     /**
-     * This will get the uniform resource identifier to resolve, encoded in 7-bit ASCII.
+     * This will get the uniform resource identifier to resolve, encoded in
+     * 7-bit ASCII.
      *
      * @return The URI entry of the specific URI action dictionary.
      */
     public String getURI()
     {
-        return action.getString( "URI" );
+        return action.getString("URI");
     }
 
     /**
-     * This will set the uniform resource identifier to resolve, encoded in 7-bit ASCII.
+     * This will set the uniform resource identifier to resolve, encoded in
+     * 7-bit ASCII.
      *
      * @param uri The uniform resource identifier.
      */
-    public void setURI( String uri )
+    public void setURI(String uri)
     {
-        action.setString( "URI", uri );
+        action.setString("URI", uri);
     }
 
     /**
-     * This will specify whether to track the mouse position when the URI is resolved.
-     * Default value: false.
-     * This entry applies only to actions triggered by the user's clicking an annotation;
-     * it is ignored for actions associated with outline items or with a document's OpenAction entry.
+     * This will specify whether to track the mouse position when the URI is
+     * resolved. Default value: false. This entry applies only to actions
+     * triggered by the user's clicking an annotation; it is ignored for actions
+     * associated with outline items or with a document's OpenAction entry.
      *
-     * @return A flag specifying whether to track the mouse position when the URI is resolved.
+     * @return A flag specifying whether to track the mouse position when the
+     * URI is resolved.
      */
     public boolean shouldTrackMousePosition()
     {
@@ -128,46 +133,13 @@ public class PDActionURI extends PDAction
     }
 
     /**
-     * This will specify whether to track the mouse position when the URI is resolved.
+     * This will specify whether to track the mouse position when the URI is
+     * resolved.
      *
      * @param value The flag value.
      */
-    public void setTrackMousePosition( boolean value )
+    public void setTrackMousePosition(boolean value)
     {
         this.action.setBoolean("IsMap", value);
-    }
-
-    // TODO this must go into PDURIDictionary
-    /**
-     * This will get the base URI to be used in resolving relative URI references.
-     * URI actions within the document may specify URIs in partial form, to be interpreted
-     * relative to this base address. If no base URI is specified, such partial URIs
-     * will be interpreted relative to the location of the document itself.
-     * The use of this entry is parallel to that of the body element &lt;BASE&gt;, as described
-     * in the HTML 4.01 Specification.
-     *
-     * @return The URI entry of the specific URI dictionary.
-     * @deprecated use {@link PDURIDictionary#getBase()} instead
-     */
-    public String getBase()
-    {
-        return action.getString( "Base" );
-    }
-
-    // TODO this must go into PDURIDictionary
-    /**
-     * This will set the base URI to be used in resolving relative URI references.
-     * URI actions within the document may specify URIs in partial form, to be interpreted
-     * relative to this base address. If no base URI is specified, such partial URIs
-     * will be interpreted relative to the location of the document itself.
-     * The use of this entry is parallel to that of the body element &lt;BASE&gt;, as described
-     * in the HTML 4.01 Specification.
-     *
-     * @param base The the base URI to be used.
-     * @deprecated use {@link PDURIDictionary#setBase(String)} instead
-     */
-    public void setBase( String base )
-    {
-        action.setString( "Base", base );
     }
 }
