@@ -18,11 +18,12 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -120,29 +121,38 @@ public class PDSeparation extends PDSpecialColorSpace
         int width = raster.getWidth();
         int height = raster.getHeight();
         float[] samples = new float[1];
-        int[] alt = new int[numAltComponents];
+
+        Map<Integer, int[]> calculatedValues = new HashMap<Integer, int[]>();
+        Integer hash;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 raster.getPixel(x, y, samples);
-                samples[0] /= 255; // 0..1
-
-                // TODO special colorants: None, All
-
-                float[] result = tintTransform.eval(samples);
-                for (int s = 0; s < numAltComponents; s++)
+                int alt[] = calculatedValues.get(hash = Float.floatToIntBits(samples[0]));
+                if (alt == null)
                 {
-                    // scale to 0..255
-                    alt[s] = (int)(result[s] * 255);
-                }
-
+                    alt = new int[numAltComponents];
+                    tintTransform(samples, alt);
+                    calculatedValues.put(hash, alt);
+                }                
                 altRaster.setPixel(x, y, alt);
             }
         }
 
         // convert the alternate color space to RGB
         return alternateColorSpace.toRGBImage(altRaster);
+    }
+
+    protected void tintTransform(float samples[], int alt[]) throws IOException
+    {
+        samples[0] /= 255; // 0..1
+        float result[] = tintTransform.eval(samples);
+        for (int s = 0; s < alt.length; s++)
+        {
+            // scale to 0..255
+            alt[s] = (int) (result[s] * 255);
+        }
     }
 
     /**
