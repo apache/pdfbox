@@ -50,11 +50,9 @@ public class LZWFilter extends Filter
      * The LZW end of data code.
      */
     public static final long EOD = 257;
-
-    /**
-     * The LZW code table.
-     */
-    private ArrayList<byte[]> codeTable = null;
+    
+    //BEWARE: codeTable must be local to each method, because there is only
+    // one instance of each filter
 
     /**
      * {@inheritDoc}
@@ -63,7 +61,7 @@ public class LZWFilter extends Filter
     protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
             COSDictionary parameters) throws IOException
     {
-        codeTable = null;
+        ArrayList<byte[]> codeTable = null;
         int chunk = 9;
         MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
         long nextCommand = 0;
@@ -76,7 +74,7 @@ public class LZWFilter extends Filter
                 if (nextCommand == CLEAR_TABLE)
                 {
                     chunk = 9;
-                    initCodeTable();
+                    codeTable = createCodeTable();
                     prevCommand = -1;
                 }
                 else
@@ -123,7 +121,7 @@ public class LZWFilter extends Filter
     protected final void encode(InputStream rawData, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        initCodeTable();
+        ArrayList<byte[]> codeTable = createCodeTable();
         int chunk = 9;
 
         byte[] inputPattern = null;
@@ -160,7 +158,7 @@ public class LZWFilter extends Filter
                         // code table is full
                         out.writeBits(CLEAR_TABLE, chunk);
                         chunk = 9;
-                        initCodeTable();
+                        codeTable = createCodeTable();
                     }
 
                     inputPattern = new byte[]
@@ -191,7 +189,6 @@ public class LZWFilter extends Filter
         out.writeBits(EOD, chunk);
         out.writeBits(0, 7); // pad with 0
         out.flush(); // must do or file will be empty :-(
-        codeTable.clear();
     }
 
     /**
@@ -237,9 +234,9 @@ public class LZWFilter extends Filter
      * Init the code table with 1 byte entries and the EOD and CLEAR_TABLE
      * markers.
      */
-    private void initCodeTable()
+    private ArrayList<byte[]> createCodeTable()
     {
-        codeTable = new ArrayList<byte[]>(4096);
+        ArrayList<byte[]> codeTable = new ArrayList<byte[]>(4096);
         for (int i = 0; i < 256; ++i)
         {
             codeTable.add(new byte[]
@@ -249,6 +246,7 @@ public class LZWFilter extends Filter
         }
         codeTable.add(null); // 256 EOD
         codeTable.add(null); // 257 CLEAR_TABLE
+        return codeTable;
     }
 
     /**
