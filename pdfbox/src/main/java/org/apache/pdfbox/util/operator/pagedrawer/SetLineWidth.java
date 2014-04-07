@@ -40,6 +40,7 @@ public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
      * @param arguments List
      * @throws IOException If an error occurs while processing the font.
      */
+    @Override
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         super.process( operator, arguments );
@@ -48,7 +49,7 @@ public class SetLineWidth extends org.apache.pdfbox.util.operator.SetLineWidth
         BasicStroke stroke = (BasicStroke)drawer.getStroke();
         if (stroke == null)
         {
-            drawer.setStroke( new BasicStroke( lineWidth ) );
+            drawer.setStroke( new BasicStroke( lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER ) );
         }
         else
         {
