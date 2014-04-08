@@ -29,9 +29,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
-import org.apache.pdfbox.io.*;
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.RandomAccessFileInputStream;
+import org.apache.pdfbox.io.RandomAccessFileOutputStream;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
 
 /**
  * This class represents a stream object in a PDF document.
@@ -178,7 +182,7 @@ public class COSStream extends COSDictionary
      */
     public InputStream  getUnfilteredStream() throws IOException
     {
-        InputStream retval = null;
+        InputStream retval;
         if( unFilteredStream == null )
         {
             doDecode();
@@ -189,7 +193,7 @@ public class COSStream extends COSDictionary
         if( unFilteredStream != null )
         {
             long position = unFilteredStream.getPosition();
-            long length = unFilteredStream.getLength();
+            long length = unFilteredStream.getLengthWritten();
             RandomAccessFileInputStream input =
                 new RandomAccessFileInputStream( file, position, length );
             retval = new BufferedInputStream( input, BUFFER_SIZE );
@@ -246,6 +250,7 @@ public class COSStream extends COSDictionary
      * @param visitor The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromStream(this);
