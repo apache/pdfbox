@@ -28,10 +28,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
-import org.apache.pdfbox.io.*;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.RandomAccessFileInputStream;
+import org.apache.pdfbox.io.RandomAccessFileOutputStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.io.IOUtils;
 /**
  * This class represents a stream object in a PDF document.
  *
@@ -177,7 +181,7 @@ public class COSStream extends COSDictionary
      */
     public InputStream getUnfilteredStream() throws IOException
     {
-        InputStream retval = null;
+        InputStream retval;
         if( unFilteredStream == null )
         {
             doDecode();
@@ -188,7 +192,7 @@ public class COSStream extends COSDictionary
         if( unFilteredStream != null )
         {
             long position = unFilteredStream.getPosition();
-            long length = unFilteredStream.getLength();
+            long length = unFilteredStream.getLengthWritten();
             RandomAccessFileInputStream input =
                 new RandomAccessFileInputStream( file, position, length );
             retval = new BufferedInputStream( input, BUFFER_SIZE );
@@ -223,6 +227,7 @@ public class COSStream extends COSDictionary
      * @return any object, depending on the visitor implementation, or null
      * @throws COSVisitorException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws COSVisitorException
     {
         return visitor.visitFromStream(this);
@@ -287,7 +292,7 @@ public class COSStream extends COSDictionary
             //if the length is zero then don't bother trying to decode
             //some filters don't work when attempting to decode
             //with a zero length stream.  See zlib_error_01.pdf
-        	IOUtils.closeQuietly(unFilteredStream);
+            IOUtils.closeQuietly(unFilteredStream);
             unFilteredStream = new RandomAccessFileOutputStream( file );
             done = true;
         }
