@@ -24,17 +24,14 @@ import javax.print.PrintService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.rendering.PDFPrinter;
-import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * This is a command line program that will print a PDF document.
  * 
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PrintPDF
 {
-
     private static final String PASSWORD = "-password";
     private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
@@ -115,7 +112,7 @@ public class PrintPDF
                 boolean printerFound = false;
                 for (int i = 0; !printerFound && i < printService.length; i++)
                 {
-                    if (printService[i].getName().indexOf(printerName) != -1)
+                    if (printService[i].getName().contains(printerName))
                     {
                         printJob.setPrintService(printService[i]);
                         printerFound = true;
@@ -128,7 +125,7 @@ public class PrintPDF
             {
                 printer.silentPrint(printJob);
             }
-            else if (printJob.printDialog())
+            else
             {
                 printer.print(printJob);
             }

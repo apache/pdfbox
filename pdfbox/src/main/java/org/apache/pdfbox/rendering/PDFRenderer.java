@@ -158,10 +158,23 @@ public class PDFRenderer
      */
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics) throws IOException
     {
+        renderPageToGraphics(pageIndex, graphics, 1);
+    }
+
+    /**
+     * Renders a given page to an AWT Graphics2D instance.
+     * @param pageIndex the zero-based index of the page to be converted
+     * @param graphics the Graphics2D on which to draw the page
+     * @scale scale the scale to draw the page at
+     * @throws IOException if the PDF cannot be read
+     */
+    public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scale)
+            throws IOException
+    {
         PDPage page = document.getPage(pageIndex);
         // TODO need width/wight calculations? should these be in PageDrawer?
         PDRectangle cropBox = page.findCropBox();
-        renderPage(page, graphics, (int)cropBox.getWidth(), (int)cropBox.getHeight(), 1f, 1f);
+        renderPage(page, graphics, (int)cropBox.getWidth(), (int)cropBox.getHeight(), scale, scale);
     }
 
     // renders a page to the given graphics
@@ -170,6 +183,10 @@ public class PDFRenderer
                             float scaleY) throws IOException
     {
         graphics.clearRect(0, 0, width, height);
+
+        graphics.scale(scaleX, scaleY);
+        // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
+
         int rotationAngle = page.findRotation();
         if (rotationAngle != 0)
         {
@@ -177,24 +194,19 @@ public class PDFRenderer
             int translateY = 0;
             switch (rotationAngle)
             {
-            case 90:
-                translateX = width;
-                break;
-            case 270:
-                translateY = height;
-                break;
-            case 180:
-                translateX = width;
-                translateY = height;
-                break;
-            default:
-                break;
+                case 90:
+                case 270:
+                    translateX = height;
+                    break;
+                case 180:
+                    translateX = width;
+                    translateY = height;
+                    break;
             }
             graphics.translate(translateX, translateY);
             graphics.rotate((float) Math.toRadians(rotationAngle));
         }
-        // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
-        graphics.scale(scaleX, scaleY);
+
         PageDrawer drawer = new PageDrawer(this);   // TODO: need to make it easy to use a custom PageDrawer
         drawer.drawPage(graphics, page, page.findCropBox());
         drawer.dispose();

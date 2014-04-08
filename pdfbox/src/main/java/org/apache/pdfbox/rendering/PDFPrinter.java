@@ -18,10 +18,16 @@ package org.apache.pdfbox.rendering;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.rendering.printing.Orientation;
+import org.apache.pdfbox.rendering.printing.Scaling;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
@@ -43,6 +49,10 @@ public class PDFPrinter
     protected final PDDocument document;
     protected final PDFRenderer renderer;
     protected final PrinterJob printerJob;
+    protected final Scaling scaling;
+    protected final Orientation orientation;
+    protected final boolean showPageBorder;
+    protected final Paper paper; // may be null
 
     /**
      * Creates a new PDFPrinter.
@@ -60,6 +70,47 @@ public class PDFPrinter
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob) throws PrinterException
     {
+        this(document, printerJob, Scaling.SHRINK_TO_FIT, Orientation.AUTO, false, null);
+    }
+
+    /**
+     * Creates a new PDFPrinter with the given page scaling and orientation.
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param orientation page orientation policy
+     */
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation)
+            throws PrinterException
+    {
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, false, null);
+    }
+
+    /**
+     * Creates a new PDFPrinter with the given page scaling and orientation.
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param orientation page orientation policy
+     */
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper)
+            throws PrinterException
+    {
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, false, paper);
+    }
+
+    /**
+     * Creates a new PDFPrinter for a given printer job, the given page scaling and orientation,
+     * and with optional page borders shown.
+     * @param document the document to print
+     * @param printerJob the printer job to use
+     * @param scaling page scaling policy
+     * @param orientation page orientation policy
+     * @param showPageBorder true if page borders are to be printed
+     * @throws PrinterException
+     */
+    public PDFPrinter(PDDocument document, PrinterJob printerJob, Scaling scaling,
+                      Orientation orientation, boolean showPageBorder, Paper paper)
+            throws PrinterException
+    {
         if (document == null)
         {
             throw new IllegalArgumentException("document");
@@ -75,6 +126,10 @@ public class PDFPrinter
         this.document = document;
         this.renderer = new PDFRenderer(document);
         this.printerJob = printerJob;
+        this.scaling = scaling;
+        this.orientation = orientation;
+        this.showPageBorder = showPageBorder;
+        this.paper = paper;
     }
 
     /**
@@ -153,32 +208,35 @@ public class PDFPrinter
         public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException
         {
             PageFormat format = printerJob.defaultPage();
-
             PDPage page = document.getPage(pageIndex);
-            Dimension media = page.findMediaBox().createDimension();
-            Dimension crop = page.findCropBox().createDimension();
 
-            // Center the ImageableArea if the crop is smaller than the media
-            double diffWidth = 0.0;
-            double diffHeight = 0.0;
-            if (!media.equals(crop))
+            // auto portrait/landscape
+            if (orientation == Orientation.AUTO)
             {
-                diffWidth = (media.getWidth() - crop.getWidth()) / 2.0;
-                diffHeight = (media.getHeight() - crop.getHeight()) / 2.0;
+                Dimension cropBox = page.findRotatedCropBox().createDimension();
+                if (cropBox.getWidth() > cropBox.getHeight())
+                {
+                    format.setOrientation(PageFormat.LANDSCAPE);
+                }
+                else
+                {
+                    format.setOrientation(PageFormat.PORTRAIT);
+                }
             }
-
-            Paper paper = format.getPaper();
-            if (media.getWidth() < media.getHeight())
-            {
-                format.setOrientation(PageFormat.PORTRAIT);
-                paper.setImageableArea(diffWidth, diffHeight, crop.getWidth(), crop.getHeight());
-            }
-            else
+            else if (orientation == Orientation.LANDSCAPE)
             {
                 format.setOrientation(PageFormat.LANDSCAPE);
-                paper.setImageableArea(diffHeight, diffWidth, crop.getHeight(), crop.getWidth());
             }
-            format.setPaper(paper);
+            else if (orientation == Orientation.PORTRAIT)
+            {
+                format.setOrientation(PageFormat.PORTRAIT);
+            }
+
+            // custom paper
+            if (paper != null)
+            {
+                format.setPaper(paper);
+            }
 
             return format;
         }
@@ -204,17 +262,59 @@ public class PDFPrinter
             {
                 return NO_SUCH_PAGE;
             }
-
-            // draws to graphics using PDFRender
             try
             {
-                // TODO need to specify print DPI
-                renderer.renderPageToGraphics(pageIndex, (Graphics2D) graphics);
+                Graphics2D graphics2D = (Graphics2D)graphics;
+
+                PDPage page = document.getPage(pageIndex);
+                PDRectangle cropBox = page.findRotatedCropBox();
+
+                // the imageable area is the area within the page margins
+                final double imageableWidth = pageFormat.getImageableWidth();
+                final double imageableHeight = pageFormat.getImageableHeight();
+
+                double scale = 1;
+                if (scaling != Scaling.ACTUAL_SIZE)
+                {
+                    // scale to fit
+                    double scaleX = imageableWidth / cropBox.getWidth();
+                    double scaleY = imageableHeight / cropBox.getHeight();
+                    scale = Math.min(scaleX, scaleY);
+
+                    // only shrink to fit when enabled
+                    if (scale > 1 && scaling == Scaling.SHRINK_TO_FIT)
+                    {
+                        scale = 1;
+                    }
+                }
+
+                // set the graphics origin to the origin of the imageable area (i.e the margins)
+                graphics2D.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+                // center on page
+                graphics2D.translate((imageableWidth - cropBox.getWidth() * scale) / 2,
+                        (imageableHeight - cropBox.getHeight() * scale) / 2);
+
+                // draw to graphics using PDFRender
+                AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
+                renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale);
+
+                // draw crop box
+                if (showPageBorder)
+                {
+                    graphics2D.setTransform(transform);
+                    graphics2D.setClip(0, 0, (int)imageableWidth, (int)imageableHeight);
+                    graphics2D.scale(scale, scale);
+                    graphics2D.setColor(Color.GRAY);
+                    graphics2D.setStroke(new BasicStroke(0.5f));
+                    graphics.drawRect(0, 0, (int)cropBox.getWidth(), (int)cropBox.getHeight());
+                }
+
                 return PAGE_EXISTS;
             }
-            catch (IOException io)
+            catch (IOException e)
             {
-                throw new PrinterIOException(io);
+                throw new PrinterIOException(e);
             }
         }
     }
