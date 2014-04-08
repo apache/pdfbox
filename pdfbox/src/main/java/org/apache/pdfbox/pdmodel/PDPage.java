@@ -378,6 +378,27 @@ public class PDPage implements COSObjectable
     }
 
     /**
+     * This will find the CropBox with rotation applied, for this page by looking up the hierarchy
+     * until it finds them.
+     *
+     * @return The CropBox at this level in the hierarchy.
+     */
+    public PDRectangle findRotatedCropBox()
+    {
+        PDRectangle cropBox = findCropBox();
+        int rotation = findRotation();
+        if (rotation == 90 || rotation == 270)
+        {
+            return new PDRectangle(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
+                                   cropBox.getHeight(), cropBox.getWidth());
+        }
+        else
+        {
+            return cropBox;
+        }
+    }
+
+    /**
      * This will search for a crop box in the parent and return null if it is not found. It will NOT default to the
      * media box if it cannot be found.
      * 
