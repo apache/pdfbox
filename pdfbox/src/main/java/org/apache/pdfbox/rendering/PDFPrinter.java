@@ -41,7 +41,7 @@ import java.io.IOException;
  * Prints a PDF document using AWT.
  * This class may be overridden in order to perform custom printing.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas Lehmkï¿½hler
  * @author John Hewson
  */
 public class PDFPrinter
@@ -138,7 +138,7 @@ public class PDFPrinter
      */
     public void silentPrint() throws PrinterException
     {
-        silentPrint(PrinterJob.getPrinterJob());
+        silentPrint(printerJob);
     }
 
     /**
@@ -160,7 +160,7 @@ public class PDFPrinter
      */
     public void print() throws PrinterException
     {
-        print(PrinterJob.getPrinterJob());
+        print(printerJob);
     }
 
     /**
