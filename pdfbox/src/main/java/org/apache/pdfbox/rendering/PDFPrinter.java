@@ -297,6 +297,7 @@ public class PDFPrinter
 
                 // draw to graphics using PDFRender
                 AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
+                graphics2D.setBackground(Color.WHITE);
                 renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale);
 
                 // draw crop box
