@@ -18,7 +18,10 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -37,29 +40,75 @@ public class PDInlineImageTest extends TestCase
      */
     public void testInlineImage() throws IOException
     {
+        String outDir = "target/test-output/graphics";
+
+        new File(outDir).mkdirs();
+        if (!new File(outDir).exists())
+        {
+            throw new IOException("could not create output directory");
+        }
+
         COSDictionary dict = new COSDictionary();
         dict.setBoolean(COSName.IM, true);
-        dict.setInt(COSName.W, 30);
-        dict.setInt(COSName.H, 28);
+        int w = 30;
+        int h = 28;
+        dict.setInt(COSName.W, w);
+        dict.setInt(COSName.H, h);
         dict.setInt(COSName.BPC, 1);
-        byte[] data = new byte[113];
+        int rowbytes = w / 8;
+        if (rowbytes * 8 < w)
+        {
+            // PDF spec:
+            // If the number of data bits per row is not a multiple of 8, 
+            // the end of the row is padded with extra bits to fill out the last byte. 
+            ++rowbytes;
+        }
+        
+        // draw a grid
+        int datalen = rowbytes * h;
+        byte[] data = new byte[datalen];
+        for (int i = 0; i < datalen; ++i)
+        {
+            data[i] = (i / 4 % 2 == 0) ? (byte) Integer.parseInt("10101010", 2) : 0;
+        }
         PDInlineImage inlineImage = new PDInlineImage(dict, data, null);
         assertTrue(inlineImage.isStencil());
-        assertEquals(30, inlineImage.getWidth());
-        assertEquals(28, inlineImage.getHeight());
+        assertEquals(w, inlineImage.getWidth());
+        assertEquals(h, inlineImage.getHeight());
         assertEquals(1, inlineImage.getBitsPerComponent());
         assertEquals(data.length, inlineImage.getStream().getLength());
 
         Paint paint = new Color(0, 0, 0);
         BufferedImage stencilImage = inlineImage.getStencilImage(paint);
-        assertEquals(30, stencilImage.getWidth());
-        assertEquals(28, stencilImage.getHeight());
+        assertEquals(w, stencilImage.getWidth());
+        assertEquals(h, stencilImage.getHeight());
 
         BufferedImage image = inlineImage.getImage();
-        assertEquals(30, image.getWidth());
-        assertEquals(28, image.getHeight());
-        
-        boolean writeOk = ImageIOUtil.writeImage(image, "png", new NullOutputStream());
+        assertEquals(w, image.getWidth());
+        assertEquals(h, image.getHeight());
+
+        // write and read
+        boolean writeOk = ImageIOUtil.writeImage(image, "png", 
+                new FileOutputStream(new File(outDir + "/inline-grid.png")));
         assertTrue(writeOk);
+        BufferedImage bim = ImageIO.read(new File(outDir + "/inline-grid.png"));
+        assertNotNull(bim);
+        assertEquals(w, bim.getWidth());
+        assertEquals(h, bim.getHeight());
+
+        // compare: pixels with even coordinates are white (FF), all others are black (0)
+        for (int x = 0; x < w; ++x)
+        {
+            for (int y = 0; y < h; ++y)
+            {
+                if (x % 2 == 0 && y % 2 == 0)
+                {
+                    assertEquals(0xFFFFFF, bim.getRGB(x, y) & 0xFFFFFF);
+                }
+                else
+                    assertEquals(0, bim.getRGB(x, y) & 0xFFFFFF);
+            }
+        }
     }
 }
+
