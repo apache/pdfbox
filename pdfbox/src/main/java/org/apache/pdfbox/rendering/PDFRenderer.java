@@ -174,12 +174,14 @@ public class PDFRenderer
         PDPage page = document.getPage(pageIndex);
         // TODO need width/wight calculations? should these be in PageDrawer?
         PDRectangle cropBox = page.findCropBox();
-        renderPage(page, graphics, (int)cropBox.getWidth(), (int)cropBox.getHeight(), scale, scale);
+        renderPageToGraphics(page, graphics, (int)cropBox.getWidth(), (int)cropBox.getHeight(), scale, scale);
     }
 
     // renders a page to the given graphics
-    // TODO need to be able to override this
-    private void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX,
+    // TODO 1: need to be able to override this
+    // TODO 2: merge this with private renderPage per DRY, fix regressions related to PDFBOX-2021
+    //      test rendering and printing of PDFBOX-758, PDFBOX-427, PDFBOX-1435 and PDFBOX-1693
+    private void renderPageToGraphics(PDPage page, Graphics2D graphics, int width, int height, float scaleX,
                             float scaleY) throws IOException
     {
         graphics.clearRect(0, 0, width, height);
@@ -211,4 +213,41 @@ public class PDFRenderer
         drawer.drawPage(graphics, page, page.findCropBox());
         drawer.dispose();
     }
+    
+    // renders a page to the given graphics
+    // TODO need to be able to override this
+    private void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX,
+                            float scaleY) throws IOException
+    {
+        graphics.clearRect(0, 0, width, height);
+        int rotationAngle = page.findRotation();
+        if (rotationAngle != 0)
+        {
+            int translateX = 0;
+            int translateY = 0;
+            switch (rotationAngle)
+            {
+                case 90:
+                translateX = width;
+                break;
+                case 270:
+                translateY = height;
+                    break;
+                case 180:
+                    translateX = width;
+                    translateY = height;
+                    break;
+            default:
+                break;
+            }
+            graphics.translate(translateX, translateY);
+            graphics.rotate((float) Math.toRadians(rotationAngle));
+        }
+        // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
+        graphics.scale(scaleX, scaleY);
+        PageDrawer drawer = new PageDrawer(this);   // TODO: need to make it easy to use a custom PageDrawer
+        drawer.drawPage(graphics, page, page.findCropBox());
+        drawer.dispose();
+    }
+    
 }
