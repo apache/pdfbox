@@ -773,7 +773,7 @@ public class DateConverter
      */
     public static Calendar toCalendar(String text) throws IOException
     {
-        if (text == null)
+        if (text == null || "".equals(text))
         {
             return null;    
         }
