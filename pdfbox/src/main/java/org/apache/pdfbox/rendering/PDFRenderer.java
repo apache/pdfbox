@@ -196,8 +196,10 @@ public class PDFRenderer
             switch (rotationAngle)
             {
                 case 90:
-                case 270:
                     translateX = cropBox.getHeight();
+                    break;
+                case 270:
+                    translateY = cropBox.getWidth();
                     break;
                 case 180:
                     translateX = cropBox.getWidth();
