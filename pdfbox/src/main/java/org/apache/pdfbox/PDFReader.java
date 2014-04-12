@@ -100,6 +100,7 @@ public class PDFReader extends javax.swing.JFrame
         setTitle("PDFBox - PDF Reader");
         addWindowListener(new java.awt.event.WindowAdapter()
         {
+            @Override
             public void windowClosing(java.awt.event.WindowEvent evt)
             {
                 exitApplication();
@@ -388,20 +389,20 @@ public class PDFReader extends javax.swing.JFrame
         else
         {
             document = PDDocument.load(file);
-            if( document.isEncrypted() )
+        }
+        if( document.isEncrypted() )
+        {
+            try
             {
-                try
-                {
-                    document.decrypt( password );
-                }
-                catch( InvalidPasswordException e )
-                {
-                    System.err.println( "Error: The document is encrypted." );
-                }
-                catch( org.apache.pdfbox.exceptions.CryptographyException e )
-                {
-                    e.printStackTrace();
-                }
+                document.decrypt( password );
+            }
+            catch( InvalidPasswordException e )
+            {
+                System.err.println( "Error: The document is encrypted." );
+            }
+            catch( org.apache.pdfbox.exceptions.CryptographyException e )
+            {
+                e.printStackTrace();
             }
         }
     }

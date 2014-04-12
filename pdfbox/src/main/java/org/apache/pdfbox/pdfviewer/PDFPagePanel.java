@@ -80,6 +80,7 @@ public class PDFPagePanel extends JPanel
     /**
      * {@inheritDoc}
      */
+    @Override
     public void paint(Graphics g )
     {
         try
@@ -92,6 +93,12 @@ public class PDFPagePanel extends JPanel
             {
                 Graphics2D g2D = (Graphics2D)g;
                 g2D.translate(pageDimension.getWidth(), 0.0f);
+                g2D.rotate(Math.toRadians(rotation));
+            }
+            else if (rotation == 180)
+            {
+                Graphics2D g2D = (Graphics2D) g;
+                g2D.translate(pageDimension.getWidth(), pageDimension.getHeight());
                 g2D.rotate(Math.toRadians(rotation));
             }
 
