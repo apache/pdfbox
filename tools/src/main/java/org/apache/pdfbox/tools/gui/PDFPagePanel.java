@@ -25,7 +25,6 @@ import java.io.IOException;
 import javax.swing.JPanel;
 
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -42,18 +41,23 @@ public class PDFPagePanel extends JPanel
 
     private PDFRenderer renderer;
     private PDPage page;
+    private int pageNum;
     private Dimension pageDimension = null;
     private Dimension drawDimension = null;
 
     /**
      * This will set the page that should be displayed in this panel.
      *
-     * @param page The page to draw.
+     * @param renderer The renderer to render the page.
+     * @param page The PDF page to display.
+     * @param pageNum The number of the page.
+     * @throws IOException if something goes wrong.
      */
-    public void setPage( PDFRenderer renderer, PDPage page ) throws IOException
+    public void setPage(PDFRenderer renderer, PDPage page, int pageNum) throws IOException
     {
         this.renderer = renderer;
         this.page = page;
+        this.pageNum = pageNum;
 
         PDRectangle cropBox = page.findCropBox();
         drawDimension = cropBox.createDimension();
@@ -66,33 +70,23 @@ public class PDFPagePanel extends JPanel
         {
             pageDimension = drawDimension;
         }
-        setSize( pageDimension );
-        setBackground( java.awt.Color.white );
+        setSize(pageDimension);
+        setBackground(java.awt.Color.white);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void paint(Graphics g )
+    @Override
+    public void paint(Graphics g)
     {
         try
         {
-            PageDrawer drawer = new PageDrawer(renderer);
-
-            g.setColor( getBackground() );
-            g.fillRect( 0, 0, getWidth(), getHeight() );
-
-            int rotation = page.findRotation();
-            if (rotation == 90 || rotation == 270)
-            {
-                Graphics2D g2D = (Graphics2D)g;
-                g2D.translate(pageDimension.getWidth(), 0.0f);
-                g2D.rotate(Math.toRadians(rotation));
-            }
-            PDRectangle pageSize = new PDRectangle((float)drawDimension.getWidth(), (float)drawDimension.getHeight());
-            drawer.drawPage( g, page, pageSize );
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth(), getHeight());
+            renderer.renderPageToGraphics(pageNum, (Graphics2D) g);
         }
-        catch( IOException e )
+        catch (IOException e)
         {
             e.printStackTrace();
         }
