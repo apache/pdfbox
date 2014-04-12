@@ -28,6 +28,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Paper;
@@ -53,6 +54,7 @@ public class PDFPrinter
     protected final Orientation orientation;
     protected final boolean showPageBorder;
     protected final Paper paper; // may be null
+    protected final float dpi;
 
     /**
      * Creates a new PDFPrinter.
@@ -70,7 +72,7 @@ public class PDFPrinter
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob) throws PrinterException
     {
-        this(document, printerJob, Scaling.SHRINK_TO_FIT, Orientation.AUTO, false, null);
+        this(document, printerJob, Scaling.SHRINK_TO_FIT, Orientation.AUTO, null, false, 0);
     }
 
     /**
@@ -82,7 +84,7 @@ public class PDFPrinter
     public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation)
             throws PrinterException
     {
-        this(document, PrinterJob.getPrinterJob(), scaling, orientation, false, null);
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, null, false, 0);
     }
 
     /**
@@ -94,7 +96,20 @@ public class PDFPrinter
     public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper)
             throws PrinterException
     {
-        this(document, PrinterJob.getPrinterJob(), scaling, orientation, false, paper);
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, paper, false, 0);
+    }
+
+    /**
+     * Creates a new PDFPrinter with the given page scaling and orientation.
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param orientation page orientation policy
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     */
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper,
+                      float dpi) throws PrinterException
+    {
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, paper, false, dpi);
     }
 
     /**
@@ -105,10 +120,11 @@ public class PDFPrinter
      * @param scaling page scaling policy
      * @param orientation page orientation policy
      * @param showPageBorder true if page borders are to be printed
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
      * @throws PrinterException
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob, Scaling scaling,
-                      Orientation orientation, boolean showPageBorder, Paper paper)
+                      Orientation orientation, Paper paper, boolean showPageBorder, float dpi)
             throws PrinterException
     {
         if (document == null)
@@ -130,6 +146,7 @@ public class PDFPrinter
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
         this.paper = paper;
+        this.dpi = dpi;
     }
 
     /**
@@ -295,6 +312,23 @@ public class PDFPrinter
                 graphics2D.translate((imageableWidth - cropBox.getWidth() * scale) / 2,
                         (imageableHeight - cropBox.getHeight() * scale) / 2);
 
+                // rasterize to bitmap (optional)
+                Graphics2D printerGraphics = null;
+                BufferedImage image = null;
+                if (dpi > 0)
+                {
+                    float dpiScale = dpi / 72;
+                    image = new BufferedImage((int)(imageableWidth * dpiScale), (int)(imageableHeight * dpiScale),
+                            BufferedImage.TYPE_INT_ARGB);
+
+                    printerGraphics = graphics2D;
+                    graphics2D = image.createGraphics();
+
+                    // rescale
+                    printerGraphics.scale(scale / dpiScale, scale / dpiScale);
+                    scale = dpiScale;
+                }
+
                 // draw to graphics using PDFRender
                 AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
                 graphics2D.setBackground(Color.WHITE);
@@ -309,6 +343,15 @@ public class PDFPrinter
                     graphics2D.setColor(Color.GRAY);
                     graphics2D.setStroke(new BasicStroke(0.5f));
                     graphics.drawRect(0, 0, (int)cropBox.getWidth(), (int)cropBox.getHeight());
+                }
+
+                // draw rasterized bitmap (optional)
+                if (printerGraphics != null)
+                {
+                    printerGraphics.setBackground(Color.WHITE);
+                    printerGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
+                    printerGraphics.drawImage(image, 0, 0, null);
+                    graphics2D.dispose();
                 }
 
                 return PAGE_EXISTS;
