@@ -58,8 +58,8 @@ public class PDFReader extends JFrame
     private JMenu viewMenu;
     private JMenuItem nextPageItem;
     private JMenuItem previousPageItem;
-    private JPanel documentPanel = new JPanel();
-    private ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
+    private final JPanel documentPanel = new JPanel();
+    private final ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
 
     private PDFRenderer renderer;
     private PDDocument document = null;
@@ -97,6 +97,7 @@ public class PDFReader extends JFrame
         setTitle("PDFBox - PDF Reader");
         addWindowListener(new java.awt.event.WindowAdapter()
         {
+            @Override
             public void windowClosing(java.awt.event.WindowEvent evt)
             {
                 exitApplication();
@@ -114,6 +115,7 @@ public class PDFReader extends JFrame
         openMenuItem.setToolTipText("Open PDF file");
         openMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 openMenuItemActionPerformed(evt);
@@ -125,6 +127,7 @@ public class PDFReader extends JFrame
         printMenuItem.setText("Print");
         printMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 try
@@ -164,6 +167,7 @@ public class PDFReader extends JFrame
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 exitApplication();
@@ -179,6 +183,7 @@ public class PDFReader extends JFrame
         nextPageItem.setAccelerator(KeyStroke.getKeyStroke('+'));
         nextPageItem.addActionListener(new java.awt.event.ActionListener()
         {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 nextPage();
@@ -190,6 +195,7 @@ public class PDFReader extends JFrame
         previousPageItem.setAccelerator(KeyStroke.getKeyStroke('-'));
         previousPageItem.addActionListener(new java.awt.event.ActionListener()
         {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
                 previousPage();
@@ -331,7 +337,7 @@ public class PDFReader extends JFrame
         try
         {
             PageWrapper wrapper = new PageWrapper(this);
-            wrapper.displayPage(renderer, pages.get(pageNumber));
+            wrapper.displayPage(renderer, pages.get(pageNumber), pageNumber);
             if (documentPanel.getComponentCount() > 0)
             {
                 documentPanel.remove(0);
@@ -349,7 +355,6 @@ public class PDFReader extends JFrame
     {
         try
         {
-            PDFRenderer renderer = new PDFRenderer(document);
             BufferedImage pageAsImage = renderer.renderImage(currentPage);
             String imageFilename = currentFilename;
             if (imageFilename.toLowerCase().endsWith(".pdf"))
@@ -375,18 +380,18 @@ public class PDFReader extends JFrame
         else
         {
             document = PDDocument.load(file);
-            renderer = new PDFRenderer(document);
-            if (document.isEncrypted())
+        }
+        renderer = new PDFRenderer(document);
+        if (document.isEncrypted())
+        {
+            try
             {
-                try
-                {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                    document.openProtection(sdm);
-                }
-                catch (InvalidPasswordException e)
-                {
-                    System.err.println("Error: The document is encrypted.");
-                }
+                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                document.openProtection(sdm);
+            }
+            catch (InvalidPasswordException e)
+            {
+                System.err.println("Error: The document is encrypted.");
             }
         }
     }

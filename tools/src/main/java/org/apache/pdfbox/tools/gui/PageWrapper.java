@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 public class PageWrapper implements MouseMotionListener
 {
-    private JPanel pageWrapper = new JPanel();
+    private final JPanel pageWrapper = new JPanel();
     private PDFPagePanel pagePanel = null;
     private PDFReader reader = null;
 
@@ -58,12 +58,16 @@ public class PageWrapper implements MouseMotionListener
     }
 
     /**
+     * 
      * This will display the PDF page in this component.
+     * @param renderer The renderer to render the page.
      * @param page The PDF page to display.
+     * @param pageNum The number of the page.
+     * @throws IOException if something goes wrong.
      */
-    public void displayPage(PDFRenderer renderer,  PDPage page) throws IOException
+    public void displayPage(PDFRenderer renderer, PDPage page, int pageNum) throws IOException
     {
-        pagePanel.setPage(renderer, page);
+        pagePanel.setPage(renderer, page, pageNum);
         pagePanel.setPreferredSize(pagePanel.getSize());
         Dimension d = pagePanel.getSize();
         d.width+=(SPACE_AROUND_DOCUMENT*2);
