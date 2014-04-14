@@ -46,12 +46,27 @@ public class JPEGFactoryTest extends TestCase
 
     /**
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
-     * image)
+     * image) with color JPEG file
      */
     public void testCreateFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+        assertEquals(3, image.getColorModel().getNumComponents());
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
+        validate(ximage, 8, 344, 287, "jpg");
+        document.close();
+    }
+
+    /**
+     * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
+     * image) with gray JPEG file
+     */
+    public void testCreateFromImage256() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
+        assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg");
         document.close();
