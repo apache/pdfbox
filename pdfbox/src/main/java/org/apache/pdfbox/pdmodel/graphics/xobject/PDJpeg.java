@@ -110,12 +110,30 @@ public class PDJpeg extends PDXObjectImage
         getRGBImage();
         if (image != null)
         {
-            setBitsPerComponent( 8 );
-            setColorSpace( PDDeviceRGB.INSTANCE );
-            setHeight( image.getHeight() );
-            setWidth( image.getWidth() );
+            setPropertiesFromAWT(image);
         }
+    }
 
+    private void setPropertiesFromAWT(BufferedImage image) throws IllegalStateException
+    {
+        setBitsPerComponent( 8 );
+        if (image.getColorModel().getNumComponents() == 3)
+        {
+            setColorSpace( PDDeviceRGB.INSTANCE );
+        }
+        else
+        {
+            if (image.getColorModel().getNumComponents() == 1)
+            {
+                setColorSpace( new PDDeviceGray() );
+            }
+            else
+            {
+                throw new IllegalStateException();
+            }
+        }
+        setHeight( image.getHeight() );
+        setWidth( image.getWidth() );
     }
 
     /**
@@ -180,24 +198,7 @@ public class PDJpeg extends PDXObjectImage
                 alphaPdImage = new PDJpeg(doc, alpha, compressionQuality);
                 dic.setItem(COSName.SMASK, alphaPdImage);
             }
-            setBitsPerComponent( 8 );
-            if (bi.getColorModel().getNumComponents() == 3)
-            {
-                setColorSpace( PDDeviceRGB.INSTANCE );
-            }
-            else
-            {
-                if (bi.getColorModel().getNumComponents() == 1)
-                {
-                    setColorSpace( new PDDeviceGray() );
-                }
-                else
-                {
-                    throw new IllegalStateException();
-                }
-            }
-            setHeight( bi.getHeight() );
-            setWidth( bi.getWidth() );
+            setPropertiesFromAWT(bi);
         }
         finally
         {
