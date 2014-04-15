@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -27,8 +28,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +42,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -79,7 +81,6 @@ public class PDPixelMap extends PDXObjectImage
     /**
      * Construct a pixel map image from an AWT image.
      * 
-     * 
      * @param doc The PDF document to embed the image in.
      * @param bi The image to read data from.
      *
@@ -114,31 +115,66 @@ public class PDPixelMap extends PDXObjectImage
         {
             rgbImage = bi;
         }
-        java.io.OutputStream os = null;
+        OutputStream os = null;
         try
         {
             int numberOfComponents = rgbImage.getColorModel().getNumComponents();
-            if (numberOfComponents == 3)
+            if (numberOfComponents != 3 && numberOfComponents != 1)
             {
-                setColorSpace( PDDeviceRGB.INSTANCE );
+                throw new IllegalStateException();
+            }
+ 
+            int bpc;
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+            //TODO: activate this when DeviceGray tests work
+//            if ((bi.getType() == BufferedImage.TYPE_BYTE_GRAY ||
+//                    || bi.getType() == BufferedImage.TYPE_BYTE_BINARY)
+//                    && bi.getColorModel().getPixelSize() <= 8)
+            if (bi.getType() == BufferedImage.TYPE_BYTE_BINARY
+                    && bi.getColorModel().getPixelSize() <= 8)
+            {
+                setColorSpace(new PDDeviceGray());
+                MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
+
+                // grayscale images need one color per sample
+                bpc = bi.getColorModel().getPixelSize();
+                int h = rgbImage.getHeight();
+                int w = rgbImage.getWidth();
+                for (int y = 0; y < h; ++y)
+                {
+                    for (int x = 0; x < w; ++x)
+                    {
+                        mcios.writeBits(rgbImage.getRGB(x, y), bpc);
+                    }
+                }
+                mcios.writeBits(0, 7); // padding
+                mcios.flush();
+                mcios.close();
             }
             else
             {
-                if (numberOfComponents == 1)
+                // RGB
+                setColorSpace(PDDeviceRGB.INSTANCE);
+                bpc = 8;
+                int h = rgbImage.getHeight();
+                int w = rgbImage.getWidth();
+                for (int y = 0; y < h; ++y)
                 {
-                    setColorSpace( new PDDeviceGray() );
+                    for (int x = 0; x < w; ++x)
+                    {
+                        Color color = new Color(rgbImage.getRGB(x, y));
+                        bos.write(color.getRed());
+                        bos.write(color.getGreen());
+                        bos.write(color.getBlue());
+                    }
                 }
-                else
-                {
-                    throw new IllegalStateException();
-                }
-            }
-            byte[] outData = new byte[width * height * numberOfComponents];
-            rgbImage.getData().getDataElements(0, 0, width, height, outData);
+            }           
+            
             // add FlateDecode compression
             getPDStream().addCompression();
             os = getCOSStream().createUnfilteredStream();
-            os.write(outData);
+            os.write(bos.toByteArray());
             
             COSDictionary dic = getCOSStream();
             dic.setItem( COSName.FILTER, COSName.FLATE_DECODE );
@@ -149,7 +185,7 @@ public class PDPixelMap extends PDXObjectImage
                 PDPixelMap smask = new PDPixelMap(doc, alphaImage);
                 dic.setItem(COSName.SMASK, smask);
             }
-            setBitsPerComponent( 8 );
+            setBitsPerComponent( bpc );
             setHeight( height );
             setWidth( width );
         }
