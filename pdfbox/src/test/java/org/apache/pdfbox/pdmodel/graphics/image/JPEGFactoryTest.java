@@ -22,6 +22,8 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -33,7 +35,7 @@ public class JPEGFactoryTest extends TestCase
 {
     /**
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
-     * stream)
+     * stream) with color JPEG file
      */
     public void testCreateFromStream() throws IOException
     {
@@ -41,12 +43,27 @@ public class JPEGFactoryTest extends TestCase
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg");
+        assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
+        document.close();
+    }
+
+    /**
+     * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
+     * stream) with gray JPEG file
+     */
+    public void testCreateFromStream256() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        validate(ximage, 8, 344, 287, "jpg");
+        assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
     /**
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
-     * image) with color JPEG file
+     * image) with color JPEG image
      */
     public void testCreateFromImageRGB() throws IOException
     {
@@ -55,12 +72,13 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(3, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg");
+        assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
     /**
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
-     * image) with gray JPEG file
+     * image) with gray JPEG image
      */
     public void testCreateFromImage256() throws IOException
     {
@@ -69,6 +87,7 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg");
+        assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
