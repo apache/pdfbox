@@ -396,7 +396,8 @@ public final class PDAppearanceString
         {
             throw new IOException( "Error: Unknown justification value:" + q );
         }
-        printWriter.println("(" + value + ") Tj");
+        // add the value as hex string to deal with non ISO-8859-1 data values
+        printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
         printWriter.println("ET" );
         printWriter.flush();
     }
