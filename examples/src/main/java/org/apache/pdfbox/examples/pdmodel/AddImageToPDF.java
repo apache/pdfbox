@@ -16,9 +16,11 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.io.RandomAccessFile;
 
@@ -29,6 +31,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
@@ -71,15 +74,23 @@ public class AddImageToPDF
             {
                 ximage = CCITTFactory.createFromRandomAccess(doc, new RandomAccessFile(new File(image),"r"));
             }
+            else if (image.toLowerCase().endsWith(".gif") || 
+                    image.toLowerCase().endsWith(".bmp") || 
+                    image.toLowerCase().endsWith(".png"))
+            {
+                BufferedImage bim = ImageIO.read(new File(image));
+                ximage = LosslessFactory.createFromImage(doc, bim);
+            }
             else
             {
-                //BufferedImage awtImage = ImageIO.read( new File( image ) );
-                //ximage = new PDPixelMap(doc, awtImage);
-                throw new IOException( "Image type not supported:" + image );
+                throw new IOException( "Image type not supported: " + image );
             }
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
 
-            contentStream.drawImage( ximage, 20, 20 );
+            //contentStream.drawImage(ximage, 20, 20 );
+            // better method inspired by http://stackoverflow.com/a/22318681/535646
+            float scale = 1f; // reduce this value if the image is too large
+            contentStream.drawXObject(ximage, 20, 20, ximage.getWidth()*scale, ximage.getHeight()*scale);
 
             contentStream.close();
             doc.save( outputFile );
