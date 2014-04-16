@@ -82,13 +82,14 @@ public class ImageToPDF
             }
             else
             {
-                //BufferedImage awtImage = ImageIO.read( new File( image ) );
-                //ximage = new PDPixelMap(doc, awtImage);
-                throw new IOException( "Image type not supported:" + image );
+                throw new IOException( "Image type not supported: " + image );
             }
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
 
-            contentStream.drawImage( pdImage, 20, 20 );
+            //contentStream.drawImage(pdImage, 20, 20 );
+            // better method inspired by http://stackoverflow.com/a/22318681/535646
+            float scale = 1f; // reduce this value if the image is too large
+            contentStream.drawXObject(pdImage, 20, 20, pdImage.getWidth()*scale, pdImage.getHeight()*scale);
 
             contentStream.close();
             doc.save( file );
