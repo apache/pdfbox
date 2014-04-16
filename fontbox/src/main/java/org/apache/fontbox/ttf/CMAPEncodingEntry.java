@@ -130,7 +130,7 @@ public class CMAPEncodingEntry
 
 		glyphIdToCharacterCode = new int[numGlyphs];
 		// -- Read all sub header
-		for (long i = 0; i <= nbGroups ; ++i ) 
+		for (long i = 0; i < nbGroups ; ++i ) 
 		{
 			long firstCode = data.readUnsignedInt();
 			long endCode = data.readUnsignedInt();
@@ -210,7 +210,7 @@ public class CMAPEncodingEntry
 			throws IOException {
 		long nbGroups = data.readUnsignedInt();
 		glyphIdToCharacterCode = new int[numGlyphs];
-		for (long i = 0; i <= nbGroups ; ++i ) 
+		for (long i = 0; i < nbGroups ; ++i ) 
 		{
 			long firstCode = data.readUnsignedInt();
 			long endCode = data.readUnsignedInt();
@@ -252,7 +252,7 @@ public class CMAPEncodingEntry
 	protected void processSubtype13( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
 			throws IOException {
 		long nbGroups = data.readUnsignedInt();
-		for (long i = 0; i <= nbGroups ; ++i ) 
+		for (long i = 0; i < nbGroups ; ++i ) 
 		{
 			long firstCode = data.readUnsignedInt();
 			long endCode = data.readUnsignedInt();
