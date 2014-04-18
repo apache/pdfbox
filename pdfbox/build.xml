@@ -25,7 +25,6 @@
 
     <property name="download.dir" value="download" />
     <property name="jar.dir" value="external" />
-    <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
     <property name="project.version" value="2.0.0" />
@@ -39,7 +38,6 @@
     <property name="pdfbox.test.dir" value="src/test/java" />
     <property name="pdfbox.testfiles.dir" value="/src/test/resources" />
     <property name="pdfbox.resources.dir" value="src/main/resources" />
-    <property name="pdfbox.checkstyle.config" value="../pdfbox-checkstyle.xml" />
 
     <!-- fontbox -->
     <property name="fontbox.project.name" value="fontbox"/>
@@ -87,13 +85,6 @@
     <property name="icu4j.name" value="icu4j-3.8" />
     <property name="icu4j.url" value="${maven.repo1}/com/ibm/icu/icu4j/3.8/${icu4j.name}.jar" />
     <property name="icu4j.jar" value="${jar.dir}/${icu4j.name}.jar" />
-
-    <property name="checkstyle.url" value="${maven.repo2}/checkstyle/checkstyle/4.4/checkstyle-4.4.jar" />
-    <property name="checkstyle.jar" value="${tool.dir}/checkstyle.jar" />
-    <property name="beanutils.url" value="${maven.repo2}/commons-beanutils/commons-beanutils-core/1.7.0/commons-beanutils-core-1.7.0.jar" />
-    <property name="beanutils.jar" value="${tool.dir}/commons-beanutils.jar" />
-    <property name="antlr.url" value="${maven.repo2}/antlr/antlr/2.7.6/antlr-2.7.6.jar" />
-    <property name="antlr.jar" value="${tool.dir}/antlr.jar" />
 
     <property name="testoutput.dir" value="${pdfbox.target.dir}/test-output"/>
     <property name="testoutput-ext.dir" value="${pdfbox.target.dir}/test-output-ext"/>
@@ -143,17 +134,9 @@
         <pathelement path="${jempbox.resources.dir}" />
     </path>
 
-    <path id="checkstyle.classpath">
-        <pathelement path="${checkstyle.jar}" />
-        <pathelement path="${beanutils.jar}" />
-        <pathelement path="${logging.jar}" />
-        <pathelement path="${antlr.jar}" />
-    </path>
-
     <target name="pdfbox.clean" description="Remove all generated files">
         <delete dir="${pdfbox.target.dir}"/>
         <delete dir="${bin.dir}"/>
-        <delete file="checkstyle.cache" />
         <delete dir="${testoutput.dir}"/>
         <delete dir="${testoutput-ext.dir}"/>
     </target>
@@ -333,40 +316,6 @@
         <get src="${sourcefile}" dest="${destfile}"/>
     </target>
 
-    <target name="find.checkstyle">
-        <available property="checkstyle.found"
-                   classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
-                   classpathref="checkstyle.classpath"/>
-    </target>
-
-    <target name="get.checkstyle"
-            unless="checkstyle.found" depends="find.checkstyle">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${checkstyle.url}"/>
-            <param name="destfile" value="${checkstyle.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${beanutils.url}"/>
-            <param name="destfile" value="${beanutils.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${antlr.url}"/>
-            <param name="destfile" value="${antlr.jar}"/>
-        </antcall>
-    </target>
-
-    <target name="checkstyle" depends="pdfbox.compile,get.checkstyle">
-        <!-- This doesn't work when run from netbeans for some reason -->
-        <taskdef name="checkstyle"
-                 classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
-                 classpathref="checkstyle.classpath" />
-        <checkstyle config="${pdfbox.checkstyle.config}"
-                    classpathref="checkstyle.classpath"
-                    failOnViolation="false">
-            <fileset dir="${pdfbox.src.dir}" />
-        </checkstyle>
-    </target>
-
     <target name="get.externallibs.pdfbox">
         <antcall target="downloadfile">
             <param name="sourcefile" value="${bcmail.url}"/>
@@ -465,7 +414,7 @@
 
     <!-- We use Maven to create the release packages. Keep this target for -->
     <!-- now for backwards compatibility with old build scripts and habits -->
-    <target name="dist" depends="pdfbox.clean,pdfbox.package,build.NET,checkstyle"/>
+    <target name="dist" depends="pdfbox.clean,pdfbox.package,build.NET"/>
 
     <target name="clean" depends="fontbox.clean,jempbox.clean,pdfbox.clean"/>
 
