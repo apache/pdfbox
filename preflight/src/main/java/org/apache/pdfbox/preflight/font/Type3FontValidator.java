@@ -296,8 +296,9 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         int lc = this.font.getLastChar();
 
         /*
-         * wArr length = (lc - fc) + 1 and it is an array of int. If FirstChar is greater than LastChar, the validation
-         * will fail because of the array will have an expected size <= 0.
+         * wArr length = (lc - fc) + 1 and it is an array of int. 
+         * If FirstChar is greater than LastChar, the validation
+         * will fail because of the array will have an expected size &lt;= 0.
          */
         int expectedLength = (lc - fc) + 1;
         if (widths.size() != expectedLength)

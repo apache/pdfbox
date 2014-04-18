@@ -963,7 +963,7 @@ public class NonSequentialPDFParser extends PDFParser
 
     /**
      * Creates a unique object id using object number and object generation
-     * number. (requires object number < 2^31))
+     * number. (requires object number &lt; 2^31))
      */
     private final long getObjectId(final COSObject obj)
     {

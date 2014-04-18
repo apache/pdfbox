@@ -217,7 +217,7 @@ public class DateConverter
     }
 
     /**
-     * Append Zero to String Buffer before number < 10 ('1' become '01')
+     * Append Zero to String Buffer before number &lt; 10 ('1' become '01')
      * 
      * @param out
      *            The String buffer
