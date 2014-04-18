@@ -87,7 +87,7 @@ public class BookmarkValidationProcess extends AbstractProcess
     }
 
     /**
-     * return true if Count entry > 0
+     * return true if Count entry &gt; 0
      * 
      * @param outline
      * @param doc
