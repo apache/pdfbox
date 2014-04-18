@@ -72,11 +72,11 @@ public class ARCFour
     }
 
     /**
-     * Thie will ensure that the value for a byte >=0.
+     * Thie will ensure that the value for a byte &gt;=0.
      *
      * @param aByte The byte to test against.
      *
-     * @return A value >=0 and < 256
+     * @return A value &gt;=0 and &lt; 256
      */
     private static final int fixByte( byte aByte )
     {

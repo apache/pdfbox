@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
 
 /**
- * This class will be used to signify a range.  a(min) <= a* <= a(max)
+ * This class will be used to signify a range.  a(min) &lt;= a* &lt;= a(max)
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.4 $
