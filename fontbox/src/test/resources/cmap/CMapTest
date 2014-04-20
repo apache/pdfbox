@@ -18,8 +18,7 @@
 %%
 %%EndComments
 
-1 begincodespacerange
-  <0000> <02FF>
+1 begincodespacerange<0000> <02FF>
 endcodespacerange
 
 2 beginbfchar
