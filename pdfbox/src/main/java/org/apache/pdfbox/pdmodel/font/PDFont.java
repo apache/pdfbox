@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
@@ -47,6 +49,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public abstract class PDFont implements COSObjectable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFont.class);
 
     /**
      * The cos dictionary for this font.
@@ -488,6 +495,7 @@ public abstract class PDFont implements COSObjectable
             }
             catch (IOException exception)
             {
+                LOG.error("An error occurs while reading a CMap", exception);
             }
         }
         return targetCmap;
