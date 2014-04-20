@@ -49,6 +49,7 @@ public class CMapParser
     private static final String END_BASE_FONT_RANGE = "endbfrange";
     private static final String END_CID_CHAR = "endcidchar";
     private static final String END_CID_RANGE = "endcidrange";
+    private static final String END_CMAP = "endcmap";
 
     private static final String WMODE = "WMode";
     private static final String CMAP_NAME = "CMapName";
@@ -130,6 +131,11 @@ public class CMapParser
                     }
                     CMap useCMap = parse(resourceRoot, useStream);
                     result.useCmap(useCMap);
+                }
+                else if (op.op.equals(END_CMAP))
+                {
+                    // end of CMap reached, stop reading as there isn't any interesting info anymore
+                    break;
                 }
                 else if (op.op.equals(BEGIN_CODESPACE_RANGE))
                 {
@@ -482,7 +488,9 @@ public class CMapParser
                     {
                         intValue = 10 + theNextByte - 'a';
                     }
-                    else if (theNextByte == 0x20)
+                    // all kind of whitespaces may occur in malformed CMap files
+                    // see PDFBOX-2035
+                    else if (isWhitespaceOrEOF(theNextByte))
                     {
                         // skipping whitespaces
                         theNextByte = is.read();
@@ -569,10 +577,16 @@ public class CMapParser
             buffer.append((char) nextByte);
             nextByte = is.read();
 
-            while (!isWhitespaceOrEOF(nextByte))
+            // newline separator may be missing in malformed CMap files
+            // see PDFBOX-2035
+            while (!isWhitespaceOrEOF(nextByte) && nextByte != '<')
             {
                 buffer.append((char) nextByte);
                 nextByte = is.read();
+            }
+            if (nextByte == '<')
+            {
+                is.unread(nextByte);
             }
             retval = new Operator(buffer.toString());
 
