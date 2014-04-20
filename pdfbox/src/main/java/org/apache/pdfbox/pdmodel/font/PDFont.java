@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.fontbox.afm.AFMParser;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.fontbox.cmap.CMap;
@@ -57,6 +59,11 @@ import java.awt.geom.AffineTransform;
  */
 public abstract class PDFont implements COSObjectable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFont.class);
 
     /**
      * The cos dictionary for this font.
@@ -606,7 +613,10 @@ public abstract class PDFont implements COSObjectable
                     cmapObjects.put( targetCmap.getName(), targetCmap );
                 }
             }
-            catch (IOException exception) {}
+            catch (IOException exception)
+            {
+                LOG.error("An error occurs while reading a CMap", exception);
+            }
         }
         return targetCmap;
     }
