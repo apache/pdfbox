@@ -258,13 +258,6 @@
             </roles>
         </developer>
         <developer>
-            <id>leleueri</id>
-            <name>Eric Leleu</name>
-            <roles>
-                <role>PMC Member</role>
-            </roles>
-        </developer>
-        <developer>
             <id>gbailleul</id>
             <name>Guillaume Bailleul</name>
             <roles>
@@ -288,13 +281,6 @@
         <developer>
             <id>jahewson</id>
             <name>John Hewson</name>
-            <roles>
-                <role>PMC Member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>jukka</id>
-            <name>Jukka Zitting</name>
             <roles>
                 <role>PMC Member</role>
             </roles>
@@ -346,6 +332,20 @@
             <name>Villu Ruusmann</name>
             <roles>
                 <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>leleueri</id>
+            <name>Eric Leleu</name>
+            <roles>
+                <role>Emeritus PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jukka</id>
+            <name>Jukka Zitting</name>
+            <roles>
+                <role>Emeritus PMC Member</role>
             </roles>
         </developer>
     </developers>
