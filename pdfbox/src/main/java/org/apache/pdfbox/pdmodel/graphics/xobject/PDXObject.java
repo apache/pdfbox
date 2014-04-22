@@ -126,7 +126,7 @@ public abstract class PDXObject implements COSObjectable
      * Create the correct xobject from the cos base.
      * 
      * @param xobject The cos level xobject to create.
-     * @param isthumb specify if the xobject represent a Thumbnail Image (in this case, the subtype null must be
+     * @param isThumb specify if the xobject represent a Thumbnail Image (in this case, the subtype null must be
      * considered as an Image)
      * @return a pdmodel xobject
      * @throws IOException If there is an error creating the xobject.

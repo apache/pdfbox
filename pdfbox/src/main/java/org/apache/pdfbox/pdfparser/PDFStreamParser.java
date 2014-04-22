@@ -156,7 +156,9 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * {@inheritDoc}
+     * This will close the underlying pdfSource object.
+     * 
+     * @throws IOException If there is an error releasing resources.
      */
     public void close() throws IOException
     {
