@@ -16,10 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -31,6 +35,10 @@ import org.apache.pdfbox.util.ResourceLoader;
 
 public class FontManager 
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(FontManager.class);
 
     // HashMap with all known fonts
     private static HashMap<String,java.awt.Font> envFonts = new HashMap<String,java.awt.Font>();
@@ -58,6 +66,7 @@ public class FontManager
     private FontManager() 
     {
     }
+    
     /**
      * Get the standard font from the environment, usually Arial or Times New Roman. 
      *
@@ -66,7 +75,18 @@ public class FontManager
      */
     public static java.awt.Font getStandardFont() 
     {
-        return getAwtFont(standardFont);
+        Font awtFont = getAwtFont(standardFont);
+        if (awtFont == null)
+        {
+            // PDFBOX-1069
+            LOG.error("Standard font '" + standardFont + "' is not part of the environment");
+            LOG.error("Available fonts:");
+            for (Font font : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts())
+            {
+                LOG.error("\t" + font.getFontName());
+    }
+        }
+        return awtFont;
     }
     
     /**
@@ -92,11 +112,8 @@ public class FontManager
      */
     private static void loadFonts() 
     {
-        java.awt.Font[] allFonts = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-        int numberOfFonts = allFonts.length;
-        for (int i=0;i<numberOfFonts;i++) 
+        for (Font font : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts())
         {
-            java.awt.Font font = allFonts[i];
             String family = normalizeFontname(font.getFamily());
             String psname = normalizeFontname(font.getPSName());
             if (isBoldItalic(font)) 
