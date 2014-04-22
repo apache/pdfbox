@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.TexturePaint;
@@ -36,6 +37,10 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mortennobel.imagescaling.ResampleFilters;
+import com.mortennobel.imagescaling.ResampleOp;
+import com.mortennobel.imagescaling.AdvancedResizeOp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,6 +88,8 @@ import org.apache.pdfbox.util.Vector;
 public class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
+    private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
+    private static int currentFilter=0;
 
     // parent document renderer
     private final PDFRenderer renderer;
@@ -327,11 +334,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
+
     @Override
     public void beginText() throws IOException
     {
         setClip();
     }
+        /**
+     * You should override this method if you want to perform an action when a text is being processed.
+     *
+     * @param text The text to process
+     */
+    protected void processTextPosition(TextPosition text);
 
     @Override
     protected void showText(byte[] string) throws IOException
@@ -460,6 +474,57 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             setTextLineMatrix(textLineMatrix);
             setTextMatrix(textMatrix);
 
+
+    /**
+     * This will draw a string on a canvas using the font.
+     *
+     * @param font the font to be used to draw the string
+     * @param string The string to draw.
+     * @param at The transformation matrix with all information for scaling and shearing of the font.
+     *
+     * @throws IOException If there is an error drawing the specific string.
+     */
+    private void drawString(PDSimpleFont font, String string, AffineTransform at) throws IOException
+    {
+        Font awtFont = createAWTFont(font);
+        FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
+        GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
+//        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        writeFont(at, glyphs);
+    }
+
+    private void writeFont(final AffineTransform at, final GlyphVector glyphs)
+    {
+        try
+        {
+            // Convert from PDF, where glyphs are upright when direction is from
+            // bottom to top, to AWT, where this is the other way around
+            at.scale(1, -1);
+            AffineTransform atInverse = at.createInverse();
+            graphics.transform(at);
+            graphics.drawGlyphVector(glyphs, 0, 0);
+            graphics.transform(atInverse);
+        }
+        catch (NoninvertibleTransformException exception)
+        {
+            LOG.error("Can't invert the given affine transformation", exception);
+        }
+    }
+
+    /**
+     * Provides an AWT font for the given PDFont.
+     *
+     * @param font the font which needs an AWT font
+     * @return the corresponding AWT font
+     * @throws IOException if something went wrong
+     */
+    private Font createAWTFont(PDSimpleFont font) throws IOException
+    {
+        Font awtFont = null;
+        // Is there already a AWTFont for the given font?
+        if (awtFonts.containsKey(font))
+        {
+            awtFont = awtFonts.get(font);
         }
         else
         {
@@ -876,6 +941,63 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             imageTransform.translate(0, -height);
             graphics.drawImage(image, imageTransform, null);
         }
+
+    /**
+     * Draw the AWT image. Called by Invoke. Moved into PageDrawer so that Invoke doesn't have to reach in here for
+     * Graphics as that breaks extensibility.
+     *
+     * @param awtImage The image to draw.
+     * @param at The transformation to use when drawing.
+     *
+     */
+    public void drawImage(Image image, AffineTransform at)
+    {
+        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        int width = image.getWidth(null);
+        int height = image.getHeight(null);
+
+        AffineTransform imageTransform = new AffineTransform(at);
+        imageTransform.scale(1.0 / width, -1.0 / height);
+        imageTransform.translate(0, -height);
+
+        // Scaling an image directly over factors of 2x created crappy results,
+        // but using java-image-scaling all the times slows down quite a bit.
+        // So it's used only if the highQuality property in Pagedrawer is set.
+        if (image instanceof BufferedImage /*&& highQuality*/)
+        {
+            AffineTransform result=new AffineTransform(graphics.getTransform());
+            result.concatenate(imageTransform);
+            result.concatenate( graphics.getDeviceConfiguration().getNormalizingTransform() );
+            int targetWidth=(int)(width*result.getScaleX());
+            int targetHeight=(int)(height*result.getScaleY());
+            if (targetWidth>=3 && targetHeight>=3)
+            {
+                ResampleOp  resampleOp = new ResampleOp(targetWidth,targetHeight);
+                if (highQuality)
+                {
+                   resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.Normal);
+                   resampleOp.setFilter(ResampleFilters.getLanczos3Filter());
+                }
+                else
+                {
+                   // cubic hf provides good compromise between sharpness and speed
+                   resampleOp.setFilter(ResampleFilters.getBiCubicHighFreqResponse());
+                   // triangle is slightly fuzzier, similar speed
+                   // resampleOp.setFilter(ResampleFilters.getTriangleFilter());
+                }
+
+                image = resampleOp.filter((BufferedImage)image, null);
+                width=targetWidth;
+                height=targetHeight;
+
+                imageTransform = new AffineTransform(at);
+                imageTransform.scale(1.0 / targetWidth, -1.0 / targetHeight);
+                imageTransform.translate(0, -targetHeight);
+            }
+        }
+
+        graphics.drawImage(image, imageTransform, null);
     }
 
     @Override
