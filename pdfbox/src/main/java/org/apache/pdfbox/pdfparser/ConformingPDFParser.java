@@ -55,7 +55,7 @@ public class ConformingPDFParser extends BaseParser {
     /**
      * Constructor.
      *
-     * @param inputFile The input stream that contains the PDF document.
+     * @param input The input stream that contains the PDF document.
      *
      * @throws IOException If there is an error initializing the stream.
      */
@@ -365,7 +365,7 @@ public class ConformingPDFParser extends BaseParser {
      * exception will be thrown.
      * @param objectNumber the object number you expect to read
      * @param generation the generation you expect this object to be
-     * @return the object being read.
+     * @return
      */
     public COSBase readObject(long objectNumber, long generation) throws IOException {
         // when recursivly reading, we always pull the object from the filesystem
@@ -598,6 +598,7 @@ public class ConformingPDFParser extends BaseParser {
      * backwards until it finds a newline.  This should only be used if we are
      * certain that the data will only be text, and not binary data.
      * 
+     * @param offset the location of the file where we should start reading
      * @return the string which was read
      * @throws IOException if there was an error reading data from the file
      */
@@ -628,6 +629,7 @@ public class ConformingPDFParser extends BaseParser {
      * This will read a line starting with the byte at offset and going
      * forward until it finds a newline.  This should only be used if we are
      * certain that the data will only be text, and not binary data.
+     * @param offset the location of the file where we should start reading
      * @return the string which was read
      * @throws IOException if there was an error reading data from the file
      */

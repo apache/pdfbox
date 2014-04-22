@@ -45,7 +45,7 @@ public class RadialShadingPaint implements Paint
      * 
      * @param shadingType3 the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue size of the current page
+     * @param pageSizeValue size of the current page
      */
     public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeightValue) 
     {

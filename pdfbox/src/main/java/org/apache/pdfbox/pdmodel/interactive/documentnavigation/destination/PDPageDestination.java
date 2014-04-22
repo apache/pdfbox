@@ -118,7 +118,7 @@ public abstract class PDPageDestination extends PDDestination
      * this is a page number or a reference to a page.
      *
      * @since Apache PDFBox 1.0.0
-     * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
+     * @see PDOutlineItem
      * @return page number, or -1 if the destination type is unknown
      */
     public int findPageNumber() {

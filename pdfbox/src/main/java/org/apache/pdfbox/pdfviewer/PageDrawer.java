@@ -553,7 +553,7 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @throws IOException If there is an IO error while shade-filling the path/clipping area.
      * 
-     * @deprecated use {@link #shFill(COSName)} instead.
+     * @deprecated use {@link #shFill(COSName)) instead.
      */
     public void SHFill(COSName ShadingName) throws IOException
     {

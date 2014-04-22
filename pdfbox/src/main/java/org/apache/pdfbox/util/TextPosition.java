@@ -133,7 +133,7 @@ public class TextPosition
      * @param fontSizeValue The new font size.
      * @param fontSizeInPt The font size in pt units.
      *
-     * @deprecated Use {@link #TextPosition(int, float, float, Matrix, float, float, float, float, float, 
+     * @deprecated Use {@link TextPosition(int, float, float, Matrix, float, float, float, float, float, 
      * String, PDFont, float, int)} instead.
      */
     public TextPosition(

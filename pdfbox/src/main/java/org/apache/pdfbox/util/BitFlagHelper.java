@@ -79,7 +79,7 @@ public class BitFlagHelper
      *
      * @return true if the number at bitPos is '1'
      *
-     * @deprecated  use {@link #getFlag(COSDictionary, COSName, int)} using COSName constants instead
+     * @deprecated  use {@link #getFlag(COSDictionary, COSName, boolean)} using COSName constants instead
      */
     public static final boolean getFlag(COSDictionary dic, String field, int bitFlag)
     {

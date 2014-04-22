@@ -524,7 +524,7 @@ public abstract class PDFontDescriptor
     /**
      * This will set the missing width for the font.
      *
-     * @param missingWidth The new missing width for the font.
+     * @param charSet The new missing width for the font.
      */
     public abstract void setMissingWidth( float missingWidth );
 
