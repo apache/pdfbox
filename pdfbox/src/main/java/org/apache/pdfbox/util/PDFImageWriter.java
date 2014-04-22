@@ -66,7 +66,7 @@ public class PDFImageWriter extends PDFStreamEngine
 
     /**
      * Converts a given page range of a PDF document to bitmap images by calling
-     * {@link #writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
+     * {@link writeImage(PDDocument document, String imageFormat, String password, int startPage, int endPage,
      * String outputPrefix, int imageType, int resolution)} with imageType {@link BufferedImage}.TYPE_INT_RGB
      * and screen resolution, or 96dpi if screen resolution is unavailable.
      *  

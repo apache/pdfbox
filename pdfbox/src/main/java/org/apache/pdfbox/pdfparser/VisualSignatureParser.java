@@ -50,9 +50,7 @@ public class VisualSignatureParser extends BaseParser
     }
 
     /**
-     * This will parse the tokens making up the visual signature.
-     *
-     * @throws IOException If there is an error while parsing the visual signature.
+     * {@inheritDoc}
      */
     public void parse() throws IOException 
     {

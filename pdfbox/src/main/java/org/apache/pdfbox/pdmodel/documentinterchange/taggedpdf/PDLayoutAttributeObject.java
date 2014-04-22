@@ -1011,7 +1011,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
      * Gets the style of the border drawn on each edge of a table cell
      * (TBorderStyle).
      * 
-     * @return the border style.
+     * @return
      */
     public Object getTBorderStyle()
     {

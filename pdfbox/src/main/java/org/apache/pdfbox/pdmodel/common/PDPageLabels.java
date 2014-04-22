@@ -53,12 +53,12 @@ public class PDPageLabels implements COSObjectable
      * <p>
      * Note that the page label dictionary won't be automatically added to the
      * document; you will still need to do it manually (see
-     * {@link org.apache.pdfbox.pdmodel.PDDocumentCatalog#setPageLabels(PDPageLabels)}.
+     * {@link PDDocumentCatalog#setPageLabels(PDPageLabels)}.
      * </p>
      * 
      * @param document
      *            The document the page label dictionary is created for.
-     * @see org.apache.pdfbox.pdmodel.PDDocumentCatalog#setPageLabels(PDPageLabels)
+     * @see PDDocumentCatalog#setPageLabels(PDPageLabels)
      */
     public PDPageLabels(PDDocument document)
     {
@@ -76,14 +76,14 @@ public class PDPageLabels implements COSObjectable
      * <p>
      * Note that the page label dictionary won't be automatically added to the
      * document; you will still need to do it manually (see
-     * {@link org.apache.pdfbox.pdmodel.PDDocumentCatalog#setPageLabels(PDPageLabels)}.
+     * {@link PDDocumentCatalog#setPageLabels(PDPageLabels)}.
      * </p>
      * 
      * @param document
      *            The document the page label dictionary is created for.
      * @param dict
      *            an existing page label dictionary
-     * @see org.apache.pdfbox.pdmodel.PDDocumentCatalog#setPageLabels(PDPageLabels)
+     * @see PDDocumentCatalog#setPageLabels(PDPageLabels)
      * @throws IOException
      *             If something goes wrong during the number tree conversion.
      */
