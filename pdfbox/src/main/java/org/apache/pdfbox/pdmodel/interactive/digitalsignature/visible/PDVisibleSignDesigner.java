@@ -61,7 +61,7 @@ public class PDVisibleSignDesigner
      * 
      * @param originalDocumenStream
      * @param imageStream
-     * @param page-which page are you going to add visible signature
+     * @param page the page the visible signature is added to.
      * @throws IOException
      */
     public PDVisibleSignDesigner(InputStream originalDocumenStream, InputStream imageStream, int page) throws IOException
@@ -75,7 +75,7 @@ public class PDVisibleSignDesigner
      * 
      * @param documentPath - path of your pdf document
      * @param imageStream - stream of image
-     * @param page -which page are you going to add visible signature
+     * @param page the page the visible signature is added to.
      * @throws IOException
      */
     public PDVisibleSignDesigner(String documentPath, InputStream imageStream, int page) throws IOException
@@ -149,7 +149,7 @@ public class PDVisibleSignDesigner
     /**
      * zoom signature image with some percent.
      * 
-     * @param percent- x % increase image with x percent.
+     * @param percent the percentage for zooming the image.
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner zoom(float percent)
@@ -161,9 +161,9 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param xAxis - x coordinate 
-     * @param yAxis - y coordinate
-     * @return Visible Signature Configuration Object
+     * @param x the x coordinate.
+     * @param y the y coordinate.
+     * @return Visible Signature Configuration Object.
      */
     public PDVisibleSignDesigner coordinates(float x, float y)
     {
@@ -223,8 +223,8 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param sets signature image width
-     * @return Visible Signature Configuration Object
+     * @param signatureImgWidth the signature image width.
+     * @return Visible Signature Configuration Object.
      */
     public PDVisibleSignDesigner width(float signatureImgWidth)
     {
@@ -243,7 +243,7 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param set signature image Height
+     * @param signatureImgHeight the signature image height
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner height(float signatureImgHeight)
@@ -406,8 +406,8 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param sets pageWidth
-     * @return Visible Signature Configuration Object
+     * @param pageWidth the pageWidth.
+     * @return Visible Signature Configuration Object.
      */
     public PDVisibleSignDesigner pageWidth(float pageWidth)
     {
@@ -426,7 +426,7 @@ public class PDVisibleSignDesigner
 
     /**
      * get image size in percents
-     * @return
+     * @return image size in percents.
      */
     public float getImageSizeInPercents()
     {
@@ -444,7 +444,7 @@ public class PDVisibleSignDesigner
 
     /**
      * returns visible signature text
-     * @return
+     * @return visible signature text.
      */
     public String getSignatureText()
     {
@@ -454,7 +454,7 @@ public class PDVisibleSignDesigner
     /**
      * 
      * @param signatureText - adds the text on visible signature
-     * @return
+     * @return the signature design representing the text.
      */
     public PDVisibleSignDesigner signatureText(String signatureText)
     {

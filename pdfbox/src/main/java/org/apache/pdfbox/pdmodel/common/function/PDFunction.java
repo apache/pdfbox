@@ -316,7 +316,7 @@ public abstract class PDFunction implements COSObjectable
     /**
      * Clip the given input values to the ranges.
      * 
-     * @param inputArray the input values
+     * @param inputValues the input values
      * @return the clipped values
      */
     protected float[] clipToRange(float[] inputValues) 

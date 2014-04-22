@@ -33,7 +33,7 @@ public class PageExtractor {
     
     /** 
      * Creates a new instance of PageExtractor
-     * @param document The document to split.
+     * @param sourceDocument The document to split.
      */
     public PageExtractor(PDDocument sourceDocument) {
         this.sourceDocument = sourceDocument;
@@ -42,7 +42,7 @@ public class PageExtractor {
     
     /** 
      * Creates a new instance of PageExtractor
-     * @param document The document to split.
+     * @param sourceDocument The document to split.
      * @param startPage The first page you want extracted (inclusive)
      * @param endPage The last page you want extracted (inclusive)
      */

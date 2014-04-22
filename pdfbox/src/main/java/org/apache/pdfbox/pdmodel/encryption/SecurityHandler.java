@@ -501,7 +501,6 @@ public abstract class SecurityHandler
     /**
      * Getter of the property <tt>keyLength</tt>.
      * @return  Returns the keyLength.
-     * @uml.property  name="keyLength"
      */
     public int getKeyLength()
     {
@@ -542,7 +541,7 @@ public abstract class SecurityHandler
     /**
      * Set to true if AES for encryption and decryption should be used.
      * 
-     * @param aes if true AES will be used 
+     * @param aesValue if true AES will be used 
      * 
      */
     public void setAES(boolean aesValue)

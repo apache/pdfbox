@@ -70,7 +70,7 @@ public class SignatureOptions
     /**
      * Reads the visual signature from the given visual signature properties
      *  
-     * @param is the <code>PDVisibleSigProperties</code> object containing the visual signature
+     * @param visSignatureProperties the <code>PDVisibleSigProperties</code> object containing the visual signature
      * 
      * @throws IOException when something went wrong during parsing
      * 
