@@ -21,6 +21,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -58,7 +59,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * 
  */
-public class PDPageContentStream
+public class PDPageContentStream implements Closeable
 {
     /**
      * Log instance.

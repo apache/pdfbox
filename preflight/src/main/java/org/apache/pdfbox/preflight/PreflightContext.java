@@ -21,10 +21,10 @@
 
 package org.apache.pdfbox.preflight;
 
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import javax.activation.DataSource;
 
@@ -36,7 +36,7 @@ import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.xmpbox.XMPMetadata;
 
-public class PreflightContext
+public class PreflightContext implements Closeable
 {
     /**
      * Contains the list of font name embedded in the PDF document.
