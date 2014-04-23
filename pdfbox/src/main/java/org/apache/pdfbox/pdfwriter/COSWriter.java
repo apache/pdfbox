@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdfwriter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -70,7 +71,7 @@ import org.apache.pdfbox.util.StringUtil;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * 
  */
-public class COSWriter implements ICOSVisitor
+public class COSWriter implements ICOSVisitor, Closeable
 {
     /**
      * The dictionary open token.
