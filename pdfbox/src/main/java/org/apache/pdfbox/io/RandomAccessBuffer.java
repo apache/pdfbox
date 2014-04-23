@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ import java.util.ArrayList;
  * The data will be stored in 16kb chunks organized in an ArrayList.  
  *
  */
-public class RandomAccessBuffer implements RandomAccess
+public class RandomAccessBuffer implements RandomAccess, Closeable
 {
     // chunk size is 16kb
     private static final int BUFFER_SIZE = 16384;
@@ -86,6 +87,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void close() throws IOException
     {
         currentBuffer = null;
@@ -99,6 +101,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void seek(long position) throws IOException
     {
         checkClosed();
@@ -112,6 +115,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getPosition() throws IOException {
        checkClosed();
        return pointer;
@@ -120,6 +124,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public int read() throws IOException
     {
         checkClosed();
@@ -146,6 +151,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
@@ -190,6 +196,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public long length() throws IOException
     {
         checkClosed();
@@ -199,6 +206,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(int b) throws IOException
     {
         checkClosed();
@@ -231,6 +239,7 @@ public class RandomAccessBuffer implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();

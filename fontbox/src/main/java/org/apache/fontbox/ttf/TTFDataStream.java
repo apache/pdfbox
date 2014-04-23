@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ import java.util.GregorianCalendar;
  * @author Ben Litchfield (ben@benlitchfield.com)
  * 
  */
-public abstract class TTFDataStream
+public abstract class TTFDataStream implements Closeable
 {
 
     /**
@@ -205,6 +206,7 @@ public abstract class TTFDataStream
      * 
      * @throws IOException If there is an error closing the resources.
      */
+    @Override
     public abstract void close() throws IOException;
 
     /**

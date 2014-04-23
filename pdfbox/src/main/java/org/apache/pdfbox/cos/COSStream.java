@@ -19,6 +19,7 @@ package org.apache.pdfbox.cos;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,7 +43,7 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  */
-public class COSStream extends COSDictionary
+public class COSStream extends COSDictionary implements Closeable
 {
     /**
      * Log instance.

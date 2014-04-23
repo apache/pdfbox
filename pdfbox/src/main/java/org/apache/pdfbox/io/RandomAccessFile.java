@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class RandomAccessFile implements RandomAccess
+public class RandomAccessFile implements RandomAccess, Closeable
 {
     private java.io.RandomAccessFile ras;
 
@@ -46,6 +47,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void close() throws IOException
     {
         ras.close();
@@ -54,6 +56,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void seek(long position) throws IOException
     {
         ras.seek(position);
@@ -62,6 +65,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getPosition() throws IOException {
         return ras.getFilePointer();
     }
@@ -69,6 +73,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public int read() throws IOException
     {
         return ras.read();
@@ -77,6 +82,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public int read(byte[] b, int offset, int length) throws IOException
     {
         return ras.read(b, offset, length);
@@ -85,6 +91,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public long length() throws IOException
     {
         return ras.length();
@@ -93,6 +100,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(byte[] b, int offset, int length) throws IOException
     {
         ras.write(b, offset, length);
@@ -101,6 +109,7 @@ public class RandomAccessFile implements RandomAccess
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(int b) throws IOException
     {
         ras.write(b);
