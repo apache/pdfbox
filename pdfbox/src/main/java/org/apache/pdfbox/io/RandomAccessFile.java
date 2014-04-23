@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.io;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.io.IOException;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
  */
-public class RandomAccessFile implements RandomAccess
+public class RandomAccessFile implements RandomAccess, Closeable
 {
     private java.io.RandomAccessFile ras;
 
