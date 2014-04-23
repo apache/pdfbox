@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.fdf;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,7 +50,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.6 $
  */
-public class FDFDocument
+public class FDFDocument implements Closeable
 {
     private COSDocument document;
 
