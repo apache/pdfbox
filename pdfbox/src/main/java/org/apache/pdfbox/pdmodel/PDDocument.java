@@ -22,6 +22,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -85,7 +86,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.47 $
  */
-public class PDDocument implements Pageable
+public class PDDocument implements Pageable, Closeable
 {
 
     private COSDocument document;

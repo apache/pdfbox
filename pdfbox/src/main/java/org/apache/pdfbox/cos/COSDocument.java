@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * 
  */
-public class COSDocument extends COSBase
+public class COSDocument extends COSBase implements Closeable
 {
 
     /**
