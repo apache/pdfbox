@@ -311,18 +311,29 @@ public class PDICCBased extends PDColorSpace
         stream.getStream().setItem( COSName.ALTERNATE, altArray );
     }
 
-    private COSArray getRangeArray( int n )
+    /**
+     * Get the range array, create and fill it with default values (0, 1) if
+     * needed so that it has enough value pairs for the position.
+     *
+     * @param pos The zero-based position that should exist after this call is
+     * completed.
+     * @return A valid range array.
+     */
+    private COSArray getRangeArray(int pos)
     {
-        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject( COSName.RANGE);
-        if( rangeArray == null )
+        //TODO per "clean code", a method should either 
+        // return something or modify something, but not both.
+        COSArray rangeArray = (COSArray)stream.getStream().getDictionaryObject(COSName.RANGE);
+        if(rangeArray == null)
         {
             rangeArray = new COSArray();
-            stream.getStream().setItem( COSName.RANGE, rangeArray );
-            while( rangeArray.size() < n*2 )
-            {
-                rangeArray.add( new COSFloat( -100 ) );
-                rangeArray.add( new COSFloat( 100 ) );
-            }
+            stream.getStream().setItem(COSName.RANGE, rangeArray);
+        }
+        // extend range array with default values if needed
+        while (rangeArray.size() < (pos + 1) * 2)
+        {
+            rangeArray.add(new COSFloat(0));
+            rangeArray.add(new COSFloat(1));
         }
         return rangeArray;
     }
