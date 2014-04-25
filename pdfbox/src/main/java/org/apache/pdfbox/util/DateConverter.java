@@ -578,7 +578,7 @@ public class DateConverter
      * @param text The text to be parsed.
      * 
      * @param fmts A list of formats to be tried. The syntax is that for 
-     *      {@link #java.text.SimpleDateFormat}
+     *      {@link java.text.SimpleDateFormat}
      * 
      * @param initialWhere At start this is the position to begin
      *      examining the text. Upon return it will have been
@@ -732,7 +732,7 @@ public class DateConverter
        
     /**
      * Converts a string to a Calendar by parsing the String for a date.
-     * @see toCalendar(String).
+     * @see #toCalendar(String).
      *
      * The returned value will have 0 for DST_OFFSET.
      * 
@@ -741,7 +741,7 @@ public class DateConverter
      *      Or null if text was null.
      * @throws IOException If the date string is not in the correct format.
      * @deprecated This method throws an IOException for failure. Replace
-     *      calls to it with {@link #toCalendar(text.getString(), null)} 
+     *      calls to it with {@link #toCalendar(String, String[])}
      *      and test for failure with
      *          (value == null || value.get(Calendar.YEAR) == INVALID_YEAR)
      */
@@ -756,7 +756,7 @@ public class DateConverter
     
     /**
      * Converts a string date to a Calendar date value; equivalent to 
-     * {@link #toCalendar(String, null)}, 
+     * {@link #toCalendar(String, String[])} using <pre>null</pre> for the second parameter,
      * but throws an IOException for failure.
      * 
      * The returned value will have 0 for DST_OFFSET.
@@ -767,7 +767,8 @@ public class DateConverter
      * @throws IOException If the date string is non-null 
      *      and not a parseable date.
      * @deprecated This method throws an IOException for failure. Replace
-     *      calls to it with {@link #toCalendar(text, null)} 
+     *      calls to it with {@link #toCalendar(String, String[])}
+     *      using <pre>null</pre> for the second parameter
      *      and test for failure with
      *          (value == null || value.get(Calendar.YEAR) == INVALID_YEAR)
      */

@@ -79,7 +79,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
 
     /**
      * Gets the list numbering (ListNumbering). The default value is
-     * {@link #LIST_NUMBERING_NONE}.
+     * {@link PDListAttributeObject#LIST_NUMBERING_NONE}.
      * 
      * @return the list numbering
      */
@@ -93,15 +93,15 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * Sets the list numbering (ListNumbering). The value shall be one of the
      * following:
      * <ul>
-     *   <li>{@link #LIST_NUMBERING_NONE},</li>
-     *   <li>{@link #LIST_NUMBERING_DISC},</li>
-     *   <li>{@link #LIST_NUMBERING_CIRCLE},</li>
-     *   <li>{@link #LIST_NUMBERING_SQUARE},</li>
-     *   <li>{@link #LIST_NUMBERING_DECIMAL},</li>
-     *   <li>{@link #LIST_NUMBERING_UPPER_ROMAN},</li>
-     *   <li>{@link #LIST_NUMBERING_LOWER_ROMAN},</li>
-     *   <li>{@link #LIST_NUMBERING_UPPER_ALPHA},</li>
-     *   <li>{@link #LIST_NUMBERING_LOWER_ALPHA}.</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_NONE},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_DISC},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_CIRCLE},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_SQUARE},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_DECIMAL},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_UPPER_ROMAN},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_LOWER_ROMAN},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_UPPER_ALPHA},</li>
+     *   <li>{@link PDListAttributeObject#LIST_NUMBERING_LOWER_ALPHA}.</li>
      * </ul>
      * 
      * @param listNumbering the list numbering
@@ -199,9 +199,9 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
      * contains it, or both the row and the column that contain it. The value
      * shall be one of the following:
      * <ul>
-     *   <li>{@link #SCOPE_ROW},</li>
-     *   <li>{@link #SCOPE_COLUMN}, or</li>
-     *   <li>{@link #SCOPE_BOTH}.</li>
+     *   <li>{@link PDTableAttributeObject#SCOPE_ROW},</li>
+     *   <li>{@link PDTableAttributeObject#SCOPE_COLUMN}, or</li>
+     *   <li>{@link PDTableAttributeObject#SCOPE_BOTH}.</li>
      * </ul>
      * 
      * @param scope the scope
@@ -212,7 +212,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
     }
 
     /**
-     * Gets the summary of the table’s purpose and structure.
+     * Gets the summary of the table's purpose and structure.
      * 
      * @return the summary
      */
@@ -222,7 +222,7 @@ public class PDExportFormatAttributeObject extends PDLayoutAttributeObject
     }
 
     /**
-     * Sets the summary of the table’s purpose and structure.
+     * Sets the summary of the table's purpose and structure.
      * 
      * @param summary the summary
      */

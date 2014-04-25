@@ -61,7 +61,7 @@ public class PDVisibleSigProperties
     /**
      * Sets signer name
      * @param signerName
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties signerName(String signerName)
     {
@@ -81,7 +81,7 @@ public class PDVisibleSigProperties
     /**
      * Sets location
      * @param signerLocation
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties signerLocation(String signerLocation)
     {
@@ -101,7 +101,7 @@ public class PDVisibleSigProperties
     /**
      * sets reason of signing
      * @param signatureReason
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties signatureReason(String signatureReason)
     {
@@ -111,7 +111,7 @@ public class PDVisibleSigProperties
 
     /**
      * returns your page
-     * @return 
+     * @return the page number.
      */
     public int getPage()
     {
@@ -121,7 +121,7 @@ public class PDVisibleSigProperties
     /**
      * sets page number
      * @param page
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties page(int page)
     {
@@ -131,7 +131,7 @@ public class PDVisibleSigProperties
 
     /**
      * gets our preferred size
-     * @return
+     * @return the signature's preferred size.
      */
     public int getPreferredSize()
     {
@@ -141,7 +141,7 @@ public class PDVisibleSigProperties
     /**
      * sets our preferred size
      * @param preferredSize
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties preferredSize(int preferredSize)
     {
@@ -151,7 +151,7 @@ public class PDVisibleSigProperties
 
     /**
      * checks if we need to add visible signature
-     * @return
+     * @return state if visible signature is needed.
      */
     public boolean isVisualSignEnabled()
     {
@@ -161,7 +161,7 @@ public class PDVisibleSigProperties
     /**
      * sets visible signature to be added or not
      * @param visualSignEnabled
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties visualSignEnabled(boolean visualSignEnabled)
     {
@@ -171,7 +171,7 @@ public class PDVisibleSigProperties
 
     /**
      * this method gets visible signature configuration object
-     * @return
+     * @return the visible signature configuration.
      */
     public PDVisibleSignDesigner getPdVisibleSignature()
     {
@@ -181,7 +181,7 @@ public class PDVisibleSigProperties
     /**
      * Sets visible signature configuration Object
      * @param pdVisibleSignature
-     * @return
+     * @return the visible signature properties.
      */
     public PDVisibleSigProperties setPdVisibleSignature(PDVisibleSignDesigner pdVisibleSignature)
     {
@@ -191,7 +191,7 @@ public class PDVisibleSigProperties
 
     /**
      * returns visible signature configuration object
-     * @return
+     * @return the input stream representing the visible signature.
      */
     public InputStream getVisibleSignature()
     {
