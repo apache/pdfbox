@@ -45,7 +45,7 @@ public class PDFunctionType2 extends PDFunction
     /**
      * Constructor.
      *
-     * @param functionStream The function .
+     * @param function The function.
      */
     public PDFunctionType2(COSBase function)
     {

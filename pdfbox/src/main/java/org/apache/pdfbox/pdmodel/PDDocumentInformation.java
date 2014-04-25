@@ -34,6 +34,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * method then it will clear the value.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author  Gerardo Ortiz
+ *      
  * @version $Revision: 1.12 $
  */
 public class PDDocumentInformation implements COSObjectable
@@ -276,7 +278,6 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @return String Value of metadata field
      *
-     * @author  Gerardo Ortiz
      */
     public String getCustomMetadataValue(String fieldName)
     {

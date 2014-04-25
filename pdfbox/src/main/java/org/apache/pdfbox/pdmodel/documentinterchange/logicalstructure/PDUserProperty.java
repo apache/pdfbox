@@ -35,7 +35,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     /**
      * Creates a new user property.
      * 
-     * @param the user attribute object
+     * @param userAttributeObject the user attribute object
      */
     public PDUserProperty(PDUserAttributeObject userAttributeObject)
     {
