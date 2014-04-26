@@ -47,8 +47,8 @@ public class PDLabTest extends TestCase
         assertEquals(0f, pdLab.getBlackPoint().getY());
         assertEquals(0f, pdLab.getBlackPoint().getZ());
         assertEquals(1f, pdLab.getWhitepoint().getX());
-        assertEquals(1f, pdLab.getWhitepoint().getX());
-        assertEquals(1f, pdLab.getWhitepoint().getX());
+        assertEquals(1f, pdLab.getWhitepoint().getY());
+        assertEquals(1f, pdLab.getWhitepoint().getZ());
         assertEquals(-100f, pdLab.getARange().getMin());
         assertEquals(100f, pdLab.getARange().getMax());
         assertEquals(-100f, pdLab.getBRange().getMin());
