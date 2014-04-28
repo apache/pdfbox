@@ -141,7 +141,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Xmx64m</argLine>
+                    <argLine>-Xmx128m</argLine>
                     <includes>
                         <include>org/apache/pdfbox/TestAll.java</include>
                         <include>org/apache/pdfbox/util/TestTextStripper.java</include>
