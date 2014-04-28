@@ -296,6 +296,11 @@ final class Type1Parser
 
         for (int i = 0; i < length; i++)
         {
+            if (lexer.peekToken().getKind() == Token.NAME
+                    && !lexer.peekToken().getText().equals("end"))
+            {
+                read(Token.NAME);
+            }
             // premature end
             if (lexer.peekToken().getKind() == Token.NAME &&
                     lexer.peekToken().getText().equals("end"))
@@ -483,7 +488,7 @@ final class Type1Parser
             {
                 read(Token.START_PROC);
                 read(Token.NAME, "noaccess");
-                read(Token.NAME, "put");
+                read(Token.NAME);
                 read(Token.END_PROC);
                 read(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
@@ -610,6 +615,12 @@ final class Type1Parser
 
         for (int i = 0; i < length; i++)
         {
+            // premature end
+            if (lexer.peekToken().getKind() == Token.NAME
+                    && lexer.peekToken().getText().equals("end"))
+            {
+                break;
+            }
             // key/value
             String name = read(Token.LITERAL).getText();
 
