@@ -1,57 +1,80 @@
-Release Notes -- Apache PDFBox -- Version 1.8.3
+Release Notes -- Apache PDFBox -- Version 1.8.5
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.3 release. It 
+This is an incremental bugfix release based on the earlier 1.8.4 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
 issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
-Bug Fixes
+Bug
 
-[PDFBOX-161] - java.util.EmptyStackException from PDFTextStripper.writeText
-[PDFBOX-940] - [pdmodel.font.PDFont] Error: Could not parse predefined CMAP file for
-               'PDFXC-Indentity0-0'
-[PDFBOX-1302] - Got ArrayIndexOutOfBoundsException in parsing a Chinese ttf file.
-[PDFBOX-1541] - expected='endstream' actual='' failure to parse
-[PDFBOX-1585] - org.apache.pdfbox.util.PDFTextStripper.getText() causes thread to block
-                indefinitely
-[PDFBOX-1625] - java.lang.IndexOutOfBoundsException at writing PDF file
-[PDFBOX-1668] - Loading a Russian PDF never finishes
-[PDFBOX-1679] - java.io.IOException: Error: Expected an integer type, actual='f'
-[PDFBOX-1725] - Character rendered at wrong position
-[PDFBOX-1733] - Rectangles have one rounded edge in rendered image only
-[PDFBOX-1763] - Exception caused by "Invalid ICC Profile Data"
-[PDFBOX-1770] - ExtractText gets all "?" when pdf 's font is instance of PDType1Font
-[PDFBOX-1777] - memory leak in org.apache.pdfbox.cos.COSDocument
-[PDFBOX-1789] - NullPointerException at PDPageContentStream.setFont
-[PDFBOX-1794] - Rendering Problem with Type 3 Fonts
-[PDFBOX-1796] - Infiniteloop BaseParser.java:1010
-[PDFBOX-1799] - NullPointerException when constructing a PDJPeg using a BufferedImage
-[PDFBOX-1802] - COSDictionary in COSArray setDirect(true) but dic written indirect
-[PDFBOX-1804] - PDFTextStripper Issue related to word positions not correctly being parsed
-[PDFBOX-1808] - PDFTextStripper.getText - hight memory usage
-[PDFBOX-1810] - PDFToImage: Image of pdf is resized and drawn multiple times at top of 
-                output image
-[PDFBOX-1812] - Illegal characters in XML output
-[PDFBOX-1818] - Push back buffer is full error
-[PDFBOX-1829] - PDF Extract Image Pixelmap Issue
-[PDFBOX-1830] - Grey background rectangle rendered at different position
-[PDFBOX-1861] - Line is incorrectly dashed
-[PDFBOX-1862] - Incomplete signature creation (regression in 1.8.3 with PDFBOX-1780)
+[PDFBOX-198] - Tiff image problems
+[PDFBOX-205] - Miscellaneous errors on valid files
+[PDFBOX-778] - OutOfMemory when extracting text from pdf
+[PDFBOX-1069] - Ubuntu throws exceptions when fonts missing
+[PDFBOX-1074] - TIFFFaxDecoder5 when using PDFImageWriter
+[PDFBOX-1147] - Printing a PDF with an image inside show black.
+[PDFBOX-1164] - Inline image parsing error causes RuntimeException + FIX
+[PDFBOX-1664] - NullPointerException in PDType1Font.java
+[PDFBOX-1708] - IndexOutOfBoundsException on convertToImage with an embedded Fax-Image
+[PDFBOX-1811] - java.io.IOException: Object at offset does not end with 'endobj'
+[PDFBOX-1860] - HTML converter escapes formatting close tags
+[PDFBOX-1870] - PDFunctionType0 incorrect
+[PDFBOX-1876] - Incorrect color for DeviceN type 4 shading object
+[PDFBOX-1877] - Radial Shading (type 3) fails Ghent Workgroup tests
+[PDFBOX-1880] - [PATCH] Type 1 Shading must not ignore current transformation matrix
+[PDFBOX-1882] - Negative array size exception when reading a string from a OTF font
+[PDFBOX-1884] - Avoid NPE when encountering null PDComplexFileSpecification
+[PDFBOX-1887] - Bugfixes + Optimization of Gouraud Shading
+[PDFBOX-1888] - JBIG2Filter is creating an ImageInputStream (with temp file) and not 
+                closing it
+[PDFBOX-1896] - Support MMType1 (Multiple Master) Fonts
+[PDFBOX-1901] - null check confusing
+[PDFBOX-1917] - Rendering hangs
+[PDFBOX-1924] - Gouraud shading: detect empty triangles
+[PDFBOX-1966] - Type 1, 4 and 5 shadings for shFill()
+[PDFBOX-1970] - 1.8 shadings are sometimes flipped
+[PDFBOX-1977] - LZWFilter fails
+[PDFBOX-1984] - PDFont documentation correction needed for getFontWidth and getFontHeight
+[PDFBOX-1988] - PDFBox ExtractText issue of PDF with no embedded fonts
+[PDFBOX-1998] - PDF rendering with reversed colors
+[PDFBOX-1999] - JBIG2Filter - FlateDecoded Globals Table
+[PDFBOX-2004] - PDF2Image hangs/loops forever processing PDF
+[PDFBOX-2008] - Off-by-one error in BaseParser.readGenerationNumber()
+[PDFBOX-2016] - Stream parsing still incorrect if length value is wrong
+[PDFBOX-2018] - Dashed line with incorrect line cap
+[PDFBOX-2024] - /Rotate 180 PDF is not displayed correctly in PDFReader app
+[PDFBOX-2026] - cannot load jpg into new pdf
+[PDFBOX-2030] - Using new PDPixelMap() results in black image in PDF
+[PDFBOX-2031] - GrayScale images become inverted
+[PDFBOX-2032] - [PATCH] TTF Type12 IOException: Invalid Characters codes
+[PDFBOX-2035] - Ignore badly formatted toUnicode CMaps
+[PDFBOX-2036] - Add test with LZW fail sequence
+[PDFBOX-2042] - ColorSpace with empty Range array
 
 Improvement
 
-[PDFBOX-1685] - Verify interpretation of rdf:about for PDF/A
-[PDFBOX-1707] - Add dispose() when done with graphics
-[PDFBOX-1769] - Fix crash on invalid xref
-[PDFBOX-1815] - Suggestion: close files in COSStream
-[PDFBOX-1820] - Suggestion: close streams in PDIndex and PDJpeg
-[PDFBOX-1839] - PDFImageWriter default BufferedImage type makes output colors look poor
+[PDFBOX-52] - DCTFilter is not implemented yet
+[PDFBOX-615] - shfill operator needs implementation
+[PDFBOX-1734] - ImageIoUtil.WriteImage doesn't work with tiff images
+[PDFBOX-1869] - Implementation for ShadingType 1
+[PDFBOX-1897] - There are some errors within the source code documentation (javadocs)
+[PDFBOX-1902] - generics added to maputil
+[PDFBOX-1909] - Close open streams
+[PDFBOX-1914] - Shading package: Move "function" methods to base class and more 
+                refactoring
+[PDFBOX-1946] - Running within an Applet has many AccessControlException 's
+[PDFBOX-1964] - PDFMergerUtility support merging using non sequential parser
+[PDFBOX-1975] - Improve TestImageIOUtils unit tests to check image resolution and 
+                compression
+[PDFBOX-2010] - make "protected PDFont getDescendantFont()" public as it is in 2.0.0
+[PDFBOX-2039] - Class PDDocument should implement java.io.Closeable
+
 
 Release Contents
 ----------------
