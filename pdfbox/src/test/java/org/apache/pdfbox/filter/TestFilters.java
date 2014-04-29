@@ -36,15 +36,29 @@ public class TestFilters extends TestCase
 {
 
     /**
-     * This will test all of the filters in the system.
+     * This will test all of the filters in the system. There will be COUNT
+     * of deterministic tests and COUNT of non-deterministic tests, see also
+     * the discussion in PDFBOX-1977.
      *
      * @throws IOException If there is an exception while encoding.
      */
     public void testFilters() throws IOException
     {
-        for(int iter=0;iter<10;iter++) 
+        final int COUNT = 10;
+        Random rd = new Random(123456);
+        for (int iter = 0; iter < COUNT * 2; iter++)
         {
-            final long seed = new Random().nextLong();
+            long seed;
+            if (iter < COUNT)
+            {
+                // deterministic seed
+                seed = rd.nextLong();
+            }
+            else
+            {
+                // non-deterministic seed
+                seed = new Random().nextLong();
+            }
             boolean success = false;
             try 
             {
@@ -58,7 +72,7 @@ public class TestFilters extends TestCase
                     final int left = numBytes - upto;
                     if (random.nextBoolean() || left < 2) 
                     {
-                        // Fill w/ truly random bytes:
+                        // Fill w/ pseudo-random bytes:
                         final int end = upto + Math.min(left, 10+random.nextInt(100));
                         while(upto < end) 
                         {
