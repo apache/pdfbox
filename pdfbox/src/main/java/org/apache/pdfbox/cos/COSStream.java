@@ -311,7 +311,7 @@ public class COSStream extends COSDictionary implements Closeable
         // in case we need it later
         long writtenLength = unFilteredStream.getLengthWritten();  
 
-        if( length == 0 )
+        if (length == 0 && writtenLength == 0)
         {
             //if the length is zero then don't bother trying to decode
             //some filters don't work when attempting to decode
@@ -325,7 +325,7 @@ public class COSStream extends COSDictionary implements Closeable
             //ok this is a simple hack, sometimes we read a couple extra
             //bytes that shouldn't be there, so we encounter an error we will just
             //try again with one less byte.
-            for( int tryCount=0; !done && tryCount<5; tryCount++ )
+            for (int tryCount = 0; length > 0 && !done && tryCount < 5; tryCount++)
             {
                 InputStream input = null;
                 try
