@@ -99,7 +99,7 @@ public class PDLab extends PDColorSpace
      */
     protected ColorSpace createColorSpace() throws IOException
     {
-        return new ColorSpaceLab(getWhitepoint(), getBlackPoint(), getARange(), getBRange());
+        return new ColorSpaceLab(getWhitePoint(), getBlackPoint(), getARange(), getBRange());
     }
 
     /**
@@ -135,24 +135,22 @@ public class PDLab extends PDColorSpace
     }
 
     /**
-     * This will return the whitepoint tristimulus.  As this is a required field
-     * this will never return null.  A default of 1,1,1 will be returned if the
-     * pdf does not have any values yet.
-     *
-     * @return The whitepoint tristimulus.
+     * This will return the whitepoint tristimulus.
+     * As this is a required field this will never return null.
+     * A default of 1,1,1 will be returned if the pdf does not have any values yet.
+     * @return the whitepoint tristimulus
      */
-    public PDTristimulus getWhitepoint()
+    public PDTristimulus getWhitePoint()
     {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject( COSName.WHITE_POINT );
-        if( wp == null )
+        COSArray wp = (COSArray)dictionary.getDictionaryObject(COSName.WHITE_POINT);
+        if(wp == null)
         {
             wp = new COSArray();
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            wp.add( new COSFloat( 1.0f ) );
-            dictionary.setItem( COSName.WHITE_POINT, wp );
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
+            wp.add(new COSFloat(1.0f));
         }
-        return new PDTristimulus( wp );
+        return new PDTristimulus(wp);
     }
 
     /**
@@ -161,7 +159,7 @@ public class PDLab extends PDColorSpace
      *
      * @param wp The whitepoint tristimulus.
      */
-    public void setWhitepoint( PDTristimulus wp )
+    public void setWhitePoint( PDTristimulus wp )
     {
         COSBase wpArray = wp.getCOSObject();
         if( wpArray != null )
@@ -171,24 +169,22 @@ public class PDLab extends PDColorSpace
     }
 
     /**
-     * This will return the BlackPoint tristimulus.  This is an optional field but
-     * has defaults so this will never return null.
+     * This will return the BlackPoint tristimulus.
+     * This is an optional field but has defaults so this will never return null.
      * A default of 0,0,0 will be returned if the pdf does not have any values yet.
-     *
-     * @return The blackpoint tristimulus.
+     * @return the blackpoint tristimulus
      */
     public PDTristimulus getBlackPoint()
     {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject( COSName.BLACK_POINT );
-        if( bp == null )
+        COSArray bp = (COSArray)dictionary.getDictionaryObject(COSName.BLACK_POINT);
+        if(bp == null)
         {
             bp = new COSArray();
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            bp.add( new COSFloat( 0.0f ) );
-            dictionary.setItem( COSName.BLACK_POINT, bp );
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
+            bp.add(new COSFloat(0.0f));
         }
-        return new PDTristimulus( bp );
+        return new PDTristimulus(bp);
     }
 
     /**
@@ -199,7 +195,6 @@ public class PDLab extends PDColorSpace
      */
     public void setBlackPoint( PDTristimulus bp )
     {
-
         COSBase bpArray = null;
         if( bp != null )
         {
@@ -208,86 +203,100 @@ public class PDLab extends PDColorSpace
         dictionary.setItem( COSName.BLACK_POINT, bpArray );
     }
 
-    private COSArray getRangeArray()
+    /**
+     * creates a range array with default values (-100..100 -100..100).
+     * @return the new range array.
+     */
+    private COSArray getDefaultRangeArray()
     {
-        COSArray range = (COSArray)dictionary.getDictionaryObject( COSName.RANGE );
-        if( range == null )
-        {
-            range = new COSArray();
-            dictionary.setItem( COSName.RANGE, array );
-            range.add( new COSFloat( -100 ) );
-            range.add( new COSFloat( 100 ) );
-            range.add( new COSFloat( -100 ) );
-            range.add( new COSFloat( 100 ) );
-        }
+        COSArray range = new COSArray();
+        range.add(new COSFloat(-100));
+        range.add(new COSFloat(100));
+        range.add(new COSFloat(-100));
+        range.add(new COSFloat(100));
         return range;
     }
 
     /**
-     * This will get the valid range for the a component.  If none is found
-     * then the default will be returned, which is -100 to 100.
-     *
-     * @return The a range.
+     * This will get the valid range for the "a" component.
+     * If none is found then the default will be returned, which is -100..100.
+     * @return the "a" range.
      */
     public PDRange getARange()
     {
-        COSArray range = getRangeArray();
-        return new PDRange( range, 0 );
+        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        if (rangeArray == null)
+        {
+            rangeArray = getDefaultRangeArray();
+        }
+        return new PDRange(rangeArray, 0);
     }
 
     /**
-     * This will set the a range for this color space.
-     *
-     * @param range The new range for the a component.
+     * This will set the a range for the "a" component.
+     * @param range the new range for the "a" component, 
+     * or null if defaults (-100..100) are to be set.
      */
-    public void setARange( PDRange range )
+    public void setARange(PDRange range)
     {
-        COSArray rangeArray = null;
-        //if null then reset to defaults
-        if( range == null )
+        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        if (rangeArray == null)
         {
-            rangeArray = getRangeArray();
-            rangeArray.set( 0, new COSFloat( -100 ) );
-            rangeArray.set( 1, new COSFloat( 100 ) );
+            rangeArray = getDefaultRangeArray();
+        }
+        //if null then reset to defaults
+        if(range == null)
+        {
+            rangeArray.set(0, new COSFloat(-100));
+            rangeArray.set(1, new COSFloat(100));
         }
         else
         {
-            rangeArray = range.getCOSArray();
+            rangeArray.set(0, new COSFloat(range.getMin()));
+            rangeArray.set(1, new COSFloat(range.getMax()));
         }
-        dictionary.setItem( COSName.RANGE, rangeArray );
+        dictionary.setItem(COSName.RANGE, rangeArray);
     }
 
     /**
-     * This will get the valid range for the b component.  If none is found
-     * then the default will be returned, which is -100 to 100.
-     *
-     * @return The b range.
+     * This will get the valid range for the "b" component.
+     * If none is found  then the default will be returned, which is -100..100.
+     * @return the "b" range.
      */
     public PDRange getBRange()
     {
-        COSArray range = getRangeArray();
-        return new PDRange( range, 1 );
+        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        if (rangeArray == null)
+        {
+            rangeArray = getDefaultRangeArray();
+        }
+        return new PDRange(rangeArray, 1);
     }
 
     /**
-     * This will set the b range for this color space.
-     *
-     * @param range The new range for the b component.
+     * This will set the "b" range for this color space.
+     * @param range the new range for the "b" component,
+     * or null if defaults (-100..100) are to be set.
      */
-    public void setBRange( PDRange range )
+    public void setBRange(PDRange range)
     {
-        COSArray rangeArray = null;
-        //if null then reset to defaults
-        if( range == null )
+        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
+        if (rangeArray == null)
         {
-            rangeArray = getRangeArray();
-            rangeArray.set( 2, new COSFloat( -100 ) );
-            rangeArray.set( 3, new COSFloat( 100 ) );
+            rangeArray = getDefaultRangeArray();
+        }
+        //if null then reset to defaults
+        if(range == null)
+        {
+            rangeArray.set(2, new COSFloat(-100));
+            rangeArray.set(3, new COSFloat(100));
         }
         else
         {
-            rangeArray = range.getCOSArray();
+            rangeArray.set(2, new COSFloat(range.getMin()));
+            rangeArray.set(3, new COSFloat(range.getMax()));
         }
-        dictionary.setItem( COSName.RANGE, rangeArray );
+        dictionary.setItem(COSName.RANGE, rangeArray);
     }
+
 }
