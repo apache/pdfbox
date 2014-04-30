@@ -101,18 +101,7 @@ public class TestFilters extends TestCase
                             continue;
                         }
 
-                    ByteArrayOutputStream encoded = new ByteArrayOutputStream();
-                    filter.encode(new ByteArrayInputStream( original ),
-                                  encoded, new COSDictionary() );
-
-                    ByteArrayOutputStream decoded = new ByteArrayOutputStream();
-                    filter.decode(new ByteArrayInputStream( encoded.toByteArray() ),
-                                  decoded, new COSDictionary() );
-
-                    assertTrue(
-                               "Data that is encoded and then decoded through "
-                               + filter.getClass() + " does not match the original data",
-                               Arrays.equals( original, decoded.toByteArray() ) );
+                    checkEncodeDecode(filter, original);
                 }
                 success = true;
             } 
@@ -145,15 +134,21 @@ public class TestFilters extends TestCase
             baos.write(by);
         }
         is.close();
+        
+        checkEncodeDecode(lzwFilter, baos.toByteArray());
+    }
+
+    private void checkEncodeDecode(Filter filter, byte[] original) throws IOException
+    {
         ByteArrayOutputStream encoded = new ByteArrayOutputStream();
-        lzwFilter.encode(new ByteArrayInputStream(baos.toByteArray()),
-                encoded, new COSDictionary());
+        filter.encode(new ByteArrayInputStream(original), encoded, new COSDictionary());
         ByteArrayOutputStream decoded = new ByteArrayOutputStream();
-        lzwFilter.decode(new ByteArrayInputStream(encoded.toByteArray()),
+        filter.decode(new ByteArrayInputStream(encoded.toByteArray()),
                 decoded, new COSDictionary());
+
         assertTrue(
-                "PDFBOX-1777 data that is encoded and then decoded through "
-                + lzwFilter.getClass() + " does not match the original data",
-                Arrays.equals(baos.toByteArray(), decoded.toByteArray()));
+                "Data that is encoded and then decoded through "
+                + filter.getClass() + " does not match the original data",
+                Arrays.equals(original, decoded.toByteArray()));
     }
 }
