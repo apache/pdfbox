@@ -15,6 +15,8 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +27,10 @@ import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 /**
  *
@@ -60,6 +65,50 @@ public class LZWFilter implements Filter
     public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex)
             throws IOException
     {
+        COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        COSDictionary decodeParams = null;
+        if (baseObj instanceof COSDictionary)
+        {
+            decodeParams = (COSDictionary) baseObj;
+        }
+        else if (baseObj instanceof COSArray)
+        {
+            COSArray paramArray = (COSArray) baseObj;
+            if (filterIndex < paramArray.size())
+            {
+                decodeParams = (COSDictionary) paramArray.getObject(filterIndex);
+            }
+        }
+        else if (baseObj != null)
+        {
+            throw new IOException("Error: Expected COSArray or COSDictionary and not "
+                    + baseObj.getClass().getName());
+        }
+
+        int predictor = -1;
+        if (decodeParams != null)
+        {
+            predictor = decodeParams.getInt(COSName.PREDICTOR);
+        }
+        if (predictor > 1)
+        {
+            int colors = decodeParams.getInt(COSName.COLORS, 1);
+            int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
+            int columns = decodeParams.getInt(COSName.COLUMNS, 1);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            doLZWDecode(compressedData, baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
+            result.write(decodedData);
+        }
+        else
+        {
+            doLZWDecode(compressedData, result);
+        }
+    }
+
+    private void doLZWDecode(InputStream compressedData, OutputStream result) throws IOException
+    {
         ArrayList<byte[]> codeTable = null;
         int chunk = 9;
         MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(compressedData);
@@ -88,7 +137,9 @@ public class LZWFilter implements Filter
                             data = codeTable.get((int) prevCommand);
                             byte[] newData = new byte[data.length + 1];
                             for (int i = 0; i < data.length; ++i)
+                            {
                                 newData[i] = data[i];
+                            }
                             newData[data.length] = firstByte;
                             codeTable.add(newData);
                         }
@@ -98,12 +149,14 @@ public class LZWFilter implements Filter
                         byte[] data = codeTable.get((int) prevCommand);
                         byte[] newData = new byte[data.length + 1];
                         for (int i = 0; i < data.length; ++i)
+                        {
                             newData[i] = data[i];
+                        }
                         newData[data.length] = data[0];
                         result.write(newData);
                         codeTable.add(newData);
                     }
-                    
+
                     chunk = calculateChunk(codeTable.size());
                     prevCommand = nextCommand;
                 }
@@ -145,7 +198,9 @@ public class LZWFilter implements Filter
             {
                 byte[] inputPatternCopy = new byte[inputPattern.length + 1];
                 for (int i = 0; i < inputPattern.length; ++i)
+                {
                     inputPatternCopy[i] = inputPattern[i];
+                }
                 inputPattern = inputPatternCopy;
                 inputPattern[inputPattern.length - 1] = by;
                 int newFoundCode = findPatternCode(codeTable, inputPattern);
