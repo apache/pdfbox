@@ -15,6 +15,8 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +28,7 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 /**
  *
@@ -60,6 +63,34 @@ public class LZWFilter extends Filter
     @Override
     protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
             COSDictionary parameters) throws IOException
+    {
+        int predictor = -1;
+
+        COSDictionary decodeParams = (COSDictionary)
+                parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        if (decodeParams != null)
+        {
+            predictor = decodeParams.getInt(COSName.PREDICTOR);
+        }
+        if (predictor > 1)
+        {
+            int colors = decodeParams.getInt(COSName.COLORS, 1);
+            int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
+            int columns = decodeParams.getInt(COSName.COLUMNS, 1);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            doLZWDecode(encoded, baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
+            decoded.write(decodedData);
+        }
+        else
+        {
+            doLZWDecode(encoded, decoded);
+        }
+        return new DecodeResult(parameters);
+    }
+
+    private void doLZWDecode(InputStream encoded, OutputStream decoded) throws IOException
     {
         ArrayList<byte[]> codeTable = null;
         int chunk = 9;
@@ -111,7 +142,6 @@ public class LZWFilter extends Filter
             LOG.warn("Premature EOF in LZW stream, EOD code missing");
         }
         decoded.flush();
-        return new DecodeResult(parameters);
     }
 
     /**
