@@ -82,6 +82,9 @@ public class LZWFilter extends Filter
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
             decoded.write(decodedData);
+            decoded.flush();
+            baos.reset();
+            bais.reset();
         }
         else
         {
