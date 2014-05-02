@@ -57,80 +57,52 @@ public class FlateFilter implements Filter
     {
         COSBase baseObj = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         COSDictionary dict = null;
-        if( baseObj instanceof COSDictionary )
+        if (baseObj instanceof COSDictionary)
         {
-            dict = (COSDictionary)baseObj;
+            dict = (COSDictionary) baseObj;
         }
-        else if( baseObj instanceof COSArray )
+        else if (baseObj instanceof COSArray)
         {
-            COSArray paramArray = (COSArray)baseObj;
-            if( filterIndex < paramArray.size() )
+            COSArray paramArray = (COSArray) baseObj;
+            if (filterIndex < paramArray.size())
             {
-                dict = (COSDictionary)paramArray.getObject( filterIndex );
+                dict = (COSDictionary) paramArray.getObject(filterIndex);
             }
         }
-        else if( baseObj != null )
+        else if (baseObj != null)
         {
-            throw new IOException( "Error: Expected COSArray or COSDictionary and not "
-                    + baseObj.getClass().getName() );
+            throw new IOException("Error: Expected COSArray or COSDictionary and not "
+                    + baseObj.getClass().getName());
         }
-
 
         int predictor = -1;
-        int colors = -1;
-        int bitsPerPixel = -1;
-        int columns = -1;
-        ByteArrayInputStream bais = null;
-        ByteArrayOutputStream baos = null;
-        if (dict!=null)
+        if (dict != null)
         {
             predictor = dict.getInt(COSName.PREDICTOR);
-            if(predictor > 1)
-            {
-                colors = dict.getInt(COSName.COLORS);
-                bitsPerPixel = dict.getInt(COSName.BITS_PER_COMPONENT);
-                columns = dict.getInt(COSName.COLUMNS);
-            }
         }
-
         try
         {
-            baos = decompress(compressedData);
             // Decode data using given predictor
-            if (predictor==-1 || predictor == 1 )
+            if (predictor > 1)
             {
-                result.write(baos.toByteArray()); 
+                int colors = dict.getInt(COSName.COLORS, 1);
+                int bitsPerPixel = dict.getInt(COSName.BITS_PER_COMPONENT, 8);
+                int columns = dict.getInt(COSName.COLUMNS, 1);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                decompress(compressedData, baos);
+                ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+                byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
+                result.write(decodedData);
+                result.flush();
+                baos.reset();
+                bais.reset();
             }
             else
             {
-                /*
-                 * Reverting back to default values
-                 */
-                if( colors == -1 )
-                {
-                    colors = 1;
-                }
-                if( bitsPerPixel == -1 )
-                {
-                    bitsPerPixel = 8;
-                }
-                if( columns == -1 )
-                {
-                    columns = 1;
-                }
-
-                // Copy data to ByteArrayInputStream for reading
-                bais = new ByteArrayInputStream(baos.toByteArray());
-
-                byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
-                bais.close();
-                bais = null;
-
-                result.write(decodedData);
+                decompress(compressedData, result);
             }
-            result.flush();
-        } 
-        catch (DataFormatException exception) 
+        }
+        catch (DataFormatException exception)
         {
             // if the stream is corrupt a DataFormatException may occur
             LOG.error("FlateFilter: stop reading corrupt stream due to a DataFormatException");
@@ -139,24 +111,12 @@ public class FlateFilter implements Filter
             io.initCause(exception);
             throw io;
         }
-        finally
-        {
-            if (bais != null)
-            {
-                bais.close();
-            }
-            if (baos != null)
-            {
-                baos.close();
-            }
-        }
     }
 
     // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably 
     // missing Z_STREAM_END, see PDFBOX-1232 for details
-    private ByteArrayOutputStream decompress(InputStream in) throws IOException, DataFormatException 
+    private void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
     { 
-        ByteArrayOutputStream out = new ByteArrayOutputStream(); 
         byte[] buf = new byte[2048]; 
         int read = in.read(buf); 
         if(read > 0) 
@@ -181,7 +141,6 @@ public class FlateFilter implements Filter
             }
         }
         out.close();
-        return out;
     } 
     
     /**

@@ -100,6 +100,9 @@ public class LZWFilter implements Filter
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
             result.write(decodedData);
+            result.flush();
+            baos.reset();
+            bais.reset();
         }
         else
         {
