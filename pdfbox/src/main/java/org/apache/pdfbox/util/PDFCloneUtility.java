@@ -29,6 +29,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -109,6 +110,25 @@ public class PDFCloneUtility
               }
               retval = newArray;
               clonedVersion.put( base, retval );
+          }
+          else if (base instanceof COSStreamArray) // PDFBOX-2052
+          {
+              COSStreamArray originalStream = (COSStreamArray) base;
+
+              if (originalStream.size() > 0)
+              {
+                  throw new IllegalStateException("Cannot close stream array with items next to the streams.");
+              }
+
+              COSArray array = new COSArray();
+              for (int i = 0; i < originalStream.getStreamCount(); i++)
+              {
+                  COSBase base2 = originalStream.get(i);
+                  COSBase cloneForNewDocument = cloneForNewDocument(base2);
+                  array.add(cloneForNewDocument);
+              }
+              retval = new COSStreamArray(array);
+              clonedVersion.put(base, retval);
           }
           else if( base instanceof COSStream )
           {
