@@ -205,7 +205,7 @@ public class PDFPrinter
         }
         else
         {
-            job.setPageable(new PDFPageable());
+            job.setPageable(getPageable());
             if (isSilent || job.printDialog())
             {
                 job.print();
