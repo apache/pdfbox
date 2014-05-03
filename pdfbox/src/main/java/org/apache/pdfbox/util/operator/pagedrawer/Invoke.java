@@ -89,7 +89,6 @@ public final class Invoke extends OperatorProcessor
             catch (Exception e)
             {
                 // TODO we probably shouldn't catch Exception, what errors are expected here?
-                e.printStackTrace();
                 LOG.error(e, e);
             }
         }
