@@ -257,7 +257,7 @@ public class PageDrawer extends PDFStreamEngine
         }
         catch( IOException io )
         {
-            io.printStackTrace();
+            LOG.error (io, io);
         }
     }
 

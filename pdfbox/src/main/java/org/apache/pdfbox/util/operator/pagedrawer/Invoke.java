@@ -110,7 +110,6 @@ public class Invoke extends OperatorProcessor
             }
             catch( Exception e )
             {
-                e.printStackTrace();
                 LOG.error(e, e);
             }
         }
