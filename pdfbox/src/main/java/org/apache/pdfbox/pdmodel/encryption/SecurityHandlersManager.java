@@ -20,6 +20,8 @@ package org.apache.pdfbox.pdmodel.encryption;
 import java.lang.reflect.Constructor;
 import java.security.Security;
 import java.util.Hashtable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -36,6 +38,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 public class SecurityHandlersManager
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(SecurityHandlersManager.class);
+    
     /**
      * The unique instance of this manager.
      */
@@ -177,7 +184,7 @@ public class SecurityHandlersManager
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG(e,e);
             throw new BadSecurityHandlerException(
                 "problem while trying to instanciate the security handler "+
                 handlerclass.getName() + ": " + e.getMessage());
@@ -214,7 +221,7 @@ public class SecurityHandlersManager
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG(e,e);
             throw new BadSecurityHandlerException(
                 "problem while trying to instanciate the security handler "+
                 handlerclass.getName() + ": " + e.getMessage());

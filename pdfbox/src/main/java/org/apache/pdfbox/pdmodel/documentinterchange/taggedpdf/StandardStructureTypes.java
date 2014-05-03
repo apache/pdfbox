@@ -21,6 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * The standard structure types.
@@ -31,10 +33,14 @@ import java.util.List;
 public class StandardStructureTypes
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(StandardStructureTypes.class);
+    
     private StandardStructureTypes()
     {
     }
-
 
     // Grouping Elements
     /**
@@ -306,11 +312,11 @@ public class StandardStructureTypes
                 }
                 catch (IllegalArgumentException e)
                 {
-                    e.printStackTrace();
+                    LOG.error(e,e);
                 }
                 catch (IllegalAccessException e)
                 {
-                    e.printStackTrace();
+                    LOG.error(e,e);
                 }
             }
         }

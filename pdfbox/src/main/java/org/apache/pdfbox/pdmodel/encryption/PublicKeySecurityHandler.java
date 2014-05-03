@@ -35,6 +35,8 @@ import java.util.Iterator;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DERObject;
@@ -74,6 +76,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public class PublicKeySecurityHandler extends SecurityHandler
 {
+        
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PublicKeySecurityHandler.class);
 
     /**
      * The filter name.
@@ -370,7 +377,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            LOG.error(e,e);
             throw new CryptographyException(e);
         }
 

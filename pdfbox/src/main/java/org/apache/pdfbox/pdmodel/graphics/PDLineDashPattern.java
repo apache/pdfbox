@@ -25,6 +25,8 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents the line dash pattern for a graphics state.  See PDF
@@ -35,6 +37,12 @@ import java.util.List;
  */
 public class PDLineDashPattern implements COSObjectable, Cloneable
 {
+    
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDLineDashPattern.class);
+    
     private COSArray lineDashPattern = null;
 
     /**
@@ -82,9 +90,9 @@ public class PDLineDashPattern implements COSObjectable, Cloneable
             pattern.setDashPattern(getDashPattern());
             pattern.setPhaseStart(getPhaseStart());
         }
-        catch(CloneNotSupportedException exception)
+        catch(CloneNotSupportedException e)
         {
-            exception.printStackTrace();
+            LOG.error(e,e);
         }
         return pattern;
     }

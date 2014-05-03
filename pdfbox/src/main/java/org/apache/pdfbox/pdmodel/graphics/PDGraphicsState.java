@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.graphics;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -33,6 +35,12 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDGraphicsState implements Cloneable
 {
+    
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDGraphicsState.class);
+    
     private Matrix currentTransformationMatrix = new Matrix();
 
     //Here are some attributes of the Graphics state, but have not been created yet.
@@ -434,7 +442,7 @@ public class PDGraphicsState implements Cloneable
         }
         catch( CloneNotSupportedException e )
         {
-            e.printStackTrace();
+            LOG.error(e, e);
         }
         return clone;
     }
