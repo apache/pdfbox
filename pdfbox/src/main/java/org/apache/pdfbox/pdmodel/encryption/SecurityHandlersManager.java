@@ -184,7 +184,7 @@ public class SecurityHandlersManager
         }
         catch(Exception e)
         {
-            LOG(e,e);
+            LOG.error(e,e);
             throw new BadSecurityHandlerException(
                 "problem while trying to instanciate the security handler "+
                 handlerclass.getName() + ": " + e.getMessage());
@@ -221,7 +221,7 @@ public class SecurityHandlersManager
         }
         catch(Exception e)
         {
-            LOG(e,e);
+            LOG.error(e,e);
             throw new BadSecurityHandlerException(
                 "problem while trying to instanciate the security handler "+
                 handlerclass.getName() + ": " + e.getMessage());
