@@ -55,7 +55,7 @@ public class FontManager
         }
         catch( IOException io )
         {
-            io.printStackTrace();
+            LOG.error(io,io);
             throw new RuntimeException( "Error loading font mapping" );
         }
         loadFonts();

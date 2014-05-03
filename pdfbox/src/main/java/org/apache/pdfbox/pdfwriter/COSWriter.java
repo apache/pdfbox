@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -73,6 +75,12 @@ import org.apache.pdfbox.util.StringUtil;
  */
 public class COSWriter implements ICOSVisitor, Closeable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(COSWriter.class);
+
     /**
      * The dictionary open token.
      */
@@ -278,7 +286,7 @@ public class COSWriter implements ICOSVisitor, Closeable
       }
       catch (IOException e)
       {
-        e.printStackTrace();
+        LOG.error(e,e);
       }
     }
     
