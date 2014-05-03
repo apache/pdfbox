@@ -35,11 +35,19 @@ import org.apache.pdfbox.pdmodel.common.TestEmbeddedFiles;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
+import org.apache.pdfbox.pdmodel.common.function.TestFunctions;
 import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorStateTest;
+import org.apache.pdfbox.pdmodel.graphics.color.PDLabTest;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMapTest;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
+import org.apache.pdfbox.util.PDFCloneUtilityTest;
 import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestImageIOUtils;
+import org.apache.pdfbox.util.TestLayerUtility;
 import org.apache.pdfbox.util.TestMatrix;
+import org.apache.pdfbox.util.TestPDFText2HTML;
 
 /**
  * This is a holder for all test cases in the pdfbox system.
@@ -91,10 +99,10 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestPDDocumentCatalog.class );
         suite.addTestSuite( TestPDDocumentInformation.class );
         suite.addTestSuite( TestEmbeddedFiles.class );
-        suite.addTestSuite( org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups.class );
-        suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );
-        suite.addTestSuite( org.apache.pdfbox.TestTextToPdf.class );
-        suite.addTest( org.apache.pdfbox.pdmodel.common.function.TestFunctions.suite() );
+        suite.addTestSuite( TestOptionalContentGroups.class );
+        suite.addTestSuite( TestLayerUtility.class );
+        suite.addTestSuite( TestTextToPdf.class );
+        suite.addTest( TestFunctions.suite() );
 
         suite.addTestSuite( TestIOUtils.class );
         suite.addTestSuite( TestRandomAccessBuffer.class );
@@ -108,6 +116,12 @@ public class TestAll extends TestCase
         
         suite.addTestSuite(TestPDNameTreeNode.class);
         suite.addTestSuite(TestPDNumberTreeNode.class);
+        
+        suite.addTestSuite(PDFCloneUtilityTest.class);
+        suite.addTestSuite(PDLabTest.class);
+        suite.addTestSuite(PDPixelMapTest.class);
+        suite.addTestSuite(TestPDFText2HTML.class);
+        suite.addTestSuite(PDColorStateTest.class);
 
         return suite;
     }
