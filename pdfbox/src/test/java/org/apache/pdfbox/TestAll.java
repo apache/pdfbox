@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.TestCOSString;
 import org.apache.pdfbox.filter.TestFilters;
 import org.apache.pdfbox.io.TestIOUtils;
 import org.apache.pdfbox.io.TestRandomAccessBuffer;
+import org.apache.pdfbox.io.TestRandomAccessFileOutputStream;
 import org.apache.pdfbox.io.ccitt.TestCCITTFaxG31DDecodeInputStream;
 import org.apache.pdfbox.io.ccitt.TestPackedBitArray;
 import org.apache.pdfbox.pdmodel.TestFDF;
@@ -106,6 +107,7 @@ public class TestAll extends TestCase
 
         suite.addTestSuite( TestIOUtils.class );
         suite.addTestSuite( TestRandomAccessBuffer.class );
+        suite.addTestSuite( TestRandomAccessFileOutputStream.class );        
         suite.addTestSuite( TestImageIOUtils.class );
         suite.addTestSuite( TestPackedBitArray.class );
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
