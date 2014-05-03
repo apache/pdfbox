@@ -19,6 +19,8 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
@@ -31,6 +33,12 @@ import org.apache.pdfbox.persistence.util.COSHEXTable;
  */
 public class COSString extends COSBase
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(COSString.class);
+
     /**
      * One of the open string tokens.
      */
@@ -140,7 +148,7 @@ public class COSString extends COSBase
         }
         catch (IOException ignore)
         {
-            ignore.printStackTrace();
+            LOG.error(ignore,ignore);
             // should never happen
         }
     }
@@ -160,7 +168,7 @@ public class COSString extends COSBase
         }
         catch (IOException ignore)
         {
-            ignore.printStackTrace();
+            LOG.error(ignore,ignore);
             // should never happen
         }
     }
@@ -320,7 +328,7 @@ public class COSString extends COSBase
         catch (IOException e)
         {
             // should never happen
-            e.printStackTrace();
+            LOG.error(e,e);
             retval = new String(getBytes());
         }
         this.str = retval;
