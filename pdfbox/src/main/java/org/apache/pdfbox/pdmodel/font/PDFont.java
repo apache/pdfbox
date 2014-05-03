@@ -563,7 +563,7 @@ public abstract class PDFont implements COSObjectable
             catch (UnsupportedEncodingException e)
             {
                 // Nothing should happen here
-                e.printStackTrace();
+                LOG.error(e,e);
             }
             for( int j=0; j<256; j++ )
             {
@@ -574,7 +574,7 @@ public abstract class PDFont implements COSObjectable
                 catch (UnsupportedEncodingException e)
                 {
                     // Nothing should happen here
-                    e.printStackTrace();
+                    LOG.error(e,e);
                 }
             }
         }
