@@ -1682,7 +1682,7 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
-            throw new IOException( "Error: Expected a long type at offset "+pdfSource.getOffset());
+            throw new IOException( "Error: Expected a long type at offset "+pdfSource.getOffset() + ", instead got '" + longBuffer + "'");
         }
         return retval;
     }
@@ -1701,6 +1701,7 @@ public abstract class BaseParser
                 lastByte != 10 &&
                 lastByte != 13 &&
                 lastByte != 60 && //see sourceforge bug 1714707
+                lastByte != '[' && // PDFBOX-1845
                 lastByte != 0 && //See sourceforge bug 853328
                 lastByte != -1 )
         {
