@@ -56,11 +56,13 @@ public class PDType1CFont extends PDSimpleFont
 
     private String fontname = null;
 
-    private Map<Integer, String> codeToName = new HashMap<Integer, String>();
+    private Map<Integer, String> sidToName = new HashMap<Integer, String>();
 
-    private Map<Integer, String> codeToCharacter = new HashMap<Integer, String>();
+    private Map<Integer, Integer> codeToSID = new HashMap<Integer, Integer>();
 
-    private Map<String, Integer> characterToCode = new HashMap<String, Integer>();
+    private Map<Integer, String> sidToCharacter = new HashMap<Integer, String>();
+
+    private Map<String, Integer> characterToSID = new HashMap<String, Integer>();
 
     private FontMetric fontMetric = null;
 
@@ -76,8 +78,6 @@ public class PDType1CFont extends PDSimpleFont
 
     private static final byte[] SPACE_BYTES = { (byte) 32 };
 
-    private Map<Integer, Integer> codeToGlyph = new HashMap<Integer, Integer>();
-
     /**
      * Constructor.
      * 
@@ -88,6 +88,20 @@ public class PDType1CFont extends PDSimpleFont
     {
         super(fontDictionary);
         load();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String encode(byte[] bytes, int offset, int length) throws IOException
+    {
+        String character = getCharacter(bytes, offset, length);
+        if (character == null)
+        {
+            LOG.debug("No character for code " + (bytes[offset] & 0xff) + " in " + fontname);
+            return null;
+        }
+        return character;
     }
 
     /**
@@ -106,6 +120,21 @@ public class PDType1CFont extends PDSimpleFont
             code = code * 256 + bytes[offset + 1] & 0xff;
         }
         return code;
+    }
+
+    private String getCharacter(byte[] bytes, int offset, int length)
+    {
+        int code = getCodeFromArray(bytes, offset, length);
+        String character = null;
+        if (codeToSID.containsKey(code))
+        {
+            code = codeToSID.get(code);
+        }
+        if (sidToCharacter.containsKey(code))
+        {
+            character = sidToCharacter.get(code);
+        }
+        return character;
     }
 
     /**
@@ -165,7 +194,7 @@ public class PDType1CFont extends PDSimpleFont
             code = code * 256 + bytes[offset + 1] & 0xff;
         }
 
-        return codeToName.get(code);
+        return sidToName.get(code);
     }
 
     /**
@@ -195,18 +224,7 @@ public class PDType1CFont extends PDSimpleFont
 
     private Integer getCode(String character)
     {
-        return characterToCode.get(character);
-    }
-
-    /**
-     * Returns the glyph index of the given character code.
-     * 
-     * @param code the character code
-     * @return the glyph index
-     */
-    protected Integer getGlyphIndex(int code)
-    {
-        return codeToGlyph.get(code);
+        return characterToSID.get(character);
     }
 
     /**
@@ -218,7 +236,6 @@ public class PDType1CFont extends PDSimpleFont
         {
             avgWidth = getFontMetric().getAverageCharacterWidth();
         }
-
         return avgWidth.floatValue();
     }
 
@@ -231,7 +248,6 @@ public class PDType1CFont extends PDSimpleFont
         {
             fontBBox = new PDRectangle(getFontMetric().getFontBBox());
         }
-
         return fontBBox;
     }
 
@@ -315,15 +331,14 @@ public class PDType1CFont extends PDSimpleFont
         {
             codeToNameMap.put(mapping.getCode(), mapping.getName());
         }
-        int glyphId = 0;
         for (CFFFont.Mapping mapping : mappings)
         {
-            int code = mapping.getSID();
+            int sid = mapping.getSID();
             String name = mapping.getName();
             String character = null;
             if (nameToCode != null && nameToCode.containsKey(name))
             {
-                code = nameToCode.get(name);
+                sid = nameToCode.get(name);
                 character = encoding.getCharacter(name);
             }
             if (character == null)
@@ -332,13 +347,13 @@ public class PDType1CFont extends PDSimpleFont
             }
             if (character == null)
             {
-                name = "uni" + hexString(code, 4);
-                character = String.valueOf(Character.toChars(code));
+                name = "uni" + hexString(sid, 4);
+                character = String.valueOf(Character.toChars(sid));
             }
-            codeToGlyph.put(code, glyphId++);
-            codeToName.put(code, name);
-            codeToCharacter.put(code, character);
-            characterToCode.put(character, code);
+            sidToName.put(sid, name);
+            sidToCharacter.put(sid, character);
+            characterToSID.put(character, sid);
+            codeToSID.put(mapping.getCode(), sid);
         }
     }
 
@@ -400,7 +415,8 @@ public class PDType1CFont extends PDSimpleFont
             // Replace default FontBBox value with a newly computed one
             BoundingBox bounds = result.getFontBBox();
             List<Integer> numbers = Arrays.asList(Integer.valueOf((int) bounds.getLowerLeftX()),
-                    Integer.valueOf((int) bounds.getLowerLeftY()), Integer.valueOf((int) bounds.getUpperRightX()),
+                    Integer.valueOf((int) bounds.getLowerLeftY()),
+                    Integer.valueOf((int) bounds.getUpperRightX()),
                     Integer.valueOf((int) bounds.getUpperRightY()));
             font.addValueToTopDict("FontBBox", numbers);
 
