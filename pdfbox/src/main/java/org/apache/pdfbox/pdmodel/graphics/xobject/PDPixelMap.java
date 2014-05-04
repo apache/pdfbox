@@ -89,10 +89,35 @@ public class PDPixelMap extends PDXObjectImage
     public PDPixelMap(PDDocument doc, BufferedImage bi) throws IOException
     {
         super( doc, PNG);
-        createImageStream(doc, bi);
+        createImageStream(doc, bi, false);
     }
 
-    private void createImageStream(PDDocument doc, BufferedImage bi) throws IOException
+    /**
+     * Construct a pixel map image from an AWT image.
+     * 
+     * @param doc The PDF document to embed the image in.
+     * @param bi The image to read data from.
+     * @param mask true if this is a mask, false if not.
+     *
+     * @throws IOException If there is an error while embedding this image.
+     */
+    private PDPixelMap(PDDocument doc, BufferedImage bi, boolean mask) throws IOException
+    {
+        super(doc, PNG);
+        createImageStream(doc, bi, mask);
+    }
+
+    /**
+     * Create an image stream from an AWT image.
+     * 
+     * @param doc The PDF document to embed the image in.
+     * @param bi The image to read data from.
+     * @param mask true if this is a mask, false if not. If true, the image
+     * stream will be forced to be DeviceGray.
+     * 
+     * @throws IOException If there is an error while embedding this image.
+     */
+    private void createImageStream(PDDocument doc, BufferedImage bi, boolean mask) throws IOException
     {
         BufferedImage alphaImage = null;
         BufferedImage rgbImage = null;
@@ -128,11 +153,12 @@ public class PDPixelMap extends PDXObjectImage
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
             //TODO: activate this when DeviceGray tests work
-//            if ((bi.getType() == BufferedImage.TYPE_BYTE_GRAY ||
+//            if (((mask || bi.getType() == BufferedImage.TYPE_BYTE_GRAY) ||
 //                    || bi.getType() == BufferedImage.TYPE_BYTE_BINARY)
 //                    && bi.getColorModel().getPixelSize() <= 8)
-            if (bi.getType() == BufferedImage.TYPE_BYTE_BINARY
-                    && bi.getColorModel().getPixelSize() <= 8)
+            if (mask || // PDFBOX-2057 force masks to be gray
+                    (bi.getType() == BufferedImage.TYPE_BYTE_BINARY
+                    && bi.getColorModel().getPixelSize() <= 8))
             {
                 setColorSpace(new PDDeviceGray());
                 MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
@@ -182,7 +208,7 @@ public class PDPixelMap extends PDXObjectImage
             dic.setItem( COSName.TYPE, COSName.XOBJECT );
             if(alphaImage != null)
             {
-                PDPixelMap smask = new PDPixelMap(doc, alphaImage);
+                PDPixelMap smask = new PDPixelMap(doc, alphaImage, true);
                 dic.setItem(COSName.SMASK, smask);
             }
             setBitsPerComponent( bpc );
@@ -197,6 +223,7 @@ public class PDPixelMap extends PDXObjectImage
             }
         }
     }
+    
     /**
      * Returns a {@link java.awt.image.BufferedImage} of the COSStream
      * set in the constructor or null if the COSStream could not be encoded.
