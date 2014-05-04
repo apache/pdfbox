@@ -38,7 +38,8 @@
   <inceptionYear>2002</inceptionYear>
 
   <properties>
-    <lucene.version>4.8.0</lucene.version>
+    <lucene.version>4.7.2</lucene.version>
+    <!-- don't update this, because later versions require JDK7 -->
   </properties>
 
   <dependencies>
