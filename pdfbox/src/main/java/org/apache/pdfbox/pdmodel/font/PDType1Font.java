@@ -519,12 +519,13 @@ public class PDType1Font extends PDSimpleFont
     {
         if (type1CFont != null && getFontEncoding() == null)
         {
-            return type1CFont.encode(c, offset, length);
+            String character = type1CFont.encode(c, offset, length);
+            if (character != null)
+            {
+                return character;
+            }
         }
-        else
-        {
-            return super.encode(c, offset, length);
-        }
+        return super.encode(c, offset, length);
     }
 
     /**
