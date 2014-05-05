@@ -345,15 +345,13 @@ public class PDType1CFont extends PDSimpleFont
             {
                 character = Encoding.getCharacterForName(name);
             }
-            if (character == null)
-            {
-                name = "uni" + hexString(sid, 4);
-                character = String.valueOf(Character.toChars(sid));
-            }
-            sidToName.put(sid, name);
-            sidToCharacter.put(sid, character);
-            characterToSID.put(character, sid);
             codeToSID.put(mapping.getCode(), sid);
+            sidToName.put(sid, name);
+            if (character != null)
+            {
+                sidToCharacter.put(sid, character);
+                characterToSID.put(character, sid);
+            }
         }
     }
 
@@ -390,16 +388,6 @@ public class PDType1CFont extends PDSimpleFont
             }
         }
         return null;
-    }
-
-    private static String hexString(int code, int length)
-    {
-        String string = Integer.toHexString(code).toUpperCase();
-        while (string.length() < length)
-        {
-            string = ("0" + string);
-        }
-        return string;
     }
 
     private FontMetric prepareFontMetric(CFFFont font) throws IOException
