@@ -21,40 +21,28 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cff.AFMFormatter;
-import org.apache.fontbox.cff.charset.CFFCharset;
-import org.apache.fontbox.cff.encoding.CFFEncoding;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.Type1FontFormatter;
 import org.apache.fontbox.util.BoundingBox;
-
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -63,17 +51,20 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 /**
  * This class represents a CFF/Type2 Font (aka Type1C Font).
  * @author Villu Ruusmann
- * @version $Revision: 10.0$
  */
 public class PDType1CFont extends PDSimpleFont
 {
     private CFFFont cffFont = null;
 
-    private Map<Integer, String> codeToName = new HashMap<Integer, String>();
+    private String fontname = null;
 
-    private Map<Integer, String> codeToCharacter = new HashMap<Integer, String>();
+    private Map<Integer, String> sidToName = new HashMap<Integer, String>();
 
-    private Map<String, Integer> characterToCode = new HashMap<String, Integer>();
+    private Map<Integer, Integer> codeToSID = new HashMap<Integer, Integer>();
+
+    private Map<Integer, String> sidToCharacter = new HashMap<Integer, String>();
+
+    private Map<String, Integer> characterToSID = new HashMap<String, Integer>();
 
     private FontMetric fontMetric = null;
 
@@ -91,8 +82,6 @@ public class PDType1CFont extends PDSimpleFont
 
     private static final byte[] SPACE_BYTES = {(byte)32};
 
-    private COSDictionary fontDict = null;
-    
     /**
      * Constructor.
      * @param fontDictionary the corresponding dictionary
@@ -100,31 +89,64 @@ public class PDType1CFont extends PDSimpleFont
     public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
-        fontDict = fontDictionary;
         load();
     }
 
-    public int encodeToCID( byte[] bytes, int offset, int length )
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String encode(byte[] bytes, int offset, int length) throws IOException
     {
-      if (length > 2)
-      {
-          return -1;
-      }
-      int code = bytes[offset] & 0xff;
-      if (length == 2)
-      {
-          code = code * 256 + bytes[offset+1] & 0xff;
-      }
-      return code;
+        String character = getCharacter(bytes, offset, length);
+        if (character == null)
+        {
+            log.debug("No character for code " + (bytes[offset] & 0xff) + " in " + fontname);
+            return null;
+        }
+        return character;
     }
-    
+
+    private String getCharacter(byte[] bytes, int offset, int length)
+    {
+        int code = getCodeFromArray(bytes, offset, length);
+        String character = null;
+        if (codeToSID.containsKey(code))
+        {
+            code = codeToSID.get(code);
+        }
+        if (sidToCharacter.containsKey(code))
+        {
+            character = sidToCharacter.get(code);
+        }
+        return character;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int encodeToCID(byte[] bytes, int offset, int length)
+    {
+        if (length > 2)
+        {
+            return -1;
+        }
+        int code = bytes[offset] & 0xff;
+        if (length == 2)
+        {
+            code = code * 256 + bytes[offset + 1] & 0xff;
+        }
+        return code;
+    }
+
     /**
      * {@inheritDoc}
      */
     public float getFontWidth( byte[] bytes, int offset, int length ) throws IOException
     {
         String name = getName(bytes, offset, length);
-        if( name == null && !Arrays.equals(SPACE_BYTES, bytes) )
+        if ( name == null && !Arrays.equals(SPACE_BYTES, bytes) )
         {
             log.debug("No name for code " + (bytes[offset] & 0xff) + " in " + this.cffFont.getName());
 
@@ -177,7 +199,7 @@ public class PDType1CFont extends PDSimpleFont
             code = code * 256 + bytes[offset+1] & 0xff;
         }
 
-        return (String)this.codeToName.get(code);
+        return sidToName.get(code);
     }
 
     /**
@@ -207,7 +229,7 @@ public class PDType1CFont extends PDSimpleFont
 
     private Integer getCode( String character )
     {
-        return (Integer)this.characterToCode.get(character);
+        return characterToSID.get(character);
     }
 
 
@@ -314,87 +336,45 @@ public class PDType1CFont extends PDSimpleFont
             this.cffFont = (CFFFont)fonts.get(0);
         }
 
-        CFFEncoding encoding = this.cffFont.getEncoding();
-        PDFEncoding pdfEncoding = new PDFEncoding(encoding);
+        // cache the font name
+        fontname = cffFont.getName();
 
-        CFFCharset charset = this.cffFont.getCharset();
-        PDFCharset pdfCharset = new PDFCharset(charset);
-
-        Map<String,byte[]> charStringsDict = this.cffFont.getCharStringsDict();
-        Map<String,byte[]> pdfCharStringsDict = new LinkedHashMap<String,byte[]>();
-        pdfCharStringsDict.put(".notdef", charStringsDict.get(".notdef"));
-
-        Map<Integer,String> codeToNameMap = new LinkedHashMap<Integer,String>();
-
-        Collection<CFFFont.Mapping> mappings = this.cffFont.getMappings();
-        for( Iterator<CFFFont.Mapping> it = mappings.iterator(); it.hasNext();)
-        {
-            CFFFont.Mapping mapping = it.next();
-            Integer code = Integer.valueOf(mapping.getCode());
-            String name = mapping.getName();
-            codeToNameMap.put(code, name);
-        }
-
-        Set<String> knownNames = new HashSet<String>(codeToNameMap.values());
-
-        Map<Integer,String> codeToNameOverride = loadOverride();
-        for( Iterator<Map.Entry<Integer, String>> it = (codeToNameOverride.entrySet()).iterator(); it.hasNext();)
-        {
-            Map.Entry<Integer, String> entry = it.next();
-            Integer code = (Integer)entry.getKey();
-            String name = (String)entry.getValue();
-            if(knownNames.contains(name))
-            {
-                codeToNameMap.put(code, name);
-            }
-        }
-
-        Map<String,String> nameToCharacter;
-        try
-        {
-            // TODO remove access by reflection
-            Field nameToCharacterField = Encoding.class.getDeclaredField("NAME_TO_CHARACTER");
-            nameToCharacterField.setAccessible(true);
-            nameToCharacter = (Map<String,String>)nameToCharacterField.get(null);
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException(e);
-        }
-
-        for( Iterator<Map.Entry<Integer,String>> it = (codeToNameMap.entrySet()).iterator(); it.hasNext();)
-        {
-            Map.Entry<Integer,String> entry = it.next();
-            Integer code = (Integer)entry.getKey();
-            String name = (String)entry.getValue();
-            String uniName = "uni";
-            String character = (String)nameToCharacter.get(name);
-            if( character != null )
-            {
-                for( int j = 0; j < character.length(); j++ )
-                {
-                    uniName += hexString(character.charAt(j), 4);
-                }
-            }
-            else
-            {
-                uniName += hexString(code.intValue(), 4);
-                character = String.valueOf((char)code.intValue());
-            }
-            pdfEncoding.register(code.intValue(), code.intValue());
-            pdfCharset.register(code.intValue(), uniName);
-            this.codeToName.put(code, uniName);
-            this.codeToCharacter.put(code, character);
-            this.characterToCode.put(character, code);
-            pdfCharStringsDict.put(uniName, charStringsDict.get(name));
-        }
-
-        this.cffFont.setEncoding(pdfEncoding);
-        this.cffFont.setCharset(pdfCharset);
-        charStringsDict.clear();
-        charStringsDict.putAll(pdfCharStringsDict);
-        Number defaultWidthX = (Number)this.cffFont.getProperty("defaultWidthX");
+        Number defaultWidthX = (Number) this.cffFont.getProperty("defaultWidthX");
         this.glyphWidths.put(null, Float.valueOf(defaultWidthX.floatValue()));
+
+        Encoding encoding = getFontEncoding();
+        Map<String, Integer> nameToCode = encoding != null ? encoding.getNameToCodeMap() : null;
+        Collection<CFFFont.Mapping> mappings = cffFont.getMappings();
+        Map<Integer, String> codeToNameMap = new LinkedHashMap<Integer, String>();
+        for (CFFFont.Mapping mapping : mappings)
+        {
+            codeToNameMap.put(mapping.getCode(), mapping.getName());
+        }
+        for (CFFFont.Mapping mapping : mappings)
+        {
+            int sid = mapping.getSID();
+            String name = mapping.getName();
+            String character = null;
+            if (nameToCode != null && nameToCode.containsKey(name))
+            {
+                sid = nameToCode.get(name);
+                character = encoding.getCharacter(name);
+            }
+            if (character == null)
+            {
+                character = Encoding.getCharacterForName(name);
+            }
+            if (character == null)
+            {
+                name = "uni" + hexString(sid, 4);
+                character = String.valueOf(Character.toChars(sid));
+            }
+            sidToName.put(sid, name);
+            sidToCharacter.put(sid, character);
+            characterToSID.put(character, sid);
+            codeToSID.put(mapping.getCode(), sid);
+        }
+
     }
 
     private byte[] loadBytes() throws IOException
@@ -433,73 +413,6 @@ public class PDType1CFont extends PDSimpleFont
         throw new IOException();
     }
 
-    private Map<Integer,String> loadOverride() throws IOException
-    {
-        Map<Integer,String> result = new LinkedHashMap<Integer,String>();
-        COSBase encoding = fontDict.getDictionaryObject(COSName.ENCODING);
-        if( encoding instanceof COSName )
-        {
-            COSName name = (COSName)encoding;
-            result.putAll(loadEncoding(name));
-        }
-        else if( encoding instanceof COSDictionary )
-        {
-            COSDictionary encodingDic = (COSDictionary)encoding;
-            COSName baseName = (COSName)encodingDic.getDictionaryObject(COSName.BASE_ENCODING);
-            if( baseName != null )
-            {
-                result.putAll(loadEncoding(baseName));
-            }
-            COSArray differences = (COSArray)encodingDic.getDictionaryObject(COSName.DIFFERENCES);
-            if( differences != null )
-            {
-                result.putAll(loadDifferences(differences));
-            }
-        }
-
-        return result;
-    }
-
-    private Map<Integer,String> loadEncoding(COSName name) throws IOException
-    {
-        Map<Integer,String> result = new LinkedHashMap<Integer,String>();
-        Encoding encoding = EncodingManager.INSTANCE.getEncoding(name);
-        for( Iterator<Map.Entry<Integer,String>> it = (encoding.getCodeToNameMap().entrySet()).iterator();
-                    it.hasNext();)
-        {
-            Map.Entry<Integer,String> entry = it.next();
-            result.put(entry.getKey(), (entry.getValue()));
-        }
-
-        return result;
-    }
-
-    private Map<Integer,String> loadDifferences(COSArray differences)
-    {
-        Map<Integer,String> result = new LinkedHashMap<Integer,String>();
-        Integer code = null;
-        for( int i = 0; i < differences.size(); i++)
-        {
-            COSBase element = differences.get(i);
-            if( element instanceof COSNumber )
-            {
-                COSNumber number = (COSNumber)element;
-                code = Integer.valueOf(number.intValue());
-            } 
-            else 
-            {
-                if( element instanceof COSName )
-                {
-                    COSName name = (COSName)element;
-                    result.put(code, name.getName());
-                    code = Integer.valueOf(code.intValue() + 1);
-                }
-            }
-        }
-        return result;
-    }
-
-    
     private static String hexString( int code, int length )
     {
         String string = Integer.toHexString(code);
@@ -558,51 +471,6 @@ public class PDType1CFont extends PDSimpleFont
         {
             is.close();
         }
-    }
-
-    /**
-     * This class represents a PDFEncoding.
-     *
-     */
-    private static class PDFEncoding extends CFFEncoding
-    {
-
-        private PDFEncoding( CFFEncoding parent )
-        {
-            Iterator<Entry> parentEntries = parent.getEntries().iterator();
-            while(parentEntries.hasNext())
-            {
-                addEntry(parentEntries.next());
-            }
-        }
-
-        public boolean isFontSpecific()
-        {
-            return true;
-        }
-
-    }
-
-    /**
-     * This class represents a PDFCharset.
-     *
-     */
-    private static class PDFCharset extends CFFCharset
-    {
-        private PDFCharset( CFFCharset parent )
-        {
-            Iterator<Entry> parentEntries = parent.getEntries().iterator();
-            while(parentEntries.hasNext())
-            {
-                addEntry(parentEntries.next());
-            }
-        }
-
-        public boolean isFontSpecific()
-        {
-            return true;
-        }
-
     }
 
 }
