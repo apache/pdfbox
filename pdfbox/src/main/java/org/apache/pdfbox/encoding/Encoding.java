@@ -246,6 +246,24 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
+     * This will take a name and get the character code for that name.
+     * 
+     * @param name The name.
+     * 
+     * @return The name of the character.
+     * 
+     */
+    public static String getCharacterForName(String name)
+    {
+        if (NAME_TO_CHARACTER.containsKey(name))
+        {
+            LOG.debug("No character for name " + name);
+            return NAME_TO_CHARACTER.get(name);
+        }
+        return null;
+    }
+
+    /**
      * This will take a character code and get the name from the code.
      *
      * @param c The character.
