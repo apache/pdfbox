@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import static org.apache.pdfbox.pdmodel.graphics.image.ImageFactory.getColorImage;
 
 /**
  * Factory for creating a PDImageXObject containing a lossless compressed image.
@@ -53,10 +52,9 @@ public class LosslessFactory
         int bpc;
         PDDeviceColorSpace deviceColorSpace;
 
-        // extract color channel
-        BufferedImage awtColorImage = getColorImage(image);
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        int height = image.getHeight();
+        int width = image.getWidth();
 
         if ((image.getType() == BufferedImage.TYPE_BYTE_GRAY
                 || image.getType() == BufferedImage.TYPE_BYTE_BINARY)
@@ -67,16 +65,17 @@ public class LosslessFactory
             // grayscale images need one color per sample
             bpc = image.getColorModel().getPixelSize();
             deviceColorSpace = PDDeviceGray.INSTANCE;
-            int h = awtColorImage.getHeight();
-            int w = awtColorImage.getWidth();
-            for (int y = 0; y < h; ++y)
+            for (int y = 0; y < height; ++y)
             {
-                for (int x = 0; x < w; ++x)
+                for (int x = 0; x < width; ++x)
                 {
-                    mcios.writeBits(awtColorImage.getRGB(x, y), bpc);
+                    mcios.writeBits(image.getRGB(x, y) & 0xFF, bpc);
                 }
             }
-            mcios.writeBits(0, 7); // padding
+            while (mcios.getBitOffset() != 0)
+            {
+                mcios.writeBit(0);
+            }
             mcios.flush();
             mcios.close();
         }
@@ -85,13 +84,11 @@ public class LosslessFactory
             // RGB
             bpc = 8;
             deviceColorSpace = PDDeviceRGB.INSTANCE;
-            int h = awtColorImage.getHeight();
-            int w = awtColorImage.getWidth();
-            for (int y = 0; y < h; ++y)
+            for (int y = 0; y < height; ++y)
             {
-                for (int x = 0; x < w; ++x)
+                for (int x = 0; x < width; ++x)
                 {
-                    Color color = new Color(awtColorImage.getRGB(x, y));
+                    Color color = new Color(image.getRGB(x, y));
                     bos.write(color.getRed());
                     bos.write(color.getGreen());
                     bos.write(color.getBlue());
@@ -113,8 +110,8 @@ public class LosslessFactory
 
         pdImage.setColorSpace(deviceColorSpace);
         pdImage.setBitsPerComponent(bpc);
-        pdImage.setHeight(awtColorImage.getHeight());
-        pdImage.setWidth(awtColorImage.getWidth());
+        pdImage.setHeight(image.getHeight());
+        pdImage.setWidth(image.getWidth());
 
         // alpha -> soft mask
         PDImage xAlpha = createAlphaFromARGBImage(document, image);

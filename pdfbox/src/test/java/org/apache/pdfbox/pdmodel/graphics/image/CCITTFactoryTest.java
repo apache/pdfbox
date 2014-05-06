@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -41,7 +43,7 @@ public class CCITTFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
         PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader);
-        validate(ximage, 1, 344, 287, "tiff");
+        validate(ximage, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         document.close();
     }
 }

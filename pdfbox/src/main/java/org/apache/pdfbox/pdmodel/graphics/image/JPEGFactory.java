@@ -172,9 +172,9 @@ public final class JPEGFactory extends ImageFactory
         BufferedImage awtAlphaImage = getAlphaImage(image);
 
         // create XObject
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIOUtil.writeImage(image, "jpeg", bos, dpi, quality);
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIOUtil.writeImage(image, "jpeg", baos, dpi, quality);
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
         PDImageXObject pdImage = new PDImageXObject(document, byteStream);
         
         // add DCT filter
@@ -187,7 +187,7 @@ public final class JPEGFactory extends ImageFactory
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             dict.setItem(COSName.SMASK, xAlpha);
         }
-
+        
         // set properties (width, height, depth, color space, etc.)
         setPropertiesFromAWT(awtColorImage, pdImage);
 

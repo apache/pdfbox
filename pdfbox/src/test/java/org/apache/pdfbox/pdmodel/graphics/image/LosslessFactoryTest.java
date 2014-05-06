@@ -17,10 +17,15 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -30,6 +35,15 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
  */
 public class LosslessFactoryTest extends TestCase
 {
+    private final File testResultsDir = new File("target/test-output/graphics");
+
+    @Override
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        testResultsDir.mkdirs();
+    }
+
     /**
      * Tests RGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
@@ -41,39 +55,52 @@ public class LosslessFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
-        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
-        validate(ximage, 8, 344, 287, "png");
-        checkIdent(image, ximage.getImage());
+        PDImageXObject ximage1 = LosslessFactory.createFromImage(document, image);
+        validate(ximage1, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage1.getImage());
 
         // Create a grayscale image
         BufferedImage grayImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         Graphics g = grayImage.getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
-        ximage = LosslessFactory.createFromImage(document, grayImage);
-        validate(ximage, 8, 344, 287, "png");
-        checkIdent(grayImage, ximage.getImage());
+        PDImageXObject ximage2 = LosslessFactory.createFromImage(document, grayImage);
+        validate(ximage2, 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        checkIdent(grayImage, ximage2.getImage());
 
         // Create a bitonal image
         BufferedImage bitonalImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
         g = bitonalImage.getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
-        ximage = LosslessFactory.createFromImage(document, bitonalImage);
-        validate(ximage, 1, 344, 287, "png");
-        checkIdent(bitonalImage, ximage.getImage());
+        PDImageXObject ximage3 = LosslessFactory.createFromImage(document, bitonalImage);
+        validate(ximage3, 1, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        checkIdent(bitonalImage, ximage3.getImage());
 
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage1, 200, 300, ximage1.getWidth() / 2, ximage1.getHeight() / 2);
+        contentStream.drawXObject(ximage2, 200, 450, ximage2.getWidth() / 2, ximage2.getHeight() / 2);
+        contentStream.drawXObject(ximage3, 200, 600, ximage3.getWidth() / 2, ximage3.getHeight() / 2);
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "misc.pdf");
+        document.save(pdfFile);
         document.close();
-
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
     }
 
     /**
-     * Tests ARGB LosslessFactoryTest#createFromImage(PDDocument document,
+     * Tests INT_ARGB LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image)
      *
      * @throws java.io.IOException
      */
-    public void testCreateLosslessFromImageARGB() throws IOException
+    public void testCreateLosslessFromImageINT_ARGB() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
@@ -86,26 +113,91 @@ public class LosslessFactoryTest extends TestCase
         ag.drawImage(image, 0, 0, null);
         ag.dispose();
 
-        // create a weird transparency triangle
-        for (int y = 0; y < h; ++y)
+        for (int x = 0; x < argbImage.getWidth(); ++x)
         {
-            for (int x = 0; x < Math.min(y, w); ++x)
+            for (int y = 0; y < argbImage.getHeight(); ++y)
             {
-                argbImage.setRGB(x, y, image.getRGB(x, y) & 0xFFFFFF | ((x * 255 / w) << 24));
+                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
             }
         }
 
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
-        validate(ximage, 8, 344, 287, "png");
+        validate(ximage, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(argbImage, ximage.getImage());
+        checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
 
         assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 8, 344, 287, "png");
+        validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
 
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "intargb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
         document.close();
     }
 
     /**
-     * Check whether images are identical.
+     * Tests 4BYTE_ABGR LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image)
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromImage4BYTE_ABGR() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        // create an ARGB image
+        int w = image.getWidth();
+        int h = image.getHeight();
+        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics ag = argbImage.getGraphics();
+        ag.drawImage(image, 0, 0, null);
+        ag.dispose();
+
+        for (int x = 0; x < argbImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < argbImage.getHeight(); ++y)
+            {
+                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
+        
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+        validate(ximage, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(argbImage, ximage.getImage());
+        checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
+
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "4bargb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
+    }
+
+    /**
+     * Check whether the images are identical.
      *
      * @param expectedImage
      * @param actualImage
@@ -116,15 +208,43 @@ public class LosslessFactoryTest extends TestCase
 
         int w = expectedImage.getWidth();
         int h = expectedImage.getHeight();
+        assertEquals(w, actualImage.getWidth());
+        assertEquals(h, actualImage.getHeight());
         for (int y = 0; y < h; ++y)
         {
             for (int x = 0; x < w; ++x)
             {
                 if (expectedImage.getRGB(x, y) != actualImage.getRGB(x, y))
                 {
-                    errMsg = String.format("(%d,%d) %X != %X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                    errMsg = String.format("(%d,%d) %08X != %08X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
                 }
                 assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+            }
+        }
+    }
+    /**
+     * Check whether the RGB part of images are identical.
+     *
+     * @param expectedImage
+     * @param actualImage
+     */
+    private void checkIdentRGB(BufferedImage expectedImage, BufferedImage actualImage)
+    {
+        String errMsg = "";
+
+        int w = expectedImage.getWidth();
+        int h = expectedImage.getHeight();
+        assertEquals(w, actualImage.getWidth());
+        assertEquals(h, actualImage.getHeight());
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < w; ++x)
+            {
+                if ((expectedImage.getRGB(x, y) & 0xFFFFFF) != (actualImage.getRGB(x, y) & 0xFFFFFF))
+                {
+                    errMsg = String.format("(%d,%d) %06X != %06X", x, y, expectedImage.getRGB(x, y) & 0xFFFFFF, actualImage.getRGB(x, y) & 0xFFFFFF);
+                }
+                assertEquals(errMsg, expectedImage.getRGB(x, y) & 0xFFFFFF, actualImage.getRGB(x, y) & 0xFFFFFF);
             }
         }
     }
