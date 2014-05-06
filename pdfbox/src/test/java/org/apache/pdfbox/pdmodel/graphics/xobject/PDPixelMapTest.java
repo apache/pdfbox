@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -37,7 +38,7 @@ import org.apache.pdfbox.util.ImageIOUtil;
  */
 public class PDPixelMapTest extends TestCase
 {
-    private final File testResultsDir = new File("target/test-output");
+    private final File testResultsDir = new File("target/test-output/graphics");
 
     @Override
     protected void setUp() throws Exception
@@ -57,7 +58,7 @@ public class PDPixelMapTest extends TestCase
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
         PDXObjectImage ximage = new PDPixelMap(document, image);
-        validate(ximage, 8, 344, 287, "png", PDDeviceRGB.NAME);
+        validate(ximage, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.NAME);
         checkIdent(image, ximage.getRGBImage());
 
         // Create a grayscale image
@@ -67,7 +68,7 @@ public class PDPixelMapTest extends TestCase
         g.dispose();
 
         ximage = new PDPixelMap(document, grayImage);
-        validate(ximage, 8, 344, 287, "png", PDDeviceRGB.NAME);
+        validate(ximage, 8, grayImage.getWidth(), grayImage.getHeight(), "png", PDDeviceGray.NAME);
         checkIdent(grayImage, ximage.getRGBImage());
 
         // Create a bitonal image
@@ -78,7 +79,28 @@ public class PDPixelMapTest extends TestCase
 
         ximage = new PDPixelMap(document, bitonalImage);
         checkIdent(bitonalImage, ximage.getRGBImage());
-        validate(ximage, 1, 344, 287, "png", PDDeviceGray.NAME);
+        validate(ximage, 1, bitonalImage.getWidth(), bitonalImage.getHeight(), "png", PDDeviceGray.NAME);
+        document.close();
+    }
+
+    public void testCreateLosslessFromImageGray() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_BYTE_GRAY);
+        int w = image.getWidth();
+        int h = image.getHeight();
+        for (int x = 0; x < w; ++x)
+        {
+            for (int y = 0; y < h; ++y)
+            {
+                int color = ((x + y) / 2) & 0xFF;
+                color += (color << 8) + (color << 16);
+                image.setRGB(x, y, color);
+            }
+        }
+        PDXObjectImage ximage = new PDPixelMap(document, image);
+        validate(ximage, 8, w, h, "png", PDDeviceGray.NAME);
+        checkIdent(image, ximage.getRGBImage());
         document.close();
     }
 
@@ -94,7 +116,7 @@ public class PDPixelMapTest extends TestCase
 
         PDXObjectImage ximage = new PDPixelMap(document, imageFromBitonalGif);
         checkIdent(imageFromBitonalGif, ximage.getRGBImage());
-        validate(ximage, 1, 344, 287, "png", PDDeviceGray.NAME);
+        validate(ximage, 1, imageFromBitonalGif.getWidth(), imageFromBitonalGif.getHeight(), "png", PDDeviceGray.NAME);
         document.close();
     }
 
@@ -102,29 +124,24 @@ public class PDPixelMapTest extends TestCase
      * Tests RGB PDPixelMapTest() with TYPE_4BYTE_ABGR image.
      *
      * @throws java.io.IOException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
      */
     public void testCreateLossless4BYTE_ABGR() throws IOException, COSVisitorException
     {
         PDDocument document = new PDDocument();
-        BufferedImage awtImage = new BufferedImage(300, 300, BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_4BYTE_ABGR);
 
-        // draw something
-        Graphics g = awtImage.getGraphics();
-        g.setColor(Color.blue);
-        g.fillRect(0, 0, 100, 300);
-        g.setColor(Color.white);
-        g.fillRect(100, 0, 100, 300);
-        g.setColor(Color.red);
-        g.fillRect(200, 0, 100, 300);
-        g.setColor(Color.black);
-        g.drawRect(0, 0, 299, 299);
-        g.dispose();
+        for (int x = 0; x < awtImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < awtImage.getHeight(); ++y)
+            {
+                awtImage.setRGB(x, y, (awtImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
 
         PDPixelMap ximage = new PDPixelMap(document, awtImage);
-        validate(ximage, 8, 300, 300, "png", PDDeviceRGB.NAME);
-        validate(ximage.getSMaskImage(), 8, 300, 300, "png", PDDeviceGray.NAME);
-        assertEquals(ximage.getColorSpace().getName(), PDDeviceRGB.NAME);
-        assertEquals(ximage.getSMaskImage().getColorSpace().getName(), PDDeviceGray.NAME);
+        validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
+        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
         checkIdent(awtImage, ximage.getRGBImage());
 
         // This part isn't really needed because this test doesn't break
@@ -132,8 +149,9 @@ public class PDPixelMapTest extends TestCase
         // if something goes wrong in the future and we want to have a PDF to open.
         PDPage page = new PDPage();
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
         contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
         contentStream.close();
         File pdfFile = new File(testResultsDir, "4babgr.pdf");
         document.save(pdfFile);
@@ -142,6 +160,110 @@ public class PDPixelMapTest extends TestCase
         document.close();
     }
 
+    /**
+     * Tests RGB PDPixelMapTest() with TYPE_INT_ARGB image.
+     *
+     * @throws java.io.IOException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
+     */
+    public void testCreateLosslessINT_ARGB() throws IOException, COSVisitorException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_INT_ARGB);
+
+        for (int x = 0; x < awtImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < awtImage.getHeight(); ++y)
+            {
+                awtImage.setRGB(x, y, (awtImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
+
+        PDPixelMap ximage = new PDPixelMap(document, awtImage);
+        validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
+        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
+        checkIdent(awtImage, ximage.getRGBImage());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "intargb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
+    }
+
+    /**
+     * Tests RGB PDPixelMapTest() with TYPE_INT_RGB image.
+     *
+     * @throws java.io.IOException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
+     */
+    public void testCreateLosslessINT_RGB() throws IOException, COSVisitorException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_INT_RGB);
+
+        PDPixelMap ximage = new PDPixelMap(document, awtImage);
+        validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
+        assertNull(ximage.getSMaskImage());
+        checkIdent(awtImage, ximage.getRGBImage());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "intrgb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
+    }
+
+    /**
+     * Tests RGB PDPixelMapTest() with TYPE_INT_BGR image.
+     *
+     * @throws java.io.IOException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
+     */
+    public void testCreateLosslessINT_BGR() throws IOException, COSVisitorException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_INT_BGR);
+
+        PDPixelMap ximage = new PDPixelMap(document, awtImage);
+        validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
+        assertNull(ximage.getSMaskImage());
+        checkIdent(awtImage, ximage.getRGBImage());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "intbgr.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
+    }
+    
     /**
      * Tests RGB PDPixelMapTest() with image from a color GIF
      *
@@ -202,4 +324,21 @@ public class PDPixelMapTest extends TestCase
             }
         }
     }
+
+    private BufferedImage createInterestingImage(int type)
+    {
+        BufferedImage awtImage = new BufferedImage(256, 256, type);
+        Graphics g = awtImage.getGraphics();
+        g.setColor(Color.blue);
+        g.fillRect(0, 0, awtImage.getWidth() / 3, awtImage.getHeight() - 1);
+        g.setColor(Color.white);
+        g.fillRect(awtImage.getWidth() / 3, 0, awtImage.getWidth() / 3, awtImage.getHeight() - 1);
+        g.setColor(Color.red);
+        g.fillRect(awtImage.getWidth() / 3 * 2, 0, awtImage.getWidth() / 3, awtImage.getHeight() - 1);
+        g.setColor(Color.black);
+        g.drawRect(0, 0, awtImage.getWidth() - 1, awtImage.getHeight() - 1);
+        g.dispose();
+        return awtImage;
+    }
+
 }
