@@ -75,7 +75,7 @@ public class ASCIIHexFilter implements Filter
             {
                 firstByte = compressedData.read();
             }
-            if(isEOD(firstByte))
+            if (firstByte == -1 || isEOD(firstByte))
             {
                 break;
             }
@@ -87,7 +87,7 @@ public class ASCIIHexFilter implements Filter
             value = REVERSE_HEX[firstByte] * 16;
             secondByte = compressedData.read();
        
-            if(isEOD(secondByte)) 
+            if (secondByte == -1 || isEOD(secondByte)) 
             {
                 // second value behaves like 0 in case of EOD
                 result.write( value );
