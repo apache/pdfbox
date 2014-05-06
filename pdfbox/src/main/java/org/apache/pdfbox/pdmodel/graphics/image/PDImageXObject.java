@@ -163,7 +163,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
 
         // get image as RGB
-        BufferedImage image = SampledImageReader.getRGBImage(this,  getColorKeyMask());
+        BufferedImage image = SampledImageReader.getRGBImage(this, getColorKeyMask());
 
         // soft mask (overrides explicit mask)
         PDImageXObject softMask = getSoftMask();

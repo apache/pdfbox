@@ -42,7 +42,7 @@ public class JPEGFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
-        validate(ximage, 8, 344, 287, "jpg");
+        validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
         document.close();
     }
@@ -56,7 +56,7 @@ public class JPEGFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
-        validate(ximage, 8, 344, 287, "jpg");
+        validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
         assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }
@@ -71,7 +71,7 @@ public class JPEGFactoryTest extends TestCase
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
         assertEquals(3, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
-        validate(ximage, 8, 344, 287, "jpg");
+        validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
         document.close();
     }
@@ -86,7 +86,7 @@ public class JPEGFactoryTest extends TestCase
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
         assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
-        validate(ximage, 8, 344, 287, "jpg");
+        validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
         assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }

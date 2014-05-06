@@ -29,7 +29,7 @@ import org.apache.pdfbox.util.ImageIOUtil;
  */
 public class ValidateXImage
 {
-    static public void validate(PDImageXObject ximage, int bpc, int width, int height, String format) throws IOException
+    static public void validate(PDImageXObject ximage, int bpc, int width, int height, String format, String colorSpaceName) throws IOException
     {
         // check the dictionary
         assertNotNull(ximage);
@@ -39,13 +39,18 @@ public class ValidateXImage
         assertEquals(width, ximage.getWidth());
         assertEquals(height, ximage.getHeight());
         assertEquals(format, ximage.getSuffix());
+        assertEquals(colorSpaceName, ximage.getColorSpace().getName());
 
         // check the image
         assertNotNull(ximage.getImage());
         assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
         assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
 
-        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), format, new NullOutputStream());
+        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(), 
+                format, new NullOutputStream());
+        assertTrue(writeOk);
+        writeOk = ImageIOUtil.writeImage(SampledImageReader.getRGBImage(ximage, null), 
+                format, new NullOutputStream());
         assertTrue(writeOk);
     }
 

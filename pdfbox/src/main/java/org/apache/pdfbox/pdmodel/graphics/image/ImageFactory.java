@@ -112,16 +112,22 @@ class ImageFactory
         {
             throw new UnsupportedOperationException("only RGB color spaces are implemented");
         }
+        int width = image.getWidth();
+        int height = image.getHeight();
 
         // create an RGB image without alpha
-        BufferedImage rgbImage = new BufferedImage(image.getWidth(), image.getHeight(),
-                BufferedImage.TYPE_INT_RGB);
-
-        Graphics2D g = rgbImage.createGraphics();
-        g.setComposite(AlphaComposite.Src);
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-
+        //BEWARE: the previous solution in the history 
+        // g.setComposite(AlphaComposite.Src) and g.drawImage()
+        // didn't work properly for TYPE_4BYTE_ABGR.
+        // alpha values of 0 result in a black dest pixel!!!
+        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                rgbImage.setRGB(x, y, image.getRGB(x, y) & 0xFFFFFF);
+            }
+        }
         return rgbImage;
     }
 }
