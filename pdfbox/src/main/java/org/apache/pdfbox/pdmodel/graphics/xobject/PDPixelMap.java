@@ -16,21 +16,21 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBufferInt;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteOrder;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import org.apache.commons.logging.Log;
@@ -97,14 +97,14 @@ public class PDPixelMap extends PDXObjectImage
      * 
      * @param doc The PDF document to embed the image in.
      * @param bi The image to read data from.
-     * @param mask true if this is a mask, false if not.
+     * @param isMask true if this is a mask, false if not.
      *
      * @throws IOException If there is an error while embedding this image.
      */
-    private PDPixelMap(PDDocument doc, BufferedImage bi, boolean mask) throws IOException
+    private PDPixelMap(PDDocument doc, BufferedImage bi, boolean isMask) throws IOException
     {
         super(doc, PNG);
-        createImageStream(doc, bi, mask);
+        createImageStream(doc, bi, isMask);
     }
 
     /**
@@ -112,29 +112,68 @@ public class PDPixelMap extends PDXObjectImage
      * 
      * @param doc The PDF document to embed the image in.
      * @param bi The image to read data from.
-     * @param mask true if this is a mask, false if not. If true, the image
+     * @param isMask true if this is a mask, false if not. If true, the image
      * stream will be forced to be DeviceGray.
      * 
      * @throws IOException If there is an error while embedding this image.
      */
-    private void createImageStream(PDDocument doc, BufferedImage bi, boolean mask) throws IOException
+    private void createImageStream(PDDocument doc, BufferedImage bi, boolean isMask) throws IOException
     {
         BufferedImage alphaImage = null;
-        BufferedImage rgbImage = null;
+        BufferedImage rgbImage;
         int width = bi.getWidth();
         int height = bi.getHeight();
         if (bi.getColorModel().hasAlpha())
         {
             // extract the alpha information
             WritableRaster alphaRaster = bi.getAlphaRaster();
-            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), 
-                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-            alphaImage = new BufferedImage(cm, alphaRaster, false, null);
-            // create a RGB image without alpha
+            DataBuffer dbSrc = alphaRaster.getDataBuffer();
+            if (dbSrc instanceof DataBufferInt)
+            {
+                // PDFBOX-2057, handle TYPE_INT_A... types
+                // See also
+                // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4243485
+
+                alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
+                // alpha value is in the highest byte
+                for (int i = 0; i < dbSrc.getSize(); ++i)
+                {
+                    dbDst.setElem(i, dbSrc.getElem(i) >>> 24);
+                }
+            }
+            else if (dbSrc instanceof DataBufferByte)
+            {
+                alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
+                // alpha value is at bytes 0...4...8...
+                for (int i = 0; i < dbDst.getSize(); ++i)
+                {
+                    dbDst.setElem(i, dbSrc.getElem(i << 2));
+                }
+            }
+            else
+            {
+                // fallback to old solution. 
+                // This didn't work for INT types, see PDFBOX-2057.
+                ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                        false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+                alphaImage = new BufferedImage(cm, alphaRaster, false, null);
+            }
+
+            // create RGB image without alpha
+            //BEWARE: the previous solution in the history 
+            // g.setComposite(AlphaComposite.Src) and g.drawImage()
+            // didn't work properly for TYPE_4BYTE_ABGR.
+            // alpha values of 0 result in a black dest pixel!!!
             rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-            Graphics2D g = rgbImage.createGraphics();
-            g.setComposite(AlphaComposite.Src);
-            g.drawImage(bi, 0, 0, null);
+            for (int x = 0; x < width; ++x)
+            {
+                for (int y = 0; y < height; ++y)
+                {
+                    rgbImage.setRGB(x, y, bi.getRGB(x, y) & 0xFFFFFF);
+                }
+            }
         }
         else
         {
@@ -148,35 +187,55 @@ public class PDPixelMap extends PDXObjectImage
             {
                 throw new IllegalStateException();
             }
- 
-            int bpc;
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-            //TODO: activate this when DeviceGray tests work
-//            if (((mask || bi.getType() == BufferedImage.TYPE_BYTE_GRAY) ||
-//                    || bi.getType() == BufferedImage.TYPE_BYTE_BINARY)
-//                    && bi.getColorModel().getPixelSize() <= 8)
-            if (mask || // PDFBOX-2057 force masks to be gray
-                    (bi.getType() == BufferedImage.TYPE_BYTE_BINARY
-                    && bi.getColorModel().getPixelSize() <= 8))
+            int bpc;
+
+            // use FlateDecode compression
+            getPDStream().addCompression();
+            os = getCOSStream().createUnfilteredStream();
+
+            if (((isMask
+                    || bi.getType() == BufferedImage.TYPE_BYTE_GRAY)
+                    || bi.getType() == BufferedImage.TYPE_BYTE_BINARY)
+                    && bi.getColorModel().getPixelSize() <= 8)
             {
                 setColorSpace(new PDDeviceGray());
-                MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-
-                // grayscale images need one color per sample
-                bpc = bi.getColorModel().getPixelSize();
                 int h = rgbImage.getHeight();
                 int w = rgbImage.getWidth();
-                for (int y = 0; y < h; ++y)
+                bpc = bi.getColorModel().getPixelSize();
+                if (bpc < 8)
                 {
-                    for (int x = 0; x < w; ++x)
+                    MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(os);
+                    for (int y = 0; y < h; ++y)
                     {
-                        mcios.writeBits(rgbImage.getRGB(x, y), bpc);
+                        for (int x = 0; x < w; ++x)
+                        {
+                            // grayscale images need one color per sample
+                            mcios.writeBits(bi.getRGB(x, y) & 0xFF, bpc);
+                        }
+                    }
+                    // padding
+                    while (mcios.getBitOffset() != 0)
+                    {
+                        mcios.writeBit(0);
+                    }
+                    mcios.flush();
+                    mcios.close();
+                }
+                else
+                {
+                    //BEWARE: the gray values must be extracted from raster
+                    // and not from getRGB or the TYPE_BYTE_GRAY tests will fail
+                    DataBuffer dataBuffer = rgbImage.getData().getDataBuffer();
+                    for (int y = 0; y < h; ++y)
+                    {
+                        for (int x = 0; x < w; ++x)
+                        {
+                            // grayscale images need one color per sample
+                            os.write(dataBuffer.getElem(y * w + x));
+                        }
                     }
                 }
-                mcios.writeBits(0, 7); // padding
-                mcios.flush();
-                mcios.close();
             }
             else
             {
@@ -189,31 +248,26 @@ public class PDPixelMap extends PDXObjectImage
                 {
                     for (int x = 0; x < w; ++x)
                     {
+                        // rgb images need three colors per sample
                         Color color = new Color(rgbImage.getRGB(x, y));
-                        bos.write(color.getRed());
-                        bos.write(color.getGreen());
-                        bos.write(color.getBlue());
+                        os.write(color.getRed());
+                        os.write(color.getGreen());
+                        os.write(color.getBlue());
                     }
                 }
-            }           
-            
-            // add FlateDecode compression
-            getPDStream().addCompression();
-            os = getCOSStream().createUnfilteredStream();
-            os.write(bos.toByteArray());
-            
+            }
             COSDictionary dic = getCOSStream();
-            dic.setItem( COSName.FILTER, COSName.FLATE_DECODE );
-            dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-            dic.setItem( COSName.TYPE, COSName.XOBJECT );
-            if(alphaImage != null)
+            dic.setItem(COSName.FILTER, COSName.FLATE_DECODE);
+            dic.setItem(COSName.SUBTYPE, COSName.IMAGE);
+            dic.setItem(COSName.TYPE, COSName.XOBJECT);
+            if (alphaImage != null)
             {
                 PDPixelMap smask = new PDPixelMap(doc, alphaImage, true);
                 dic.setItem(COSName.SMASK, smask);
             }
-            setBitsPerComponent( bpc );
-            setHeight( height );
-            setWidth( width );
+            setBitsPerComponent(bpc);
+            setHeight(height);
+            setWidth(width);
         }
         finally
         {
