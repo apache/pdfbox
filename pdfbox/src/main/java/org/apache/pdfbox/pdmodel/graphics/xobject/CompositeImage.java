@@ -77,10 +77,15 @@ public class CompositeImage
 
         final int baseImageWidth = baseImage.getWidth();
         final int baseImageHeight = baseImage.getHeight();
+        
+        // PDFBOX-2064: avoid ArrayIndexOutOfBoundsException
+        int width = Math.min(baseImageWidth, smaskImage.getWidth());
+        int height = Math.min(baseImageHeight, smaskImage.getHeight());
+
         BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);
-        for (int x = 0; x < baseImageWidth; x++)
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < baseImageHeight; y++)
+            for (int y = 0; y < height; y++)
             {
                 int rgb = baseImage.getRGB(x, y);
                 int alpha = smaskImage.getRGB(x, y);
@@ -129,9 +134,14 @@ public class CompositeImage
         WritableRaster maskRaster = smaskImage.getRaster();
         BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);
         int[] alpha = new int[1];
-        for (int x = 0; x < baseImageWidth; x++)
+        
+        // PDFBOX-2064: avoid ArrayIndexOutOfBoundsException
+        int width = Math.min(baseImageWidth, smaskImage.getWidth());
+        int height = Math.min(baseImageHeight, smaskImage.getHeight());
+
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < baseImageHeight; y++)
+            for (int y = 0; y < height; y++)
             {
                 maskRaster.getPixel(x, y, alpha);
                 // We need to remove any alpha value in the main image.
