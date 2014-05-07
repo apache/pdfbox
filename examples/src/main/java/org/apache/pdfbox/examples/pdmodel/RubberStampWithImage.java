@@ -16,25 +16,31 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+
 
 /**
  * This is an example on how to add a rubber stamp with an image to pages of a PDF document.
@@ -48,7 +54,7 @@ public class RubberStampWithImage
     private static final String XOBJECT_DO = "Do\n";
     private static final String SPACE = " ";
 
-    private static NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
+    private static final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
 
     /**
      * Add a rubber stamp with an jpg image to every page of the given document.
@@ -81,16 +87,42 @@ public class RubberStampWithImage
                     rubberStamp.setRectangle(new PDRectangle(200,100));
                     rubberStamp.setContents("A top secret note");
 
-                    // create a PDXObjectImage with the given jpg
-                    FileInputStream fin = new FileInputStream( args[2] );
-                    PDImageXObject image = JPEGFactory.createFromStream(document, fin);
+                    // create a PDXObjectImage with the given image file
+                    String imageFilename = args[2];
+                    PDImageXObject ximage;
+                    if( imageFilename.toLowerCase().endsWith( ".jpg" ) )
+                    {
+                        ximage = JPEGFactory.createFromStream(document, new FileInputStream(imageFilename));
+                    }
+                    else if (imageFilename.toLowerCase().endsWith(".tif") || imageFilename.toLowerCase().endsWith(".tiff"))
+                    {
+                        ximage = CCITTFactory.createFromRandomAccess(document, new RandomAccessFile(new File(imageFilename),"r"));
+                    }
+                    else if (imageFilename.toLowerCase().endsWith(".gif") || 
+                            imageFilename.toLowerCase().endsWith(".bmp") || 
+                            imageFilename.toLowerCase().endsWith(".png"))
+                    {
+                        BufferedImage bim = ImageIO.read(new File(imageFilename));
+                        ximage = LosslessFactory.createFromImage(document, bim);
+                    }
+                    else
+                    {
+                        throw new IOException( "Image type not supported: " + imageFilename );
+                    }                    
 
                     // define and set the target rectangle
+                    int lowerLeftX = 250;
+                    int lowerLeftY = 550;
+                    int formWidth = 150;
+                    int formHeight = 25;
+                    int imgWidth = 50;
+                    int imgHeight = 25;
+                    
                     PDRectangle rect = new PDRectangle();
-                    rect.setUpperRightX(400);
-                    rect.setUpperRightY(575);
-                    rect.setLowerLeftX(250);
-                    rect.setLowerLeftY(550);
+                    rect.setLowerLeftX(lowerLeftX);
+                    rect.setLowerLeftY(lowerLeftY);
+                    rect.setUpperRightX(lowerLeftX + formWidth);
+                    rect.setUpperRightY(lowerLeftY + formHeight);
 
                     // Create a PDFormXObject
                     PDStream stream = new PDStream(document);
@@ -101,7 +133,7 @@ public class RubberStampWithImage
                     form.setFormType(1);
 
                     // adjust the image to the target rectangle and add it to the stream
-                    drawXObject(image, form.getResources(), os, 250, 550, 50, 25);
+                    drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
                     os.close();
 
                     PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSStream());
@@ -179,6 +211,6 @@ public class RubberStampWithImage
      */
     private void usage()
     {
-        System.err.println( "Usage: java "+getClass().getName()+" <input-pdf> <output-pdf> <jpeg-filename>" );
+        System.err.println( "Usage: java "+getClass().getName()+" <input-pdf> <output-pdf> <image-filename>" );
     }
 }
