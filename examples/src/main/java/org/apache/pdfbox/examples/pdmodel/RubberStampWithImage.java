@@ -16,21 +16,8 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.util.MapUtil;
-
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,6 +25,23 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import javax.imageio.ImageIO;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDCcitt;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
  * This is an example on how to add a rubber stamp with an image to pages of a PDF document.
@@ -53,7 +57,7 @@ public class RubberStampWithImage
     private static final String XOBJECT_DO = "Do\n";
     private static final String SPACE = " ";
 
-    private static NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
+    private static final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
 
     /**
      * Add a rubber stamp with an jpg image to every page of the given document.
@@ -89,33 +93,54 @@ public class RubberStampWithImage
                     rubberStamp.setRectangle(new PDRectangle(100,100));
                     rubberStamp.setContents("A top secret note");
 
-                    // Create a PDXObjectImage with the given jpg
-                    FileInputStream fin = new FileInputStream( args[2] );
-                    PDJpeg mypic = new PDJpeg(document,fin);
+                    // create a PDXObjectImage with the given image file
+                    String imageFilename = args[2];
+                    PDXObjectImage ximage;
+                    if (imageFilename.toLowerCase().endsWith(".jpg"))
+                    {
+                        ximage = new PDJpeg(document, new FileInputStream(imageFilename));
+                    }
+                    else if (imageFilename.toLowerCase().endsWith(".tif") || imageFilename.toLowerCase().endsWith(".tiff"))
+                    {
+                        ximage = new PDCcitt(document, new RandomAccessFile(new File(imageFilename), "r"));
+                    }
+                    else
+                    {
+                        BufferedImage awtImage = ImageIO.read(new File(imageFilename));
+                        ximage = new PDPixelMap(document, awtImage);
+                    }
                     
-                    //Define and set the target rectangle
-                    PDRectangle myrect = new PDRectangle();
-                    myrect.setUpperRightX(275);
-                    myrect.setUpperRightY(575);
-                    myrect.setLowerLeftX(250);
-                    myrect.setLowerLeftY(550);
+                    // define and set the target rectangle
+                    int lowerLeftX = 250;
+                    int lowerLeftY = 550;
+                    int formWidth = 150;
+                    int formHeight = 25;
+                    int imgWidth = 50;
+                    int imgHeight = 25;
+                    
+                    PDRectangle rect = new PDRectangle();
+                    rect.setLowerLeftX(lowerLeftX);
+                    rect.setLowerLeftY(lowerLeftY);
+                    rect.setUpperRightX(lowerLeftX + formWidth);
+                    rect.setUpperRightY(lowerLeftY + formHeight);
 
                     // Create a PDXObjectForm
-                    PDStream formstream = new PDStream(document);
-                    OutputStream os = formstream.createOutputStream();
-                    PDXObjectForm form = new PDXObjectForm(formstream);
+                    PDStream stream = new PDStream(document);
+                    OutputStream os = stream.createOutputStream();
+                    PDXObjectForm form = new PDXObjectForm(stream);
                     form.setResources(new PDResources());
-                    form.setBBox(myrect);
+                    form.setBBox(rect);
                     form.setFormType(1);
+
                     // adjust the image to the target rectangle and add it to the stream
-                    drawXObject(mypic, form.getResources(), os, 250, 550, 25, 25);
+                    drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
                     os.close();
 
                     PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSStream());
                     PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
                     appearance.setNormalAppearance(myDic);
                     rubberStamp.setAppearance(appearance);
-                    rubberStamp.setRectangle(myrect);
+                    rubberStamp.setRectangle(rect);
 
                     //Add the new RubberStamp to the document
                     annotations.add(rubberStamp);
@@ -143,8 +168,7 @@ public class RubberStampWithImage
     {
         // This is similar to PDPageContentStream.drawXObject()
         String xObjectPrefix = "Im";
-        String objMapping = MapUtil.getNextUniqueKey( resources.getImages(), xObjectPrefix );
-        resources.getXObjects().put( objMapping, xobject );
+        String xObjectId = resources.addXObject(xobject, xObjectPrefix);
 
         appendRawCommands( os, SAVE_GRAPHICS_STATE );
         appendRawCommands( os, formatDecimal.format( width ) );
@@ -162,7 +186,7 @@ public class RubberStampWithImage
         appendRawCommands( os, CONCATENATE_MATRIX );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, "/" );
-        appendRawCommands( os, objMapping );
+        appendRawCommands( os, xObjectId );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, XOBJECT_DO );
         appendRawCommands( os, SPACE );
