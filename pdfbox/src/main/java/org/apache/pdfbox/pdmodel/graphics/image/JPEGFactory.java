@@ -173,7 +173,7 @@ public final class JPEGFactory extends ImageFactory
 
         // create XObject
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIOUtil.writeImage(image, "jpeg", baos, dpi, quality);
+        ImageIOUtil.writeImage(awtColorImage, "jpeg", baos, dpi, quality);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
         PDImageXObject pdImage = new PDImageXObject(document, byteStream);
         
