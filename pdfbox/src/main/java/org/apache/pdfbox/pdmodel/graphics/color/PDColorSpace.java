@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSArray;
-
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -30,10 +29,8 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
 import java.util.Map;
@@ -252,9 +249,10 @@ public abstract class PDColorSpace implements COSObjectable
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
-    /**
-     * Converts this standard java object to a COS object.
-     * @return The COS object that matches this Java object.
-     */
-    public abstract COSBase getCOSObject();
+    @Override
+    public COSBase getCOSObject()
+    {
+        return array;
+    }
+
 }

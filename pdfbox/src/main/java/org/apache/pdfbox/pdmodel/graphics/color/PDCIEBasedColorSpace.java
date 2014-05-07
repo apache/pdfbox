@@ -74,12 +74,6 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
     }
 
     @Override
-    public COSBase getCOSObject()
-    {
-        return array;
-    }
-
-    @Override
     public String toString()
     {
         return getName();   // TODO return more info

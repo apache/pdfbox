@@ -34,7 +34,6 @@ public final class PDLab extends PDCIEBasedColorSpace
 {
     private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
 
-    private COSArray array;
     private COSDictionary dictionary;
     private PDColor initialColor;
     
@@ -76,12 +75,6 @@ public final class PDLab extends PDCIEBasedColorSpace
     public String getName()
     {
         return COSName.LAB.getName();
-    }
-
-    @Override
-    public COSBase getCOSObject()
-    {
-        return array;
     }
 
     @Override
