@@ -24,8 +24,6 @@ import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 
-import java.awt.color.ColorSpace;
-
 /**
  * A CalRGB colour space is a CIE-based colour space with one transformation stage instead of two.
  * In this type of space, A, B, and C represent calibrated red, green, and blue colour values.
@@ -37,7 +35,6 @@ public class PDCalRGB extends PDCIEBasedColorSpace
 {
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
 
-    protected COSArray array;
     protected COSDictionary dictionary;
 
     /**

@@ -90,12 +90,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         return COSName.ICCBASED.getName();
     }
 
-    @Override
-    public COSBase getCOSObject()
-    {
-        return array;
-    }
-
     /**
      * Get the underlying ICC profile stream.
      * @return the underlying ICC profile stream
