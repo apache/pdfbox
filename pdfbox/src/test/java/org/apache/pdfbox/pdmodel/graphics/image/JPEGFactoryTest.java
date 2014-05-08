@@ -107,7 +107,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image)
      */
-    public void testCreateFromImageARGB() throws IOException
+    public void testCreateFromImageINT_ARGB() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
@@ -149,4 +149,49 @@ public class JPEGFactoryTest extends TestCase
         document.close();
     }
 
+    /**
+     * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
+     * image)
+     */
+    public void testCreateFromImage4BYTE_ABGR() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+
+        // create an ARGB image
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        Graphics ag = argbImage.getGraphics();
+        ag.drawImage(image, 0, 0, null);
+        ag.dispose();
+
+        for (int x = 0; x < argbImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < argbImage.getHeight(); ++y)
+            {
+                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
+
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
+        validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "jpeg-4bargb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        document.close();
+    }
 }
