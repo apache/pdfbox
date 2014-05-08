@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -128,6 +129,7 @@ public class LosslessFactoryTest extends TestCase
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -179,6 +181,7 @@ public class LosslessFactoryTest extends TestCase
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
