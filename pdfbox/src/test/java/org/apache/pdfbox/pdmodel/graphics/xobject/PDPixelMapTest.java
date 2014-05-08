@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,6 +29,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.colorCount;
 import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
@@ -144,8 +146,9 @@ public class PDPixelMapTest extends TestCase
 
         PDPixelMap ximage = new PDPixelMap(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
-        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
         checkIdent(awtImage, ximage.getRGBImage());
+        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
+        assertTrue(colorCount(ximage.getSMaskImage().getRGBImage()) > awtImage.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -184,8 +187,9 @@ public class PDPixelMapTest extends TestCase
 
         PDPixelMap ximage = new PDPixelMap(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
-        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
         checkIdent(awtImage, ximage.getRGBImage());
+        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
+        assertTrue(colorCount(ximage.getSMaskImage().getRGBImage()) > awtImage.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -216,8 +220,8 @@ public class PDPixelMapTest extends TestCase
 
         PDPixelMap ximage = new PDPixelMap(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
-        assertNull(ximage.getSMaskImage());
         checkIdent(awtImage, ximage.getRGBImage());
+        assertNull(ximage.getSMaskImage());
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -248,8 +252,8 @@ public class PDPixelMapTest extends TestCase
 
         PDPixelMap ximage = new PDPixelMap(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
-        assertNull(ximage.getSMaskImage());
         checkIdent(awtImage, ximage.getRGBImage());
+        assertNull(ximage.getSMaskImage());
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -267,43 +271,6 @@ public class PDPixelMapTest extends TestCase
         document.close();
     }
 
-//    /**
-//     * Tests RGB PDPixelMapTest() with TYPE_INT_ARGB image.
-//     *
-//     * @throws java.io.IOException
-//     * @throws org.apache.pdfbox.exceptions.COSVisitorException
-//     */
-//    public void testCreateLosslessPDFBOX1649() throws IOException, COSVisitorException
-//    {
-//        PDDocument document = new PDDocument();
-//        BufferedImage awtImage = ImageIO.read(new URL("https://issues.apache.org/jira/secure/attachment/12589433/test.png").openStream());
-//        
-//System.out.println ("PNG: " + awtImage);  
-//
-//ImageIO.write (awtImage, "png", new File(testResultsDir, "8.png"));        
-//        PDPixelMap ximage = new PDPixelMap(document, awtImage);
-//        validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceRGB.NAME);
-//        validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "png", PDDeviceGray.NAME);
-//ImageIO.write (ximage.getRGBImage(), "png", new File(testResultsDir, "91.png"));        
-//ImageIO.write (ximage.getSMaskImage().getRGBImage(), "png", new File(testResultsDir, "92.png"));        
-//
-//        // This part isn't really needed because this test doesn't break
-//        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-//        // if something goes wrong in the future and we want to have a PDF to open.
-//        PDPage page = new PDPage(PDPage.PAGE_SIZE_A4);
-//        document.addPage(page);
-//        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-//        contentStream.drawXObject(ximage, 0, 500, ximage.getWidth(), ximage.getHeight());
-//        //contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
-//        contentStream.close();
-//        File pdfFile = new File(testResultsDir, "PDFBOX1649.pdf");
-//        document.save(pdfFile);
-//        document.close();
-//        document = PDDocument.loadNonSeq(pdfFile, null);
-//        document.close();
-//
-//        checkIdent(awtImage, ximage.getRGBImage());
-//    }
     /**
      * Tests RGB PDPixelMapTest() with image from a color GIF
      *

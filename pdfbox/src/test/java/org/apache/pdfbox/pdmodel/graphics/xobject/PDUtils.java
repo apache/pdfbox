@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Set;
 import static junit.framework.Assert.assertEquals;
 
 /**
@@ -68,4 +70,19 @@ public class PDUtils
         }
     }
 
+    static int colorCount(BufferedImage bim)
+    {
+        Set<Integer> colors = new HashSet<Integer>();
+        int w = bim.getWidth();
+        int h = bim.getHeight();
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                colors.add(bim.getRGB(x, y));
+            }
+        }
+        return colors.size();
+    }
+    
 }

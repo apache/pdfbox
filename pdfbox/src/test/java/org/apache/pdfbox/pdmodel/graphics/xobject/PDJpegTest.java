@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.checkIdent;
+import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.createInterestingImage;
 import org.apache.pdfbox.util.ImageIOUtil;
 
@@ -88,7 +89,6 @@ public class PDJpegTest extends TestCase
 
         // this can be checked for ident, because the actual jpeg stream is stored
         PDUtils.checkIdent(image, ximage.getRGBImage());
-        
         assertNull(ximage.getSMaskImage());
 
         // This part isn't really needed because this test doesn't break
@@ -185,6 +185,7 @@ public class PDJpegTest extends TestCase
         PDJpeg ximage = new PDJpeg(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "jpg", PDDeviceRGB.NAME);
         validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "jpg", PDDeviceGray.NAME);
+        assertTrue(colorCount(ximage.getSMaskImage().getRGBImage()) > awtImage.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -224,6 +225,7 @@ public class PDJpegTest extends TestCase
         PDJpeg ximage = new PDJpeg(document, awtImage);
         validate(ximage, 8, awtImage.getWidth(), awtImage.getHeight(), "jpg", PDDeviceRGB.NAME);
         validate(ximage.getSMaskImage(), 8, awtImage.getWidth(), awtImage.getHeight(), "jpg", PDDeviceGray.NAME);
+        assertTrue(colorCount(ximage.getSMaskImage().getRGBImage()) > awtImage.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
