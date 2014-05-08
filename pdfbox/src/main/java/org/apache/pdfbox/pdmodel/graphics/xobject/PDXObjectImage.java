@@ -19,7 +19,15 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.WritableRaster;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -478,6 +486,14 @@ public abstract class PDXObjectImage extends PDXObject
             return mask;
         }
         return null;
+    }
+
+    BufferedImage extractAlphaImage(BufferedImage bi)
+    {
+        WritableRaster alphaRaster = bi.getAlphaRaster();
+        BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), alphaRaster.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        alphaImage.setData(alphaRaster);
+        return alphaImage;
     }
 
 }

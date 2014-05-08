@@ -125,41 +125,7 @@ public class PDPixelMap extends PDXObjectImage
         int height = bi.getHeight();
         if (bi.getColorModel().hasAlpha())
         {
-            // extract the alpha information
-            WritableRaster alphaRaster = bi.getAlphaRaster();
-            DataBuffer dbSrc = alphaRaster.getDataBuffer();
-            if (dbSrc instanceof DataBufferInt)
-            {
-                // PDFBOX-2057, handle TYPE_INT_A... types
-                // See also
-                // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4243485
-
-                alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-                DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
-                // alpha value is in the highest byte
-                for (int i = 0; i < dbSrc.getSize(); ++i)
-                {
-                    dbDst.setElem(i, dbSrc.getElem(i) >>> 24);
-                }
-            }
-            else if (dbSrc instanceof DataBufferByte)
-            {
-                alphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-                DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
-                // alpha value is at bytes 0...4...8...
-                for (int i = 0; i < dbDst.getSize(); ++i)
-                {
-                    dbDst.setElem(i, dbSrc.getElem(i << 2));
-                }
-            }
-            else
-            {
-                // fallback to old solution. 
-                // This didn't work for INT types, see PDFBOX-2057.
-                ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                        false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-                alphaImage = new BufferedImage(cm, alphaRaster, false, null);
-            }
+            alphaImage = extractAlphaImage(bi);
 
             // create RGB image without alpha
             //BEWARE: the previous solution in the history 
@@ -200,15 +166,13 @@ public class PDPixelMap extends PDXObjectImage
                     && bi.getColorModel().getPixelSize() <= 8)
             {
                 setColorSpace(new PDDeviceGray());
-                int h = rgbImage.getHeight();
-                int w = rgbImage.getWidth();
                 bpc = bi.getColorModel().getPixelSize();
                 if (bpc < 8)
                 {
                     MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(os);
-                    for (int y = 0; y < h; ++y)
+                    for (int y = 0; y < height; ++y)
                     {
-                        for (int x = 0; x < w; ++x)
+                        for (int x = 0; x < width; ++x)
                         {
                             // grayscale images need one color per sample
                             mcios.writeBits(bi.getRGB(x, y) & 0xFF, bpc);
@@ -227,12 +191,12 @@ public class PDPixelMap extends PDXObjectImage
                     //BEWARE: the gray values must be extracted from raster
                     // and not from getRGB or the TYPE_BYTE_GRAY tests will fail
                     DataBuffer dataBuffer = rgbImage.getData().getDataBuffer();
-                    for (int y = 0; y < h; ++y)
+                    for (int y = 0; y < height; ++y)
                     {
-                        for (int x = 0; x < w; ++x)
+                        for (int x = 0; x < width; ++x)
                         {
                             // grayscale images need one color per sample
-                            os.write(dataBuffer.getElem(y * w + x));
+                            os.write(dataBuffer.getElem(y * width + x));
                         }
                     }
                 }
@@ -242,11 +206,9 @@ public class PDPixelMap extends PDXObjectImage
                 // RGB
                 setColorSpace(PDDeviceRGB.INSTANCE);
                 bpc = 8;
-                int h = rgbImage.getHeight();
-                int w = rgbImage.getWidth();
-                for (int y = 0; y < h; ++y)
+                for (int y = 0; y < height; ++y)
                 {
-                    for (int x = 0; x < w; ++x)
+                    for (int x = 0; x < width; ++x)
                     {
                         // rgb images need three colors per sample
                         Color color = new Color(rgbImage.getRGB(x, y));
