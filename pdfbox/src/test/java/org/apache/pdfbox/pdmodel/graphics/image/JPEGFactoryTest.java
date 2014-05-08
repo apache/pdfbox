@@ -17,11 +17,14 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
@@ -33,6 +36,15 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
  */
 public class JPEGFactoryTest extends TestCase
 {
+    private final File testResultsDir = new File("target/test-output/graphics");
+
+    @Override
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        testResultsDir.mkdirs();
+    }
+
     /**
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with color JPEG file
@@ -101,27 +113,39 @@ public class JPEGFactoryTest extends TestCase
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
         // create an ARGB image
-        int w = image.getWidth();
-        int h = image.getHeight();
-        BufferedImage argbImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage argbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics ag = argbImage.getGraphics();
         ag.drawImage(image, 0, 0, null);
         ag.dispose();
 
-        // create a weird transparency triangle
-        for (int y = 0; y < h; ++y)
+        for (int x = 0; x < argbImage.getWidth(); ++x)
         {
-            for (int x = 0; x < Math.min(y, w); ++x)
+            for (int y = 0; y < argbImage.getHeight(); ++y)
             {
-                argbImage.setRGB(x, y, image.getRGB(x, y) & 0xFFFFFF | ((x * 255 / w) << 24));
+                argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
             }
         }
 
-        //TODO uncomment if ImageFactory.getAlphaImage() ever works
-//        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
-//        validate(ximage, 8, 344, 287, "jpg");
-//        assertNotNull(ximage.getSoftMask());
-//        validate(ximage.getSoftMask(), 8, 344, 287, "jpg");
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, argbImage);
+        validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "jpeg-intargb.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
         document.close();
     }
 
