@@ -25,6 +25,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.InputStream;
@@ -129,7 +130,7 @@ public class PDJpeg extends PDXObjectImage
             }
             else
             {
-                throw new IllegalStateException();
+                throw new IllegalStateException("");
             }
         }
         setHeight( image.getHeight() );
@@ -166,36 +167,32 @@ public class PDJpeg extends PDXObjectImage
 
     private void createImageStream(PDDocument doc, BufferedImage bi, float compressionQuality) throws IOException
     {
-        BufferedImage alpha = null;
+        BufferedImage alphaImage = null;
         if (bi.getColorModel().hasAlpha())
         {
-            // extract the alpha information
-            WritableRaster alphaRaster = bi.getAlphaRaster();
-            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), 
-                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-            alpha = new BufferedImage(cm, alphaRaster, false, null);
-            // create a RGB image without alpha
-            image = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = image.createGraphics();
+            alphaImage = extractAlphaImage(bi);
+
+            // create an RGB image without alpha
+            BufferedImage img = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = img.createGraphics();
             g.setComposite(AlphaComposite.Src);
             g.drawImage(bi, 0, 0, null);
             g.dispose();
-            bi = image;
+            bi = img;
         }
 
         java.io.OutputStream os = getCOSStream().createFilteredStream();
         try
         {
             ImageIOUtil.writeImage(bi, JPG, os, ImageIOUtil.DEFAULT_SCREEN_RESOLUTION, compressionQuality);
-            
+
             COSDictionary dic = getCOSStream();
-            dic.setItem( COSName.FILTER, COSName.DCT_DECODE );
-            dic.setItem( COSName.SUBTYPE, COSName.IMAGE);
-            dic.setItem( COSName.TYPE, COSName.XOBJECT );
-            PDXObjectImage alphaPdImage = null;
-            if(alpha != null)
+            dic.setItem(COSName.FILTER, COSName.DCT_DECODE);
+            dic.setItem(COSName.SUBTYPE, COSName.IMAGE);
+            dic.setItem(COSName.TYPE, COSName.XOBJECT);
+            if (alphaImage != null)
             {
-                alphaPdImage = new PDJpeg(doc, alpha, compressionQuality);
+                PDXObjectImage alphaPdImage = new PDJpeg(doc, alphaImage, compressionQuality);
                 dic.setItem(COSName.SMASK, alphaPdImage);
             }
             setPropertiesFromAWT(bi);
@@ -209,6 +206,8 @@ public class PDJpeg extends PDXObjectImage
     /**
      * Returns an image of the JPeg, or null if JPegs are not supported. (They should be. )
      * {@inheritDoc}
+     * @return A Jpeg image.
+     * @throws java.io.IOException
      */
     public BufferedImage getRGBImage() throws IOException
     {   
