@@ -16,7 +16,10 @@
 
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
@@ -52,6 +55,21 @@ public class ValidateXImage
         writeOk = ImageIOUtil.writeImage(SampledImageReader.getRGBImage(ximage, null), 
                 format, new NullOutputStream());
         assertTrue(writeOk);
+    }
+    
+    static int colorCount(BufferedImage bim)
+    {
+        Set<Integer> colors = new HashSet<Integer>();
+        int w = bim.getWidth();
+        int h = bim.getHeight();
+        for (int y = 0; y < h; y++)
+        {
+            for (int x = 0; x < w; x++)
+            {
+                colors.add(bim.getRGB(x, y));
+            }
+        }
+        return colors.size();
     }
 
 }

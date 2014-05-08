@@ -22,11 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -132,6 +134,7 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
+        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
@@ -178,6 +181,7 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
+        assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
