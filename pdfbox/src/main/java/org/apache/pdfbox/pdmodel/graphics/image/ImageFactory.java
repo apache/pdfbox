@@ -21,17 +21,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 
 /**
@@ -90,43 +82,9 @@ class ImageFactory
         {
             return null;
         }
-        BufferedImage alphaImage = null;
         WritableRaster alphaRaster = image.getAlphaRaster();
-        DataBuffer dbSrc = alphaRaster.getDataBuffer();
-        if (dbSrc instanceof DataBufferInt)
-        {
-            // PDFBOX-2057, handle TYPE_INT_A... types
-            // See also
-            // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4243485
-
-            alphaImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
-            // alpha value is in the highest byte
-            for (int i = 0; i < dbSrc.getSize(); ++i)
-            {
-                dbDst.setElem(i, dbSrc.getElem(i) >>> 24);
-            }
-        }
-        else if (dbSrc instanceof DataBufferByte)
-        {
-            alphaImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            DataBuffer dbDst = alphaImage.getRaster().getDataBuffer();
-            // alpha value is at bytes 0...4...8...
-            for (int i = 0; i < dbDst.getSize(); ++i)
-            {
-                dbDst.setElem(i, dbSrc.getElem(i << 2));
-            }
-        }
-        else
-        {
-            // This didn't work for INT types, see PDFBOX-2057. The raster returned has a
-            // SinglePixelPackedSampleModel, and ComponentColorModel created is not
-            // compatible with it, because the BufferedImage constructor expects a
-            // ComponentSampleModel, and with the same number of bands.
-            ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                    false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-            alphaImage = new BufferedImage(cm, alphaRaster, false, null);
-        }
+        BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), alphaRaster.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        alphaImage.setData(alphaRaster);
         return alphaImage;
     }
 
