@@ -97,14 +97,7 @@ public class LosslessFactory
             }
         }
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
-
-        Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-        filter.encode(bais, bos2, new COSDictionary(), 0);
-
-        ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(bos2.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE);
+        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray());
 
         pdImage.setColorSpace(deviceColorSpace);
         pdImage.setBitsPerComponent(bpc);
@@ -122,7 +115,8 @@ public class LosslessFactory
     }
 
     /**
-     * Creates a grayscale Flate encoded PDImageXObject from the alpha channel of an image.
+     * Creates a grayscale Flate encoded PDImageXObject from the alpha channel
+     * of an image.
      *
      * @param document the document where the image will be created.
      * @param image an ARGB image.
@@ -165,7 +159,7 @@ public class LosslessFactory
                 mcios.writeBit(0);
             }
             mcios.flush();
-            mcios.close();            
+            mcios.close();
         }
         else
         {
@@ -175,14 +169,8 @@ public class LosslessFactory
                 bos.write(pixel);
             }
         }
-        ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
 
-        Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-        filter.encode(bais, bos2, new COSDictionary(), 0);
-
-        ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(bos2.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE);
+        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray());
 
         pdImage.setColorSpace(PDDeviceGray.INSTANCE);
         pdImage.setBitsPerComponent(bpc);
@@ -191,7 +179,26 @@ public class LosslessFactory
 
         return pdImage;
     }
-    
 
+    /**
+     * Create a PDImageXObject with the data encoded with the Flate filter.
+     *
+     * @param document The document.
+     * @param byteArray array with data.
+     * @return the newly created PDImageXObject with the data compressed.
+     * @throws IOException
+     */
+    private static PDImageXObject prepareImageXObject(PDDocument document, byte[] byteArray) 
+            throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
+        filter.encode(new ByteArrayInputStream(byteArray), baos, new COSDictionary(), 0);
+
+        return new PDImageXObject(document,
+                new ByteArrayInputStream(baos.toByteArray()),
+                COSName.FLATE_DECODE);
+    }
 
 }
