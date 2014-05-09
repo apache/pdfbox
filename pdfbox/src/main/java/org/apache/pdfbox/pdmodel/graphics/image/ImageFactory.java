@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
+import java.awt.image.ColorConvertOp;
 
 /**
  * An image factory.
@@ -75,19 +75,6 @@ class ImageFactory
         }
     }
 
-    // returns the alpha channel of an image
-    protected static BufferedImage getAlphaImage(BufferedImage image)
-    {
-        if (!image.getColorModel().hasAlpha())
-        {
-            return null;
-        }
-        WritableRaster alphaRaster = image.getAlphaRaster();
-        BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), alphaRaster.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        alphaImage.setData(alphaRaster);
-        return alphaImage;
-    }
-
     // returns the color channels of an image
     protected static BufferedImage getColorImage(BufferedImage image)
     {
@@ -100,22 +87,16 @@ class ImageFactory
         {
             throw new UnsupportedOperationException("only RGB color spaces are implemented");
         }
-        int width = image.getWidth();
-        int height = image.getHeight();
 
         // create an RGB image without alpha
         //BEWARE: the previous solution in the history 
         // g.setComposite(AlphaComposite.Src) and g.drawImage()
         // didn't work properly for TYPE_4BYTE_ABGR.
         // alpha values of 0 result in a black dest pixel!!!
-        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                rgbImage.setRGB(x, y, image.getRGB(x, y) & 0xFFFFFF);
-            }
-        }
-        return rgbImage;
+        BufferedImage rgbImage = new BufferedImage(
+                image.getWidth(),
+                image.getHeight(),
+                BufferedImage.TYPE_3BYTE_BGR);
+        return new ColorConvertOp(null).filter(image, rgbImage);
     }
 }

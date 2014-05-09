@@ -16,7 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -30,7 +32,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
@@ -158,6 +159,23 @@ public final class JPEGFactory extends ImageFactory
                                                  float quality, int dpi) throws IOException
     {
         return createJPEG(document, image, quality, dpi);
+    }
+    
+    // returns the alpha channel of an image
+    private static BufferedImage getAlphaImage(BufferedImage image) throws IOException
+    {
+        if (!image.getColorModel().hasAlpha())
+        {
+            return null;
+        }
+        if (image.getTransparency() == Transparency.BITMASK)
+        {
+            throw new UnsupportedOperationException("BITMASK Transparency JPEG compression is not useful, use LosslessImageFactory instead");
+        }
+        WritableRaster alphaRaster = image.getAlphaRaster();
+        BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        alphaImage.setData(alphaRaster);
+        return alphaImage;
     }
     
     // Creates an Image XObject from a Buffered Image using JAI Image I/O
