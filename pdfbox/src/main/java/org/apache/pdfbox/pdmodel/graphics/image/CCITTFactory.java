@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 /**
@@ -54,13 +53,10 @@ public final class CCITTFactory
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         extractFromTiff(reader, bos, decodeParms);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.CCITTFAX_DECODE);
 
         COSDictionary dict = pdImage.getCOSStream();
 
-        dict.setItem(COSName.FILTER, COSName.CCITTFAX_DECODE);
-        dict.setItem(COSName.SUBTYPE, COSName.IMAGE);
-        dict.setItem(COSName.TYPE, COSName.XOBJECT);
         dict.setItem(COSName.DECODE_PARMS, decodeParms);
 
         pdImage.setBitsPerComponent(1);

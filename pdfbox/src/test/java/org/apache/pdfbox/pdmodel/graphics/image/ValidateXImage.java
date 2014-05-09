@@ -23,6 +23,8 @@ import java.util.Set;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
@@ -36,7 +38,10 @@ public class ValidateXImage
     {
         // check the dictionary
         assertNotNull(ximage);
-        assertNotNull(ximage.getCOSStream());
+        COSStream cosStream = ximage.getCOSStream();
+        assertNotNull(cosStream);
+        assertEquals(COSName.XOBJECT, cosStream.getItem(COSName.TYPE));
+        assertEquals(COSName.IMAGE, cosStream.getItem(COSName.SUBTYPE));
         assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
         assertEquals(bpc, ximage.getBitsPerComponent());
         assertEquals(width, ximage.getWidth());
