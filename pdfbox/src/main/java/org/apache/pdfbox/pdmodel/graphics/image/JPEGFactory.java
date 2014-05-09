@@ -64,10 +64,7 @@ public final class JPEGFactory extends ImageFactory
         byteStream.reset();
 
         // create Image XObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
-
-        // add DCT filter
-        pdImage.getCOSStream().setItem(COSName.FILTER, COSName.DCT_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.DCT_DECODE);
 
         // no alpha
         if (awtImage.getColorModel().hasAlpha())
@@ -175,17 +172,13 @@ public final class JPEGFactory extends ImageFactory
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIOUtil.writeImage(awtColorImage, "jpeg", baos, dpi, quality);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream);
-        
-        // add DCT filter
-        COSStream dict = pdImage.getCOSStream();
-        dict.setItem(COSName.FILTER, COSName.DCT_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.DCT_DECODE);
 
         // alpha -> soft mask
         if (awtAlphaImage != null)
         {
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
-            dict.setItem(COSName.SMASK, xAlpha);
+            pdImage.getCOSStream().setItem(COSName.SMASK, xAlpha);
         }
         
         // set properties (width, height, depth, color space, etc.)

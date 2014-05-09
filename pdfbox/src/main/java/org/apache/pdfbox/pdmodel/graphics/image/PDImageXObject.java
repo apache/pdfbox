@@ -65,6 +65,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Creates an Image XObject in the given document.
      * @param document the current document
+     * @throws java.io.IOException if there is an error creating the XObject.
      */
     public PDImageXObject(PDDocument document) throws IOException
     {
@@ -75,11 +76,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Creates an Image XObject in the given document using the given filtered stream.
      * @param document the current document
      * @param filteredStream a filtered stream of image data
-     * @throws IOException
+     * @param cosFilter the filter or a COSArray of filters
+     * @throws IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDDocument document, InputStream filteredStream) throws IOException
+    public PDImageXObject(PDDocument document, InputStream filteredStream, COSBase cosFilter) throws IOException
     {
         super(new PDStream(document, filteredStream, true), COSName.IMAGE);
+        getCOSStream().setItem(COSName.FILTER, cosFilter);
         colorSpaces = null;
         colorSpace = null;
     }
@@ -88,6 +91,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * Creates an Image XObject with the given stream as its contents and current color spaces.
      * @param stream the XObject stream to read
      * @param colorSpaces the color spaces in the current resources dictionary, null for masks
+     * @throws java.io.IOException if there is an error creating the XObject.
      */
     public PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces) throws IOException
     {
@@ -155,6 +159,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * {@inheritDoc}
      * The returned images are cached for the lifetime of this XObject.
      */
+    @Override
     public BufferedImage getImage() throws IOException
     {
         if (cachedImage != null)
@@ -189,6 +194,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * {@inheritDoc}
      * The returned images are not cached.
      */
+    @Override
     public BufferedImage getStencilImage(Paint paint) throws IOException
     {
         if (!isStencil())
@@ -318,6 +324,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         return null;
     }
 
+    @Override
     public int getBitsPerComponent()
     {
         if (isStencil())
@@ -330,11 +337,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
     }
 
+    @Override
     public void setBitsPerComponent(int bpc)
     {
         getCOSStream().setInt(COSName.BITS_PER_COMPONENT, bpc);
     }
 
+    @Override
     public PDColorSpace getColorSpace() throws IOException
     {
         if (colorSpace == null)
@@ -358,41 +367,49 @@ public final class PDImageXObject extends PDXObject implements PDImage
         return colorSpace;
     }
 
+    @Override
     public PDStream getStream() throws IOException
     {
         return getPDStream();
     }
 
+    @Override
     public void setColorSpace(PDColorSpace cs)
     {
         getCOSStream().setItem(COSName.COLORSPACE, cs != null ? cs.getCOSObject() : null);
     }
 
+    @Override
     public int getHeight()
     {
         return getCOSStream().getInt(COSName.HEIGHT);
     }
 
+    @Override
     public void setHeight(int h)
     {
         getCOSStream().setInt(COSName.HEIGHT, h);
     }
 
+    @Override
     public int getWidth()
     {
         return getCOSStream().getInt(COSName.WIDTH);
     }
 
+    @Override
     public void setWidth(int w)
     {
         getCOSStream().setInt(COSName.WIDTH, w);
     }
 
+    @Override
     public void setDecode(COSArray decode)
     {
         getCOSStream().setItem(COSName.DECODE, decode);
     }
 
+    @Override
     public COSArray getDecode()
     {
         COSBase decode = getCOSStream().getDictionaryObject(COSName.DECODE);
@@ -403,11 +420,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
         return null;
     }
 
+    @Override
     public boolean isStencil()
     {
         return getCOSStream().getBoolean(COSName.IMAGE_MASK, false);
     }
 
+    @Override
     public void setStencil(boolean isStencil)
     {
         getCOSStream().setBoolean(COSName.IMAGE_MASK, isStencil);

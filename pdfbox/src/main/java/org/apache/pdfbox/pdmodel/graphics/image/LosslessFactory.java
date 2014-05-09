@@ -16,6 +16,7 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Color;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
@@ -103,10 +104,7 @@ public class LosslessFactory
         filter.encode(bais, bos2, new COSDictionary(), 0);
 
         ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(bos2.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream);
-
-        COSDictionary dict = pdImage.getCOSStream();
-        dict.setItem(COSName.FILTER, COSName.FLATE_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE);
 
         pdImage.setColorSpace(deviceColorSpace);
         pdImage.setBitsPerComponent(bpc);
@@ -117,14 +115,14 @@ public class LosslessFactory
         PDImage xAlpha = createAlphaFromARGBImage(document, image);
         if (xAlpha != null)
         {
-            dict.setItem(COSName.SMASK, xAlpha);
+            pdImage.getCOSStream().setItem(COSName.SMASK, xAlpha);
         }
 
         return pdImage;
     }
 
     /**
-     * Creates a grayscale PDImageXObject from the alpha channel of an image.
+     * Creates a grayscale Flate encoded PDImageXObject from the alpha channel of an image.
      *
      * @param document the document where the image will be created.
      * @param image an ARGB image.
@@ -140,9 +138,6 @@ public class LosslessFactory
         // SinglePixelPackedSampleModel, i.e. the values can be used 1:1 for
         // the stream. 
         // Sadly the type of the databuffer is TYPE_INT and not TYPE_BYTE.
-        //TODO: optimize this to lessen the memory footprint.
-        // possible idea? Derive an inputStream that reads from the raster.
-
         if (!image.getColorModel().hasAlpha())
         {
             return null;
@@ -156,9 +151,29 @@ public class LosslessFactory
                 alphaRaster.getSampleModel().getHeight(),
                 (int[]) null);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        for (int pixel : pixels)
+        int bpc;
+        if (image.getTransparency() == Transparency.BITMASK)
         {
-            bos.write(pixel);
+            bpc = 1;
+            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
+            for (int pixel : pixels)
+            {
+                mcios.writeBit(pixel);
+            }
+            while (mcios.getBitOffset() != 0)
+            {
+                mcios.writeBit(0);
+            }
+            mcios.flush();
+            mcios.close();            
+        }
+        else
+        {
+            bpc = 8;
+            for (int pixel : pixels)
+            {
+                bos.write(pixel);
+            }
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(bos.toByteArray());
 
@@ -167,17 +182,16 @@ public class LosslessFactory
         filter.encode(bais, bos2, new COSDictionary(), 0);
 
         ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(bos2.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream);
-
-        COSDictionary dict = pdImage.getCOSStream();
-        dict.setItem(COSName.FILTER, COSName.FLATE_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE);
 
         pdImage.setColorSpace(PDDeviceGray.INSTANCE);
-        pdImage.setBitsPerComponent(8);
+        pdImage.setBitsPerComponent(bpc);
         pdImage.setHeight(image.getHeight());
         pdImage.setWidth(image.getWidth());
 
         return pdImage;
     }
+    
+
 
 }
