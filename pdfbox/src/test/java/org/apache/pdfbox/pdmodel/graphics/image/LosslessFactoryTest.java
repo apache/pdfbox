@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * Unit tests for LosslessFactory
@@ -97,6 +98,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        new PDFRenderer(document).renderImage(0);
         document.close();
     }
 
@@ -149,6 +151,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        new PDFRenderer(document).renderImage(0);
         document.close();
     }
 
@@ -223,6 +226,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        new PDFRenderer(document).renderImage(0);
         document.close();
     }
 
@@ -381,6 +385,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        new PDFRenderer(document).renderImage(0);
         document.close();
     }
 
