@@ -57,7 +57,6 @@ public class JPEGFactoryTest extends TestCase
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
-        assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
@@ -71,7 +70,6 @@ public class JPEGFactoryTest extends TestCase
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
-        assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
@@ -86,7 +84,6 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(3, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
-        assertEquals(PDDeviceRGB.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
@@ -101,7 +98,6 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
-        assertEquals(PDDeviceGray.INSTANCE, ximage.getColorSpace());
         document.close();
     }
 
