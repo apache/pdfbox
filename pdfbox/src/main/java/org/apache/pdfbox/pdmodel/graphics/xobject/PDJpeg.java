@@ -170,6 +170,10 @@ public class PDJpeg extends PDXObjectImage
         BufferedImage alphaImage = null;
         if (bi.getColorModel().hasAlpha())
         {
+            if (bi.getTransparency() == Transparency.BITMASK)
+            {
+                throw new UnsupportedOperationException("BITMASK Transparency JPEG compression is not useful, use PDPixelMap instead");
+            }
             alphaImage = extractAlphaImage(bi);
 
             // create an RGB image without alpha
