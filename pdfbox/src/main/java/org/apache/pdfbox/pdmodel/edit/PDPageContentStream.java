@@ -33,7 +33,9 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -51,6 +53,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 
 /**
  * This class is a convenience for creating page content streams.  You MUST
@@ -142,6 +145,7 @@ public class PDPageContentStream implements Closeable
 
     private static final byte[] OPENING_BRACKET = getISOBytes("[");
     private static final byte[] CLOSING_BRACKET = getISOBytes("]");
+    private static final byte[] NEWLINE = getISOBytes("\n");
 
     private static final int SPACE = 32;
 
@@ -354,6 +358,85 @@ public class PDPageContentStream implements Closeable
     {
         AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
         drawXObject(xobject, transform);
+    }
+
+    /**
+     * Draw an inline image at the x,y coordinates, with the default size of the image.
+     *
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
+    {
+        drawInlineImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
+    }
+    
+    /**
+     * Draw an inline image at the x,y coordinates and a certain width and height.
+     *
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
+     * @param width The width of the inline image to draw.
+     * @param height The height of the inline image to draw.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    {
+        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        
+        if (inTextMode)
+        {
+            throw new IOException("Error: drawInlineImage is not allowed within a text block.");
+        }
+        saveGraphicsState();
+        concatenate2CTM(transform);
+        appendRawCommands("BI\n");
+        appendRawCommands("/W");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getWidth()));
+        appendRawCommands(SPACE);
+        appendRawCommands("/H");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getHeight()));
+        appendRawCommands(SPACE);
+        appendRawCommands("/CS");
+        appendRawCommands(SPACE);
+        appendRawCommands("/");
+        appendRawCommands(inlineImage.getColorSpace().getName());
+        appendRawCommands(NEWLINE);
+        if (inlineImage.getDecode() != null && inlineImage.getDecode().size() > 0)
+        {
+            appendRawCommands("/D");
+            appendRawCommands(SPACE);
+            appendRawCommands(OPENING_BRACKET);
+            appendRawCommands(SPACE);
+            for (COSBase cosBase : inlineImage.getDecode())
+            {
+                COSInteger cosInt = (COSInteger) cosBase;
+                appendRawCommands(Integer.toString(cosInt.intValue()));
+                appendRawCommands(SPACE);
+            }
+            appendRawCommands(CLOSING_BRACKET);
+            appendRawCommands("\n");
+        }
+        if (inlineImage.isStencil())
+        {
+            appendRawCommands("/IM true\n");
+        }
+        appendRawCommands("/BPC");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getBitsPerComponent()));
+        appendRawCommands(NEWLINE);
+        appendRawCommands("ID\n");
+        appendRawCommands(inlineImage.getStream().getByteArray());
+        appendRawCommands(NEWLINE);
+        appendRawCommands("EI\n");
+        restoreGraphicsState();
     }
 
     /**
