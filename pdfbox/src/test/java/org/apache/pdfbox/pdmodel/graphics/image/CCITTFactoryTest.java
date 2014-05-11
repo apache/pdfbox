@@ -23,6 +23,7 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -32,6 +33,15 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
  */
 public class CCITTFactoryTest extends TestCase
 {
+    private final File testResultsDir = new File("target/test-output/graphics");
+
+    @Override
+    protected void setUp() throws Exception
+    {
+        super.setUp();
+        testResultsDir.mkdirs();
+    }
+
     /**
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader)
@@ -43,6 +53,7 @@ public class CCITTFactoryTest extends TestCase
         RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
         PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader);
         validate(ximage, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
-        document.close();
+        
+        doWritePDF(document, ximage, testResultsDir, "tiff.pdf");        
     }
 }

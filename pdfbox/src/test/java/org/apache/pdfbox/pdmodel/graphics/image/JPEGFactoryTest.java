@@ -24,11 +24,10 @@ import javax.imageio.ImageIO;
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
 /**
@@ -131,21 +130,8 @@ public class JPEGFactoryTest extends TestCase
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
-
-        // This part isn't really needed because this test doesn't break
-        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-        // if something goes wrong in the future and we want to have a PDF to open.
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
-        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
-        contentStream.close();
-        File pdfFile = new File(testResultsDir, "jpeg-intargb.pdf");
-        document.save(pdfFile);
-        document.close();
-        document = PDDocument.loadNonSeq(pdfFile, null);
-        document.close();
+        
+        doWritePDF(document, ximage, testResultsDir, "jpeg-intargb.pdf");
     }
 
     /**
@@ -179,19 +165,6 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        // This part isn't really needed because this test doesn't break
-        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-        // if something goes wrong in the future and we want to have a PDF to open.
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
-        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
-        contentStream.close();
-        File pdfFile = new File(testResultsDir, "jpeg-4bargb.pdf");
-        document.save(pdfFile);
-        document.close();
-        document = PDDocument.loadNonSeq(pdfFile, null);
-        document.close();
+        doWritePDF(document, ximage, testResultsDir, "jpeg-4bargb.pdf");
     }
 }

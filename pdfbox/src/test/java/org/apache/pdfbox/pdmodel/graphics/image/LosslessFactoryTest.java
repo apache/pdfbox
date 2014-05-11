@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -94,9 +95,11 @@ public class LosslessFactoryTest extends TestCase
         contentStream.drawXObject(ximage2, 200, 450, ximage2.getWidth() / 2, ximage2.getHeight() / 2);
         contentStream.drawXObject(ximage3, 200, 600, ximage3.getWidth() / 2, ximage3.getHeight() / 2);
         contentStream.close();
+        
         File pdfFile = new File(testResultsDir, "misc.pdf");
         document.save(pdfFile);
         document.close();
+        
         document = PDDocument.loadNonSeq(pdfFile, null);
         new PDFRenderer(document).renderImage(0);
         document.close();
@@ -138,21 +141,7 @@ public class LosslessFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        // This part isn't really needed because this test doesn't break
-        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-        // if something goes wrong in the future and we want to have a PDF to open.
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
-        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
-        contentStream.close();
-        File pdfFile = new File(testResultsDir, "intargb.pdf");
-        document.save(pdfFile);
-        document.close();
-        document = PDDocument.loadNonSeq(pdfFile, null);
-        new PDFRenderer(document).renderImage(0);
-        document.close();
+        doWritePDF(document, ximage, testResultsDir, "intargb.pdf");
     }
 
     /**
@@ -205,6 +194,7 @@ public class LosslessFactoryTest extends TestCase
         }
 
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
+
         validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(argbImage, ximage.getImage());
         checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
@@ -213,21 +203,7 @@ public class LosslessFactoryTest extends TestCase
         validate(ximage.getSoftMask(), 8, w, h, "png", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
-        // This part isn't really needed because this test doesn't break
-        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
-        // if something goes wrong in the future and we want to have a PDF to open.
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
-        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
-        contentStream.close();
-        File pdfFile = new File(testResultsDir, "4babgr.pdf");
-        document.save(pdfFile);
-        document.close();
-        document = PDDocument.loadNonSeq(pdfFile, null);
-        new PDFRenderer(document).renderImage(0);
-        document.close();
+        doWritePDF(document, ximage, testResultsDir, "4babgr.pdf");
     }
 
     /**
