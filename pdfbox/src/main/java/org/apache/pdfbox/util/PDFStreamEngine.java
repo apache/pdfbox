@@ -366,7 +366,7 @@ public class PDFStreamEngine
             // so lets make it a little bit smaller.
             spaceWidthText *= .80f;
         }
-        else
+        if (spaceWidthText == 0)
         {
             spaceWidthText = 1.0f; // if could not find font, use a generic value
         }        
@@ -404,7 +404,7 @@ public class PDFStreamEngine
 
             // the space width has to be transformed into display units
             float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText 
-                                    * textMatrix.getValue(0, 0) * ctm.getValue(0, 0);
+                                    * textMatrix.getXScale() * ctm.getXScale();
 
             //todo, handle horizontal displacement
             // get the width and height of this character in text units 
@@ -443,7 +443,7 @@ public class PDFStreamEngine
             {
                 spacingText += wordSpacingText;
             }
-            textXctm = textMatrix.multiply(ctm, textXctm);
+            textMatrix.multiply(ctm, textXctm);
             // Convert textMatrix to display units
             // We need to instantiate a new Matrix instance here as it is passed to the TextPosition constructor below.
             Matrix textMatrixStart = textStateParameters.multiply(textXctm);
@@ -462,8 +462,8 @@ public class PDFStreamEngine
             // textMatrixEnd contains the coordinates of the end of the last glyph without 
             // taking characterSpacingText and spacintText into account, otherwise it'll be
             // impossible to detect new words within text extraction
-            tempMatrix = textStateParameters.multiply(td, tempMatrix);
-            textMatrixEnd = tempMatrix.multiply(textXctm, textMatrixEnd);
+            textStateParameters.multiply(td, tempMatrix);
+            tempMatrix.multiply(textXctm, textMatrixEnd);
             final float endXPosition = textMatrixEnd.getXPosition();
             final float endYPosition = textMatrixEnd.getYPosition();
 
@@ -471,7 +471,7 @@ public class PDFStreamEngine
             tx = ((characterHorizontalDisplacementText)*fontSizeText+characterSpacingText+spacingText)
                     *horizontalScalingText;
             td.setValue( 2, 0, tx );
-            textMatrix = td.multiply(textMatrix, textMatrix );
+            td.multiply(textMatrix, textMatrix );
             
             // determine the width of this character
             // XXX: Note that if we handled vertical text, we should be using Y here
