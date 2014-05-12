@@ -1751,6 +1751,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
                current == '%' ||
                current == '<' ||
                current == '>' ||
+               current == '{' || current == '}' || // PDFBOX-2073                    
                current == NAME_ESCAPE[0] )
             {
                 output.write(NAME_ESCAPE);
