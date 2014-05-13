@@ -144,7 +144,7 @@ public class TestFilters extends TestCase
         filter.encode(new ByteArrayInputStream(original), encoded, new COSDictionary());
         ByteArrayOutputStream decoded = new ByteArrayOutputStream();
         filter.decode(new ByteArrayInputStream(encoded.toByteArray()),
-                decoded, new COSDictionary());
+                decoded, new COSDictionary(), 0);
 
         assertTrue(
                 "Data that is encoded and then decoded through "
