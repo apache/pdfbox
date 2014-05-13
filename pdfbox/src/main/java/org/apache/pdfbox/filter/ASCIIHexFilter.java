@@ -49,8 +49,8 @@ final class ASCIIHexFilter extends Filter
     };
 
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         int value, firstByte, secondByte;
         while ((firstByte = encoded.read()) != -1)

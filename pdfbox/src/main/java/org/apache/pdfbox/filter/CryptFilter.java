@@ -29,18 +29,18 @@ import org.apache.pdfbox.cos.COSName;
 final class CryptFilter extends Filter
 {
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         COSName encryptionName = (COSName) parameters.getDictionaryObject(COSName.NAME);
         if(encryptionName == null || encryptionName.equals(COSName.IDENTITY)) 
         {
             // currently the only supported implementation is the Identity crypt filter
             Filter identityFilter = new IdentityFilter();
-            identityFilter.decode(encoded, decoded, parameters);
+            identityFilter.decode(encoded, decoded, parameters, index);
             return new DecodeResult(parameters);
         }
-        else 
+        else
         {
             throw new IOException("Unsupported crypt filter " + encryptionName.getName());
         }

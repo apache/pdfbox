@@ -30,8 +30,8 @@ import org.apache.pdfbox.io.IOUtils;
 final class ASCII85Filter extends Filter
 {
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         ASCII85InputStream is = null;
         try

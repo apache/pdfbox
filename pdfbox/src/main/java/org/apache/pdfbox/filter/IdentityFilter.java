@@ -30,10 +30,10 @@ import org.apache.pdfbox.cos.COSDictionary;
 final class IdentityFilter extends Filter
 {
     private static final int BUFFER_SIZE = 1024;
-    
+
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters)
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index)
         throws IOException
     {
         byte[] buffer = new byte[BUFFER_SIZE];

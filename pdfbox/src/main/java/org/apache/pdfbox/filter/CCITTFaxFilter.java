@@ -43,15 +43,14 @@ final class CCITTFaxFilter extends Filter
     private static final Log log = LogFactory.getLog(CCITTFaxFilter.class);
 
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);
 
         // get decode parameters
-        COSDictionary decodeParms = (COSDictionary)
-                parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        COSDictionary decodeParms = getDecodeParams(parameters, index);
 
         // parse dimensions
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);

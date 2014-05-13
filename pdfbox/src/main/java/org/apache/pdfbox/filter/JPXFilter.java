@@ -31,7 +31,6 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 
 /**
@@ -52,8 +51,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 public final class JPXFilter extends Filter
 {
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);

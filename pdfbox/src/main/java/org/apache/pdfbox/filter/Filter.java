@@ -49,18 +49,8 @@ public abstract class Filter
      * @return repaired parameters dictionary, or the original parameters dictionary
      * @throws IOException if the stream cannot be decoded
      */
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary parameters,
-                            int index) throws IOException
-    {
-        COSDictionary params = new COSDictionary();
-        params.addAll(parameters);
-        params.setItem(COSName.DECODE_PARMS, getDecodeParams(params, index));
-        return decode(encoded, decoded, params.asUnmodifiableDictionary());
-    }
-
-    // implemented in subclasses
-    protected abstract DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                   COSDictionary parameters) throws IOException;
+    public abstract DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary parameters,
+                            int index) throws IOException;
 
     /**
      * Encodes data.
@@ -81,7 +71,7 @@ public abstract class Filter
 
     // gets the decode params for a specific filter index, this is used to
     // normalise the DecodeParams entry so that it is always a dictionary
-    private COSDictionary getDecodeParams(COSDictionary dictionary, int index)
+    protected COSDictionary getDecodeParams(COSDictionary dictionary, int index)
     {
         COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         if (obj instanceof COSDictionary)
