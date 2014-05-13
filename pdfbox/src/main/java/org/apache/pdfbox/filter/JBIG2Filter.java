@@ -52,8 +52,8 @@ final class JBIG2Filter extends Filter
     private static final Log LOG = LogFactory.getLog(JBIG2Filter.class);
 
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JBIG2");

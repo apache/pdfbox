@@ -61,13 +61,12 @@ public class LZWFilter extends Filter
      * {@inheritDoc}
      */
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-            COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+            COSDictionary parameters, int index) throws IOException
     {
         int predictor = -1;
 
-        COSDictionary decodeParams = (COSDictionary)
-                parameters.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        COSDictionary decodeParams = getDecodeParams(parameters, index);
         if (decodeParams != null)
         {
             predictor = decodeParams.getInt(COSName.PREDICTOR);

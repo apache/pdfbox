@@ -36,8 +36,8 @@ final class RunLengthDecodeFilter extends Filter
     private static final int RUN_LENGTH_EOD = 128;
 
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         int dupAmount;
         byte[] buffer = new byte[128];

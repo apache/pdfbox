@@ -47,8 +47,8 @@ final class DCTFilter extends Filter
     private static final Log LOG = LogFactory.getLog(DCTFilter.class);
 
     @Override
-    protected final DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters) throws IOException
+    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+                                         COSDictionary parameters, int index) throws IOException
     {
         // find suitable image reader
         Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
