@@ -447,15 +447,15 @@ public abstract class SecurityHandler
         for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
             COSBase value = entry.getValue();
-            // within a dictionary only strings and streams have to be decrypted
-            if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray)
+            // within a dictionary only the following kind of COS objects have to be decrypted
+            if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray || value instanceof COSDictionary)
             {
                 // if we are a signature dictionary and contain a Contents entry then
                 // we don't decrypt it.
-                if (!(entry.getKey().getName().equals("Contents") && value instanceof COSString && potentialSignatures
+                if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString && potentialSignatures
                         .contains(dictionary)))
                 {
-                    decrypt(entry.getValue(), objNum, genNum);
+                    decrypt(value, objNum, genNum);
                 }
             }
         }
