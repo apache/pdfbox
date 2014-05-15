@@ -50,22 +50,7 @@ final class DCTFilter extends Filter
     public final DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
-        // find suitable image reader
-        Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
-        ImageReader reader = null;
-        while(readers.hasNext()) {
-            reader = (ImageReader)readers.next();
-            if(reader.canReadRaster()) {
-                break;
-            }
-        }
-
-        if (reader == null)
-        {
-            throw new MissingImageReaderException("Cannot read JPEG image: " +
-                    "a suitable JAI I/O image filter is not installed");
-        }
-
+        ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
         ImageInputStream iis = null;
         try
         {
