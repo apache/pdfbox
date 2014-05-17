@@ -491,7 +491,11 @@ public abstract class PDXObjectImage extends PDXObject
     BufferedImage extractAlphaImage(BufferedImage bi)
     {
         WritableRaster alphaRaster = bi.getAlphaRaster();
-        BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), alphaRaster.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), 
+                alphaRaster.getHeight(), 
+                bi.getTransparency() == Transparency.BITMASK ? 
+                BufferedImage.TYPE_BYTE_BINARY : 
+                BufferedImage.TYPE_BYTE_GRAY);
         alphaImage.setData(alphaRaster);
         return alphaImage;
     }
