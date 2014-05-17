@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.pdfbox.filter.CCITTFaxDecodeFilter;
 
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
@@ -150,6 +151,7 @@ public class PDInlinedImage
             colorModel = new IndexColorModel( 1, 2,
                     colors, colors, colors, transparentColors );
         }
+        boolean isCCITTFax = false;
         List filters = params.getFilters();
         byte[] finalData = null;
         if( filters == null )
@@ -167,6 +169,10 @@ public class PDInlinedImage
                 Filter filter = filterManager.getFilter( (String)filters.get( i ) );
                 filter.decode( in, out, params.getDictionary(), i );
                 in = new ByteArrayInputStream( out.toByteArray() );
+                if (filter instanceof CCITTFaxDecodeFilter)
+                {
+                    isCCITTFax = true;
+                }
             }
             finalData = out.toByteArray();
         }
@@ -185,6 +191,11 @@ public class PDInlinedImage
             DataBufferByte byteBuffer = (DataBufferByte)rasterBuffer;
             byte[] data = byteBuffer.getData();
             System.arraycopy( finalData, 0, data, 0, data.length );
+            if (isCCITTFax)
+            {
+                // PDFBOX-2080: do the inversion that is done in PDCcitt
+                invertBitmap(data);
+            }
         }
         else if( rasterBuffer instanceof DataBufferInt )
         {
@@ -200,4 +211,13 @@ public class PDInlinedImage
         image.setData( raster );
         return image;
     }
+    
+    private void invertBitmap(byte[] bufferData)
+    {
+        for (int i = 0, c = bufferData.length; i < c; i++)
+        {
+            bufferData[i] = (byte) (~bufferData[i] & 0xFF);
+        }
+    }
+    
 }
