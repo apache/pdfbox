@@ -17,9 +17,14 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 import javax.imageio.ImageIO;
 import static junit.framework.Assert.assertTrue;
 import junit.framework.TestCase;
@@ -163,6 +168,8 @@ public class PDPixelMapTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
         document.close();
     }
 
@@ -204,6 +211,8 @@ public class PDPixelMapTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
         document.close();
     }
 
@@ -236,6 +245,8 @@ public class PDPixelMapTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
         document.close();
     }
 
@@ -268,6 +279,8 @@ public class PDPixelMapTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
         document.close();
     }
 
@@ -284,6 +297,136 @@ public class PDPixelMapTest extends TestCase
         checkIdent(imageFromColorGif, ximage.getRGBImage());
         validate(ximage, 8, 344, 287, "png", PDDeviceRGB.NAME);
         assertNull(ximage.getSMaskImage());
+        document.close();
+    }
+
+    /**
+     * Tests INT_ARGB LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image) with BITMASK transparency
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromImageBITMASK_INT_ARGB() throws IOException, COSVisitorException
+    {
+        doBitmaskTransparencyTest(BufferedImage.TYPE_INT_ARGB, "bitmaskintargb.pdf");
+    }
+
+    /**
+     * Tests 4BYTE_ABGR LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image) with BITMASK transparency
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromImageBITMASK4BYTE_ABGR() throws IOException, COSVisitorException
+    {
+        doBitmaskTransparencyTest(BufferedImage.TYPE_INT_ARGB, "bitmask4babgr.pdf");
+    }
+
+    private void doBitmaskTransparencyTest(int imageType, String pdfFilename) throws IOException, COSVisitorException
+    {
+        PDDocument document = new PDDocument();
+
+        int width = 256;
+        int height = 256;
+
+        // create an ARGB image
+        BufferedImage argbImage = new BufferedImage(width, height, imageType);
+
+        // from there, create an image with Transparency.BITMASK
+        Graphics2D g = argbImage.createGraphics();
+        GraphicsConfiguration gc = g.getDeviceConfiguration();
+        argbImage = gc.createCompatibleImage(width, height, Transparency.BITMASK);
+        g.dispose();
+        // create a red rectangle
+        g = argbImage.createGraphics();
+        g.setColor(Color.red);
+        g.fillRect(0, 0, width, height);
+        g.dispose();
+
+        Random random = new Random();
+        random.setSeed(12345);
+        // create a transparency cross: only pixels in the 
+        // interval max/2 - max/8 ... max/2 + max/8 will be visible
+        int startX = width / 2 - width / 8;
+        int endX = width / 2 + width / 8;
+        int startY = height / 2 - height / 8;
+        int endY = height / 2 + height / 8;
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                // create pseudorandom alpha values, but those within the cross
+                // must be >= 128 and those outside must be < 128
+                int alpha;
+                if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                {
+                    alpha = 128 + (int) (random.nextFloat() * 127);
+                    assertTrue(alpha >= 128);
+                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
+                    assertEquals(255, argbImage.getRGB(x, y) >>> 24);
+                }
+                else
+                {
+                    alpha = (int) (random.nextFloat() * 127);
+                    assertTrue(alpha < 128);
+                    argbImage.setRGB(x, y, (argbImage.getRGB(x, y) & 0xFFFFFF) | (alpha << 24));
+                    assertEquals(0, argbImage.getRGB(x, y) >>> 24);
+                }
+            }
+        }
+
+        PDXObjectImage ximage = new PDPixelMap(document, argbImage);
+        validate(ximage, 8, width, height, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(argbImage, ximage.getRGBImage());
+
+        assertNotNull(ximage.getSMaskImage());
+        validate(ximage.getSMaskImage(), 1, width, height, "png", PDDeviceGray.NAME);
+        assertEquals(2, colorCount(ximage.getSMaskImage().getRGBImage()));
+
+        // check whether the mask is a b/w cross
+        BufferedImage maskImage = ximage.getSMaskImage().getRGBImage();
+        // returns Transparency.BITMASK in 1.8
+        //assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                if ((x >= startX && x <= endX) || y >= startY && y <= endY)
+                {
+                    assertEquals(0xFFFFFF, maskImage.getRGB(x, y) & 0xFFFFFF);
+                }
+                else
+                {
+                    assertEquals(0, maskImage.getRGB(x, y) & 0xFFFFFF);
+                }
+            }
+        }
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        // Create a rectangle
+        BufferedImage rectImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        g = rectImage.createGraphics();
+        g.setColor(Color.blue);
+        g.fillRect(0, 0, width, height);
+        g.dispose();
+
+        PDXObjectImage ximage2 = new PDPixelMap(document, rectImage);
+
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage.getSMaskImage(), 150, 0, ximage.getSMaskImage().getWidth(), ximage.getSMaskImage().getHeight());
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, pdfFilename);
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
         document.close();
     }
 
