@@ -310,7 +310,7 @@ public class PDFParser extends BaseParser
         }
     }
 
-    private void parseHeader() throws IOException
+    protected void parseHeader() throws IOException
     {
         // read first line
         String header = readLine();
