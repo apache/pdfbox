@@ -25,7 +25,7 @@ import java.util.List;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class NamingTable extends TTFTable
 {
@@ -35,6 +35,11 @@ public class NamingTable extends TTFTable
     public static final String TAG = "name";
     
     private List<NameRecord> nameRecords = new ArrayList<NameRecord>();
+    
+    private String fontFamily = null;
+    private String fontSubFamily = null;
+    private String psName = null;
+    
     
     /**
      * This will read the required data from the stream.
@@ -83,6 +88,19 @@ public class NamingTable extends TTFTable
             }
             String string = data.readString( nr.getStringLength(), charset );
             nr.setString( string );
+            int nameID = nr.getNameId();
+            if (nameID == NameRecord.NAME_FONT_FAMILY_NAME && fontFamily == null )
+            {
+                fontFamily = string;
+            }
+            if (NameRecord.NAME_FONT_SUB_FAMILY_NAME == nameID && fontSubFamily == null)
+            {
+                fontSubFamily = string;
+            }
+            if ( nameID == NameRecord.NAME_POSTSCRIPT_NAME && psName == null )
+            {
+                psName = string;
+            }
         }
     }
     
@@ -95,4 +113,35 @@ public class NamingTable extends TTFTable
     {
         return nameRecords;
     }
+    
+    /**
+     * Returns the font family name.
+     * 
+     * @return the font family name
+     */
+    public String getFontFamily()
+    {
+        return fontFamily;
+    }
+
+    /**
+     * Returns the font sub family name.
+     * 
+     * @return the font sub family name
+     */
+    public String getFontSubFamily()
+    {
+        return fontSubFamily;
+    }
+
+    /**
+     * Returns the postscript name.
+     * 
+     * @return the postscript name
+     */
+    public String getPSName()
+    {
+        return psName;
+    }
+
 }
