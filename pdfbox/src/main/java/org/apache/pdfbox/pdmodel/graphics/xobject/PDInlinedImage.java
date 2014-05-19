@@ -28,8 +28,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.pdfbox.filter.CCITTFaxDecodeFilter;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterManager;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -43,6 +46,11 @@ import org.apache.pdfbox.util.ImageParameters;
  */
 public class PDInlinedImage
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDInlinedImage.class);
+
     private ImageParameters params;
     private byte[] imageData;
 
@@ -136,7 +144,7 @@ public class PDInlinedImage
 
         //verify again pci32.pdf before changing below
         PDColorSpace pcs = params.getColorSpace( colorSpaces );
-        ColorModel colorModel = null;
+        ColorModel colorModel;
         if(pcs != null)
         {
             colorModel =
@@ -151,9 +159,30 @@ public class PDInlinedImage
             colorModel = new IndexColorModel( 1, 2,
                     colors, colors, colors, transparentColors );
         }
-        boolean isCCITTFax = false;
+        
+        boolean invert = false;
+        // maybe a decode array is defined
+        COSBase dictObj = params.getDictionary().getDictionaryObject(COSName.DECODE, COSName.D);
+        if (dictObj != null && dictObj instanceof COSArray)
+        {
+            COSArray decode = (COSArray) dictObj;
+            if (decode.getInt(0) == 1)
+            {
+                if (params.getBitsPerComponent() == 1)
+                {
+                    // [1.0, 0.0] -> invert the "color" values
+                    invert = true;
+                }
+                else
+                {
+                    //TODO implement decode array for BPC > 1
+                    LOG.warn("decode array is not implemented for BPC > 1");
+                }
+            }
+        }
+        
         List filters = params.getFilters();
-        byte[] finalData = null;
+        byte[] finalData;
         if( filters == null )
         {
             finalData = getImageData();
@@ -169,10 +198,6 @@ public class PDInlinedImage
                 Filter filter = filterManager.getFilter( (String)filters.get( i ) );
                 filter.decode( in, out, params.getDictionary(), i );
                 in = new ByteArrayInputStream( out.toByteArray() );
-                if (filter instanceof CCITTFaxDecodeFilter)
-                {
-                    isCCITTFax = true;
-                }
             }
             finalData = out.toByteArray();
         }
@@ -191,9 +216,8 @@ public class PDInlinedImage
             DataBufferByte byteBuffer = (DataBufferByte)rasterBuffer;
             byte[] data = byteBuffer.getData();
             System.arraycopy( finalData, 0, data, 0, data.length );
-            if (isCCITTFax)
+            if (invert)
             {
-                // PDFBOX-2080: do the inversion that is done in PDCcitt
                 invertBitmap(data);
             }
         }
@@ -203,11 +227,14 @@ public class PDInlinedImage
             int[] data = byteBuffer.getData();
             for( int i=0; i<finalData.length; i++ )
             {
-                data[i] = (finalData[i]+256)%256;
+                data[i] = (finalData[i] + 256) % 256;
+                if (invert)
+                {
+                    data[i] = (~data[i] & 0xFF);
+                }
             }
         }
-        BufferedImage image = new BufferedImage(
-                colorModel, raster, false, null );
+        BufferedImage image = new BufferedImage(colorModel, raster, false, null);
         image.setData( raster );
         return image;
     }

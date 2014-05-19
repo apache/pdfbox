@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -69,7 +70,6 @@ public class CCITTFaxDecodeFilter implements Filter
         {
             decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(filterIndex);
         }
-        byte[] compressed = IOUtils.toByteArray(compressedData);
         int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
         int rows = decodeParms.getInt(COSName.ROWS, 0);
         int height = options.getInt(COSName.HEIGHT, COSName.H, 0);
@@ -89,26 +89,45 @@ public class CCITTFaxDecodeFilter implements Filter
         TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
         // TODO possible options??
         long tiffOptions = 0;
+        byte[] compressed = IOUtils.toByteArray(compressedData);
+        byte[] decompressed = null;
         if (k == 0)
         {
             InputStream in = new CCITTFaxG31DDecodeInputStream(
-                    new java.io.ByteArrayInputStream(compressed), cols, encodedByteAlign);
+                    new ByteArrayInputStream(compressed), cols, encodedByteAlign);
             in = new FillOrderChangeInputStream(in); //Decorate to change fill order
-            IOUtils.copy(in, result);
+            decompressed = IOUtils.toByteArray(in);
             in.close();
         }
         else if (k > 0)
         {
-            byte[] decompressed = new byte[arraySize];
+            decompressed = new byte[arraySize];
             faxDecoder.decode2D(decompressed, compressed, 0, rows, tiffOptions);
-            result.write(decompressed);
         }
         else if (k < 0)
         {
-            byte[] decompressed = new byte[arraySize];
+            decompressed = new byte[arraySize];
             faxDecoder.decodeT6(decompressed, compressed, 0, rows, tiffOptions, encodedByteAlign);
-            result.write(decompressed);
         }
+
+        // invert bitmap
+        boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
+        if (!blackIsOne)
+        {
+            // Inverting the bitmap
+            // Note the previous approach with starting from an IndexColorModel didn't work
+            // reliably. In some cases the image wouldn't be painted for some reason.
+            // So a safe but slower approach was taken.
+            invertBitmap(decompressed);
+        }
+        
+        // repair missing color space
+        if (!options.containsKey(COSName.COLORSPACE))
+        {
+            options.setName(COSName.COLORSPACE, COSName.DEVICEGRAY.getName());
+        }        
+        
+        result.write(decompressed);        
     }
 
     /**
@@ -119,4 +138,13 @@ public class CCITTFaxDecodeFilter implements Filter
     {
         log.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
     }
+
+    private void invertBitmap(byte[] bufferData)
+    {
+        for (int i = 0, c = bufferData.length; i < c; i++)
+        {
+            bufferData[i] = (byte) (~bufferData[i] & 0xFF);
+        }
+    }
+
 }
