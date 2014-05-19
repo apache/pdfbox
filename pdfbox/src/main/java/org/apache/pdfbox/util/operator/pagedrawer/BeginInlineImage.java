@@ -44,7 +44,7 @@ public class BeginInlineImage extends OperatorProcessor
     /**
      * Log instance.
      */
-    private static final Log log = LogFactory.getLog(BeginInlineImage.class);
+    private static final Log LOG = LogFactory.getLog(BeginInlineImage.class);
 
     /**
      * process : BI : begin inline image.
@@ -61,11 +61,16 @@ public class BeginInlineImage extends OperatorProcessor
         PDInlinedImage image = new PDInlinedImage();
         image.setImageParameters( params );
         image.setImageData( operator.getImageData() );
+        if (params.isStencil())
+        {
+            //TODO implement inline image stencil masks 
+            LOG.warn("Stencil masks are not implemented, background may be incorrect");
+        }
         BufferedImage awtImage = image.createImage( context.getColorSpaces() );
 
         if (awtImage == null) 
         {
-            log.warn("BeginInlineImage.process(): createImage returned NULL");
+            LOG.warn("BeginInlineImage.process(): createImage returned NULL");
             return;
         }
         int imageWidth = awtImage.getWidth();

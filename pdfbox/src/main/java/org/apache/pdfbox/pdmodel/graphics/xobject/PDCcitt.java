@@ -148,14 +148,6 @@ public class PDCcitt extends PDXObjectImage
             // at least one of the values has to have a valid value
             rows = Math.max(rows, height);
         }
-        boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
-        // maybe a decode array is defined
-        COSArray decode = getDecode();
-        if (decode != null && decode.getInt(0) == 1)
-        {
-            // [1.0, 0.0] -> invert the "color" values
-            blackIsOne = !blackIsOne;
-        }
         byte[] bufferData = null;
         ColorModel colorModel = null;
         PDColorSpace colorspace = getColorSpace();
@@ -186,12 +178,10 @@ public class PDCcitt extends PDXObjectImage
         IOUtils.populateBuffer(is, bufferData);
         IOUtils.closeQuietly(is);
         BufferedImage image = new BufferedImage(colorModel, raster, false, null);
-        if (!blackIsOne)
+        // maybe a decode array is defined
+        COSArray decode = getDecode();
+        if (decode != null && decode.getInt(0) == 1)
         {
-            // Inverting the bitmap
-            // Note the previous approach with starting from an IndexColorModel didn't work
-            // reliably. In some cases the image wouldn't be painted for some reason.
-            // So a safe but slower approach was taken.
             invertBitmap(bufferData);
         }
         /*

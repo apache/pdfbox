@@ -232,4 +232,25 @@ public class ImageParameters
         COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray( filters );
         dictionary.setItem( "Filter", obj );
     }
+    
+    /**
+     * Returns true if the image is a stencil mask.
+     *
+     * @return true if the image is a stencil mask.
+     */
+    public boolean isStencil()
+    {
+        return dictionary.getBoolean(COSName.IM, COSName.IMAGE_MASK, false);
+    }
+    
+    /**
+     * Sets whether or not the image is a stencil.
+     * This corresponds to the {@code ImageMask} entry in the image stream's dictionary.
+     * @param isStencil True to make the image a stencil.
+     */
+    public void setStencil(boolean isStencil)
+    {
+        dictionary.setBoolean(COSName.IM, isStencil);
+    }    
+    
 }
