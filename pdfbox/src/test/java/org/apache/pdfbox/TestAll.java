@@ -46,7 +46,6 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMapTest;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.PDFCloneUtilityTest;
 import org.apache.pdfbox.util.TestDateUtil;
-import org.apache.pdfbox.util.TestImageIOUtils;
 import org.apache.pdfbox.util.TestLayerUtility;
 import org.apache.pdfbox.util.TestMatrix;
 import org.apache.pdfbox.util.TestPDFText2HTML;
@@ -109,7 +108,6 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestIOUtils.class );
         suite.addTestSuite( TestRandomAccessBuffer.class );
         suite.addTestSuite( TestRandomAccessFileOutputStream.class );        
-        suite.addTestSuite( TestImageIOUtils.class );
         suite.addTestSuite( TestPackedBitArray.class );
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
 
