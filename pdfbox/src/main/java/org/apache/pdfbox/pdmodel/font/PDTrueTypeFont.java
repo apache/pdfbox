@@ -48,7 +48,6 @@ import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This is the TrueType implementation of fonts.
@@ -58,28 +57,6 @@ import org.apache.pdfbox.util.ResourceLoader;
  */
 public class PDTrueTypeFont extends PDSimpleFont
 {
-
-    /**
-     * This is the key to a property in the PDFBox_External_Fonts.properties file to load a Font when a mapping does not
-     * exist for the current font.
-     */
-    private static final String UNKNOWN_FONT = "UNKNOWN_FONT";
-
-    private static Properties externalFonts = new Properties();
-    private static Map<String, TrueTypeFont> loadedExternalFonts = new HashMap<String, TrueTypeFont>();
-
-    static
-    {
-        try
-        {
-            ResourceLoader
-                    .loadProperties("org/apache/pdfbox/resources/PDFBox_External_Fonts.properties", externalFonts);
-        }
-        catch (IOException io)
-        {
-            throw new RuntimeException("Error loading font resources", io);
-        }
-    }
 
     /**
      * Constructor.
@@ -394,41 +371,6 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     /**
-     * Permit to load an external TTF Font program file
-     * 
-     * Created by Pascal Allain Vertical7 Inc.
-     * 
-     * @return A PDStream with the Font File program, null if fd is null
-     * @throws IOException If the font is not found
-     */
-    private TrueTypeFont getExternalFontFile2() throws IOException
-    {
-        TrueTypeFont retval = null;
-        String baseFont = getBaseFont();
-        String fontResource = externalFonts.getProperty(UNKNOWN_FONT);
-        if ((baseFont != null) && (externalFonts.containsKey(baseFont)))
-        {
-            fontResource = externalFonts.getProperty(baseFont);
-        }
-        if (fontResource != null)
-        {
-            retval = (TrueTypeFont) loadedExternalFonts.get(baseFont);
-            if (retval == null)
-            {
-                TTFParser ttfParser = new TTFParser();
-                InputStream fontStream = ResourceLoader.loadResource(fontResource);
-                if (fontStream == null)
-                {
-                    throw new IOException("Error missing font resource '" + externalFonts.get(baseFont) + "'");
-                }
-                retval = ttfParser.parseTTF(fontStream);
-                loadedExternalFonts.put(baseFont, retval);
-            }
-        }
-        return retval;
-    }
-
-    /**
      * Return the TTF font as TrueTypeFont.
      * 
      * @return the TTF font
@@ -450,7 +392,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         if (trueTypeFont == null)
         {
             // check if there is a font mapping for an external font file
-            trueTypeFont = getExternalFontFile2();
+            trueTypeFont = org.apache.fontbox.util.FontManager.findTTFont(getBaseFont());
         }
         return trueTypeFont;
     }
