@@ -144,6 +144,7 @@
                     <argLine>-Xmx128m</argLine>
                     <includes>
                         <include>org/apache/pdfbox/TestAll.java</include>
+                        <include>org/apache/pdfbox/util/TestImageIOUtils.java</include>
                         <include>org/apache/pdfbox/util/TestTextStripper.java</include>
                         <!--
                         <include>org/apache/pdfbox/util/TestPDFToImage.java</include>
