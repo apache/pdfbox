@@ -854,7 +854,7 @@ public class PDFParser extends BaseParser
      *
      * @param parsedTrailer the parsed catalog in the trailer
      */
-    private void readVersionInTrailer(COSDictionary parsedTrailer)
+    protected void readVersionInTrailer(COSDictionary parsedTrailer)
     {
         COSObject root = (COSObject) parsedTrailer.getItem(COSName.ROOT);
         if (root != null)
