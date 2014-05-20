@@ -56,7 +56,8 @@ public class JPEGFactoryTest extends TestCase
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
-        document.close();
+
+        doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
     }
 
     /**
@@ -69,7 +70,8 @@ public class JPEGFactoryTest extends TestCase
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
         PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
-        document.close();
+
+        doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
     }
 
     /**
@@ -83,7 +85,8 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(3, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
-        document.close();
+
+        doWritePDF(document, ximage, testResultsDir, "jpegrgb.pdf");
     }
 
     /**
@@ -97,7 +100,8 @@ public class JPEGFactoryTest extends TestCase
         assertEquals(1, image.getColorModel().getNumComponents());
         PDImageXObject ximage = JPEGFactory.createFromImage(document, image);
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
-        document.close();
+
+        doWritePDF(document, ximage, testResultsDir, "jpeg256.pdf");
     }
 
     /**
