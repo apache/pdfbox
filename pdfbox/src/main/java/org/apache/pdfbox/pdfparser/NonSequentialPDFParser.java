@@ -484,6 +484,10 @@ public class NonSequentialPDFParser extends PDFParser
                 }
             }
         }
+        
+        // PDFBOX-1922: read the version again now that all objects have been resolved
+        readVersionInTrailer(trailer);
+        
         initialParseDone = true;
     }
 
