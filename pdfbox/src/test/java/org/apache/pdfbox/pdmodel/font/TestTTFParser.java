@@ -44,7 +44,7 @@ public class TestTTFParser
     public void testPostTable() throws IOException
     {
         InputStream arialIs = TestTTFParser.class.getClassLoader().getResourceAsStream(
-                "org/apache/pdfbox/resources/ttf/ArialMT.ttf");
+                "org/apache/pdfbox/ttf/ArialMT.ttf");
         Assert.assertNotNull(arialIs);
 
         TTFParser parser = new TTFParser();
