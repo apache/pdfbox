@@ -301,10 +301,18 @@ public class COSDocument extends COSBase implements Closeable
                 try
                 {
                     COSDictionary dic = (COSDictionary)realObject;
-                    COSName objectType = (COSName)dic.getItem( COSName.TYPE );
-                    if( objectType != null && objectType.equals( type ) )
+                    COSBase typeItem = dic.getItem(COSName.TYPE);
+                    if (typeItem != null && typeItem instanceof COSName)
                     {
-                        retval.add( object );
+                        COSName objectType = (COSName) typeItem;
+                        if (objectType.equals(type))
+                        {
+                            retval.add( object );
+                        }
+                    }
+                    else if (typeItem != null)
+                    {
+                        LOG.debug("Expected a /Name object after /Type, got '" + typeItem + "' instead");
                     }
                 }
                 catch (ClassCastException e)
