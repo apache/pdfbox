@@ -257,10 +257,17 @@ public class TTFGlyph2D implements Glyph2D
                         }
                         result = cmapWinUnicode.getGlyphId(result);
                     }
-                    else if (cmapMacintoshSymbol != null)
+                    else if (cmapMacintoshSymbol != null && MacOSRomanEncoding.INSTANCE.hasCodeForName(charactername))
                     {
                         result = MacOSRomanEncoding.INSTANCE.getCode(charactername);
                         result = cmapMacintoshSymbol.getGlyphId(result);
+                    }
+                    else if (cmapWinSymbol != null)
+                    {
+                        // fallback scenario if the glyph can't be found yet
+                        // maybe the 3,0 cmap provides a suitable mapping
+                        // see PDFBOX-2091
+                        result = cmapWinSymbol.getGlyphId(code);
                     }
                 }
             }
