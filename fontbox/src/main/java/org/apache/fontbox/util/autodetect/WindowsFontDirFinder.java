@@ -21,6 +21,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -134,8 +136,26 @@ public class WindowsFontDirFinder implements FontDirFinder
      */
     public Map<String, String> getCommonTTFMapping()
     {
-        // TODO Auto-generated method stub
-        return null;
+        HashMap<String,String> map = new HashMap<String,String>();
+        map.put("Arial", "arialmt");
+        map.put("Arial,Bold", "arialmtbold");
+        map.put("Arial,Italic", "arialmtitalic");
+        map.put("Arial,BoldItalic", "arialmtbolditalic");
+
+        map.put("TimesNewRoman", "timesnewromanpsmt");
+        map.put("TimesNewRoman,Bold", "timesnewromanpsmtbold");
+        map.put("TimesNewRoman,BoldItalic", "timesnewromanpsmtbolditalic");
+        map.put("TimesNewRoman,Italic", "timesnewromanpsmtitalic");
+        
+        map.put("Courier", "couriernewpsmt");
+        map.put("Courier,Bold", "couriernewpsmtbold");
+        map.put("Courier,Italic", "couriernewpsmtitalic");
+        map.put("Courier,BoldItalic", "couriernewpsmtbolditalic");
+
+        map.put("Symbol", "symbolmt");
+        map.put("ZapfDingbats", "Wingdings");
+
+        return Collections.unmodifiableMap(map);
     }
 
 }
