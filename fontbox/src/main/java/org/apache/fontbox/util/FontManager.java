@@ -107,8 +107,11 @@ public class FontManager
         if (ttfFont != null)
         {
             NamingTable namingTable = ttfFont.getNaming();
-            String normalizedName = normalizeFontname(namingTable.getPSName());
-            ttfFontfiles.put(normalizedName, ttfFilename);
+            if (namingTable != null && namingTable.getPSName() != null)
+            {
+                String normalizedName = normalizeFontname(namingTable.getPSName());
+                ttfFontfiles.put(normalizedName, ttfFilename);
+            }
         }
     }
 
@@ -216,6 +219,7 @@ public class FontManager
     private static void createFontmapping()
     {
         addFontFamilyMapping("ArialNarrow", "Arial", fontMappingTTF);
+        addFontFamilyMapping("CourierNew", "Courier", fontMappingTTF);
     }
 
     /**
@@ -246,9 +250,10 @@ public class FontManager
             loadFonts();
         }
         String fontfile = null;
-        if (ttfFontfiles.containsKey(fontname))
+        String normalizedFontname = normalizeFontname(fontname);
+        if (ttfFontfiles.containsKey(normalizedFontname))
         {
-            fontfile = ttfFontfiles.get(fontname);
+            fontfile = ttfFontfiles.get(normalizedFontname);
         }
         if (fontfile == null)
         {

@@ -66,7 +66,7 @@ public class NamingTable extends TTFTable
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
             String charset = "ISO-8859-1";
-            if( platform == 3 && encoding == 1 )
+            if( platform == 3 && (encoding == 1 || encoding == 0) )
             {
                 charset = "UTF-16";
             }
@@ -88,18 +88,21 @@ public class NamingTable extends TTFTable
             }
             String string = data.readString( nr.getStringLength(), charset );
             nr.setString( string );
-            int nameID = nr.getNameId();
-            if (nameID == NameRecord.NAME_FONT_FAMILY_NAME && fontFamily == null )
+            if( platform == 3 && (encoding == 1 || encoding == 0) )
             {
-                fontFamily = string;
-            }
-            if (NameRecord.NAME_FONT_SUB_FAMILY_NAME == nameID && fontSubFamily == null)
-            {
-                fontSubFamily = string;
-            }
-            if ( nameID == NameRecord.NAME_POSTSCRIPT_NAME && psName == null )
-            {
-                psName = string;
+                int nameID = nr.getNameId();
+                if (nameID == NameRecord.NAME_FONT_FAMILY_NAME && fontFamily == null )
+                {
+                    fontFamily = string;
+                }
+                if (NameRecord.NAME_FONT_SUB_FAMILY_NAME == nameID && fontSubFamily == null)
+                {
+                    fontSubFamily = string;
+                }
+                if ( nameID == NameRecord.NAME_POSTSCRIPT_NAME && psName == null )
+                {
+                    psName = string;
+                }
             }
         }
     }

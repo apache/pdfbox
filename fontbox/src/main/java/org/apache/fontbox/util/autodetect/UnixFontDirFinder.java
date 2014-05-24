@@ -53,9 +53,9 @@ public class UnixFontDirFinder extends NativeFontDirFinder
         map.put("TimesNewRoman,Bold","LiberationSerif-Bold");
         map.put("TimesNewRoman,Italic","LiberationSerif-Italic");
         map.put("TimesNewRoman","LiberationSerif");
-        map.put("ArialNarrow,BoldItalic","LiberationSans-BoldItalic");
-        map.put("ArialNarrow,Italic","LiberationSans-Italic");
-        map.put("ArialNarrow,Bold","LiberationSans-Bold");
+        map.put("Arial,BoldItalic","LiberationSans-BoldItalic");
+        map.put("Arial,Italic","LiberationSans-Italic");
+        map.put("Arial,Bold","LiberationSans-Bold");
         map.put("Arial","LiberationSans");
         map.put("Symbol", "OpenSymbol");
         map.put("ZapfDingbats", "Dingbats");
