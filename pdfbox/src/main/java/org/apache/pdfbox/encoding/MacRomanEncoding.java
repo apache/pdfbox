@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.encoding;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
@@ -25,7 +23,6 @@ import org.apache.pdfbox.cos.COSName;
  * This is an interface to a text encoder.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.10 $
  */
 public class MacRomanEncoding extends Encoding
 {
@@ -249,21 +246,12 @@ public class MacRomanEncoding extends Encoding
         addCharacterEncoding( 0264, "yen" );
         addCharacterEncoding( 0172, "z" );
         addCharacterEncoding( 060, "zero" );
+        // adding an additional mapping as defined in Appendix D of the pdf spec
+        // we must not add it to both mappings as the nameToCode mapping
+        // wouldn't be unique
+        codeToName.put(0312, "space");
     }
     
-    public String getName( int code ) throws IOException
-  	{
-  		if (!codeToName.containsKey(code) && code == 0312) {
-  				/*
-  				 * The space character is also encoded as 0312 in MacRoman and 0240 in WinAnsi. 
-  				 * The meaning of this duplicate code is "nonbreaking space" but it is 
-  				 * typographically the same as space. 
-  				 */
-  				return "space";
-  		}
-  		return codeToName.get( code );
-  	}
-
     /**
      * Convert this standard java object to a COS object.
      *
