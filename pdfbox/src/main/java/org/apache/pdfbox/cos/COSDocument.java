@@ -257,7 +257,7 @@ public class COSDocument extends COSBase implements Closeable
                     }
                     else if (typeItem != null)
                     {
-                        LOG.warn("Expected a /Name object after /Type, got '" + typeItem + "' instead");
+                        LOG.debug("Expected a /Name object after /Type, got '" + typeItem + "' instead");
                     }
                 }
                 catch (ClassCastException e)
