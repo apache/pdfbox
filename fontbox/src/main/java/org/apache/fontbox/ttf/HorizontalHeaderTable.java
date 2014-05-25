@@ -22,7 +22,6 @@ import java.io.IOException;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class HorizontalHeaderTable extends TTFTable
 {
@@ -75,6 +74,7 @@ public class HorizontalHeaderTable extends TTFTable
         reserved5 = data.readSignedShort();
         metricDataFormat = data.readSignedShort();
         numberOfHMetrics = data.readUnsignedShort();
+        initialized = true;
     }
     
     /**

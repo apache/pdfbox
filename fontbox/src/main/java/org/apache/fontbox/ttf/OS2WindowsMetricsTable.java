@@ -758,5 +758,6 @@ public class OS2WindowsMetricsTable extends TTFTable
             codePageRange1 = data.readUnsignedInt();
             codePageRange2 = data.readUnsignedInt();
         }
+        initialized = true;
     }
 }

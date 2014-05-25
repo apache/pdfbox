@@ -22,7 +22,6 @@ import java.io.IOException;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class TTFTable 
 {
@@ -30,7 +29,12 @@ public class TTFTable
     private long checkSum;
     private long offset;
     private long length;
-      
+    
+    /**
+     * Indicates if the table is initialized or not.
+     */
+    protected boolean initialized = false;
+    
     /**
      * @return Returns the checkSum.
      */
@@ -88,6 +92,15 @@ public class TTFTable
         this.tag = tagValue;
     }
     
+    /**
+     * Indicates if the table is already initialized.
+     * 
+     * @return true if the table is initialized
+     */
+    public boolean getInitialized()
+    {
+        return initialized;
+    }
     /**
      * This will read the required data from the stream.
      * 

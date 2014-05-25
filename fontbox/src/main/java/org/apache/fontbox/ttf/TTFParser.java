@@ -22,20 +22,37 @@ import java.io.IOException;
  * A true type font file parser.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.2 $
  */
 public class TTFParser extends AbstractTTFParser
 {
+    /**
+     * Constructor.
+     */
     public TTFParser()
     {
         super(false);
     }
 
+    /**
+     * Constructor.
+     *  
+     * @param isEmbedded indicates whether the font is embedded or not.
+     */
     public TTFParser(boolean isEmbedded)
     {
         super(isEmbedded);
     }
 
+    /**
+     *  Constructor.
+     *  
+     * @param isEmbedded indicates whether the font is embedded or not.
+     * @param parseOnDemand indicates whether the tables of the font should be parsed on demand only or not.
+     */
+    public TTFParser(boolean isEmbedded, boolean parseOnDemand)
+    {
+        super(isEmbedded, parseOnDemand);
+    }
     /**
      * A simple command line program to test parsing of a TTF file. <br/>
      * usage: java org.pdfbox.ttf.TTFParser &lt;ttf-file&gt;
@@ -62,7 +79,6 @@ public class TTFParser extends AbstractTTFParser
     protected void parseTables(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
         super.parseTables(font, raf);
-
         // check others mandatory tables
         if (!isEmbedded && font.getCMAP() == null)
         {

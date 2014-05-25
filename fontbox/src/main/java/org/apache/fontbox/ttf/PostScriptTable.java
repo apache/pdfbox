@@ -53,7 +53,6 @@ public class PostScriptTable extends TTFTable
      */
     public void initData(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
-        MaximumProfileTable maxp = ttf.getMaximumProfile();
         formatType = data.read32Fixed();
         italicAngle = data.read32Fixed();
         underlinePosition = data.readSignedShort();
@@ -120,7 +119,7 @@ public class PostScriptTable extends TTFTable
         }
         else if (formatType == 2.5f)
         {
-            int[] glyphNameIndex = new int[maxp.getNumGlyphs()];
+            int[] glyphNameIndex = new int[ttf.getNumberOfGlyphs()];
             for (int i = 0; i < glyphNameIndex.length; i++)
             {
                 int offset = data.readSignedByte();
@@ -141,6 +140,7 @@ public class PostScriptTable extends TTFTable
         {
             // no postscript information is provided.
         }
+        initialized = true;
     }
 
     /**

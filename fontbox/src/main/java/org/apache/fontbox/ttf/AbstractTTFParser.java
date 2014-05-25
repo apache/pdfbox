@@ -19,9 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class represents a true type font parser.
@@ -31,6 +29,7 @@ abstract class AbstractTTFParser
 {
 
     protected boolean isEmbedded = false;
+    protected boolean parseOnDemandOnly = false;
 
     /**
      * Constructor.
@@ -40,7 +39,19 @@ abstract class AbstractTTFParser
      */
     public AbstractTTFParser(boolean fontIsEmbedded)
     {
+        this(fontIsEmbedded, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param fontIsEmbedded indicates whether the font is embedded or not.
+     * @param parseOnDemand indicates whether the tables of the font should be parsed on demand only or not.
+     */
+    public AbstractTTFParser(boolean fontIsEmbedded, boolean parseOnDemand)
+    {
         isEmbedded = fontIsEmbedded;
+        parseOnDemandOnly = parseOnDemand;
     }
 
     /**
@@ -101,9 +112,11 @@ abstract class AbstractTTFParser
             TTFTable table = readTableDirectory(raf);
             font.addTable(table);
         }
-
-        // need to initialize a couple tables in a certain order
-        parseTables(font, raf);
+        // parse tables if wanted
+        if (!parseOnDemandOnly)
+        {
+            parseTables(font, raf);
+        }
 
         return font;
     }
@@ -117,45 +130,36 @@ abstract class AbstractTTFParser
      */
     protected void parseTables(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
-        List<TTFTable> initialized = new ArrayList<TTFTable>();
+        Iterator<TTFTable> iter = font.getTables().iterator();
+        while (iter.hasNext())
+        {
+            TTFTable table = iter.next();
+            if (!table.getInitialized())
+            {
+                font.initializeTable(table);
+            }
+        }
+
         HeaderTable head = font.getHeader();
         if (head == null)
         {
             throw new IOException("head is mandatory");
         }
-        raf.seek(head.getOffset());
-        head.initData(font, raf);
-        initialized.add(head);
 
         HorizontalHeaderTable hh = font.getHorizontalHeader();
         if (hh == null)
         {
             throw new IOException("hhead is mandatory");
         }
-        raf.seek(hh.getOffset());
-        hh.initData(font, raf);
-        initialized.add(hh);
 
         MaximumProfileTable maxp = font.getMaximumProfile();
-        if (maxp != null)
-        {
-            raf.seek(maxp.getOffset());
-            maxp.initData(font, raf);
-            initialized.add(maxp);
-        }
-        else
+        if (maxp == null)
         {
             throw new IOException("maxp is mandatory");
         }
 
         PostScriptTable post = font.getPostScript();
-        if (post != null)
-        {
-            raf.seek(post.getOffset());
-            post.initData(font, raf);
-            initialized.add(post);
-        }
-        else if (!isEmbedded)
+        if (post == null && !isEmbedded)
         {
             // in an embedded font this table is optional
             throw new IOException("post is mandatory");
@@ -166,21 +170,6 @@ abstract class AbstractTTFParser
         {
             throw new IOException("loca is mandatory");
         }
-        raf.seek(loc.getOffset());
-        loc.initData(font, raf);
-        initialized.add(loc);
-
-        Iterator<TTFTable> iter = font.getTables().iterator();
-        while (iter.hasNext())
-        {
-            TTFTable table = iter.next();
-            if (!initialized.contains(table))
-            {
-                raf.seek(table.getOffset());
-                table.initData(font, raf);
-            }
-        }
-
         // check other mandatory tables
         if (font.getGlyph() == null)
         {

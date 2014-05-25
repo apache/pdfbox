@@ -102,7 +102,7 @@ public class FontManager
      */
     private static void analyzeTTF(String ttfFilename) throws IOException
     {
-        TTFParser ttfParser = new TTFParser();
+        TTFParser ttfParser = new TTFParser(false,true);
         TrueTypeFont ttfFont = ttfParser.parseTTF(ttfFilename);
         if (ttfFont != null)
         {
