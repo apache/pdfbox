@@ -92,14 +92,14 @@ public class CMAPTable extends TTFTable
         for (int i = 0; i < numberOfTables; i++)
         {
             CMAPEncodingEntry cmap = new CMAPEncodingEntry();
-            cmap.initData(ttf, data);
+            cmap.initData(data);
             cmaps[i] = cmap;
         }
         for (int i = 0; i < numberOfTables; i++)
         {
-            cmaps[i].initSubtable(ttf, data);
+            cmaps[i].initSubtable(this, ttf.getNumberOfGlyphs(), data);
         }
-
+        initialized = true;
     }
 
     /**

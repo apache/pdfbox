@@ -22,7 +22,6 @@ import java.io.IOException;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class MaximumProfileTable extends TTFTable
 {
@@ -282,5 +281,6 @@ public class MaximumProfileTable extends TTFTable
         maxSizeOfInstructions = data.readUnsignedShort();
         maxComponentElements = data.readUnsignedShort();
         maxComponentDepth = data.readUnsignedShort();
+        initialized = true;
     }
 }
