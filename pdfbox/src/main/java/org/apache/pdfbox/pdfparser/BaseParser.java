@@ -503,7 +503,7 @@ public abstract class BaseParser
             {
                 // Couldn't determine length from dict: just
                 // scan until we find endstream:
-                readUntilEndStream( out );
+                readUntilEndStream(new EndstreamOutputStream(out));
             }
             else
             {
@@ -583,7 +583,7 @@ public abstract class BaseParser
                       	IOUtils.closeQuietly(out);
                         out = stream.createFilteredStream( streamLength );
                         // scan until we find endstream:
-                        readUntilEndStream( out );
+                        readUntilEndStream(new EndstreamOutputStream(out));
                     }
                 }
             }
@@ -621,7 +621,7 @@ public abstract class BaseParser
                      * If for some reason we get something else here, Read until we find the next
                      * "endstream"
                      */
-                    readUntilEndStream( out );
+                    readUntilEndStream(new EndstreamOutputStream(out));
                     endStream = readString();
                     if( !endStream.equals( ENDSTREAM_STRING ) )
                     {
@@ -747,6 +747,8 @@ public abstract class BaseParser
             }
             
         }  // while
+        
+        out.flush(); // this writes a lonely CR or drops trailing CR LF and LF
     }
     
     /**

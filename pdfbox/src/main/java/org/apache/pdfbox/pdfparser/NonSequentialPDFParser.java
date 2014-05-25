@@ -1604,7 +1604,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (useReadUntilEnd)
             {
                 out = stream.createFilteredStream(streamLengthObj);
-                readUntilEndStream(out);
+                readUntilEndStream(new EndstreamOutputStream(out));
             }
             String endStream = readString();
             if (!endStream.equals("endstream"))
@@ -1646,9 +1646,9 @@ public class NonSequentialPDFParser extends PDFParser
     	}
     	return streamLengthIsValid;
     }
+    
     private void readUntilEndStream(final OutputStream out) throws IOException
     {
-
         int bufSize;
         int charMatchCount = 0;
         byte[] keyw = ENDSTREAM;
@@ -1660,7 +1660,7 @@ public class NonSequentialPDFParser extends PDFParser
         // beginning of buffer
         while ((bufSize = pdfSource.read(streamCopyBuf, charMatchCount, streamCopyBufLen - charMatchCount)) > 0)
         {
-        	// number of already matching chars
+            // number of already matching chars
             int startingMatchCount = charMatchCount;
             int bIdx = charMatchCount;
             int quickTestIdx;
@@ -1693,7 +1693,6 @@ public class NonSequentialPDFParser extends PDFParser
 
                 final byte ch = streamCopyBuf[bIdx]; // could be negative - but
                                                      // we only compare to ASCII
-
                 if (ch == keyw[charMatchCount])
                 {
                     if (++charMatchCount == keyw.length)
@@ -1710,7 +1709,6 @@ public class NonSequentialPDFParser extends PDFParser
                         // maybe ENDSTREAM is missing but we could have ENDOBJ
                         keyw = ENDOBJ;
                         charMatchCount++;
-
                     }
                     else
                     {
@@ -1742,17 +1740,17 @@ public class NonSequentialPDFParser extends PDFParser
             {
                 // keyword matched; 
             	// unread matched keyword (endstream/endobj) and following buffered content
-           		pdfSource.unread(streamCopyBuf, contentBytes, bufSize - contentBytes - keyw.length + startingMatchCount);
+       		pdfSource.unread(streamCopyBuf, contentBytes, bufSize - contentBytes - keyw.length + startingMatchCount);
                 break;
-
             }
             else
             {
                 // copy matched chars at start of buffer
                 System.arraycopy(keyw, 0, streamCopyBuf, 0, charMatchCount);
             }
-
         } // while
+
+        out.flush(); // this writes a lonely CR or drops trailing CR LF and LF
     }
     
     /**

@@ -29,6 +29,7 @@ import org.apache.pdfbox.io.TestRandomAccessBuffer;
 import org.apache.pdfbox.io.TestRandomAccessFileOutputStream;
 import org.apache.pdfbox.io.ccitt.TestCCITTFaxG31DDecodeInputStream;
 import org.apache.pdfbox.io.ccitt.TestPackedBitArray;
+import org.apache.pdfbox.pdfparser.EndstreamOutputStreamTest;
 import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocument;
 import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
@@ -124,6 +125,9 @@ public class TestAll extends TestCase
         suite.addTestSuite(PDJpegTest.class);        
         suite.addTestSuite(TestPDFText2HTML.class);
         suite.addTestSuite(PDColorStateTest.class);
+
+        suite.addTestSuite(EndstreamOutputStreamTest.class);
+        
 
         return suite;
     }
