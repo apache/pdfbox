@@ -748,6 +748,10 @@ public class PDFParser extends BaseParser
         {
             long currObjID = readObjectNumber(); // first obj id
             long count = readLong(); // the number of objects in the xref table
+            if (count == 0)
+            {
+                LOG.warn("Count in xref table is 0 at offset " + pdfSource.getOffset());
+            }
             skipSpaces();
             for(int i = 0; i < count; i++)
             {
