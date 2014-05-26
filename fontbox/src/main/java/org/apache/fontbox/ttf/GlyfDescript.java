@@ -112,7 +112,6 @@ public abstract class GlyfDescript implements GlyphDescription
      */
     protected void readInstructions(TTFDataStream bais, int count) throws IOException
     {
-        instructions = new int[count];
         instructions = bais.readUnsignedByteArray(count);
     }
 
