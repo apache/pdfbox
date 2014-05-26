@@ -16,8 +16,10 @@
  */
 package org.apache.fontbox.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -64,21 +66,27 @@ public class FontManager
             List<URL> fonts = fontfinder.find();
             for (URL font : fonts)
             {
-                String fontfilename = font.getPath();
-                if (fontfilename.toLowerCase().endsWith(".ttf"))
+                try
                 {
-                    try
+                    // the URL may contain some escaped characters like spaces
+                    // use the URI to decode such escape sequences
+                    String fontfilename = new File(font.toURI()).getPath();
+                    if (fontfilename.toLowerCase().endsWith(".ttf"))
                     {
                         analyzeTTF(fontfilename);
                     }
-                    catch (IOException exception)
+                    else
                     {
-                        LOG.debug("Can't read external font: " + fontfilename, exception);
+                        LOG.debug("Unsupported font format for external font: " + fontfilename);
                     }
                 }
-                else
+                catch (IOException exception)
                 {
-                    LOG.debug("Unsupported font format for external font: " + fontfilename);
+                    LOG.debug("Can't read external font: " + font.getPath(), exception);
+                }
+                catch (URISyntaxException exception)
+                {
+                    LOG.debug("Can't read external font: " + font.getPath(), exception);
                 }
             }
             addFontMapping(fontfinder.getCommonTTFMapping(), fontMappingTTF);
@@ -220,6 +228,7 @@ public class FontManager
     {
         addFontFamilyMapping("ArialNarrow", "Arial", fontMappingTTF);
         addFontFamilyMapping("CourierNew", "Courier", fontMappingTTF);
+        addFontFamilyMapping("TimesNewRomanPSMT", "TimesNewRoman", fontMappingTTF);
     }
 
     /**
