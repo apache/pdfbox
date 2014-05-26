@@ -66,9 +66,12 @@ public class NamingTable extends TTFTable
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
             String charset = "ISO-8859-1";
+            boolean isPlatform310 = false;
+            boolean isPlatform10 = false;
             if( platform == 3 && (encoding == 1 || encoding == 0) )
             {
                 charset = "UTF-16";
+                isPlatform310 = true;
             }
             else if( platform == 2 )
             {
@@ -86,24 +89,37 @@ public class NamingTable extends TTFTable
                     charset = "ISO-8859-1";
                 }
             }
+            else if ( platform == 1 && encoding == 0)
+            {
+                isPlatform10 = true;
+            }
             String string = data.readString( nr.getStringLength(), charset );
             nr.setString( string );
-            if( platform == 3 && (encoding == 1 || encoding == 0) )
+            int nameID = nr.getNameId();
+            if (nameID == NameRecord.NAME_FONT_FAMILY_NAME)
             {
-                int nameID = nr.getNameId();
-                if (nameID == NameRecord.NAME_FONT_FAMILY_NAME && fontFamily == null )
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && fontFamily == null))
                 {
                     fontFamily = string;
                 }
-                if (NameRecord.NAME_FONT_SUB_FAMILY_NAME == nameID && fontSubFamily == null)
+            }            
+            else if (nameID == NameRecord.NAME_FONT_SUB_FAMILY_NAME)
+            {
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && fontSubFamily == null))
                 {
                     fontSubFamily = string;
                 }
-                if ( nameID == NameRecord.NAME_POSTSCRIPT_NAME && psName == null )
+            }            
+            else if (nameID == NameRecord.NAME_POSTSCRIPT_NAME)
+            {
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && psName == null))
                 {
                     psName = string;
                 }
-            }
+            }            
         }
         initialized = true;
     }
