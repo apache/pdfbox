@@ -81,14 +81,9 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public class NonSequentialPDFParser extends PDFParser
 {
-    private static final String PDF_HEADER = "%PDF-";
-    private static final String FDF_HEADER = "%FDF-";
-    private static final String PDF_DEFAULT_VERSION = "1.4";
-    private static final String FDF_DEFAULT_VERSION = "1.0";
+    private static final byte[] XREF = new byte[] { 'x', 'r', 'e', 'f' };
 
-	private static final byte[] XREF = new byte[] { 'x', 'r', 'e', 'f' };
-
-	private static final int E = 'e';
+    private static final int E = 'e';
     private static final int N = 'n';
     private static final int X = 'x';
 
@@ -359,6 +354,17 @@ public class NonSequentialPDFParser extends PDFParser
                 // use existing parser to parse xref table
                 parseXrefTable(prev);
                 // parse the last trailer.
+                long trailerOffset = pdfSource.getOffset();
+                //PDFBOX-1739 skip extra xref entries in RegisSTAR documents
+                while (isLenient && pdfSource.peek() != 't')
+                {
+                    if (pdfSource.getOffset() == trailerOffset)
+                    {
+                        // warn only the first time
+                        LOG.warn("Expected trailer object at position " + trailerOffset + ", keep trying");
+                    }
+                    readLine();
+                }
                 if (!parseTrailer())
                 {
                     throw new IOException("Expected trailer object at position: " + pdfSource.getOffset());
