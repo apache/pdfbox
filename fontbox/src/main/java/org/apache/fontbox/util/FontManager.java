@@ -19,8 +19,7 @@ package org.apache.fontbox.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,14 +62,14 @@ public class FontManager
         try
         {
             FontFileFinder fontfinder = new FontFileFinder();
-            List<URL> fonts = fontfinder.find();
-            for (URL font : fonts)
+            List<URI> fonts = fontfinder.find();
+            for (URI font : fonts)
             {
                 try
                 {
                     // the URL may contain some escaped characters like spaces
                     // use the URI to decode such escape sequences
-                    String fontfilename = new File(font.toURI()).getPath();
+                    String fontfilename = new File(font).getPath();
                     if (fontfilename.toLowerCase().endsWith(".ttf"))
                     {
                         analyzeTTF(fontfilename);
@@ -81,10 +80,6 @@ public class FontManager
                     }
                 }
                 catch (IOException exception)
-                {
-                    LOG.debug("Can't read external font: " + font.getPath(), exception);
-                }
-                catch (URISyntaxException exception)
                 {
                     LOG.debug("Can't read external font: " + font.getPath(), exception);
                 }
