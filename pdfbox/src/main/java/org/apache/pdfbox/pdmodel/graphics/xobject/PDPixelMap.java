@@ -351,22 +351,7 @@ public class PDPixelMap extends PDXObjectImage
             }
             else
             {
-                if (colorspace instanceof PDICCBased)
-                {
-                    if (((PDICCBased)colorspace).getNumberOfComponents() == 1)
-                    {
-                        byte[] map = new byte[] {(byte)0xff};
-                        cm = new IndexColorModel(bpc, 1, map, map, map, Transparency.OPAQUE);
-                    }
-                    else
-                    {
-                        cm = colorspace.createColorModel( bpc );
-                    }
-                }
-                else
-                {
-                    cm = colorspace.createColorModel( bpc );
-                }
+                cm = colorspace.createColorModel( bpc );
             }
 
             LOG.debug("ColorModel: " + cm.toString());
