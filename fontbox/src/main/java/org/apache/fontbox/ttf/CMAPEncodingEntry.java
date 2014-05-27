@@ -37,91 +37,92 @@ public class CMAPEncodingEntry
 	private int[] glyphIdToCharacterCode;
 	private Map<Integer, Integer> characterCodeToGlyphId = new HashMap<Integer, Integer>();
 
-	/**
-	 * This will read the required data from the stream.
-	 * 
-	 * @param ttf The font that is being read.
-	 * @param data The stream to read the data from.
-	 * @throws IOException If there is an error reading the data.
-	 */
-	public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
-	{
-		platformId = data.readUnsignedShort();
-		platformEncodingId = data.readUnsignedShort();
-		subTableOffset = data.readUnsignedInt();
-	}
+    /**
+     * This will read the required data from the stream.
+     * 
+     * @param data The stream to read the data from.
+     * @throws IOException If there is an error reading the data.
+     */
+    public void initData(TTFDataStream data) throws IOException
+    {
+        platformId = data.readUnsignedShort();
+        platformEncodingId = data.readUnsignedShort();
+        subTableOffset = data.readUnsignedInt();
+    }
 
-	/**
-	 * This will read the required data from the stream.
-	 * 
-	 * @param ttf The font that is being read.
-	 * @param data The stream to read the data from.
-	 * @throws IOException If there is an error reading the data.
-	 */
-	public void initSubtable( TrueTypeFont ttf, TTFDataStream data ) throws IOException
-	{
-		data.seek( ttf.getCMAP().getOffset() + subTableOffset );
-		int subtableFormat = data.readUnsignedShort();
-		long length;
-		long version;
-		int numGlyphs;
-		if (subtableFormat < 8) {
-			length = data.readUnsignedShort();
-			version = data.readUnsignedShort();
-			numGlyphs = ttf.getMaximumProfile().getNumGlyphs();
-		} else {
-			// read an other UnsignedShort to read a Fixed32
-			data.readUnsignedShort();
-			length = data.readUnsignedInt();
-			version = data.readUnsignedInt();
-			numGlyphs = ttf.getMaximumProfile().getNumGlyphs();         
-		}
+    /**
+     * This will read the required data from the stream.
+     * 
+     * @param cmap the CMAP this encoding belongs to.
+     * @param numGlyphs number of glyphs.
+     * @param data The stream to read the data from.
+     * @throws IOException If there is an error reading the data.
+     */
+    public void initSubtable(CMAPTable cmap, int numGlyphs, TTFDataStream data) throws IOException
+    {
+        data.seek(cmap.getOffset() + subTableOffset);
+        int subtableFormat = data.readUnsignedShort();
+        long length;
+        long version;
+        if (subtableFormat < 8)
+        {
+            length = data.readUnsignedShort();
+            version = data.readUnsignedShort();
+        }
+        else
+        {
+            // read an other UnsignedShort to read a Fixed32
+            data.readUnsignedShort();
+            length = data.readUnsignedInt();
+            version = data.readUnsignedInt();
+        }
 
-		switch (subtableFormat) {
-		case 0:
-			processSubtype0(ttf, data);
-			break;
-		case 2:
-			processSubtype2(ttf, data, numGlyphs);
-			break;
-		case 4:
-			processSubtype4(ttf, data, numGlyphs);
-			break;
-		case 6:
-			processSubtype6(ttf, data, numGlyphs);
-			break;
-		case 8:
-			processSubtype8(ttf, data, numGlyphs);
-			break;
-		case 10:
-			processSubtype10(ttf, data, numGlyphs);
-			break;
-		case 12:
-			processSubtype12(ttf, data, numGlyphs);
-			break;
-		case 13:
-			processSubtype13(ttf, data, numGlyphs); 
-			break;
-		case 14:
-			processSubtype14(ttf, data, numGlyphs);
-			break;
-		default:
-			throw new IOException( "Unknown cmap format:" + subtableFormat );   
-		}
-	}
+        switch (subtableFormat)
+        {
+        case 0:
+            processSubtype0(data);
+            break;
+        case 2:
+            processSubtype2(data, numGlyphs);
+            break;
+        case 4:
+            processSubtype4(data, numGlyphs);
+            break;
+        case 6:
+            processSubtype6(data, numGlyphs);
+            break;
+        case 8:
+            processSubtype8(data, numGlyphs);
+            break;
+        case 10:
+            processSubtype10(data, numGlyphs);
+            break;
+        case 12:
+            processSubtype12(data, numGlyphs);
+            break;
+        case 13:
+            processSubtype13(data, numGlyphs);
+            break;
+        case 14:
+            processSubtype14(data, numGlyphs);
+            break;
+        default:
+            throw new IOException("Unknown cmap format:" + subtableFormat);
+        }
+    }
 
-	/**
-	 * Reads a format 8 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype8( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		// --- is32 is a 65536 BITS array ( = 8192 BYTES) 
-		int[] is32 = data.readUnsignedByteArray(8192);
-		long nbGroups = data.readUnsignedInt();
+    /**
+     * Reads a format 8 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype8(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        // --- is32 is a 65536 BITS array ( = 8192 BYTES)
+        int[] is32 = data.readUnsignedByteArray(8192);
+        long nbGroups = data.readUnsignedInt();
 
 		// --- nbGroups shouldn't be greater than 65536
 		if (nbGroups > 65536) {
@@ -176,20 +177,21 @@ public class CMAPEncodingEntry
 		}
 	}
 
-	/**
-	 * Reads a format 10 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype10( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		long startCode = data.readUnsignedInt();
-		long numChars = data.readUnsignedInt();
-		if (numChars > Integer.MAX_VALUE) {
-			throw new IOException("Invalid number of Characters");
-		}
+    /**
+     * Reads a format 10 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype10(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        long startCode = data.readUnsignedInt();
+        long numChars = data.readUnsignedInt();
+        if (numChars > Integer.MAX_VALUE)
+        {
+            throw new IOException("Invalid number of Characters");
+        }
 
 		if ( startCode < 0 || startCode > 0x0010FFFF 
 				|| (startCode + numChars) > 0x0010FFFF
@@ -199,22 +201,22 @@ public class CMAPEncodingEntry
 		}   
 	}   
 
-	/**
-	 * Reads a format 12 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype12( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		long nbGroups = data.readUnsignedInt();
-		glyphIdToCharacterCode = new int[numGlyphs];
-		for (long i = 0; i < nbGroups ; ++i ) 
-		{
-			long firstCode = data.readUnsignedInt();
-			long endCode = data.readUnsignedInt();
-			long startGlyph = data.readUnsignedInt();
+    /**
+     * Reads a format 12 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype12(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        long nbGroups = data.readUnsignedInt();
+        glyphIdToCharacterCode = new int[numGlyphs];
+        for (long i = 0; i < nbGroups; ++i)
+        {
+            long firstCode = data.readUnsignedInt();
+            long endCode = data.readUnsignedInt();
+            long startGlyph = data.readUnsignedInt();
 
 			if ( firstCode < 0 || firstCode > 0x0010FFFF 
 					|| ( firstCode >= 0x0000D800 && firstCode <= 0x0000DFFF ) ) {
@@ -242,21 +244,21 @@ public class CMAPEncodingEntry
 		}
 	}
 
-	/**
-	 * Reads a format 13 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype13( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		long nbGroups = data.readUnsignedInt();
-		for (long i = 0; i < nbGroups ; ++i ) 
-		{
-			long firstCode = data.readUnsignedInt();
-			long endCode = data.readUnsignedInt();
-			long glyphId = data.readUnsignedInt();
+    /**
+     * Reads a format 13 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype13(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        long nbGroups = data.readUnsignedInt();
+        for (long i = 0; i < nbGroups; ++i)
+        {
+            long firstCode = data.readUnsignedInt();
+            long endCode = data.readUnsignedInt();
+            long glyphId = data.readUnsignedInt();
 
 			if (glyphId > numGlyphs) {
 				throw new IOException("CMap contains an invalid glyph index");  
@@ -283,57 +285,57 @@ public class CMAPEncodingEntry
 		}
 	}
 
-	/**
-	 * Reads a format 14 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype14( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		throw new IOException("CMap subtype 14 not yet implemented");
-	}
+    /**
+     * Reads a format 14 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype14(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        throw new IOException("CMap subtype 14 not yet implemented");
+    }
 
-	/**
-	 * Reads a format 6 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype6( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		int firstCode = data.readUnsignedShort();
-		int entryCount = data.readUnsignedShort();
-		glyphIdToCharacterCode = new int[numGlyphs];
-		int[] glyphIdArray = data.readUnsignedShortArray( entryCount );
-		for( int i=0; i<entryCount; i++)
-		{
-			glyphIdToCharacterCode[glyphIdArray[i]] = firstCode+i;
-			characterCodeToGlyphId.put((firstCode+i), glyphIdArray[i]);
-		}
-	}
+    /**
+     * Reads a format 6 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype6(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        int firstCode = data.readUnsignedShort();
+        int entryCount = data.readUnsignedShort();
+        glyphIdToCharacterCode = new int[numGlyphs];
+        int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
+        for (int i = 0; i < entryCount; i++)
+        {
+            glyphIdToCharacterCode[glyphIdArray[i]] = firstCode + i;
+            characterCodeToGlyphId.put((firstCode + i), glyphIdArray[i]);
+        }
+    }
 
-	/**
-	 * Reads a format 4 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype4( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		int segCountX2 = data.readUnsignedShort();
-		int segCount = segCountX2/2;
-		int searchRange = data.readUnsignedShort();
-		int entrySelector = data.readUnsignedShort();
-		int rangeShift = data.readUnsignedShort();
-		int[] endCount = data.readUnsignedShortArray( segCount );
-		int reservedPad = data.readUnsignedShort();
-		int[] startCount = data.readUnsignedShortArray( segCount );
-		int[] idDelta = data.readUnsignedShortArray( segCount );
-		int[] idRangeOffset = data.readUnsignedShortArray( segCount );
+    /**
+     * Reads a format 4 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype4(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        int segCountX2 = data.readUnsignedShort();
+        int segCount = segCountX2 / 2;
+        int searchRange = data.readUnsignedShort();
+        int entrySelector = data.readUnsignedShort();
+        int rangeShift = data.readUnsignedShort();
+        int[] endCount = data.readUnsignedShortArray(segCount);
+        int reservedPad = data.readUnsignedShort();
+        int[] startCount = data.readUnsignedShortArray(segCount);
+        int[] idDelta = data.readUnsignedShortArray(segCount);
+        int[] idRangeOffset = data.readUnsignedShortArray(segCount);
 
 		Map<Integer, Integer> tmpGlyphToChar = new HashMap<Integer, Integer>();
 
@@ -390,23 +392,23 @@ public class CMAPEncodingEntry
 		}
 	}
 
-	/**
-	 * Read a format 2 subtable.
-	 * @param ttf the TrueTypeFont instance holding the parsed data.
-	 * @param data the data stream of the to be parsed ttf font
-	 * @param numGlyphs number of glyphs to be read
-	 * @throws IOException If there is an error parsing the true type font.
-	 */
-	protected void processSubtype2( TrueTypeFont ttf, TTFDataStream data, int numGlyphs ) 
-			throws IOException {
-		int[] subHeaderKeys = new int[256];
-		// ---- keep the Max Index of the SubHeader array to know its length
-		int maxSubHeaderIndex = 0;
-		for( int i=0; i<256; i++)
-		{
-			subHeaderKeys[i] = data.readUnsignedShort();
-			maxSubHeaderIndex = Math.max(maxSubHeaderIndex, subHeaderKeys[i]/8);
-		}
+    /**
+     * Read a format 2 subtable.
+     * 
+     * @param data the data stream of the to be parsed ttf font
+     * @param numGlyphs number of glyphs to be read
+     * @throws IOException If there is an error parsing the true type font.
+     */
+    protected void processSubtype2(TTFDataStream data, int numGlyphs) throws IOException
+    {
+        int[] subHeaderKeys = new int[256];
+        // ---- keep the Max Index of the SubHeader array to know its length
+        int maxSubHeaderIndex = 0;
+        for (int i = 0; i < 256; i++)
+        {
+            subHeaderKeys[i] = data.readUnsignedShort();
+            maxSubHeaderIndex = Math.max(maxSubHeaderIndex, subHeaderKeys[i] / 8);
+        }
 
 		// ---- Read all SubHeaders to avoid useless seek on DataSource
 		SubHeader[] subHeaders = new SubHeader[maxSubHeaderIndex + 1]; 
@@ -457,8 +459,7 @@ public class CMAPEncodingEntry
 	 * @param data
 	 * @throws IOException
 	 */
-	protected void processSubtype0( TrueTypeFont ttf, TTFDataStream data ) 
-			throws IOException {
+	protected void processSubtype0( TTFDataStream data ) throws IOException {
 		byte[] glyphMapping = data.read( 256 );
 		glyphIdToCharacterCode = new int[256];
 		for( int i=0;i < glyphMapping.length; i++ )
@@ -518,11 +519,11 @@ public class CMAPEncodingEntry
 	 * @param characterCode
 	 * @return glyphId
 	 */
-        public int getGlyphId(int characterCode)
-        {
-            Integer glyphId = characterCodeToGlyphId.get(characterCode);
-            return glyphId == null ? 0 : glyphId.intValue();
-        }
+	public int getGlyphId(int characterCode)
+	{
+	    Integer glyphId = characterCodeToGlyphId.get(characterCode);
+	    return glyphId == null ? 0 : glyphId.intValue();
+	}
 
 	/**
 	 * Class used to manage CMap - Format 2

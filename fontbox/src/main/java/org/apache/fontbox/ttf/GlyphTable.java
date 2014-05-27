@@ -42,12 +42,11 @@ public class GlyphTable extends TTFTable
      */
     public void initData(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
-        MaximumProfileTable maxp = ttf.getMaximumProfile();
         IndexToLocationTable loc = ttf.getIndexToLocation();
         // the glyph offsets
         long[] offsets = loc.getOffsets();
         // number of glyphs
-        int numGlyphs = maxp.getNumGlyphs();
+        int numGlyphs = ttf.getNumberOfGlyphs();
         // the end of the glyph table
         long endOfGlyphs = offsets[numGlyphs];
         long offset = getOffset();
@@ -67,7 +66,7 @@ public class GlyphTable extends TTFTable
             }
             glyphs[i] = new GlyphData();
             data.seek(offset + offsets[i]);
-            glyphs[i].initData(ttf, data);
+            glyphs[i].initData(this, data);
         }
         for (int i = 0; i < numGlyphs; i++)
         {
@@ -78,6 +77,7 @@ public class GlyphTable extends TTFTable
                 glyph.getDescription().resolve();
             }
         }
+        initialized = true;
     }
 
     /**

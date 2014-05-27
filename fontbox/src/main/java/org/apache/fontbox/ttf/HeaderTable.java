@@ -23,7 +23,6 @@ import java.util.Calendar;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class HeaderTable extends TTFTable
 {
@@ -76,6 +75,7 @@ public class HeaderTable extends TTFTable
         fontDirectionHint = data.readSignedShort();
         indexToLocFormat = data.readSignedShort();
         glyphDataFormat = data.readSignedShort();
+        initialized = true;
     }
     /**
      * @return Returns the checkSumAdjustment.
