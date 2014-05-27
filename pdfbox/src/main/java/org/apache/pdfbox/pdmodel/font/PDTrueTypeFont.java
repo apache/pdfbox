@@ -563,25 +563,32 @@ public class PDTrueTypeFont extends PDSimpleFont
         if ( fd != null )
         {
             String baseFont = getBaseFont();
-            String fontResource = externalFonts.getProperty( UNKNOWN_FONT );
-            if( (baseFont != null) &&
-                 (externalFonts.containsKey(baseFont)) )
+            // search for a suitable font in the local environment
+            retval = org.apache.fontbox.util.FontManager.findTTFont(baseFont);
+            // can't find any font, use fall back mapping
+            // NOTE: this fall back mechanism will be removed with PDFBox 2.0.0
+            if (retval == null)
             {
-                fontResource = externalFonts.getProperty(baseFont);
-            }
-            if( fontResource != null )
-            {
-                retval = (TrueTypeFont)loadedExternalFonts.get( baseFont );
-                if( retval == null )
+                String fontResource = externalFonts.getProperty( UNKNOWN_FONT );
+                if( (baseFont != null) &&
+                     (externalFonts.containsKey(baseFont)) )
                 {
-                    TTFParser ttfParser = new TTFParser();
-                    InputStream fontStream = ResourceLoader.loadResource( fontResource );
-                    if( fontStream == null )
+                    fontResource = externalFonts.getProperty(baseFont);
+                }
+                if( fontResource != null )
+                {
+                    retval = (TrueTypeFont)loadedExternalFonts.get( baseFont );
+                    if( retval == null )
                     {
-                        throw new IOException( "Error missing font resource '" + externalFonts.get(baseFont) + "'" );
+                        TTFParser ttfParser = new TTFParser();
+                        InputStream fontStream = ResourceLoader.loadResource( fontResource );
+                        if( fontStream == null )
+                        {
+                            throw new IOException( "Error missing font resource '" + externalFonts.get(baseFont) + "'" );
+                        }
+                        retval = ttfParser.parseTTF( fontStream );
+                        loadedExternalFonts.put( baseFont, retval );
                     }
-                    retval = ttfParser.parseTTF( fontStream );
-                    loadedExternalFonts.put( baseFont, retval );
                 }
             }
         }
