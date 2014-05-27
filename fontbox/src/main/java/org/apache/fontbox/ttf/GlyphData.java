@@ -24,7 +24,6 @@ import org.apache.fontbox.util.BoundingBox;
  * A glyph data record in the glyf table.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class GlyphData
 {
@@ -39,11 +38,11 @@ public class GlyphData
     /**
      * This will read the required data from the stream.
      * 
-     * @param ttf The font that is being read.
+     * @param glyphTable The glyph table this glyph belongs to.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    public void initData( GlyphTable glyphTable, TTFDataStream data ) throws IOException
     {
         numberOfContours = data.readSignedShort();
         xMin = data.readSignedShort();
@@ -60,7 +59,7 @@ public class GlyphData
         else 
         {
             // create a composite glyph
-            glyphDescription = new GlyfCompositeDescript(data, ttf.getGlyph());
+            glyphDescription = new GlyfCompositeDescript(data, glyphTable);
         }
     }
     

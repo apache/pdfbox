@@ -25,7 +25,7 @@ import java.util.List;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * 
  */
 public class NamingTable extends TTFTable
 {
@@ -35,6 +35,11 @@ public class NamingTable extends TTFTable
     public static final String TAG = "name";
     
     private List<NameRecord> nameRecords = new ArrayList<NameRecord>();
+    
+    private String fontFamily = null;
+    private String fontSubFamily = null;
+    private String psName = null;
+    
     
     /**
      * This will read the required data from the stream.
@@ -61,9 +66,12 @@ public class NamingTable extends TTFTable
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
             String charset = "ISO-8859-1";
-            if( platform == 3 && encoding == 1 )
+            boolean isPlatform310 = false;
+            boolean isPlatform10 = false;
+            if( platform == 3 && (encoding == 1 || encoding == 0) )
             {
                 charset = "UTF-16";
+                isPlatform310 = true;
             }
             else if( platform == 2 )
             {
@@ -81,9 +89,39 @@ public class NamingTable extends TTFTable
                     charset = "ISO-8859-1";
                 }
             }
+            else if ( platform == 1 && encoding == 0)
+            {
+                isPlatform10 = true;
+            }
             String string = data.readString( nr.getStringLength(), charset );
             nr.setString( string );
+            int nameID = nr.getNameId();
+            if (nameID == NameRecord.NAME_FONT_FAMILY_NAME)
+            {
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && fontFamily == null))
+                {
+                    fontFamily = string;
+                }
+            }            
+            else if (nameID == NameRecord.NAME_FONT_SUB_FAMILY_NAME)
+            {
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && fontSubFamily == null))
+                {
+                    fontSubFamily = string;
+                }
+            }            
+            else if (nameID == NameRecord.NAME_POSTSCRIPT_NAME)
+            {
+                // prefer 3,1 or 3,0 platform/encoding use 1,0 as fallback
+                if (isPlatform310 || (isPlatform10 && psName == null))
+                {
+                    psName = string;
+                }
+            }            
         }
+        initialized = true;
     }
     
     /**
@@ -95,4 +133,35 @@ public class NamingTable extends TTFTable
     {
         return nameRecords;
     }
+    
+    /**
+     * Returns the font family name.
+     * 
+     * @return the font family name
+     */
+    public String getFontFamily()
+    {
+        return fontFamily;
+    }
+
+    /**
+     * Returns the font sub family name.
+     * 
+     * @return the font sub family name
+     */
+    public String getFontSubFamily()
+    {
+        return fontSubFamily;
+    }
+
+    /**
+     * Returns the postscript name.
+     * 
+     * @return the postscript name
+     */
+    public String getPSName()
+    {
+        return psName;
+    }
+
 }

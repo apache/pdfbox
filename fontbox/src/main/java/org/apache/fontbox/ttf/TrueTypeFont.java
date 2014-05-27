@@ -19,19 +19,25 @@ package org.apache.fontbox.ttf;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.autodetect.FontFileFinder;
 
 /**
  * A class to hold true type font information.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.2 $
  */
 public class TrueTypeFont 
 {
+    private final Log log = LogFactory.getLog(TrueTypeFont.class);
+
     private float version; 
+
+    private int numberOfGlyphs = -1;
     
     private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     
@@ -99,7 +105,12 @@ public class TrueTypeFont
      */
     public NamingTable getNaming()
     {
-        return (NamingTable)tables.get( NamingTable.TAG );
+        NamingTable naming = (NamingTable)tables.get( NamingTable.TAG );
+        if (naming != null && !naming.getInitialized())
+        {
+            initializeTable(naming);
+        }
+        return naming;
     }
     
     /**
@@ -109,7 +120,12 @@ public class TrueTypeFont
      */
     public PostScriptTable getPostScript()
     {
-        return (PostScriptTable)tables.get( PostScriptTable.TAG );
+        PostScriptTable postscript = (PostScriptTable)tables.get( PostScriptTable.TAG );
+        if (postscript != null && !postscript.getInitialized())
+        {
+            initializeTable(postscript);
+        }
+        return postscript;
     }
     
     /**
@@ -119,7 +135,12 @@ public class TrueTypeFont
      */
     public OS2WindowsMetricsTable getOS2Windows()
     {
-        return (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
+        OS2WindowsMetricsTable os2WindowsMetrics = (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
+        if (os2WindowsMetrics != null && !os2WindowsMetrics.getInitialized())
+        {
+            initializeTable(os2WindowsMetrics);
+        }
+        return os2WindowsMetrics;
     }
     
     /**
@@ -129,7 +150,12 @@ public class TrueTypeFont
      */
     public MaximumProfileTable getMaximumProfile()
     {
-        return (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
+        MaximumProfileTable maximumProfile = (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
+        if (maximumProfile != null && !maximumProfile.getInitialized())
+        {
+            initializeTable(maximumProfile);
+        }
+        return maximumProfile;
     }
     
     /**
@@ -139,7 +165,12 @@ public class TrueTypeFont
      */
     public HeaderTable getHeader()
     {
-        return (HeaderTable)tables.get( HeaderTable.TAG );
+        HeaderTable header = (HeaderTable)tables.get( HeaderTable.TAG );
+        if (header != null && !header.getInitialized())
+        {
+            initializeTable(header);
+        }
+        return header;
     }
     
     /**
@@ -149,7 +180,12 @@ public class TrueTypeFont
      */
     public HorizontalHeaderTable getHorizontalHeader()
     {
-        return (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
+        HorizontalHeaderTable horizontalHeader = (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
+        if (horizontalHeader != null && !horizontalHeader.getInitialized())
+        {
+            initializeTable(horizontalHeader);
+        }
+        return horizontalHeader;
     }
     
     /**
@@ -159,7 +195,12 @@ public class TrueTypeFont
      */
     public HorizontalMetricsTable getHorizontalMetrics()
     {
-        return (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
+        HorizontalMetricsTable horizontalMetrics = (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
+        if (horizontalMetrics != null && !horizontalMetrics.getInitialized())
+        {
+            initializeTable(horizontalMetrics);
+        }
+        return horizontalMetrics;
     }
     
     /**
@@ -169,7 +210,12 @@ public class TrueTypeFont
      */
     public IndexToLocationTable getIndexToLocation()
     {
-        return (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
+        IndexToLocationTable indexToLocation = (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
+        if (indexToLocation != null && !indexToLocation.getInitialized())
+        {
+            initializeTable(indexToLocation);
+        }
+        return indexToLocation;
     }
     
     /**
@@ -179,7 +225,12 @@ public class TrueTypeFont
      */
     public GlyphTable getGlyph()
     {
-        return (GlyphTable)tables.get( GlyphTable.TAG );
+        GlyphTable glyph = (GlyphTable)tables.get( GlyphTable.TAG );
+        if (glyph != null && !glyph.getInitialized())
+        {
+            initializeTable(glyph);
+        }
+        return glyph;
     }
     
     /**
@@ -189,7 +240,12 @@ public class TrueTypeFont
      */
     public CMAPTable getCMAP()
     {
-        return (CMAPTable)tables.get( CMAPTable.TAG );
+        CMAPTable cmap = (CMAPTable)tables.get( CMAPTable.TAG );
+        if (cmap != null && !cmap.getInitialized())
+        {
+            initializeTable(cmap);
+        }
+        return cmap;
     }
     
     /**
@@ -204,5 +260,50 @@ public class TrueTypeFont
     public InputStream getOriginalData() throws IOException 
     {
        return data.getOriginalData(); 
+    }
+    
+    /**
+     * Initialize the given table if necessary.
+     * 
+     * @param table the table to be initialized
+     */
+    public void initializeTable(TTFTable table)
+    {
+        try
+        {
+            // save current position
+            long currentPosition = data.getCurrentPosition();
+            data.seek(table.getOffset());
+            table.initData(this, data);
+            // restore current position
+            data.seek(currentPosition);
+        }
+        catch (IOException exception)
+        {
+            log.error("An error occured when reading table " + table.getTag(), exception);
+        }
+    }
+
+    /**
+     * Returns the number of glyphs (MaximuProfile.numGlyphs).
+     * 
+     * @return the number of glyphs
+     */
+    public int getNumberOfGlyphs()
+    {
+        if (numberOfGlyphs == -1)
+        {
+            MaximumProfileTable maximumProfile = getMaximumProfile();
+            if (maximumProfile != null)
+            {
+                numberOfGlyphs = maximumProfile.getNumGlyphs();
+            }
+            else
+            {
+                // this should never happen
+                numberOfGlyphs = 0;
+            }
+        }
+        return numberOfGlyphs;
     }
 }

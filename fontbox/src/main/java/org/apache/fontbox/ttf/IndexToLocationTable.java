@@ -22,7 +22,6 @@ import java.io.IOException;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class IndexToLocationTable extends TTFTable
 {
@@ -46,8 +45,7 @@ public class IndexToLocationTable extends TTFTable
     public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
     {
         HeaderTable head = ttf.getHeader();
-        MaximumProfileTable maxp = ttf.getMaximumProfile();
-        int numGlyphs = maxp.getNumGlyphs();
+        int numGlyphs = ttf.getNumberOfGlyphs();
         offsets = new long[ numGlyphs +1];
         for( int i=0; i<numGlyphs+1; i++ )
         {
@@ -64,6 +62,7 @@ public class IndexToLocationTable extends TTFTable
                 throw new IOException( "Error:TTF.loca unknown offset format.");
             }
         }
+        initialized = true;
     }
     /**
      * @return Returns the offsets.
@@ -77,6 +76,6 @@ public class IndexToLocationTable extends TTFTable
      */
     public void setOffsets(long[] offsetsValue)
     {
-        this.offsets = offsetsValue;
+        offsets = offsetsValue;
     }
 }
