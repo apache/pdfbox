@@ -210,6 +210,7 @@ public class ExtractImages
                 }
             }
         }
+        resources.clear();
     }
 
     private String getUniqueFileName( String prefix, String suffix )
