@@ -214,6 +214,7 @@ public class ExtractImages
                 }
             }
         }
+        resources.clear();
     }
 
     /**
