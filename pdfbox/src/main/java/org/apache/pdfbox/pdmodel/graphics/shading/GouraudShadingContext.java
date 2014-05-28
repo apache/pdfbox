@@ -82,10 +82,13 @@ abstract class GouraudShadingContext implements PaintContext
         gouraudShadingType = shading;
         triangleList = new ArrayList<GouraudTriangle>();
         hasFunction = shading.getFunction() != null;
+        LOG.debug("hasFunction: " + hasFunction);
 
         shadingColorSpace = shading.getColorSpace();
         LOG.debug("colorSpace: " + shadingColorSpace);
-        numberOfColorComponents = shadingColorSpace.getNumberOfComponents();
+
+        numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
+        LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
 
         LOG.debug("BBox: " + shading.getBBox());
         LOG.debug("Background: " + shading.getBackground());
