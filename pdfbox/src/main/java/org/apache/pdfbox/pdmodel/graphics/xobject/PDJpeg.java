@@ -293,12 +293,7 @@ public class PDJpeg extends PDXObjectImage
      */
     public void write2OutputStream(OutputStream out) throws IOException
     {
-        getRGBImage();
-        if (image != null) 
-        {
-            ImageIOUtil.writeImage(image, JPG, out);
-        }
-
+        removeAllFiltersButDCT(out);
     }
 
     private void removeAllFiltersButDCT(OutputStream out) throws IOException
