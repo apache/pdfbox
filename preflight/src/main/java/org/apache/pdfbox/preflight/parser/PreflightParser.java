@@ -162,6 +162,7 @@ public class PreflightParser extends NonSequentialPDFParser
         }
     }
 
+    @Override
     public void parse() throws IOException
     {
         parse(Format.PDF_A1B);
@@ -335,6 +336,7 @@ public class PreflightParser extends NonSequentialPDFParser
      * Same method than the {@linkplain PDFParser#parseXrefTable(long)} with additional controls : - EOL mandatory after
      * the 'xref' keyword - Cross reference subsection header uses single white space as separator - and so on
      */
+    @Override
     protected boolean parseXrefTable(long startByteOffset) throws IOException
     {
         if (pdfSource.peek() != 'x')
@@ -447,6 +449,7 @@ public class PreflightParser extends NonSequentialPDFParser
      * Wraps the {@link NonSequentialPDFParser#parseCOSStream} to check rules on 'stream' and 'endstream' keywords.
      * {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
      */
+    @Override
     protected COSStream parseCOSStream(COSDictionary dic, RandomAccess file) throws IOException
     {
         checkStreamKeyWord();
@@ -555,8 +558,21 @@ public class PreflightParser extends NonSequentialPDFParser
     /**
      * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
      * offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
+     * @deprecated Not needed anymore. Use {@link #COSString()} instead. PDFBOX-1437
      */
+    @Override
+    @Deprecated
     protected COSString parseCOSString(boolean isDictionary) throws IOException
+    {
+        return parseCOSString();
+    }
+    
+    /**
+     * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
+     * offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
+     */
+    @Override
+    protected COSString parseCOSString() throws IOException
     {
         // offset reminder
         long offset = pdfSource.getOffset();
@@ -569,7 +585,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 nextChar = (char) pdfSource.read();
                 if (nextChar != '>')
                 {
-                    if (Character.digit((char) nextChar, 16) >= 0)
+                    if (Character.digit(nextChar, 16) >= 0)
                     {
                         count++;
                     }
@@ -591,7 +607,7 @@ public class PreflightParser extends NonSequentialPDFParser
 
         // reset the offset to parse the COSString
         pdfSource.seek(offset);
-        COSString result = super.parseCOSString(isDictionary);
+        COSString result = super.parseCOSString();
 
         if (result.getString().length() > MAX_STRING_LENGTH)
         {
@@ -603,6 +619,7 @@ public class PreflightParser extends NonSequentialPDFParser
     /**
      * Call {@link BaseParser#parseDirObject()} check limit range for Float, Integer and number of Dictionary entries.
      */
+    @Override
     protected COSBase parseDirObject() throws IOException
     {
         COSBase result = super.parseDirObject();
@@ -641,6 +658,7 @@ public class PreflightParser extends NonSequentialPDFParser
         return result;
     }
 
+    @Override
     protected COSBase parseObjectDynamically(int objNr, int objGenNr, boolean requireExistingNotCompressedObj)
             throws IOException
     {
@@ -863,6 +881,7 @@ public class PreflightParser extends NonSequentialPDFParser
         return pdfObject.getObject();
     }
 
+    @Override
     protected int lastIndexOf(final char[] pattern, final byte[] buf, final int endOff)
     {
         int offset = super.lastIndexOf(pattern, buf, endOff);

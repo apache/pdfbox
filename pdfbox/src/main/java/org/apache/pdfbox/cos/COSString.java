@@ -19,16 +19,19 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.pdfbox.encoding.PdfDocEncoding;
+import org.apache.pdfbox.encoding.PDFDocEncodingCharset;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
  * This represents a string object in a PDF document.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.30 $
  */
@@ -89,8 +92,6 @@ public class COSString extends COSBase
      */
     private boolean forceHexForm = false;
 
-    private boolean isDictionary = false;
-
     /**
      * Constructor.
      */
@@ -99,20 +100,21 @@ public class COSString extends COSBase
         out = new ByteArrayOutputStream();
     }
 
-    /** 
+    /**
      * Constructor.
-     * 
+     *
      * @param isDictionaryValue determines if this string represents a dictionary
+     * @deprecated Not needed anymore. Use {@link #COSString()} instead. PDFBOX-1437
      */
+    @Deprecated
     public COSString(boolean isDictionaryValue)
     {
         this();
-        isDictionary = isDictionaryValue;
     }
 
     /**
      * Explicit constructor for ease of manual PDF construction.
-     * 
+     *
      * @param value
      *            The string value of the object.
      */
@@ -155,7 +157,7 @@ public class COSString extends COSBase
 
     /**
      * Explicit constructor for ease of manual PDF construction.
-     * 
+     *
      * @param value
      *            The string value of the object.
      */
@@ -175,7 +177,7 @@ public class COSString extends COSBase
 
     /**
      * Forces the string to be written in literal form instead of hexadecimal form.
-     * 
+     *
      * @param v
      *            if v is true the string will be written in literal form, otherwise it will be written in hexa if
      *            necessary.
@@ -188,7 +190,7 @@ public class COSString extends COSBase
 
     /**
      * Forces the string to be written in hexadecimal form instead of literal form.
-     * 
+     *
      * @param v
      *            if v is true the string will be written in hexadecimal form otherwise it will be written in literal if
      *            necessary.
@@ -201,7 +203,7 @@ public class COSString extends COSBase
 
     /**
      * This will create a COS string from a string of hex characters.
-     * 
+     *
      * @param hex
      *            A hex string.
      * @return A cos string with the hex characters converted to their actual bytes.
@@ -215,7 +217,7 @@ public class COSString extends COSBase
 
     /**
      * Creates a COS string from a string of hex characters, optionally ignoring malformed input.
-     * 
+     *
      * @param hex
      *            A hex string.
      * @param force
@@ -259,7 +261,7 @@ public class COSString extends COSBase
 
     /**
      * This will take this string and create a hex representation of the bytes that make the string.
-     * 
+     *
      * @return A hex string representing the bytes in this string.
      */
     public String getHexString()
@@ -277,92 +279,74 @@ public class COSString extends COSBase
 
     /**
      * This will get the string that this object wraps.
-     * 
+     *
      * @return The wrapped string.
      */
     public String getString()
     {
-        if (this.str != null)
+        if (str != null)
         {
-            return this.str;
+            return str;
         }
         String retval;
-        String encoding = "ISO-8859-1";
+        Charset charset = PDFDocEncodingCharset.INSTANCE;
         byte[] data = getBytes();
         int start = 0;
         if (data.length > 2)
         {
             if (data[0] == (byte) 0xFF && data[1] == (byte) 0xFE)
             {
-                encoding = "UTF-16LE";
+                charset = Charset.forName("UTF-16LE");
                 start = 2;
             }
             else if (data[0] == (byte) 0xFE && data[1] == (byte) 0xFF)
             {
-                encoding = "UTF-16BE";
+                charset = Charset.forName("UTF-16BE");
                 start = 2;
             }
         }
-        try
-        {
-            if (isDictionary && encoding.equals("ISO-8859-1"))
-            {
-                byte[] tmp = getBytes();
-                PdfDocEncoding pde = new PdfDocEncoding();
-                StringBuilder sb = new StringBuilder(tmp.length);
-                for (byte b : tmp)
-                {
-                    final String character = pde.getCharacter((b + 256) % 256);
-                    if (character != null)
-                    {
-                        sb.append(character);
-                    }
-                }
-                retval = sb.toString();
-            }
-            else
-            {
-                retval = new String(getBytes(), start, data.length - start, encoding);
-            }
-        }
-        catch (IOException e)
-        {
-            // should never happen
-            LOG.error (e,e);
-            retval = new String(getBytes());
-        }
-        this.str = retval;
+
+        retval = toString(data, start, data.length - start, charset);
+        str = retval;
         return retval;
+    }
+
+    private static String toString(byte[] data, int offset, int length, Charset charset)
+    {
+        //This is only needed until PDFBox switches to JavaSE-1.6
+        //This could be just: return new String(data, offset, length, charset);
+        CharBuffer charBuffer = charset.decode(ByteBuffer.wrap(data, offset, length));
+        return charBuffer.toString();
     }
 
     /**
      * This will append a byte[] to the string.
-     * 
+     *
      * @param data
      *            The byte[] to add to this string.
-     * 
+     *
      * @throws IOException
      *             If an IO error occurs while writing the byte.
      */
     public void append(byte[] data) throws IOException
     {
         out.write(data);
-        this.str = null;
+        str = null;
     }
 
     /**
      * This will append a byte to the string.
-     * 
+     *
      * @param in
      *            The byte to add to this string.
-     * 
+     *
      * @throws IOException
      *             If an IO error occurs while writing the byte.
      */
     public void append(int in) throws IOException
     {
         out.write(in);
-        this.str = null;
+        str = null;
     }
 
     /**
@@ -371,12 +355,12 @@ public class COSString extends COSBase
     public void reset()
     {
         out.reset();
-        this.str = null;
+        str = null;
     }
 
     /**
      * This will get the bytes of the string.
-     * 
+     *
      * @return A byte array that represents the string.
      */
     public byte[] getBytes()
@@ -395,7 +379,7 @@ public class COSString extends COSBase
 
     /**
      * This will output this string as a PDF object.
-     * 
+     *
      * @param output
      *            The stream to write to.
      * @throws IOException
@@ -475,7 +459,7 @@ public class COSString extends COSBase
 
     /**
      * visitor pattern double dispatch method.
-     * 
+     *
      * @param visitor
      *            The object to notify when visiting this object.
      * @return any object, depending on the visitor implementation, or null
@@ -497,7 +481,7 @@ public class COSString extends COSBase
         if (obj instanceof COSString)
         {
             COSString strObj = (COSString) obj;
-            return this.getString().equals(strObj.getString()) && this.forceHexForm == strObj.forceHexForm;
+            return this.getString().equals(strObj.getString()) && forceHexForm == strObj.forceHexForm;
         }
         return false;
     }

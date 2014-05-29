@@ -923,15 +923,15 @@ public class COSWriter implements ICOSVisitor, Closeable
                 COSBase current = i.next();
                 if( current instanceof COSDictionary )
                 {
-                	if (current.isDirect())
-                	{
-                		visitFromDictionary((COSDictionary)current);
-                	}
-                	else
-                	{
-                		addObjectToWrite( current );
-                		writeReference( current );
-                	}
+                    if (current.isDirect())
+                    {
+                        visitFromDictionary((COSDictionary)current);
+                    }
+                    else
+                    {
+                        addObjectToWrite( current );
+                        writeReference( current );
+                    }
                 }
                 else if( current instanceof COSObject )
                 {
@@ -952,7 +952,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 }
                 else if( current instanceof COSString )
                 {
-                    COSString copy = new COSString(true);
+                    COSString copy = new COSString();
                     copy.append(((COSString)current).getBytes());
                     copy.accept(this);
                 }
@@ -1432,7 +1432,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @throws COSVisitorException If an error occurs while generating the data.
      */
     public void write(PDDocument doc) throws COSVisitorException
-	{
+    {
         Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
                                                     doc.getDocumentId();
         
