@@ -61,7 +61,7 @@ public class ValidateXImage
         boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(),
                 format, new NullOutputStream());
         assertTrue(writeOk);
-        writeOk = ImageIOUtil.writeImage(SampledImageReader.getRGBImage(ximage, null),
+        writeOk = ImageIOUtil.writeImage(ximage.getOpaqueImage(),
                 format, new NullOutputStream());
         assertTrue(writeOk);
     }

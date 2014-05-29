@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -135,7 +137,7 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
         validate(ximage, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
+        checkIdentRGB(argbImage, ximage.getOpaqueImage());
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
@@ -197,7 +199,7 @@ public class LosslessFactoryTest extends TestCase
 
         validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
+        checkIdentRGB(argbImage, ximage.getOpaqueImage());
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, w, h, "png", PDDeviceGray.INSTANCE.getName());
@@ -316,7 +318,7 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
         validate(ximage, 8, width, height, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(argbImage, ximage.getImage());
-        checkIdentRGB(argbImage, SampledImageReader.getRGBImage(ximage, null));
+        checkIdentRGB(argbImage, ximage.getOpaqueImage());
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 1, width, height, "png", PDDeviceGray.INSTANCE.getName());
