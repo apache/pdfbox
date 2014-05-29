@@ -175,6 +175,7 @@
                 <configuration>
                     <excludes>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/cmap/*</exclude>
+                        <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>download/glyphlist.txt</exclude>
                         <exclude>release.properties</exclude>
