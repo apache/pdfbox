@@ -292,10 +292,12 @@ public class PDJpeg extends PDXObjectImage
      */
     public void write2OutputStream(OutputStream out) throws IOException
     {
-        removeAllFiltersButDCT(out);
-        
-        //TODO insert color profile in the output 
-        // if one was assigned explicitely inside the PDF file
+        getRGBImage();
+        if (image != null) 
+        {
+            ImageIOUtil.writeImage(image, JPG, out);
+        }
+
     }
 
     private void removeAllFiltersButDCT(OutputStream out) throws IOException
