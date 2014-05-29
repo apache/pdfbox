@@ -20,10 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.pdfbox.pdfwriter.COSWriter;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.apache.pdfbox.pdfwriter.COSWriter;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -33,9 +33,9 @@ import junit.framework.TestSuite;
  */
 public class TestCOSString extends TestCOSBase
 {
-    private final static String ESC_CHAR_STRING =
+    private static final String ESC_CHAR_STRING =
             "( test#some) escaped< \\chars>!~1239857 ";
-    private final static String ESC_CHAR_STRING_PDF_FORMAT =
+    private static final String ESC_CHAR_STRING_PDF_FORMAT =
             "\\( test#some\\) escaped< \\\\chars>!~1239857 ";
 
     /**
@@ -48,6 +48,7 @@ public class TestCOSString extends TestCOSBase
         return new TestSuite(TestCOSString.class);
     }
 
+    @Override
     public void setUp()
     {
         testCOSBase = new COSString("test cos string");
@@ -229,6 +230,25 @@ public class TestCOSString extends TestCOSBase
 
             COSString escapedString = new COSString(ESC_CHAR_STRING);
             assertEquals(ESC_CHAR_STRING, escapedString.getString());
+
+            testStr = "Line1\nLine2\nLine3\n";
+            COSString lineFeedString = new COSString(testStr);
+            assertEquals(testStr, lineFeedString.getString());
+
+            //Same as previous but this time it is constructed incrementally (like in a dictionary)
+            lineFeedString = new COSString();
+            for (int i = 0; i < testStr.length(); i++)
+            {
+                lineFeedString.append(testStr.charAt(i));
+            }
+            assertEquals(testStr, lineFeedString.getString());
+
+            testStr = "Text\u2026"; //PDFBOX-1437
+            COSString pdfbox1437 = new COSString();
+            pdfbox1437.append(new byte[] {
+                    0x54, 0x65, 0x78, 0x74, (byte)(0x83 & 0xFF)
+            });
+            assertEquals(testStr, pdfbox1437.getString());
         }
         catch (IOException e)
         {

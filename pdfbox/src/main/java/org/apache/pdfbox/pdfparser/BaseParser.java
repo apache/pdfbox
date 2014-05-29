@@ -47,7 +47,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * PDFParser and the COSStreamParser.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @version $Revision$
  */
 public abstract class BaseParser
 {
@@ -550,11 +550,8 @@ public abstract class BaseParser
                         out.flush();
                         InputStream writtenStreamBytes = stream.getFilteredStream();
                         ByteArrayOutputStream bout = new ByteArrayOutputStream( length );
-                        
-                        while ( ( readCount = writtenStreamBytes.read( strmBuf ) ) >= 0 )
-                        {
-                            bout.write( strmBuf, 0, readCount );
-                        }
+
+                        IOUtils.copy(writtenStreamBytes, bout);
                         IOUtils.closeQuietly(writtenStreamBytes);
                         try
                         {
@@ -568,7 +565,7 @@ public abstract class BaseParser
                                                    PROP_PUSHBACK_SIZE, ioe );
                         }
                         // close and create new filtered stream
-                      	IOUtils.closeQuietly(out);
+                        IOUtils.closeQuietly(out);
                         out = stream.createFilteredStream( streamLength );
                         // scan until we find endstream:
                         readUntilEndStream( new EndstreamOutputStream(out) );
@@ -799,6 +796,7 @@ public abstract class BaseParser
         }
         return braces;
     }
+
     /**
      * This will parse a PDF string.
      *
@@ -806,11 +804,25 @@ public abstract class BaseParser
      * @return The parsed PDF string.
      *
      * @throws IOException If there is an error reading from the stream.
+     * @deprecated Not needed anymore. Use {@link #parseCOSString()} instead. PDFBOX-1437
      */
+    @Deprecated
     protected COSString parseCOSString(boolean isDictionary) throws IOException
     {
+        return parseCOSString();
+    }
+
+    /**
+     * This will parse a PDF string.
+     *
+     * @return The parsed PDF string.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected COSString parseCOSString() throws IOException
+    {
         char nextChar = (char)pdfSource.read();
-        COSString retval = new COSString(isDictionary);
+        COSString retval = new COSString();
         char openBrace;
         char closeBrace;
         if( nextChar == '(' )
@@ -1088,7 +1100,7 @@ public abstract class BaseParser
             else
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt object reference" );
+                LOG.warn("Corrupt object reference at offset " + pdfSource.getOffset());
 
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
@@ -1260,7 +1272,7 @@ public abstract class BaseParser
             }
             else
             {
-                retval = parseCOSString(true);
+                retval = parseCOSString();
             }
             break;
         }
@@ -1270,7 +1282,7 @@ public abstract class BaseParser
             break;
         }
         case '(':
-            retval = parseCOSString(true);
+            retval = parseCOSString();
             break;
         case '/':   // name
             retval = parseCOSName();
@@ -1610,27 +1622,29 @@ public abstract class BaseParser
      * This will read a long from the Stream and throw an {@link IllegalArgumentException} if the long value
      * has more than 10 digits (i.e. : bigger than {@link #OBJECT_NUMBER_THRESHOLD})
      * @return the object number being read.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     protected long readObjectNumber() throws IOException
     {
         long retval = readLong();
-        if(retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD) {
+        if(retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD)
+        {
             throw new IOException("Object Number '" + retval + "' has more than 10 digits or is negative");
         }
         return retval;
     }
-    
+
     /**
      * This will read a integer from the Stream and throw an {@link IllegalArgumentException} if the integer value
      * has more than the maximum object revision (i.e. : bigger than {@link #GENERATION_NUMBER_THRESHOLD})
      * @return the generation number being read.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     protected int readGenerationNumber() throws IOException
     {
         int retval = readInt();
-        if(retval < 0 || retval > GENERATION_NUMBER_THRESHOLD) {
+        if(retval < 0 || retval > GENERATION_NUMBER_THRESHOLD)
+        {
             throw new IOException("Generation Number '" + retval + "' has more than 5 digits");
         }
         return retval;
@@ -1684,14 +1698,16 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
-            throw new IOException( "Error: Expected a long type at offset "+pdfSource.getOffset() + ", instead got '" + longBuffer + "'");
+            throw new IOException( "Error: Expected a long type at offset "
+                    + pdfSource.getOffset() + ", instead got '" + longBuffer + "'");
         }
         return retval;
     }
 
     /**
-     * This method is used to read a token by the {@linkplain #readInt()} method and the {@linkplain #readLong()} method.
-     *  
+     * This method is used to read a token by the {@linkplain #readInt()} method
+     * and the {@linkplain #readLong()} method.
+     *
      * @return the token to parse as integer or long by the calling method.
      * @throws IOException throws by the {@link #pdfSource} methods.
      */
@@ -1721,11 +1737,11 @@ public abstract class BaseParser
      */
     public void clearResources()
     {
-    	document = null;
-    	if (pdfSource != null)
-    	{
-    		IOUtils.closeQuietly(pdfSource);
-    		pdfSource = null;
-    	}
+        document = null;
+        if (pdfSource != null)
+        {
+            IOUtils.closeQuietly(pdfSource);
+            pdfSource = null;
+        }
     }
 }

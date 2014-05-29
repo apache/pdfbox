@@ -1289,7 +1289,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @throws IOException If an error occurs while generating the data.
      */
     public void write(PDDocument doc) throws IOException
-	{
+    {
         Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
                                                     doc.getDocumentId();
 

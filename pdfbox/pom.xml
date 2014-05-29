@@ -83,7 +83,7 @@
             <groupId>net.java.dev.jai-imageio</groupId>
             <artifactId>jai-imageio-core-standalone</artifactId>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <build>
@@ -148,6 +148,7 @@
                         <exclude>src/main/resources/org/apache/pdfbox/resources/afm/*</exclude>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/cmap/*</exclude>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/icc/*</exclude>
+                        <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/output/*</exclude>
                         <exclude>release.properties</exclude>

@@ -41,12 +41,12 @@ import org.apache.pdfbox.util.operator.PDFOperator;
  * This will parse a PDF byte stream and extract operands and such.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @version $Revision$
  */
 public class PDFStreamParser extends BaseParser
 {
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
-    private RandomAccess file;
+    private final RandomAccess file;
     private final int    maxBinCharTestLength = 5;
     private final byte[] binCharTestArr = new byte[maxBinCharTestLength];
 
@@ -260,7 +260,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = parseCOSString(false);
+                    retval = parseCOSString();
                 }
                 break;
             }
@@ -270,7 +270,7 @@ public class PDFStreamParser extends BaseParser
                 break;
             }
             case '(': // string
-                retval = parseCOSString(false);
+                retval = parseCOSString();
                 break;
             case '/':   // name
                 retval = parseCOSName();
@@ -360,7 +360,7 @@ public class PDFStreamParser extends BaseParser
                 retval = PDFOperator.getOperator( next );
                 if( next.equals( "BI" ) )
                 {
-                	PDFOperator beginImageOP = (PDFOperator)retval;
+                    PDFOperator beginImageOP = (PDFOperator)retval;
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters( imageParams );
                     Object nextToken = null;
@@ -530,13 +530,13 @@ public class PDFStreamParser extends BaseParser
      * {@inheritDoc}
      */
     @Override
-    public void clearResources() 
+    public void clearResources()
     {
-    	super.clearResources();
-    	if (streamObjects != null)
-    	{
-    		streamObjects.clear();
-    		streamObjects = null;
-    	}
+        super.clearResources();
+        if (streamObjects != null)
+        {
+            streamObjects.clear();
+            streamObjects = null;
+        }
     }
 }
