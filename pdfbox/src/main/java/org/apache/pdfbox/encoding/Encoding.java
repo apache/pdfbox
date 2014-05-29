@@ -281,7 +281,7 @@ public abstract class Encoding implements COSObjectable
         String name = getName(code);
         if (name != null)
         {
-            return getCharacter(getName(code));
+            return getCharacter(name);
         }
         return null;
     }

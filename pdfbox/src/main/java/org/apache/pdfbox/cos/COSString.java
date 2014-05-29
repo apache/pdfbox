@@ -19,10 +19,11 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.pdfbox.encoding.PdfDocEncoding;
+import org.apache.pdfbox.encoding.PDFDocEncodingCharset;
 import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
@@ -89,8 +90,6 @@ public class COSString extends COSBase
      */
     private boolean forceHexForm = false;
 
-    private boolean isDictionary = false;
-
     /**
      * Constructor.
      */
@@ -103,11 +102,12 @@ public class COSString extends COSBase
      * Constructor.
      * 
      * @param isDictionaryValue determines if this string represents a dictionary
+     * @deprecated Not needed anymore. Use {@link #COSString()} instead. PDFBOX-2102
      */
+    @Deprecated
     public COSString(boolean isDictionaryValue)
     {
         this();
-        isDictionary = isDictionaryValue;
     }
 
     /**
@@ -287,51 +287,25 @@ public class COSString extends COSBase
             return this.str;
         }
         String retval;
-        String encoding = "ISO-8859-1";
+        Charset charset = PDFDocEncodingCharset.INSTANCE;
         byte[] data = getBytes();
         int start = 0;
         if (data.length > 2)
         {
             if (data[0] == (byte) 0xFF && data[1] == (byte) 0xFE)
             {
-                encoding = "UTF-16LE";
+                charset = Charset.forName("UTF-16LE");
                 start = 2;
             }
             else if (data[0] == (byte) 0xFE && data[1] == (byte) 0xFF)
             {
-                encoding = "UTF-16BE";
+                charset = Charset.forName("UTF-16BE");
                 start = 2;
             }
         }
-        try
-        {
-            if (isDictionary && encoding.equals("ISO-8859-1"))
-            {
-                byte[] tmp = getBytes();
-                PdfDocEncoding pde = new PdfDocEncoding();
-                StringBuilder sb = new StringBuilder(tmp.length);
-                for (byte b : tmp)
-                {
-                    final String character = pde.getCharacter((b + 256) % 256);
-                    if (character != null)
-                    {
-                        sb.append(character);
-                    }
-                }
-                retval = sb.toString();
-            }
-            else
-            {
-                retval = new String(getBytes(), start, data.length - start, encoding);
-            }
-        }
-        catch (IOException e)
-        {
-            // should never happen
-            LOG.error(e,e);
-            retval = new String(getBytes());
-        }
-        this.str = retval;
+
+        retval = new String(data, start, data.length - start, charset);
+        str = retval;
         return retval;
     }
 
