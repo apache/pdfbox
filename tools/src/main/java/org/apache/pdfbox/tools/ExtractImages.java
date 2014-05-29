@@ -241,6 +241,9 @@ public class ExtractImages
             out.write(buf, 0, amountRead);
         }
         IOUtils.closeQuietly(data);
+        
+        //TODO insert color profile in the output
+        // if one was assigned explicitely inside the PDF file
     }
 
     /**
