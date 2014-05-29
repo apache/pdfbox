@@ -25,7 +25,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.InputStream;
@@ -294,6 +293,9 @@ public class PDJpeg extends PDXObjectImage
     public void write2OutputStream(OutputStream out) throws IOException
     {
         removeAllFiltersButDCT(out);
+        
+        //TODO insert color profile in the output 
+        // if one was assigned explicitely inside the PDF file
     }
 
     private void removeAllFiltersButDCT(OutputStream out) throws IOException
