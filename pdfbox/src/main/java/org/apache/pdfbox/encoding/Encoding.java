@@ -296,7 +296,7 @@ public abstract class Encoding implements COSObjectable
         String name = getName( code );
         if (name != null)
         {
-            return getCharacter( getName( code ) );
+            return getCharacter( name );
         }
         return null;
     }
@@ -349,7 +349,7 @@ public abstract class Encoding implements COSObjectable
                     character = name;
                 }
             }
-            // test for an alternate Unicode name representation 
+            // test for an alternate Unicode name representation
             else if ( name.startsWith( "u" ) )
             {
                 try
