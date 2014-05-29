@@ -20,9 +20,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -51,6 +56,14 @@ public class ExtractImages
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
     private static final String NONSEQ = "-nonSeq";
+
+    private static final List<String> DCT_FILTERS = new ArrayList<String>();
+
+    static
+    {
+        DCT_FILTERS.add( COSName.DCT_DECODE.getName() );
+        DCT_FILTERS.add( COSName.DCT_DECODE_ABBREVIATION.getName() );
+    }
 
     private ExtractImages()
     {
@@ -216,6 +229,19 @@ public class ExtractImages
         }
         resources.clear();
     }
+    
+    private void writeJpeg2OutputStream(PDImageXObject xobj, OutputStream out)
+            throws IOException
+    {
+        InputStream data = xobj.getPDStream().getPartiallyFilteredStream(DCT_FILTERS);
+        byte[] buf = new byte[1024];
+        int amountRead;
+        while ((amountRead = data.read(buf)) != -1)
+        {
+            out.write(buf, 0, amountRead);
+        }
+        IOUtils.closeQuietly(data);
+    }
 
     /**
      * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg".
@@ -235,6 +261,10 @@ public class ExtractImages
                 if ("tiff".equals(xobj.getSuffix()))
                 {
                     TIFFInputStream.writeToOutputStream(xobj, out);
+                }
+                else if ("jpg".equals(xobj.getSuffix()))
+                {
+                    writeJpeg2OutputStream(xobj, out);
                 }
                 else
                 {
