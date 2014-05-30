@@ -835,4 +835,11 @@ public abstract class PDFont implements COSObjectable
         return cmap;
     }
 
+    /**
+     * Calling this will release all cached information.
+     */
+    public void clear()
+    {
+    }
+
 }

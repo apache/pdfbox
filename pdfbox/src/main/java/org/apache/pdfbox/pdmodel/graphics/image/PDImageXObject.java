@@ -467,4 +467,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
             return null;
         }
     }
+    
+    @Override
+    public void clear()
+    {
+        super.clear();
+        cachedImage = null;
+    }
 }
