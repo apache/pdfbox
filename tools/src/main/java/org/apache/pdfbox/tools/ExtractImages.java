@@ -23,7 +23,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -46,6 +49,7 @@ import org.apache.pdfbox.util.ImageIOUtil;
 public class ExtractImages
 {
     private int imageCounter = 1;
+    private Set<COSStream> seen = new HashSet<COSStream>();
 
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
@@ -192,16 +196,25 @@ public class ExtractImages
                 // write the images
                 if (xobject instanceof PDImageXObject)
                 {
+                    if (seen.contains(xobject.getCOSStream()))
+                    {
+                        // skip duplicate image
+                        continue;
+                    }
+                    seen.add(xobject.getCOSStream());
+
                     PDImageXObject image = (PDImageXObject)xobject;
                     String name = null;
                     if (addKey) 
                     {
-                        name = getUniqueFileName( prefix + "_" + key, image.getSuffix() );
+                        name = prefix + "-" + imageCounter + "_" + key;
                     }
                     else 
                     {
-                        name = getUniqueFileName( prefix, image.getSuffix() );
+                        name = prefix + "-" + imageCounter;
                     }
+                    imageCounter++;
+
                     System.out.println( "Writing image:" + name );
                     write2file( image, name );
                 }
@@ -250,19 +263,6 @@ public class ExtractImages
                 out.close();
             }
         }
-    }
-
-    private String getUniqueFileName( String prefix, String suffix )
-    {
-        String uniqueName = null;
-        File f = null;
-        while( f == null || f.exists() )
-        {
-            uniqueName = prefix + "-" + imageCounter;
-            f = new File( uniqueName + "." + suffix );
-            imageCounter++;
-        }
-        return uniqueName;
     }
 
     /**
