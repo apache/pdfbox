@@ -237,4 +237,10 @@ public class PDType1AfmPfbFont extends PDType1Font
         return new DictionaryEncoding(dictionary);
     }
 
+    @Override
+    public void clear()
+    {
+        super.clear();
+        metric = null;
+    }
 }

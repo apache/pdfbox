@@ -503,4 +503,15 @@ public class PDType1Font extends PDSimpleFont
             return super.getFontMatrix();
         }
     }
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        if (type1CFont != null)
+        {
+            type1CFont.clear();
+            type1CFont = null;
+        }
+    }
 }
