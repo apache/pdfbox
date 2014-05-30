@@ -107,6 +107,10 @@ public class PDResources implements COSObjectable
     {
         if (fonts != null)
         {
+            for(PDFont font : fonts.values())
+            {
+                font.clear();
+            }
             fonts.clear();
             fonts = null;
         }
@@ -122,6 +126,10 @@ public class PDResources implements COSObjectable
         }
         if (xobjects != null)
         {
+            for(PDXObject xobject : xobjects.values())
+            {
+                xobject.clear();
+            }
             xobjects.clear();
             xobjects = null;
         }
