@@ -181,4 +181,20 @@ public class PDType0Font extends PDSimpleFont
         return descendantFont;
     }
 
+    @Override
+    public void clear()
+    {
+        super.clear();
+        if (descendantFontArray != null)
+        {
+            descendantFontArray.clear();
+            descendantFontArray = null;
+        }
+        if (descendantFont != null)
+        {
+            descendantFont.clear();
+            descendantFont = null;
+        }
+        descendantFontDictionary = null;
+    }
 }
