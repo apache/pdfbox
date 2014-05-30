@@ -23,7 +23,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -77,7 +76,7 @@ public final class JPXFilter extends Filter
         try
         {
             iis = ImageIO.createImageInputStream(input);
-            reader.setInput(iis);
+            reader.setInput(iis, true, true);
 
             BufferedImage image;
             try
