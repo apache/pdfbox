@@ -664,5 +664,44 @@ public class PDType1CFont extends PDSimpleFont
         }
 
     }
-
+    
+    @Override
+    public void clear()
+    {
+        super.clear();
+        cffFont = null;
+        fontMetric = null;
+        fontBBox = null;
+        if (characterToSID != null)
+        {
+            characterToSID.clear();
+            characterToSID = null;
+        }
+        if (codeToSID != null)
+        {
+            codeToSID.clear();
+            codeToSID = null;
+        }
+        if (glyphHeights != null)
+        {
+            glyphHeights.clear();
+            glyphHeights = null;
+        }
+        if (glyphWidths != null)
+        {
+            glyphWidths.clear();
+            glyphWidths = null;
+        }
+        if (sidToCharacter != null)
+        {
+            sidToCharacter.clear();
+            sidToCharacter = null;
+        }
+        if (sidToName != null)
+        {
+            sidToName.clear();
+            sidToName = null;
+        }
+    }
+    
 }
