@@ -935,4 +935,12 @@ public abstract class PDFont implements COSObjectable
     {
         return toUnicodeCmap;
     }
+    
+    /**
+     * Calling this will release all cached information.
+     */
+    public void clear()
+    {
+    }
+
 }
