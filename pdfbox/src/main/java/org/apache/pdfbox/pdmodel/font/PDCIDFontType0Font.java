@@ -82,4 +82,15 @@ public class PDCIDFontType0Font extends PDCIDFont
     {
         return type1CFont;
     }
+    
+    @Override
+    public void clear()
+    {
+        super.clear();
+        if (type1CFont != null)
+        {
+            type1CFont.clear();
+            type1CFont = null;
+        }
+    }
 }

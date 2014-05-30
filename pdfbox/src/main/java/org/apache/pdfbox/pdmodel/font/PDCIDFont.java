@@ -374,4 +374,15 @@ public abstract class PDCIDFont extends PDSimpleFont
         }
         return result;
     }
+    
+    @Override
+    public void clear()
+    {
+        super.clear();
+        if (widthCache != null)
+        {
+            widthCache.clear();
+            widthCache = null;
+        }
+    }
 }
