@@ -542,6 +542,12 @@ public class PDJpeg extends PDXObjectImage
         // create an image using the converted color values
         return new BufferedImage(cm, writeableRaster, true, null);
     }
-    
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        image = null;
+    }
 }
 

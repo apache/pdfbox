@@ -459,4 +459,11 @@ public class PDPixelMap extends PDXObjectImage
         }
         return 1;
     }
+    
+    @Override
+    public void clear()
+    {
+        super.clear();
+        image = null;
+    }
 }

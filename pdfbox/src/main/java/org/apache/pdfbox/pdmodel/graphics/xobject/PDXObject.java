@@ -232,4 +232,11 @@ public abstract class PDXObject implements COSObjectable
         getCOSStream().setInt(COSName.STRUCT_PARENT, structParent);
     }
 
+    /**
+     * Calling this will release all cached information.
+     */
+    public void clear()
+    {
+    }
+
 }
