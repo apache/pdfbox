@@ -222,6 +222,7 @@ public class FontManager
     private static void createFontmapping()
     {
         addFontFamilyMapping("ArialNarrow", "Arial", fontMappingTTF);
+        addFontFamilyMapping("ArialMT", "Arial", fontMappingTTF);
         addFontFamilyMapping("CourierNew", "Courier", fontMappingTTF);
         addFontFamilyMapping("TimesNewRomanPSMT", "TimesNewRoman", fontMappingTTF);
     }
