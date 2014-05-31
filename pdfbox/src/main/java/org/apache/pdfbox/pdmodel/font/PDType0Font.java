@@ -223,11 +223,7 @@ public class PDType0Font extends PDSimpleFont
     public void clear()
     {
         super.clear();
-        if (descendantFontArray != null)
-        {
-            descendantFontArray.clear();
-            descendantFontArray = null;
-        }
+        descendantFontArray = null;
         if (descendantFont != null)
         {
             descendantFont.clear();
