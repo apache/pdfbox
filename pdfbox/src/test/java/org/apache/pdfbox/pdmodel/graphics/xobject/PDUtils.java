@@ -19,9 +19,16 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import static junit.framework.Assert.assertEquals;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
  *
@@ -84,5 +91,38 @@ public class PDUtils
         }
         return colors.size();
     }
+    
+
+    // write image twice (overlapped) in document, close document and re-read PDF
+    static void doWritePDF(PDDocument document, PDXObjectImage ximage, File testResultsDir, String filename)
+            throws IOException, COSVisitorException
+    {
+        File pdfFile = new File(testResultsDir, filename);
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        int width = ximage.getWidth();
+        int height = ximage.getHeight();
+
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, width, height);
+        contentStream.drawXObject(ximage, 200, 350, width, height);
+        contentStream.close();
+
+        document.save(pdfFile);
+        document.close();
+
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        for (PDPage pdPage : pdPages)
+        {
+            pdPage.convertToImage();
+        }
+        document.close();
+    }
+        
     
 }

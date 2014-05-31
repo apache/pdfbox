@@ -20,6 +20,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Transparency;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -240,6 +241,13 @@ public class PDPixelMapTest extends TestCase
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
         contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
         contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+        
+        // Example to use rotation, also posted to
+        // http://stackoverflow.com/a/23876858/535646
+        AffineTransform at = new AffineTransform(ximage.getWidth() / 4, 0, 0, ximage.getHeight() / 4, 100, 600);
+        at.rotate(Math.toRadians(10));
+        contentStream.drawXObject(ximage, at);
+        
         contentStream.close();
         File pdfFile = new File(testResultsDir, "intrgb.pdf");
         document.save(pdfFile);

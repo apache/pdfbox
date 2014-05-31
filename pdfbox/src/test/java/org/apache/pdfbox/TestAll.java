@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorStateTest;
 import org.apache.pdfbox.pdmodel.graphics.color.PDLabTest;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDCcittTest;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpegTest;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMapTest;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
@@ -122,7 +123,8 @@ public class TestAll extends TestCase
         suite.addTestSuite(PDFCloneUtilityTest.class);
         suite.addTestSuite(PDLabTest.class);
         suite.addTestSuite(PDPixelMapTest.class);
-        suite.addTestSuite(PDJpegTest.class);        
+        suite.addTestSuite(PDJpegTest.class);       
+        suite.addTestSuite(PDCcittTest.class);        
         suite.addTestSuite(TestPDFText2HTML.class);
         suite.addTestSuite(PDColorStateTest.class);
 
