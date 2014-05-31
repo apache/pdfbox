@@ -88,7 +88,7 @@ public class PDCcitt extends PDXObjectImage
 
         COSDictionary dic = getCOSStream();
 
-        extractFromTiff(raf, getCOSStream().createFilteredStream(), decodeParms);
+        extractFromTiff(raf, getCOSStream().createFilteredStream(), decodeParms, number);
 
         dic.setItem(COSName.FILTER, COSName.CCITTFAX_DECODE);
         dic.setItem(COSName.SUBTYPE, COSName.IMAGE);
