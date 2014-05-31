@@ -107,5 +107,34 @@ public class ValidateXImage
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
+    
+    /**
+     * Check whether the images are identical.
+     *
+     * @param expectedImage
+     * @param actualImage
+     */
+    static void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
+    {
+        String errMsg = "";
+
+        int w = expectedImage.getWidth();
+        int h = expectedImage.getHeight();
+        assertEquals(w, actualImage.getWidth());
+        assertEquals(h, actualImage.getHeight());
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < w; ++x)
+            {
+                if (expectedImage.getRGB(x, y) != actualImage.getRGB(x, y))
+                {
+                    errMsg = String.format("(%d,%d) %08X != %08X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                }
+                assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+            }
+        }
+    }
+
+    
 
 }
