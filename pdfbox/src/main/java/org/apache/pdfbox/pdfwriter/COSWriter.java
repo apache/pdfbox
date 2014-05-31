@@ -960,7 +960,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
             else if( current instanceof COSString )
             {
-                COSString copy = new COSString(true);
+                COSString copy = new COSString();
                 copy.append(((COSString)current).getBytes());
                 copy.accept(this);
             }
