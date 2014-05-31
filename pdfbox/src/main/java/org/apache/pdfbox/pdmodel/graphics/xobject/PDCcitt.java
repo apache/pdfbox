@@ -68,18 +68,19 @@ public class PDCcitt extends PDXObjectImage
     public PDCcitt(PDStream ccitt)
     {
         super(ccitt, "tiff");
-
     }
-
+    
     /**
      * Construct from a tiff file.
      * 
      * @param doc The document to create the image as part of.
      * @param raf The random access TIFF file which contains a suitable CCITT compressed image
+     * @param number TIFF image number, starting from 0
      * @throws IOException If there is an error reading the tiff data.
+     * @throws IllegalArgumentException If there is no such image number
      */
-
-    public PDCcitt(PDDocument doc, RandomAccess raf) throws IOException
+    public PDCcitt(PDDocument doc, RandomAccess raf, int number) 
+            throws IOException, IllegalArgumentException
     {
         super(new PDStream(doc), "tiff");
 
@@ -98,7 +99,20 @@ public class PDCcitt extends PDXObjectImage
         setColorSpace(new PDDeviceGray());
         setWidth(decodeParms.getInt(COSName.COLUMNS));
         setHeight(decodeParms.getInt(COSName.ROWS));
+    }    
+    
 
+    /**
+     * Construct from a tiff file.
+     * 
+     * @param doc The document to create the image as part of.
+     * @param raf The random access TIFF file which contains a suitable CCITT compressed image
+     * @throws IOException If there is an error reading the tiff data.
+     */
+
+    public PDCcitt(PDDocument doc, RandomAccess raf) throws IOException
+    {
+        this(doc, raf, 0);
     }
 
     /**
@@ -230,13 +244,16 @@ public class PDCcitt extends PDXObjectImage
      * @param raf - TIFF File
      * @param os - Stream to write raw ccitt data two
      * @param parms - COSDictionary which the encoding parameters are added to
+     * @param number TIFF image number, starting from 0
      * @throws IOException If there is an error reading/writing to/from the stream
+     * @throws IllegalArgumentException If there is no such image number
      */
-    private void extractFromTiff(RandomAccess raf, OutputStream os, COSDictionary parms) throws IOException
+    private void extractFromTiff(RandomAccess raf, OutputStream os, 
+            COSDictionary parms, int number) 
+            throws IOException, IllegalArgumentException
     {
         try
         {
-
             // First check the basic tiff header
             raf.seek(0);
             char endianess = (char) raf.read();
@@ -256,7 +273,26 @@ public class PDCcitt extends PDXObjectImage
             }
 
             // Relocate to the first set of tags
-            raf.seek(readlong(endianess, raf));
+            int address = readlong(endianess, raf);
+            raf.seek(address);
+    
+            // If some higher page number is required, skip this page's tags, 
+            // then read the next page's address
+            for (int i = 0; i < number; i++)
+            {
+                int numtags = readshort(endianess, raf);
+                if (numtags > 50)
+                {
+                    throw new IOException("Not a valid tiff file");
+                }
+                raf.seek(address + 2 + numtags * 12);
+                address = readlong(endianess, raf);
+                if (address == 0)
+                {
+                    throw new IllegalArgumentException("Image number " + number + " does not exist");
+                }
+                raf.seek(address);
+            }
 
             int numtags = readshort(endianess, raf);
 
