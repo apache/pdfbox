@@ -39,19 +39,42 @@ public final class CCITTFactory
     }
 
     /**
-     * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     * Creates a new CCITT Fax compressed Image XObject from the first page of 
+     * a TIFF file.
      * 
      * @param document the document to create the image as part of.
-     * @param reader the random access TIFF file which contains a suitable CCITT compressed image
+     * @param reader the random access TIFF file which contains a suitable CCITT
+     * compressed image
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader)
+    public static PDImageXObject createFromRandomAccess(PDDocument document,
+            RandomAccess reader)
             throws IOException
+    {
+        return createFromRandomAccess(document, reader, 0);
+    }
+
+    /**
+     * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     * 
+     * @param document the document to create the image as part of.
+     * @param reader the random access TIFF file which contains a suitable CCITT
+     * compressed image
+     * @param number TIFF image number, starting from 0
+     * @return a new Image XObject, or null if no such page
+     * @throws IOException if there is an error reading the TIFF data.
+     */
+    public static PDImageXObject createFromRandomAccess(PDDocument document,
+            RandomAccess reader, int number) throws IOException
     {
         COSDictionary decodeParms = new COSDictionary();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        extractFromTiff(reader, bos, decodeParms);
+        extractFromTiff(reader, bos, decodeParms, number);
+        if (bos.size() == 0)
+        {
+            return null;
+        }
         ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
         PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.CCITTFAX_DECODE);
 
@@ -68,8 +91,8 @@ public final class CCITTFactory
     }
 
     // extracts the CCITT stream from the TIFF file
-    private static void extractFromTiff(RandomAccess reader, OutputStream os, COSDictionary params)
-            throws IOException
+    private static void extractFromTiff(RandomAccess reader, OutputStream os,
+            COSDictionary params, int number) throws IOException
     {
         try
         {
@@ -92,7 +115,26 @@ public final class CCITTFactory
             }
 
             // Relocate to the first set of tags
-            reader.seek(readlong(endianess, reader));
+            int address = readlong(endianess, reader);
+            reader.seek(address);
+    
+            // If some higher page number is required, skip this page's tags, 
+            // then read the next page's address
+            for (int i = 0; i < number; i++)
+            {
+                int numtags = readshort(endianess, reader);
+                if (numtags > 50)
+                {
+                    throw new IOException("Not a valid tiff file");
+                }
+                reader.seek(address + 2 + numtags * 12);
+                address = readlong(endianess, reader);
+                if (address == 0)
+                {
+                    return;
+                }
+                reader.seek(address);
+            }
 
             int numtags = readshort(endianess, reader);
 
