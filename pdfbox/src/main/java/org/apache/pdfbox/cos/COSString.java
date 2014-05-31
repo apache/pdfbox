@@ -98,18 +98,6 @@ public class COSString extends COSBase
         out = new ByteArrayOutputStream();
     }
 
-    /** 
-     * Constructor.
-     * 
-     * @param isDictionaryValue determines if this string represents a dictionary
-     * @deprecated Not needed anymore. Use {@link #COSString()} instead. PDFBOX-2102
-     */
-    @Deprecated
-    public COSString(boolean isDictionaryValue)
-    {
-        this();
-    }
-
     /**
      * Explicit constructor for ease of manual PDF construction.
      * 
