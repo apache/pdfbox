@@ -26,13 +26,12 @@ import java.io.IOException;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
@@ -206,33 +205,6 @@ public class LosslessFactoryTest extends TestCase
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         doWritePDF(document, ximage, testResultsDir, "4babgr.pdf");
-    }
-
-    /**
-     * Check whether the images are identical.
-     *
-     * @param expectedImage
-     * @param actualImage
-     */
-    private void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
-    {
-        String errMsg = "";
-
-        int w = expectedImage.getWidth();
-        int h = expectedImage.getHeight();
-        assertEquals(w, actualImage.getWidth());
-        assertEquals(h, actualImage.getHeight());
-        for (int y = 0; y < h; ++y)
-        {
-            for (int x = 0; x < w; ++x)
-            {
-                if (expectedImage.getRGB(x, y) != actualImage.getRGB(x, y))
-                {
-                    errMsg = String.format("(%d,%d) %08X != %08X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
-                }
-                assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
-            }
-        }
     }
 
     /**
