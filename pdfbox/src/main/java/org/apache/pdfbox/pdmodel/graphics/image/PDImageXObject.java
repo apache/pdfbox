@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An Image XObject.
@@ -45,6 +47,11 @@ import java.util.Map;
  */
 public final class PDImageXObject extends PDXObject implements PDImage
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDImageXObject.class);
+
     private BufferedImage cachedImage;
     private PDColorSpace colorSpace;
     private Map<String, PDColorSpace> colorSpaces;  // from current resource dictionary
@@ -457,12 +464,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
             return "tiff";
         }
         else if (filters.contains(COSName.FLATE_DECODE)
-                || filters.contains(COSName.LZW_DECODE))
+                || filters.contains(COSName.LZW_DECODE)
+                || filters.contains(COSName.RUN_LENGTH_DECODE))
         {
             return "png";
         }
         else
         {
+            LOG.warn("getSuffix() returns null, filters: " + filters);
             // TODO more...
             return null;
         }
