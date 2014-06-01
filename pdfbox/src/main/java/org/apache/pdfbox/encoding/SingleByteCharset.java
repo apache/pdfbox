@@ -137,6 +137,7 @@ public class SingleByteCharset extends Charset
                 ch = toUnicodeMap[b & 0xFF];
                 if (ch == REPLACEMENT_CHARACTER)
                 {
+                    in.position(in.position() - 1);
                     return CoderResult.unmappableForLength(1);
                 }
                 out.put(ch);
