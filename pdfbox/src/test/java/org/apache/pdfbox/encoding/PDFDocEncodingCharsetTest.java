@@ -17,6 +17,9 @@
 package org.apache.pdfbox.encoding;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 import junit.framework.TestCase;
 
@@ -60,6 +63,23 @@ public class PDFDocEncodingCharsetTest extends TestCase
         assertEquals("Bad??char", decoded);
     }
 
+    /**
+     * Checking for behaviour with undefined character at the end of the buffer.
+     * This used to cause an IllegalArgumentException.
+     */
+    public void testUnencodedAtEnd()
+    {
+        byte[] encoded = new byte[] {0x00, 0x01, 0x02, 0x7F}; //0x7F is undefined
+        String decoded = toString(encoded, 0, encoded.length, PDFDocEncodingCharset.INSTANCE);
+        assertEquals("\u0000\u0001\u0002\uFFFD", decoded);
+    }
+    
+    private static String toString(byte[] data, int offset, int length, Charset charset)
+    {
+        CharBuffer charBuffer = charset.decode(ByteBuffer.wrap(data, offset, length));
+        return charBuffer.toString();
+    }
+    
     private void compareEncoded(byte[] encoded, int[] expected)
     {
         assertEquals(expected.length, encoded.length);
