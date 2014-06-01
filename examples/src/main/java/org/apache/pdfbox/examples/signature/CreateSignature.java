@@ -31,12 +31,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertStore;
 import java.security.cert.Certificate;
-import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -50,13 +47,14 @@ import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.Attributes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.CMSSignedGenerator;
@@ -266,21 +264,17 @@ public class CreateSignature implements SignatureInterface
     {
         try
         {
-            CMSProcessable processable = new CMSProcessableInputStream(content);
-
-            CertStore certStore = CertStore.getInstance("Collection",
-                    new CollectionCertStoreParameters(Arrays.asList(certificateChain)));
-
+            CMSProcessableInputStream processable = new CMSProcessableInputStream(content);
+            org.bouncycastle.asn1.x509.Certificate certificate =
+                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(certificateChain[0].getEncoded()));
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             gen.addSigner(privateKey, (X509Certificate) certificateChain[0], CMSSignedGenerator.DIGEST_SHA256);
-            gen.addCertificatesAndCRLs(certStore);
+            gen.addCertificate(new X509CertificateHolder(certificate));
             CMSSignedData signedData = gen.generate(processable, false, new BouncyCastleProvider());
-
             if (tsaClient != null)
             {
                 signedData = signTimeStamps(signedData);
             }
-
             return signedData.getEncoded();
         }
         catch (GeneralSecurityException e)
