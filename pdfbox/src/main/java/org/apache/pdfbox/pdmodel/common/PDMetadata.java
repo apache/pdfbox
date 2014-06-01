@@ -76,11 +76,14 @@ public class PDMetadata extends PDStream
     /**
      * Extract the XMP metadata and create and build an in memory object.
      * To persist changes back to the PDF you must call importXMPMetadata.
+     * 
+     * @deprecated will return an InputStream in the future.
      *
      * @return A parsed XMP object.
      *
      * @throws IOException If there is an error parsing the XMP data.
      */
+    @Deprecated
     public XMPMetadata exportXMPMetadata() throws IOException
     {
         return XMPMetadata.load( createInputStream() );
@@ -92,8 +95,25 @@ public class PDMetadata extends PDStream
      * @param xmp The XMP data.
      *
      * @throws IOException If there is an error generating the XML document.
+     */
+    public void importXMPMetadata( byte[] xmp )
+        throws IOException
+    {
+    	OutputStream os = createOutputStream;
+        os.write(xmp)
+        os.close();
+    }
+    
+    
+    /**
+     * Import an XMP stream into the PDF document.
+     *
+     * @param xmp The XMP data.
+     *
+     * @throws IOException If there is an error generating the XML document.
      * @throws TransformerException If there is an error generating the XML document.
      */
+    @Deprecated
     public void importXMPMetadata( XMPMetadata xmp )
         throws IOException, TransformerException
     {
