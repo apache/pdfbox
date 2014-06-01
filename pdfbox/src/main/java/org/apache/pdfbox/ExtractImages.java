@@ -200,6 +200,7 @@ public class ExtractImages
                     }
                     System.out.println( "Writing image:" + name );
                     image.write2file( name );
+                    image.clear(); // PDFBOX-2101 get rid of cache ASAP
                 }
                 // maybe there are more images embedded in a form object
                 else if (xobject instanceof PDXObjectForm)
