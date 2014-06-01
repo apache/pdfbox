@@ -18,10 +18,10 @@ package org.apache.pdfbox.pdmodel.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.jempbox.xmp.XMPMetadata;
 import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -74,16 +74,16 @@ public class PDMetadata extends PDStream
     }
 
     /**
-     * Extract the XMP metadata and create and build an in memory object.
+     * Extract the XMP metadata.
      * To persist changes back to the PDF you must call importXMPMetadata.
      *
-     * @return A parsed XMP object.
+     * @return A stream to get the xmp data from.
      *
      * @throws IOException If there is an error parsing the XMP data.
      */
-    public XMPMetadata exportXMPMetadata() throws IOException
+    public InputStream exportXMPMetadata() throws IOException
     {
-        return XMPMetadata.load( createInputStream() );
+        return createInputStream();
     }
 
     /**
@@ -94,9 +94,11 @@ public class PDMetadata extends PDStream
      * @throws IOException If there is an error generating the XML document.
      * @throws TransformerException If there is an error generating the XML document.
      */
-    public void importXMPMetadata( XMPMetadata xmp )
-        throws IOException, TransformerException
+    public void importXMPMetadata( byte[] xmp )
+        throws IOException
     {
-        xmp.save( createOutputStream() );
+    	OutputStream os = createOutputStream();
+    	os.write(xmp);
+    	os.close();
     }
 }

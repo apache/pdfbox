@@ -31,7 +31,12 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.w3c.dom.Document;
 
 /**
  * This is an example on how to extract metadata from a PDF document.
@@ -84,7 +89,10 @@ public class ExtractMetadata
                 PDMetadata meta = catalog.getMetadata();
                 if ( meta != null)
                 {
-                    XMPMetadata metadata = meta.exportXMPMetadata();
+                	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+                	Document xmpDocument = documentBuilder.parse(meta.createInputStream());
+                    XMPMetadata metadata = new XMPMetadata(xmpDocument);
     
                     XMPSchemaDublinCore dc = metadata.getDublinCoreSchema();
                     if (dc != null)
