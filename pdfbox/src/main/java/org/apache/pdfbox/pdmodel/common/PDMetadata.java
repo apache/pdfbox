@@ -92,7 +92,6 @@ public class PDMetadata extends PDStream
      * @param xmp The XMP data.
      *
      * @throws IOException If there is an error generating the XML document.
-     * @throws TransformerException If there is an error generating the XML document.
      */
     public void importXMPMetadata( byte[] xmp )
         throws IOException
