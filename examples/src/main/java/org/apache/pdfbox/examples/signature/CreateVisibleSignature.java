@@ -26,15 +26,11 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -42,6 +38,8 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.CMSSignedGenerator;
@@ -187,16 +185,13 @@ public class CreateVisibleSignature implements SignatureInterface
     {
         CMSProcessableInputStream input = new CMSProcessableInputStream(content);
         CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-        // CertificateChain
-        List<Certificate> certList = Arrays.asList(cert);
-
-        CertStore certStore = null;
         try
         {
-            certStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), provider);
-            gen.addSigner(privKey, (X509Certificate) certList.get(0), CMSSignedGenerator.DIGEST_SHA256);
-            gen.addCertificatesAndCRLs(certStore);
-            CMSSignedData signedData = gen.generate(input, false, provider);
+            org.bouncycastle.asn1.x509.Certificate certificate = 
+                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(cert[0].getEncoded())); 
+            gen.addSigner(privKey, (X509Certificate) cert[0], CMSSignedGenerator.DIGEST_SHA256);
+            gen.addCertificate(new X509CertificateHolder(certificate));
+            CMSSignedData signedData = gen.generate(input, false, new BouncyCastleProvider());
             return signedData.getEncoded();
         }
         catch (Exception e)

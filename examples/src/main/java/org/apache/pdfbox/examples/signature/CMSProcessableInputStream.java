@@ -16,8 +16,10 @@
  */
 package org.apache.pdfbox.examples.signature;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSTypedData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +30,19 @@ import java.io.OutputStream;
  * It's an alternative to the CMSProcessableByteArray.
  * @author Thomas Chojecki
  */
-class CMSProcessableInputStream implements CMSProcessable
+class CMSProcessableInputStream implements CMSTypedData
 {
     private InputStream in;
+    private final ASN1ObjectIdentifier contentType;
 
     public CMSProcessableInputStream(InputStream is)
     {
+        this(new ASN1ObjectIdentifier(CMSObjectIdentifiers.data.getId()), is);
+    }
+
+    public CMSProcessableInputStream(ASN1ObjectIdentifier type, InputStream is)
+    {
+        contentType = type;
         in = is;
     }
 
@@ -52,5 +61,11 @@ class CMSProcessableInputStream implements CMSProcessable
             out.write(buffer, 0, read);
         }
         in.close();
+    }
+
+    @Override
+    public ASN1ObjectIdentifier getContentType()
+    {
+        return contentType;
     }
 }
