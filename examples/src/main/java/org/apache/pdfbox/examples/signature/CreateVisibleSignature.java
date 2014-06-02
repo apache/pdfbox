@@ -28,7 +28,7 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.Calendar;
 import java.util.Enumeration;
 
@@ -39,11 +39,18 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.CMSSignedGenerator;
+import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
+import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 
 /**
  * This is an example for visual signing a pdf with bouncy castle.
@@ -183,15 +190,22 @@ public class CreateVisibleSignature implements SignatureInterface
     @Override
     public byte[] sign(InputStream content) throws IOException
     {
-        CMSProcessableInputStream input = new CMSProcessableInputStream(content);
-        CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
         try
         {
             org.bouncycastle.asn1.x509.Certificate certificate = 
                     org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(cert[0].getEncoded())); 
-            gen.addSigner(privKey, (X509Certificate) cert[0], CMSSignedGenerator.DIGEST_SHA256);
-            gen.addCertificate(new X509CertificateHolder(certificate));
-            CMSSignedData signedData = gen.generate(input, false, new BouncyCastleProvider());
+
+            AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256WITHRSAENCRYPTION");
+            AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
+            RSAPrivateKey privateRSAKey = (RSAPrivateKey)privKey; 
+            RSAKeyParameters keyParams = new RSAKeyParameters(true, privateRSAKey.getModulus(), privateRSAKey.getPrivateExponent()); 
+            ContentSigner sigGen = new BcRSAContentSignerBuilder(sigAlgId, digAlgId).build(keyParams);
+            CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
+            gen.addSignerInfoGenerator(
+                    new SignerInfoGeneratorBuilder(new BcDigestCalculatorProvider())
+                        .build(sigGen, new X509CertificateHolder(certificate)));
+            CMSProcessableInputStream processable = new CMSProcessableInputStream(content);
+            CMSSignedData signedData = gen.generate(processable, false);
             return signedData.getEncoded();
         }
         catch (Exception e)
