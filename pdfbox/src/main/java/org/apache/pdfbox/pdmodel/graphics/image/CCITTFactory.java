@@ -75,18 +75,17 @@ public final class CCITTFactory
         {
             return null;
         }
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(bos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.CCITTFAX_DECODE);
-
+        ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(bos.toByteArray());
+        PDImageXObject pdImage = new PDImageXObject(document, 
+                filteredByteStream, 
+                COSName.CCITTFAX_DECODE, 
+                decodeParms.getInt(COSName.COLUMNS), 
+                decodeParms.getInt(COSName.ROWS),
+                1,
+                PDDeviceGray.INSTANCE);
+        
         COSDictionary dict = pdImage.getCOSStream();
-
         dict.setItem(COSName.DECODE_PARMS, decodeParms);
-
-        pdImage.setBitsPerComponent(1);
-        pdImage.setColorSpace(PDDeviceGray.INSTANCE);
-        pdImage.setWidth(decodeParms.getInt(COSName.COLUMNS));
-        pdImage.setHeight(decodeParms.getInt(COSName.ROWS));
-
         return pdImage;
     }
 
