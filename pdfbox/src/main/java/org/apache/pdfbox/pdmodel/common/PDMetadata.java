@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.common;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.transform.TransformerException;
 
@@ -100,7 +101,7 @@ public class PDMetadata extends PDStream
         throws IOException
     {
     	OutputStream os = createOutputStream;
-        os.write(xmp)
+        os.write(xmp);
         os.close();
     }
     
