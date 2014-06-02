@@ -100,7 +100,7 @@ public class PDMetadata extends PDStream
     public void importXMPMetadata( byte[] xmp )
         throws IOException
     {
-    	OutputStream os = createOutputStream;
+    	OutputStream os = createOutputStream();
         os.write(xmp);
         os.close();
     }
