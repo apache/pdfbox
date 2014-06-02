@@ -23,11 +23,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -97,12 +100,8 @@ public class LosslessFactory
             }
         }
 
-        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray());
-
-        pdImage.setColorSpace(deviceColorSpace);
-        pdImage.setBitsPerComponent(bpc);
-        pdImage.setHeight(image.getHeight());
-        pdImage.setWidth(image.getWidth());
+        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray(), 
+                image.getWidth(), image.getHeight(), bpc, deviceColorSpace);
 
         // alpha -> soft mask
         PDImage xAlpha = createAlphaFromARGBImage(document, image);
@@ -170,35 +169,37 @@ public class LosslessFactory
             }
         }
 
-        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray());
-
-        pdImage.setColorSpace(PDDeviceGray.INSTANCE);
-        pdImage.setBitsPerComponent(bpc);
-        pdImage.setHeight(image.getHeight());
-        pdImage.setWidth(image.getWidth());
+        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray(), 
+                image.getWidth(), image.getHeight(), bpc, PDDeviceGray.INSTANCE);
 
         return pdImage;
     }
 
     /**
-     * Create a PDImageXObject with the data encoded with the Flate filter.
-     *
+     * Create a PDImageXObject while making a decision whether not to 
+     * compress, use Flate filter only, or Flate and LZW filters.
+     * 
      * @param document The document.
      * @param byteArray array with data.
+     * @param width the image width
+     * @param height the image height
+     * @param bitsPerComponent the bits per component
+     * @param initColorSpace the color space
      * @return the newly created PDImageXObject with the data compressed.
-     * @throws IOException
+     * @throws IOException 
      */
-    private static PDImageXObject prepareImageXObject(PDDocument document, byte[] byteArray) 
-            throws IOException
+    private static PDImageXObject prepareImageXObject(PDDocument document, 
+            byte [] byteArray, int width, int height, int bitsPerComponent, 
+            PDColorSpace initColorSpace) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
         filter.encode(new ByteArrayInputStream(byteArray), baos, new COSDictionary(), 0);
 
-        return new PDImageXObject(document,
-                new ByteArrayInputStream(baos.toByteArray()),
-                COSName.FLATE_DECODE);
+        ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(baos.toByteArray());
+        return new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE, 
+                width, height, bitsPerComponent, initColorSpace);
     }
 
 }

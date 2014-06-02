@@ -84,14 +84,24 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * @param document the current document
      * @param filteredStream a filtered stream of image data
      * @param cosFilter the filter or a COSArray of filters
+     * @param width the image width
+     * @param height the image height
+     * @param bitsPerComponent the bits per component
+     * @param initColorSpace the color space
      * @throws IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDDocument document, InputStream filteredStream, COSBase cosFilter) throws IOException
+    public PDImageXObject(PDDocument document, InputStream filteredStream, 
+            COSBase cosFilter, int width, int height, int bitsPerComponent, 
+            PDColorSpace initColorSpace) throws IOException
     {
         super(new PDStream(document, filteredStream, true), COSName.IMAGE);
         getCOSStream().setItem(COSName.FILTER, cosFilter);
         colorSpaces = null;
         colorSpace = null;
+        setBitsPerComponent(bitsPerComponent);
+        setWidth(width);
+        setHeight(height);
+        setColorSpace(initColorSpace);
     }
 
     /**

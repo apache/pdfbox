@@ -38,21 +38,18 @@ class ImageFactory
     {
     }
 
-    // sets Image XObject properties from an AWT buffered image
-    protected static void setPropertiesFromAWT(BufferedImage awtImage, PDImageXObject pdImage)
+    // returns a PDColorSpace for a given BufferedImage
+    protected static PDColorSpace getColorSpaceFromAWT(BufferedImage awtImage)
     {
         if (awtImage.getColorModel().getNumComponents() == 1)
         {
             // 256 color (gray) JPEG
-            pdImage.setColorSpace(PDDeviceGray.INSTANCE);
+            return PDDeviceGray.INSTANCE;
         }
         else
         {
-            pdImage.setColorSpace(toPDColorSpace(awtImage.getColorModel().getColorSpace()));
+            return toPDColorSpace(awtImage.getColorModel().getColorSpace());
         }
-        pdImage.setBitsPerComponent(awtImage.getColorModel().getComponentSize(0));
-        pdImage.setHeight(awtImage.getHeight());
-        pdImage.setWidth(awtImage.getWidth());
     }
 
     // returns a PDColorSpace for a given AWT ColorSpace

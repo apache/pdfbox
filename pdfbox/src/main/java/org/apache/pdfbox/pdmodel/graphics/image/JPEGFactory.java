@@ -65,16 +65,16 @@ public final class JPEGFactory extends ImageFactory
         byteStream.reset();
 
         // create Image XObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.DCT_DECODE);
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+                COSName.DCT_DECODE, awtImage.getWidth(), awtImage.getHeight(), 
+                awtImage.getColorModel().getComponentSize(0),
+                getColorSpaceFromAWT(awtImage));
 
         // no alpha
         if (awtImage.getColorModel().hasAlpha())
         {
             throw new UnsupportedOperationException("alpha channel not implemented");
         }
-
-        // set properties (width, height, depth, color space, etc.)
-        setPropertiesFromAWT(awtImage, pdImage);
 
         return pdImage;
     }
@@ -190,7 +190,12 @@ public final class JPEGFactory extends ImageFactory
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIOUtil.writeImage(awtColorImage, "jpeg", baos, dpi, quality);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, COSName.DCT_DECODE);
+        
+        
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+                COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
+                awtColorImage.getColorModel().getComponentSize(0),
+                getColorSpaceFromAWT(awtColorImage));
 
         // alpha -> soft mask
         if (awtAlphaImage != null)
@@ -198,9 +203,6 @@ public final class JPEGFactory extends ImageFactory
             PDImage xAlpha = JPEGFactory.createFromImage(document, awtAlphaImage, quality);
             pdImage.getCOSStream().setItem(COSName.SMASK, xAlpha);
         }
-        
-        // set properties (width, height, depth, color space, etc.)
-        setPropertiesFromAWT(awtColorImage, pdImage);
 
         return pdImage;
     }
