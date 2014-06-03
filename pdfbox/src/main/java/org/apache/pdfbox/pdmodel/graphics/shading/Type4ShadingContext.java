@@ -63,9 +63,8 @@ class Type4ShadingContext extends GouraudShadingContext
         bitsPerColorComponent = shading.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
         bitsPerCoordinate = shading.getBitsPerCoordinate();
-        LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
-        long maxSrcCoord = (int) Math.pow(2, bitsPerCoordinate) - 1;
-        long maxSrcColor = (int) Math.pow(2, bitsPerColorComponent) - 1;
+        long maxSrcCoord = (long) (Math.pow(2, bitsPerCoordinate) - 1);
+        long maxSrcColor = (long) (Math.pow(2, bitsPerColorComponent) - 1);
         LOG.debug("maxSrcCoord: " + maxSrcCoord);
         LOG.debug("maxSrcColor: " + maxSrcColor);
 
