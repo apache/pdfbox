@@ -24,7 +24,6 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.util.autodetect.FontFileFinder;
 
 /**
  * A class to hold true type font information.
@@ -38,6 +37,10 @@ public class TrueTypeFont
     private float version; 
 
     private int numberOfGlyphs = -1;
+    
+    private int unitsPerEm = -1;
+
+    private int[] advanceWidths = null;
     
     private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     
@@ -306,4 +309,61 @@ public class TrueTypeFont
         }
         return numberOfGlyphs;
     }
+
+    /**
+     * Returns the units per EM (Header.unitsPerEm).
+     * 
+     * @return units per EM
+     */
+    public int getUnitsPerEm()
+    {
+        if (unitsPerEm == -1)
+        {
+            HeaderTable header = getHeader();
+            if (header != null)
+            {
+                unitsPerEm = header.getUnitsPerEm();
+            }
+            else
+            {
+                // this should never happen
+                unitsPerEm = 0;
+            }
+        }
+        return unitsPerEm;
+    }
+
+    /**
+     * Returns the width for the given glyph code.
+     * 
+     * @param code the glyph code
+     * @return the width
+     */
+    public int getAdvanceWidth(int code)
+    {
+        if (advanceWidths == null)
+        {
+            HorizontalMetricsTable hmtx = getHorizontalMetrics();
+            if (hmtx != null)
+            {
+                advanceWidths = hmtx.getAdvanceWidth();
+            }
+            else
+            {
+                // this should never happen
+                advanceWidths = new int[]{250};
+            }
+        }
+        if (advanceWidths.length > code)
+        {
+            return advanceWidths[code];
+        }
+        else
+        {
+            // monospaced fonts may not have a width for every glyph
+            // the last one is for subsequent glyphs
+            return advanceWidths[advanceWidths.length-1];
+        }
+    }
+
 }
