@@ -105,7 +105,7 @@ class Type4ShadingContext extends GouraudShadingContext
         //TODO missing: BBox, AntiAlias (p. 305 in 1.7 spec)
         // p318:
         //  reading in sequence from higher-order to lower-order bit positions
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getFilteredStream());
+        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
         while (true)
         {
             try
