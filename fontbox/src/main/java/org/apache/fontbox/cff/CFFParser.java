@@ -127,7 +127,7 @@ public class CFFParser
     private static String readTagName(CFFDataInput input) throws IOException
     {
         byte[] b = input.readBytes(4);
-        return new String(b);
+        return new String(b, "ISO-8859-1");
     }
 
     private static long readLong(CFFDataInput input) throws IOException
