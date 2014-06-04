@@ -100,7 +100,7 @@ class Type5ShadingContext extends GouraudShadingContext
         
         // p318:
         //  reading in sequence from higher-order to lower-order bit positions
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getFilteredStream());
+        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
 
         int verticesPerRow = shading.getVerticesPerRow(); //TODO check >=2
         LOG.debug("verticesPerRow" + verticesPerRow);
