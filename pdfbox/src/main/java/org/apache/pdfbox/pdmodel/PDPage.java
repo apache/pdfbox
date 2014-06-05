@@ -907,4 +907,19 @@ public class PDPage implements COSObjectable, Printable
     {
         return this.getCOSDictionary().hashCode();
     }
+    
+    /**
+     * Calling this will release all cached information.
+     * 
+     */
+    public void clear()
+    {
+        if (pageResources != null)
+        {
+            pageResources.clear();
+        }
+        mediaBox = null;
+        parent = null;
+    }
+
 }
