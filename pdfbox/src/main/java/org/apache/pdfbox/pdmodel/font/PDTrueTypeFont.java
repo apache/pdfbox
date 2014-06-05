@@ -26,8 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.GlyphData;
@@ -41,9 +42,11 @@ import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.FontManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -58,6 +61,27 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 public class PDTrueTypeFont extends PDSimpleFont
 {
 
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDTrueTypeFont.class);
+
+    /**
+     * Start of coderanges.
+     */
+    private static final int START_RANGE_F000 = 0xF000;
+    private static final int START_RANGE_F100 = 0xF100;
+    private static final int START_RANGE_F200 = 0xF200;
+
+    private CMAPEncodingEntry cmapWinUnicode = null;
+    private CMAPEncodingEntry cmapWinSymbol = null;
+    private CMAPEncodingEntry cmapMacintoshSymbol = null;
+    private boolean cmapInitialized = false;
+    
+    private TrueTypeFont trueTypeFont = null;
+
+    private HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> (); 
+    
     /**
      * Constructor.
      */
@@ -378,22 +402,200 @@ public class PDTrueTypeFont extends PDSimpleFont
      */
     public TrueTypeFont getTTFFont() throws IOException
     {
-        TrueTypeFont trueTypeFont = null;
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
-        if (fd != null)
-        {
-            PDStream ff2Stream = fd.getFontFile2();
-            if (ff2Stream != null)
-            {
-                TTFParser ttfParser = new TTFParser(true);
-                trueTypeFont = ttfParser.parseTTF(ff2Stream.createInputStream());
-            }
-        }
         if (trueTypeFont == null)
         {
-            // check if there is a font mapping for an external font file
-            trueTypeFont = org.apache.fontbox.util.FontManager.findTTFont(getBaseFont());
+            PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
+            if (fd != null)
+            {
+                PDStream ff2Stream = fd.getFontFile2();
+                if (ff2Stream != null)
+                {
+                    TTFParser ttfParser = new TTFParser(true);
+                    trueTypeFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+                }
+            }
+            if (trueTypeFont == null)
+            {
+                // check if there is a font mapping for an external font file
+                trueTypeFont = FontManager.findTTFont(getBaseFont());
+            }
         }
         return trueTypeFont;
     }
+    
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        cmapWinUnicode = null;
+        cmapWinSymbol = null;
+        cmapMacintoshSymbol = null;
+        trueTypeFont = null;
+        if (advanceWidths != null)
+        {
+            advanceWidths.clear();
+        }
+    }
+
+    @Override
+    public float getFontWidth(int charCode)
+    {
+        float width = super.getFontWidth(charCode);
+        if (width < 0)
+        {
+            if (advanceWidths.containsKey(charCode))
+            {
+                width = advanceWidths.get(charCode);
+            }
+            else
+            {
+                TrueTypeFont ttf = null;
+                try
+                {
+                    ttf = getTTFFont();
+                    if (ttf != null)
+                    {
+                        int code = getGlyphcode(charCode);
+                        width = ttf.getAdvanceWidth(code);
+                        int unitsPerEM = ttf.getUnitsPerEm();
+                        // do we have to scale the width
+                        if (unitsPerEM != 1000)
+                        {
+                            width *= 1000f/unitsPerEM;
+                        }
+                    }
+                }
+                catch (IOException exception)
+                {
+                    width = 250;
+                }
+                advanceWidths.put(charCode, width);
+            }
+        }
+        return width;
+    }
+
+    // TODO I had to copy the following code from TTFGlyph2D as I haven't any idea
+    // where to put it else.
+    private int getGlyphcode(int code)
+    {
+        extractCMaps();
+        int result = 0;
+        if (getFontEncoding() != null && !isSymbolicFont())
+        {
+            try
+            {
+                String charactername = getFontEncoding().getName(code);
+                if (charactername != null)
+                {
+                    if (cmapWinUnicode != null)
+                    {
+                        String unicode = Encoding.getCharacterForName(charactername);
+                        if (unicode != null)
+                        {
+                            result = unicode.codePointAt(0);
+                        }
+                        result = cmapWinUnicode.getGlyphId(result);
+                    }
+                    else if (cmapMacintoshSymbol != null && MacOSRomanEncoding.INSTANCE.hasCodeForName(charactername))
+                    {
+                        result = MacOSRomanEncoding.INSTANCE.getCode(charactername);
+                        result = cmapMacintoshSymbol.getGlyphId(result);
+                    }
+                    else if (cmapWinSymbol != null)
+                    {
+                        // fallback scenario if the glyph can't be found yet
+                        // maybe the 3,0 cmap provides a suitable mapping
+                        // see PDFBOX-2091
+                        result = cmapWinSymbol.getGlyphId(code);
+                    }
+                }
+            }
+            catch (IOException exception)
+            {
+                LOG.error("Caught an exception getGlyhcode: " + exception);
+            }
+        }
+        else if (getFontEncoding() == null || isSymbolicFont())
+        {
+            if (cmapWinSymbol != null)
+            {
+                result = cmapWinSymbol.getGlyphId(code);
+                if (code >= 0 && code <= 0xFF)
+                {
+                    // the CMap may use one of the following code ranges,
+                    // so that we have to add the high byte to get the
+                    // mapped value
+                    if (result == 0)
+                    {
+                        // F000 - F0FF
+                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F000);
+                    }
+                    if (result == 0)
+                    {
+                        // F100 - F1FF
+                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F100);
+                    }
+                    if (result == 0)
+                    {
+                        // F200 - F2FF
+                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F200);
+                    }
+                }
+            }
+            else if (cmapMacintoshSymbol != null)
+            {
+                result = cmapMacintoshSymbol.getGlyphId(code);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * extract all useful CMaps.
+     */
+    private void extractCMaps()
+    {
+        if (!cmapInitialized)
+        {
+            try 
+            {
+                getTTFFont();
+            }
+            catch(IOException exception)
+            {
+                LOG.error("Can't read the true type font", exception);
+            }
+            CMAPTable cmapTable = trueTypeFont.getCMAP();
+            if (cmapTable != null)
+            {
+                // get all relevant CMaps
+                CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
+                for (int i = 0; i < cmaps.length; i++)
+                {
+                    if (CMAPTable.PLATFORM_WINDOWS == cmaps[i].getPlatformId())
+                    {
+                        if (CMAPTable.ENCODING_UNICODE == cmaps[i].getPlatformEncodingId())
+                        {
+                            cmapWinUnicode = cmaps[i];
+                        }
+                        else if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                        {
+                            cmapWinSymbol = cmaps[i];
+                        }
+                    }
+                    else if (CMAPTable.PLATFORM_MACINTOSH == cmaps[i].getPlatformId())
+                    {
+                        if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                        {
+                            cmapMacintoshSymbol = cmaps[i];
+                        }
+                    }
+                }
+            }
+            cmapInitialized = true;
+        }
+    }
 }
+
