@@ -37,13 +37,26 @@ public class PDFRenderer
     protected final PDDocument document;
     // TODO keep rendering state such as caches here
 
+    private boolean clearResourcesAutomatically;
+    
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
      */
     public PDFRenderer(PDDocument document)
     {
+        this(document, true);
+    }
+
+    /**
+     * Creates a new PDFRenderer.
+     * @param document the document to render
+     * @param clearResourcesAutomatically indicates that all resources will be cleared automatically after rendering
+     */
+    public PDFRenderer(PDDocument document, boolean clearResourcesAutomatically)
+    {
         this.document = document;
+        this.clearResourcesAutomatically = clearResourcesAutomatically;
     }
 
     /**
@@ -213,5 +226,9 @@ public class PDFRenderer
         PageDrawer drawer = new PageDrawer(this);   // TODO: need to make it easy to use a custom PageDrawer
         drawer.drawPage(graphics, page, cropBox);
         drawer.dispose();
+        if (clearResourcesAutomatically)
+        {
+            page.clear();
+        }
     }
 }
