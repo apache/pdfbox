@@ -213,6 +213,28 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
+     * Determines if the encoding has a mapping for the given name value.
+     * 
+     * @param name the source value for the mapping
+     * @return the mapped value
+     */
+    public boolean hasCodeForName(String name)
+    {
+        return nameToCode.containsKey(name);
+    }
+
+    /**
+     * Determines if the encoding has a mapping for the given code value.
+     * 
+     * @param code the source value for the mapping
+     * @return the mapped value
+     */
+    public boolean hasNameForCode(int code)
+    {
+        return codeToName.containsKey(code);
+    }
+    
+    /**
      * This will get the character code for the name.
      *
      * @param name The name of the character.

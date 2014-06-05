@@ -97,6 +97,8 @@ public abstract class PDFont implements COSObjectable
     protected CMap toUnicodeCmap = null;
     
     private boolean hasToUnicode = false;
+    
+    private boolean widthsAreMissing = false;
 
     protected static Map<String, CMap> cmapObjects =
         Collections.synchronizedMap( new HashMap<String, CMap>() );
@@ -795,12 +797,16 @@ public abstract class PDFont implements COSObjectable
      */
     public List<Float> getWidths()
     {
-        if (widths == null)
+        if (widths == null && !widthsAreMissing)
         {
             COSArray array = (COSArray)font.getDictionaryObject( COSName.WIDTHS );
             if (array != null)
             {
                 widths = COSArrayList.convertFloatCOSArrayToList(array);
+            }
+            else
+            {
+                widthsAreMissing = true;
             }
         }
         return widths;
@@ -885,10 +891,13 @@ public abstract class PDFont implements COSObjectable
         if (charCode >= firstChar && charCode <= lastChar)
         {
             // maybe the font doesn't provide any widths
-            getWidths();
-            if (widths != null)
+            if (!widthsAreMissing)
             {
-                width = widths.get(charCode-firstChar).floatValue();
+                getWidths();
+                if (widths != null)
+                {
+                    width = widths.get(charCode-firstChar).floatValue();
+                }
             }
         }
         else
