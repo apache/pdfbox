@@ -30,7 +30,17 @@ public class CMAPTable extends TTFTable
      * A tag used to identify this table.
      */
     public static final String TAG = "cmap";
-    
+ 
+    /**
+     * A constant for the platform.
+     */
+    public static final int PLATFORM_MISC = 0;
+
+    /**
+     * A constant for the platform.
+     */
+    public static final int PLATFORM_MACINTOSH = 1;
+     
     /**
      * A constant for the platform.
      */
