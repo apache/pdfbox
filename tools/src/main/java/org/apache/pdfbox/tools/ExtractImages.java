@@ -20,11 +20,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,6 +40,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.image.TIFFInputStream;
 import org.apache.pdfbox.util.ImageIOUtil;
 
@@ -55,6 +62,14 @@ public class ExtractImages
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
     private static final String NONSEQ = "-nonSeq";
+
+    private static final List<String> DCT_FILTERS = new ArrayList<String>();
+
+    static
+    {
+        DCT_FILTERS.add( COSName.DCT_DECODE.getName() );
+        DCT_FILTERS.add( COSName.DCT_DECODE_ABBREVIATION.getName() );
+    }
 
     private ExtractImages()
     {
@@ -230,6 +245,15 @@ public class ExtractImages
         }
         resources.clear();
     }
+    
+    // get and write the unmodified JPEG stream
+    private void writeJpeg2OutputStream(PDImageXObject ximage, OutputStream out)
+            throws IOException
+    {
+        InputStream data = ximage.getPDStream().getPartiallyFilteredStream(DCT_FILTERS);        
+        IOUtils.copy(data, out);
+        IOUtils.closeQuietly(data);
+    }
 
     /**
      * Writes the image to a file with the filename + an appropriate suffix, like "Image.jpg".
@@ -239,6 +263,13 @@ public class ExtractImages
      */
     private void write2file(PDImageXObject xobj, String filename) throws IOException
     {
+        if (xobj.getSuffix() == null || xobj.getSuffix().isEmpty())
+        {
+            System.err.println ("image has no suffix, skipped");
+            System.err.println ("filter(s): " + xobj.getCOSStream().getFilters());
+            return;
+        }
+
         FileOutputStream out = null;
         try
         {
@@ -250,7 +281,25 @@ public class ExtractImages
                 {
                     TIFFInputStream.writeToOutputStream(xobj, out);
                 }
-                else
+                else if ("jpg".equals(xobj.getSuffix()))
+                {
+                    String colorSpaceName = xobj.getColorSpace().getName();
+                    if (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
+                            PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName))
+                    {
+                        // RGB and Gray colorspace:
+                        // get and write the unmodified JPEG stream
+                        writeJpeg2OutputStream(xobj, out);
+                    }
+                    else
+                    {
+                        // CMYK and other "unusual" colorspaces
+                        // create BufferedImage with correct colors and then save into a 
+                        // JPEG (some quality loss)
+                        ImageIOUtil.writeImage(xobj.getImage(), xobj.getSuffix(), out);
+                    }
+                }
+                else 
                 {
                     ImageIOUtil.writeImage(image, xobj.getSuffix(), out);
                 }
