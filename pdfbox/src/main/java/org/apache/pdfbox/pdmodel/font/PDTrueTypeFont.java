@@ -442,7 +442,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     public float getFontWidth(int charCode)
     {
         float width = super.getFontWidth(charCode);
-        if (width < 0)
+        if (width <= 0)
         {
             if (advanceWidths.containsKey(charCode))
             {
