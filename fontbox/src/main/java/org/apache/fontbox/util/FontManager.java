@@ -113,9 +113,23 @@ public class FontManager
             if (namingTable != null && namingTable.getPSName() != null)
             {
                 String normalizedName = normalizeFontname(namingTable.getPSName());
-                ttfFontfiles.put(normalizedName, ttfFilename);
+                if (!ttfFontfiles.containsKey(normalizedName))
+                {
+                    LOG.debug("Added font mapping "+normalizedName + " -=> "+ttfFilename);
+                    ttfFontfiles.put(normalizedName, ttfFilename);
+                }
             }
-        }
+            // take the font family name into account
+            if (namingTable != null && namingTable.getFontFamily() != null)
+            {
+                String normalizedName = normalizeFontFamily(namingTable.getFontFamily(), namingTable.getPSName());
+                if (!ttfFontfiles.containsKey(normalizedName))
+                {
+                    LOG.debug("Added font mapping "+normalizedName + " -=> "+ttfFilename);
+                    ttfFontfiles.put(normalizedName, ttfFilename);
+                }
+            }
+        }   
     }
 
     /**
@@ -140,9 +154,8 @@ public class FontManager
         // normalize all kinds of fonttypes. There are several possible version which have to be normalized
         // e.g. Arial,Bold Arial-BoldMT Helevtica-oblique ...
         boolean isBold = normalizedFontname.indexOf("bold") > -1;
-        boolean isItalic = normalizedFontname.indexOf("italic") > -1
-                || normalizedFontname.indexOf("oblique") > -1;
-        normalizedFontname = normalizedFontname.toLowerCase().replaceAll("bold", "")
+        boolean isItalic = normalizedFontname.indexOf("italic") > -1 || normalizedFontname.indexOf("oblique") > -1;
+        normalizedFontname = normalizedFontname.replaceAll("bold", "")
                 .replaceAll("italic", "").replaceAll("oblique", "");
         if (isBold)
         {
@@ -155,6 +168,28 @@ public class FontManager
         return normalizedFontname;
     }
 
+    private static String normalizeFontFamily(String fontFamily, String psFontName)
+    {
+        String normalizedFontFamily=fontFamily.toLowerCase().replaceAll(" ", "").replaceAll(",", "").replaceAll("-", "");
+        if (psFontName!=null) 
+        {
+            psFontName=psFontName.toLowerCase();
+               
+            boolean isBold = psFontName.indexOf("bold") > -1;
+            boolean isItalic = psFontName.indexOf("italic") > -1 || psFontName.indexOf("oblique") > -1;
+            
+            if (isBold)
+            {
+                normalizedFontFamily += "bold";
+            }
+            if (isItalic)
+            {
+                normalizedFontFamily += "italic";
+            }
+        }
+        return normalizedFontFamily;
+    }
+     
     /**
      * Add a font-mapping.
      * 
@@ -268,7 +303,11 @@ public class FontManager
                 fontfile = ttfFontfiles.get(mappedFontname);
             }
         }
-        if (fontfile == null)
+        if (fontfile != null)
+        {
+            LOG.debug("Using ttf mapping "+fontname + " -=> "+fontfile);
+        }
+        else
         {
             LOG.warn("Font not found: " + fontname);
         }
