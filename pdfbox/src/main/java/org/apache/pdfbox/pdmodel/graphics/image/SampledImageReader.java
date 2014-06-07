@@ -19,14 +19,9 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
-import java.awt.image.PackedColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -153,9 +148,87 @@ final class SampledImageReader
         {
             return from8bit(pdImage, raster);
         }
+        else if (bitsPerComponent == 1 && colorKey == null)
+        {
+            return from1Bit(pdImage, raster);
+        }
         else
         {
             return fromAny(pdImage, raster, colorKey);
+        }
+    }
+    
+    private static BufferedImage from1Bit(PDImage pdImage, WritableRaster raster)
+            throws IOException
+    {
+        final PDColorSpace colorSpace = pdImage.getColorSpace();
+        final int width = pdImage.getWidth();
+        final int height = pdImage.getHeight();
+        final float[] decode = getDecodeArray(pdImage);
+        byte[] output = ((DataBufferByte) raster.getDataBuffer()).getData();
+
+        // read bit stream
+        InputStream iis = null;
+        try
+        {
+            // create stream
+            iis = pdImage.getStream().createInputStream();
+            final boolean isIndexed = colorSpace instanceof PDIndexed;
+
+            int rowLen = width / 8;
+            if (width % 8 > 0)
+            {
+                rowLen++;
+            }
+
+            // read stream
+            byte value0;
+            byte value1;
+            if (isIndexed || decode[0] < decode[1])
+            {
+                value0 = 0;
+                value1 = (byte) 255;
+            }
+            else
+            {
+                value0 = (byte) 255;
+                value1 = 0;
+            }
+            byte[] buff = new byte[rowLen];
+            int idx = 0;
+            for (int y = 0; y < height; y++)
+            {
+                int x = 0;
+                iis.read(buff);
+                for (int r = 0; r < rowLen; r++)
+                {
+                    int value = buff[r];
+                    int mask = 128;
+                    for (int i = 0; i < 8; i++)
+                    {
+                        int bit = value & mask;
+                        mask >>= 1;
+                        output[idx++] = bit == 0 ? value0 : value1;
+                        x++;
+                        if (x == width)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // use the color space to convert the image to RGB
+            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+
+            return rgbImage;
+        }
+        finally
+        {
+            if (iis != null)
+            {
+                iis.close();
+            }
         }
     }
 
@@ -192,8 +265,8 @@ final class SampledImageReader
         {
             IOUtils.closeQuietly(input);
         }
-    }
-
+    }    
+    
     // slower, general-purpose image conversion from any image format
     private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey)
             throws IOException
