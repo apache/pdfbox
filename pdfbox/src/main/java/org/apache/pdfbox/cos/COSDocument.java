@@ -138,10 +138,8 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * Constructor.  Uses memory to store stream.
-     *
-     *  @throws IOException If there is an error creating the tmp file.
      */
-    public COSDocument() throws IOException 
+    public COSDocument()
     {
         this(new RandomAccessBuffer(), false);
     }
