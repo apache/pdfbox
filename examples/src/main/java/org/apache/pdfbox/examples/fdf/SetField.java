@@ -20,25 +20,26 @@ import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 /**
  * This example will take a PDF document and set a FDF field in it.
- * 
+ *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ *
  */
 public class SetField
 {
-
     /**
      * This will set a single field in the document.
-     * 
+     *
      * @param pdfDocument The PDF to set the field in.
      * @param name The name of the field to set.
      * @param value The new value of the field.
-     * 
+     *
      * @throws IOException If there is an error setting the field.
      */
     public void setField(PDDocument pdfDocument, String name, String value) throws IOException
@@ -58,11 +59,12 @@ public class SetField
     }
 
     /**
-     * This will read a PDF file and set a field and then write it the pdf out again. <br />
+     * This will read a PDF file and set a field and then write it the pdf out
+     * again. <br />
      * see usage() for commandline
-     * 
+     *
      * @param args command line arguments
-     * 
+     *
      * @throws IOException If there is an error importing the FDF document.
      */
     public static void main(String[] args) throws IOException
@@ -85,6 +87,19 @@ public class SetField
                 SetField example = new SetField();
 
                 pdf = PDDocument.load(args[0]);
+                if (pdf.isEncrypted())
+                {
+                    try
+                    {
+                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
+                        pdf.openProtection(sdm);
+                    }
+                    catch (InvalidPasswordException e)
+                    {
+                        System.err.println("Error: The document is encrypted.");
+                        usage();
+                    }
+                }
                 example.setField(pdf, args[1], args[2]);
                 pdf.save(args[0]);
             }
