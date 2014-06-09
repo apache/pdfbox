@@ -243,7 +243,7 @@ public abstract class BaseParser
             char r = (char)pdfSource.read();
             if( r != 'R' )
             {
-                throw new IOException( "expected='R' actual='" + r + "' " + pdfSource );
+                throw new IOException("expected='R' actual='" + r + "' at offset " + pdfSource.getOffset());
             }
             COSObjectKey key = new COSObjectKey(((COSInteger) number).intValue(),
                     ((COSInteger) generationNumber).intValue());
@@ -268,12 +268,12 @@ public abstract class BaseParser
         char c = (char)pdfSource.read();
         if( c != '<')
         {
-            throw new IOException( "expected='<' actual='" + c + "'" );
+            throw new IOException( "expected='<' actual='" + c + "' at offset " + pdfSource.getOffset());
         }
         c = (char)pdfSource.read();
         if( c != '<')
         {
-            throw new IOException( "expected='<' actual='" + c + "' " + pdfSource );
+            throw new IOException( "expected='<' actual='" + c + "' at offset " + pdfSource.getOffset());
         }
         skipSpaces();
         COSDictionary obj = new COSDictionary();
@@ -390,12 +390,12 @@ public abstract class BaseParser
         char ch = (char)pdfSource.read();
         if( ch != '>' )
         {
-            throw new IOException( "expected='>' actual='" + ch + "'" );
+            throw new IOException( "expected='>' actual='" + ch + "' at offset " + pdfSource.getOffset());
         }
         ch = (char)pdfSource.read();
         if( ch != '>' )
         {
-            throw new IOException( "expected='>' actual='" + ch + "'" );
+            throw new IOException( "expected='>' actual='" + ch + "' at offset " + pdfSource.getOffset());
         }
         return obj;
     }
@@ -421,7 +421,7 @@ public abstract class BaseParser
 
             if (!streamString.equals(STREAM_STRING))
             {
-                throw new IOException("expected='stream' actual='" + streamString + "'");
+                throw new IOException("expected='stream' actual='" + streamString + "' at offset " + pdfSource.getOffset());
             }
 
             //PDF Ref 3.2.7 A stream must be followed by either
@@ -610,7 +610,7 @@ public abstract class BaseParser
                     endStream = readString();
                     if( !endStream.equals( ENDSTREAM_STRING ) )
                     {
-                        throw new IOException("expected='endstream' actual='" + endStream + "' " + pdfSource);
+                        throw new IOException("expected='endstream' actual='" + endStream + "' at offset " + pdfSource.getOffset());
                     }
                 }
             }
@@ -1061,7 +1061,7 @@ public abstract class BaseParser
         char ch = (char)pdfSource.read();
         if( ch != '[')
         {
-            throw new IOException( "expected='[' actual='" + ch + "'" );
+            throw new IOException( "expected='[' actual='" + ch + "' at offset " + pdfSource.getOffset());
         }
         COSArray po = new COSArray();
         COSBase pbo;
@@ -1144,7 +1144,7 @@ public abstract class BaseParser
         int c = pdfSource.read();
         if( (char)c != '/')
         {
-            throw new IOException("expected='/' actual='" + (char)c + "'-" + c + " " + pdfSource );
+            throw new IOException("expected='/' actual='" + (char)c + "'-" + c + " at offset " + pdfSource.getOffset());
         }
         // costruisce il nome
         StringBuilder buffer = new StringBuilder();
@@ -1217,7 +1217,7 @@ public abstract class BaseParser
             String trueString = new String( pdfSource.readFully( 4 ), "ISO-8859-1" );
             if( !trueString.equals( TRUE ) )
             {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "'" );
+                throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "' at offset " + pdfSource.getOffset());
             }
             else
             {
@@ -1229,7 +1229,7 @@ public abstract class BaseParser
             String falseString = new String( pdfSource.readFully( 5 ), "ISO-8859-1" );
             if( !falseString.equals( FALSE ) )
             {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "'" );
+                throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "' at offset " + pdfSource.getOffset());
             }
             else
             {
@@ -1238,7 +1238,7 @@ public abstract class BaseParser
         }
         else
         {
-            throw new IOException( "Error parsing boolean expected='t or f' actual='" + c + "'" );
+            throw new IOException( "Error parsing boolean expected='t or f' actual='" + c + "' at offset " + pdfSource.getOffset());
         }
         return retval;
     }
@@ -1292,7 +1292,7 @@ public abstract class BaseParser
             String nullString = readString();
             if( !nullString.equals( NULL) )
             {
-                throw new IOException("Expected='null' actual='" + nullString + "'");
+                throw new IOException("Expected='null' actual='" + nullString + "' at offset " + pdfSource.getOffset());
             }
             retval = COSNull.NULL;
             break;
