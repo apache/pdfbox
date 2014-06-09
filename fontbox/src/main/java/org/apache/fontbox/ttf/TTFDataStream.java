@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * An interface into a data stream.
@@ -194,7 +195,9 @@ public abstract class TTFDataStream implements Closeable
     public Calendar readInternationalDate() throws IOException
     {
         long secondsSince1904 = readLong();
-        GregorianCalendar cal = new GregorianCalendar(1904, 0, 1);
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(1904, 0, 1, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         long millisFor1904 = cal.getTimeInMillis();
         millisFor1904 += (secondsSince1904 * 1000);
         cal.setTimeInMillis(millisFor1904);
