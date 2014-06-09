@@ -27,6 +27,8 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
 import org.apache.pdfbox.examples.AbstractExample;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 /**
  * This example will take a PDF document and set a FDF field in it.
@@ -72,13 +74,15 @@ public class SetField extends AbstractExample
      * @throws IOException If there is an error importing the FDF document.
      * @throws COSVisitorException If there is an error writing the PDF.
      */
-    public static void main(String[] args) throws IOException, COSVisitorException
+    public static void main(String[] args) 
+            throws IOException, COSVisitorException, CryptographyException
     {
         SetField setter = new SetField();
         setter.setField( args );
     }
 
-    private void setField( String[] args ) throws IOException, COSVisitorException
+    private void setField( String[] args ) 
+            throws IOException, COSVisitorException, CryptographyException
     {
         PDDocument pdf = null;
         try
@@ -92,6 +96,18 @@ public class SetField extends AbstractExample
                 SetField example = new SetField();
 
                 pdf = PDDocument.load( args[0] );
+                if (pdf.isEncrypted())
+                {
+                    try
+                    {
+                        pdf.decrypt("");
+                    }
+                    catch (InvalidPasswordException e)
+                    {
+                        System.err.println("Error: The document is encrypted.");
+                        usage();
+                    }
+                }
                 example.setField( pdf, args[1], args[2] );
                 pdf.save( args[0] );
             }
