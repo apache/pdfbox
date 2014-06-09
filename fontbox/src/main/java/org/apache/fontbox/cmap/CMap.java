@@ -17,7 +17,6 @@
 package org.apache.fontbox.cmap;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -25,14 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class represents a CMap file.
  *
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.3 $
  */
 public class CMap
 {
+ 
+    private static final Log LOG = LogFactory.getLog(CMap.class);
     
     private int wmode = 0;
     private String cmapName = null;
@@ -234,7 +237,8 @@ public class CMap
         }
         else
         {
-            throw new IOException( "Mapping code should be 1 or two bytes and not " + src.length );
+            // Just log the invalid entry instead of throwing an exception
+            LOG.error("Mapping code should be 1 or two bytes and not " + src.length);
         }
     }
 
