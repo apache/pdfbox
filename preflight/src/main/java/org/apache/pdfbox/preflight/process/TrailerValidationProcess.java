@@ -105,27 +105,14 @@ public class TrailerValidationProcess extends AbstractProcess
         else
         {
             COSDictionary last = ctx.getXrefTableResolver().getLastTrailer();
-            COSDocument cosDoc = null;
-            try
+            COSDocument cosDoc = new COSDocument();
+            checkMainTrailer(ctx, first);
+            if (!compareIds(first, last, cosDoc))
             {
-                cosDoc = new COSDocument();
-                checkMainTrailer(ctx, first);
-                if (!compareIds(first, last, cosDoc))
-                {
-                    addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
-                            "ID is different in the first and the last trailer"));
-                }
-
+                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
+                        "ID is different in the first and the last trailer"));
             }
-            catch (IOException e)
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER,
-                        "Unable to parse trailers of the linearized PDF"));
-            }
-            finally
-            {
-                COSUtils.closeDocumentQuietly(cosDoc);
-            }
+            COSUtils.closeDocumentQuietly(cosDoc);
         }
     }
 
