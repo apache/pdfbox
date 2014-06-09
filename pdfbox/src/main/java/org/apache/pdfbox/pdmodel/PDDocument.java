@@ -131,10 +131,8 @@ public class PDDocument implements Pageable, Closeable
     /**
      * Constructor, creates a new PDF Document with no pages.  You need to add
      * at least one page for the document to be valid.
-     *
-     * @throws IOException If there is an error creating this document.
      */
-    public PDDocument() throws IOException
+    public PDDocument()
     {
         document = new COSDocument();
 
