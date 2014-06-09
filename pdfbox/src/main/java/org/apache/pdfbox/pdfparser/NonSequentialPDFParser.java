@@ -697,8 +697,8 @@ public class NonSequentialPDFParser extends PDFParser
         {
             if (pdfSource.read() != c)
             {
-                throw new IOException("Expected pattern '" + new String(pattern) + " but missed at character '" + c
-                        + "'");
+                throw new IOException("Expected pattern '" + new String(pattern) + "' but missed at character '" + c
+                        + "' at offset " + pdfSource.getOffset());
             }
         }
 
@@ -1615,7 +1615,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (!endStream.equals("endstream"))
             {
                 throw new IOException("Error reading stream using length value. Expected='endstream' actual='"
-                        + endStream + "' ");
+                        + endStream + "' at offset " + pdfSource.getOffset());
             }
         }
         finally
