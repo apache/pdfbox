@@ -68,18 +68,9 @@ public class TestSynchronizedMetadataValidation
     @Before
     public void initNewDocumentInformation() throws Exception
     {
-
-        try
-        {
-            doc = new PDDocument();
-            dico = doc.getDocumentInformation();
-            metadata = XMPMetadata.createXMPMetadata();
-        }
-        catch (IOException e)
-        {
-            throw new Exception("Failed to create temporary test PDF/XMP Document");
-        }
-
+        doc = new PDDocument();
+        dico = doc.getDocumentInformation();
+        metadata = XMPMetadata.createXMPMetadata();
     }
 
     /**
