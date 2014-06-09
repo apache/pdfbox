@@ -22,10 +22,11 @@ import java.io.OutputStream;
 
 /**
  * This class is only for the readUntilEndStream methods, to prevent a
- * final CR LF or LF (but not a final CR!) from being written to the output.
- * Because of that, only the 3-param write() method is implemented. This solves
- * PDFBOX-2079 and avoids making readUntilEndStream() even more complex than it
- * already is.
+ * final CR LF or LF (but not a final CR!) from being written to the output,
+ * unless the beginning of the stream is assumed to be ASCII.
+ * Only the 3-param write() method is implemented. This solves
+ * PDFBOX-2079 and PDFBOX-2120 and avoids making readUntilEndStream() 
+ * even more complex than it already is.
  *
  * @author Tilman Hausherr
  */
@@ -35,7 +36,9 @@ class EndstreamOutputStream extends BufferedOutputStream
     
     private boolean hasCR = false;
     private boolean hasLF = false;
-    
+    private int pos = 0;
+    private boolean mustFilter = true;
+
     public EndstreamOutputStream(OutputStream out)
     {
         super(out);
@@ -44,7 +47,8 @@ class EndstreamOutputStream extends BufferedOutputStream
     /**
      * Write CR and/or LF that were kept, then writes len bytes from the 
      * specified byte array starting at offset off to this output stream,
-     * except trailing CR, CR LF, or LF.
+     * except trailing CR, CR LF, or LF. No filtering will be done for the
+     * entire stream if the beginning is assumed to be ASCII.
      * @param b byte array.
      * @param off offset.
      * @param len length of segment to write.
@@ -53,46 +57,65 @@ class EndstreamOutputStream extends BufferedOutputStream
     @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
-        // first write what we kept last time
-        if (hasCR)
+        if (pos == 0 && len > 10)
         {
-            if (!hasLF && len == 1 && b[off] == '\n')
+            // PDFBOX-2120 Don't filter if ASCII, i.e. keep a final CR LF or LF
+            mustFilter = false;
+            for (int i = 0; i < 10; ++i)
             {
-                // previous buffer ended with CR
-                // actual buffer contains only LF so it will be the last one
-                // => we're done
-                hasCR = false; // to avoid this getting written in the flush
-                return;                    
+                // Heuristic approach, taken from PDFStreamParser, PDFBOX-1164
+                if ((b[i] < 0x09) || ((b[i] > 0x0a) && (b[i] < 0x20) && (b[i] != 0x0d)))
+                {
+                    // control character or > 0x7f -> we have binary data
+                    mustFilter = true;
+                    break;
+                }
             }
-            super.write('\r');
-            hasCR = false;
         }
-        if (hasLF)
+        if (mustFilter)
         {
-            super.write('\n');
-            hasLF = false;
-        } 
-        // don't write CR, LF, or CR LF if at the end of the buffer
-        if (len > 0)
-        {
-            if (b[off + len - 1] == '\r')
+            // first write what we kept last time
+            if (hasCR)
             {
-                hasCR = true;
-                --len;
+                if (!hasLF && len == 1 && b[off] == '\n')
+                {
+                    // previous buffer ended with CR
+                    // actual buffer contains only LF so it will be the last one
+                    // => we're done
+                    hasCR = false; // to avoid this getting written in the flush
+                    return;
+                }
+                super.write('\r');
+                hasCR = false;
             }
-            else if (b[off + len - 1] == '\n')
+            if (hasLF)
             {
-                hasLF = true;
-                --len;
-                if (len > 0 && b[off + len - 1] == '\r')
+                super.write('\n');
+                hasLF = false;
+            }
+            // don't write CR, LF, or CR LF if at the end of the buffer
+            if (len > 0)
+            {
+                if (b[off + len - 1] == '\r')
                 {
                     hasCR = true;
                     --len;
                 }
+                else if (b[off + len - 1] == '\n')
+                {
+                    hasLF = true;
+                    --len;
+                    if (len > 0 && b[off + len - 1] == '\r')
+                    {
+                        hasCR = true;
+                        --len;
+                    }
+                }
             }
-        }        
+        }
         super.write(b, off, len);
-    } 
+        pos += len;
+    }
 
     /**
      * write out a single CR if one was kept. Don't write kept CR LF or LF, 
@@ -107,6 +130,7 @@ class EndstreamOutputStream extends BufferedOutputStream
         if (hasCR && !hasLF)
         {
             super.write('\r');
+            ++pos;
         }
         hasCR = false;
         hasLF = false;
