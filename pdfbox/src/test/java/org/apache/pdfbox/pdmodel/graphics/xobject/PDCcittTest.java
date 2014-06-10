@@ -56,14 +56,40 @@ public class PDCcittTest extends TestCase
      */
     public void testCreateFromRandomAccessSingle() throws IOException, COSVisitorException
     {
-        String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/xobject/ccittg4.tif";
+        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/xobject/ccittg3.tif";
+        String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/xobject/ccittg4.tif";
         
         PDDocument document = new PDDocument();
-        RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
-        PDXObjectImage ximage = new PDCcitt(document, reader);
-        validate(ximage, 1, 344, 287, "tiff", PDDeviceGray.NAME);
+        RandomAccess reader = new RandomAccessFile(new File(tiffG3Path), "r");
+        PDXObjectImage ximage3 = new PDCcitt(document, reader);
+        validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.NAME);
+        BufferedImage bim3 = ImageIO.read(new File(tiffG3Path));
+        checkIdent(bim3, ximage3.getRGBImage());
+        PDPage page = new PDPage(PDPage.PAGE_SIZE_A4);
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
+        contentStream.close();
+
+        reader = new RandomAccessFile(new File(tiffG4Path), "r");
+        PDXObjectImage ximage4 = new PDCcitt(document, reader);
+        validate(ximage4, 1, 344, 287, "tiff", PDDeviceGray.NAME);
+        BufferedImage bim4 = ImageIO.read(new File(tiffG3Path));
+        checkIdent(bim4, ximage4.getRGBImage());
+        page = new PDPage(PDPage.PAGE_SIZE_A4);
+        document.addPage(page);
+        contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage4, 0, 0, ximage4.getWidth(), ximage4.getHeight());
+        contentStream.close();
+       
+        document.save(testResultsDir + "/singletiff.pdf");
+        document.close();
         
-        doWritePDF(document, ximage, testResultsDir, "singletiff.pdf");
+        document = PDDocument.loadNonSeq(new File(testResultsDir, "singletiff.pdf"), null);
+        List pages = document.getDocumentCatalog().getAllPages();
+        assertEquals(2, pages.size());
+        
+        document.close();  
     }
     
     /**
