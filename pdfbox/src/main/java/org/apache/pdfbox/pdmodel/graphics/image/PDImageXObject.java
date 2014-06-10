@@ -264,6 +264,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
         float[] rgb = new float[3];
         float[] rgba = new float[4];
+        float[] alphaPixel = null;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -273,14 +274,15 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 rgba[0] = rgb[0];
                 rgba[1] = rgb[1];
                 rgba[2] = rgb[2];
-
+                
+                alphaPixel = alpha.getPixel(x, y, alphaPixel);
                 if (isSoft)
                 {
-                    rgba[3] = alpha.getPixel(x, y, (float[])null)[0];
+                    rgba[3] = alphaPixel[0];
                 }
                 else
                 {
-                    rgba[3] = 255 - alpha.getPixel(x, y, (float[])null)[0];
+                    rgba[3] = 255 - alphaPixel[0];
                 }
 
                 dest.setPixel(x, y, rgba);

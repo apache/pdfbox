@@ -79,21 +79,16 @@ final class SampledImageReader
         WritableRaster raster = masked.getRaster();
         WritableRaster alpha = mask.getRaster();
 
-        float[] rgba = new float[4];
         final float[] transparent = new float[4];
+        float[] alphaPixel = null;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
-                raster.getPixel(x, y, rgba);
-
-                if (alpha.getPixel(x, y, (float[])null)[0] == 255)
+                alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                if (alphaPixel[0] == 255)
                 {
                     raster.setPixel(x, y, transparent);
-                }
-                else
-                {
-                    raster.setPixel(x, y, rgba);
                 }
             }
         }
@@ -246,11 +241,11 @@ final class SampledImageReader
             final int width = pdImage.getWidth();
             final int height = pdImage.getHeight();
             final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
+            int max = width * height;
 
             for (int c = 0; c < numComponents; c++)
             {
                 int sourceOffset = c;
-                int max = width * height;
                 for (int i = 0; i < max; i++)
                 {
                     banks[c][i] = source[sourceOffset];
@@ -397,6 +392,7 @@ final class SampledImageReader
 
         float[] rgb = new float[3];
         float[] rgba = new float[4];
+        float[] alphaPixel = null;
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -406,7 +402,8 @@ final class SampledImageReader
                 rgba[0] = rgb[0];
                 rgba[1] = rgb[1];
                 rgba[2] = rgb[2];
-                rgba[3] = 255 - alpha.getPixel(x, y, (float[])null)[0];
+                alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                rgba[3] = 255 - alphaPixel[0];
 
                 dest.setPixel(x, y, rgba);
             }
