@@ -395,9 +395,18 @@ public class PDCcitt extends PDXObjectImage
                 }
                 case 292:
                 {
-                    if (val == 1)
+                    if ((val & 1) != 0)
                     {
-                        k = 50; // T4 2D - arbitary K value
+                        k = 50; // T4 2D - arbitary positive K value
+                    }
+                    // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
+                    if ((val & 4) != 0)
+                    {
+                        throw new IOException("CCITT Group 3 'uncompressed mode' is not supported");
+                    }
+                    if ((val & 2) != 0)
+                    {
+                        throw new IOException("CCITT Group 3 'fill bits before EOL' is not supported");
                     }
                     break;
                 }
