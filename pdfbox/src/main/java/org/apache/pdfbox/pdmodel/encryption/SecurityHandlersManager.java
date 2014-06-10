@@ -81,10 +81,10 @@ public class SecurityHandlersManager
                 PublicKeySecurityHandler.class,
                 PublicKeyProtectionPolicy.class);
         }
-        catch(Exception e)
+        catch (BadSecurityHandlerException e)
         {
-            System.err.println("SecurityHandlersManager strange error with builtin handlers: " + e.getMessage());
-            System.exit(1);
+            // should never happen
+            throw new RuntimeException(e);
         }
     }
 
