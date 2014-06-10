@@ -73,6 +73,8 @@ public class PDFReader extends JFrame
     private static final String NONSEQ = "-nonSeq";
     private static boolean useNonSeqParser = false;
 
+    private static final String VERSION = Version.getVersion();
+    private static final String BASETITLE = "PDFBox " + VERSION; 
     /**
      * Constructor.
      */
@@ -94,7 +96,7 @@ public class PDFReader extends JFrame
         nextPageItem = new JMenuItem();
         previousPageItem = new JMenuItem();
 
-        setTitle("PDFBox - PDF Reader");
+        setTitle(BASETITLE);
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             @Override
@@ -213,7 +215,7 @@ public class PDFReader extends JFrame
 
     private void updateTitle()
     {
-        setTitle("PDFBox - " + currentFilename + " (" + (currentPage + 1) + "/" + numberOfPages + ")");
+        setTitle(BASETITLE + ": " + currentFilename + " (" + (currentPage + 1) + "/" + numberOfPages + ")");
     }
 
     private void nextPage()
@@ -407,7 +409,7 @@ public class PDFReader extends JFrame
 
     private static void usage()
     {
-        System.err.println("usage: java -jar pdfbox-app-x.y.z.jar PDFReader [OPTIONS] <input-file>\n"
+        System.err.println("usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [OPTIONS] <input-file>\n"
                 + "  -password <password>      Password to decrypt the document\n"
                 + "  -nonSeq                   Enables the new non-sequential parser\n"
                 + "  <input-file>              The PDF document to be loaded\n");
