@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdfviewer.PageWrapper;
 import org.apache.pdfbox.pdfviewer.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -398,10 +397,6 @@ public class PDFReader extends javax.swing.JFrame
             try
             {
                 document.decrypt( password );
-            }
-            catch( InvalidPasswordException e )
-            {
-                System.err.println( "Error: The document is encrypted." );
             }
             catch( org.apache.pdfbox.exceptions.CryptographyException e )
             {

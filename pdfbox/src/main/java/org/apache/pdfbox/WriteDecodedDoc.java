@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 /**
  * load document and write with all streams decoded.
@@ -97,18 +96,6 @@ public class WriteDecodedDoc
                     {
                         doc.decrypt( password );
                         doc.setAllSecurityToBeRemoved(true);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        if (password.trim().length() == 0)
-                        {
-                            System.err.println( "Password needed!!" );
-                        }
-                        else
-                        {
-                            System.err.println( "Wrong password!!" );
-                        }
-                        return;
                     }
                     catch( org.apache.pdfbox.exceptions.CryptographyException e )
                     {

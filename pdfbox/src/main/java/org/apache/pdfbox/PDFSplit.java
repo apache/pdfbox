@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 
 import java.util.List;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -141,24 +140,7 @@ public class PDFSplit
                     document = PDDocument.load(pdfFile);
                     if( document.isEncrypted() )
                     {
-                        try
-                        {
-                            document.decrypt( password );
-                        }
-                        catch( InvalidPasswordException e )
-                        {
-                            if( args.length == 4 )//they supplied the wrong password
-                            {
-                                System.err.println( "Error: The supplied password is incorrect." );
-                                System.exit( 2 );
-                            }
-                            else
-                            {
-                                //they didn't supply a password and the default of "" was wrong.
-                                System.err.println( "Error: The document is encrypted." );
-                                usage();
-                            }
-                        }
+                        document.decrypt( password );
                     }
                 }
 

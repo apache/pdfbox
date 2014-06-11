@@ -183,7 +183,6 @@ public class DocumentEncryption
 
         PDStandardEncryption encParameters = (PDStandardEncryption)pdDocument.getEncryptionDictionary();
 
-
         int permissions = encParameters.getPermissions();
         int revision = encParameters.getRevision();
         int length = encParameters.getLength()/8;
