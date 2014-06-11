@@ -61,9 +61,10 @@ public class PDPageable implements Pageable, Printable
      *
      * @param document PDF document
      * @param printerJob printer job
+     * @throws IllegalArgumentException if an argument is <code>null</code>
      * @throws PrinterException if the document permissions prevent printing
      */
-    public PDPageable(PDDocument document, PrinterJob printerJob) throws PrinterException
+    public PDPageable(PDDocument document, PrinterJob printerJob) throws IllegalArgumentException, PrinterException
     {
         if (document == null || printerJob == null)
         {
@@ -87,9 +88,10 @@ public class PDPageable implements Pageable, Printable
      * a default printer job returned by {@link PrinterJob#getPrinterJob()}.
      *
      * @param document PDF document
+     * @throws IllegalArgumentException if the argument is <code>null</code>
      * @throws PrinterException if the document permissions prevent printing
      */
-    public PDPageable(PDDocument document) throws PrinterException
+    public PDPageable(PDDocument document) throws IllegalArgumentException, PrinterException
     {
         this(document, PrinterJob.getPrinterJob());
     }
@@ -121,10 +123,13 @@ public class PDPageable implements Pageable, Printable
      *
      * @param i page index, zero-based
      * @return page format
+     * @throws IndexOutOfBoundsException if the page index is invalid
      */
-    public PageFormat getPageFormat(int i)
+    public PageFormat getPageFormat(int i) throws IndexOutOfBoundsException
     {
-        PDPage page = pages.get(i);
+        PageFormat format = job.defaultPage();
+
+        PDPage page = pages.get(i); // can throw IOOBE
         Dimension media = page.findMediaBox().createDimension();
         Dimension crop = page.findCropBox().createDimension();
 
@@ -137,22 +142,20 @@ public class PDPageable implements Pageable, Printable
             diffHeight = (media.getHeight() - crop.getHeight()) / 2.0;
         }
 
-        PageFormat wantedFormat = new PageFormat();
-        Paper wantedPaper = new Paper();
-        if (media.getWidth() <= media.getHeight())
+        Paper paper = format.getPaper();
+        if (media.getWidth() < media.getHeight())
         {
-            wantedFormat.setOrientation(PageFormat.PORTRAIT);
-            wantedPaper.setSize(media.getWidth(), media.getHeight());
-            wantedPaper.setImageableArea(diffWidth, diffHeight, crop.getWidth(), crop.getHeight());
+          format.setOrientation(PageFormat.PORTRAIT);
+          paper.setImageableArea(diffWidth, diffHeight, crop.getWidth(), crop.getHeight());
         }
         else
         {
-            wantedFormat.setOrientation(PageFormat.LANDSCAPE);
-            wantedPaper.setSize(media.getHeight(), media.getWidth());
-            wantedPaper.setImageableArea(diffHeight, diffWidth, crop.getHeight(), crop.getWidth());
+          format.setOrientation(PageFormat.LANDSCAPE);
+          paper.setImageableArea(diffHeight, diffWidth, crop.getHeight(), crop.getWidth());
         }
-        wantedFormat.setPaper(wantedPaper);
-        return job.validatePage(wantedFormat);
+        format.setPaper(paper);
+
+        return format;
     }
 
     /**
@@ -163,8 +166,9 @@ public class PDPageable implements Pageable, Printable
      *
      * @param i page index, zero-based
      * @return printable
+     * @throws IndexOutOfBoundsException if the page index is invalid
      */
-    public Printable getPrintable(int i)
+    public Printable getPrintable(int i) throws IndexOutOfBoundsException
     {
         return pages.get(i);
     }
