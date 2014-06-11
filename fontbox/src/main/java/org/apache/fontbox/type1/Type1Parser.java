@@ -139,8 +139,12 @@ final class Type1Parser
                     readMaybe(Token.NAME, "array");
 
                     // 0 1 255 {1 index exch /.notdef put } for
+                    // we have to check "readonly" and "def" too 
+                    // as some fonts don't provide any dup-values, see PDFBOX-2134 
                     while (!(lexer.peekToken().getKind() == Token.NAME &&
-                            lexer.peekToken().getText().equals("dup")))
+                            (lexer.peekToken().getText().equals("dup") ||
+                            lexer.peekToken().getText().equals("readonly") ||
+                            lexer.peekToken().getText().equals("def"))))
                     {
                         lexer.nextToken();
                     }
