@@ -21,8 +21,6 @@ import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -32,6 +30,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
  * This class represents a color space in a pdf document.
@@ -41,11 +40,6 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public final class PDColorSpaceFactory
 {
-    /**
-     * Logger instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDColorSpaceFactory.class);
-    
     /**
      * Private constructor for utility classes.
      */
@@ -112,12 +106,7 @@ public final class PDColorSpaceFactory
             String name = ((COSName)array.getObject( 0 )).getName();
             if( name.equals( PDCalGray.NAME ) )
             {
-                // PDFBOX-1724
-                // https://github.com/mozilla/pdf.js/issues/252
-                LOG.warn("CalGray not implemented, using DeviceGray instead, see PDFBOX-1724");
-                retval = new PDDeviceGray();
-                //TH
-//                retval = new PDCalGray( array );
+                retval = new PDCalGray( array );
             }
             else if( name.equals( PDDeviceRGB.NAME ) )
             {
