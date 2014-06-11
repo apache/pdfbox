@@ -17,11 +17,15 @@
 package org.apache.pdfbox;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -30,6 +34,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * This will read a read pdf and extract images. <br/><br/>
@@ -47,6 +53,7 @@ public class ExtractImages
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
     private static final String NONSEQ = "-nonSeq";
+    private static final String DIRECTJPEG = "-directJPEG";
 
     private ExtractImages()
     {
@@ -78,6 +85,7 @@ public class ExtractImages
             String prefix = null;
             boolean addKey = false;
             boolean useNonSeqParser = false;
+            boolean directJPEG = false;
             for( int i=0; i<args.length; i++ )
             {
                 if( args[i].equals( PASSWORD ) )
@@ -105,6 +113,10 @@ public class ExtractImages
                 else if( args[i].equals( NONSEQ ) )
                 {
                     useNonSeqParser = true;
+                }
+                else if( args[i].equals( DIRECTJPEG ) )
+                {
+                    directJPEG = true;
                 }
                 else
                 {
@@ -157,7 +169,7 @@ public class ExtractImages
                         PDPage page = (PDPage)iter.next();
                         PDResources resources = page.getResources();
                         // extract all XObjectImages which are part of the page resources
-                        processResources(resources, prefix, addKey);
+                        processResources(resources, prefix, addKey, directJPEG);
                     }
                 }
                 finally
@@ -170,8 +182,39 @@ public class ExtractImages
             }
         }
     }
+    
+    public void writeJpeg2file(PDJpeg image, String filename) throws IOException
+    {
+        final List<String> DCT_FILTERS = new ArrayList<String>();
+        DCT_FILTERS.add(COSName.DCT_DECODE.getName());
+        DCT_FILTERS.add(COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
+        FileOutputStream out = null;
+        
+        try
+        {
+            out = new FileOutputStream(filename + ".jpg");
+            InputStream data = image.getPDStream().getPartiallyFilteredStream(DCT_FILTERS);
+            byte[] buf = new byte[1024];
+            int amountRead;
+            while ((amountRead = data.read(buf)) != -1)
+            {
+                out.write(buf, 0, amountRead);
+            }
+            IOUtils.closeQuietly(data);
+            out.flush();
+        }
+        finally
+        {
+            if (out != null)
+            {
+                out.close();
+            }
+        }
+    }
+
+    private void processResources(PDResources resources, String prefix, 
+            boolean addKey, boolean directJPEG) throws IOException
     {
         if (resources == null)
         {
@@ -199,7 +242,14 @@ public class ExtractImages
                         name = getUniqueFileName( prefix, image.getSuffix() );
                     }
                     System.out.println( "Writing image:" + name );
-                    image.write2file( name );
+                    if (directJPEG && "jpg".equals(image.getSuffix()))
+                    {
+                        writeJpeg2file((PDJpeg) image, name);
+                    }
+                    else
+                    {
+                        image.write2file(name);
+                    }
                     image.clear(); // PDFBOX-2101 get rid of cache ASAP
                 }
                 // maybe there are more images embedded in a form object
@@ -207,7 +257,7 @@ public class ExtractImages
                 {
                     PDXObjectForm xObjectForm = (PDXObjectForm)xobject;
                     PDResources formResources = xObjectForm.getResources();
-                    processResources(formResources, prefix, addKey);
+                    processResources(formResources, prefix, addKey, directJPEG);
                 }
             }
         }
@@ -237,6 +287,7 @@ public class ExtractImages
             "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
             "  -addkey                      add the internal image key to the file name\n" +
             "  -nonSeq                      Enables the new non-sequential parser\n" +
+            "  -directJPEG                  Forces the direct extraction of JPEG images regardless of colorspace\n" +
             "  <PDF file>                   The PDF document to use\n"
             );
         System.exit( 1 );
