@@ -28,7 +28,6 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 
 import org.apache.pdfbox.examples.AbstractExample;
 import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 /**
  * This example will take a PDF document and set a FDF field in it.

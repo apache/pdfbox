@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 import org.apache.pdfbox.pdfparser.PDFParser;
 
