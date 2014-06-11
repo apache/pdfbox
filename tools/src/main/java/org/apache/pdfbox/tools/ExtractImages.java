@@ -62,6 +62,7 @@ public class ExtractImages
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
     private static final String NONSEQ = "-nonSeq";
+    private static final String DIRECTJPEG = "-directJPEG";
 
     private static final List<String> DCT_FILTERS = new ArrayList<String>();
 
@@ -101,6 +102,7 @@ public class ExtractImages
             String prefix = null;
             boolean addKey = false;
             boolean useNonSeqParser = false;
+            boolean directJPEG = false;
             for( int i=0; i<args.length; i++ )
             {
                 if( args[i].equals( PASSWORD ) )
@@ -128,6 +130,10 @@ public class ExtractImages
                 else if( args[i].equals( NONSEQ ) )
                 {
                     useNonSeqParser = true;
+                }
+                else if( args[i].equals( DIRECTJPEG ) )
+                {
+                    directJPEG = true;
                 }
                 else
                 {
@@ -180,7 +186,7 @@ public class ExtractImages
                         PDPage page = (PDPage)iter.next();
                         PDResources resources = page.getResources();
                         // extract all XObjectImages which are part of the page resources
-                        processResources(resources, prefix, addKey);
+                        processResources(resources, prefix, addKey, directJPEG);
                     }
                 }
                 finally
@@ -194,7 +200,8 @@ public class ExtractImages
         }
     }
 
-    private void processResources(PDResources resources, String prefix, boolean addKey) throws IOException
+    private void processResources(PDResources resources, String prefix, 
+            boolean addKey, boolean directJPEG) throws IOException
     {
         if (resources == null)
         {
@@ -231,7 +238,7 @@ public class ExtractImages
                     imageCounter++;
 
                     System.out.println( "Writing image:" + name );
-                    write2file( image, name );
+                    write2file( image, name, directJPEG );
                     image.clear(); // PDFBOX-2101 get rid of cache ASAP
                 }
                 // maybe there are more images embedded in a form object
@@ -239,7 +246,7 @@ public class ExtractImages
                 {
                     PDFormXObject xObjectForm = (PDFormXObject)xobject;
                     PDResources formResources = xObjectForm.getResources();
-                    processResources(formResources, prefix, addKey);
+                    processResources(formResources, prefix, addKey, directJPEG);
                 }
             }
         }
@@ -261,7 +268,7 @@ public class ExtractImages
      * @param filename the filename
      * @throws IOException When somethings wrong with the corresponding file.
      */
-    private void write2file(PDImageXObject xobj, String filename) throws IOException
+    private void write2file(PDImageXObject xobj, String filename, boolean directJPEG) throws IOException
     {
         if (xobj.getSuffix() == null || xobj.getSuffix().isEmpty())
         {
@@ -284,10 +291,11 @@ public class ExtractImages
                 else if ("jpg".equals(xobj.getSuffix()))
                 {
                     String colorSpaceName = xobj.getColorSpace().getName();
-                    if (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
+                    if (directJPEG ||
+                            PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
                             PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName))
                     {
-                        // RGB and Gray colorspace:
+                        // directJPEG option, RGB or Gray colorspace:
                         // get and write the unmodified JPEG stream
                         writeJpeg2OutputStream(xobj, out);
                     }
@@ -325,6 +333,7 @@ public class ExtractImages
             "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
             "  -addkey                      add the internal image key to the file name\n" +
             "  -nonSeq                      Enables the new non-sequential parser\n" +
+            "  -directJPEG                  Forces the direct extraction of JPEG images regardless of colorspace\n" +
             "  <PDF file>                   The PDF document to use\n"
             );
         System.exit( 1 );
