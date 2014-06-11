@@ -16,15 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +38,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.EncodingManager;
+import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
@@ -252,8 +250,8 @@ public class PDType1Font extends PDSimpleFont
                 }
             }
         }
+        getEncodingFromFont(getFontEncoding() == null);
     }
-
     /**
      * Constructor.
      * 
@@ -334,7 +332,6 @@ public class PDType1Font extends PDSimpleFont
             }
             setFontEncoding(fontEncoding);
         }
-        getEncodingFromFont(getFontEncoding() == null);
     }
 
     /**
@@ -343,169 +340,36 @@ public class PDType1Font extends PDSimpleFont
      */
     private void getEncodingFromFont(boolean extractEncoding)
     {
-        // This whole section of code needs to be replaced with an actual type1 font parser!!
-        // Get the font program from the embedded type font.
-        PDFontDescriptor fontDescriptor = getFontDescriptor();
-        if (fontDescriptor != null && fontDescriptor instanceof PDFontDescriptorDictionary)
+        if (type1font != null)
         {
-            PDStream fontFile = ((PDFontDescriptorDictionary) fontDescriptor).getFontFile();
-            if (fontFile != null)
+            // Fontmatrix
+            List<Number> matrixValues = type1font.getFontMatrix();
+            if (!matrixValues.isEmpty() && matrixValues.size() == 6)
             {
-                BufferedReader in = null;
-                try
+                COSArray array = new COSArray();
+                for (Number value : matrixValues  )
                 {
-                    in = new BufferedReader(new InputStreamReader(fontFile.createInputStream()));
-
-                    // this section parses the font program stream searching for a /Encoding entry
-                    // if it contains an array of values a Type1Encoding will be returned
-                    // if it encoding contains an encoding name the corresponding Encoding will be returned
-                    String line = "";
-                    Type1Encoding encoding = null;
-                    while ((line = in.readLine()) != null)
-                    {
-                        if (extractEncoding)
-                        {
-                            if (line.startsWith("currentdict end"))
-                            {
-                                if (encoding != null)
-                                {
-                                    setFontEncoding(encoding);
-                                }
-                                break;
-                            }
-                            if (line.startsWith("/Encoding"))
-                            {
-                                if (line.contains("array"))
-                                {
-                                    StringTokenizer st = new StringTokenizer(line);
-                                    // ignore the first token
-                                    st.nextElement();
-                                    int arraySize = Integer.parseInt(st.nextToken());
-                                    encoding = new Type1Encoding(arraySize);
-                                }
-                                // if there is already an encoding, we don't need to
-                                // assign another one
-                                else if (getFontEncoding() == null)
-                                {
-                                    StringTokenizer st = new StringTokenizer(line);
-                                    // ignore the first token
-                                    st.nextElement();
-                                    String type1Encoding = st.nextToken();
-                                    setFontEncoding(EncodingManager.INSTANCE.getEncoding(COSName
-                                            .getPDFName(type1Encoding)));
-                                    break;
-                                }
-                            }
-                            else if (line.startsWith("dup"))
-                            {
-                                StringTokenizer st = new StringTokenizer(line.replaceAll("/", " /"));
-                                // ignore the first token
-                                st.nextElement();
-                                try
-                                {
-                                    int index = Integer.parseInt(st.nextToken());
-                                    String name = st.nextToken();
-                                    if (encoding == null)
-                                    {
-                                        LOG.warn("Unable to get character encoding. "
-                                                + "Encoding definition found without /Encoding line.");
-                                    }
-                                    else
-                                    {
-                                        encoding.addCharacterEncoding(index, name.replace("/", ""));
-                                    }
-                                }
-                                catch (NumberFormatException exception)
-                                {
-                                    // there are (tex?)-some fonts containing postscript code like the following,
-                                    // which has to be ignored, see PDFBOX-1481
-                                    // dup dup 161 10 getinterval 0 exch putinterval ....
-                                    LOG.debug("Malformed encoding definition ignored (line=" + line + ")");
-                                }
-                                continue;
-                            }
-                        }
-                        // according to the pdf reference, all font matrices should be same, except for type 3 fonts.
-                        // but obviously there are some type1 fonts with different matrix values, see pdf sample
-                        // attached to PDFBOX-935
-                        if (line.startsWith("/FontMatrix"))
-                        {
-                            // most likely all matrix values are in the same line than the keyword
-                            if (line.indexOf("[") > -1)
-                            {
-                                String matrixValues = line.substring(line.indexOf("[") + 1, line.lastIndexOf("]"));
-                                StringTokenizer st = new StringTokenizer(matrixValues);
-                                COSArray array = new COSArray();
-                                if (st.countTokens() >= 6)
-                                {
-                                    try
-                                    {
-                                        for (int i = 0; i < 6; i++)
-                                        {
-                                            COSFloat floatValue = new COSFloat(Float.parseFloat(st.nextToken()));
-                                            array.add(floatValue);
-                                        }
-                                    }
-                                    catch (NumberFormatException exception)
-                                    {
-                                        LOG.error("Can't read the fontmatrix from embedded font file!");
-                                    }
-                                    fontMatrix = new PDMatrix(array);
-                                }
-                            }
-                            else
-                            {
-                                // there are fonts where all values are on a separate line, see PDFBOX-1611
-                                COSArray array = new COSArray();
-                                while ((line = in.readLine()) != null)
-                                {
-                                    if (line.startsWith("["))
-                                    {
-                                        continue;
-                                    }
-                                    if (line.endsWith("]"))
-                                    {
-                                        break;
-                                    }
-                                    try
-                                    {
-                                        COSFloat floatValue = new COSFloat(Float.parseFloat(line));
-                                        array.add(floatValue);
-                                    }
-                                    catch (NumberFormatException exception)
-                                    {
-                                        LOG.error("Can't read the fontmatrix from embedded font file!");
-                                    }
-                                }
-                                if (array.size() == 6)
-                                {
-                                    fontMatrix = new PDMatrix(array);
-                                }
-                                else
-                                {
-                                    LOG.error("Can't read the fontmatrix from embedded font file, not enough values!");
-                                }
-                            }
-                        }
-                    }
+                    array.add(new COSFloat(value.floatValue()));
                 }
-                catch (IOException exception)
+                fontMatrix = new PDMatrix(array);
+            }
+            if (extractEncoding)
+            {
+                // Encoding
+                org.apache.fontbox.encoding.Encoding encoding = type1font.getEncoding();
+                if (encoding instanceof org.apache.fontbox.encoding.StandardEncoding)
                 {
-                    LOG.error("Error: Could not extract the encoding from the embedded type1 font.");
+                    setFontEncoding(StandardEncoding.INSTANCE);
                 }
-                finally
+                else if (encoding instanceof org.apache.fontbox.encoding.CustomEncoding)
                 {
-                    if (in != null)
+                    Map<Integer,String> codeToName = encoding.getCodeToNameMap();
+                    Type1Encoding type1Encoding = new Type1Encoding(codeToName.size());
+                    for (Integer code : codeToName.keySet())
                     {
-                        try
-                        {
-                            in.close();
-                        }
-                        catch (IOException exception)
-                        {
-                            LOG.error("An error occurs while closing the stream used to read the embedded type1 font.");
-                        }
+                        type1Encoding.addCharacterEncoding(code, codeToName.get(code));
                     }
+                    setFontEncoding(type1Encoding);
                 }
             }
         }
