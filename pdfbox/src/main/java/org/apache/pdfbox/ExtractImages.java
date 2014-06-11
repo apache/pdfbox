@@ -55,6 +55,14 @@ public class ExtractImages
     private static final String NONSEQ = "-nonSeq";
     private static final String DIRECTJPEG = "-directJPEG";
 
+    private static final List<String> DCT_FILTERS = new ArrayList<String>();
+
+    static
+    {
+        DCT_FILTERS.add( COSName.DCT_DECODE.getName() );
+        DCT_FILTERS.add( COSName.DCT_DECODE_ABBREVIATION.getName() );
+    }
+
     private ExtractImages()
     {
     }
@@ -185,10 +193,6 @@ public class ExtractImages
     
     public void writeJpeg2file(PDJpeg image, String filename) throws IOException
     {
-        final List<String> DCT_FILTERS = new ArrayList<String>();
-        DCT_FILTERS.add(COSName.DCT_DECODE.getName());
-        DCT_FILTERS.add(COSName.DCT_DECODE_ABBREVIATION.getName());
-
         FileOutputStream out = null;
         
         try
