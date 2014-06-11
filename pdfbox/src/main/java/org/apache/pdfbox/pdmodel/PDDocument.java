@@ -49,7 +49,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -845,11 +844,10 @@ public class PDDocument implements Closeable
      * 
      * @param password Either the user or owner password.
      *
-     * @throws InvalidPasswordException If the password is not a user or owner password.
      * @throws IOException If there is an error getting the stream data.
      */
     @Deprecated
-    public void decrypt(String password) throws InvalidPasswordException, IOException
+    public void decrypt(String password) throws IOException
     {
         StandardDecryptionMaterial m = new StandardDecryptionMaterial(password);
         openProtection(m);
