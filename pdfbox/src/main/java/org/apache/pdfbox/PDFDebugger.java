@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox;
 
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 import org.apache.pdfbox.pdfviewer.PDFTreeModel;
 import org.apache.pdfbox.pdfviewer.PDFTreeCellRenderer;
@@ -411,10 +410,6 @@ public class PDFDebugger extends javax.swing.JFrame
                 try
                 {
                     document.decrypt( password );
-                }
-                catch( InvalidPasswordException e )
-                {
-                    System.err.println( "Error: The document is encrypted." );
                 }
                 catch( org.apache.pdfbox.exceptions.CryptographyException e )
                 {

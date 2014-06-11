@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -362,24 +361,7 @@ public class ConvertColorspace
             doc = PDDocument.load( inputFile );
             if( doc.isEncrypted() )
             {
-                try
-                {
-                    doc.decrypt( password );
-                }
-                catch( InvalidPasswordException e )
-                {
-                    if( !password.equals( "" ) )//they supplied the wrong password
-                    {
-                        System.err.println( "Error: The supplied password is incorrect." );
-                        System.exit( 2 );
-                    }
-                    else
-                    {
-                        //they didn't suppply a password and the default of "" was wrong.
-                        System.err.println( "Error: The document is encrypted." );
-                        usage();
-                    }
-                }
+                doc.decrypt( password );
             }
             ConvertColorspace converter = new ConvertColorspace();
             converter.replaceColors(doc, colorEquivalents, destColorspace );
