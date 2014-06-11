@@ -17,7 +17,7 @@
 package org.apache.fontbox.encoding;
 
 import java.io.IOException;
-
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -204,4 +204,15 @@ public abstract class Encoding
         }
         return character;
     }
+    
+    /**
+     * Returns an unmodifiable view of the Code2Name mapping.
+     * 
+     * @return the Code2Name map
+     */
+    public Map<Integer, String> getCodeToNameMap()
+    {
+        return Collections.unmodifiableMap(codeToName);
+    }
+
 }
