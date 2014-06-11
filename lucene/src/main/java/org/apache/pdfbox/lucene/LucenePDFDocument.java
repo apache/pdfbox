@@ -38,7 +38,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 
 import org.apache.pdfbox.util.PDFTextStripper;
 
@@ -460,13 +459,6 @@ public class LucenePDFDocument
         catch( CryptographyException e )
         {
             throw new IOException( "Error decrypting document(" + documentLocation + "): " + e );
-        }
-        catch( InvalidPasswordException e )
-        {
-            //they didn't suppply a password and the default of "" was wrong.
-            throw new IOException(
-                "Error: The document(" + documentLocation +
-                ") is encrypted and will not be indexed." );
         }
         finally
         {
