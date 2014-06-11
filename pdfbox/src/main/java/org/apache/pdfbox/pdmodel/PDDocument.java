@@ -46,7 +46,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.exceptions.SignatureException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.BaseParser;
@@ -934,10 +933,9 @@ public class PDDocument implements Pageable, Closeable
      *
      * @throws CryptographyException If there is an error decrypting the document.
      * @throws IOException If there is an error getting the stream data.
-     * @throws InvalidPasswordException If the password is not a user or owner password.
      *
      */
-    public void decrypt( String password ) throws CryptographyException, IOException, InvalidPasswordException
+    public void decrypt( String password ) throws CryptographyException, IOException
     {
         try
         {
