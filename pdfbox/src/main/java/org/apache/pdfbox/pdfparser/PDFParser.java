@@ -243,6 +243,10 @@ public class PDFParser extends BaseParser
             {
                 document.dereferenceObjectStreams();
             }
+            else
+            {
+                LOG.info("Document is encrypted");
+            }
             ConflictObj.resolveConflicts(document, conflictList);
         }
         catch( Throwable t )
