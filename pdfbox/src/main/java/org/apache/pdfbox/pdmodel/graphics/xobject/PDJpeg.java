@@ -292,6 +292,18 @@ public class PDJpeg extends PDXObjectImage
      */
     public void write2OutputStream(OutputStream out) throws IOException
     {
+        String colorSpaceName = getColorSpace().getName();
+        if (PDDeviceGray.NAME.equals(colorSpaceName)
+                || PDDeviceRGB.NAME.equals(colorSpaceName))
+        {
+            // RGB and Gray colorspace:
+            // get and write the unmodified JPEG stream
+            removeAllFiltersButDCT(out);
+            return;
+        }
+        // CMYK and other "unusual" colorspaces
+        // create BufferedImage with correct colors and then save into a 
+        // JPEG (some quality loss)
         getRGBImage();
         if (image != null) 
         {
