@@ -125,15 +125,7 @@ public class PrintFields
                 PrintFields exporter = new PrintFields();
                 if (pdf.isEncrypted())
                 {
-                    try
-                    {
-                        pdf.decrypt("");
-                    }
-                    catch (InvalidPasswordException e)
-                    {
-                        System.err.println("Error: The document is encrypted.");
-                        usage();
-                    }
+                    pdf.decrypt("");
                 }
                 exporter.printFields(pdf);
             }

@@ -98,15 +98,7 @@ public class SetField extends AbstractExample
                 pdf = PDDocument.load( args[0] );
                 if (pdf.isEncrypted())
                 {
-                    try
-                    {
-                        pdf.decrypt("");
-                    }
-                    catch (InvalidPasswordException e)
-                    {
-                        System.err.println("Error: The document is encrypted.");
-                        usage();
-                    }
+                    pdf.decrypt("");
                 }
                 example.setField( pdf, args[1], args[2] );
                 pdf.save( args[0] );

@@ -63,15 +63,7 @@ public class ExtractTextByArea
                 document = PDDocument.load( args[0] );
                 if( document.isEncrypted() )
                 {
-                    try
-                    {
-                        document.decrypt( "" );
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
+                    document.decrypt( "" );
                 }
                 PDFTextStripperByArea stripper = new PDFTextStripperByArea();
                 stripper.setSortByPosition( true );
