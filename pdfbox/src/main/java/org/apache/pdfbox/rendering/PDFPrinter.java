@@ -19,6 +19,7 @@ package org.apache.pdfbox.rendering;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.rendering.printing.Orientation;
 import org.apache.pdfbox.rendering.printing.Scaling;
 
 import java.awt.BasicStroke;
@@ -41,22 +42,23 @@ import java.io.IOException;
  * Prints a PDF document using AWT.
  * This class may be overridden in order to perform custom printing.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas Lehmkï¿½hler
  * @author John Hewson
  */
 public class PDFPrinter
 {
-    private final PDDocument document;
-    private final PDFRenderer renderer;
-    private final PrinterJob printerJob;
-    private final Scaling scaling;
-    private final boolean showPageBorder;
-    private final float dpi;
+    protected final PDDocument document;
+    protected final PDFRenderer renderer;
+    protected final PrinterJob printerJob;
+    protected final Scaling scaling;
+    protected final Orientation orientation;
+    protected final boolean showPageBorder;
+    protected final Paper paper; // may be null
+    protected final float dpi;
 
     /**
      * Creates a new PDFPrinter.
      * @param document the document to print
-     * @throws PrinterException if something went wrong
      */
     public PDFPrinter(PDDocument document) throws PrinterException
     {
@@ -67,49 +69,62 @@ public class PDFPrinter
      * Creates a new PDFPrinter for a given printer job.
      * @param document the document to print
      * @param printerJob the printer job to use
-     * @throws PrinterException if something went wrong
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob) throws PrinterException
     {
-        this(document, printerJob, Scaling.SHRINK_TO_FIT, false, 0);
+        this(document, printerJob, Scaling.SHRINK_TO_FIT, Orientation.AUTO, null, false, 0);
     }
 
     /**
-     * Creates a new PDFPrinter with the given page scaling.
+     * Creates a new PDFPrinter with the given page scaling and orientation.
      * @param document the document to print
      * @param scaling page scaling policy
-     * @throws PrinterException if something went wrong
+     * @param orientation page orientation policy
      */
-    public PDFPrinter(PDDocument document, Scaling scaling)
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation)
             throws PrinterException
     {
-        this(document, PrinterJob.getPrinterJob(), scaling, false, 0);
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, null, false, 0);
     }
 
     /**
-     * Creates a new PDFPrinter with the given page scaling.
+     * Creates a new PDFPrinter with the given page scaling and orientation.
      * @param document the document to print
      * @param scaling page scaling policy
-     * @param dpi if non-zero then the image will be rasterized at the given DPI
-     * @throws PrinterException if something went wrong
+     * @param orientation page orientation policy
      */
-    public PDFPrinter(PDDocument document, Scaling scaling, float dpi) throws PrinterException
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper)
+            throws PrinterException
     {
-        this(document, PrinterJob.getPrinterJob(), scaling, false, dpi);
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, paper, false, 0);
     }
 
     /**
-     * Creates a new PDFPrinter for a given printer job, the given page scaling,
+     * Creates a new PDFPrinter with the given page scaling and orientation.
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param orientation page orientation policy
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     */
+    public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper,
+                      float dpi) throws PrinterException
+    {
+        this(document, PrinterJob.getPrinterJob(), scaling, orientation, paper, false, dpi);
+    }
+
+    /**
+     * Creates a new PDFPrinter for a given printer job, the given page scaling and orientation,
      * and with optional page borders shown.
      * @param document the document to print
      * @param printerJob the printer job to use
      * @param scaling page scaling policy
+     * @param orientation page orientation policy
      * @param showPageBorder true if page borders are to be printed
      * @param dpi if non-zero then the image will be rasterized at the given DPI
-     * @throws PrinterException if something went wrong
+     * @throws PrinterException
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob, Scaling scaling,
-                      boolean showPageBorder, float dpi)
+                      Orientation orientation, Paper paper, boolean showPageBorder, float dpi)
             throws PrinterException
     {
         if (document == null)
@@ -128,7 +143,9 @@ public class PDFPrinter
         this.renderer = new PDFRenderer(document);
         this.printerJob = printerJob;
         this.scaling = scaling;
+        this.orientation = orientation;
         this.showPageBorder = showPageBorder;
+        this.paper = paper;
         this.dpi = dpi;
     }
 
@@ -174,10 +191,6 @@ public class PDFPrinter
     }
 
     // todo: new
-    /**
-     * Returns a newly create PDFPageable.
-     * @return an newly created instance of PDFPageable
-     */
     public PDFPageable getPageable()
     {
         return new PDFPageable();
@@ -200,9 +213,6 @@ public class PDFPrinter
         }
     }
 
-    /**
-     * PDFPageable implements the interface java.awt.print.Pageable.
-     */
     protected class PDFPageable implements Pageable
     {
         @Override
@@ -212,66 +222,44 @@ public class PDFPrinter
         }
 
         @Override
-        public PageFormat getPageFormat(int pageIndex)
+        public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException
         {
+            PageFormat format = printerJob.defaultPage();
             PDPage page = document.getPage(pageIndex);
-            Dimension media = page.findMediaBox().createDimension();
-            Dimension crop = page.findCropBox().createDimension();
-            // Center the ImageableArea if the crop is smaller than the media
-            double diffWidth = 0.0;
-            double diffHeight = 0.0;
-            if( !media.equals( crop ) )
+
+            // auto portrait/landscape
+            if (orientation == Orientation.AUTO)
             {
-                   diffWidth = (media.getWidth() - crop.getWidth()) / 2.0;
-                   diffHeight = (media.getHeight() - crop.getHeight()) / 2.0;
+                Dimension cropBox = page.findRotatedCropBox().createDimension();
+                if (cropBox.getWidth() > cropBox.getHeight())
+                {
+                    format.setOrientation(PageFormat.LANDSCAPE);
+                }
+                else
+                {
+                    format.setOrientation(PageFormat.PORTRAIT);
+                }
             }
-            PageFormat wantedFormat = new PageFormat();
-            Paper wantedPaper = new Paper();
-            boolean hasRotation = page.findRotation() != 0;
-            Dimension rotatedCrop = null;
-            if (hasRotation)
+            else if (orientation == Orientation.LANDSCAPE)
             {
-                rotatedCrop = page.findRotatedCropBox().createDimension();
+                format.setOrientation(PageFormat.LANDSCAPE);
             }
-            else
+            else if (orientation == Orientation.PORTRAIT)
             {
-                rotatedCrop = crop;
+                format.setOrientation(PageFormat.PORTRAIT);
             }
 
-            if( rotatedCrop.getWidth() <= rotatedCrop.getHeight() )
+            // custom paper
+            if (paper != null)
             {
-                   wantedFormat.setOrientation( PageFormat.PORTRAIT );
-                   if (hasRotation)
-                   {
-                       wantedPaper.setSize( media.getHeight(), media.getWidth() );
-                       wantedPaper.setImageableArea( diffHeight, diffWidth, crop.getHeight(), crop.getWidth() );
-                   }
-                   else
-                   {
-                       wantedPaper.setSize( media.getWidth(), media.getHeight() );
-                       wantedPaper.setImageableArea( diffWidth, diffHeight, crop.getWidth(), crop.getHeight() );
-                   }
+                format.setPaper(paper);
             }
-            else
-            {
-                   wantedFormat.setOrientation( PageFormat.LANDSCAPE );
-                   if (hasRotation)
-                   {
-                       wantedPaper.setSize( media.getWidth(), media.getHeight() );
-                       wantedPaper.setImageableArea( diffWidth, diffHeight, crop.getWidth(), crop.getHeight() );
-                   }
-                   else
-                   {
-                       wantedPaper.setSize( media.getHeight(), media.getWidth() );
-                       wantedPaper.setImageableArea( diffHeight, diffWidth, crop.getHeight(), crop.getWidth() );
-                   }
-            }
-            wantedFormat.setPaper( wantedPaper );
-            return printerJob.validatePage( wantedFormat );
+
+            return format;
         }
 
         @Override
-        public Printable getPrintable(int i)
+        public Printable getPrintable(int i) throws IndexOutOfBoundsException
         {
             if (i >= getNumberOfPages())
             {
@@ -281,9 +269,6 @@ public class PDFPrinter
         }
     }
 
-    /**
-     * PDFPageable implements the interface java.awt.print.Printable.
-     */
     protected class PDFPrintable implements Printable
     {
         @Override
