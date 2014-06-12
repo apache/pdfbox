@@ -261,8 +261,11 @@ public abstract class Encoding implements COSObjectable
     {
         if (NAME_TO_CHARACTER.containsKey(name))
         {
-            LOG.debug("No character for name " + name);
             return NAME_TO_CHARACTER.get(name);
+        }
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("No character for name " + name);
         }
         return null;
     }

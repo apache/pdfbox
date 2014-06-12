@@ -224,7 +224,10 @@ public class TTFGlyph2D implements Glyph2D
             }
             else
             {
-                LOG.debug(name + ": Glyph not found:" + glyphId);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug(name + ": Glyph not found:" + glyphId);
+                }
             }
         }
         return glyphPath != null ? (GeneralPath) glyphPath.clone() : null;
@@ -511,25 +514,37 @@ public class TTFGlyph2D implements Glyph2D
     private void closePath(GeneralPath path)
     {
         path.closePath();
-        LOG.debug("closePath");
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("closePath");
+        }
     }
 
     private void moveTo(GeneralPath path, Point point)
     {
         path.moveTo(point.x, point.y);
-        LOG.debug("moveTo: " + String.format("%d,%d", point.x, point.y));
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("moveTo: " + String.format("%d,%d", point.x, point.y));
+        }
     }
 
     private void lineTo(GeneralPath path, Point point)
     {
         path.lineTo(point.x, point.y);
-        LOG.debug("lineTo: " + String.format("%d,%d", point.x, point.y));
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("lineTo: " + String.format("%d,%d", point.x, point.y));
+        }
     }
 
     private void quadTo(GeneralPath path, Point ctrlPoint, Point point)
     {
         path.quadTo(ctrlPoint.x, ctrlPoint.y, point.x, point.y);
-        LOG.debug("quadTo: " + String.format("%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y, point.x, point.y));
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("quadTo: " + String.format("%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y, point.x, point.y));
+        }
     }
 
     private int midValue(int a, int b)
