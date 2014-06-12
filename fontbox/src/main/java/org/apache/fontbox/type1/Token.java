@@ -99,7 +99,8 @@ class Token
 
     public int intValue()
     {
-        return Integer.parseInt(text);
+        // some fonts have reals where integers should be, so we tolerate it
+        return (int)Float.parseFloat(text);
     }
 
     public float floatValue()
