@@ -396,16 +396,21 @@ public class PageDrawer extends PDFStreamEngine
             COSStream stream = font.getCharStream((char)codePoints[i]);
             if (stream != null)
             {
-                // save the current graphics state
+                // save the current graphics state and matrices
                 getGraphicsStack().push((PDGraphicsState) getGraphicsState().clone());
-
+                Matrix textMatrix = getTextMatrix();
+                Matrix textLineMatrix = getTextLineMatrix();
+                
                 Matrix ctm = new Matrix();
                 ctm.setFromAffineTransform(at);
                 getGraphicsState().setCurrentTransformationMatrix(ctm);
                 processSubStream(font.getType3Resources(), stream);
 
-                // restore the saved graphics state
+                // restore the saved graphics state and matrices
                 setGraphicsState(getGraphicsStack().pop());
+                setTextLineMatrix(textLineMatrix);
+                setTextMatrix(textMatrix);
+                 
             }
             else
             {
