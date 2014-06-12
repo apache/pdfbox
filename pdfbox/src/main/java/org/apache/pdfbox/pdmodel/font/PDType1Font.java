@@ -162,6 +162,13 @@ public class PDType1Font extends PDSimpleFont
         addAdobeFontMetric(metrics, "Times-Italic");
         addAdobeFontMetric(metrics, "Times-Roman");
         addAdobeFontMetric(metrics, "ZapfDingbats");
+        
+        // PDFBOX-239
+        addAdobeFontMetric(metrics, "Arial", "Helvetica");
+        addAdobeFontMetric(metrics, "Arial,Bold", "Helvetica-Bold");
+        addAdobeFontMetric(metrics, "Arial,Italic", "Helvetica-Oblique");
+        addAdobeFontMetric(metrics, "Arial,BoldItalic", "Helvetica-BoldOblique");
+
         return metrics;
     }
 
@@ -169,9 +176,14 @@ public class PDType1Font extends PDSimpleFont
 
     private static void addAdobeFontMetric(Map<String, FontMetric> metrics, String name)
     {
+        addAdobeFontMetric(metrics, name, name);
+    }
+    
+    private static void addAdobeFontMetric(Map<String, FontMetric> metrics, String name, String filePrefix)
+    {
         try
         {
-            String resource = resourceRootAFM + name + ".afm";
+            String resource = resourceRootAFM + filePrefix + ".afm";
             InputStream afmStream = ResourceLoader.loadResource(resource);
             if (afmStream != null)
             {
