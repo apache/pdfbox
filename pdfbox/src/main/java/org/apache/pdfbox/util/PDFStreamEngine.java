@@ -114,10 +114,20 @@ public class PDFStreamEngine
                     OperatorProcessor processor = (OperatorProcessor) cls.newInstance();
                     registerOperatorProcessor(operator, processor);
                 }
-                catch (ReflectiveOperationException e)
+                catch (ClassNotFoundException e)
                 {
                     // should not happen
                     throw new RuntimeException(e);
+                }
+                catch (InstantiationException e)
+                {
+                  // should not happen
+                  throw new RuntimeException(e);
+                }
+                catch (IllegalAccessException e)
+                {
+                  // should not happen
+                  throw new RuntimeException(e);
                 }
             }
         }
