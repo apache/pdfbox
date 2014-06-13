@@ -90,10 +90,8 @@ public class PDFStreamEngine
      * execute those operators. An empty value means that the operator will be silently ignored.
      * 
      * @param properties The engine properties.
-     * 
-     * @throws IOException If there is an error setting the engine properties.
      */
-    public PDFStreamEngine(Properties properties) throws IOException
+    public PDFStreamEngine(Properties properties)
     {
         if (properties == null)
         {
@@ -116,10 +114,10 @@ public class PDFStreamEngine
                     OperatorProcessor processor = (OperatorProcessor) cls.newInstance();
                     registerOperatorProcessor(operator, processor);
                 }
-                catch (Exception e)
+                catch (ReflectiveOperationException e)
                 {
-                    throw new IOException("OperatorProcessor class " + processorClassName +
-                                          " could not be instantiated", e);
+                    // should not happen
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -161,7 +159,7 @@ public class PDFStreamEngine
      * This method must be called between processing documents. The PDFStreamEngine caches information for the document
      * between pages and this will release the cached information. This only needs to be called if processing a new
      * document.
-     * 
+     *
      */
     public void resetEngine()
     {
@@ -519,27 +517,20 @@ public class PDFStreamEngine
      */
     protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        try
+        String operation = operator.getOperation();
+        OperatorProcessor processor = operators.get(operation);
+        if (processor != null)
         {
-            String operation = operator.getOperation();
-            OperatorProcessor processor = (OperatorProcessor) operators.get(operation);
-            if (processor != null)
-            {
-                processor.setContext(this);
-                processor.process(operator, arguments);
-            }
-            else
-            {
-                if (!unsupportedOperators.contains(operation))
-                {
-                    LOG.info("unsupported/disabled operation: " + operation);
-                    unsupportedOperators.add(operation);
-                }
-            }
+            processor.setContext(this);
+            processor.process(operator, arguments);
         }
-        catch (Exception e)
+        else
         {
-            LOG.warn(e, e);
+            if (!unsupportedOperators.contains(operation))
+            {
+                LOG.info("unsupported/disabled operation: " + operation);
+                unsupportedOperators.add(operation);
+            }
         }
     }
 
