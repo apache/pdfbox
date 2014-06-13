@@ -458,7 +458,7 @@ final class Type1Parser
         readMaybe(Token.NAME, "dup");
         read(Token.NAME, "begin");
 
-        int levIV = 4; // number of random bytes at start of charstring
+        int lenIV = 4; // number of random bytes at start of charstring
 
         for (int i = 0; i < length; i++)
         {
@@ -473,11 +473,11 @@ final class Type1Parser
 
             if (key.equals("Subrs"))
             {
-                readSubrs(levIV);
+                readSubrs(lenIV);
             }
-            else if (key.equals("levIV"))
+            else if (key.equals("lenIV"))
             {
-                levIV = readDictValue().get(0).intValue();
+                lenIV = readDictValue().get(0).intValue();
             }
             else if (key.equals("ND"))
             {
@@ -514,7 +514,7 @@ final class Type1Parser
 
         // CharStrings dict
         read(Token.LITERAL, "CharStrings");
-        readCharStrings(levIV);
+        readCharStrings(lenIV);
     }
 
     /**
