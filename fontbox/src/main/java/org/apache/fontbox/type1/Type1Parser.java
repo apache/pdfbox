@@ -548,7 +548,7 @@ final class Type1Parser
         }
         else if (key.equals("BlueFuzz"))
         {
-            font.blueScale = value.get(0).intValue();
+            font.blueFuzz = value.get(0).intValue();
         }
         else if (key.equals("StdHW"))
         {
