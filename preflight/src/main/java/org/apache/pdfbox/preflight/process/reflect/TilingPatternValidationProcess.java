@@ -34,7 +34,7 @@ import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.content.ContentStreamWrapper;
+import org.apache.pdfbox.preflight.content.PreflightContentStream;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
@@ -79,7 +79,7 @@ public class TilingPatternValidationProcess extends AbstractProcess
     protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPattern pattern)
             throws ValidationException
             {
-        ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
+        PreflightContentStream csWrapper = new PreflightContentStream(context, page);
         csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
             }
 

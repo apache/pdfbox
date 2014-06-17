@@ -51,14 +51,12 @@ import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
-public class ContentStreamWrapper extends ContentStreamEngine
+public class PreflightContentStream extends PreflightStreamEngine
 {
-
-    public ContentStreamWrapper(PreflightContext _context, PDPage _page)
+    public PreflightContentStream(PreflightContext _context, PDPage _page)
     {
         super(_context, _page);
     }
-
 
     /**
      * Process the validation of a PageContent (The page is initialized by the constructor)

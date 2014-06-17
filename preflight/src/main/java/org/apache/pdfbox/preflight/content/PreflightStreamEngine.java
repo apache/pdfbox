@@ -92,9 +92,8 @@ import org.apache.pdfbox.util.operator.SetWordSpacing;
  * This class inherits from org.apache.pdfbox.util.PDFStreamEngine to allow the validation of specific rules in
  * ContentStream.
  */
-public abstract class ContentStreamEngine extends PDFStreamEngine
+public abstract class PreflightStreamEngine extends PDFStreamEngine
 {
-
     private enum ColorSpaceType
     {
         RGB, CMYK, ALL
@@ -108,7 +107,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
     protected Map<String, OperatorProcessor> contentStreamEngineOperators = new HashMap<String, OperatorProcessor>();
 
-    public ContentStreamEngine(PreflightContext _context, PDPage _page)
+    public PreflightStreamEngine(PreflightContext _context, PDPage _page)
     {
         super();
         this.context = _context;
