@@ -56,7 +56,6 @@ public class PDFHighlighter extends PDFTextStripper
     {
         super(ENCODING);
         super.setLineSeparator( "" );
-        super.setPageSeparator( "" );
         super.setWordSeparator( "" );
         super.setShouldSeparateByBeads( false );
         super.setSuppressDuplicateOverlappingText( false );

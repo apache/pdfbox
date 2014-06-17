@@ -203,9 +203,9 @@ public class PDDocumentCatalog implements COSObjectable
      *
      * @return A list of PDPage objects.
      */
-    public List<COSObjectable> getAllPages()
+    public List getAllPages()
     {
-        List<COSObjectable> retval = new ArrayList<COSObjectable>();
+        List retval = new ArrayList();
         PDPageNode rootNode = getPages();
         //old (slower):
         //getPageObjects( rootNode, retval );
