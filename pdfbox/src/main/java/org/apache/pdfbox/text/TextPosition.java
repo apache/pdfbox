@@ -23,8 +23,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * This represents a string and a position on the screen of those characters.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.12 $
+ * @author Ben Litchfield
  */
 public class TextPosition
 {
