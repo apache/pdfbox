@@ -36,7 +36,7 @@ public class GSave extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        context.getGraphicsStack().push( (PDGraphicsState)context.getGraphicsState().clone() );
+        context.saveGraphicsState();
     }
 
 }

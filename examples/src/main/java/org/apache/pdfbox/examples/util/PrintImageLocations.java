@@ -164,7 +164,7 @@ public class PrintImageLocations extends PDFStreamEngine
             else if(xobject instanceof PDFormXObject)
             {
                 // save the graphics state
-                getGraphicsStack().push( (PDGraphicsState)getGraphicsState().clone() );
+                saveGraphicsState();
                 
                 PDFormXObject form = (PDFormXObject)xobject;
                 COSStream invoke = (COSStream)form.getCOSObject();
@@ -179,7 +179,7 @@ public class PrintImageLocations extends PDFStreamEngine
                 processSubStream( pdResources, invoke );
                 
                 // restore the graphics state
-                setGraphicsState( (PDGraphicsState)getGraphicsStack().pop() );
+                restoreGraphicsState();
             }
             
         }

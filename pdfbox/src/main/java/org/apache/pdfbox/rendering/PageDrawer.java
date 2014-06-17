@@ -25,6 +25,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.TexturePaint;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -32,6 +34,10 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,20 +70,24 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
-import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
+import org.apache.pdfbox.pdmodel.graphics.blend.SoftMaskPaint;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
+import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
-import org.apache.pdfbox.text.TextPosition;
 
 /**
  * This will paint a page in a PDF document to a graphics context.
@@ -397,7 +407,7 @@ public class PageDrawer extends PDFStreamEngine
             if (stream != null)
             {
                 // save the current graphics state and matrices
-                getGraphicsStack().push((PDGraphicsState) getGraphicsState().clone());
+                saveGraphicsState();
                 Matrix textMatrix = getTextMatrix();
                 Matrix textLineMatrix = getTextLineMatrix();
                 
@@ -407,7 +417,7 @@ public class PageDrawer extends PDFStreamEngine
                 processSubStream(font.getType3Resources(), stream);
 
                 // restore the saved graphics state and matrices
-                setGraphicsState(getGraphicsStack().pop());
+                restoreGraphicsState();
                 setTextLineMatrix(textLineMatrix);
                 setTextMatrix(textMatrix);
                  
@@ -623,11 +633,49 @@ public class PageDrawer extends PDFStreamEngine
         return linePath;
     }
 
+    /**
+     * Generates awt raster for a soft mask
+     * 
+     * @param context
+     * @return
+     * @throws IOException
+     */
+    private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
+    {
+        PageDrawer.Group result = createPageDrawerGroup(softMask.getGroup());
+        COSName sMaskSubType = softMask.getSubType();
+        if (COSName.ALPHA.equals(sMaskSubType))
+        {
+            return result.getAlphaRaster();
+        }
+        else if (COSName.LUMINOSITY.equals(sMaskSubType))
+        {
+            return result.getLuminosityRaster();
+        }
+        else
+        {
+            throw new IOException("Invalid soft mask subtype.");
+        }
+    }
+
+    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException  
+    {
+        if (softMask != null) 
+        {
+            return new SoftMaskPaint(parentPaint, createSoftMaskRaster(softMask));
+        }
+        else 
+        {
+            return parentPaint;
+        }
+    }
+
     // returns the stroking AWT Paint
     private Paint getStrokingPaint() throws IOException
     {
-        return getGraphicsState().getStrokingColorSpace()
-                .toPaint(renderer, getGraphicsState().getStrokingColor(), pageHeight);
+        PDGraphicsState graphicsState = getGraphicsState();
+        return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
+                .toPaint(renderer, graphicsState.getStrokingColor(), pageHeight), graphicsState.getSoftMask());
     }
 
     // returns the non-stroking AWT Paint
@@ -816,16 +864,34 @@ public class PageDrawer extends PDFStreamEngine
      * @param at The transformation to use when drawing.
      * 
      */
-    public void drawImage(Image awtImage, AffineTransform at)
+    public void drawImage(Image awtImage, AffineTransform at) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
-        int width = awtImage.getWidth(null);
-        int height = awtImage.getHeight(null);
-        AffineTransform imageTransform = new AffineTransform(at);
-        imageTransform.scale(1.0 / width, -1.0 / height);
-        imageTransform.translate(0, -height);
-        graphics.drawImage(awtImage, imageTransform, null);
+        PDSoftMask softMask = getGraphicsState().getSoftMask();
+        if( softMask != null ) 
+        {
+            AffineTransform imageTransform = new AffineTransform(at);
+            imageTransform.scale(1, -1);
+            imageTransform.translate(0, -1);
+            Paint awtPaint = new TexturePaint((BufferedImage)awtImage, 
+                    new Rectangle2D.Double(imageTransform.getTranslateX(), imageTransform.getTranslateY(),
+                            imageTransform.getScaleX(), imageTransform.getScaleY())); 
+            awtPaint = applySoftMaskToPaint(awtPaint, softMask);
+            graphics.setPaint(awtPaint);
+            graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
+            graphics.fill(at.createTransformedShape(unitRect));
+        }
+        else 
+        {
+            int width = awtImage.getWidth(null);
+            int height = awtImage.getHeight(null);
+            AffineTransform imageTransform = new AffineTransform(at);
+            imageTransform.scale(1.0 / width, -1.0 / height);
+            imageTransform.translate(0, -height);
+            graphics.drawImage(awtImage, imageTransform, null);
+        }
     }
 
     /**
@@ -845,5 +911,192 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(paint);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.fill(getGraphicsState().getCurrentClippingPath());
+    }
+
+    /**
+     * Creates a buffered image for a transparency group result.
+     *
+     * @param clippingPath clipping path (in current graphics2D coordinates)
+     * @param resources Global resources
+     * @param content Content of the transparency group to create
+     * @return {@link Group} object
+     */
+    private Group createGroup(GeneralPath clippingPath, PDResources resources, COSStream content) throws IOException {
+        return new Group(clippingPath, resources, content);
+    }
+
+
+    /**
+     * Draws the transparency group into a {@link BufferedImage} object and returns it together with the transformation matrix
+     *
+     * @param context {@link PageDrawer} object
+     * @return PageDrawer.Group
+     * @throws IOException
+     */
+    public PageDrawer.Group createPageDrawerGroup(PDFormXObject form) throws IOException {
+        // save the graphics state
+        saveGraphicsState();
+
+        try {
+            PDResources pdResources = form.getResources();
+            if (pdResources == null) {
+                pdResources = getResources();
+            }
+
+            // if there is an optional form matrix, we have to
+            // map the form space to the user space
+            Matrix matrix = form.getMatrix();
+            if(matrix != null)
+            {
+                Matrix xobjectCTM = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
+                getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+            }
+
+            PDRectangle bBox = form.getBBox();
+
+            float x1 = bBox.getLowerLeftX();
+            float y1 = bBox.getLowerLeftY();
+            float x2 = bBox.getUpperRightX();
+            float y2 = bBox.getUpperRightY();
+
+            Point2D p0 = transformedPoint(x1, y1);
+            Point2D p1 = transformedPoint(x2, y1);
+            Point2D p2 = transformedPoint(x2, y2);
+            Point2D p3 = transformedPoint(x1, y2);
+
+            GeneralPath path = new GeneralPath();
+            path.moveTo((float) p0.getX(), (float) p0.getY());
+            path.lineTo((float) p1.getX(), (float) p1.getY());
+            path.lineTo((float) p2.getX(), (float) p2.getY());
+            path.lineTo((float) p3.getX(), (float) p3.getY());
+            path.closePath();
+
+            return createGroup(path, pdResources, form.getCOSStream());
+        }
+        finally {
+            // restore the graphics state
+            restoreGraphicsState();
+        }
+
+    }
+
+    /**
+     * Create for rendering transparency groups...
+     *
+     **/
+    public class Group {
+        /**
+         * {@link BufferedImage} object to draw into...
+         */
+        private final BufferedImage mImage;
+        /**
+         * Matrix for drawing the result
+         */
+        private final Matrix mResultMatrix;
+
+
+        private final int minX;
+        private final int minY;
+        private final int width;
+        private final int height;
+
+        /**
+         * Creates a group object. The group can now be created only if the underlying {@link Graphics2D} implementation
+         * is SunGraphics2D (i.e. rendering to bitmap). For all other implementations, this throws
+         * an {@link UnsupportedOperationException}.
+         *
+         * @param image
+         * @param g2d
+         */
+        private Group(GeneralPath clippingPath, PDResources resources, COSStream content) throws IOException {
+            Graphics2D g2dOriginal = graphics;
+
+            // Check underlying g2d
+            double unitSize = 1.0;
+
+            Area resultClippingArea = new Area(getGraphicsState().getCurrentClippingPath());
+            if(clippingPath != null) {
+                Area newArea = new Area(clippingPath);            
+                resultClippingArea.intersect(newArea);
+            }
+
+            AffineTransform at = g2dOriginal.getTransform();
+            at.scale(unitSize, unitSize);
+            Shape clippingPathInPixels = at.createTransformedShape(resultClippingArea);
+            Rectangle2D bounds2D = clippingPathInPixels.getBounds2D();
+
+            minX = (int) Math.floor(bounds2D.getMinX());
+            minY = (int) Math.floor(bounds2D.getMinY());
+            int maxX = (int) Math.floor(bounds2D.getMaxX()) + 1;
+            int maxY = (int) Math.floor(bounds2D.getMaxY()) + 1;
+
+            width = maxX - minX;
+            height = maxY - minY;
+            mImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);     // FIXME - color space
+            Graphics2D groupG2D = mImage.createGraphics();
+            groupG2D.translate(-minX, -minY);
+            groupG2D.transform(at);
+            groupG2D.setClip(resultClippingArea);
+
+            AffineTransform atInv = null;
+            Matrix tmpResultMatrix = null;
+            try {
+                atInv = groupG2D.getTransform().createInverse();
+                atInv.scale(width, -height);
+                atInv.translate(0, -1);
+                tmpResultMatrix = new Matrix();
+                tmpResultMatrix.setFromAffineTransform(atInv);
+            }
+            catch (NoninvertibleTransformException e) {
+                LOG.warn("Non-invertible transform when rendering a transparency group.", e);
+            }
+            mResultMatrix = tmpResultMatrix;
+
+            PDGraphicsState gs = getGraphicsState();
+            gs.setBlendMode(BlendMode.NORMAL);
+            gs.setAlphaConstants(1.0);
+            gs.setNonStrokeAlphaConstants(1.0);
+            gs.setSoftMask(null);
+            graphics = groupG2D;
+            try {
+                processSubStream(resources, content);
+            }
+            finally 
+            {
+                graphics = g2dOriginal;
+            }
+        }
+
+        public BufferedImage getImage() {
+            return mImage;
+        }
+
+        /**
+         * @return the resultMatrix
+         */
+        public Matrix getResultMatrix() {
+            return mResultMatrix;
+        }
+
+        public void drawResult() throws IOException {
+            if (mResultMatrix != null) {
+                saveGraphicsState();
+                drawImage(mImage, mResultMatrix.createAffineTransform());
+                restoreGraphicsState();
+            }
+        }
+
+        public Raster getAlphaRaster() {
+            return mImage.getAlphaRaster().createTranslatedChild(minX, minY);
+        }
+
+        public Raster getLuminosityRaster() {
+            BufferedImage tmpImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            Graphics g = tmpImage.getGraphics();
+            g.drawImage(mImage, 0, 0, null);
+
+            WritableRaster result = tmpImage.getRaster();
+            return result.createTranslatedChild(minX, minY);
+        }
     }
 }
