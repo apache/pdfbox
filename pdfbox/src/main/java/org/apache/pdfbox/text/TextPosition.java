@@ -641,7 +641,7 @@ public class TextPosition
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
         {
-            buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
+            buf.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
             widths2[i] = 0;
             buf.append(str.charAt(i));
             widths2[i+1] = widths[i];
@@ -650,7 +650,7 @@ public class TextPosition
         {
             buf.append(str.charAt(i));
             widths2[i] = widths[i];
-            buf.append(normalize.normalizeDiac(diacritic.getCharacter()));
+            buf.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
             widths2[i+1] = 0;
         }
 
