@@ -42,7 +42,6 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
@@ -51,6 +50,7 @@ import org.apache.pdfbox.util.operator.PDFOperator;
 /**
  * Processes a PDF content stream and executes certain operations.
  * Provides a callback interface for clients that want to do things with the stream.
+ *
  * {@see org.apache.pdfbox.util.PDFTextStripper}
  * @author Ben Litchfield
  */
@@ -69,9 +69,6 @@ public class PDFStreamEngine
 
     private Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
 
-    private int validCharCnt;
-    private int totalCharCnt;
-
     private int pageRotation;
     private PDRectangle drawingRectangle;
 
@@ -86,8 +83,9 @@ public class PDFStreamEngine
     }
 
     /**
-     * Constructor with engine properties. The property keys are all PDF operators, the values are class names used to
-     * execute those operators. An empty value means that the operator will be silently ignored.
+     * Constructor with engine properties. The property keys are all PDF operators, the values are
+     * class names used to execute those operators. An empty value means that the operator will be
+     * silently ignored.
      * 
      * @param properties The engine properties.
      */
@@ -166,15 +164,13 @@ public class PDFStreamEngine
     }
 
     /**
-     * This method must be called between processing documents. The PDFStreamEngine caches information for the document
-     * between pages and this will release the cached information. This only needs to be called if processing a new
-     * document.
-     *
+     * This method must be called between processing documents. The PDFStreamEngine caches
+     * information for the document between pages and this will release the cached information.
+     * This only needs to be called if processing a new document.
      */
     public void resetEngine()
     {
-        validCharCnt = 0;
-        totalCharCnt = 0;
+        // overridden in subclasses
     }
 
     /**
@@ -201,11 +197,10 @@ public class PDFStreamEngine
      * @param cosStream the Stream to execute.
      * @param drawingSize the size of the page
      * @param rotation the page rotation
-     * 
      * @throws IOException if there is an error accessing the stream.
      */
-    public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize, int rotation)
-            throws IOException
+    public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize,
+                              int rotation) throws IOException
     {
         initStream(drawingSize, rotation);
         processSubStream(resources, cosStream);
@@ -216,7 +211,6 @@ public class PDFStreamEngine
      * 
      * @param resources The resources used when processing the stream.
      * @param cosStream The stream to process.
-     * 
      * @throws IOException If there is an exception while processing the stream.
      */
     public void processSubStream(PDResources resources, COSStream cosStream) throws IOException
@@ -275,8 +269,8 @@ public class PDFStreamEngine
     }
 
     /**
-     * A method provided as an event interface to allow a subclass to perform some specific functionality when text
-     * needs to be processed.
+     * A method provided as an event interface to allow a subclass to perform some specific
+     * functionality when text needs to be processed.
      * 
      * @param text The text to be processed.
      */
@@ -286,37 +280,22 @@ public class PDFStreamEngine
     }
 
     /**
-     * A method provided as an event interface to allow a subclass to perform some specific functionality on the string
-     * encoded by a glyph.
-     * 
-     * @param str The string to be processed.
-     * 
-     * @return the altered string
-     */
-    protected String inspectFontEncoding(String str)
-    {
-        return str;
-    }
-
-    /**
-     * Process encoded text from the PDF Stream. You should override this method if you want to perform an action when
-     * encoded text is being processed.
+     * Process encoded text from the PDF Stream. You should override this method if you want to
+     * perform an action when encoded text is being processed.
      * 
      * @param string The encoded text
-     * 
      * @throws IOException If there is an error processing the string
      */
     public void processEncodedText(byte[] string) throws IOException
     {
-        /*
-         * Note on variable names. There are three different units being used in this code. Character sizes are given in
-         * glyph units, text locations are initially given in text units, and we want to save the data in display units.
-         * The variable names should end with Text or Disp to represent if the values are in text or disp units (no
-         * glyph units are saved).
-         */
+        // Note on variable names. There are three different units being used in this code.
+        // Character sizes are given in glyph units, text locations are initially given in text
+        // units, and we want to save the data in display units. The variable names should end with
+        // Text or Disp to represent if the values are in text or disp units (no glyph units are
+        // saved).
+
         final float fontSizeText = graphicsState.getTextState().getFontSize();
-        final float horizontalScalingText = graphicsState.getTextState().getHorizontalScalingPercent() / 100f;
-        // float verticalScalingText = horizontalScaling;//not sure if this is right but what else to do???
+        final float horizontalScalingText = graphicsState.getTextState().getHorizontalScaling() / 100f;
         final float riseText = graphicsState.getTextState().getRise();
         final float wordSpacingText = graphicsState.getTextState().getWordSpacing();
         final float characterSpacingText = graphicsState.getTextState().getCharacterSpacing();
@@ -327,7 +306,7 @@ public class PDFStreamEngine
         // were a single byte will result in two output characters "fi"
 
         final PDFont font = graphicsState.getTextState().getFont();
-        // all fonts are providing the width/height of a character in thousandths of a unit of text space
+        // all fonts have the width/height of a character in thousandths of a unit of text space
         float fontMatrixXScaling = 1 / 1000f;
         float fontMatrixYScaling = 1 / 1000f;
         float glyphSpaceToTextSpaceFactor = 1 / 1000f;
@@ -344,9 +323,8 @@ public class PDFStreamEngine
         float spaceWidthText = 0;
         try
         {
-            // to avoid crash as described in PDFBOX-614
-            // lets see what the space displacement should be
-            spaceWidthText = (font.getSpaceWidth() * glyphSpaceToTextSpaceFactor);
+            // to avoid crash as described in PDFBOX-614, see what the space displacement should be
+            spaceWidthText = font.getSpaceWidth() * glyphSpaceToTextSpaceFactor;
         }
         catch (Throwable exception)
         {
@@ -355,9 +333,8 @@ public class PDFStreamEngine
 
         if (spaceWidthText == 0)
         {
-            spaceWidthText = (font.getAverageFontWidth() * glyphSpaceToTextSpaceFactor);
-            // The average space width appears to be higher than necessary
-            // so lets make it a little bit smaller.
+            spaceWidthText = font.getAverageFontWidth() * glyphSpaceToTextSpaceFactor;
+            // the average space width appears to be higher than necessary so make it smaller
             spaceWidthText *= .80f;
         }
         if (spaceWidthText == 0)
@@ -380,13 +357,13 @@ public class PDFStreamEngine
         Matrix td = new Matrix();
         Matrix tempMatrix = new Matrix();
 
-        int codeLength = 1;
+        int codeLength;
         for (int i = 0; i < string.length; i += codeLength)
         {
             // Decode the value to a Unicode character
             codeLength = 1;
             String c = font.encode(string, i, codeLength);
-            int[] codePoints = null;
+            int[] codePoints;
             if (c == null && i + 1 < string.length)
             {
                 // maybe a multibyte encoding
@@ -400,19 +377,20 @@ public class PDFStreamEngine
             }
 
             // the space width has to be transformed into display units
-            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText * textMatrix.getXScale()
-                    * ctm.getXScale();
+            float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText *
+                    textMatrix.getXScale()  * ctm.getXScale();
 
-            // todo, handle horizontal displacement
+            // TODO: handle horizontal displacement
             // get the width and height of this character in text units
-            float characterHorizontalDisplacementText = font.getFontWidth(string, i, codeLength);
-            float characterVerticalDisplacementText = font.getFontHeight(string, i, codeLength);
+            float charHorizontalDisplacementText = font.getFontWidth(string, i, codeLength);
+            float charVerticalDisplacementText = font.getFontHeight(string, i, codeLength);
 
             // multiply the width/height with the scaling factor
-            characterHorizontalDisplacementText = characterHorizontalDisplacementText * fontMatrixXScaling;
-            characterVerticalDisplacementText = characterVerticalDisplacementText * fontMatrixYScaling;
+            charHorizontalDisplacementText = charHorizontalDisplacementText * fontMatrixXScaling;
+            charVerticalDisplacementText = charVerticalDisplacementText * fontMatrixYScaling;
 
-            maxVerticalDisplacementText = Math.max(maxVerticalDisplacementText, characterVerticalDisplacementText);
+            maxVerticalDisplacementText = Math.max(maxVerticalDisplacementText,
+                    charVerticalDisplacementText);
 
             // PDF Spec - 5.5.2 Word Spacing
             //
@@ -433,18 +411,19 @@ public class PDFStreamEngine
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
             float spacingText = 0;
-            if ((string[i] == 0x20) && codeLength == 1)
+            if (string[i] == 0x20 && codeLength == 1)
             {
                 spacingText += wordSpacingText;
             }
             textMatrix.multiply(ctm, textXctm);
             // Convert textMatrix to display units
-            // We need to instantiate a new Matrix instance here as it is passed to the TextPosition constructor below.
+            // We need to instantiate a new Matrix instance here as it is passed to the TextPosition
+            // constructor below
             Matrix textMatrixStart = textStateParameters.multiply(textXctm);
 
-            // TODO : tx should be set for horizontal text and ty for vertical text
+            // TODO: tx should be set for horizontal text and ty for vertical text
             // which seems to be specified in the font (not the direction in the matrix).
-            float tx = ((characterHorizontalDisplacementText) * fontSizeText) * horizontalScalingText;
+            float tx = charHorizontalDisplacementText * fontSizeText * horizontalScalingText;
             float ty = 0;
             // reset the matrix instead of creating a new one
             td.reset();
@@ -462,8 +441,8 @@ public class PDFStreamEngine
             final float endYPosition = textMatrixEnd.getYPosition();
 
             // add some spacing to the text matrix (see comment above)
-            tx = ((characterHorizontalDisplacementText) * fontSizeText + characterSpacingText + spacingText)
-                    * horizontalScalingText;
+            tx = (charHorizontalDisplacementText * fontSizeText + characterSpacingText +
+                    spacingText) * horizontalScalingText;
             td.setValue(2, 0, tx);
             td.multiply(textMatrix, textMatrix);
 
@@ -472,27 +451,20 @@ public class PDFStreamEngine
             float startXPosition = textMatrixStart.getXPosition();
             float widthText = endXPosition - startXPosition;
 
-            // there are several cases where one character code will
-            // output multiple characters. For example "fi" or a
-            // glyphname that has no mapping like "visiblespace"
-            if (c != null)
+            // PDFBOX-373: Replace a null entry with "?" so it is not printed as "(null)"
+            if (c == null)
             {
-                validCharCnt++;
-            }
-            else
-            {
-                // PDFBOX-373: Replace a null entry with "?" so it is
-                // not printed as "(null)"
                 c = "?";
             }
-            totalCharCnt++;
 
-            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText * textXctm.getYScale();
+            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText *
+                    textXctm.getYScale();
 
             // process the decoded text
-            processTextPosition(new TextPosition(pageRotation, pageWidth, pageHeight, textMatrixStart, endXPosition,
-                    endYPosition, totalVerticalDisplacementDisp, widthText, spaceWidthDisp, c, codePoints, font,
-                    fontSizeText, (int) (fontSizeText * textMatrix.getXScale())));
+            processTextPosition(new TextPosition(pageRotation, pageWidth, pageHeight,
+                    textMatrixStart, endXPosition, endYPosition, totalVerticalDisplacementDisp,
+                    widthText, spaceWidthDisp, c, codePoints, font, fontSizeText,
+                    (int)(fontSizeText * textMatrix.getXScale())));
         }
     }
 
@@ -501,15 +473,14 @@ public class PDFStreamEngine
      * 
      * @param operation The operation to perform.
      * @param arguments The list of arguments.
-     * 
      * @throws IOException If there is an error processing the operation.
      */
     public void processOperator(String operation, List<COSBase> arguments) throws IOException
     {
         try
         {
-            PDFOperator oper = PDFOperator.getOperator(operation);
-            processOperator(oper, arguments);
+            PDFOperator operator = PDFOperator.getOperator(operation);
+            processOperator(operator, arguments);
         }
         catch (IOException e)
         {
@@ -522,7 +493,6 @@ public class PDFStreamEngine
      * 
      * @param operator The operation to perform.
      * @param arguments The list of arguments.
-     * 
      * @throws IOException If there is an error processing the operation.
      */
     protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException
@@ -545,47 +515,11 @@ public class PDFStreamEngine
     }
 
     /**
-     * Transforms the given point using the current transformation matrix
-     *
-     * @param x x-coordinate of the point to be transformed
-     * @param y y-coordinate of the point to be transformed
-     * @return the transformed point
-     */
-   /* public Point2D.Double transformPoint(double x, double y)
-    {
-        double[] position = { x, y };
-        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-        ctm.createAffineTransform().transform(position, 0, position, 0, 1);
-        return new Point2D.Double(position[0], position[1]);
-    }*/
-
-    /**
-     * Transforms the given width using the current transformation matrix
-     *
-     * @param width the width to be transformed
-     * @return the transformed width
-     */
-    /*public double transformWidth(double width) {
-        Matrix ctm = graphicsState.getCurrentTransformationMatrix();
-        double x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
-        double y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
-        return width * Math.sqrt(0.5 * (x * x + y * y));
-    }*/
-
-    /**
-     * @return Returns the colorSpaces.
+     * @return Returns the XObjects.
      */
     public Map<String, PDXObject> getXObjects()
     {
         return streamResourcesStack.peek().getXObjects();
-    }
-
-    /**
-     * @param value The colorSpaces to set.
-     */
-    public void setColorSpaces(Map<String, PDColorSpace> value)
-    {
-        streamResourcesStack.peek().setColorSpaces(value);
     }
 
     /**
@@ -706,31 +640,10 @@ public class PDFStreamEngine
     }
 
     /**
-     * Get the total number of valid characters in the doc that could be decoded in processEncodedText().
-     * 
-     * @return The number of valid characters.
-     */
-    public int getValidCharCnt()
-    {
-        return validCharCnt;
-    }
-
-    /**
-     * Get the total number of characters in the doc (including ones that could not be mapped).
-     * 
-     * @return The number of characters.
-     */
-    public int getTotalCharCnt()
-    {
-        return totalCharCnt;
-    }
-
-    /**
      * Remove all cached resources.
      */
     public void dispose()
     {
-        resetEngine();
         drawingRectangle = null;
         graphicsState = null;
         textLineMatrix = null;
@@ -750,9 +663,6 @@ public class PDFStreamEngine
             operators.clear();
             operators = null;
         }
-        if (unsupportedOperators != null)
-        {
-            unsupportedOperators.clear();
-        }
+        unsupportedOperators.clear();
     }
 }
