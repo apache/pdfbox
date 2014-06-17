@@ -33,14 +33,14 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.content.ContentStreamEngine;
+import org.apache.pdfbox.preflight.content.PreflightStreamEngine;
 import org.apache.pdfbox.util.operator.PDFOperator;
 
 /**
  * This class is used to parse a glyph of a Type3 font program. If the glyph is parsed without error, the width of the
  * glyph is accessible through the getWidth method.
  */
-public class PDFAType3StreamParser extends ContentStreamEngine
+public class PreflightType3Stream extends PreflightStreamEngine
 {
     private boolean firstOperator = true;
     private float width = 0;
@@ -48,7 +48,7 @@ public class PDFAType3StreamParser extends ContentStreamEngine
     private PDInlineImage image = null;
     private BoundingBox box = null;
 
-    public PDFAType3StreamParser(PreflightContext context, PDPage page)
+    public PreflightType3Stream(PreflightContext context, PDPage page)
     {
         super(context, page);
     }

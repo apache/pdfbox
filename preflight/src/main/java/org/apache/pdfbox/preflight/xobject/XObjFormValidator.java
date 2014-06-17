@@ -40,7 +40,7 @@ import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.content.ContentStreamWrapper;
+import org.apache.pdfbox.preflight.content.PreflightContentStream;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
@@ -109,7 +109,7 @@ public class XObjFormValidator extends AbstractXObjValidator
     protected void validateXObjectContent() throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, vPath.getClosestPathElement(PDPage.class));
+        PreflightContentStream csWrapper = new PreflightContentStream(context, vPath.getClosestPathElement(PDPage.class));
         csWrapper.validXObjContentStream(pdXObj);
     }
 

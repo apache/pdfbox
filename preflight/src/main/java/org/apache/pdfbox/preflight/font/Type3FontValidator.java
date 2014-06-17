@@ -53,7 +53,7 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.container.Type3Container;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.preflight.font.util.PDFAType3StreamParser;
+import org.apache.pdfbox.preflight.font.util.PreflightType3Stream;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
@@ -405,7 +405,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     private float getWidthFromCharacterStream(PDResources resources, COSStream charStream) throws IOException
     {
         PreflightPath vPath = context.getValidationPath();
-        PDFAType3StreamParser parser = new PDFAType3StreamParser(context, vPath.getClosestPathElement(PDPage.class));
+        PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class));
         parser.resetEngine();
         parser.processSubStream(resources, charStream);
         return parser.getWidth();
