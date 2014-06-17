@@ -264,7 +264,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
     {
         if ("q".equals(operator.getOperation()))
         {
-            int numberOfGraphicStates = this.getGraphicsStack().size();
+            int numberOfGraphicStates = this.getGraphicsStackSize();
             if (numberOfGraphicStates > MAX_GRAPHIC_STATES)
             {
                 registerError("Too many graphic states", ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES);

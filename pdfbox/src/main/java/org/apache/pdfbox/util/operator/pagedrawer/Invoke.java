@@ -94,27 +94,36 @@ public final class Invoke extends OperatorProcessor
         }
         else if (xobject instanceof PDFormXObject)
         {
-            // save the graphics state
-            context.getGraphicsStack().push((PDGraphicsState) context.getGraphicsState().clone());
+            PDFormXObject form = (PDFormXObject) xobject;         
+            if ((form.getGroup() != null) && (COSName.TRANSPARENCY.equals(form.getGroup().getSubType()))) {
+                PageDrawer.Group group = drawer.createPageDrawerGroup(form);
 
-            PDFormXObject form = (PDFormXObject) xobject;
-            COSStream formContentStream = form.getCOSStream();
-
-            // find some optional resources, instead of using the current resources
-            PDResources pdResources = form.getResources();
-
-            // if there is an optional form matrix, we have to map the form space to the user space
-            Matrix matrix = form.getMatrix();
-            if (matrix != null)
-            {
-                Matrix xobjectCTM = matrix.multiply(
-                    context.getGraphicsState().getCurrentTransformationMatrix());
-                    context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+                // Draw the result of the group to the page...
+                group.drawResult();
             }
-            getContext().processSubStream(pdResources, formContentStream);
+            else 
+            {
+                // save the graphics state
+                context.saveGraphicsState();
 
-            // restore the graphics state
-            context.setGraphicsState(context.getGraphicsStack().pop());
+                COSStream formContentStream = form.getCOSStream();
+
+                // find some optional resources, instead of using the current resources
+                PDResources pdResources = form.getResources();
+
+                // if there is an optional form matrix, we have to map the form space to the user space
+                Matrix matrix = form.getMatrix();
+                if (matrix != null)
+                {
+                    Matrix xobjectCTM = matrix.multiply(
+                                    context.getGraphicsState().getCurrentTransformationMatrix());
+                    context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+                }
+                getContext().processSubStream(pdResources, formContentStream);
+
+                // restore the graphics state
+                context.restoreGraphicsState();
+            }
         }
     }
 }

@@ -610,19 +610,27 @@ public class PDFStreamEngine
     }
 
     /**
-     * @return Returns the graphicsStack.
+     * Pushes the current graphics state to the stack.
      */
-    public Stack<PDGraphicsState> getGraphicsStack()
+    public void saveGraphicsState()
     {
-        return graphicsStack;
+        graphicsStack.push((PDGraphicsState) getGraphicsState().clone());
     }
 
     /**
-     * @param value The graphicsStack to set.
+     * Pops the current graphics state from the stack.
      */
-    public void setGraphicsStack(Stack<PDGraphicsState> value)
+    public void restoreGraphicsState()
     {
-        graphicsStack = value;
+        graphicsState = graphicsStack.pop();
+    }
+
+    /**
+     * @return Returns the size of the graphicsStack.
+     */
+    public int getGraphicsStackSize()
+    {
+        return graphicsStack.size();
     }
 
     /**
@@ -747,5 +755,4 @@ public class PDFStreamEngine
             unsupportedOperators.clear();
         }
     }
-
 }

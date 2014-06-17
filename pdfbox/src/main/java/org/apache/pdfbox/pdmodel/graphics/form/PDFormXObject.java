@@ -22,12 +22,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -60,6 +58,8 @@ public final class PDFormXObject extends PDXObject
 
     // name of XObject in resources, to prevent recursion
     private String name;
+
+    private PDGroup group;
 
     /**
      * Creates a Form XObject for reading.
@@ -106,6 +106,23 @@ public final class PDFormXObject extends PDXObject
     public void setFormType(int formType)
     {
         getCOSStream().setInt(COSName.FORMTYPE, formType);
+    }
+
+    /**
+     * Returns group descriptor...
+     *
+     * @return
+     */
+    public PDGroup getGroup() {
+        if( group == null ) 
+        {
+            COSDictionary dic = (COSDictionary) getCOSStream().getDictionaryObject(COSName.GROUP);
+            if( dic != null ) 
+            {
+                group = new PDGroup(dic);
+            }
+        }
+        return group;
     }
 
     /**

@@ -141,7 +141,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
         this.setGraphicsState(new PDGraphicsState());
         this.setTextMatrix(null);
         this.setTextLineMatrix(null);
-        this.getGraphicsStack().clear();
+        //this.getGraphicsStack().clear();
         // this.streamResourcesStack.clear();
     }
 

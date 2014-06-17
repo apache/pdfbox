@@ -16,19 +16,18 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.state;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDFontSetting;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-
-import java.io.IOException;
-
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 
 /**
  * This class represents the graphics state dictionary that is stored in the PDF document.
@@ -150,6 +149,14 @@ public class PDExtendedGraphicsState implements COSObjectable
             else if( key.equals( COSName.TK ) )
             {
                 gs.getTextState().setKnockoutFlag( getTextKnockoutFlag() );
+            }
+            else if( key.equals( COSName.SMASK ) ) 
+            {
+                gs.setSoftMask(getSoftMask());
+            }
+            else if( key.equals( COSName.BM ) ) 
+            {
+                gs.setBlendMode( getBlendMode() );
             }
         }
     }
@@ -283,7 +290,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setLineDashPattern( PDLineDashPattern dashPattern )
     {
-        graphicsState.setItem( COSName.D, dashPattern.getCOSObject() );
+        graphicsState.setItem(COSName.D, dashPattern.getCOSObject());
     }
 
     /**
@@ -303,7 +310,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setRenderingIntent( String ri )
     {
-        graphicsState.setName( "RI", ri );
+        graphicsState.setName("RI", ri);
     }
 
     /**
@@ -313,7 +320,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getStrokingOverprintControl()
     {
-        return graphicsState.getBoolean( COSName.OP, false );
+        return graphicsState.getBoolean(COSName.OP, false);
     }
 
     /**
@@ -323,7 +330,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setStrokingOverprintControl( boolean op )
     {
-        graphicsState.setBoolean( COSName.OP, op );
+        graphicsState.setBoolean(COSName.OP, op);
     }
 
     /**
@@ -354,7 +361,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getOverprintMode()
     {
-        return getFloatItem( COSName.OPM );
+        return getFloatItem(COSName.OPM);
     }
 
     /**
@@ -364,7 +371,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setOverprintMode( Float overprintMode )
     {
-        setFloatItem( COSName.OPM, overprintMode );
+        setFloatItem(COSName.OPM, overprintMode);
     }
 
     /**
@@ -390,7 +397,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setFontSetting( PDFontSetting fs )
     {
-        graphicsState.setItem( COSName.FONT, fs );
+        graphicsState.setItem(COSName.FONT, fs);
     }
 
     /**
@@ -410,7 +417,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setFlatnessTolerance( Float flatness )
     {
-        setFloatItem( COSName.FL, flatness );
+        setFloatItem(COSName.FL, flatness);
     }
 
     /**
@@ -440,7 +447,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getAutomaticStrokeAdjustment()
     {
-        return graphicsState.getBoolean( COSName.SA,false );
+        return graphicsState.getBoolean(COSName.SA, false);
     }
 
     /**
@@ -450,7 +457,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setAutomaticStrokeAdjustment( boolean sa )
     {
-        graphicsState.setBoolean( COSName.SA, sa );
+        graphicsState.setBoolean(COSName.SA, sa);
     }
 
     /**
@@ -460,7 +467,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public Float getStrokingAlpaConstant()
     {
-        return getFloatItem( COSName.CA );
+        return getFloatItem(COSName.CA);
     }
 
     /**
@@ -470,7 +477,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setStrokingAlphaConstant( Float alpha )
     {
-        setFloatItem( COSName.CA, alpha );
+        setFloatItem(COSName.CA, alpha);
     }
 
     /**
@@ -500,7 +507,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public boolean getAlphaSourceFlag()
     {
-        return graphicsState.getBoolean( COSName.AIS, false );
+        return graphicsState.getBoolean(COSName.AIS, false);
     }
 
     /**
@@ -510,8 +517,23 @@ public class PDExtendedGraphicsState implements COSObjectable
      */
     public void setAlphaSourceFlag( boolean alpha )
     {
-        graphicsState.setBoolean( COSName.AIS, alpha );
+        graphicsState.setBoolean(COSName.AIS, alpha);
     }
+
+    /**
+     * Returns the blending mode stored in the COS dictionary
+     *
+     * @return
+     */
+    public BlendMode getBlendMode() {
+        return BlendMode.getInstance(graphicsState.getDictionaryObject(COSName.BM));
+    }
+
+    public PDSoftMask getSoftMask() {
+        return PDSoftMask.create(graphicsState.getDictionaryObject(COSName.SMASK));
+    }
+
+    /**
 
     /**
      * This will get the text knockout flag.

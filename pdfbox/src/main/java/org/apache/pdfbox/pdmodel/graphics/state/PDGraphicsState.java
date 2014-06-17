@@ -16,13 +16,18 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.state;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Composite;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.GeneralPath;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendComposite;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -77,6 +82,9 @@ public class PDGraphicsState implements Cloneable
     private double smoothness = 0;
 
     private GeneralPath currentClippingPath;
+
+    private BlendMode blendMode = BlendMode.COMPATIBLE;
+    private PDSoftMask softMask;
 
     /**
      * Default constructor.
@@ -279,6 +287,49 @@ public class PDGraphicsState implements Cloneable
     {
         alphaSource = value;
     }
+
+    /**
+     * returns the current softmask
+     *
+     * @return softMask
+     */
+    public PDSoftMask getSoftMask() 
+    {
+        return softMask;
+    }
+
+
+    /**
+     * Sets the current soft mask
+     *
+     * @param softMask
+     */
+    public void setSoftMask(PDSoftMask softMask)
+    {
+        this.softMask = softMask;
+    }
+
+    /**
+     * Returns the current blend mode
+     *
+     * @return
+     */
+    public BlendMode getBlendMode()
+    {
+        return blendMode;
+    }
+
+    /**
+     * Sets the blend mode in the current graphics state
+     *
+     * @param blendMode
+     */
+    public void setBlendMode(BlendMode blendMode)
+    {
+        this.blendMode = blendMode;
+    }
+
+    /**
 
     /**
      * get the value of the overprint property.
@@ -567,13 +618,13 @@ public class PDGraphicsState implements Cloneable
         return currentClippingPath;
     }
 
-    public Composite getStrokeJavaComposite() {
-
-        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alphaConstants);
+    public Composite getStrokeJavaComposite() 
+    {
+        return BlendComposite.getInstance(blendMode, (float) alphaConstants);
     }
 
-    public Composite getNonStrokeJavaComposite() {
-
-        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) nonStrokingAlphaConstants);
+    public Composite getNonStrokeJavaComposite() 
+    {
+        return BlendComposite.getInstance(blendMode, (float) nonStrokingAlphaConstants);
     }
 }
