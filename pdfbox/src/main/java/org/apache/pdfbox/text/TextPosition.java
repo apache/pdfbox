@@ -27,8 +27,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class TextPosition
 {
-    // TextMatrix for the start of the text object.
-    // Coordinates are in display units and have not been adjusted.
+    // text matrix for the start of the text object, coordinates are in display units
+    // and have not been adjusted
     private Matrix textPos;
 
     // ending X and Y coordinates in display units
@@ -43,15 +43,18 @@ public class TextPosition
     private float pageWidth;
     private float[] widths;
     private float widthOfSpace; // width of a space, in display units
-    private String str;
+    private String string;
     private int[] unicodeCP;
     private PDFont font;
     private float fontSize;
     private int fontSizePt;
 
     /**
-     *  Constructor.
+     * Constructor.
+     *
+     * @deprecated Can this be removed?
      */
+    @Deprecated
     protected TextPosition()
     {
     }
@@ -75,8 +78,8 @@ public class TextPosition
      */
     @Deprecated
     public TextPosition(PDPage page, Matrix textPositionSt, Matrix textPositionEnd, float maxFontH,
-            float[] individualWidths, float spaceWidth, String string, PDFont currentFont,
-            float fontSizeValue, int fontSizeInPt, float ws)
+                        float[] individualWidths, float spaceWidth, String string,
+                        PDFont currentFont, float fontSizeValue, int fontSizeInPt, float ws)
     {
         this.textPos = textPositionSt;
 
@@ -100,7 +103,7 @@ public class TextPosition
 
         this.widths = individualWidths;
         this.widthOfSpace = spaceWidth;
-        this.str = string;
+        this.string = string;
         this.font = currentFont;
         this.fontSize = fontSizeValue;
         this.fontSizePt = fontSizeInPt;
@@ -149,9 +152,9 @@ public class TextPosition
         this.pageHeight = pageHeightValue;
         this.pageWidth = pageWidthValue;
 
-        this.widths = new float[]{individualWidth};
+        this.widths = new float[] { individualWidth };
         this.widthOfSpace = spaceWidth;
-        this.str = string;
+        this.string = string;
         this.unicodeCP = codePoints;
         this.font = currentFont;
         this.fontSize = fontSizeValue;
@@ -165,7 +168,7 @@ public class TextPosition
      */
     public String getCharacter()
     {
-        return str;
+        return string;
     }
 
     /**
@@ -189,8 +192,7 @@ public class TextPosition
     }
 
     /**
-     * Return the direction/orientation of the string in this object
-     * based on its text matrix.
+     * Return the direction/orientation of the string in this object based on its text matrix.
      * @return The direction of the text (0, 90, 180, or 270)
      */
     public float getDir()
@@ -228,9 +230,8 @@ public class TextPosition
     }
 
     /**
-     * Return the X starting coordinate of the text, adjusted by
-     * the given rotation amount.  The rotation adjusts where the 0,0
-     * location is relative to the text.
+     * Return the X starting coordinate of the text, adjusted by the given rotation amount.
+     * The rotation adjusts where the 0,0 location is relative to the text.
      *
      * @param rotation Rotation to apply (0, 90, 180, or 270).  0 will perform no adjustments.
      * @return X coordinate
@@ -258,8 +259,7 @@ public class TextPosition
 
     /**
      * This will get the page rotation adjusted x position of the character.
-     * This is adjusted based on page rotation so that the upper
-     * left is 0,0.
+     * This is adjusted based on page rotation so that the upper left is 0,0.
      *
      * @return The x coordinate of the character.
      */
@@ -287,8 +287,8 @@ public class TextPosition
     /**
      * This will get the y position of the character with 0,0 in lower left.
      * This will be adjusted by the given rotation.
-     * @param rotation Rotation to apply to text to adjust the 0,0 location (0,90,180,270)
      *
+     * @param rotation Rotation to apply to text to adjust the 0,0 location (0,90,180,270)
      * @return The y coordinate of the text
      */
     private float getYLowerLeftRot(float rotation)
@@ -313,8 +313,8 @@ public class TextPosition
     }
 
     /**
-     * This will get the y position of the text, adjusted so that 0,0 is upper left and
-     * it is adjusted based on the page rotation.
+     * This will get the y position of the text, adjusted so that 0,0 is upper left and it is
+     * adjusted based on the page rotation.
      *
      * @return The adjusted y coordinate of the character.
      */
@@ -322,7 +322,7 @@ public class TextPosition
     {
         if (y == Float.NEGATIVE_INFINITY)
         {
-            if ((rot == 0) || (rot == 180))
+            if (rot == 0 || rot == 180)
             {
                 y = pageHeight - getYLowerLeftRot(rot);
             }
@@ -335,8 +335,8 @@ public class TextPosition
     }
 
     /**
-     * This will get the y position of the text, adjusted so that 0,0 is upper left and
-     * it is adjusted based on the text direction.
+     * This will get the y position of the text, adjusted so that 0,0 is upper left and it is
+     * adjusted based on the text direction.
      *
      * @return The adjusted y coordinate of the character.
      */
@@ -353,8 +353,6 @@ public class TextPosition
             return pageWidth - getYLowerLeftRot(dir);
         }
     }
-
-
 
     /**
      * Get the length or width of the text, based on a given rotation.
@@ -411,13 +409,12 @@ public class TextPosition
      */
     public float getHeightDir()
     {
-        // this is not really a rotation-dependent calculation, but this is defined for symmetry.
+        // this is not really a rotation-dependent calculation, but this is defined for symmetry
         return maxTextHeight;
     }
 
     /**
-     * This will get the font size that this object is
-     * suppose to be drawn at.
+     * This will get the font size that this object is suppose to be drawn at.
      *
      * @return The font size.
      */
@@ -427,8 +424,8 @@ public class TextPosition
     }
 
     /**
-     * This will get the font size in pt.
-     * To get this size we have to multiply the pdf-fontsize and the scaling from the textmatrix
+     * This will get the font size in pt. To get this size we have to multiply the pdf-fontsize
+     * and the scaling from the textmatrix
      *
      * @return The font size in pt.
      */
@@ -448,9 +445,8 @@ public class TextPosition
     }
 
     /**
-     * This will get the width of a space character.  This is useful for some
-     * algorithms such as the text stripper, that need to know the width of a
-     * space character.
+     * This will get the width of a space character. This is useful for some algorithms such as the
+     * text stripper, that need to know the width of a space character.
      *
      * @return The width of a space character.
      */
@@ -458,6 +454,7 @@ public class TextPosition
     {
         return widthOfSpace;
     }
+
     /**
      * @return Returns the xScale.
      */
@@ -485,11 +482,10 @@ public class TextPosition
     }
 
     /**
-     * Determine if this TextPosition logically contains
-     * another (i.e. they overlap and should be rendered on top
-     * of each other).
-     * @param tp2 The other TestPosition to compare against
+     * Determine if this TextPosition logically contains another (i.e. they overlap and should be
+     * rendered on top of each other).
      *
+     * @param tp2 The other TestPosition to compare against
      * @return True if tp2 is contained in the bounding box of this text.
      */
     public boolean contains(TextPosition tp2)
@@ -500,24 +496,22 @@ public class TextPosition
         double tp2Xstart = tp2.getXDirAdj();
         double tp2Xend = tp2.getXDirAdj() + tp2.getWidthDirAdj();
 
-        // No X overlap at all so return as soon as possible.
+        // no X overlap at all so return as soon as possible
         if (tp2Xend <= thisXstart || tp2Xstart >= thisXend)
         {
             return false;
         }
 
-        // No Y overlap at all so return as soon as possible.
-        // Note: 0.0 is in the upper left and y-coordinate is
-        // top of TextPosition
+        // no Y overlap at all so return as soon as possible. Note: 0.0 is in the upper left and
+        // y-coordinate is top of TextPosition
         if (tp2.getYDirAdj() + tp2.getHeightDir() < getYDirAdj() ||
            tp2.getYDirAdj() > getYDirAdj() + getHeightDir())
         {
             return false;
         }
-
-        // We're going to calculate the percentage of overlap. If its less
-        // than a 15% x-coordinate overlap then we'll return false because its negligible.
-        // .15 was determined by trial and error in the regression test files.
+        // we're going to calculate the percentage of overlap, if its less than a 15% x-coordinate
+        // overlap then we'll return false because its negligible, .15 was determined by trial and
+        // error in the regression test files
         else if (tp2Xstart > thisXstart && tp2Xend > thisXend)
         {
             double overlap = thisXend - tp2Xstart;
@@ -534,10 +528,9 @@ public class TextPosition
     }
 
     /**
-     * Merge a single character TextPosition into the current object.
-     * This is to be used only for cases where we have a diacritic that
-     * overlaps an existing TextPosition.  In a graphical display, we could
-     * overlay them, but for text extraction we need to merge them. Use the
+     * Merge a single character TextPosition into the current object. This is to be used only for
+     * cases where we have a diacritic that overlaps an existing TextPosition. In a graphical
+     * display, we could overlay them, but for text extraction we need to merge them. Use the
      * contains() method to test if two objects overlap.
      *
      * @param diacritic TextPosition to merge into the current TextPosition.
@@ -555,16 +548,16 @@ public class TextPosition
 
         float currCharXStart = getXDirAdj();
 
-        int strLen = str.length();
+        int strLen = string.length();
         boolean wasAdded = false;
 
         for (int i = 0; i < strLen && !wasAdded; i++)
         {
             float currCharXEnd = currCharXStart + widths[i];
 
-             // This is the case where there is an overlap of the diacritic character with
-             // the current character and the previous character. If no previous character,
-             // just append the diacritic after the current one.
+             // this is the case where there is an overlap of the diacritic character with the
+             // current character and the previous character. If no previous character, just append
+             // the diacritic after the current one
             if (diacXStart < currCharXStart && diacXEnd <= currCharXEnd)
             {
                 if (i == 0)
@@ -577,7 +570,7 @@ public class TextPosition
                     float percentage1 = distanceOverlapping1/widths[i];
 
                     float distanceOverlapping2 = currCharXStart - diacXStart;
-                    float percentage2 = distanceOverlapping2/widths[i-1];
+                    float percentage2 = distanceOverlapping2/widths[i - 1];
 
                     if (percentage1 >= percentage2)
                     {
@@ -585,55 +578,55 @@ public class TextPosition
                     }
                     else
                     {
-                        insertDiacritic(i-1, diacritic, normalize);
+                        insertDiacritic(i - 1, diacritic, normalize);
                     }
                 }
                 wasAdded = true;
             }
-            // diacritic completely covers this character and therefore we assume that
-            // this is the character the diacritic belongs to
+            // diacritic completely covers this character and therefore we assume that this is the
+            // character the diacritic belongs to
             else if (diacXStart < currCharXStart && diacXEnd > currCharXEnd)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
-            // Otherwise, The diacritic modifies this character because its completely
+            // otherwise, The diacritic modifies this character because its completely
             // contained by the character width
             else if (diacXStart >= currCharXStart && diacXEnd <= currCharXEnd)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
-            // Last character in the TextPosition so we add diacritic to the end
+            // last character in the TextPosition so we add diacritic to the end
             else if (diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == strLen - 1)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
 
-            // Couldn't find anything useful so we go to the next character in the TextPosition
+            // couldn't find anything useful so we go to the next character in the TextPosition
             currCharXStart += widths[i];
         }
     }
     /**
-     * Inserts the diacritic TextPosition to the str of this TextPosition
-     * and updates the widths array to include the extra character width.
+     * Inserts the diacritic TextPosition to the str of this TextPosition and updates the widths
+     * array to include the extra character width.
+     *
      * @param i current character
      * @param diacritic The diacritic TextPosition
      * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
     private void insertDiacritic(int i, TextPosition diacritic, TextNormalize normalize)
     {
-        // we add the diacritic to the right or left of the character
-        // depending on the direction of the character.  Note that this
-        // is only required because the text is currently stored in
-        // presentation order and not in logical order.
-        int dir = Character.getDirectionality(str.charAt(i));
-        StringBuffer buf = new StringBuffer();
+        // we add the diacritic to the right or left of the character depending on the direction
+        // of the character. Note that this is only required because the text is currently stored in
+        // presentation order and not in logical order
+        int dir = Character.getDirectionality(string.charAt(i));
+        StringBuilder sb = new StringBuilder();
 
-        buf.append(str.substring(0,i));
+        sb.append(string.substring(0, i));
 
-        float[] widths2 = new float[widths.length+1];
+        float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
 
         if (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
@@ -641,24 +634,24 @@ public class TextPosition
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
         {
-            buf.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
+            sb.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
             widths2[i] = 0;
-            buf.append(str.charAt(i));
-            widths2[i+1] = widths[i];
+            sb.append(string.charAt(i));
+            widths2[i + 1] = widths[i];
         }
         else
         {
-            buf.append(str.charAt(i));
+            sb.append(string.charAt(i));
             widths2[i] = widths[i];
-            buf.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
-            widths2[i+1] = 0;
+            sb.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
+            widths2[i + 1] = 0;
         }
 
-        // Get the rest of the string
-        buf.append(str.substring(i+1, str.length()));
-        System.arraycopy(widths, i+1, widths2, i+2, widths.length-i-1);
+        // get the rest of the string
+        sb.append(string.substring(i + 1, string.length()));
+        System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
 
-        str = buf.toString();
+        string = sb.toString();
         widths = widths2;
     }
 
@@ -667,12 +660,12 @@ public class TextPosition
      */
     public boolean isDiacritic()
     {
-        final String cText = this.getCharacter(); 
-        if (cText.length() != 1)
+        String text = this.getCharacter();
+        if (text.length() != 1)
         {
             return false; 
         }
-        final int type = Character.getType(cText.charAt(0)); 
+        int type = Character.getType(text.charAt(0));
         return type == Character.NON_SPACING_MARK ||
                type == Character.MODIFIER_SYMBOL ||
                type == Character.MODIFIER_LETTER;
