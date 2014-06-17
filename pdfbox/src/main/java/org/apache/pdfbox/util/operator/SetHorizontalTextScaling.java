@@ -43,6 +43,6 @@ public class SetHorizontalTextScaling extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         COSNumber scaling = (COSNumber)arguments.get(0);
-        context.getGraphicsState().getTextState().setHorizontalScalingPercent( scaling.floatValue() );
+        context.getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
     }
 }

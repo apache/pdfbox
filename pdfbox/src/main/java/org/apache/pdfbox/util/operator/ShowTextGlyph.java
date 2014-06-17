@@ -43,7 +43,7 @@ public class ShowTextGlyph extends OperatorProcessor
         COSArray array = (COSArray)arguments.get( 0 );
         int arraySize = array.size();
         float fontsize = context.getGraphicsState().getTextState().getFontSize();
-        float horizontalScaling = context.getGraphicsState().getTextState().getHorizontalScalingPercent()/100;
+        float horizontalScaling = context.getGraphicsState().getTextState().getHorizontalScaling()/100;
         for( int i=0; i<arraySize; i++ )
         {
             COSBase next = array.get( i );
