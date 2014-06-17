@@ -112,15 +112,14 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * The platform's line separator.
      */
-    protected final String systemLineSeparator = System.getProperty("line.separator"); 
+    protected final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-    private String lineSeparator = systemLineSeparator;
-    private String pageSeparator = systemLineSeparator;
+    private String lineSeparator = LINE_SEPARATOR;
     private String wordSeparator = " ";
     private String paragraphStart = "";
     private String paragraphEnd = "";
     private String pageStart = "";
-    private String pageEnd = pageSeparator;
+    private String pageEnd = LINE_SEPARATOR;
     private String articleStart = "";
     private String articleEnd = "";
 
@@ -139,7 +138,7 @@ public class PDFTextStripper extends PDFStreamEngine
     private float indentThreshold = DEFAULT_INDENT_THRESHOLD;
     private float dropThreshold = DEFAULT_DROP_THRESHOLD;
 
-    // We will need to estimate where to add spaces. These are used to help guess.
+    // we will need to estimate where to add spaces, these are used to help guess
     private float spacingTolerance = .5f;
     private float averageCharTolerance = .3f;
 
@@ -211,6 +210,7 @@ public class PDFTextStripper extends PDFStreamEngine
         this.outputEncoding = null;
         normalize = new TextNormalize(this.outputEncoding);
     }
+
     /**
      * Instantiate a new PDFTextStripper object. This object will load
      * properties from PDFTextStripper.properties and will apply
@@ -330,10 +330,9 @@ public class PDFTextStripper extends PDFStreamEngine
             startBookmarkPageNumber = 0;
             endBookmarkPageNumber = 0;
         }
-        Iterator<COSObjectable> pageIter = pages.iterator();
-        while (pageIter.hasNext())
+        for (COSObjectable page : pages)
         {
-            PDPage nextPage = (PDPage)pageIter.next();
+            PDPage nextPage = (PDPage) page;
             PDStream contentStream = nextPage.getContents();
             currentPageNo++;
             if (contentStream != null)
@@ -360,10 +359,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * This method is available for subclasses of this class. It will be called before processing
      * of the document start.
      *
-     * @param pdf The PDF document that is being processed.
+     * @param document The PDF document that is being processed.
      * @throws IOException If an IO error occurs.
      */
-    protected void startDocument(PDDocument pdf) throws IOException
+    protected void startDocument(PDDocument document) throws IOException
     {
         // no default implementation, but available for subclasses
     }
@@ -372,10 +371,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * This method is available for subclasses of this class. It will be called after processing
      * of the document finishes.
      *
-     * @param pdf The PDF document that is being processed.
+     * @param document The PDF document that is being processed.
      * @throws IOException If an IO error occurs.
      */
-    protected void endDocument(PDDocument pdf) throws IOException
+    protected void endDocument(PDDocument document) throws IOException
     {
         // no default implementation, but available for subclasses
     }
@@ -403,7 +402,7 @@ public class PDFTextStripper extends PDFStreamEngine
             }
             int originalSize = charactersByArticle.size();
             charactersByArticle.setSize(numberOfArticleSections);
-            for (int i=0; i<numberOfArticleSections; i++)
+            for (int i = 0; i < numberOfArticleSections; i++)
             {
                 if (numberOfArticleSections < originalSize)
                 {
@@ -441,10 +440,10 @@ public class PDFTextStripper extends PDFStreamEngine
      * Default implementation is to do nothing.  Subclasses
      * may provide additional information.
      *
-     * @param isltr true if primary direction of text is left to right.
+     * @param isLTR true if primary direction of text is left to right.
      * @throws IOException If there is any error writing to the stream.
      */
-    protected void startArticle(boolean isltr) throws IOException
+    protected void startArticle(boolean isLTR) throws IOException
     {
         output.write(getArticleStart());
     }
@@ -649,7 +648,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 // with some margin. This calculation does not make a true average (average of
                 // averages) but we found that it gave the best results after numerous experiments.
                 // Based on experiments we also found that .3 worked well.
-                float averageCharWidth = -1;
+                float averageCharWidth;
                 if (previousAveCharWidth < 0)
                 {
                     averageCharWidth = positionWidth / wordCharCount;
@@ -762,33 +761,17 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * Write the page separator value to the output stream.
-     * @throws IOException
-     *             If there is a problem writing out the pageseparator to the document.
-     */
-    protected void writePageSeperator() throws IOException
-    {
-        // RDD - newline at end of flush - required for end of page (so that the top
-        // of the next page starts on its own line.
-        output.write(getPageSeparator());
-        output.flush();
-    }
-
-    /**
      * Write the line separator value to the output stream.
-     * @throws IOException
-     *             If there is a problem writing out the lineseparator to the document.
+     * @throws IOException If there is a problem writing out the lineseparator to the document.
      */
     protected void writeLineSeparator() throws IOException
     {
         output.write(getLineSeparator());
     }
 
-
     /**
      * Write the word separator value to the output stream.
-     * @throws IOException
-     *             If there is a problem writing out the wordseparator to the document.
+     * @throws IOException If there is a problem writing out the wordseparator to the document.
      */
     protected void writeWordSeparator() throws IOException
     {
@@ -843,9 +826,8 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * This will process a TextPosition object and add the
-     * text to the list of characters on a page.  It takes care of
-     * overlapping text.
+     * This will process a TextPosition object and add the text to the list of characters on a page.
+     * It takes care of overlapping text.
      *
      * @param text The text to process.
      */
@@ -913,7 +895,7 @@ public class PDFTextStripper extends PDFStreamEngine
             float y = text.getY();
             if (shouldSeparateByBeads)
             {
-                for (int i=0; i<pageArticles.size() && foundArticleDivisionIndex == -1; i++)
+                for (int i = 0; i < pageArticles.size() && foundArticleDivisionIndex == -1; i++)
                 {
                     PDThreadBead bead = pageArticles.get(i);
                     if (bead != null)
@@ -921,23 +903,23 @@ public class PDFTextStripper extends PDFStreamEngine
                         PDRectangle rect = bead.getRectangle();
                         if (rect.contains(x, y))
                         {
-                            foundArticleDivisionIndex = i*2+1;
+                            foundArticleDivisionIndex = i * 2 + 1;
                         }
                         else if ((x < rect.getLowerLeftX() ||
                                 y < rect.getUpperRightY()) &&
                                 notFoundButFirstLeftAndAboveArticleDivisionIndex == -1)
                         {
-                            notFoundButFirstLeftAndAboveArticleDivisionIndex = i*2;
+                            notFoundButFirstLeftAndAboveArticleDivisionIndex = i * 2;
                         }
                         else if (x < rect.getLowerLeftX() &&
                                 notFoundButFirstLeftArticleDivisionIndex == -1)
                         {
-                            notFoundButFirstLeftArticleDivisionIndex = i*2;
+                            notFoundButFirstLeftArticleDivisionIndex = i * 2;
                         }
                         else if (y < rect.getUpperRightY() &&
                                 notFoundButFirstAboveArticleDivisionIndex == -1)
                         {
-                            notFoundButFirstAboveArticleDivisionIndex = i*2;
+                            notFoundButFirstAboveArticleDivisionIndex = i * 2;
                         }
                     }
                     else
@@ -950,7 +932,7 @@ public class PDFTextStripper extends PDFStreamEngine
             {
                 foundArticleDivisionIndex = 0;
             }
-            int articleDivisionIndex = -1;
+            int articleDivisionIndex;
             if (foundArticleDivisionIndex != -1)
             {
                 articleDivisionIndex = foundArticleDivisionIndex;
@@ -969,7 +951,7 @@ public class PDFTextStripper extends PDFStreamEngine
             }
             else
             {
-                articleDivisionIndex = charactersByArticle.size()-1;
+                articleDivisionIndex = charactersByArticle.size() - 1;
             }
 
             List<TextPosition> textList = charactersByArticle.get(articleDivisionIndex);
@@ -989,7 +971,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 // Note that we are making an assumption that we need to only look back
                 // one TextPosition to find what we are overlapping.
                 // This may not always be true. */
-                TextPosition previousTextPosition = textList.get(textList.size()-1);
+                TextPosition previousTextPosition = textList.get(textList.size() - 1);
                 if (text.isDiacritic() && previousTextPosition.contains(text))
                 {
                     previousTextPosition.mergeDiacritic(text, normalize);
@@ -1079,18 +1061,6 @@ public class PDFTextStripper extends PDFStreamEngine
     }
 
     /**
-     * Set the desired page separator for output text.  The line.separator
-     * system property is used if the page separator preference is not set
-     * explicitly using this method.
-     *
-     * @param separator The desired page separator string.
-     */
-    public void setPageSeparator(String separator)
-    {
-        pageSeparator = separator;
-    }
-
-    /**
      * This will get the word separator.
      *
      * @return The desired word separator string.
@@ -1114,15 +1084,6 @@ public class PDFTextStripper extends PDFStreamEngine
         wordSeparator = separator;
     }
 
-    /**
-     * This will get the page separator.
-     *
-     * @return The page separator string.
-     */
-    public String getPageSeparator()
-    {
-        return pageSeparator;
-    }
     /**
      * @return Returns the suppressDuplicateOverlappingText.
      */
@@ -1171,8 +1132,7 @@ public class PDFTextStripper extends PDFStreamEngine
      *
      * @param suppressDuplicateOverlappingTextValue The suppressDuplicateOverlappingText to set.
      */
-    public void setSuppressDuplicateOverlappingText(
-            boolean suppressDuplicateOverlappingTextValue)
+    public void setSuppressDuplicateOverlappingText(boolean suppressDuplicateOverlappingTextValue)
     {
         suppressDuplicateOverlappingText = suppressDuplicateOverlappingTextValue;
     }
@@ -1709,7 +1669,7 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * a list of regular expressions that match commonly used
      * list item formats, i.e. bullets, numbers, letters,
-     * Roman numerals, etc.  Not meant to be
+     * Roman numerals, etc. Not meant to be
      * comprehensive.
      */
     private static final String[] LIST_ITEM_EXPRESSIONS = {
@@ -1786,7 +1746,6 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected static Pattern matchPattern(String string, List<Pattern> patterns)
     {
-        Pattern matchedPattern = null;
         for (Pattern p : patterns)
         {
             if (p.matcher(string).matches())
@@ -1794,7 +1753,7 @@ public class PDFTextStripper extends PDFStreamEngine
                 return p;
             }
         }
-        return matchedPattern;
+        return null;
     }
 
     /**
@@ -1807,11 +1766,11 @@ public class PDFTextStripper extends PDFStreamEngine
             throws IOException
     {
         int numberOfStrings = line.size();
-        for (int i=0; i<numberOfStrings; i++)
+        for (int i = 0; i < numberOfStrings; i++)
         {
             WordWithTextPositions word = line.get(i);
             writeString(word.getText(), word.getTextPositions());
-            if (i < numberOfStrings-1)
+            if (i < numberOfStrings - 1)
             {
                 writeWordSeparator();
             }
@@ -1860,7 +1819,7 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     private WordWithTextPositions createWord(String word, List<TextPosition> wordPositions)
     {
-        return new WordWithTextPositions(normalize.normalizePres(word), wordPositions);
+        return new WordWithTextPositions(normalize.normalizePresentationForm(word), wordPositions);
     }
 
     /**
@@ -1896,7 +1855,7 @@ public class PDFTextStripper extends PDFStreamEngine
         {
         }
 
-        public static final WordSeparator getSeparator()
+        public static WordSeparator getSeparator()
         {
             return separator;
         }

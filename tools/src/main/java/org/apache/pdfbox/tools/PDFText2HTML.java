@@ -50,13 +50,13 @@ public class PDFText2HTML extends PDFTextStripper
     public PDFText2HTML(String encoding) throws IOException
     {
         super(encoding);
-        setLineSeparator(systemLineSeparator);
+        setLineSeparator(LINE_SEPARATOR);
         setParagraphStart("<p>");
-        setParagraphEnd("</p>"+systemLineSeparator);
+        setParagraphEnd("</p>"+ LINE_SEPARATOR);
         setPageStart("<div style=\"page-break-before:always; page-break-after:always\">");
-        setPageEnd("</div>"+systemLineSeparator);
-        setArticleStart(systemLineSeparator);
-        setArticleEnd(systemLineSeparator);
+        setPageEnd("</div>"+ LINE_SEPARATOR);
+        setArticleStart(LINE_SEPARATOR);
+        setArticleEnd(LINE_SEPARATOR);
     }
 
     /**
@@ -99,7 +99,7 @@ public class PDFText2HTML extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
-    public void endDocument(PDDocument pdf) throws IOException
+    public void endDocument(PDDocument document) throws IOException
     {
         super.writeString("</body></html>");
     }
@@ -156,13 +156,13 @@ public class PDFText2HTML extends PDFTextStripper
      * Write out the article separator (div tag) with proper text direction
      * information.
      *
-     * @param isltr true if direction of text is left to right
+     * @param isLTR true if direction of text is left to right
      * @throws IOException
      *             If there is an error writing to the stream.
      */
-    protected void startArticle(boolean isltr) throws IOException
+    protected void startArticle(boolean isLTR) throws IOException
     {
-        if (isltr)
+        if (isLTR)
         {
             super.writeString("<div>");
         }
