@@ -265,11 +265,11 @@ public class PDDocument implements Closeable
         int preferedSignatureSize = options.getPreferedSignatureSize();
         if (preferedSignatureSize > 0)
         {
-            sigObject.setContents(new byte[preferedSignatureSize * 2 + 2]);
+            sigObject.setContents(new byte[preferedSignatureSize]);
         }
         else
         {
-            sigObject.setContents(new byte[0x2500 * 2 + 2]);
+            sigObject.setContents(new byte[0x2500]);
         }
 
         // Reserve ByteRange
