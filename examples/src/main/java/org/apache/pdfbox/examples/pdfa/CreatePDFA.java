@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.apache.jempbox.xmp.XMPMetadata;
@@ -70,7 +71,7 @@ public class CreatePDFA
             doc.addPage( page );
 
             // load the font as this needs to be embedded as part of PDF/A
-            PDFont font = PDTrueTypeFont.loadTTF(doc, fontfile);
+            PDFont font = PDTrueTypeFont.loadTTF(doc, new File(fontfile));
             
             // create a page with the message where needed
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);

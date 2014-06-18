@@ -35,33 +35,23 @@ import org.apache.fontbox.ttf.GlyphDescription;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 /**
  * This class provides a glyph to GeneralPath conversion for true type fonts.
- * 
- * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
- * http://xmlgraphics.apache.org/batik/ for further details.
- * 
+ * Based on code from Apache Batik a subproject of Apache XMLGraphics.
+ *
+ * {@see http://xmlgraphics.apache.org/batik/}
  */
 public class TTFGlyph2D implements Glyph2D
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(TTFGlyph2D.class);
 
-    /**
-     * Start of coderanges.
-     */
-    private static final int START_RANGE_F000 = 0xF000;
-    private static final int START_RANGE_F100 = 0xF100;
-    private static final int START_RANGE_F200 = 0xF200;
-
-    private TrueTypeFont font;
+    private PDFont pdFont;
+    private TrueTypeFont ttf;
     private PDCIDFontType2Font descendantFont;
     private String name;
     private float scale = 1.0f;
@@ -80,27 +70,32 @@ public class TTFGlyph2D implements Glyph2D
 
     /**
      * Constructor.
-     * 
-     * @param trueTypeFont the true type font containing the glyphs
-     * @param pdFont the given PDFont
+     *
+     * @param ttfFont TrueType font
      */
-    public TTFGlyph2D(TrueTypeFont trueTypeFont, PDFont pdFont)
+    public TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
     {
-        this(trueTypeFont, pdFont, null);
+        this(ttfFont.getTTFFont(), ttfFont, null);
     }
 
     /**
      * Constructor.
-     * 
-     * @param trueTypeFont the true type font containing the glyphs
-     * @param pdFont the given PDFont
-     * @param descFont the descendant font of a Type0Font
+     *
+     * @param type0Font Type0 font, with CIDFontType2 descendant
      */
-    public TTFGlyph2D(TrueTypeFont trueTypeFont, PDFont pdFont, PDCIDFontType2Font descFont)
+    public TTFGlyph2D(PDType0Font type0Font) throws IOException
     {
-        font = trueTypeFont;
+        this(((PDCIDFontType2Font)type0Font.getDescendantFont()).getTTFFont(), type0Font,
+                (PDCIDFontType2Font)type0Font.getDescendantFont());
+    }
+
+    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, PDCIDFontType2Font descFont)
+            throws IOException
+    {
+        this.pdFont = pdFont;
+        this.ttf = ttf;
         // get units per em, which is used as scaling factor
-        HeaderTable header = font.getHeader();
+        HeaderTable header = this.ttf.getHeader();
         if (header != null && header.getUnitsPerEm() != 1000)
         {
             // in most case the scaling factor is set to 1.0f
@@ -108,19 +103,19 @@ public class TTFGlyph2D implements Glyph2D
             scale = 1000f / header.getUnitsPerEm();
             hasScaling = true;
         }
-        extractCMaps();
+        extractCmapTable();
         extractFontSpecifics(pdFont, descFont);
     }
 
     /**
-     * extract all useful CMaps.
+     * extract all useful "cmap" subtables.
      */
-    private void extractCMaps()
+    private void extractCmapTable()
     {
-        CMAPTable cmapTable = font.getCMAP();
+        CMAPTable cmapTable = ttf.getCMAP();
         if (cmapTable != null)
         {
-            // get all relevant CMaps
+            // get all relevant "cmap" subtables
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
             for (CMAPEncodingEntry cmap : cmaps)
             {
@@ -168,7 +163,6 @@ public class TTFGlyph2D implements Glyph2D
             {
                 hasTwoByteMappings = fontCMap.hasTwoByteMappings();
             }
-
         }
     }
 
@@ -208,7 +202,7 @@ public class TTFGlyph2D implements Glyph2D
         }
         else
         {
-            GlyphData[] glyphData = font.getGlyph().getGlyphs();
+            GlyphData[] glyphData = ttf.getGlyph().getGlyphs();
             if (glyphId < glyphData.length && glyphData[glyphId] != null)
             {
                 GlyphData glyph = glyphData[glyphId];
@@ -231,87 +225,6 @@ public class TTFGlyph2D implements Glyph2D
             }
         }
         return glyphPath != null ? (GeneralPath) glyphPath.clone() : null;
-    }
-
-    /*
-     * Try to map the given code to the corresponding glyph-ID
-     */
-    private int getGlyphcode(int code)
-    {
-        if (isCIDFont)
-        {
-            return getGID(code);
-        }
-
-        int result = 0;
-        if (fontEncoding != null && !isSymbol)
-        {
-            try
-            {
-                String charactername = fontEncoding.getName(code);
-                if (charactername != null)
-                {
-                    if (cmapWinUnicode != null)
-                    {
-                        String unicode = Encoding.getCharacterForName(charactername);
-                        if (unicode != null)
-                        {
-                            result = unicode.codePointAt(0);
-                        }
-                        result = cmapWinUnicode.getGlyphId(result);
-                    }
-                    else if (cmapMacintoshSymbol != null && MacOSRomanEncoding.INSTANCE.hasCodeForName(charactername))
-                    {
-                        result = MacOSRomanEncoding.INSTANCE.getCode(charactername);
-                        result = cmapMacintoshSymbol.getGlyphId(result);
-                    }
-                    else if (cmapWinSymbol != null)
-                    {
-                        // fallback scenario if the glyph can't be found yet
-                        // maybe the 3,0 cmap provides a suitable mapping
-                        // see PDFBOX-2091
-                        result = cmapWinSymbol.getGlyphId(code);
-                    }
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Caught an exception getGlyhcode: " + exception);
-            }
-        }
-        if (fontEncoding == null || isSymbol)
-        {
-            if (cmapWinSymbol != null)
-            {
-                result = cmapWinSymbol.getGlyphId(code);
-                if (code >= 0 && code <= 0xFF)
-                {
-                    // the CMap may use one of the following code ranges,
-                    // so that we have to add the high byte to get the
-                    // mapped value
-                    if (result == 0)
-                    {
-                        // F000 - F0FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F000);
-                    }
-                    if (result == 0)
-                    {
-                        // F100 - F1FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F100);
-                    }
-                    if (result == 0)
-                    {
-                        // F200 - F2FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F200);
-                    }
-                }
-            }
-            else if (cmapMacintoshSymbol != null)
-            {
-                result = cmapMacintoshSymbol.getGlyphId(code);
-            }
-        }
-        return result;
     }
 
     /**
@@ -343,14 +256,10 @@ public class TTFGlyph2D implements Glyph2D
         return code;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public GeneralPath getPathForCharacterCode(int code)
     {
-
-        int glyphId = getGlyphcode(code);
+        int glyphId = getGIDForCharacterCode(code);
 
         if (glyphId > 0)
         {
@@ -367,6 +276,19 @@ public class TTFGlyph2D implements Glyph2D
             }
         }
         return getPathForGlyphId(glyphId);
+    }
+
+    // Try to map the given code to the corresponding glyph-ID
+    private int getGIDForCharacterCode(int code)
+    {
+        if (isCIDFont)
+        {
+            return getGID(code);
+        }
+        else
+        {
+            return ((PDTrueTypeFont)pdFont).getGIDForCharacterCode(code);
+        }
     }
 
     /**
@@ -543,7 +465,8 @@ public class TTFGlyph2D implements Glyph2D
         path.quadTo(ctrlPoint.x, ctrlPoint.y, point.x, point.y);
         if (LOG.isDebugEnabled())
         {
-            LOG.debug("quadTo: " + String.format("%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y, point.x, point.y));
+            LOG.debug("quadTo: " + String.format("%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y,
+                    point.x, point.y));
         }
     }
 
@@ -559,11 +482,9 @@ public class TTFGlyph2D implements Glyph2D
 
     /**
      * This class represents one point of a glyph.
-     * 
      */
     private class Point
     {
-
         private int x = 0;
         private int y = 0;
         private boolean onCurve = true;
@@ -590,13 +511,10 @@ public class TTFGlyph2D implements Glyph2D
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getNumberOfGlyphs()
     {
-        return font != null ? font.getGlyph().getGlyphs().length : 0;
+        return ttf != null ? ttf.getGlyph().getGlyphs().length : 0;
     }
 
     @Override
@@ -605,7 +523,7 @@ public class TTFGlyph2D implements Glyph2D
         cmapMacintoshSymbol = null;
         cmapWinSymbol = null;
         cmapWinUnicode = null;
-        font = null;
+        ttf = null;
         descendantFont = null;
         fontCMap = null;
         fontEncoding = null;

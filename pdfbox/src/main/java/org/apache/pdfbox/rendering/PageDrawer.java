@@ -558,7 +558,7 @@ public class PageDrawer extends PDFStreamEngine
                 TrueTypeFont ttf = ttfFont.getTTFFont();
                 if (ttf != null)
                 {
-                    glyph2D = new TTFGlyph2D(ttf, font);
+                    glyph2D = new TTFGlyph2D(ttfFont);
                 }
             }
             else if (font instanceof PDType1Font)
