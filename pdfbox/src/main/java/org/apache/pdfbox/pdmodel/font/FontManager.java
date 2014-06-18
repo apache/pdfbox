@@ -319,11 +319,7 @@ public class FontManager
             return true;
         }
         String psname = font.getPSName().toLowerCase();
-        if (psname.indexOf("bold") > -1)
-        {
-            return true;
-        }
-        return false;
+        return psname.indexOf("bold") > -1;
     }
     
     /**
@@ -342,10 +338,6 @@ public class FontManager
             return true;
         }
         String psname = font.getPSName().toLowerCase();
-        if (psname.indexOf("italic") > -1 || psname.indexOf("oblique") > -1)
-        {
-            return true;
-        }
-        return false;
+        return psname.indexOf("italic") > -1 || psname.indexOf("oblique") > -1;
     }
 }

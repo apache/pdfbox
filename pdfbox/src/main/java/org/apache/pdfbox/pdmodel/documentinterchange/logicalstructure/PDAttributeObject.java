@@ -178,11 +178,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     {
         if (oldValue == null)
         {
-            if (newValue == null)
-            {
-                return false;
-            }
-            return true;
+            return newValue != null;
         }
         return !oldValue.equals(newValue);
     }
