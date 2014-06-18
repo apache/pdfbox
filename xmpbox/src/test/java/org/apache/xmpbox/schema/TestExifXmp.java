@@ -22,15 +22,12 @@
 package org.apache.xmpbox.schema;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.OECFType;
 import org.apache.xmpbox.type.TextType;
 import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.xml.DomXmpParser;
-import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
