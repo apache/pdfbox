@@ -215,7 +215,7 @@ public class TestCOSFloat extends TestCOSNumber
     private String removeTrailingNull(String value)
     {
         // remove fraction digit "0" only
-        if (value.indexOf(".") > -1 && !value.endsWith(".0"))
+        if (value.indexOf('.') > -1 && !value.endsWith(".0"))
         {
             while (value.endsWith("0") && !value.endsWith(".0"))
             {

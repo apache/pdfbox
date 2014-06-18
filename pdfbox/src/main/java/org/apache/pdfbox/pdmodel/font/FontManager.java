@@ -154,9 +154,9 @@ public class FontManager
         // Terminate trailing characters up to the "+".
         // As far as I know, these characters are used in names of embedded fonts
         // If the embedded font can't be read, we'll try to find it here
-        if (normalizedFontname.indexOf("+") > -1)
+        if (normalizedFontname.indexOf('+') > -1)
         {
-            normalizedFontname = normalizedFontname.substring(normalizedFontname.indexOf("+")+1);
+            normalizedFontname = normalizedFontname.substring(normalizedFontname.indexOf('+')+1);
         }
         // normalize all kinds of fonttypes. There are several possible version which have to be normalized
         // e.g. Arial,Bold Arial-BoldMT Helevtica-oblique ...

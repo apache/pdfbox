@@ -310,7 +310,7 @@ public abstract class PDCIDFont extends PDSimpleFont
             }
             else
             {
-                cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf("-")) +
+                cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf('-')) +
                         "-UCS2";
             }
             cmap = cmapObjects.get(cidSystemInfo);
