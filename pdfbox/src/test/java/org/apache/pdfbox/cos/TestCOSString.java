@@ -384,10 +384,10 @@ public class TestCOSString extends TestCOSBase
             assertFalse(x1.equals(x2));
 
             // Non-nullity
-            assertFalse(x1.equals(null));
-            assertFalse(y1.equals(null));
-            assertFalse(z1.equals(null));
-            assertFalse(x2.equals(null));
+            assertFalse(x1 == null);
+            assertFalse(y1 == null);
+            assertFalse(z1 == null);
+            assertFalse(x2 == null);
 
             // Also check other state
             COSString y2 = new COSString("Test");
