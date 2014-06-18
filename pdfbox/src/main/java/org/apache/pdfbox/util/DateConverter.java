@@ -567,7 +567,7 @@ public final class DateConverter
      */
     private static Calendar parseDate(String text, ParsePosition initialWhere)
     {
-        if (text == null || text.equals(""))
+        if (text == null || text.isEmpty())
         {
             return null;
         }
@@ -665,7 +665,7 @@ public final class DateConverter
      */
     public static Calendar toCalendar(String text)
     {
-        if (text == null || text.trim().equals(""))
+        if (text == null || text.trim().isEmpty())
         {
             return null;
         }
