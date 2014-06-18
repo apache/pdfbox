@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.afm;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -300,16 +301,16 @@ public class AFMParser
     {
         java.io.File afmDir = new java.io.File( "Resources/afm" );
         java.io.File[] files = afmDir.listFiles();
-        for( int i=0; i< files.length; i++ )
+        for (File file : files)
         {
-            if( files[i].getPath().toUpperCase().endsWith( ".AFM" ) )
+            if (file.getPath().toUpperCase().endsWith(".AFM"))
             {
                 long start = System.currentTimeMillis();
-                java.io.FileInputStream input = new java.io.FileInputStream( files[i] );
+                java.io.FileInputStream input = new java.io.FileInputStream(file);
                 AFMParser parser = new AFMParser( input );
                 parser.parse();
                 long stop = System.currentTimeMillis();
-                System.out.println( "Parsing:" + files[i].getPath() + " " + (stop-start) );
+                System.out.println("Parsing:" + file.getPath() + " " + (stop-start));
             }
         }
     }
