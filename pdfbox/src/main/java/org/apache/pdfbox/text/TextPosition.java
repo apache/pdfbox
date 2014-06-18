@@ -36,8 +36,8 @@ public final class TextPosition
 
     private final float maxTextHeight; // maximum height of text, in display units
     private final int rotation; // 0, 90, 180, 270 degrees of page rotation
-    private final float x = Float.NEGATIVE_INFINITY;
-    private final float y = Float.NEGATIVE_INFINITY;
+    private final float x;
+    private final float y;
     private final float pageHeight;
     private final float pageWidth;
 
@@ -103,6 +103,16 @@ public final class TextPosition
         this.font = currentFont;
         this.fontSize = fontSizeValue;
         this.fontSizePt = fontSizeInPt;
+
+        x = getXRot(rotation);
+        if (rotation == 0 || rotation == 180)
+        {
+            y = pageHeight - getYLowerLeftRot(rotation);
+        }
+        else
+        {
+            y = pageWidth - getYLowerLeftRot(rotation);
+        }
     }
 
     /**
@@ -209,10 +219,6 @@ public final class TextPosition
      */
     public float getX()
     {
-        if (x == Float.NEGATIVE_INFINITY)
-        {
-            return getXRot(rotation);
-        }
         return x;
     }
 
@@ -264,17 +270,6 @@ public final class TextPosition
      */
     public float getY()
     {
-        if (y == Float.NEGATIVE_INFINITY)
-        {
-            if (rotation == 0 || rotation == 180)
-            {
-                return pageHeight - getYLowerLeftRot(rotation);
-            }
-            else
-            {
-                return pageWidth - getYLowerLeftRot(rotation);
-            }
-        }
         return y;
     }
 
