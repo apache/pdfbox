@@ -309,15 +309,14 @@ public class PDTrueTypeFont extends PDSimpleFont
             CMAPTable cmapTable = ttf.getCMAP();
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
             CMAPEncodingEntry uniMap = null;
-
-            for (int i = 0; i < cmaps.length; i++)
+            for (CMAPEncodingEntry cmapEncodingEntry : cmaps)
             {
-                if (cmaps[i].getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
+                if (cmapEncodingEntry.getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
                 {
-                    int platformEncoding = cmaps[i].getPlatformEncodingId();
+                    int platformEncoding = cmapEncodingEntry.getPlatformEncodingId();
                     if (CMAPTable.ENCODING_UNICODE == platformEncoding)
                     {
-                        uniMap = cmaps[i];
+                        uniMap = cmapEncodingEntry;
                         break;
                     }
                 }

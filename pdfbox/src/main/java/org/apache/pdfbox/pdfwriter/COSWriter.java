@@ -620,12 +620,11 @@ public class COSWriter implements ICOSVisitor, Closeable
             writeXrefEntry(COSWriterXRefEntry.getNullEntry());
             // write entry for every object
             long lastObjectNumber = 0;
-            for (Iterator<COSWriterXRefEntry> i = getXRefEntries().iterator(); i.hasNext();)
+            for (COSWriterXRefEntry entry : getXRefEntries())
             {
-                COSWriterXRefEntry entry = i.next();
                 while( lastObjectNumber<entry.getKey().getNumber()-1 )
                 {
-                  writeXrefEntry(COSWriterXRefEntry.getNullEntry());
+                    writeXrefEntry(COSWriterXRefEntry.getNullEntry());
                 }
                 lastObjectNumber = entry.getKey().getNumber();
                 writeXrefEntry(entry);

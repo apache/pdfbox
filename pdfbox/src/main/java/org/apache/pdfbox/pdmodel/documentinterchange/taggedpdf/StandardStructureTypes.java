@@ -303,19 +303,17 @@ public class StandardStructureTypes
     static
     {
         Field[] fields = StandardStructureTypes.class.getFields();
-        for (int i = 0; i < fields.length; i++)
+        for (Field field : fields)
         {
-            if (Modifier.isFinal(fields[i].getModifiers()))
+            if (Modifier.isFinal(field.getModifiers()))
             {
                 try
                 {
-                    types.add(fields[i].get(null).toString());
-                }
-                catch (IllegalArgumentException e)
+                    types.add(field.get(null).toString());
+                }catch (IllegalArgumentException e)
                 {
                     LOG.error(e,e);
-                }
-                catch (IllegalAccessException e)
+                }catch (IllegalAccessException e)
                 {
                     LOG.error(e,e);
                 }

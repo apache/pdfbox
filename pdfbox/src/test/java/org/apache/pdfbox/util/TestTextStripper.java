@@ -336,13 +336,12 @@ public class TestTextStripper extends TestCase
                 return (name.endsWith(".pdf"));
             }
         });
-
-        for (int n = 0; n < testFiles.length; n++) 
+        for (File testFile : testFiles) 
         {
             //Test without sorting
-            doTestFile(testFiles[n], outDir, false, false);
+            doTestFile(testFile, outDir, false, false);
             //Test with sorting
-            doTestFile(testFiles[n], outDir, false, true);
+            doTestFile(testFile, outDir, false, true);
         }
     }
     

@@ -1440,34 +1440,33 @@ public class COSDictionary extends COSBase
 		}
 	}
 
-	/**
-	 * Nice method, gives you every object you want
-	 * Arrays works properly too. Try "P/Annots/[k]/Rect"
-	 * where k means the index of the Annotsarray.
-	 *
-	 * @param objPath the relative path to the object.
-	 * @return the object
-	 */
-	public COSBase getObjectFromPath(String objPath)
-	{
-		COSBase retval = null;
-		String[] path = objPath.split(PATH_SEPARATOR);
-		retval = this;
-
-		for (int i = 0; i < path.length; i++)
-		{
-			if(retval instanceof COSArray)
-			{
-				int idx = new Integer(path[i].replaceAll("\\[","").replaceAll("\\]","")).intValue();
-				retval = ((COSArray)retval).getObject(idx);
-			}
-			else if (retval instanceof COSDictionary)
-			{
-				retval = ((COSDictionary)retval).getDictionaryObject( path[i] );
-			}
-		}
-		return retval;
-	}
+    /**
+     * Nice method, gives you every object you want
+     * Arrays works properly too. Try "P/Annots/[k]/Rect"
+     * where k means the index of the Annotsarray.
+     *
+     * @param objPath the relative path to the object.
+     * @return the object
+     */
+    public COSBase getObjectFromPath(String objPath)
+    {
+        COSBase retval = null;
+        String[] path = objPath.split(PATH_SEPARATOR);
+        retval = this;
+        for (String pathString : path)
+        {
+            if (retval instanceof COSArray)
+            {
+                int idx = new Integer(pathString.replaceAll("\\[", "").replaceAll("\\]", "")).intValue();
+                retval = ((COSArray) retval).getObject(idx);
+            }
+            else if (retval instanceof COSDictionary)
+            {
+                retval = ((COSDictionary) retval).getDictionaryObject(pathString);
+            }
+        }
+        return retval;
+    }
 
     /**
      * Returns an unmodifiable view of this dictionary.

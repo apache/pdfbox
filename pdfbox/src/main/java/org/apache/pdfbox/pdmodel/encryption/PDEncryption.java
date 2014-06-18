@@ -425,10 +425,10 @@ public class PDEncryption
     public void setRecipients(byte[][] recipients) throws IOException
     {
         COSArray array = new COSArray();
-        for(int i=0; i<recipients.length; i++)
+        for (byte[] recipient : recipients)
         {
             COSString recip = new COSString();
-            recip.append(recipients[i]);
+            recip.append(recipient);
             recip.setForceLiteralForm(true);
             array.add(recip);
         }

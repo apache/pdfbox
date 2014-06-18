@@ -210,13 +210,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 	
 	          // put each bytes of the recipients array in the sha1 input
 	          int sha1InputOffset = 20;
-	          for(int i=0; i<recipientFieldsBytes.length; i++)
-	          {
-	              System.arraycopy(
-	                  recipientFieldsBytes[i], 0,
-	                  sha1Input, sha1InputOffset, recipientFieldsBytes[i].length);
-	              sha1InputOffset += recipientFieldsBytes[i].length;
-	          }
+                  for (byte[] recipientFieldsByte : recipientFieldsBytes)
+                  {
+                      System.arraycopy(recipientFieldsByte, 0, sha1Input, sha1InputOffset, recipientFieldsByte.length);
+                      sha1InputOffset += recipientFieldsByte.length;
+                  }
 	
 	          MessageDigest md = MessageDigests.getSHA1();
 	          byte[] mdResult = md.digest(sha1Input);
