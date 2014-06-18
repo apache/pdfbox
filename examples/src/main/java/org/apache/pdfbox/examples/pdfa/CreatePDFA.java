@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import org.apache.jempbox.xmp.XMPMetadata;
