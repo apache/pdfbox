@@ -26,7 +26,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 
-import java.io.ByteArrayOutputStream;
 import java.util.GregorianCalendar;
 
 /**
