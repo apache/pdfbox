@@ -45,38 +45,26 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
- * This class represents a CFF/Type2 Font (aka Type1C Font).
+ * Adobe CFF Font, also known as a "Type1C" font.
  * 
  * @author Villu Ruusmann
- * 
  */
 public class PDType1CFont extends PDSimpleFont
 {
-    private CFFFont cffFont = null;
-
-    private String fontname = null;
-
-    private Map<Integer, String> sidToName = new HashMap<Integer, String>();
-
-    private Map<Integer, Integer> codeToSID = new HashMap<Integer, Integer>();
-
-    private Map<Integer, String> sidToCharacter = new HashMap<Integer, String>();
-
-    private Map<String, Integer> characterToSID = new HashMap<String, Integer>();
-
-    private FontMetric fontMetric = null;
-
-    private Map<String, Float> glyphWidths = new HashMap<String, Float>();
-
-    private Map<String, Float> glyphHeights = new HashMap<String, Float>();
-
-    private Float avgWidth = null;
-
-    private PDRectangle fontBBox = null;
-
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
-
     private static final byte[] SPACE_BYTES = { (byte) 32 };
+
+    private CFFFont cffFont = null;
+    private String fontname = null;
+    private Map<Integer, String> sidToName = new HashMap<Integer, String>();
+    private Map<Integer, Integer> codeToSID = new HashMap<Integer, Integer>();
+    private Map<Integer, String> sidToCharacter = new HashMap<Integer, String>();
+    private Map<String, Integer> characterToSID = new HashMap<String, Integer>();
+    private FontMetric fontMetric = null;
+    private Map<String, Float> glyphWidths = new HashMap<String, Float>();
+    private Map<String, Float> glyphHeights = new HashMap<String, Float>();
+    private Float avgWidth = null;
+    private PDRectangle fontBBox = null;
 
     /**
      * Constructor.
@@ -90,9 +78,7 @@ public class PDType1CFont extends PDSimpleFont
         load();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String encode(byte[] bytes, int offset, int length) throws IOException
     {
         String character = getCharacter(bytes, offset, length);
@@ -104,9 +90,6 @@ public class PDType1CFont extends PDSimpleFont
         return character;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int encodeToCID(byte[] bytes, int offset, int length)
     {
@@ -137,9 +120,7 @@ public class PDType1CFont extends PDSimpleFont
         return character;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public float getFontWidth(byte[] bytes, int offset, int length) throws IOException
     {
         String name = getName(bytes, offset, length);
@@ -149,19 +130,17 @@ public class PDType1CFont extends PDSimpleFont
             return 0;
         }
 
-        Float width = (Float) glyphWidths.get(name);
+        Float width = glyphWidths.get(name);
         if (width == null)
         {
-            width = Float.valueOf(getFontMetric().getCharacterWidth(name));
+            width = getFontMetric().getCharacterWidth(name);
             glyphWidths.put(name, width);
         }
 
-        return width.floatValue();
+        return width;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public float getFontHeight(byte[] bytes, int offset, int length) throws IOException
     {
         String name = getName(bytes, offset, length);
@@ -197,9 +176,7 @@ public class PDType1CFont extends PDSimpleFont
         return sidToName.get(code);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public float getStringWidth(String string) throws IOException
     {
         float width = 0;
@@ -227,21 +204,17 @@ public class PDType1CFont extends PDSimpleFont
         return characterToSID.get(character);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public float getAverageFontWidth() throws IOException
     {
         if (avgWidth == null)
         {
             avgWidth = getFontMetric().getAverageCharacterWidth();
         }
-        return avgWidth.floatValue();
+        return avgWidth;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
         if (fontBBox == null)
@@ -251,9 +224,7 @@ public class PDType1CFont extends PDSimpleFont
         return fontBBox;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public PDMatrix getFontMatrix()
     {
         if (fontMatrix == null)
@@ -313,14 +284,14 @@ public class PDType1CFont extends PDSimpleFont
         }
         if (cffFont == null)
         {
-            cffFont = (CFFFont) fonts.get(0);
+            cffFont = fonts.get(0);
         }
-        // chache the font name
+        // cache the font name
         fontname = cffFont.getName();
 
         // TODO is this really needed?
         Number defaultWidthX = (Number) this.cffFont.getProperty("defaultWidthX");
-        glyphWidths.put(null, Float.valueOf(defaultWidthX.floatValue()));
+        glyphWidths.put(null, defaultWidthX.floatValue());
 
         // calculate some mappings to be used for rendering and text extraction
         Encoding encoding = getFontEncoding();
@@ -402,10 +373,9 @@ public class PDType1CFont extends PDSimpleFont
 
             // Replace default FontBBox value with a newly computed one
             BoundingBox bounds = result.getFontBBox();
-            List<Integer> numbers = Arrays.asList(Integer.valueOf((int) bounds.getLowerLeftX()),
-                    Integer.valueOf((int) bounds.getLowerLeftY()),
-                    Integer.valueOf((int) bounds.getUpperRightX()),
-                    Integer.valueOf((int) bounds.getUpperRightY()));
+            List<Integer> numbers = Arrays.asList((int) bounds.getLowerLeftX(),
+                    (int) bounds.getLowerLeftY(), (int) bounds.getUpperRightX(),
+                    (int) bounds.getUpperRightY());
             font.addValueToTopDict("FontBBox", numbers);
 
             return result;

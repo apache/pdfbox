@@ -24,10 +24,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is implementation of the CIDFontType0 Font.
+ * A Type0 CIDFont (CFF).
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PDCIDFontType0Font extends PDCIDFont
 {

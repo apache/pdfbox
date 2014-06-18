@@ -44,16 +44,16 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 /**
  * This is the base class for all PDF fonts.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public abstract class PDFont implements COSObjectable
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDFont.class);
+
+    protected static final String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
+
+    protected static Map<String, CMap> cmapObjects =
+            Collections.synchronizedMap(new HashMap<String, CMap>()); // todo: why synchronized?
 
     /**
      * The cos dictionary for this font.
@@ -61,22 +61,12 @@ public abstract class PDFont implements COSObjectable
     protected COSDictionary font;
 
     /**
-     * This is only used if this is a font object and it has an encoding.
-     */
-    private Encoding fontEncoding = null;
-
-    /**
-     * The descriptor of the font.
-     */
-    private PDFontDescriptor fontDescriptor = null;
-
-    /**
      * The font matrix.
      */
     protected PDMatrix fontMatrix = null;
 
     /**
-     * This is only used if this is a font object and it has an encoding and it is a type0 font with a cmap.
+     * Used only if this is a font object and it has an encoding and it is a Type0 font with a CMap.
      */
     protected CMap cmap = null;
 
@@ -85,27 +75,20 @@ public abstract class PDFont implements COSObjectable
      */
     protected CMap toUnicodeCmap = null;
 
+    private List<Integer> widths = null;
+    private Encoding fontEncoding = null; // only used when this font has an encoding
+    private PDFontDescriptor fontDescriptor = null;
     private boolean hasToUnicode = false;
-
     private boolean widthsAreMissing = false;
 
-    protected static Map<String, CMap> cmapObjects = Collections.synchronizedMap(new HashMap<String, CMap>());
-
     /**
-     * A list a floats representing the widths.
-     */
-    private List<Integer> widths = null;
-
-    protected static final String resourceRootCMAP = "org/apache/pdfbox/resources/cmap/";
-
-    /**
-     * This will clear AFM resources that are stored statically. This is usually not a problem unless you want to
-     * reclaim resources for a long running process.
+     * This will clear AFM resources that are stored statically. This is usually not a problem
+     * unless you want to reclaim resources for a long running process.
      * 
-     * SPECIAL NOTE: The font calculations are currently in COSObject, which is where they will reside until PDFont is
-     * mature enough to take them over. PDFont is the appropriate place for them and not in COSObject but we need font
-     * calculations for text extraction. THIS METHOD WILL BE MOVED OR REMOVED TO ANOTHER LOCATION IN A FUTURE VERSION OF
-     * PDFBOX.
+     * SPECIAL NOTE: The font calculations are currently in COSObject, which is where they will
+     * reside until PDFont is mature enough to take them over. PDFont is the appropriate place for
+     * them and not in COSObject but we need font calculations for text extraction. THIS METHOD WILL
+     * BE MOVED OR REMOVED TO ANOTHER LOCATION IN A FUTURE VERSION OF PDFBOX.
      */
     public static void clearResources()
     {
@@ -136,7 +119,6 @@ public abstract class PDFont implements COSObjectable
      * This will get the font descriptor for this font.
      * 
      * @return The font descriptor for this font.
-     * 
      */
     public PDFontDescriptor getFontDescriptor()
     {
@@ -176,14 +158,12 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * Determines the encoding for the font. This method as to be overwritten, as there are different possibilities to
-     * define a mapping.
+     * Determines the encoding for the font. This method as to be overwritten, as there are
+     * different possibilities to define a mapping.
      */
     protected abstract void determineEncoding();
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public COSBase getCOSObject()
     {
         return font;
@@ -195,9 +175,7 @@ public abstract class PDFont implements COSObjectable
      * @param c The character code to get the width for.
      * @param offset The offset into the array.
      * @param length The length of the data.
-     * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
     public abstract float getFontWidth(byte[] c, int offset, int length) throws IOException;
@@ -208,9 +186,7 @@ public abstract class PDFont implements COSObjectable
      * @param c The character code to get the height for.
      * @param offset The offset into the array.
      * @param length The length of the data.
-     * 
      * @return The height is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
     public abstract float getFontHeight(byte[] c, int offset, int length) throws IOException;
@@ -219,9 +195,7 @@ public abstract class PDFont implements COSObjectable
      * This will get the width of this string for this font.
      * 
      * @param string The string to get the width of.
-     * 
      * @return The width of the string in 1000 units of text space, ie 333 567...
-     * 
      * @throws IOException If there is an error getting the width information.
      */
     public float getStringWidth(String string) throws IOException
@@ -239,7 +213,6 @@ public abstract class PDFont implements COSObjectable
      * This will get the average font width for all characters.
      * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
     public abstract float getAverageFontWidth() throws IOException;
@@ -250,7 +223,6 @@ public abstract class PDFont implements COSObjectable
      * @param data The array of data.
      * @param offset The offset into the array.
      * @param length The number of bytes to use.
-     * 
      * @return The int value of data from the array.
      */
     public int getCodeFromArray(byte[] data, int offset, int length)
@@ -268,9 +240,7 @@ public abstract class PDFont implements COSObjectable
      * This will attempt to get the font width from an AFM file.
      * 
      * @param code The character code we are trying to get.
-     * 
      * @return The font width from the AFM file.
-     * 
      * @throws IOException if we cannot find the width.
      */
     protected float getFontWidthFromAFMFile(int code) throws IOException
@@ -289,7 +259,6 @@ public abstract class PDFont implements COSObjectable
      * This will attempt to get the average font width from an AFM file.
      * 
      * @return The average font width from the AFM file.
-     * 
      * @throws IOException if we cannot find the width.
      */
     protected float getAverageFontWidthFromAFMFile() throws IOException
@@ -307,7 +276,6 @@ public abstract class PDFont implements COSObjectable
      * This will get an AFM object if one exists.
      * 
      * @return The afm object from the name.
-     * 
      */
     protected FontMetric getAFM()
     {
@@ -317,7 +285,7 @@ public abstract class PDFont implements COSObjectable
     private COSBase encoding = null;
 
     /**
-     * cache the {@link COSName#ENCODING} object from the font's dictionary since it is called so often.
+     * Cache the {@link COSName#ENCODING} object from the font's dictionary as it is called often.
      * <p>
      * Use this method instead of
      * 
@@ -357,7 +325,8 @@ public abstract class PDFont implements COSObjectable
      * @return The value of the encoded character.
      * @throws IOException if something went wrong
      */
-    protected String cmapEncoding(int code, int length, boolean isCIDFont, CMap sourceCmap) throws IOException
+    protected String cmapEncoding(int code, int length, boolean isCIDFont, CMap sourceCmap)
+            throws IOException
     {
         String retval = null;
         // there is not sourceCmap if this is a descendant font
@@ -382,9 +351,7 @@ public abstract class PDFont implements COSObjectable
      * @param c The character to encode.
      * @param offset The offset into the array to get the data
      * @param length The number of bytes to read.
-     * 
      * @return The value of the encoded character.
-     * 
      * @throws IOException If there is an error during the encoding.
      */
     public String encode(byte[] c, int offset, int length) throws IOException
@@ -444,7 +411,8 @@ public abstract class PDFont implements COSObjectable
             {
                 try
                 {
-                    DOUBLE_CHAR_STRING[i][j] = new String(new byte[] { (byte) i, (byte) j }, "UTF-16BE");
+                    DOUBLE_CHAR_STRING[i][j] = new String(new byte[] { (byte) i, (byte) j },
+                            "UTF-16BE");
                 }
                 catch (UnsupportedEncodingException e)
                 {
@@ -457,7 +425,7 @@ public abstract class PDFont implements COSObjectable
 
     private static String getStringFromArray(byte[] c, int offset, int length) throws IOException
     {
-        String retval = null;
+        String retval;
         if (length == 1)
         {
             retval = SINGLE_CHAR_STRING[(c[offset] + 256) % 256];
@@ -710,11 +678,11 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * This will get the matrix that is used to transform glyph space to text space. By default there are 1000 glyph
-     * units to 1 text space unit, but type3 fonts can use any value.
+     * This will get the matrix that is used to transform glyph space to text space. By default
+     * there are 1000 glyph units to 1 text space unit, but type3 fonts can use any value.
      * 
-     * Note:If this is a type3 font then it can be modified via the PDType3Font.setFontMatrix, otherwise this is a
-     * read-only property.
+     * Note: If this is a type3 font then it can be modified via the PDType3Font.setFontMatrix,
+     * otherwise this is a read-only property.
      * 
      * @return The matrix to transform from glyph space to text space.
      */
@@ -742,26 +710,9 @@ public abstract class PDFont implements COSObjectable
      * This will get the fonts bounding box.
      * 
      * @return The fonts bounding box.
-     * 
      * @throws IOException If there is an error getting the bounding box.
      */
     public abstract PDRectangle getFontBoundingBox() throws IOException;
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean equals(Object other)
-    {
-        return other instanceof PDFont && ((PDFont) other).getCOSObject() == this.getCOSObject();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int hashCode()
-    {
-        return this.getCOSObject().hashCode();
-    }
 
     /**
      * Determines the width of the given character.
@@ -851,4 +802,15 @@ public abstract class PDFont implements COSObjectable
     {
     }
 
+    @Override
+    public boolean equals(Object other)
+    {
+        return other instanceof PDFont && ((PDFont) other).getCOSObject() == this.getCOSObject();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.getCOSObject().hashCode();
+    }
 }

@@ -53,22 +53,14 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
- * This is the TrueType implementation of fonts.
+ * TrueType font.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PDTrueTypeFont extends PDSimpleFont
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDTrueTypeFont.class);
 
-    /**
-     * Start of coderanges.
-     */
     private static final int START_RANGE_F000 = 0xF000;
     private static final int START_RANGE_F100 = 0xF100;
     private static final int START_RANGE_F200 = 0xF200;
@@ -77,9 +69,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     private CMAPEncodingEntry cmapWinSymbol = null;
     private CMAPEncodingEntry cmapMacintoshSymbol = null;
     private boolean cmapInitialized = false;
-    
-    private TrueTypeFont trueTypeFont = null;
 
+    private TrueTypeFont trueTypeFont = null;
     private HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> (); 
     
     /**
@@ -149,7 +140,8 @@ public class PDTrueTypeFont extends PDSimpleFont
      * @return a PDTrueTypeFont instance.
      * @throws IOException If there is an error loading the data.
      */
-    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream stream, Encoding enc) throws IOException
+    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream stream, Encoding enc)
+            throws IOException
     {
         PDStream fontStream = new PDStream(doc, stream, false);
         fontStream.getStream().setInt(COSName.LENGTH1, fontStream.getByteArray().length);
@@ -189,7 +181,8 @@ public class PDTrueTypeFont extends PDSimpleFont
         return retval;
     }
 
-    private void loadDescriptorDictionary(PDFontDescriptorDictionary fd, InputStream ttfData) throws IOException
+    private void loadDescriptorDictionary(PDFontDescriptorDictionary fd, InputStream ttfData)
+            throws IOException
     {
         TrueTypeFont ttf = null;
         try
@@ -198,15 +191,13 @@ public class PDTrueTypeFont extends PDSimpleFont
             ttf = parser.parseTTF(ttfData);
             NamingTable naming = ttf.getNaming();
             List<NameRecord> records = naming.getNameRecords();
-            for (int i = 0; i < records.size(); i++)
+            for (NameRecord nr : records)
             {
-                NameRecord nr = records.get(i);
                 if (nr.getNameId() == NameRecord.NAME_POSTSCRIPT_NAME)
                 {
                     setBaseFont(nr.getString());
                     fd.setFontName(nr.getString());
-                }
-                else if (nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME)
+                } else if (nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME)
                 {
                     fd.setFontFamily(nr.getString());
                 }
@@ -299,8 +290,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 for (int i = 0; i < names.length; i++)
                 {
-                    // if we have a capital H then use that, otherwise use the
-                    // tallest letter
+                    // if we have a capital H then use that, otherwise use the tallest letter
                     if (names[i].equals("H"))
                     {
                         fd.setCapHeight(glyphs[i].getBoundingBox().getUpperRightY() / scaling);
@@ -314,7 +304,7 @@ public class PDTrueTypeFont extends PDSimpleFont
 
             // hmm there does not seem to be a clear definition for StemV,
             // this is close enough and I am told it doesn't usually get used.
-            fd.setStemV((fd.getFontBoundingBox().getWidth() * .13f));
+            fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
 
             CMAPTable cmapTable = ttf.getCMAP();
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
@@ -357,9 +347,8 @@ public class PDTrueTypeFont extends PDSimpleFont
             // unicode cpoint point mapping of Adobe's glyphlist.txt
             Encoding glyphlist = WinAnsiEncoding.INSTANCE;
 
-            // A character code is mapped to a glyph name via the provided
-            // font encoding. Afterwards, the glyph name is translated to a
-            // glyph ID.
+            // A character code is mapped to a glyph name via the provided font encoding
+            // Afterwards, the glyph name is translated to a glyph ID.
             // For details, see PDFReference16.pdf, Section 5.5.5, p.401
             //
             for (Entry<Integer, String> e : codeToName.entrySet())
@@ -377,7 +366,8 @@ public class PDTrueTypeFont extends PDSimpleFont
                     }
                     else
                     {
-                        widths.set(e.getKey().intValue() - firstChar, Math.round(widthValues[gid] * scaling));
+                        widths.set(e.getKey().intValue() - firstChar,
+                                   Math.round(widthValues[gid] * scaling));
                     }
                 }
             }
@@ -422,7 +412,6 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
         return trueTypeFont;
     }
-    
 
     @Override
     public void clear()
@@ -450,7 +439,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             }
             else
             {
-                TrueTypeFont ttf = null;
+                TrueTypeFont ttf;
                 try
                 {
                     ttf = getTTFFont();
@@ -462,7 +451,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                         // do we have to scale the width
                         if (unitsPerEM != 1000)
                         {
-                            width *= 1000f/unitsPerEM;
+                            width *= 1000f / unitsPerEM;
                         }
                     }
                 }
@@ -486,21 +475,22 @@ public class PDTrueTypeFont extends PDSimpleFont
         {
             try
             {
-                String charactername = getFontEncoding().getName(code);
-                if (charactername != null)
+                String characterName = getFontEncoding().getName(code);
+                if (characterName != null)
                 {
                     if (cmapWinUnicode != null)
                     {
-                        String unicode = Encoding.getCharacterForName(charactername);
+                        String unicode = Encoding.getCharacterForName(characterName);
                         if (unicode != null)
                         {
                             result = unicode.codePointAt(0);
                         }
                         result = cmapWinUnicode.getGlyphId(result);
                     }
-                    else if (cmapMacintoshSymbol != null && MacOSRomanEncoding.INSTANCE.hasCodeForName(charactername))
+                    else if (cmapMacintoshSymbol != null &&
+                             MacOSRomanEncoding.INSTANCE.hasCodeForName(characterName))
                     {
-                        result = MacOSRomanEncoding.INSTANCE.getCode(charactername);
+                        result = MacOSRomanEncoding.INSTANCE.getCode(characterName);
                         result = cmapMacintoshSymbol.getGlyphId(result);
                     }
                     else if (cmapWinSymbol != null)
@@ -572,24 +562,22 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 // get all relevant CMaps
                 CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-                for (int i = 0; i < cmaps.length; i++)
+                for (CMAPEncodingEntry cmap1 : cmaps)
                 {
-                    if (CMAPTable.PLATFORM_WINDOWS == cmaps[i].getPlatformId())
+                    if (CMAPTable.PLATFORM_WINDOWS == cmap1.getPlatformId())
                     {
-                        if (CMAPTable.ENCODING_UNICODE == cmaps[i].getPlatformEncodingId())
+                        if (CMAPTable.ENCODING_UNICODE == cmap1.getPlatformEncodingId())
                         {
-                            cmapWinUnicode = cmaps[i];
-                        }
-                        else if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                            cmapWinUnicode = cmap1;
+                        } else if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
                         {
-                            cmapWinSymbol = cmaps[i];
+                            cmapWinSymbol = cmap1;
                         }
-                    }
-                    else if (CMAPTable.PLATFORM_MACINTOSH == cmaps[i].getPlatformId())
+                    } else if (CMAPTable.PLATFORM_MACINTOSH == cmap1.getPlatformId())
                     {
-                        if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                        if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
                         {
-                            cmapMacintoshSymbol = cmaps[i];
+                            cmapMacintoshSymbol = cmap1;
                         }
                     }
                 }
@@ -598,4 +586,3 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
     }
 }
-

@@ -39,23 +39,18 @@ import org.apache.pdfbox.util.ResourceLoader;
 /**
  * This class contains implementation details of the simple pdf fonts.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public abstract class PDSimpleFont extends PDFont
 {
-    private final HashMap<Integer, Float> mFontSizes = new HashMap<Integer, Float>(128);
+    private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
+    private static final byte[] SPACE_BYTES = { (byte) 32 };
 
+    private final HashMap<Integer, Float> fontSizes = new HashMap<Integer, Float>(128);
     private float avgFontWidth = 0.0f;
     private float avgFontHeight = 0.0f;
     private float fontWidthOfSpace = -1f;
-
-    private static final byte[] SPACE_BYTES = { (byte) 32 };
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
+    private boolean isFontSubstituted = false;
 
     /**
      * Constructor.
@@ -81,11 +76,10 @@ public abstract class PDSimpleFont extends PDFont
      * @param c The character code to get the width for.
      * @param offset The offset into the array.
      * @param length The length of the data.
-     * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
+    @Override
     public float getFontHeight(byte[] c, int offset, int length) throws IOException
     {
         // maybe there is already a precalculated value
@@ -107,9 +101,8 @@ public abstract class PDSimpleFont extends PDFont
             PDFontDescriptor desc = getFontDescriptor();
             if (desc != null)
             {
-                // the following values are all more or less accurate
-                // at least all are average values. Maybe we'll find
-                // another way to get those value for every single glyph
+                // the following values are all more or less accurate at least all are average
+                // values. Maybe we'll find another way to get those value for every single glyph
                 // in the future if needed
                 PDRectangle fontBBox = desc.getFontBoundingBox();
                 if (fontBBox != null)
@@ -144,15 +137,14 @@ public abstract class PDSimpleFont extends PDFont
      * @param c The character code to get the width for.
      * @param offset The offset into the array.
      * @param length The length of the data.
-     * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
+    @Override
     public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
         int code = getCodeFromArray(c, offset, length);
-        Float fontWidth = mFontSizes.get(code);
+        Float fontWidth = fontSizes.get(code);
         if (fontWidth == null)
         {
             fontWidth = getFontWidth(code);
@@ -161,7 +153,7 @@ public abstract class PDSimpleFont extends PDFont
                 // TODO should this be in PDType1Font??
                 fontWidth = getFontWidthFromAFMFile(code);
             }
-            mFontSizes.put(code, fontWidth);
+            fontSizes.put(code, fontWidth);
         }
         return fontWidth;
     }
@@ -170,13 +162,12 @@ public abstract class PDSimpleFont extends PDFont
      * This will get the average font width for all characters.
      * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * 
      * @throws IOException If an error occurs while parsing.
      */
+    @Override
     public float getAverageFontWidth() throws IOException
     {
-        float average = 0.0f;
-
+        float average;
         if (avgFontWidth != 0.0f)
         {
             average = avgFontWidth;
@@ -236,17 +227,15 @@ public abstract class PDSimpleFont extends PDFont
      * This will get the fonts bounding box.
      * 
      * @return The fonts bouding box.
-     * 
      * @throws IOException If there is an error getting the bounding box.
      */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
         return getFontDescriptor().getFontBoundingBox();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected void determineEncoding()
     {
         String cmapName = null;
@@ -322,12 +311,14 @@ public abstract class PDSimpleFont extends PDFont
                 	cmap = parseCmap(resourceRootCMAP, cmapStream);
                 	if (cmap == null && encodingName == null)
                 	{
-                		LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'");
+                		LOG.error("Error: Could not parse predefined CMAP file for '" +
+                                  cmapName + "'");
                 	}
                 }
                 else
                 {
-            		LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's embedded in the pdf itself.");
+            		LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's" +
+                              "embedded in the pdf itself.");
                 }
             }
             catch (IOException exception)
@@ -343,8 +334,8 @@ public abstract class PDSimpleFont extends PDFont
 
     private void extractToUnicodeEncoding()
     {
-        COSName encodingName = null;
-        String cmapName = null;
+        COSName encodingName;
+        String cmapName;
         COSBase toUnicode = getToUnicode();
         if (toUnicode != null)
         {
@@ -372,26 +363,27 @@ public abstract class PDSimpleFont extends PDFont
                     String resourceName = resourceRootCMAP + cmapName;
                     try
                     {
-                        toUnicodeCmap = parseCmap(resourceRootCMAP, ResourceLoader.loadResource(resourceName));
+                        toUnicodeCmap = parseCmap(resourceRootCMAP,
+                                ResourceLoader.loadResource(resourceName));
                     }
                     catch (IOException exception)
                     {
-                        LOG.error("Error: Could not find predefined ToUnicode CMap file for '" + cmapName + "'");
+                        LOG.error("Error: Could not find predefined ToUnicode CMap file for '" +
+                                cmapName + "'");
                     }
                     if (toUnicodeCmap == null)
                     {
-                        LOG.error("Error: Could not parse predefined ToUnicode CMap file for '" + cmapName + "'");
+                        LOG.error("Error: Could not parse predefined ToUnicode CMap file for '" +
+                                cmapName + "'");
                     }
                 }
             }
         }
     }
 
-    private boolean isFontSubstituted = false;
-
     /**
-     * This will get the value for isFontSubstituted, which indicates if the font was substituted due to a problem with
-     * the embedded one.
+     * This will get the value for isFontSubstituted, which indicates if the font was substituted
+     * due to a problem with the embedded one.
      * 
      * @return true if the font was substituted
      */
@@ -410,9 +402,7 @@ public abstract class PDSimpleFont extends PDFont
         isFontSubstituted = isSubstituted;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public float getSpaceWidth()
     {
         if (fontWidthOfSpace == -1f)
@@ -440,11 +430,10 @@ public abstract class PDSimpleFont extends PDFont
             }
             catch (Exception e)
             {
-                LOG.error("Can't determine the width of the space character using 250 as default", e);
+                LOG.error("Can't determine the width of the space character, assuming 250", e);
                 fontWidthOfSpace = 250f;
             }
         }
         return fontWidthOfSpace;
     }
-
 }
