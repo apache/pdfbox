@@ -21,8 +21,6 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.*;
 
 import java.awt.color.ICC_ColorSpace;

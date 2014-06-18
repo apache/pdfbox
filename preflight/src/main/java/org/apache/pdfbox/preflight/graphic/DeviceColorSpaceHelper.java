@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN;
 
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
