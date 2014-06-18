@@ -24,7 +24,18 @@ package org.apache.xmpbox.schema;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.*;
+import org.apache.xmpbox.type.AgentNameType;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.Cardinality;
+import org.apache.xmpbox.type.IntegerType;
+import org.apache.xmpbox.type.PropertyType;
+import org.apache.xmpbox.type.RenditionClassType;
+import org.apache.xmpbox.type.ResourceRefType;
+import org.apache.xmpbox.type.StructuredType;
+import org.apache.xmpbox.type.TextType;
+import org.apache.xmpbox.type.Types;
+import org.apache.xmpbox.type.URIType;
+import org.apache.xmpbox.type.URLType;
 
 /**
  * Representation of XMPMediaManagement Schema

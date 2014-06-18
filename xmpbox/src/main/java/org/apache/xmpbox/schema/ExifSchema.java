@@ -22,9 +22,13 @@
 package org.apache.xmpbox.schema;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.*;
 
 import java.util.List;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.Cardinality;
+import org.apache.xmpbox.type.PropertyType;
+import org.apache.xmpbox.type.StructuredType;
+import org.apache.xmpbox.type.Types;
 
 /**
  * Representation of a Exif Schema

@@ -32,7 +32,21 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.schema.*;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.ExifSchema;
+import org.apache.xmpbox.schema.PDFAExtensionSchema;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.schema.PhotoshopSchema;
+import org.apache.xmpbox.schema.TiffSchema;
+import org.apache.xmpbox.schema.XMPBasicJobTicketSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.schema.XMPMediaManagementSchema;
+import org.apache.xmpbox.schema.XMPRightsManagementSchema;
+import org.apache.xmpbox.schema.XMPSchema;
+import org.apache.xmpbox.schema.XMPSchemaFactory;
+import org.apache.xmpbox.schema.XMPageTextSchema;
+import org.apache.xmpbox.schema.XmpSchemaException;
 
 public final class TypeMapping
 {
