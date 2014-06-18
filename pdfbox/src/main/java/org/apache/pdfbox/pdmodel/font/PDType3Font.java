@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -31,19 +30,10 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  *
  * @author Ben Litchfield
  */
-public class PDType3Font extends PDSimpleFont
+public class PDType3Font extends PDFont
 {
 	private PDResources type3Resources = null;
     private COSDictionary charProcs = null;
-    
-    /**
-     * Constructor.
-     */
-    public PDType3Font()
-    {
-        super();
-        font.setItem(COSName.SUBTYPE, COSName.TYPE3);
-    }
 
     /**
      * Constructor.
@@ -56,16 +46,6 @@ public class PDType3Font extends PDSimpleFont
     }
 
     /**
-     * Set the font matrix for this type3 font.
-     *
-     * @param matrix The font matrix for this type3 font.
-     */
-    public void setFontMatrix(PDMatrix matrix)
-    {
-        font.setItem(COSName.FONT_MATRIX, matrix);
-    }
-
-    /**
      * Returns the optional resources of the type3 stream.
      * 
      * @return the resources bound to be used when parsing the type3 stream 
@@ -74,7 +54,7 @@ public class PDType3Font extends PDSimpleFont
     {
         if (type3Resources == null)
         {
-            COSDictionary resources = (COSDictionary)font.getDictionaryObject(COSName.RESOURCES);
+            COSDictionary resources = (COSDictionary) dict.getDictionaryObject(COSName.RESOURCES);
             if (resources != null)
             {
             	type3Resources = new PDResources(resources);
@@ -92,7 +72,7 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
-        COSArray rect = (COSArray)font.getDictionaryObject(COSName.FONT_BBOX);
+        COSArray rect = (COSArray) dict.getDictionaryObject(COSName.FONT_BBOX);
         PDRectangle retval = null;
         if(rect != null)
         {
@@ -110,7 +90,7 @@ public class PDType3Font extends PDSimpleFont
     {
         if (charProcs == null)
         {
-        	charProcs = (COSDictionary)font.getDictionaryObject(COSName.CHAR_PROCS);
+        	charProcs = (COSDictionary) dict.getDictionaryObject(COSName.CHAR_PROCS);
         }
         return charProcs;
     }

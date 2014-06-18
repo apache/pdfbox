@@ -31,8 +31,7 @@ public class PDMMType1Font extends PDType1Font
      */
     public PDMMType1Font()
     {
-        super();
-        font.setItem(COSName.SUBTYPE, COSName.MM_TYPE1);
+        dict.setItem(COSName.SUBTYPE, COSName.MM_TYPE1);
     }
 
     /**

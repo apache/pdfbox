@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ import org.apache.pdfbox.util.ResourceLoader;
  * 
  * @author Ben Litchfield
  */
-public class PDType1Font extends PDSimpleFont
+public class PDType1Font extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
@@ -91,41 +90,39 @@ public class PDType1Font extends PDSimpleFont
     /**
      * The static map of the default Adobe font metrics.
      */
-    private static final Map<String, FontMetric> AFM_MAP = getAdobeFontMetrics();
+    private static final Map<String, FontMetric> AFM_MAP;
 
-    private static Map<String, FontMetric> getAdobeFontMetrics()
+    static
     {
-        Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
-        addMetric(metrics, "Courier-Bold");
-        addMetric(metrics, "Courier-BoldOblique");
-        addMetric(metrics, "Courier");
-        addMetric(metrics, "Courier-Oblique");
-        addMetric(metrics, "Helvetica");
-        addMetric(metrics, "Helvetica-Bold");
-        addMetric(metrics, "Helvetica-BoldOblique");
-        addMetric(metrics, "Helvetica-Oblique");
-        addMetric(metrics, "Symbol");
-        addMetric(metrics, "Times-Bold");
-        addMetric(metrics, "Times-BoldItalic");
-        addMetric(metrics, "Times-Italic");
-        addMetric(metrics, "Times-Roman");
-        addMetric(metrics, "ZapfDingbats");
-        
+        AFM_MAP = new HashMap<String, FontMetric>();
+        addMetric("Courier-Bold");
+        addMetric("Courier-BoldOblique");
+        addMetric("Courier");
+        addMetric("Courier-Oblique");
+        addMetric("Helvetica");
+        addMetric("Helvetica-Bold");
+        addMetric("Helvetica-BoldOblique");
+        addMetric("Helvetica-Oblique");
+        addMetric("Symbol");
+        addMetric("Times-Bold");
+        addMetric("Times-BoldItalic");
+        addMetric("Times-Italic");
+        addMetric("Times-Roman");
+        addMetric("ZapfDingbats");
+
         // PDFBOX-239
-        addMetric(metrics, "Arial", "Helvetica");
-        addMetric(metrics, "Arial,Bold", "Helvetica-Bold");
-        addMetric(metrics, "Arial,Italic", "Helvetica-Oblique");
-        addMetric(metrics, "Arial,BoldItalic", "Helvetica-BoldOblique");
-
-        return Collections.unmodifiableMap(metrics);
+        addMetric("Arial", "Helvetica");
+        addMetric("Arial,Bold", "Helvetica-Bold");
+        addMetric("Arial,Italic", "Helvetica-Oblique");
+        addMetric("Arial,BoldItalic", "Helvetica-BoldOblique");
     }
 
-    private static void addMetric(Map<String, FontMetric> metrics, String name)
+    private static void addMetric(String name)
     {
-        addMetric(metrics, name, name);
+        addMetric(name, name);
     }
-    
-    private static void addMetric(Map<String, FontMetric> metrics, String name, String prefix)
+
+    private static void addMetric(String name, String prefix)
     {
         try
         {
@@ -137,7 +134,7 @@ public class PDType1Font extends PDSimpleFont
                 {
                     AFMParser parser = new AFMParser(afmStream);
                     FontMetric metric = parser.parse();
-                    metrics.put(name, metric);
+                    AFM_MAP.put(name, metric);
                 }
                 finally
                 {
@@ -158,9 +155,22 @@ public class PDType1Font extends PDSimpleFont
     /**
      * Constructor.
      */
-    public PDType1Font()
+    protected PDType1Font()
     {
-        font.setItem(COSName.SUBTYPE, COSName.TYPE1);
+        dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param baseFont The base font for this font.
+     */
+    private PDType1Font(String baseFont)
+    {
+        dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
+        dict.setName(COSName.BASE_FONT, baseFont);
+        this.fontEncoding = new WinAnsiEncoding();
+        dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING); // todo: really?
     }
 
     /**
@@ -180,7 +190,7 @@ public class PDType1Font extends PDSimpleFont
             {
                 try
                 {
-                    type1CFont = new PDType1CFont(super.font);
+                    type1CFont = new PDType1CFont(super.dict);
                 }
                 catch (IOException e)
                 {
@@ -214,24 +224,11 @@ public class PDType1Font extends PDSimpleFont
         getEncodingFromFont(getFontEncoding() == null);
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param baseFont The base font for this font.
-     */
-    public PDType1Font(String baseFont)
-    {
-        this();
-        setBaseFont(baseFont);
-        setFontEncoding(new WinAnsiEncoding());
-        setEncoding(COSName.WIN_ANSI_ENCODING);
-    }
-
     protected FontMetric getAFM()
     {
         if (afm == null)
         {
-            COSBase baseFont = font.getDictionaryObject(COSName.BASE_FONT);
+            COSBase baseFont = dict.getDictionaryObject(COSName.BASE_FONT);
             String name = null;
             if (baseFont instanceof COSName)
             {
@@ -289,7 +286,7 @@ public class PDType1Font extends PDSimpleFont
             {
                 fontEncoding = new AFMEncoding(metric);
             }
-            setFontEncoding(fontEncoding);
+            this.fontEncoding = fontEncoding;
         }
     }
 
@@ -317,7 +314,7 @@ public class PDType1Font extends PDSimpleFont
                 org.apache.fontbox.encoding.Encoding encoding = type1font.getEncoding();
                 if (encoding instanceof org.apache.fontbox.encoding.StandardEncoding)
                 {
-                    setFontEncoding(StandardEncoding.INSTANCE);
+                    this.fontEncoding = StandardEncoding.INSTANCE;
                 }
                 else if (encoding instanceof org.apache.fontbox.encoding.CustomEncoding)
                 {
@@ -327,7 +324,7 @@ public class PDType1Font extends PDSimpleFont
                     {
                         type1Encoding.addCharacterEncoding(code, codeToName.get(code));
                     }
-                    setFontEncoding(type1Encoding);
+                    this.fontEncoding = type1Encoding;
                 }
             }
         }

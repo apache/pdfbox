@@ -50,6 +50,7 @@ import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -58,7 +59,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * 
  * @author Ben Litchfield
  */
-public class PDTrueTypeFont extends PDSimpleFont
+public class PDTrueTypeFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDTrueTypeFont.class);
 
@@ -102,7 +103,7 @@ public class PDTrueTypeFont extends PDSimpleFont
      */
     private PDTrueTypeFont(PDDocument document, InputStream ttf) throws IOException
     {
-        font.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
+        dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
 
         PDStream stream = new PDStream(document, ttf, false);
         stream.getStream().setInt(COSName.LENGTH1, stream.getByteArray().length); // todo: wrong?
@@ -112,8 +113,8 @@ public class PDTrueTypeFont extends PDSimpleFont
         // just use Identity-H with unicode mapping
         Encoding encoding = new WinAnsiEncoding(); // fixme: read encoding from TTF
 
-        setFontEncoding(encoding);
-        setEncoding(encoding.getCOSObject());
+        this.fontEncoding = encoding;
+        dict.setItem(COSName.ENCODING, encoding.getCOSObject());
 
         // as the stream was close within the PDStream constructor, we have to recreate it
         InputStream stream2 = null;
@@ -128,9 +129,8 @@ public class PDTrueTypeFont extends PDSimpleFont
             IOUtils.closeQuietly(stream2);
         }
 
-
         fd.setFontFile2(stream);
-        setFontDescriptor(fd);
+        dict.setItem(COSName.FONT_DESC, fd);
     }
 
     // creates a new font descriptor dictionary for the given TTF
@@ -144,7 +144,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         {
             if (nr.getNameId() == NameRecord.NAME_POSTSCRIPT_NAME)
             {
-                setBaseFont(nr.getString());
+                dict.setName(COSName.BASE_FONT, nr.getString());
                 fd.setFontName(nr.getString());
             }
             else if (nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME)
@@ -318,9 +318,9 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
         }
-        setWidths(widths);
-        font.setInt(COSName.FIRST_CHAR, firstChar);
-        font.setInt(COSName.LAST_CHAR, lastChar);
+        dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
+        dict.setInt(COSName.FIRST_CHAR, firstChar);
+        dict.setInt(COSName.LAST_CHAR, lastChar);
 
         return fd;
     }

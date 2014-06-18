@@ -60,8 +60,7 @@ public class DictionaryEncoding extends Encoding
         COSName baseEncodingName =
             (COSName) encoding.getDictionaryObject(COSName.BASE_ENCODING);
         if (baseEncodingName != null) {
-            baseEncoding =
-                EncodingManager.INSTANCE.getEncoding(baseEncodingName);
+            baseEncoding = Encoding.getInstance(baseEncodingName);
         }
 
         nameToCode.putAll( baseEncoding.nameToCode );

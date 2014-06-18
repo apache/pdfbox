@@ -39,7 +39,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -222,12 +221,11 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkEncodingAsString(COSBase fontEncoding)
     {
-        EncodingManager emng = new EncodingManager();
         // Encoding is a Name, check if it is an Existing Encoding
         String enc = COSUtils.getAsString(fontEncoding, cosDocument);
         try
         {
-            this.encoding = emng.getEncoding(COSName.getPDFName(enc));
+            this.encoding = Encoding.getInstance(COSName.getPDFName(enc));
         }
         catch (IOException e)
         {
