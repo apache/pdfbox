@@ -22,7 +22,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
-import java.lang.Math;
 
 /**
  * This class represents a Type 2 (exponential interpolation) function in a PDF document.
