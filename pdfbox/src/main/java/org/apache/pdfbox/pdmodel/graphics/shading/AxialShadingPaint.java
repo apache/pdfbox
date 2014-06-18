@@ -67,8 +67,6 @@ class AxialShadingPaint implements Paint
     {
         try
         {
-            if (xform.getScaleX() > 10)
-                xform.setTransform(4.16, 0, 0, -4.16, 0, 3508);
             return new AxialShadingContext(shading, cm, xform, ctm, pageHeight);
         }
         catch (IOException ex)
