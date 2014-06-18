@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.transform.TransformerException;
 
 import org.apache.pdfbox.cos.COSStream;
 

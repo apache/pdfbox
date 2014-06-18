@@ -23,7 +23,6 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
 import java.awt.Paint;
-import java.io.IOException;
 
 /**
  * Resources for a shading type 5 (Lattice-Form Gouraud-Shade Triangle Mesh).

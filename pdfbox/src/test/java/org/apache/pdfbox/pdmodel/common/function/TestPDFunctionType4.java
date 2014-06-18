@@ -21,7 +21,6 @@ import java.io.OutputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 
