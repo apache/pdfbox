@@ -76,9 +76,7 @@ public class TestPDNumberTreeNode extends TestCase
             if ( getClass() != obj.getClass())
                 return false;
             PDTest other = (PDTest) obj;
-            if ( value != other.value)
-                return false;
-            return true;
+            return value == other.value;
         }
     }
 

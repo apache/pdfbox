@@ -104,12 +104,7 @@ class GouraudTriangle
             return false;
         }
 
-        if ((xCminusB * (p.getY() - pointB.getY()) - yCminusB * (p.getX() - pointB.getX()) > 0) != signAB)
-        {
-            return false;
-        }
-
-        return true;
+        return (xCminusB * (p.getY() - pointB.getY()) - yCminusB * (p.getX() - pointB.getX()) > 0) == signAB;
     }
 
     // returns the area of a triangle

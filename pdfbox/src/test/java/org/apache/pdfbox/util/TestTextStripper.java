@@ -175,18 +175,8 @@ public class TestTextStripper extends TestCase
                 }
             }
         }
-        else if( ( expected == null && actual != null && actual.trim().isEmpty(  ) ) ||
-            ( actual == null && expected != null && expected.trim().isEmpty(  ) ) )
-        {
-            //basically there are some cases where pdfbox will put an extra line
-            //at the end of the file, who cares, this is not enough to report
-            // a failure
-            equals = true;
-        }
-        else
-        {
-            equals = false;
-        }
+        else equals = ( expected == null && actual != null && actual.trim().isEmpty(  ) ) ||
+                ( actual == null && expected != null && expected.trim().isEmpty(  ) );
         return equals;
     }
 

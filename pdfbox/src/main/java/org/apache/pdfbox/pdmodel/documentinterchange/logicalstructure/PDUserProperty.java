@@ -179,11 +179,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     {
         if (oldEntry == null)
         {
-            if (newEntry == null)
-            {
-                return false;
-            }
-            return true;
+            return newEntry != null;
         }
         return !oldEntry.equals(newEntry);
     }

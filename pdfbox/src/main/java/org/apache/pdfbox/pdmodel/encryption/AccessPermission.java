@@ -438,10 +438,6 @@ public class AccessPermission
         {
             return true;
         }
-        if (canPrintDegraded())
-        {
-            return true;
-        }
-        return false;
+        return canPrintDegraded();
     }
 }
