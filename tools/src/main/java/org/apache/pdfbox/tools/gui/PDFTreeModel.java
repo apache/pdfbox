@@ -27,7 +27,6 @@ package org.apache.pdfbox.tools.gui;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeModel;
 
-//import java.awt.event.*;
 import javax.swing.event.TreeModelListener;
 
 import org.apache.pdfbox.cos.COSArray;
