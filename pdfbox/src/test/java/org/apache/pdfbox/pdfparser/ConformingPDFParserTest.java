@@ -19,13 +19,14 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.File;
 import java.net.URL;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
