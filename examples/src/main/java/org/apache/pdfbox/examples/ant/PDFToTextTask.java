@@ -62,9 +62,9 @@ public class PDFToTextTask extends Task
             DirectoryScanner dirScanner = next.getDirectoryScanner( getProject() );
             dirScanner.scan();
             String[] files = dirScanner.getIncludedFiles();
-            for( int i=0; i<files.length; i++ )
+            for (String file : files)
             {
-                File f = new File( dirScanner.getBasedir(), files[i] );
+                File f = new File(dirScanner.getBasedir(), file);
                 log( "processing: " + f.getAbsolutePath() );
                 String pdfFile = f.getAbsolutePath();
                 if( pdfFile.toUpperCase().endsWith( ".PDF" ) )
