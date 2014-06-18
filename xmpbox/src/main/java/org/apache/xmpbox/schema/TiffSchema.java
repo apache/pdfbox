@@ -21,9 +21,14 @@
 package org.apache.xmpbox.schema;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.*;
 
 import java.util.List;
+import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.Cardinality;
+import org.apache.xmpbox.type.ProperNameType;
+import org.apache.xmpbox.type.PropertyType;
+import org.apache.xmpbox.type.StructuredType;
+import org.apache.xmpbox.type.Types;
 
 @StructuredType(preferedPrefix = "tiff", namespace = "http://ns.adobe.com/tiff/1.0/")
 public class TiffSchema extends XMPSchema{

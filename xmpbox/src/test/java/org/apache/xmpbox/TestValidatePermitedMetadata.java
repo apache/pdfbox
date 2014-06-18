@@ -21,7 +21,6 @@
 package org.apache.xmpbox;
 
 import org.apache.xmpbox.schema.XMPSchema;
-import static org.junit.Assert.*;
 
 import org.apache.xmpbox.schema.XMPSchemaFactory;
 import org.apache.xmpbox.type.PropertyType;
@@ -38,6 +37,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class TestValidatePermitedMetadata {
