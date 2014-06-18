@@ -28,7 +28,7 @@
     <property name="tool.dir" value="tools" />
     <property name="bin.dir" value="bin" />
 
-    <property name="project.version" value="1.8.5" />
+    <property name="project.version" value="1.8.6" />
 
     <!-- pdfbox -->
     <property name="pdfbox.project.name" value="pdfbox"/>
@@ -94,17 +94,6 @@
     <property name="testoutput.dir" value="${pdfbox.target.dir}/test-output"/>
     <property name="testoutput-ext.dir" value="${pdfbox.target.dir}/test-output-ext"/>
     <property name="testinput-ext.dir" value="${pdfbox.target.dir}/test-input-ext"/>
-    <property name="jiraattachment.url" value="https://issues.apache.org/jira/secure/attachment"/>
-    <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
-    <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
-    <property name="testfiles2.url" value="${jiraattachment.url}/12413231/input-ext2.jar"/>
-    <property name="testfiles2.jar" value="${download.dir}/input-ext2.jar"/>
-    <property name="testfiles3.url" value="${jiraattachment.url}/12413232/input-ext3.jar"/>
-    <property name="testfiles3.jar" value="${download.dir}/input-ext3.jar"/>
-    <property name="testfiles.rendering.url" value="${jiraattachment.url}/12413229/input-ext_rendering.jar"/>
-    <property name="testfiles.rendering.jar" value="${download.dir}/input-ext_rendering.jar"/>
-    <property name="testfiles.encryption.url" value="${jiraattachment.url}/12413268/input-ext_encryption.jar"/>
-    <property name="testfiles.encryption.jar" value="${download.dir}/input-ext_encryption.jar"/>
 
     <property name="adobefiles.url" value="${maven.repo2}/com/adobe/pdf/pcfi/2010.08.09/pcfi-2010.08.09.jar"/>
     <property name="adobefiles.jar" value="${download.dir}/pcfi-2010.08.09.jar"/>
@@ -240,42 +229,6 @@
             </patternset>
             <mapper type="flatten"/>
         </unjar>
-    </target>
-
-    <target name="find.testfiles">
-        <available property="testfiles.found"
-                   file="${testinput-ext.dir}"
-                   type="dir"/>
-    </target>
-
-    <target name="get.testfiles" 
-            unless="testfiles.found" depends="find.testfiles" 
-            description="Download additional testfiles without suitable license to add them to svn">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles1.url}"/>
-            <param name="destfile" value="${testfiles1.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles2.url}"/>
-            <param name="destfile" value="${testfiles2.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles3.url}"/>
-            <param name="destfile" value="${testfiles3.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles.rendering.url}"/>
-            <param name="destfile" value="${testfiles.rendering.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles.encryption.url}"/>
-            <param name="destfile" value="${testfiles.encryption.jar}"/>
-        </antcall>
-        <unjar src="${testfiles1.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles2.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles3.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles.rendering.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles.encryption.jar}" dest="${testinput-ext.dir}"/>
     </target>
 
     <target name="testextract" depends="clean,pdfbox.compile" description="Test text extraction">
