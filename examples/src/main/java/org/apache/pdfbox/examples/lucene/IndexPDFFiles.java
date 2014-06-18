@@ -172,9 +172,9 @@ public class IndexPDFFiles
                 // an IO error could occur
                 if (files != null)
                 {
-                    for (int i = 0; i < files.length; i++)
+                    for (String fileName : files)
                     {
-                        indexDocs(writer, new File(file, files[i]));
+                        indexDocs(writer, new File(file, fileName));
                     }
                 }
             }
