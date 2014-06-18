@@ -33,16 +33,12 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- * This is implementation for the CIDFontType0/CIDFontType2 Fonts.
+ * A CIDFont.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public abstract class PDCIDFont extends PDSimpleFont
 {
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
 
     private Map<Integer, Float> widthCache = null;
@@ -71,7 +67,6 @@ public abstract class PDCIDFont extends PDSimpleFont
      * This will get the fonts bounding box.
      *
      * @return The fonts bounding box.
-     *
      * @throws IOException If there is an error getting the font bounding box.
      */
     @Override
@@ -119,22 +114,19 @@ public abstract class PDCIDFont extends PDSimpleFont
      * @param c The character code to get the width for.
      * @param offset The offset into the array.
      * @param length The length of the data.
-     *
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     *
      * @throws IOException If an error occurs while parsing.
      */
     @Override
     public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
-
         float retval = getDefaultWidth();
         int code = getCodeFromArray(c, offset, length);
 
         Float widthFloat = widthCache.get(code);
         if (widthFloat != null)
         {
-            retval = widthFloat.floatValue();
+            retval = widthFloat;
         }
         return retval;
     }
@@ -273,9 +265,6 @@ public abstract class PDCIDFont extends PDSimpleFont
         return average;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getFontWidth(int charCode)
     {
@@ -294,12 +283,12 @@ public abstract class PDCIDFont extends PDSimpleFont
     private String getCIDSystemInfo()
     {
         String cidSystemInfo = null;
-        COSDictionary cidsysteminfo = (COSDictionary) font.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (cidsysteminfo != null)
+        COSDictionary dict = (COSDictionary)font.getDictionaryObject(COSName.CIDSYSTEMINFO);
+        if (dict != null)
         {
-            String ordering = cidsysteminfo.getString(COSName.ORDERING);
-            String registry = cidsysteminfo.getString(COSName.REGISTRY);
-            int supplement = cidsysteminfo.getInt(COSName.SUPPLEMENT);
+            String ordering = dict.getString(COSName.ORDERING);
+            String registry = dict.getString(COSName.REGISTRY);
+            int supplement = dict.getInt(COSName.SUPPLEMENT);
             cidSystemInfo = registry + "-" + ordering + "-" + supplement;
         }
         return cidSystemInfo;
@@ -321,7 +310,8 @@ public abstract class PDCIDFont extends PDSimpleFont
             }
             else
             {
-                cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf("-")) + "-UCS2";
+                cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf("-")) +
+                        "-UCS2";
             }
             cmap = cmapObjects.get(cidSystemInfo);
             if (cmap == null)
@@ -336,17 +326,20 @@ public abstract class PDCIDFont extends PDSimpleFont
                     	cmap = parseCmap(resourceRootCMAP, cmapStream);
                     	if (cmap == null)
                     	{
-                    		LOG.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
+                    		LOG.error("Error: Could not parse predefined CMAP file for '" +
+                                    cidSystemInfo + "'");
                     	}
                     }
                     else
                     {
-                		LOG.debug("Debug: '" + cidSystemInfo + "' isn't a predefined CMap, most likely it's embedded in the pdf itself.");
+                		LOG.debug("Debug: '" + cidSystemInfo + "' isn't a predefined CMap, most " +
+                                  "likely it's embedded in the pdf itself.");
                     }
                 }
                 catch (IOException exception)
                 {
-                    LOG.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo + "'");
+                    LOG.error("Error: Could not find predefined CMAP file for '" + cidSystemInfo +
+                              "'");
                 }
                 finally
                 {
@@ -363,7 +356,7 @@ public abstract class PDCIDFont extends PDSimpleFont
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
-        String result = null;
+        String result;
         if (cmap != null)
         {
             result = cmapEncoding(getCodeFromArray(c, offset, length), length, true, cmap);

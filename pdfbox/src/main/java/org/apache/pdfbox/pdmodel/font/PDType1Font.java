@@ -46,77 +46,27 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- * This is implementation of the Type1 Font.
+ * PostScript Type 1 Font.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PDType1Font extends PDSimpleFont
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
-    private PDType1CFont type1CFont = null;
-    private Type1Font type1font = null;
-
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font TIMES_ITALIC = new PDType1Font("Times-Italic");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font TIMES_BOLD_ITALIC = new PDType1Font("Times-BoldItalic");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font HELVETICA = new PDType1Font("Helvetica");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font HELVETICA_BOLD = new PDType1Font("Helvetica-Bold");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font HELVETICA_OBLIQUE = new PDType1Font("Helvetica-Oblique");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font HELVETICA_BOLD_OBLIQUE = new PDType1Font("Helvetica-BoldOblique");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font COURIER = new PDType1Font("Courier");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font COURIER_BOLD = new PDType1Font("Courier-Bold");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font COURIER_OBLIQUE = new PDType1Font("Courier-Oblique");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font("Courier-BoldOblique");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
-    /**
-     * Standard Base 14 Font.
-     */
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
     private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
@@ -141,57 +91,53 @@ public class PDType1Font extends PDSimpleFont
     /**
      * The static map of the default Adobe font metrics.
      */
-    private static final Map<String, FontMetric> afmObjects = Collections.unmodifiableMap(getAdobeFontMetrics());
-
-    private FontMetric afm = null;
+    private static final Map<String, FontMetric> AFM_MAP = getAdobeFontMetrics();
 
     private static Map<String, FontMetric> getAdobeFontMetrics()
     {
         Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
-        addAdobeFontMetric(metrics, "Courier-Bold");
-        addAdobeFontMetric(metrics, "Courier-BoldOblique");
-        addAdobeFontMetric(metrics, "Courier");
-        addAdobeFontMetric(metrics, "Courier-Oblique");
-        addAdobeFontMetric(metrics, "Helvetica");
-        addAdobeFontMetric(metrics, "Helvetica-Bold");
-        addAdobeFontMetric(metrics, "Helvetica-BoldOblique");
-        addAdobeFontMetric(metrics, "Helvetica-Oblique");
-        addAdobeFontMetric(metrics, "Symbol");
-        addAdobeFontMetric(metrics, "Times-Bold");
-        addAdobeFontMetric(metrics, "Times-BoldItalic");
-        addAdobeFontMetric(metrics, "Times-Italic");
-        addAdobeFontMetric(metrics, "Times-Roman");
-        addAdobeFontMetric(metrics, "ZapfDingbats");
+        addMetric("Courier-Bold");
+        addMetric("Courier-BoldOblique");
+        addMetric("Courier");
+        addMetric("Courier-Oblique");
+        addMetric("Helvetica");
+        addMetric("Helvetica-Bold");
+        addMetric("Helvetica-BoldOblique");
+        addMetric("Helvetica-Oblique");
+        addMetric("Symbol");
+        addMetric("Times-Bold");
+        addMetric("Times-BoldItalic");
+        addMetric("Times-Italic");
+        addMetric("Times-Roman");
+        addMetric("ZapfDingbats");
         
         // PDFBOX-239
-        addAdobeFontMetric(metrics, "Arial", "Helvetica");
-        addAdobeFontMetric(metrics, "Arial,Bold", "Helvetica-Bold");
-        addAdobeFontMetric(metrics, "Arial,Italic", "Helvetica-Oblique");
-        addAdobeFontMetric(metrics, "Arial,BoldItalic", "Helvetica-BoldOblique");
+        addMetric("Arial", "Helvetica");
+        addMetric("Arial,Bold", "Helvetica-Bold");
+        addMetric("Arial,Italic", "Helvetica-Oblique");
+        addMetric("Arial,BoldItalic", "Helvetica-BoldOblique");
 
-        return metrics;
+        return Collections.unmodifiableMap(metrics);
     }
 
-    private static final String resourceRootAFM = "org/apache/pdfbox/resources/afm/";
-
-    private static void addAdobeFontMetric(Map<String, FontMetric> metrics, String name)
+    private static void addMetric(String name)
     {
-        addAdobeFontMetric(metrics, name, name);
+        addMetric(name, name);
     }
     
-    private static void addAdobeFontMetric(Map<String, FontMetric> metrics, String name, String filePrefix)
+    private static void addMetric(String name, String prefix)
     {
         try
         {
-            String resource = resourceRootAFM + filePrefix + ".afm";
+            String resource = "org/apache/pdfbox/resources/afm/" + prefix + ".afm";
             InputStream afmStream = ResourceLoader.loadResource(resource);
             if (afmStream != null)
             {
                 try
                 {
                     AFMParser parser = new AFMParser(afmStream);
-                    FontMetric metric = parser.parse(); 
-                    metrics.put(name, metric);
+                    FontMetric metric = parser.parse();
+                    AFM_MAP.put(name, metric);
                 }
                 finally
                 {
@@ -205,12 +151,15 @@ public class PDType1Font extends PDSimpleFont
         }
     }
 
+    private PDType1CFont type1CFont = null;
+    private Type1Font type1font = null;
+    private FontMetric afm = null;
+
     /**
      * Constructor.
      */
     public PDType1Font()
     {
-        super();
         font.setItem(COSName.SUBTYPE, COSName.TYPE1);
     }
 
@@ -264,6 +213,7 @@ public class PDType1Font extends PDSimpleFont
         }
         getEncodingFromFont(getFontEncoding() == null);
     }
+
     /**
      * Constructor.
      * 
@@ -286,7 +236,7 @@ public class PDType1Font extends PDSimpleFont
             if (baseFont instanceof COSName)
             {
                 name = ((COSName) baseFont).getName();
-                if (name.indexOf("+") > -1)
+                if (name.contains("+"))
                 {
                     name = name.substring(name.indexOf("+") + 1);
                 }
@@ -299,7 +249,7 @@ public class PDType1Font extends PDSimpleFont
             }
             if (name != null)
             {
-                afm = afmObjects.get(name);
+                afm = AFM_MAP.get(name);
             }
         }
         return afm;
@@ -314,7 +264,7 @@ public class PDType1Font extends PDSimpleFont
      */
     public static PDType1Font getStandardFont(String name)
     {
-        return (PDType1Font) STANDARD_14.get(name);
+        return STANDARD_14.get(name);
     }
 
     /**
@@ -324,12 +274,9 @@ public class PDType1Font extends PDSimpleFont
      */
     public static String[] getStandard14Names()
     {
-        return (String[]) STANDARD_14.keySet().toArray(new String[14]);
+        return STANDARD_14.keySet().toArray(new String[14]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void determineEncoding()
     {
@@ -348,13 +295,12 @@ public class PDType1Font extends PDSimpleFont
 
     /**
      * Tries to get the encoding for the type1 font.
-     *
      */
     private void getEncodingFromFont(boolean extractEncoding)
     {
         if (type1font != null)
         {
-            // Fontmatrix
+            // FontMatrix
             List<Number> matrixValues = type1font.getFontMatrix();
             if (!matrixValues.isEmpty() && matrixValues.size() == 6)
             {
@@ -387,9 +333,6 @@ public class PDType1Font extends PDSimpleFont
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
@@ -404,9 +347,6 @@ public class PDType1Font extends PDSimpleFont
         return super.encode(c, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int encodeToCID(byte[] c, int offset, int length) throws IOException
     {
@@ -420,9 +360,6 @@ public class PDType1Font extends PDSimpleFont
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PDMatrix getFontMatrix()
     {

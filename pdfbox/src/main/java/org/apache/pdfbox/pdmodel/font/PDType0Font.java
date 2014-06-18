@@ -26,17 +26,12 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * This is implementation of the Type0 Font. See <a
- * href="https://issues.apache.org/jira/browse/PDFBOX-605">PDFBOX-605</a> for the related improvement issue.
+ * Type 0 (composite) Font.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author <Ben Litchfield
  */
 public class PDType0Font extends PDSimpleFont
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
     private COSArray descendantFontArray;
@@ -48,7 +43,6 @@ public class PDType0Font extends PDSimpleFont
      */
     public PDType0Font()
     {
-        super();
         font.setItem(COSName.SUBTYPE, COSName.TYPE0);
     }
 
@@ -74,18 +68,21 @@ public class PDType0Font extends PDSimpleFont
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private COSArray getDescendantFonts()
+    {
+        if (descendantFontArray == null)
+        {
+            descendantFontArray = (COSArray) font.getDictionaryObject(COSName.DESCENDANT_FONTS);
+        }
+        return descendantFontArray;
+    }
+
     @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
         throw new RuntimeException("Not yet implemented");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
@@ -110,45 +107,24 @@ public class PDType0Font extends PDSimpleFont
         return descendantFont.getFontWidth(c, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getFontHeight(byte[] c, int offset, int length) throws IOException
     {
         return descendantFont.getFontHeight(c, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getAverageFontWidth() throws IOException
     {
         return descendantFont.getAverageFontWidth();
     }
 
-    private COSArray getDescendantFonts()
-    {
-        if (descendantFontArray == null)
-        {
-            descendantFontArray = (COSArray) font.getDictionaryObject(COSName.DESCENDANT_FONTS);
-        }
-        return descendantFontArray;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public float getFontWidth(int charCode)
     {
         return descendantFont.getFontWidth(charCode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String encode(byte[] c, int offset, int length) throws IOException
     {
@@ -170,11 +146,9 @@ public class PDType0Font extends PDSimpleFont
     }
 
     /**
-     * 
-     * Provides the descendant font.
-     * 
+     * Returns the descendant font.
+     *
      * @return the descendant font.
-     * 
      */
     public PDFont getDescendantFont()
     {

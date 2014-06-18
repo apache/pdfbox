@@ -20,10 +20,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is implementation of the Multiple Master Type1 Font.
+ * Type 1 Multiple Master Font.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDMMType1Font extends PDType1Font
 {
@@ -33,7 +32,7 @@ public class PDMMType1Font extends PDType1Font
     public PDMMType1Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.MM_TYPE1 );
+        font.setItem(COSName.SUBTYPE, COSName.MM_TYPE1);
     }
 
     /**
@@ -41,8 +40,8 @@ public class PDMMType1Font extends PDType1Font
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDMMType1Font( COSDictionary fontDictionary )
+    public PDMMType1Font(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
+        super(fontDictionary);
     }
 }

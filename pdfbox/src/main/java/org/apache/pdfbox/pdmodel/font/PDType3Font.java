@@ -27,16 +27,13 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * This is implementation of the Type3 Font.
+ * A PostScript Type 3 Font.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PDType3Font extends PDSimpleFont
 {
-
 	private PDResources type3Resources = null;
-    
     private COSDictionary charProcs = null;
     
     /**
@@ -45,7 +42,7 @@ public class PDType3Font extends PDSimpleFont
     public PDType3Font()
     {
         super();
-        font.setItem( COSName.SUBTYPE, COSName.TYPE3 );
+        font.setItem(COSName.SUBTYPE, COSName.TYPE3);
     }
 
     /**
@@ -53,9 +50,9 @@ public class PDType3Font extends PDSimpleFont
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDType3Font( COSDictionary fontDictionary )
+    public PDType3Font(COSDictionary fontDictionary)
     {
-        super( fontDictionary );
+        super(fontDictionary);
     }
 
     /**
@@ -63,25 +60,24 @@ public class PDType3Font extends PDSimpleFont
      *
      * @param matrix The font matrix for this type3 font.
      */
-    public void setFontMatrix( PDMatrix matrix )
+    public void setFontMatrix(PDMatrix matrix)
     {
-        font.setItem( COSName.FONT_MATRIX, matrix );
+        font.setItem(COSName.FONT_MATRIX, matrix);
     }
-
 
     /**
      * Returns the optional resources of the type3 stream.
      * 
      * @return the resources bound to be used when parsing the type3 stream 
      */
-    public PDResources getType3Resources( )
+    public PDResources getType3Resources()
     {
         if (type3Resources == null)
         {
-            COSDictionary resources = (COSDictionary)font.getDictionaryObject( COSName.RESOURCES );
+            COSDictionary resources = (COSDictionary)font.getDictionaryObject(COSName.RESOURCES);
             if (resources != null)
             {
-            	type3Resources = new PDResources( resources );
+            	type3Resources = new PDResources(resources);
             }
         }
         return type3Resources;
@@ -91,16 +87,16 @@ public class PDType3Font extends PDSimpleFont
      * This will get the fonts bounding box.
      *
      * @return The fonts bounding box.
-     *
      * @throws IOException If there is an error getting the bounding box.
      */
+    @Override
     public PDRectangle getFontBoundingBox() throws IOException
     {
-        COSArray rect = (COSArray)font.getDictionaryObject( COSName.FONT_BBOX );
+        COSArray rect = (COSArray)font.getDictionaryObject(COSName.FONT_BBOX);
         PDRectangle retval = null;
-        if( rect != null )
+        if(rect != null)
         {
-            retval = new PDRectangle( rect );
+            retval = new PDRectangle(rect);
         }
         return retval;
     }
@@ -114,7 +110,7 @@ public class PDType3Font extends PDSimpleFont
     {
         if (charProcs == null)
         {
-        	charProcs = (COSDictionary)font.getDictionaryObject( COSName.CHAR_PROCS );
+        	charProcs = (COSDictionary)font.getDictionaryObject(COSName.CHAR_PROCS);
         }
         return charProcs;
     }
@@ -132,7 +128,7 @@ public class PDType3Font extends PDSimpleFont
         String cMapsTo = getFontEncoding().getName(character);
         if (cMapsTo != null)
         {
-        	stream = (COSStream)getCharProcs().getDictionaryObject( COSName.getPDFName( cMapsTo ) );
+        	stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(cMapsTo));
         }
         return stream;
     }
