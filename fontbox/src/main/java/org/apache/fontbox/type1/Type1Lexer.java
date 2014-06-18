@@ -20,7 +20,6 @@
 package org.apache.fontbox.type1;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 /**
